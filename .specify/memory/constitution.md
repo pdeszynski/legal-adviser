@@ -1,15 +1,8 @@
 <!--
 Sync Impact Report:
-- Version Change: None -> 1.0.0 (Initial Ratification)
-- Principles Defined:
-  - I. Domain-Driven Design
-  - II. Modular Monolith Architecture
-  - III. Defined Technology Stack
-  - IV. AI-First Capabilities
-  - V. English-First Development
-- Added Sections:
-  - System Constraints (Monorepo, Async Events)
-  - Quality Assurance (Architecture Tests, Speckit Workflow)
+- Version Change: 1.1.0 -> 1.2.0
+- Modified:
+  - IV. AI-First Capabilities (Added "Drafting complaints, lawsuits, and other legal pleadings")
 - Templates Checked:
   - .specify/templates/plan-template.md (✅ Consistent)
   - .specify/templates/spec-template.md (✅ Consistent)
@@ -36,7 +29,7 @@ The backend MUST be structured as a Modular Monolith.
 
 We adhere to a strict, modern technology stack:
 
-- **Frontend**: Next.js (UI Framework) + refine.dev (Data Framework). Styling via proper Tailwind CSS and shadcn/ui components. User Management: WorkOS (AuthKit).
+- **Frontend**: Next.js (UI Framework) + refine.dev (Data Framework). Styling via proper Tailwind CSS and shadcn/ui components.
 - **Core Backend**: Nest.js + nestjs-query. GraphQL is the primary API for data operations. Database: PostgreSQL. User Management: Nest.js / WorkOS (AuthKit).
 - **AI Service**: Python + FastAPI (HTTP Server). Agent logic using PydanticAI. Agent orchestration using LangGraph.
 
@@ -45,14 +38,17 @@ We adhere to a strict, modern technology stack:
 The platform is designed to assist lawyers and regular users by:
 
 - Generating legal documents and answers.
-- Searching rulings and legal bases including RAG.
+- Drafting complaints, lawsuits, and other legal pleadings.
+- Searching rulings and legal bases.
 - Using complex agentic workflows (LangGraph).
   AI logic remains distinct in the Python service but deeply integrated via API contracts.
 
-### V. English-First Development
+### V. English-First & Semantic Versioning
 
-- **Code & Docs**: All source code, comments, documentation, and commit messages MUST be in **English**.
-- **Localization**: The frontend MUST be architected to support translation/i18n mechanisms, allowing for Polish (and other languages) support to be added easily later, but the primary development language is English.
+- **English-First**: All source code, comments, documentation, and commit messages MUST be in **English**.
+- **Conventional Commits**: Commit messages MUST follow the [Conventional Commits](https://www.conventionalcommits.org/) specification (e.g., `feat:`, `fix:`, `docs:`).
+- **Semantic Release**: Versioning and releases MUST be automated using **semantic-release**, deriving version bumps (Major/Minor/Patch) directly from commit types.
+- **Localization**: The frontend MUST be architected to support translation/i18n mechanisms, allowing for Polish (and other languages) support to be added easily later.
 
 ## System Constraints
 
@@ -69,6 +65,6 @@ The platform is designed to assist lawyers and regular users by:
 This Constitution supersedes all other technical preferences or loose guidelines.
 
 - **Amendments**: Changes to principles (especially Architecture and Stack) require a formal amendment to this document and a MAJOR version bump.
-- **Compliance**: Every Pull Request Review MUST verify adherence to Modular Monolith boundaries and English language rules.
+- **Compliance**: Every Pull Request Review MUST verify adherence to Modular Monolith boundaries, English language rules, and Conventional Commits.
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-09 | **Last Amended**: 2025-12-09
+**Version**: 1.2.0 | **Ratified**: 2025-12-09 | **Last Amended**: 2025-12-09
