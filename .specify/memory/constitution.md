@@ -1,50 +1,74 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+- Version Change: None -> 1.0.0 (Initial Ratification)
+- Principles Defined:
+  - I. Domain-Driven Design
+  - II. Modular Monolith Architecture
+  - III. Defined Technology Stack
+  - IV. AI-First Capabilities
+  - V. English-First Development
+- Added Sections:
+  - System Constraints (Monorepo, Async Events)
+  - Quality Assurance (Architecture Tests, Speckit Workflow)
+- Templates Checked:
+  - .specify/templates/plan-template.md (✅ Consistent)
+  - .specify/templates/spec-template.md (✅ Consistent)
+  - .specify/templates/tasks-template.md (✅ Consistent)
+-->
+
+# Legal AI Platform Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Domain-Driven Design (DDD)
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+The project MUST be developed using Domain-Driven Design principles. The software model must deeply reflect the legal business domain. We prioritize understanding the domain over technical implementation details in the early stages.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Modular Monolith Architecture
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+The backend MUST be structured as a Modular Monolith.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+- **Strict Boundaries**: Modules must be logically and physically separated.
+- **No Direct Imports**: Importing code from one module's domain/infrastructure into another is STRICTLY PROHIBITED.
+- **Event-Driven Communication**: Communication between modules MUST happen exclusively via **asynchronous events**.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### III. Defined Technology Stack
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+We adhere to a strict, modern technology stack:
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- **Frontend**: Next.js (UI Framework) + refine.dev (Data Framework). Styling via proper Tailwind CSS and shadcn/ui components. User Management: WorkOS (AuthKit).
+- **Core Backend**: Nest.js + nestjs-query. GraphQL is the primary API for data operations. Database: PostgreSQL. User Management: Nest.js / WorkOS (AuthKit).
+- **AI Service**: Python + FastAPI (HTTP Server). Agent logic using PydanticAI. Agent orchestration using LangGraph.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### IV. AI-First Capabilities
+
+The platform is designed to assist lawyers and regular users by:
+
+- Generating legal documents and answers.
+- Searching rulings and legal bases including RAG.
+- Using complex agentic workflows (LangGraph).
+  AI logic remains distinct in the Python service but deeply integrated via API contracts.
+
+### V. English-First Development
+
+- **Code & Docs**: All source code, comments, documentation, and commit messages MUST be in **English**.
+- **Localization**: The frontend MUST be architected to support translation/i18n mechanisms, allowing for Polish (and other languages) support to be added easily later, but the primary development language is English.
+
+## System Constraints
+
+- **Monorepo Structure**: All components (Client, Server, AI Engine) live in a single repository to facilitate unified versioning and simplified CI/CD.
+- **Asynchronous Events**: Synchronous coupling between modules is forbidden to ensure scalability and independent failure domains.
+
+## Quality Assurance
+
+- **Architecture Tests**: CI pipelines MUST include architecture tests (e.g., using ArchUnit equivalent for Node/Python) to fail builds if module import rules are violated.
+- **Workflow**: All features follow the specified workflow: Specification -> Planning -> Implementation -> Verification.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This Constitution supersedes all other technical preferences or loose guidelines.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+- **Amendments**: Changes to principles (especially Architecture and Stack) require a formal amendment to this document and a MAJOR version bump.
+- **Compliance**: Every Pull Request Review MUST verify adherence to Modular Monolith boundaries and English language rules.
+
+**Version**: 1.0.0 | **Ratified**: 2025-12-09 | **Last Amended**: 2025-12-09
