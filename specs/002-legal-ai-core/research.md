@@ -33,7 +33,7 @@
 **Options Strategy**:
 
 1.  **In-Memory (`EventEmitter2`)**: Simple, zero infra, works perfectly for a monolith running in a single process.
-2.  **Redis (Pub/Sub)**: External dependency, persistence possible, decouple deployment.
+2.  **Redis (Pub/Sub)**: External dependency, persistence possible, decouple deployment. Bull module to make it async
 3.  **RabbitMQ/Kafka**: Heavy encoding, strictly coupled to infra.
 
 **Decision**: **In-Memory (`@nestjs/event-emitter`)** initially.

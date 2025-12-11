@@ -1,0 +1,9 @@
+{
+  "extends": "eslint-config-turbo",
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "no-console": "warn"
+  }
+}

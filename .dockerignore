@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+.git/
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+.env
+.env.*
+.DS_Store
+.vscode/
+.idea/
+README.md
+__pycache__/
+.venv/
