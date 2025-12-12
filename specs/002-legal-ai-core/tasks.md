@@ -46,7 +46,7 @@ description: 'Task list for Core Legal AI Features implementation'
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
 - [x] T007 Setup Postgres database and TypeORM/Prisma/MikroORM (per choice) in `apps/backend`
-- [ ] T008 [P] Implement base Authentication framework in `apps/backend` and `apps/web`
+- [x] T008 [P] Implement base Authentication framework in `apps/backend` and `apps/web`
 - [ ] T009 [P] Setup Basic AI Service API (FastAPI) and Client Generation in `apps/backend`
 - [ ] T010 [P] Implement Event Bus module in `apps/backend/src/shared/event-bus`
 - [ ] T011 [P] Configure i18n structure in `apps/web` (react-i18next)
