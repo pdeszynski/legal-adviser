@@ -1,17 +1,41 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { DEFAULT_LOCALE } from "./config";
-import { I18N_COOKIE_NAME } from "./config";
+import {
+  DEFAULT_LOCALE,
+  I18N_COOKIE_NAME,
+  SUPPORTED_LOCALES,
+  type SupportedLocale,
+} from "./config";
 
-export async function getUserLocale() {
+/**
+ * Get the user's preferred locale from cookies, falling back to default
+ * Validates that the locale is supported
+ */
+export async function getUserLocale(): Promise<SupportedLocale> {
   const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get(I18N_COOKIE_NAME)?.value;
 
-  return cookieStore.get(I18N_COOKIE_NAME)?.value || DEFAULT_LOCALE;
+  // Validate locale is supported, fallback to default if not
+  if (cookieLocale && SUPPORTED_LOCALES.includes(cookieLocale as SupportedLocale)) {
+    return cookieLocale as SupportedLocale;
+  }
+
+  return DEFAULT_LOCALE;
 }
 
-export async function setUserLocale(locale: string) {
+/**
+ * Set the user's preferred locale in cookies
+ * Validates that the locale is supported before setting
+ */
+export async function setUserLocale(locale: string): Promise<void> {
   const cookieStore = await cookies();
 
-  cookieStore.set(I18N_COOKIE_NAME, locale);
+  // Validate locale is supported
+  if (SUPPORTED_LOCALES.includes(locale as SupportedLocale)) {
+    cookieStore.set(I18N_COOKIE_NAME, locale);
+  } else {
+    // Fallback to default if invalid locale provided
+    cookieStore.set(I18N_COOKIE_NAME, DEFAULT_LOCALE);
+  }
 }

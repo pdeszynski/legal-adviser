@@ -1,19 +1,7 @@
 "use client";
 
 import { useTranslation } from "@refinedev/core";
-
-const locales = [
-  {
-    value: "en",
-    label: "English",
-    icon: "🇬🇧",
-  },
-  {
-    value: "de",
-    label: "Deutsch",
-    icon: "🇩🇪",
-  },
-];
+import { SUPPORTED_LOCALES, LOCALE_METADATA } from "@i18n/config";
 
 export const SelectLanguage = () => {
   const { getLocale, changeLocale } = useTranslation();
@@ -25,11 +13,14 @@ export const SelectLanguage = () => {
         value={currentLocale}
         onChange={(e) => changeLocale(e.target.value)}
       >
-        {locales.map((locale) => (
-          <option key={locale.value} value={locale.value}>
-            {locale.label} {locale.icon}
-          </option>
-        ))}
+        {SUPPORTED_LOCALES.map((locale) => {
+          const metadata = LOCALE_METADATA[locale];
+          return (
+            <option key={locale} value={locale}>
+              {metadata.label} {metadata.icon}
+            </option>
+          );
+        })}
       </select>
     </div>
   );

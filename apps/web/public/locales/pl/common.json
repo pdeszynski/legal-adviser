@@ -1,0 +1,170 @@
+{
+  "ID": "ID",
+  "pages": {
+    "login": {
+      "title": "Zaloguj się do swojego konta",
+      "signin": "Zaloguj się",
+      "signup": "Zarejestruj się",
+      "register": "Rejestracja",
+      "divider": "lub",
+      "fields": {
+        "email": "Email",
+        "password": "Hasło"
+      },
+      "errors": {
+        "requiredEmail": "Email jest wymagany",
+        "requiredPassword": "Hasło jest wymagane",
+        "validEmail": "Nieprawidłowy adres email"
+      },
+      "buttons": {
+        "submit": "Zaloguj",
+        "forgotPassword": "Zapomniałeś hasła?",
+        "noAccount": "Nie masz konta?",
+        "haveAccount": "Masz już konto?",
+        "rememberMe": "Zapamiętaj mnie"
+      }
+    },
+    "forgotPassword": {
+      "title": "Zapomniałeś hasła?",
+      "signin": "Zaloguj się",
+      "fields": {
+        "email": "Email"
+      },
+      "errors": {
+        "requiredEmail": "Email jest wymagany",
+        "validEmail": "Nieprawidłowy adres email"
+      },
+      "buttons": {
+        "haveAccount": "Masz już konto?",
+        "submit": "Wyślij instrukcje resetowania"
+      }
+    },
+    "register": {
+      "title": "Zarejestruj się",
+      "signin": "Zaloguj się",
+      "fields": {
+        "email": "Email",
+        "password": "Hasło"
+      },
+      "errors": {
+        "validEmail": "Nieprawidłowy adres email"
+      },
+      "buttons": {
+        "submit": "Zarejestruj",
+        "haveAccount": "Masz już konto?"
+      }
+    },
+    "updatePassword": {
+      "title": "Zaktualizuj hasło",
+      "fields": {
+        "password": "Nowe hasło",
+        "confirmPassword": "Potwierdź nowe hasło"
+      },
+      "errors": {
+        "confirmPasswordNotMatch": "Hasła nie są zgodne"
+      },
+      "buttons": {
+        "submit": "Zaktualizuj"
+      }
+    },
+    "error": {
+      "info": "Możesz zapomnieć dodać komponent {action} do zasobu {resource}.",
+      "404": "Przepraszamy, strona którą odwiedziłeś nie istnieje.",
+      "resource404": "Czy na pewno utworzyłeś zasób {resource}.",
+      "backHome": "Powrót do strony głównej"
+    }
+  },
+  "actions": {
+    "list": "Lista",
+    "create": "Utwórz",
+    "edit": "Edytuj",
+    "show": "Pokaż",
+    "delete": "Usuń",
+    "save": "Zapisz",
+    "cancel": "Anuluj"
+  },
+  "buttons": {
+    "create": "Utwórz",
+    "save": "Zapisz",
+    "logout": "Wyloguj",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "cancel": "Anuluj",
+    "confirm": "Czy na pewno?",
+    "filter": "Filtruj",
+    "clear": "Wyczyść",
+    "refresh": "Odśwież",
+    "show": "Pokaż",
+    "undo": "Cofnij",
+    "import": "Importuj",
+    "clone": "Klonuj",
+    "notAccessTitle": "Nie masz uprawnień do dostępu"
+  },
+  "warnWhenUnsavedChanges": "Czy na pewno chcesz wyjść? Masz niezapisane zmiany.",
+  "notifications": {
+    "success": "Sukces",
+    "error": "Błąd (kod statusu: {statusCode})",
+    "undoable": "Masz {seconds} sekund na cofnięcie",
+    "createSuccess": "Pomyślnie utworzono {resource}",
+    "createError": "Wystąpił błąd podczas tworzenia {resource} (kod statusu: {statusCode})",
+    "deleteSuccess": "Pomyślnie usunięto {resource}",
+    "deleteError": "Błąd podczas usuwania {resource} (kod statusu: {statusCode})",
+    "editSuccess": "Pomyślnie edytowano {resource}",
+    "editError": "Błąd podczas edycji {resource} (kod statusu: {statusCode})",
+    "importProgress": "Importowanie: {processed}/{total}"
+  },
+  "loading": "Ładowanie",
+  "tags": {
+    "clone": "Klonuj"
+  },
+  "dashboard": {
+    "title": "Panel główny"
+  },
+  "blog_posts": {
+    "blog_posts": "Wpisy na blogu",
+    "form": {
+      "select": {
+        "category": {
+          "placeholder": "Proszę wybrać kategorię"
+        }
+      }
+    },
+    "fields": {
+      "id": "Id",
+      "title": "Tytuł",
+      "category": "Kategoria",
+      "status": {
+        "title": "Status",
+        "published": "Opublikowany",
+        "draft": "Szkic",
+        "rejected": "Odrzucony"
+      },
+      "content": "Treść",
+      "createdAt": "Data utworzenia"
+    },
+    "titles": {
+      "create": "Utwórz wpis",
+      "edit": "Edytuj wpis",
+      "list": "Wpisy",
+      "show": "Pokaż wpis"
+    }
+  },
+  "categories": {
+    "categories": "Kategorie",
+    "fields": {
+      "id": "Id",
+      "title": "Tytuł",
+      "createdAt": "Data utworzenia"
+    },
+    "titles": {
+      "create": "Utwórz kategorię",
+      "edit": "Edytuj kategorię",
+      "list": "Kategorie",
+      "show": "Pokaż kategorię"
+    }
+  },
+  "table": {
+    "actions": "Akcje"
+  }
+}
+

@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AiClientModule } from './shared/ai-client/ai-client.module';
 import { QueueRegistry } from './shared/queues';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { QueueRegistry } from './shared/queues';
       inject: [ConfigService],
     }),
     AiClientModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

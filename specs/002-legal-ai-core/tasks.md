@@ -52,8 +52,8 @@ description: 'Task list for Core Legal AI Features implementation'
 - [x] T009 [P] Setup Basic AI Service API (FastAPI) and Client Generation in `apps/backend`
 - [x] T010 [P] Setup EventEmitter2 module (`@nestjs/event-emitter`) in `apps/backend/src/shared/events`
 - [x] T011 [P] Setup Redis and Bull queue module (`@nestjs/bull`) in `apps/backend/src/shared/queues`
-- [ ] T012 [P] Configure i18n structure in `apps/web` (react-i18next)
-- [ ] T013 Define User and Session entities in `apps/backend/src/modules/users`
+- [x] T012 [P] Configure i18n structure in `apps/web` (react-i18next)
+- [x] T013 Define User and Session entities in `apps/backend/src/modules/users`
 
 ### Implementation Notes for Event-Driven Architecture
 

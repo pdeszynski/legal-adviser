@@ -9,10 +9,21 @@ erDiagram
     UserSession ||--o{ LegalQuery : asks
     UserSession ||--o{ RulingSearch : performs
 
+    User {
+        uuid id PK
+        string email
+        string username
+        string first_name
+        string last_name
+        boolean is_active
+        boolean disclaimer_accepted
+        timestamp created_at
+        timestamp updated_at
+    }
+
     UserSession {
         uuid id PK
         uuid user_id FK
-        boolean disclaimer_accepted
         enum mode "LAWYER, SIMPLE"
         timestamp started_at
         timestamp ended_at
@@ -51,11 +62,17 @@ erDiagram
 
 ## Entities & Aggregates (DDD)
 
+### User Aggregate
+
+- **Root**: `User`
+- **Purpose**: Represents a user in the system with their profile and consent status.
+- **Invariants**: A valid user must have a unique email. The `disclaimer_accepted` flag tracks legal consent globally for the user.
+
 ### Session Aggregate
 
 - **Root**: `UserSession`
-- **Purpose**: Tracks the "Context" (Lawyer vs Simple) and legal disclaimer acceptance per session.
-- **Invariants**: valid `UserSession` requires `disclaimer_accepted = true` before allowing creation of `LegalDocument` or `LegalQuery`.
+- **Purpose**: Tracks the "Context" (Lawyer vs Simple mode) per session.
+- **Invariants**: A valid `UserSession` requires the associated `User` to have `disclaimer_accepted = true` before allowing creation of `LegalDocument` or `LegalQuery`.
 
 ### Document Aggregate
 
