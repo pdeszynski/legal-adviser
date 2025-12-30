@@ -36,7 +36,7 @@ description: 'Task list for Core Legal AI Features implementation'
 - [x] T004 Initialize `apps/ai-engine` (Python + FastAPI)
 - [x] T005 [P] Setup shared packages `packages/ui` and `packages/types`
 - [x] T006 [P] Configure global linting (ESLint, Prettier) and Python linting (Ruff)
-- [ ] T006a [P] Configure Jest in `apps/backend` for separate test suites: `unit` (co-located), `integration`, and `e2e` (in `tests/` folder)
+- [x] T006a [P] Configure Jest in `apps/backend` for separate test suites: `unit` (co-located), `integration`, and `e2e` (in `tests/` folder)
 
 ---
 

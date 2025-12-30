@@ -9,8 +9,9 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "turbo": "latest",
-    "prettier": "latest"
+    "eslint-config-turbo": "^2.7.2",
+    "prettier": "latest",
+    "turbo": "latest"
   },
   "engines": {
     "node": ">=18"
