@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { User } from './entities/user.entity';
 import { UserSession, SessionMode } from './entities/user-session.entity';
@@ -93,13 +93,13 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
+    type UpdateableFields = keyof typeof data;
     const updatedFields: string[] = [];
-    Object.keys(data).forEach((key) => {
-      if (
-        data[key as keyof Partial<User>] !== undefined &&
-        user[key as keyof User] !== data[key as keyof Partial<User>]
-      ) {
-        (user[key as keyof User] as unknown) = data[key as keyof Partial<User>];
+
+    (Object.keys(data) as UpdateableFields[]).forEach((key) => {
+      if (data[key] !== undefined && user[key] !== data[key]) {
+        // Type assertion is safe here as we know the key exists in both objects
+        (user as unknown as Record<string, unknown>)[key] = data[key];
         updatedFields.push(key);
       }
     });
@@ -156,7 +156,7 @@ export class UsersService {
     return this.sessionRepository.find({
       where: {
         userId,
-        endedAt: null,
+        endedAt: IsNull(),
       },
       order: {
         startedAt: 'DESC',

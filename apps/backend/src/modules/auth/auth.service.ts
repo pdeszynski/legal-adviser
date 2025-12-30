@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-interface UserPayload {
+export interface UserPayload {
   userId: number;
   username: string;
   roles: string[];
 }
 
-interface LoginResponse {
+export interface LoginResponse {
   access_token: string;
 }
 
