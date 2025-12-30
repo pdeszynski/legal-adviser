@@ -25,9 +25,9 @@ The goal is to build the core of the Legal AI platform, enabling users to genera
 **Primary Dependencies**:
 
 - **Frontend**: Next.js, Refine.dev, Shadcn UI, Tailwind CSS, `react-i18next`, `@graphql-codegen/cli`
-- **Backend**: Nest.js, `nestjs-query` (Code-First GraphQL), `@nestjs/event-emitter`, `nestjs-openapi`
+- **Backend**: Nest.js, `nestjs-query` (Code-First GraphQL), `@nestjs/event-emitter`, `@nestjs/bull`, `bull`, `nestjs-openapi`
 - **AI**: FastAPI, PydanticAI (Code-First), LangGraph, LangChain
-  **Storage**: PostgreSQL (Primary)
+  **Storage**: PostgreSQL (Primary), Redis (Bull Queue)
   **Testing**: Jest/Vitest (TS), Pytest (Python)
   **Target Platform**: Docker/Cloud Container
   **Project Type**: Monorepo (Turborepo)
@@ -78,15 +78,20 @@ apps/
 ├── backend/              # Nest.js Modular Monolith
 │   ├── src/
 │   │   ├── app.module.ts
-│   │   ├── users/        # Module example
-│   │   ├── documents/    # Module example
+│   │   ├── [module-name]/ # Unit tests (.spec.ts) co-located here
 │   │   └── shared/       # Shared kernel/infrastructure
+│   └── tests/            # Tests outside specific modules
+│       ├── integration/  # Integration tests
+│       └── e2e/          # Use-case driven E2E tests
 └── ai-engine/            # Python FastAPI AI Service
     ├── src/
     │   ├── main.py
     │   ├── agents/
     │   └── graphs/       # LangGraph definitions
     └── tests/
+        ├── unit/         # Unit tests
+        ├── integration/  # Integration tests
+        └── e2e/          # End-to-end tests
 
 packages/                 # Shared libraries (optional)
 ├── ui/                   # Shared UI components (shadcn)
@@ -94,7 +99,10 @@ packages/                 # Shared libraries (optional)
 └── config/               # Shared ESLint/TSConfig
 ```
 
-**Structure Decision**: Monorepo with three main applications corresponding to the defined stack.
+**Structure Decision**: Monorepo with three main applications.
+
+- **Backend Testing**: Unit tests co-located (`.spec.ts`), Integration/E2E separated in `tests/`.
+- **AI Testing**: Standard Python structure with `unit`, `integration`, `e2e` separation.
 
 ## Complexity Tracking
 

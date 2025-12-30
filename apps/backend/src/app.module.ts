@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AiClientModule } from './shared/ai-client/ai-client.module';
 
 @Module({
   imports: [
@@ -23,6 +25,18 @@ import { AppService } from './app.service';
       }),
       inject: [ConfigService],
     }),
+    // Event-driven communication between modules
+    EventEmitterModule.forRoot({
+      // Use wildcards to support event patterns like 'user.*'
+      wildcard: true,
+      // Set a reasonable max listeners limit
+      maxListeners: 20,
+      // Enable verbose error logging in development
+      verboseMemoryLeak: process.env.NODE_ENV !== 'production',
+      // Ignore case when matching event names
+      ignoreErrors: false,
+    }),
+    AiClientModule,
   ],
   controllers: [AppController],
   providers: [AppService],

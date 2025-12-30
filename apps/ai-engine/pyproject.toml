@@ -2,9 +2,7 @@
 name = "ai-engine"
 version = "0.1.0"
 description = "AI Engine for Legal Platform"
-authors = [
-    {name = "Your Name", email = "you@example.com"},
-]
+authors = [{ name = "Your Name", email = "you@example.com" }]
 dependencies = [
     "fastapi",
     "uvicorn",
@@ -17,7 +15,12 @@ dependencies = [
 ]
 requires-python = ">=3.11"
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
+
+[project.scripts]
+dev = "uvicorn src.main:app --reload --port 8000"
+start = "uvicorn src.main:app --host 0.0.0.0 --port 8000"
+export-openapi = "python src/export_openapi.py"
 
 [tool.ruff]
 line-length = 88

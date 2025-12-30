@@ -1,0 +1,604 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Legal AI Engine",
+    "description": "AI-powered legal assistance platform",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root",
+        "description": "Root endpoint.",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Health check endpoint.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents/generate": {
+      "post": {
+        "summary": "Generate Document",
+        "description": "Generate a legal document from natural language description.\n\nThis endpoint initiates document generation and returns a task ID.\nUse the /api/v1/documents/status/{task_id} endpoint to check progress.",
+        "operationId": "generate_document_api_v1_documents_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateDocumentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateDocumentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents/status/{task_id}": {
+      "get": {
+        "summary": "Get Document Status",
+        "description": "Get the status of a document generation task.",
+        "operationId": "get_document_status_api_v1_documents_status__task_id__get",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentGenerationStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/qa/ask": {
+      "post": {
+        "summary": "Ask Question",
+        "description": "Ask a legal question and receive an answer with citations.\n\nThe AI will provide answers tailored to the specified mode:\n- LAWYER: Detailed, technical legal analysis\n- SIMPLE: Layperson-friendly explanation",
+        "operationId": "ask_question_api_v1_qa_ask_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskQuestionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnswerResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/search/rulings": {
+      "post": {
+        "summary": "Search Rulings",
+        "description": "Search for legal rulings and case law.\n\nReturns relevant court rulings based on the search query and filters.",
+        "operationId": "search_rulings_api_v1_search_rulings_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRulingsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchRulingsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnswerResponse": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "title": "Answer",
+            "description": "Answer to the question in markdown format"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "type": "array",
+            "title": "Citations",
+            "description": "Legal citations supporting the answer"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "description": "Confidence score of the answer",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer"
+        ],
+        "title": "AnswerResponse",
+        "description": "Response to a legal question."
+      },
+      "AskQuestionRequest": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "minLength": 5,
+            "title": "Question",
+            "description": "Legal question to answer"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id",
+            "description": "User session ID for tracking"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "description": "Response mode: LAWYER (detailed) or SIMPLE (layperson)",
+            "default": "SIMPLE"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question",
+          "session_id"
+        ],
+        "title": "AskQuestionRequest",
+        "description": "Request to ask a legal question."
+      },
+      "Citation": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Source of the citation (e.g., Civil Code)"
+          },
+          "article": {
+            "type": "string",
+            "title": "Article",
+            "description": "Article or section number"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url",
+            "description": "URL to the source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "article"
+        ],
+        "title": "Citation",
+        "description": "Legal citation reference."
+      },
+      "DocumentGenerationStatus": {
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "title": "Task Id",
+            "description": "Task ID"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "PROCESSING, COMPLETED, or FAILED"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content",
+            "description": "Generated document content (markdown)"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata",
+            "description": "Additional metadata about the generation"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Error message if failed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task_id",
+          "status"
+        ],
+        "title": "DocumentGenerationStatus",
+        "description": "Status of document generation task."
+      },
+      "DocumentType": {
+        "type": "string",
+        "enum": [
+          "LAWSUIT",
+          "COMPLAINT",
+          "CONTRACT",
+          "OTHER"
+        ],
+        "title": "DocumentType",
+        "description": "Types of legal documents that can be generated."
+      },
+      "GenerateDocumentRequest": {
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "title": "Description",
+            "description": "Natural language description of the document to generate"
+          },
+          "document_type": {
+            "$ref": "#/components/schemas/DocumentType",
+            "description": "Type of legal document to generate"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context",
+            "description": "Additional context variables (e.g., defendant name, amounts)"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id",
+            "description": "User session ID for tracking"
+          }
+        },
+        "type": "object",
+        "required": [
+          "description",
+          "document_type",
+          "session_id"
+        ],
+        "title": "GenerateDocumentRequest",
+        "description": "Request to generate a legal document."
+      },
+      "GenerateDocumentResponse": {
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "title": "Task Id",
+            "description": "Task ID for tracking generation status"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Current status of the generation",
+            "default": "PROCESSING"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Status message",
+            "default": "Document generation started"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task_id"
+        ],
+        "title": "GenerateDocumentResponse",
+        "description": "Response from document generation."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Ruling": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Ruling identifier"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Ruling title or case name"
+          },
+          "court": {
+            "type": "string",
+            "title": "Court",
+            "description": "Court that issued the ruling"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date",
+            "description": "Date of the ruling (ISO format)"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "description": "Brief summary of the ruling"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url",
+            "description": "URL to full ruling"
+          },
+          "relevance_score": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Relevance Score",
+            "description": "Relevance to search query",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "court",
+          "date",
+          "summary"
+        ],
+        "title": "Ruling",
+        "description": "Legal ruling/case information."
+      },
+      "SearchRulingsRequest": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 3,
+            "title": "Query",
+            "description": "Search query"
+          },
+          "filters": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filters",
+            "description": "Search filters (date range, court type, etc.)"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "description": "Maximum results",
+            "default": 10
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "SearchRulingsRequest",
+        "description": "Request to search for legal rulings."
+      },
+      "SearchRulingsResponse": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/Ruling"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "List of matching rulings"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total number of results found"
+          },
+          "query": {
+            "type": "string",
+            "title": "Query",
+            "description": "Original search query"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "query"
+        ],
+        "title": "SearchRulingsResponse",
+        "description": "Response from ruling search."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

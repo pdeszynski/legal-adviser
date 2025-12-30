@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Node.js 20+
-- Python 3.11+
+- Python 3.11+, UV for virtualenv
 - Docker & Docker Compose
 - pnpm
 

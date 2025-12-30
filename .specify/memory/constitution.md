@@ -24,6 +24,7 @@ The backend MUST be structured as a Modular Monolith.
 - **Strict Boundaries**: Modules must be logically and physically separated.
 - **No Direct Imports**: Importing code from one module's domain/infrastructure into another is STRICTLY PROHIBITED.
 - **Event-Driven Communication**: Communication between modules MUST happen exclusively via **asynchronous events**.
+- **Domain Driven Design**: The architecture MUST follow **Domain Driven Design** principles. Separate **domain** and **infrastructure** models MUST be used for distinct optimizations. For simplicity same tables and databases are used for now, only model is different (ORM). CQRS should not be forced, used where it matters only.
 - **CQRS**: The architecture MUST follow **CQRS** (Command Query Responsibility Segregation). Separate **Read** and **Write** models MUST be used for distinct optimizations. For simplicity same tables and databases are used for now, only model is different (ORM). CQRS should not be forced, used where it matters only.
 
 ### III. Defined Technology Stack
@@ -33,6 +34,7 @@ We adhere to a strict, modern technology stack:
 - **Frontend**: Next.js (UI Framework) + refine.dev (Data Framework). Styling via proper Tailwind CSS and shadcn/ui components.
 - **Core Backend**: Nest.js + nestjs-query. GraphQL is the primary API for data operations. Database: PostgreSQL. User Management: Nest.js / WorkOS (AuthKit).
 - **AI Service**: Python + FastAPI (HTTP Server). Agent logic using PydanticAI. Agent orchestration using LangGraph.
+- **PNPM** for node package management, **UV** for python package management.
 
 ### IV. AI-First Capabilities
 
