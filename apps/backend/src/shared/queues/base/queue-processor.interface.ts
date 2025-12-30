@@ -58,4 +58,3 @@ export interface ProcessorOptions {
     delay: number;
   };
 }
-

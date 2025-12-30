@@ -54,4 +54,3 @@ export class User {
     return this.disclaimerAccepted && this.isActive;
   }
 }
-

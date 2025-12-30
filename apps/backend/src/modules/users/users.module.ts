@@ -10,4 +10,3 @@ import { UserSession } from './entities/user-session.entity';
   exports: [UsersService],
 })
 export class UsersModule {}
-

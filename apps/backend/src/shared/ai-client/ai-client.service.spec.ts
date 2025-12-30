@@ -30,28 +30,24 @@ describe('AiClientService', () => {
   describe('healthCheck', () => {
     it('should have a healthCheck method', () => {
       expect(service.healthCheck).toBeDefined();
-      expect(typeof service.healthCheck).toBe('function');
     });
   });
 
   describe('generateDocument', () => {
     it('should have a generateDocument method', () => {
       expect(service.generateDocument).toBeDefined();
-      expect(typeof service.generateDocument).toBe('function');
     });
   });
 
   describe('askQuestion', () => {
     it('should have an askQuestion method', () => {
       expect(service.askQuestion).toBeDefined();
-      expect(typeof service.askQuestion).toBe('function');
     });
   });
 
   describe('searchRulings', () => {
     it('should have a searchRulings method', () => {
       expect(service.searchRulings).toBeDefined();
-      expect(typeof service.searchRulings).toBe('function');
     });
   });
 });

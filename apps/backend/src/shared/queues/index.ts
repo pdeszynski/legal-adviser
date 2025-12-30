@@ -8,4 +8,3 @@
 export * from './base';
 export * from './queue-registry';
 export * from './bull-board.setup';
-

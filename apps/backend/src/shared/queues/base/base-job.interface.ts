@@ -85,4 +85,3 @@ export interface JobOptions {
    */
   metadata?: Record<string, any>;
 }
-

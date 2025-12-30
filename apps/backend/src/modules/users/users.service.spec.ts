@@ -6,14 +6,14 @@ import { NotFoundException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { UserSession, SessionMode } from './entities/user-session.entity';
-import { UserCreatedEvent, UserUpdatedEvent } from '../../shared/events/examples/user.events';
+import {
+  UserCreatedEvent,
+  UserUpdatedEvent,
+} from '../../shared/events/examples/user.events';
 import { EVENT_PATTERNS } from '../../shared/events/base/event-patterns';
 
 describe('UsersService', () => {
   let service: UsersService;
-  let userRepository: Repository<User>;
-  let sessionRepository: Repository<UserSession>;
-  let eventEmitter: EventEmitter2;
 
   const mockUserRepository = {
     create: jest.fn(),
@@ -53,7 +53,9 @@ describe('UsersService', () => {
 
     service = module.get<UsersService>(UsersService);
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
-    sessionRepository = module.get<Repository<UserSession>>(getRepositoryToken(UserSession));
+    sessionRepository = module.get<Repository<UserSession>>(
+      getRepositoryToken(UserSession),
+    );
     eventEmitter = module.get<EventEmitter2>(EventEmitter2);
   });
 
@@ -143,7 +145,9 @@ describe('UsersService', () => {
 
       const result = await service.findById('user-123');
 
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: 'user-123' } });
+      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'user-123' },
+      });
       expect(result).toEqual(user);
     });
 
@@ -268,9 +272,14 @@ describe('UsersService', () => {
       mockSessionRepository.create.mockReturnValue(session);
       mockSessionRepository.save.mockResolvedValue(session);
 
-      const result = await service.createSession('user-123', SessionMode.SIMPLE);
+      const result = await service.createSession(
+        'user-123',
+        SessionMode.SIMPLE,
+      );
 
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: 'user-123' } });
+      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'user-123' },
+      });
       expect(mockSessionRepository.create).toHaveBeenCalled();
       expect(mockSessionRepository.save).toHaveBeenCalled();
       expect(result).toEqual(session);
@@ -279,9 +288,9 @@ describe('UsersService', () => {
     it('should throw NotFoundException if user not found', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.createSession('non-existent', SessionMode.SIMPLE)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.createSession('non-existent', SessionMode.SIMPLE),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -361,7 +370,9 @@ describe('UsersService', () => {
     it('should throw NotFoundException if user not found', async () => {
       mockUserRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.acceptDisclaimer('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(service.acceptDisclaimer('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -380,7 +391,10 @@ describe('UsersService', () => {
       mockSessionRepository.findOne.mockResolvedValue(session);
       mockSessionRepository.save.mockResolvedValue(updatedSession);
 
-      const result = await service.updateSessionMode('session-123', SessionMode.LAWYER);
+      const result = await service.updateSessionMode(
+        'session-123',
+        SessionMode.LAWYER,
+      );
 
       expect(session.mode).toBe(SessionMode.LAWYER);
       expect(mockSessionRepository.save).toHaveBeenCalled();
@@ -421,8 +435,9 @@ describe('UsersService', () => {
     it('should throw NotFoundException if session not found', async () => {
       mockSessionRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.endSession('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(service.endSession('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });
-

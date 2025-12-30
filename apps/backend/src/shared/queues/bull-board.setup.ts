@@ -39,11 +39,13 @@ export function setupBullBoard(app: NestExpressApplication) {
 
     for (const queueName of queueNames) {
       try {
-        const queue = app.get<Queue>(getQueueToken(queueName), { strict: false });
+        const queue = app.get<Queue>(getQueueToken(queueName), {
+          strict: false,
+        });
         if (queue) {
           queues.push(queue);
         }
-      } catch (error) {
+      } catch {
         // Queue not registered yet, skip it
         // This is expected for queues that haven't been registered in any module
       }
@@ -61,10 +63,13 @@ export function setupBullBoard(app: NestExpressApplication) {
 
     app.use('/admin/queues', serverAdapter.getRouter());
 
-    console.log(`📊 Bull Board available at http://localhost:${process.env.PORT ?? 3000}/admin/queues`);
-  } catch (error) {
+    console.log(
+      `📊 Bull Board available at http://localhost:${process.env.PORT ?? 3000}/admin/queues`,
+    );
+  } catch (error: unknown) {
     // Silently fail if Bull Board setup fails (e.g., queues not registered yet)
-    console.warn('Bull Board setup skipped:', error.message);
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+    console.warn('Bull Board setup skipped:', errorMessage);
   }
 }
-

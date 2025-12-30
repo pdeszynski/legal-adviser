@@ -7,4 +7,3 @@
 export * from './base-job.interface';
 export * from './queue-processor.interface';
 export * from './queue-names';
-

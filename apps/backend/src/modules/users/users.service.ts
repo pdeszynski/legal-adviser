@@ -4,7 +4,10 @@ import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { User } from './entities/user.entity';
 import { UserSession, SessionMode } from './entities/user-session.entity';
-import { UserCreatedEvent, UserUpdatedEvent } from '../../shared/events/examples/user.events';
+import {
+  UserCreatedEvent,
+  UserUpdatedEvent,
+} from '../../shared/events/examples/user.events';
 import { EVENT_PATTERNS } from '../../shared/events/base/event-patterns';
 
 /**
@@ -92,8 +95,11 @@ export class UsersService {
 
     const updatedFields: string[] = [];
     Object.keys(data).forEach((key) => {
-      if (data[key] !== undefined && user[key] !== data[key]) {
-        user[key] = data[key];
+      if (
+        data[key as keyof Partial<User>] !== undefined &&
+        user[key as keyof User] !== data[key as keyof Partial<User>]
+      ) {
+        (user[key as keyof User] as unknown) = data[key as keyof Partial<User>];
         updatedFields.push(key);
       }
     });
@@ -174,7 +180,10 @@ export class UsersService {
   /**
    * Update session mode
    */
-  async updateSessionMode(sessionId: string, mode: SessionMode): Promise<UserSession> {
+  async updateSessionMode(
+    sessionId: string,
+    mode: SessionMode,
+  ): Promise<UserSession> {
     const session = await this.findSessionById(sessionId);
     if (!session) {
       throw new NotFoundException(`Session with ID ${sessionId} not found`);
@@ -197,4 +206,3 @@ export class UsersService {
     return this.sessionRepository.save(session);
   }
 }
-

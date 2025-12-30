@@ -84,4 +84,3 @@ export class UserSession {
     this.endedAt = new Date();
   }
 }
-

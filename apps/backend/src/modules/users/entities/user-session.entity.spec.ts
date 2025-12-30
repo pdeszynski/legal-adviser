@@ -65,11 +65,11 @@ describe('UserSession Entity', () => {
       const session = new UserSession();
       session.start();
       session.end();
-      
+
       expect(session.isActive()).toBe(false);
-      
+
       session.start();
-      
+
       expect(session.isActive()).toBe(true);
     });
   });

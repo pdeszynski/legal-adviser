@@ -49,5 +49,5 @@ export const QUEUE_NAMES = {
 /**
  * Type helper to get all queue names as a union type
  */
-export type QueueName = (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES][keyof (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES]];
-
+export type QueueName =
+  (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES][keyof (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES]];
