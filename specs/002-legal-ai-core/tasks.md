@@ -10,6 +10,7 @@ description: 'Task list for Core Legal AI Features implementation'
 **Tests**: Tests are OPTIONAL for this feature (not explicitly requested yet), but manual verification steps are included.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+**Package Manager**: pnpm, uv, turborepo
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -50,7 +51,7 @@ description: 'Task list for Core Legal AI Features implementation'
 - [x] T008 [P] Implement base Authentication framework in `apps/backend` and `apps/web`
 - [x] T009 [P] Setup Basic AI Service API (FastAPI) and Client Generation in `apps/backend`
 - [x] T010 [P] Setup EventEmitter2 module (`@nestjs/event-emitter`) in `apps/backend/src/shared/events`
-- [ ] T011 [P] Setup Redis and Bull queue module (`@nestjs/bull`) in `apps/backend/src/shared/queues`
+- [x] T011 [P] Setup Redis and Bull queue module (`@nestjs/bull`) in `apps/backend/src/shared/queues`
 - [ ] T012 [P] Configure i18n structure in `apps/web` (react-i18next)
 - [ ] T013 Define User and Session entities in `apps/backend/src/modules/users`
 

@@ -34,7 +34,7 @@ We adhere to a strict, modern technology stack:
 - **Frontend**: Next.js (UI Framework) + refine.dev (Data Framework). Styling via proper Tailwind CSS and shadcn/ui components.
 - **Core Backend**: Nest.js + nestjs-query. GraphQL is the primary API for data operations. Database: PostgreSQL. User Management: Nest.js / WorkOS (AuthKit).
 - **AI Service**: Python + FastAPI (HTTP Server). Agent logic using PydanticAI. Agent orchestration using LangGraph.
-- **PNPM** for node package management, **UV** for python package management.
+- **PNPM** for node package management, **UV** for python package management. DO NOT use NPM or Yarn or PIP
 
 ### IV. AI-First Capabilities
 

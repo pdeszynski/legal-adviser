@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { BullModule } from '@nestjs/bull';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AiClientModule } from './shared/ai-client/ai-client.module';
+import { QueueRegistry } from './shared/queues';
 
 @Module({
   imports: [
@@ -35,6 +37,14 @@ import { AiClientModule } from './shared/ai-client/ai-client.module';
       verboseMemoryLeak: process.env.NODE_ENV !== 'production',
       // Ignore case when matching event names
       ignoreErrors: false,
+    }),
+    // Asynchronous task processing (AI document generation, PDF exports, email notifications)
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        redis: QueueRegistry.getRedisConfig(configService),
+      }),
+      inject: [ConfigService],
     }),
     AiClientModule,
   ],
