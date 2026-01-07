@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { AiClientModule } from './shared/ai-client/ai-client.module';
 import { QueueRegistry } from './shared/queues';
 import { UsersModule } from './modules/users/users.module';
+import { DocumentsModule } from './modules/documents/documents.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { UsersModule } from './modules/users/users.module';
     }),
     AiClientModule,
     UsersModule,
+    DocumentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
