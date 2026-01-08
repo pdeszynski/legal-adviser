@@ -71,6 +71,12 @@ The platform is designed to assist lawyers and regular users by:
   - **Scripts**: `package.json` (Node) and `pyproject.toml` (Python) are the authoritative definitions for project commands (`build`, `test`, `start`).
   - **Documentation**: README files and Task lists should reflect these standard commands. If a command changes, update the script definition first.
 
+### VIII. Simplicity & Conciseness
+
+- **Concise Code**: Code MUST be concise and direct. Avoid unnecessary boilerplate, over-engineering, and "slop".
+- **YAGNI**: Do not implement features or abstractions "just in case". Implement only what is necessary for the current requirements.
+- **Simplicity**: Prefer simple solutions over complex ones. Use standard library features where possible.
+
 ## System Constraints
 
 - **Monorepo Structure**: All components (Client, Server, AI Engine) live in a single repository to facilitate unified versioning and simplified CI/CD.
@@ -91,4 +97,4 @@ This Constitution supersedes all other technical preferences or loose guidelines
 - **Amendments**: Changes to principles (especially Architecture and Stack) require a formal amendment to this document and a MAJOR version bump.
 - **Compliance**: Every Pull Request Review MUST verify adherence to Modular Monolith boundaries, English language rules, and Conventional Commits.
 
-**Version**: 1.3.0 | **Ratified**: 2025-12-09 | **Last Amended**: 2025-12-10
+**Version**: 1.4.0 | **Ratified**: 2025-12-09 | **Last Amended**: 2026-01-08

@@ -123,9 +123,11 @@ description: 'Task list for Core Legal AI Features implementation'
 
 - [ ] T021 [US2] Create `LegalQuery` entity in `apps/backend/src/modules/chat/entities/legal-query.entity.ts`
 - [ ] T022 [P] [US2] Implement Q&A Agent with RAG in `apps/ai-engine/src/agents/qa_agent.py`
+- [ ] T022a [P] [US2] Integrate External Legal Search Sources (e.g. SAOS, ISAP) for RAG Context (FR-008) in `apps/ai-engine/src/tools/legal_search.py`
 - [ ] T023 [US2] Create Chat Controller endpoints in `apps/backend/src/modules/chat/chat.controller.ts`
 - [ ] T024 [US2] Implement Chat Interface in `apps/web/src/components/chat/ChatWindow.tsx`
 - [ ] T025 [P] [US2] Implement Session Mode Toggle (Pro/Simple) in `apps/web/src/components/layout/ModeSwitcher.tsx`
+- [ ] T025a [US2] Implement UI Mode Differences: "Simple" hides complex citations/jargon, "Pro" validates full legal basis
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -168,6 +170,7 @@ description: 'Task list for Core Legal AI Features implementation'
 - [ ] T034 [P] Ensure all AI prompts are strictly Polish in `apps/ai-engine/src/prompts/`
 - [ ] T035 Security hardening (Input validation, Rate limiting)
 - [ ] T036 Documentation updates in `docs/`
+- [ ] T037 [P] Implement Audit Logging using Refine.dev AuditLogProvider (backed by `apps/backend/src/modules/audit`) (FR-009)
 
 ---
 
