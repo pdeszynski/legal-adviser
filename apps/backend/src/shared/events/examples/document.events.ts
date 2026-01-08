@@ -1,5 +1,85 @@
 import { BaseEvent } from '../base/base.event';
 import { EVENT_PATTERNS } from '../base/event-patterns';
+import { DocumentType } from '../../../modules/documents/entities/legal-document.entity';
+
+/**
+ * Document Created Event
+ *
+ * Emitted when a new legal document is created in the system.
+ * Other modules can listen to this event to perform actions like:
+ * - Logging document creation
+ * - Triggering AI generation workflow
+ * - Starting analytics tracking
+ */
+export class DocumentCreatedEvent extends BaseEvent {
+  public readonly eventName = EVENT_PATTERNS.DOCUMENT.CREATED;
+
+  constructor(
+    public readonly documentId: string,
+    public readonly sessionId: string,
+    public readonly title: string,
+    public readonly type: DocumentType,
+    public readonly createdAt: Date = new Date(),
+  ) {
+    super();
+  }
+
+  protected getPayload(): Record<string, unknown> {
+    return {
+      documentId: this.documentId,
+      sessionId: this.sessionId,
+      title: this.title,
+      type: this.type,
+      createdAt: this.createdAt.toISOString(),
+    };
+  }
+}
+
+/**
+ * Document Updated Event
+ *
+ * Emitted when document information is updated.
+ */
+export class DocumentUpdatedEvent extends BaseEvent {
+  public readonly eventName = EVENT_PATTERNS.DOCUMENT.UPDATED;
+
+  constructor(
+    public readonly documentId: string,
+    public readonly updatedFields: string[],
+  ) {
+    super();
+  }
+
+  protected getPayload(): Record<string, unknown> {
+    return {
+      documentId: this.documentId,
+      updatedFields: this.updatedFields,
+    };
+  }
+}
+
+/**
+ * Document Deleted Event
+ *
+ * Emitted when a document is deleted.
+ */
+export class DocumentDeletedEvent extends BaseEvent {
+  public readonly eventName = EVENT_PATTERNS.DOCUMENT.DELETED;
+
+  constructor(
+    public readonly documentId: string,
+    public readonly sessionId: string,
+  ) {
+    super();
+  }
+
+  protected getPayload(): Record<string, unknown> {
+    return {
+      documentId: this.documentId,
+      sessionId: this.sessionId,
+    };
+  }
+}
 
 /**
  * Document Generation Started Event

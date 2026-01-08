@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LegalDocument } from './entities/legal-document.entity';
+import { DocumentsService } from './services/documents.service';
 
 /**
  * Documents Module
@@ -9,14 +10,13 @@ import { LegalDocument } from './entities/legal-document.entity';
  * Part of User Story 1: AI Document Generation.
  *
  * This module will be expanded with:
- * - DocumentService (CRUD operations)
- * - DocumentController (API endpoints)
- * - PdfExportService (PDF generation)
+ * - DocumentController (API endpoints) - T017
+ * - PdfExportService (PDF generation) - T020
  */
 @Module({
   imports: [TypeOrmModule.forFeature([LegalDocument])],
-  providers: [],
+  providers: [DocumentsService],
   controllers: [],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, DocumentsService],
 })
 export class DocumentsModule {}
