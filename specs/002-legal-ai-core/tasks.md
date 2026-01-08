@@ -7,16 +7,29 @@ description: 'Task list for Core Legal AI Features implementation'
 **Input**: Design documents from `/specs/002-legal-ai-core/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md
 
-**Tests**: Tests are OPTIONAL for this feature (not explicitly requested yet), but manual verification steps are included.
+**Tests**:
+
+- **Reference**: See `constitution.md#quality-assurance` and specific app `README.md` files for authoritative test commands.
+- **Backend Standard**: `npm run test` (verify in `package.json`)
+- **AI Engine Standard**: `uv run pytest` (verify in `pyproject.toml`/`README.md`)
+- Note: Extensive test coverage is OPTIONAL for this MVP, but critical paths should be verified.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
-**Package Manager**: pnpm, uv, turborepo
+**Package Manager**: pnpm, uv, turborepo, DO NOT use PIP, NPM, YARN
+
+**Architecture notes**:
+
+- Backend: Modular Monolith structure (nestjs-query, event-driven)
+- AI Engine: LangGraph + PydanticAI, DO NOT use LangChain or API calls to openai/alternatives directly
+- Frontend: Next.js + Refine (use existing components)
+- Verify tests fail before implementing
 
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependencies)
 - **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
 - Include exact file paths in descriptions
+- Each user story should be independently completable and testable
 
 ## Path Conventions
 
@@ -90,7 +103,7 @@ description: 'Task list for Core Legal AI Features implementation'
 
 - [x] T014 [US1] Create `LegalDocument` entity in `apps/backend/src/modules/documents/entities/legal-document.entity.ts`
 - [x] T015 [US1] Implement `DocumentService` CRUD in `apps/backend/src/modules/documents/services/documents.service.ts`
-- [ ] T016 [US1] Implement AI Graph for Drafting in `apps/ai-engine/src/graphs/drafting_graph.py`
+- [x] T016 [US1] Implement AI Graph for Drafting in `apps/ai-engine/src/graphs/drafting_graph.py`
 - [ ] T017 [US1] Create API endpoint `POST /api/documents/generate` in `apps/backend/src/modules/documents/documents.controller.ts`
 - [ ] T018 [US1] Implement Document Generation Form in `apps/web/src/pages/documents/create.tsx`
 - [ ] T019 [US1] Implement Streaming Response Handler in `apps/web/src/components/chat/StreamingViewer.tsx`

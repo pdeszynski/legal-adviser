@@ -7,7 +7,12 @@ description: 'Task list template for feature implementation'
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
+**Tests**:
+
+- **Reference**: See `constitution.md#quality-assurance` and specific app `README.md` files for authoritative test commands.
+- **Backend Standard**: `npm run test` (verify in `package.json`)
+- **AI Engine Standard**: `uv run pytest` (verify in `pyproject.toml`/`README.md`)
+- Note: Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -50,7 +55,7 @@ description: 'Task list template for feature implementation'
 - [ ] T001 Create/Verify Turborepo monorepo structure
 - [ ] T002 Initialize `apps/web` (Next.js + Refine + Shadcn + Tailwind) if new
 - [ ] T003 Initialize `apps/backend` (Nest.js Modular Monolith) if new
-- [ ] T004 Initialize `apps/ai-engine` (Python + FastAPI) if new
+- [ ] T004 Initialize `apps/ai-engine` (Python + FastAPI + PydanticAI + LangGraph) if new
 - [ ] T005 [P] Setup shared packages `packages/ui` and `packages/types`
 - [ ] T006 [P] Configure global linting (ESLint, Prettier, Ruff)
 - [ ] T006a [P] Configure Jest in `apps/backend` for separate test suites: `unit` (co-located), `integration`, and `e2e` (in `tests/` folder)
@@ -146,5 +151,9 @@ Examples of foundational tasks (adjust based on your project):
 - [Story] label maps task to specific user story for traceability
 - Each user story should be independently completable and testable
 - Backend: Modular Monolith structure (nestjs-query, event-driven)
+- AI Engine: LangGraph + PydanticAI, DO NOT use LangChain or API calls to openai/alternatives directly
 - Frontend: Next.js + Refine (use existing components)
+- Verify tests fail before implementing
+- Commit after each task or logical group
+- Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence
 - Stop at any checkpoint to validate story independently
