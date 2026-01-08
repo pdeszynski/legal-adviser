@@ -58,6 +58,17 @@ The service will be available at:
 uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
+## Testing
+
+To run the tests, use the following command:
+
+```bash
+uv run pytest
+```
+
+This will run all unit tests located in the `tests/` directory.
+Configuration is available in `pyproject.toml`.
+
 ## API Endpoints
 
 ### Health Check

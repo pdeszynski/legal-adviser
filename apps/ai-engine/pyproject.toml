@@ -12,6 +12,7 @@ dependencies = [
     "langchain",
     "openai",
     "python-dotenv",
+    "pydantic-settings",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
@@ -28,3 +29,10 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
+
+[tool.pytest.ini_options]
+pythonpath = "."
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = ["pytest", "pytest-asyncio", "httpx"]

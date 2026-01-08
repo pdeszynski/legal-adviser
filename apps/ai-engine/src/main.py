@@ -7,7 +7,7 @@ This service provides AI-powered legal assistance including:
 """
 
 import uuid
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 
 from .models.requests import (
@@ -23,6 +23,7 @@ from .models.responses import (
     Ruling,
     SearchRulingsResponse,
 )
+from .graphs.drafting_graph import drafting_graph
 
 app = FastAPI(
     title="Legal AI Engine",
@@ -42,7 +43,9 @@ app.add_middleware(
 )
 
 # In-memory storage for demo (will be replaced with proper state management)
-generation_tasks = {}
+from typing import Dict, Any
+
+generation_tasks: Dict[str, Dict[str, Any]] = {}
 
 
 @app.get("/")
@@ -58,7 +61,9 @@ async def health_check():
 
 
 @app.post("/api/v1/documents/generate", response_model=GenerateDocumentResponse)
-async def generate_document(request: GenerateDocumentRequest):
+async def generate_document(
+    request: GenerateDocumentRequest, background_tasks: BackgroundTasks
+):
     """Generate a legal document from natural language description.
 
     This endpoint initiates document generation and returns a task ID.
@@ -66,8 +71,7 @@ async def generate_document(request: GenerateDocumentRequest):
     """
     task_id = str(uuid.uuid4())
 
-    # TODO: Implement actual document generation with LangGraph
-    # For now, store the request and return task ID
+    # Store initial task state
     generation_tasks[task_id] = {
         "status": "PROCESSING",
         "request": request.model_dump(),
@@ -75,11 +79,41 @@ async def generate_document(request: GenerateDocumentRequest):
         "error": None,
     }
 
+    # Prepare input state for the graph
+    initial_state = {
+        "description": request.description,
+        "document_type": request.document_type.value,
+        "context": request.context or {},
+        "draft_content": None,
+        "error": None,
+    }
+
+    # Run graph in background
+    background_tasks.add_task(run_graph_generation, task_id, initial_state)
+
     return GenerateDocumentResponse(
         task_id=task_id,
         status="PROCESSING",
         message="Document generation started",
     )
+
+
+async def run_graph_generation(task_id: str, state: dict):
+    """Run the LangGraph generation flow in the background."""
+    try:
+        result = await drafting_graph.ainvoke(state)
+
+        # Check for errors in result state
+        if result.get("error"):
+            generation_tasks[task_id]["status"] = "FAILED"
+            generation_tasks[task_id]["error"] = result["error"]
+        else:
+            generation_tasks[task_id]["status"] = "COMPLETED"
+            generation_tasks[task_id]["content"] = result.get("draft_content")
+
+    except Exception as e:
+        generation_tasks[task_id]["status"] = "FAILED"
+        generation_tasks[task_id]["error"] = str(e)
 
 
 @app.get("/api/v1/documents/status/{task_id}", response_model=DocumentGenerationStatus)
@@ -93,15 +127,15 @@ async def get_document_status(task_id: str):
     # TODO: Replace with actual task status from LangGraph
     # For demo, simulate completion
     if task["status"] == "PROCESSING":
-        task["status"] = "COMPLETED"
-        task["content"] = "# Mock Legal Document\n\nThis is a placeholder."
+        # Task is still running (or graph is slow)
+        pass
 
     return DocumentGenerationStatus(
         task_id=task_id,
-        status=task["status"],
-        content=task.get("content"),
-        metadata=task.get("request"),
-        error=task.get("error"),
+        status=str(task["status"]),
+        content=task.get("content"),  # type: ignore
+        metadata=task.get("request"),  # type: ignore
+        error=task.get("error"),  # type: ignore
     )
 
 
