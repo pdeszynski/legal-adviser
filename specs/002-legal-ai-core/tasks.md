@@ -104,7 +104,7 @@ description: 'Task list for Core Legal AI Features implementation'
 - [x] T014 [US1] Create `LegalDocument` entity in `apps/backend/src/modules/documents/entities/legal-document.entity.ts`
 - [x] T015 [US1] Implement `DocumentService` CRUD in `apps/backend/src/modules/documents/services/documents.service.ts`
 - [x] T016 [US1] Implement AI Graph for Drafting in `apps/ai-engine/src/graphs/drafting_graph.py`
-- [ ] T017 [US1] Create API endpoint `POST /api/documents/generate` in `apps/backend/src/modules/documents/documents.controller.ts`
+- [x] T017 [US1] Create API endpoint `POST /api/documents/generate` in `apps/backend/src/modules/documents/documents.controller.ts`
 - [ ] T018 [US1] Implement Document Generation Form in `apps/web/src/pages/documents/create.tsx`
 - [ ] T019 [US1] Implement Streaming Response Handler in `apps/web/src/components/chat/StreamingViewer.tsx`
 - [ ] T020 [US1] Implement PDF Export functionality in `apps/backend/src/modules/documents/services/pdf-export.service.ts`
