@@ -1,0 +1,14 @@
+{
+  "id": "audit-logging-interceptor",
+  "category": "Core",
+  "title": "Audit Logging Interceptor",
+  "description": "Create NestJS interceptor to automatically log GraphQL mutations. Capture request context and store in AuditLog entity.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "audit-log-entity"
+  ],
+  "createdAt": "2026-01-12T10:31:20.840Z",
+  "updatedAt": "2026-01-12T10:31:20.840Z"
+}

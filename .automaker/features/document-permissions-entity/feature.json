@@ -1,0 +1,14 @@
+{
+  "id": "document-permissions-entity",
+  "category": "Database",
+  "title": "Document Permissions Entity",
+  "description": "Create DocumentPermission entity linking users to documents with access levels. Support owner, editor, viewer, and commenter roles.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "document-sharing"
+  ],
+  "createdAt": "2026-01-12T10:31:20.843Z",
+  "updatedAt": "2026-01-12T10:31:20.843Z"
+}

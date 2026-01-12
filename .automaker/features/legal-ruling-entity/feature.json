@@ -1,0 +1,14 @@
+{
+  "id": "legal-ruling-entity",
+  "category": "Database",
+  "title": "Legal Ruling Entity",
+  "description": "Create LegalRuling entity for storing case law and court decisions. Include fields for signature, date, court name, summary, and full text.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "nestjs-query-migration"
+  ],
+  "createdAt": "2026-01-12T10:31:20.833Z",
+  "updatedAt": "2026-01-12T10:31:20.833Z"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "analyze-case-page",
+  "category": "UI",
+  "title": "Analyze Case Page",
+  "description": "Create page for case analysis with textarea for description input. Display identified legal grounds as cards with article references and explanations.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [
+    "classifier-backend-integration",
+    "legal-analysis-graphql"
+  ],
+  "createdAt": "2026-01-12T10:31:20.836Z",
+  "updatedAt": "2026-01-12T10:31:20.836Z"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "document-completion-notification",
+  "category": "Core",
+  "title": "Document Completion Email Notification",
+  "description": "Send email notification when document generation completes successfully. Include document title, download link, and next steps.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "email-queue-processor",
+    "document-generation-queue"
+  ],
+  "createdAt": "2026-01-12T10:31:20.838Z",
+  "updatedAt": "2026-01-12T10:31:20.838Z"
+}

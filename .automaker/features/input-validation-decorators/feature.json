@@ -1,0 +1,12 @@
+{
+  "id": "input-validation-decorators",
+  "category": "Security",
+  "title": "Input Validation Decorators",
+  "description": "Add class-validator decorators to all DTOs and input types. Enforce maximum lengths, format validation, and sanitization rules.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.839Z",
+  "updatedAt": "2026-01-12T10:31:20.839Z"
+}

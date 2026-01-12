@@ -1,0 +1,14 @@
+{
+  "id": "document-versioning-logic",
+  "category": "Core",
+  "title": "Document Versioning Logic",
+  "description": "Implement version creation on document updates. Maintain version history with diff calculation and rollback capability.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "complex",
+  "dependencies": [
+    "document-version-entity"
+  ],
+  "createdAt": "2026-01-12T10:31:20.829Z",
+  "updatedAt": "2026-01-12T10:31:20.829Z"
+}

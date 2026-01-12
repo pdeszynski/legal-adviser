@@ -1,0 +1,14 @@
+{
+  "id": "template-entity",
+  "category": "Database",
+  "title": "Document Template Entity",
+  "description": "Create DocumentTemplate entity for storing reusable templates. Include template name, type, content with variables, and metadata schema.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "document-templates"
+  ],
+  "createdAt": "2026-01-12T10:31:20.841Z",
+  "updatedAt": "2026-01-12T10:31:20.841Z"
+}

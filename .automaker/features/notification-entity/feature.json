@@ -1,0 +1,12 @@
+{
+  "id": "notification-entity",
+  "category": "Database",
+  "title": "Notification Entity",
+  "description": "Create Notification entity for in-app notifications. Store notification type, message, read status, action link, and timestamp.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.845Z",
+  "updatedAt": "2026-01-12T10:31:20.845Z"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "legal-analysis-entity",
+  "category": "Database",
+  "title": "Legal Analysis Entity",
+  "description": "Create LegalAnalysis entity to store case classification results. Include input description, identified grounds, confidence scores, and related document links.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "nestjs-query-migration"
+  ],
+  "createdAt": "2026-01-12T10:31:20.836Z",
+  "updatedAt": "2026-01-12T10:31:20.836Z"
+}

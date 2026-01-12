@@ -1,0 +1,14 @@
+{
+  "id": "search-bar-component",
+  "category": "UI",
+  "title": "Global Search Bar",
+  "description": "Create omnisearch component in header with autocomplete. Show mixed results from documents, rulings, and templates with type indicators.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "search-functionality"
+  ],
+  "createdAt": "2026-01-12T10:31:20.845Z",
+  "updatedAt": "2026-01-12T10:31:20.845Z"
+}

@@ -20,8 +20,8 @@
 **Language/Version**: [e.g., TypeScript 5+ (Node.js 20+), Python 3.11+ or NEEDS CLARIFICATION]
 **Primary Dependencies**:
 
-- **Frontend**: [e.g., Next.js, Refine.dev, Shadcn UI, Tailwind CSS]
-- **Backend**: [e.g., Nest.js, nestjs-query, TypeORM]
+- **Frontend**: [e.g., Next.js, Refine.dev, Shadcn UI, Tailwind CSS, GraphQL client]
+- **Backend**: [e.g., Nest.js, `@ptc-org/nestjs-query-*` (Code-First GraphQL with auto-CRUD), TypeORM]
 - **AI**: [e.g., FastAPI, PydanticAI, LangGraph]
   **Storage**: [e.g., PostgreSQL, Redis]
   **Testing**: [e.g., Jest, Pytest]
@@ -31,6 +31,8 @@
   **Constraints**:
 - Domain Driven Design
 - Modular Monolith (Strict boundaries, async events only)
+- GraphQL-only for frontend-backend communication (nestjs-query Code-First)
+- REST only for service-to-service (Backend ↔ AI Engine)
 - English-first codebase
 - Strong Typing (No `any`)
   **Scale/Scope**: [domain-specific, e.g., MVP of core features]

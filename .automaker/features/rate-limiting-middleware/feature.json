@@ -1,0 +1,14 @@
+{
+  "id": "rate-limiting-middleware",
+  "category": "Security",
+  "title": "Rate Limiting Middleware",
+  "description": "Implement rate limiting on GraphQL endpoints using @nestjs/throttler. Protect against abuse with per-user and per-IP limits.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "graphql-auth-mutations"
+  ],
+  "createdAt": "2026-01-12T10:31:20.839Z",
+  "updatedAt": "2026-01-12T10:31:20.839Z"
+}

@@ -165,6 +165,53 @@
   },
   "table": {
     "actions": "Akcje"
+  },
+  "documents": {
+    "documents": "Dokumenty",
+    "fields": {
+      "id": "ID",
+      "title": "Tytuł dokumentu",
+      "type": "Typ dokumentu",
+      "status": "Status",
+      "sessionId": "ID sesji",
+      "plaintiffName": "Nazwa powoda",
+      "defendantName": "Nazwa pozwanego",
+      "claimAmount": "Kwota roszczenia",
+      "claimCurrency": "Waluta",
+      "createdAt": "Data utworzenia",
+      "updatedAt": "Data aktualizacji"
+    },
+    "types": {
+      "LAWSUIT": "Pozew",
+      "COMPLAINT": "Skarga",
+      "CONTRACT": "Umowa",
+      "OTHER": "Inny"
+    },
+    "statuses": {
+      "DRAFT": "Szkic",
+      "GENERATING": "Generowanie",
+      "COMPLETED": "Ukończony",
+      "FAILED": "Niepowodzenie"
+    },
+    "titles": {
+      "create": "Wygeneruj dokument",
+      "edit": "Edytuj dokument",
+      "list": "Dokumenty",
+      "show": "Zobacz dokument"
+    },
+    "form": {
+      "select": {
+        "type": {
+          "placeholder": "Wybierz typ dokumentu"
+        }
+      },
+      "description": "Wypełnij szczegóły, aby wygenerować dokument prawny przy użyciu AI.",
+      "metadataSection": "Szczegóły dokumentu",
+      "errors": {
+        "requiredTitle": "Tytuł dokumentu jest wymagany",
+        "requiredSessionId": "ID sesji jest wymagane"
+      }
+    }
   }
 }
 

@@ -1,0 +1,14 @@
+{
+  "id": "saos-integration",
+  "category": "Integration",
+  "title": "SAOS API Integration",
+  "description": "Implement integration with Polish SAOS (System Analizy Orzeczeń Sądowych) API for fetching court rulings. Create service layer with typed API client.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "complex",
+  "dependencies": [
+    "legal-ruling-entity"
+  ],
+  "createdAt": "2026-01-12T10:31:20.833Z",
+  "updatedAt": "2026-01-12T10:31:20.833Z"
+}

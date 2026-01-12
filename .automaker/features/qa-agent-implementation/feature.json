@@ -1,0 +1,14 @@
+{
+  "id": "qa-agent-implementation",
+  "category": "AI",
+  "title": "Q&A PydanticAI Agent",
+  "description": "Create PydanticAI agent for legal question answering. Configure agent as Polish legal expert with structured response model including answer text and citations.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [
+    "legal-query-entity"
+  ],
+  "createdAt": "2026-01-12T10:31:20.830Z",
+  "updatedAt": "2026-01-12T10:31:20.830Z"
+}

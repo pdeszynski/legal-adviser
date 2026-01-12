@@ -19,9 +19,17 @@ description: 'Task list for Core Legal AI Features implementation'
 
 **Architecture notes**:
 
-- Backend: Modular Monolith structure (nestjs-query, event-driven)
+- Backend: Modular Monolith structure (nestjs-query Code-First GraphQL, event-driven)
+- **nestjs-query Usage** ([docs](https://tripss.github.io/nestjs-query/docs/introduction/getting-started)):
+  - Use `@ptc-org/nestjs-query-*` packages (maintained fork), NOT deprecated `@nestjs-query/*`
+  - **Standard CRUD**: Use `NestjsQueryGraphQLModule.forFeature()` with auto-generated resolvers
+  - **Custom Business Logic**: Use raw `@nestjs/graphql` ONLY for non-CRUD mutations (e.g., `generateDocument`)
+- **Frontend-Backend**: GraphQL ONLY (no REST endpoints for frontend communication, including auth)
+- **Backend-AI Engine**: REST with OpenAPI client generation (internal service communication)
 - AI Engine: LangGraph + PydanticAI, DO NOT use LangChain or API calls to openai/alternatives directly
-- Frontend: Next.js + Refine (use existing components)
+- **Frontend Data Providers**: Multiple Refine data providers:
+  - `default`: GraphQL data provider for Backend (NestJS) - standard CRUD operations
+  - `aiEngine`: REST data provider for AI Engine (FastAPI) - AI-specific operations (streaming, generation)
 - Verify tests fail before implementing
 
 ## Format: `[ID] [P?] [Story] Description`
@@ -61,12 +69,149 @@ description: 'Task list for Core Legal AI Features implementation'
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
 - [x] T007 Setup Postgres database and TypeORM/Prisma/MikroORM (per choice) in `apps/backend`
-- [x] T008 [P] Implement base Authentication framework in `apps/backend` and `apps/web`
+- [x] T007a [P] Upgrade nestjs-query to maintained `@ptc-org/nestjs-query-*` packages in `apps/backend/package.json`
+  - **⚠️ REQUIRED**: Current packages `@nestjs-query/*` are deprecated
+  - Replace with: `@ptc-org/nestjs-query-core`, `@ptc-org/nestjs-query-graphql`, `@ptc-org/nestjs-query-typeorm`
+  - Also install peer dependency: `@apollo/server` (required by `@nestjs/apollo`)
+- [ ] T008 [P] Implement base Authentication framework via **GraphQL mutations** (NOT REST) in `apps/backend/src/modules/auth/auth.resolver.ts` and `apps/web/src/providers/auth-provider/`
+  - **⚠️ REQUIRES REWORK**: Current implementation uses REST endpoints - must be converted to GraphQL mutations (login, register, logout, refreshToken)
+  - **Backend**: Create `AuthResolver` with GraphQL mutations using nestjs-query patterns
+  - **Frontend**: Update auth-provider to use GraphQL mutations instead of REST/mock
 - [x] T009 [P] Setup Basic AI Service API (FastAPI) and Client Generation in `apps/backend`
 - [x] T010 [P] Setup EventEmitter2 module (`@nestjs/event-emitter`) in `apps/backend/src/shared/events`
 - [x] T011 [P] Setup Redis and Bull queue module (`@nestjs/bull`) in `apps/backend/src/shared/queues`
 - [x] T012 [P] Configure i18n structure in `apps/web` (react-i18next)
+- [ ] T012a [P] Configure Multiple Data Providers in `apps/web/src/providers/data-provider/` for Refine
 - [x] T013 Define User and Session entities in `apps/backend/src/modules/users`
+
+### Implementation Notes for Multiple Data Providers
+
+**T012a - Multiple Data Providers Setup** (Ref: [Refine.dev Multiple Data Providers](https://refine.dev/docs/data/data-provider/#multiple-data-providers)):
+
+- Create REST data provider for AI Engine in `apps/web/src/providers/data-provider/ai-engine-provider.ts`
+- Update `apps/web/src/providers/data-provider/index.ts` to export both providers
+- Update `apps/web/src/app/_refine_context.tsx` to configure multiple providers:
+
+```tsx
+// Example configuration for multiple data providers
+<Refine
+  dataProvider={{
+    default: graphqlDataProvider,    // Backend (NestJS) - GraphQL
+    aiEngine: aiEngineDataProvider,  // AI Engine (FastAPI) - REST
+  }}
+  resources={[
+    {
+      name: "documents",
+      // Uses default (graphqlDataProvider) for CRUD
+    },
+    {
+      name: "ai-generation",
+      meta: {
+        dataProviderName: "aiEngine", // Uses aiEngineDataProvider
+      },
+    },
+  ]}
+/>
+```
+
+- **Default Provider (GraphQL)**: Used for all standard CRUD operations (documents, users, queries)
+- **AI Engine Provider (REST)**: Used for AI-specific operations:
+  - Streaming responses (document generation, Q&A)
+  - Direct AI Engine API calls (when not going through Backend)
+- Hooks can explicitly specify provider: `useCreate({ dataProviderName: "aiEngine" })`
+- Environment variables:
+  - `NEXT_PUBLIC_GRAPHQL_URL` - Backend GraphQL endpoint (existing)
+  - `NEXT_PUBLIC_AI_ENGINE_URL` - AI Engine REST endpoint (new)
+
+### Implementation Notes for nestjs-query (T007a, T014, T015, T017)
+
+**Reference**: [nestjs-query Getting Started](https://tripss.github.io/nestjs-query/docs/introduction/getting-started)
+
+**T007a - Package Upgrade**:
+
+```bash
+# Remove deprecated packages
+pnpm remove @nestjs-query/core @nestjs-query/query-graphql @nestjs-query/query-typeorm --filter @legal/backend
+
+# Install maintained packages
+pnpm add @ptc-org/nestjs-query-core @ptc-org/nestjs-query-graphql @ptc-org/nestjs-query-typeorm --filter @legal/backend
+
+# Install required peer dependency for @nestjs/apollo
+pnpm add @apollo/server --filter @legal/backend
+```
+
+**T014 - DTO with nestjs-query decorators** (example):
+
+```typescript
+// apps/backend/src/modules/documents/dto/legal-document.dto.ts
+import { FilterableField, IDField } from '@ptc-org/nestjs-query-graphql';
+import { ObjectType, ID, GraphQLISODateTime } from '@nestjs/graphql';
+
+@ObjectType('LegalDocument')
+export class LegalDocumentDTO {
+  @IDField(() => ID)
+  id: string;
+
+  @FilterableField()
+  title: string;
+
+  @FilterableField()
+  type: DocumentType;
+
+  @FilterableField()
+  status: DocumentStatus;
+
+  @FilterableField(() => GraphQLISODateTime)
+  createdAt: Date;
+}
+```
+
+**T015 - Module with auto-generated CRUD** (example):
+
+```typescript
+// apps/backend/src/modules/documents/documents.module.ts
+import { NestjsQueryGraphQLModule } from '@ptc-org/nestjs-query-graphql';
+import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
+import { LegalDocument } from './entities/legal-document.entity';
+import { LegalDocumentDTO } from './dto/legal-document.dto';
+import { CreateDocumentInput, UpdateDocumentInput } from './dto/document.input';
+
+@Module({
+  imports: [
+    NestjsQueryGraphQLModule.forFeature({
+      imports: [NestjsQueryTypeOrmModule.forFeature([LegalDocument])],
+      resolvers: [
+        {
+          DTOClass: LegalDocumentDTO,
+          EntityClass: LegalDocument,
+          CreateDTOClass: CreateDocumentInput,
+          UpdateDTOClass: UpdateDocumentInput,
+          // Auto-generates: documents, document, createOneDocument, updateOneDocument, deleteOneDocument
+          // Plus filtering, sorting, paging built-in
+        },
+      ],
+    }),
+  ],
+  providers: [DocumentsResolver], // Only for custom mutations like generateDocument
+})
+export class DocumentsModule {}
+```
+
+**T017 - Custom Resolver (only non-CRUD)**:
+
+```typescript
+// apps/backend/src/modules/documents/documents.resolver.ts
+@Resolver(() => LegalDocumentDTO)
+export class DocumentsResolver {
+  // ONLY custom business logic mutations
+  // Standard CRUD is handled by nestjs-query auto-generated resolvers
+
+  @Mutation(() => LegalDocumentDTO)
+  async generateDocument(@Args('input') input: GenerateDocumentInput): Promise<LegalDocument> {
+    // Custom AI generation logic
+  }
+}
+```
 
 ### Implementation Notes for Event-Driven Architecture
 
@@ -101,11 +246,17 @@ description: 'Task list for Core Legal AI Features implementation'
 
 ### Implementation for User Story 1
 
-- [x] T014 [US1] Create `LegalDocument` entity in `apps/backend/src/modules/documents/entities/legal-document.entity.ts`
-- [x] T015 [US1] Implement `DocumentService` CRUD in `apps/backend/src/modules/documents/services/documents.service.ts`
+- [ ] T014 [US1] Create `LegalDocument` DTO with nestjs-query decorators in `apps/backend/src/modules/documents/dto/legal-document.dto.ts`
+  - **⚠️ REQUIRES REWORK**: Current entity exists but lacks nestjs-query `@FilterableField()` decorators
+  - Add `@ObjectType()`, `@FilterableField()`, `@IDField()` decorators for auto-generated queries
+- [ ] T015 [US1] Implement `DocumentsModule` with `NestjsQueryGraphQLModule.forFeature()` in `apps/backend/src/modules/documents/documents.module.ts`
+  - **⚠️ REQUIRES REWORK**: Current implementation uses manual service - must use nestjs-query auto-generated CRUD
+  - Configure `TypeOrmQueryService` for standard CRUD operations (create, read, update, delete, filter, sort, page)
 - [x] T016 [US1] Implement AI Graph for Drafting in `apps/ai-engine/src/graphs/drafting_graph.py`
-- [x] T017 [US1] Create API endpoint `POST /api/documents/generate` in `apps/backend/src/modules/documents/documents.controller.ts`
-- [ ] T018 [US1] Implement Document Generation Form in `apps/web/src/pages/documents/create.tsx`
+- [ ] T017 [US1] Create **custom** GraphQL mutation `generateDocument` in `apps/backend/src/modules/documents/documents.resolver.ts`
+  - **⚠️ REQUIRES REWORK**: Keep ONLY custom mutation `generateDocument` (triggers AI), remove manual CRUD (handled by nestjs-query)
+  - Standard CRUD queries/mutations (documents, document, createDocument, updateDocument, deleteDocument) should come from nestjs-query
+- [x] T018 [US1] Implement Document Generation Form (GraphQL) in `apps/web/src/app/documents/create/page.tsx`
 - [ ] T019 [US1] Implement Streaming Response Handler in `apps/web/src/components/chat/StreamingViewer.tsx`
 - [ ] T020 [US1] Implement PDF Export functionality in `apps/backend/src/modules/documents/services/pdf-export.service.ts`
 
@@ -186,7 +337,9 @@ description: 'Task list for Core Legal AI Features implementation'
 
 - AI Engine (Python) work can proceed parallel to Backend/Frontend once T004 is done.
 - Frontend UI components (Phase 3, 4, 5) can be built parallel to Backend Services if API contracts are agreed (Code-First approach helps).
-- T005, T006, T008, T009, T010, T011 in Setup/Foundational are parallelizable.
+- T005, T006, T007a, T008, T009, T010, T011, T012, T012a in Setup/Foundational are parallelizable.
+- T007a (nestjs-query upgrade) MUST be done before T014, T015, T017 document rework.
+- T012a (Multiple Data Providers) can be done in parallel with T008 (Auth) since they affect different parts of the frontend.
 
 ## Implementation Strategy
 

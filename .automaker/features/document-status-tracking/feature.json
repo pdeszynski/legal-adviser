@@ -1,0 +1,14 @@
+{
+  "id": "document-status-tracking",
+  "category": "Core",
+  "title": "Real-time Document Status Updates",
+  "description": "Implement GraphQL subscriptions for document status changes. Emit events when document transitions between DRAFT, GENERATING, COMPLETED, and FAILED states.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [
+    "ai-streaming-response"
+  ],
+  "createdAt": "2026-01-12T10:31:20.826Z",
+  "updatedAt": "2026-01-12T10:31:20.826Z"
+}

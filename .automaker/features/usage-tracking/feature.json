@@ -1,0 +1,12 @@
+{
+  "id": "usage-tracking",
+  "category": "Core",
+  "title": "Usage Tracking Service",
+  "description": "Implement service tracking AI API usage per user. Store token counts, request counts, and costs for billing purposes.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.848Z",
+  "updatedAt": "2026-01-12T10:31:20.848Z"
+}

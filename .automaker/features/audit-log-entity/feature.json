@@ -1,0 +1,12 @@
+{
+  "id": "audit-log-entity",
+  "category": "Database",
+  "title": "Audit Log Entity",
+  "description": "Create AuditLog entity for tracking all user actions. Store action type, resource ID, user ID, timestamp, IP address, and change details.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.840Z",
+  "updatedAt": "2026-01-12T10:31:20.840Z"
+}

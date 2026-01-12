@@ -1,0 +1,14 @@
+{
+  "id": "document-comments-entity",
+  "category": "Database",
+  "title": "Document Comments Entity",
+  "description": "Create DocumentComment entity for inline document feedback. Store comment text, position/anchor, author, timestamp, and resolution status.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [
+    "document-collaboration"
+  ],
+  "createdAt": "2026-01-12T10:31:20.843Z",
+  "updatedAt": "2026-01-12T10:31:20.843Z"
+}

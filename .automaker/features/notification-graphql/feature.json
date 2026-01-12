@@ -1,0 +1,14 @@
+{
+  "id": "notification-graphql",
+  "category": "API",
+  "title": "Notification GraphQL Resolvers",
+  "description": "Add nestjs-query decorators to Notification entity. Implement subscription for real-time notifications and mutation to mark as read.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "notification-service"
+  ],
+  "createdAt": "2026-01-12T10:31:20.846Z",
+  "updatedAt": "2026-01-12T10:31:20.846Z"
+}

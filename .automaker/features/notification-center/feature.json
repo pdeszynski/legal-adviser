@@ -1,0 +1,14 @@
+{
+  "id": "notification-center",
+  "category": "UI",
+  "title": "Notification Center Page",
+  "description": "Create dedicated page showing all notifications with filtering. Support bulk mark as read and notification preferences.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [
+    "notification-bell"
+  ],
+  "createdAt": "2026-01-12T10:31:20.847Z",
+  "updatedAt": "2026-01-12T10:31:20.847Z"
+}

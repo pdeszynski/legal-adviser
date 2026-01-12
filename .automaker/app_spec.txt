@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project_specification>
+  <project_name>Legal AI Platform</project_name>
+
+  <overview>
+    A comprehensive AI-powered legal assistance platform designed to help lawyers and regular users with legal document generation, legal Q&amp;A with citations, case law search, and legal grounds identification. Built following Domain-Driven Design principles with a Modular Monolith architecture, the platform uses AI agents powered by LangGraph and PydanticAI to draft precise, professional legal documents in Polish. The system emphasizes strong typing, code-first API schemas, event-driven inter-module communication, and strict architectural boundaries. Targeting the Polish legal market, it supports multi-language interfaces with Polish-language AI prompts for authentic legal terminology.
+  </overview>
+
+  <technology_stack>
+    <technology>Turborepo - Monorepo orchestration</technology>
+    <technology>PNPM - Node.js package management</technology>
+    <technology>UV - Python package management</technology>
+    <technology>Next.js 15 - Frontend framework with React 19</technology>
+    <technology>Refine.dev - Data framework for admin/CRUD operations</technology>
+    <technology>Tailwind CSS - Utility-first styling</technology>
+    <technology>shadcn/ui - UI component library</technology>
+    <technology>next-intl - Internationalization (i18n) support</technology>
+    <technology>NestJS 11 - Backend framework</technology>
+    <technology>GraphQL with Apollo Server - Primary API layer</technology>
+    <technology>@ptc-org/nestjs-query - Auto-generated CRUD resolvers</technology>
+    <technology>TypeORM - Database ORM</technology>
+    <technology>PostgreSQL - Primary database</technology>
+    <technology>Passport.js + JWT - Authentication</technology>
+    <technology>EventEmitter2 - Event-driven module communication</technology>
+    <technology>Bull + Redis - Asynchronous job queues</technology>
+    <technology>Python 3.11+ - AI Engine runtime</technology>
+    <technology>FastAPI - AI service HTTP framework</technology>
+    <technology>PydanticAI - Structured AI responses</technology>
+    <technology>LangGraph - Agent orchestration workflows</technology>
+    <technology>OpenAI API - LLM provider</technology>
+    <technology>Pydantic Settings - Configuration management</technology>
+    <technology>Ruff - Python linting</technology>
+    <technology>ESLint + Prettier - TypeScript/JavaScript linting</technology>
+    <technology>Jest - Backend testing</technology>
+    <technology>pytest - AI Engine testing</technology>
+  </technology_stack>
+
+  <core_capabilities>
+    <capability>AI-powered legal document generation from natural language descriptions</capability>
+    <capability>Drafting complaints, lawsuits, and other legal pleadings in Polish</capability>
+    <capability>Legal Q&amp;A assistant with RAG (Retrieval Augmented Generation) and citations</capability>
+    <capability>Case law and court ruling search functionality</capability>
+    <capability>Legal grounds identification from situation descriptions</capability>
+    <capability>Multi-language UI support (English, German, Polish)</capability>
+    <capability>Event-driven modular backend architecture</capability>
+    <capability>GraphQL-first frontend-backend communication</capability>
+    <capability>REST-based Backend-AI Engine service communication</capability>
+    <capability>Asynchronous document generation with status tracking</capability>
+    <capability>User session management and authentication</capability>
+    <capability>PDF document export (planned)</capability>
+  </core_capabilities>
+
+  <implemented_features>
+    <feature>
+      <name>Turborepo Monorepo Structure</name>
+      <description>Complete monorepo setup with apps/web, apps/backend, apps/ai-engine directories and shared packages for UI components and types</description>
+      <file_locations>
+        <location>package.json</location>
+        <location>turbo.json</location>
+        <location>packages/ui/</location>
+        <location>packages/types/</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Next.js Frontend with Refine</name>
+      <description>Frontend application with Next.js 15, React 19, Refine.dev data framework, Tailwind CSS styling, and shadcn/ui components. Includes routing, layout system, and theme support</description>
+      <file_locations>
+        <location>apps/web/src/app/</location>
+        <location>apps/web/src/providers/</location>
+        <location>apps/web/src/components/</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>NestJS Modular Monolith Backend</name>
+      <description>Backend with NestJS featuring GraphQL API (Apollo Server), TypeORM database integration, modular architecture with Users, Documents, and Auth modules</description>
+      <file_locations>
+        <location>apps/backend/src/app.module.ts</location>
+        <location>apps/backend/src/modules/</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>GraphQL Data Provider</name>
+      <description>Custom GraphQL data provider for Refine frontend connecting to NestJS backend with queries and mutations for document operations</description>
+      <file_locations>
+        <location>apps/web/src/providers/data-provider/index.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>LegalDocument Entity and GraphQL Schema</name>
+      <description>Complete legal document domain model with TypeORM entity, GraphQL types, enums (LAWSUIT, COMPLAINT, CONTRACT, OTHER), status tracking (DRAFT, GENERATING, COMPLETED, FAILED), and metadata support</description>
+      <file_locations>
+        <location>apps/backend/src/modules/documents/entities/legal-document.entity.ts</location>
+        <location>apps/backend/src/modules/documents/dto/document.types.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Documents GraphQL Resolver</name>
+      <description>GraphQL resolver with queries (documents, document, documentsBySession) and mutations (generateDocument, updateDocument, deleteDocument) for document operations</description>
+      <file_locations>
+        <location>apps/backend/src/modules/documents/documents.resolver.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Document Generation Form</name>
+      <description>React form component for creating legal documents with title, type selection, and metadata fields (plaintiff/defendant names, claim amount, currency)</description>
+      <file_locations>
+        <location>apps/web/src/app/documents/create/page.tsx</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>User and Session Entities</name>
+      <description>User entity with email, profile fields, disclaimer acceptance tracking, and related UserSession entity for session management</description>
+      <file_locations>
+        <location>apps/backend/src/modules/users/entities/user.entity.ts</location>
+        <location>apps/backend/src/modules/users/entities/user-session.entity.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Event-Driven Architecture Foundation</name>
+      <description>EventEmitter2 integration with base event classes, naming conventions (domain.entity.action), and example event implementations for inter-module communication</description>
+      <file_locations>
+        <location>apps/backend/src/shared/events/base/</location>
+        <location>apps/backend/src/shared/events/examples/</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Bull Queue Infrastructure</name>
+      <description>Redis-backed Bull queue setup with queue names for document generation, PDF export, email notifications, and AI processing tasks</description>
+      <file_locations>
+        <location>apps/backend/src/shared/queues/</location>
+        <location>apps/backend/src/app.module.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>AI Engine FastAPI Service</name>
+      <description>Python FastAPI service with REST endpoints for document generation, Q&amp;A, and ruling search. Includes OpenAPI documentation and health check</description>
+      <file_locations>
+        <location>apps/ai-engine/src/main.py</location>
+        <location>apps/ai-engine/src/models/</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>LangGraph Drafting Workflow</name>
+      <description>LangGraph StateGraph implementation for document drafting with typed state, generate_draft_node, and async execution</description>
+      <file_locations>
+        <location>apps/ai-engine/src/graphs/drafting_graph.py</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>PydanticAI Drafting Agent</name>
+      <description>PydanticAI agent configured as expert Polish lawyer (Radca Prawny) for drafting legal documents with structured output (DraftResult model)</description>
+      <file_locations>
+        <location>apps/ai-engine/src/agents/drafting_agent.py</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>AI Client Service</name>
+      <description>NestJS service for Backend-AI Engine communication via REST with typed methods for document generation, Q&amp;A, and ruling search</description>
+      <file_locations>
+        <location>apps/backend/src/shared/ai-client/ai-client.service.ts</location>
+        <location>apps/backend/src/shared/ai-client/ai-client.types.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Internationalization (i18n) Structure</name>
+      <description>next-intl configuration with support for English, German, and Polish locales, locale switching, and translation integration with Refine i18nProvider</description>
+      <file_locations>
+        <location>apps/web/src/i18n/config.ts</location>
+        <location>apps/web/src/i18n/index.ts</location>
+        <location>apps/web/src/app/_refine_context.tsx</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Authentication Module (Partial)</name>
+      <description>Basic auth module with Passport.js, JWT strategy, and REST controller. Note: Requires rework to GraphQL mutations per constitution</description>
+      <file_locations>
+        <location>apps/backend/src/modules/auth/auth.module.ts</location>
+        <location>apps/backend/src/modules/auth/jwt.strategy.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Mock Auth Provider</name>
+      <description>Client-side mock authentication provider for development with cookie-based session storage</description>
+      <file_locations>
+        <location>apps/web/src/providers/auth-provider/auth-provider.client.ts</location>
+      </file_locations>
+    </feature>
+  </implemented_features>
+
+  <additional_requirements>
+    <requirement>PostgreSQL database required for persistence</requirement>
+    <requirement>Redis required for Bull queue job processing</requirement>
+    <requirement>OpenAI API key required for AI document generation</requirement>
+    <requirement>Node.js &gt;= 18 for backend and frontend</requirement>
+    <requirement>Python &gt;= 3.11 for AI Engine</requirement>
+    <requirement>Environment variables: DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE, JWT_SECRET, AI_ENGINE_URL, OPENAI_API_KEY, OPENAI_MODEL, REDIS_HOST, REDIS_PORT</requirement>
+    <requirement>Architecture tests in CI to enforce module boundaries</requirement>
+    <requirement>All features require legal disclaimer acceptance before use</requirement>
+    <requirement>AI prompts must generate documents in Polish legal terminology</requirement>
+    <requirement>Frontend must support Polish language localization for end users</requirement>
+  </additional_requirements>
+
+  <development_guidelines>
+    <guideline>Domain-Driven Design (DDD): Software model must deeply reflect the legal business domain with clear aggregate roots and invariants</guideline>
+    <guideline>Modular Monolith: Strict module boundaries - no direct imports between module domains; use events for inter-module communication</guideline>
+    <guideline>GraphQL-Only Frontend API: All frontend-backend communication must use GraphQL; REST endpoints for frontend are forbidden</guideline>
+    <guideline>REST for Service Communication: Backend-AI Engine uses REST with auto-generated OpenAPI clients</guideline>
+    <guideline>Code-First Schema: API schemas (GraphQL, OpenAPI) must be generated from code definitions; manual schema files forbidden</guideline>
+    <guideline>Strong Typing: Avoid &apos;any&apos; (TypeScript) and untyped Dict/Any (Python); aim for sound type system</guideline>
+    <guideline>nestjs-query for CRUD: Use @ptc-org/nestjs-query-* for auto-generated resolvers; raw @nestjs/graphql only for custom business logic</guideline>
+    <guideline>Event-Driven Communication: Inter-module communication via asynchronous events using EventEmitter2</guideline>
+    <guideline>Package Managers: PNPM for Node.js, UV for Python - NPM, Yarn, and PIP are forbidden</guideline>
+    <guideline>English-First: All code, comments, documentation, and commits must be in English</guideline>
+    <guideline>Conventional Commits: Commit messages must follow Conventional Commits spec (feat:, fix:, docs:)</guideline>
+    <guideline>Semantic Release: Automated versioning via semantic-release from commit types</guideline>
+    <guideline>YAGNI Principle: Implement only what&apos;s necessary; avoid over-engineering</guideline>
+    <guideline>Environment Variables: Only source for secrets and deployment config; code for defaults</guideline>
+    <guideline>Testing: Backend tests via &apos;npm run test&apos;, AI Engine via &apos;uv run pytest&apos;</guideline>
+  </development_guidelines>
+
+  <implementation_roadmap>
+    <phase>
+      <name>Phase 1: Setup (Monorepo Infrastructure)</name>
+      <status>completed</status>
+      <description>Turborepo monorepo structure with apps/web, apps/backend, apps/ai-engine. Shared packages for UI and types. Global linting configuration (ESLint, Prettier, Ruff). Jest configured for unit, integration, and e2e tests.</description>
+    </phase>
+    <phase>
+      <name>Phase 2: Foundational (Core Infrastructure)</name>
+      <status>in_progress</status>
+      <description>PostgreSQL + TypeORM setup, nestjs-query upgrade to @ptc-org packages, EventEmitter2 for events, Bull+Redis for queues, i18n structure. Auth framework needs rework from REST to GraphQL. Multiple data providers configuration pending.</description>
+    </phase>
+    <phase>
+      <name>Phase 3: User Story 1 - AI Document Generation (MVP)</name>
+      <status>in_progress</status>
+      <description>LegalDocument entity and GraphQL schema (needs nestjs-query decorators), Documents module with CRUD (needs nestjs-query refactor), AI drafting graph implemented, document creation form implemented. Pending: Streaming response handler, PDF export service.</description>
+    </phase>
+    <phase>
+      <name>Phase 4: User Story 2 - Legal Q&amp;A Assistant</name>
+      <status>pending</status>
+      <description>LegalQuery entity, Q&amp;A Agent with RAG, external legal search integration (SAOS, ISAP), Chat controller and interface, session mode toggle (Pro/Simple).</description>
+    </phase>
+    <phase>
+      <name>Phase 5: User Story 3 - Case Law Search</name>
+      <status>pending</status>
+      <description>LegalRuling entity, search service with external integration, search page UI, ruling detail view.</description>
+    </phase>
+    <phase>
+      <name>Phase 6: User Story 4 - Legal Grounds Identification</name>
+      <status>pending</status>
+      <description>Classifier AI agent, &apos;Analyze Case&apos; flow, legal basis suggestions display.</description>
+    </phase>
+    <phase>
+      <name>Phase 7: Polish &amp; Cross-Cutting Concerns</name>
+      <status>pending</status>
+      <description>Legal disclaimers (modal + footer), Polish AI prompts verification, security hardening (input validation, rate limiting), documentation updates, audit logging with Refine AuditLogProvider.</description>
+    </phase>
+  </implementation_roadmap>
+</project_specification>

@@ -165,5 +165,52 @@
   },
   "table": {
     "actions": "Actions"
+  },
+  "documents": {
+    "documents": "Documents",
+    "fields": {
+      "id": "ID",
+      "title": "Document Title",
+      "type": "Document Type",
+      "status": "Status",
+      "sessionId": "Session ID",
+      "plaintiffName": "Plaintiff Name",
+      "defendantName": "Defendant Name",
+      "claimAmount": "Claim Amount",
+      "claimCurrency": "Currency",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    },
+    "types": {
+      "LAWSUIT": "Lawsuit",
+      "COMPLAINT": "Complaint",
+      "CONTRACT": "Contract",
+      "OTHER": "Other"
+    },
+    "statuses": {
+      "DRAFT": "Draft",
+      "GENERATING": "Generating",
+      "COMPLETED": "Completed",
+      "FAILED": "Failed"
+    },
+    "titles": {
+      "create": "Generate Document",
+      "edit": "Edit Document",
+      "list": "Documents",
+      "show": "View Document"
+    },
+    "form": {
+      "select": {
+        "type": {
+          "placeholder": "Select document type"
+        }
+      },
+      "description": "Fill in the details to generate a legal document using AI.",
+      "metadataSection": "Document Details",
+      "errors": {
+        "requiredTitle": "Document title is required",
+        "requiredSessionId": "Session ID is required"
+      }
+    }
   }
 }

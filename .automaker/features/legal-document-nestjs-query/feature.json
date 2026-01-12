@@ -1,0 +1,14 @@
+{
+  "id": "legal-document-nestjs-query",
+  "category": "API",
+  "title": "Refactor LegalDocument to nestjs-query",
+  "description": "Add @QueryOptions, @FilterableField, and @Relation decorators to LegalDocument entity. Replace manual resolver with auto-generated CRUD operations from nestjs-query. Ensures type-safe GraphQL schema generation.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [
+    "nestjs-query-migration"
+  ],
+  "createdAt": "2026-01-12T10:31:20.824Z",
+  "updatedAt": "2026-01-12T10:31:20.824Z"
+}

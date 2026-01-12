@@ -1,0 +1,14 @@
+{
+  "id": "legal-analysis-graphql",
+  "category": "API",
+  "title": "Legal Analysis GraphQL Resolvers",
+  "description": "Add nestjs-query decorators to LegalAnalysis entity. Implement auto-generated CRUD resolvers for viewing analysis history.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "legal-analysis-entity"
+  ],
+  "createdAt": "2026-01-12T10:31:20.836Z",
+  "updatedAt": "2026-01-12T10:31:20.836Z"
+}

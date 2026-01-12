@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LegalDocument } from './entities/legal-document.entity';
 import { DocumentsService } from './services/documents.service';
+import { DocumentsResolver } from './documents.resolver';
 import { DocumentsController } from './documents.controller';
 
 /**
@@ -10,13 +11,15 @@ import { DocumentsController } from './documents.controller';
  * Handles legal document generation, storage, and management.
  * Part of User Story 1: AI Document Generation.
  *
+ * Primary API: GraphQL (DocumentsResolver) - per constitution
+ * Secondary API: REST (DocumentsController) - for internal services
+ *
  * This module will be expanded with:
- * - DocumentController (API endpoints) - T017
  * - PdfExportService (PDF generation) - T020
  */
 @Module({
   imports: [TypeOrmModule.forFeature([LegalDocument])],
-  providers: [DocumentsService],
+  providers: [DocumentsService, DocumentsResolver],
   controllers: [DocumentsController],
   exports: [TypeOrmModule, DocumentsService],
 })

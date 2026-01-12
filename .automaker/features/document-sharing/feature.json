@@ -1,0 +1,14 @@
+{
+  "id": "document-sharing",
+  "category": "Core",
+  "title": "Document Sharing System",
+  "description": "Implement secure document sharing with granular permissions. Generate shareable links with view-only or edit access and expiration dates.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "legal-document-nestjs-query"
+  ],
+  "createdAt": "2026-01-12T10:31:20.843Z",
+  "updatedAt": "2026-01-12T10:31:20.843Z"
+}

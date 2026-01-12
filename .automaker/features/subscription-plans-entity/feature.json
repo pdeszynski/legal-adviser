@@ -1,0 +1,12 @@
+{
+  "id": "subscription-plans-entity",
+  "category": "Database",
+  "title": "Subscription Plans Entity",
+  "description": "Create SubscriptionPlan and UserSubscription entities. Define plan tiers with feature flags, quotas, and pricing.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.851Z",
+  "updatedAt": "2026-01-12T10:31:20.851Z"
+}

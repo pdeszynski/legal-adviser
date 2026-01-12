@@ -1,0 +1,14 @@
+{
+  "id": "dashboard-widgets",
+  "category": "UI",
+  "title": "Dashboard Widget Components",
+  "description": "Create reusable widget components for dashboard. Include document count cards, activity timeline, and notification bell.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "dashboard-page"
+  ],
+  "createdAt": "2026-01-12T10:31:20.844Z",
+  "updatedAt": "2026-01-12T10:31:20.844Z"
+}

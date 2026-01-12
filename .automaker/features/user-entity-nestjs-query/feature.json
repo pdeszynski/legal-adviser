@@ -1,0 +1,14 @@
+{
+  "id": "user-entity-nestjs-query",
+  "category": "API",
+  "title": "Refactor User entity to nestjs-query",
+  "description": "Add nestjs-query decorators to User entity for auto-generated resolvers. Implement FilterableField for searchable properties and proper relation handling with UserSession.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "nestjs-query-migration"
+  ],
+  "createdAt": "2026-01-12T10:31:20.824Z",
+  "updatedAt": "2026-01-12T10:31:20.824Z"
+}

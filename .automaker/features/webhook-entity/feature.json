@@ -1,0 +1,14 @@
+{
+  "id": "webhook-entity",
+  "category": "Database",
+  "title": "Webhook Configuration Entity",
+  "description": "Create WebhookConfig entity storing endpoint URLs, event subscriptions, authentication headers, and status.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [
+    "webhook-system"
+  ],
+  "createdAt": "2026-01-12T10:31:20.847Z",
+  "updatedAt": "2026-01-12T10:31:20.847Z"
+}

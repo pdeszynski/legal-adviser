@@ -1,0 +1,14 @@
+{
+  "id": "document-version-entity",
+  "category": "Database",
+  "title": "Document Version Entity",
+  "description": "Create DocumentVersion entity to track document revision history. Store content snapshots, timestamps, and author information for audit trail.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "legal-document-nestjs-query"
+  ],
+  "createdAt": "2026-01-12T10:31:20.829Z",
+  "updatedAt": "2026-01-12T10:31:20.829Z"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "email-notification-service",
+  "category": "Core",
+  "title": "Email Notification Service",
+  "description": "Implement email service using SendGrid or similar provider. Support templated emails for document completion, account actions, and system notifications.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.837Z",
+  "updatedAt": "2026-01-12T10:31:20.837Z"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "email-queue-processor",
+  "category": "Core",
+  "title": "Email Queue Processor",
+  "description": "Create Bull queue consumer for sending emails asynchronously. Handle retry logic, bounce tracking, and delivery status updates.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "email-notification-service"
+  ],
+  "createdAt": "2026-01-12T10:31:20.838Z",
+  "updatedAt": "2026-01-12T10:31:20.838Z"
+}

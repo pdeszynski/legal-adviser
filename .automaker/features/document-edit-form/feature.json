@@ -1,0 +1,14 @@
+{
+  "id": "document-edit-form",
+  "category": "UI",
+  "title": "Document Edit Form",
+  "description": "Implement form for editing existing documents with validation. Support updating title, type, metadata fields, and content for documents in DRAFT status.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "document-detail-view"
+  ],
+  "createdAt": "2026-01-12T10:31:20.828Z",
+  "updatedAt": "2026-01-12T10:31:20.828Z"
+}

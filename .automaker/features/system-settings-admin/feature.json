@@ -1,0 +1,14 @@
+{
+  "id": "system-settings-admin",
+  "category": "UI",
+  "title": "System Settings Admin Panel",
+  "description": "Create interface for configuring system-wide settings. Include AI model selection, feature flags, and maintenance mode.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [
+    "admin-panel-layout"
+  ],
+  "createdAt": "2026-01-12T10:31:20.854Z",
+  "updatedAt": "2026-01-12T10:31:20.854Z"
+}

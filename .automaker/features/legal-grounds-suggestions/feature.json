@@ -1,0 +1,14 @@
+{
+  "id": "legal-grounds-suggestions",
+  "category": "UI",
+  "title": "Legal Grounds Suggestion Component",
+  "description": "Create reusable component displaying suggested legal grounds with confidence indicators. Support inline usage in document creation form.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "analyze-case-page"
+  ],
+  "createdAt": "2026-01-12T10:31:20.836Z",
+  "updatedAt": "2026-01-12T10:31:20.836Z"
+}

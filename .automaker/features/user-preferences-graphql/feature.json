@@ -1,0 +1,14 @@
+{
+  "id": "user-preferences-graphql",
+  "category": "API",
+  "title": "User Preferences GraphQL Resolvers",
+  "description": "Add nestjs-query decorators to UserPreferences entity. Implement mutations for updating preferences.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "user-preferences-entity"
+  ],
+  "createdAt": "2026-01-12T10:31:20.839Z",
+  "updatedAt": "2026-01-12T10:31:20.839Z"
+}

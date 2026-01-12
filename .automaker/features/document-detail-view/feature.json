@@ -1,0 +1,14 @@
+{
+  "id": "document-detail-view",
+  "category": "UI",
+  "title": "Document Detail View",
+  "description": "Create document detail page showing full document content, metadata, generation history, and action buttons. Support editing for DRAFT status documents.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [
+    "document-list-view"
+  ],
+  "createdAt": "2026-01-12T10:31:20.827Z",
+  "updatedAt": "2026-01-12T10:31:20.827Z"
+}

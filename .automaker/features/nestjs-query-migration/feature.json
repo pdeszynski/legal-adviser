@@ -1,0 +1,12 @@
+{
+  "id": "nestjs-query-migration",
+  "category": "Core",
+  "title": "Migrate to @ptc-org/nestjs-query",
+  "description": "Upgrade all nestjs-query packages to @ptc-org scoped versions. Replace manual GraphQL resolvers with auto-generated CRUD resolvers using QueryService pattern. This establishes the foundation for code-first GraphQL schema generation.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.823Z",
+  "updatedAt": "2026-01-12T10:31:20.823Z"
+}

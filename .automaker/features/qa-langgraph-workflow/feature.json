@@ -1,0 +1,14 @@
+{
+  "id": "qa-langgraph-workflow",
+  "category": "AI",
+  "title": "Q&A LangGraph Workflow",
+  "description": "Create LangGraph StateGraph for Q&A flow with nodes for query analysis, context retrieval, answer generation, and citation formatting.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "complex",
+  "dependencies": [
+    "rag-retrieval-logic"
+  ],
+  "createdAt": "2026-01-12T10:31:20.831Z",
+  "updatedAt": "2026-01-12T10:31:20.831Z"
+}

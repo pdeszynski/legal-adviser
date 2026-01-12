@@ -1,0 +1,14 @@
+{
+  "id": "locale-switcher-component",
+  "category": "UI",
+  "title": "Locale Switcher Component",
+  "description": "Create dropdown component for switching between English, Polish, and German. Store preference in user settings and URL param.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "polish-translations"
+  ],
+  "createdAt": "2026-01-12T10:31:20.837Z",
+  "updatedAt": "2026-01-12T10:31:20.837Z"
+}

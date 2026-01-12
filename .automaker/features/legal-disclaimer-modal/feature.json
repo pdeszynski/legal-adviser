@@ -1,0 +1,14 @@
+{
+  "id": "legal-disclaimer-modal",
+  "category": "UI",
+  "title": "Legal Disclaimer Acceptance Modal",
+  "description": "Create modal component requiring users to accept legal disclaimers before using AI features. Store acceptance timestamp in User entity and enforce on protected routes.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "auth-provider-graphql"
+  ],
+  "createdAt": "2026-01-12T10:31:20.827Z",
+  "updatedAt": "2026-01-12T10:31:20.827Z"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "document-generation-queue",
+  "category": "Core",
+  "title": "Document Generation Queue Processor",
+  "description": "Implement Bull queue consumer for asynchronous document generation jobs. Handle job status updates, error recovery, and AI service communication through queue system.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "complex",
+  "dependencies": [
+    "legal-document-nestjs-query"
+  ],
+  "createdAt": "2026-01-12T10:31:20.825Z",
+  "updatedAt": "2026-01-12T10:31:20.825Z"
+}

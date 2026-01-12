@@ -1,0 +1,12 @@
+{
+  "id": "error-tracking-integration",
+  "category": "Integration",
+  "title": "Error Tracking Integration",
+  "description": "Integrate Sentry or similar error tracking service. Capture exceptions from frontend, backend, and AI engine with context.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.854Z",
+  "updatedAt": "2026-01-12T10:31:20.854Z"
+}

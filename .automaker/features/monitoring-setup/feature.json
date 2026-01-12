@@ -1,0 +1,12 @@
+{
+  "id": "monitoring-setup",
+  "category": "Integration",
+  "title": "Application Monitoring",
+  "description": "Set up APM monitoring with Datadog or New Relic. Track request latency, database queries, and AI API performance.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.855Z",
+  "updatedAt": "2026-01-12T10:31:20.855Z"
+}

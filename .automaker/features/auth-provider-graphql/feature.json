@@ -1,0 +1,14 @@
+{
+  "id": "auth-provider-graphql",
+  "category": "Authentication",
+  "title": "Frontend GraphQL Auth Provider",
+  "description": "Replace mock auth provider with real GraphQL-based authentication. Implement login, logout, register, and session management using GraphQL mutations and queries.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [
+    "graphql-auth-mutations"
+  ],
+  "createdAt": "2026-01-12T10:31:20.825Z",
+  "updatedAt": "2026-01-12T10:31:20.825Z"
+}

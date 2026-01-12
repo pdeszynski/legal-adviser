@@ -1,0 +1,12 @@
+{
+  "id": "api-keys-entity",
+  "category": "Database",
+  "title": "API Keys Entity",
+  "description": "Create ApiKey entity for programmatic access. Store hashed keys, scopes, rate limits, and expiration dates.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.847Z",
+  "updatedAt": "2026-01-12T10:31:20.847Z"
+}

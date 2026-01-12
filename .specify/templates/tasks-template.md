@@ -91,7 +91,7 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] T012 [US1] Create [Entity] in `apps/backend/src/modules/[module]/entities/[entity].entity.ts`
 - [ ] T013 [US1] Implement [Service] CRUD in `apps/backend/src/modules/[module]/services/[service].service.ts`
 - [ ] T014 [US1] Implement AI Graph/Agent in `apps/ai-engine/src/[agents|graphs]/[name].py`
-- [ ] T015 [US1] Create API endpoint `POST /api/[resource]` in `apps/backend/src/modules/[module]/[module].controller.ts`
+- [ ] T015 [US1] Create GraphQL resolver mutations in `apps/backend/src/modules/[module]/[module].resolver.ts`
 - [ ] T016 [US1] Implement UI Page/Form in `apps/web/src/pages/[resource]/[action].tsx`
 - [ ] T017 [US1] Implement UI Component in `apps/web/src/components/[name].tsx`
 
@@ -150,9 +150,13 @@ Examples of foundational tasks (adjust based on your project):
 - [P] tasks = different files, no dependencies
 - [Story] label maps task to specific user story for traceability
 - Each user story should be independently completable and testable
-- Backend: Modular Monolith structure (nestjs-query, event-driven)
+- Backend: Modular Monolith structure (`@ptc-org/nestjs-query-*` Code-First GraphQL, event-driven)
+  - **Standard CRUD**: Use `NestjsQueryGraphQLModule.forFeature()` auto-generated resolvers
+  - **Custom Logic**: Use raw `@nestjs/graphql` ONLY for non-CRUD mutations
+- Frontend-Backend: GraphQL ONLY (no REST endpoints for frontend)
+- Backend-AI Engine: REST with OpenAPI client generation
 - AI Engine: LangGraph + PydanticAI, DO NOT use LangChain or API calls to openai/alternatives directly
-- Frontend: Next.js + Refine (use existing components)
+- Frontend: Next.js + Refine + GraphQL data provider
 - Verify tests fail before implementing
 - Commit after each task or logical group
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence

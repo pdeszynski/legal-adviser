@@ -165,5 +165,52 @@
   },
   "table": {
     "actions": "Aktionen"
+  },
+  "documents": {
+    "documents": "Dokumente",
+    "fields": {
+      "id": "ID",
+      "title": "Dokumenttitel",
+      "type": "Dokumenttyp",
+      "status": "Status",
+      "sessionId": "Sitzungs-ID",
+      "plaintiffName": "Name des Klägers",
+      "defendantName": "Name des Beklagten",
+      "claimAmount": "Forderungsbetrag",
+      "claimCurrency": "Währung",
+      "createdAt": "Erstellt am",
+      "updatedAt": "Aktualisiert am"
+    },
+    "types": {
+      "LAWSUIT": "Klage",
+      "COMPLAINT": "Beschwerde",
+      "CONTRACT": "Vertrag",
+      "OTHER": "Andere"
+    },
+    "statuses": {
+      "DRAFT": "Entwurf",
+      "GENERATING": "Generierung",
+      "COMPLETED": "Abgeschlossen",
+      "FAILED": "Fehlgeschlagen"
+    },
+    "titles": {
+      "create": "Dokument generieren",
+      "edit": "Dokument bearbeiten",
+      "list": "Dokumente",
+      "show": "Dokument anzeigen"
+    },
+    "form": {
+      "select": {
+        "type": {
+          "placeholder": "Dokumenttyp auswählen"
+        }
+      },
+      "description": "Füllen Sie die Details aus, um ein Rechtsdokument mit KI zu generieren.",
+      "metadataSection": "Dokumentdetails",
+      "errors": {
+        "requiredTitle": "Dokumenttitel ist erforderlich",
+        "requiredSessionId": "Sitzungs-ID ist erforderlich"
+      }
+    }
   }
 }

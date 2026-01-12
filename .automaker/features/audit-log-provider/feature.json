@@ -1,0 +1,14 @@
+{
+  "id": "audit-log-provider",
+  "category": "UI",
+  "title": "Refine Audit Log Provider",
+  "description": "Implement Refine auditLogProvider to display action history in UI. Show 'who did what when' across all resources.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "audit-logging-interceptor"
+  ],
+  "createdAt": "2026-01-12T10:31:20.841Z",
+  "updatedAt": "2026-01-12T10:31:20.841Z"
+}

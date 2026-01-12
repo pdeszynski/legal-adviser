@@ -1,0 +1,12 @@
+{
+  "id": "health-check-endpoints",
+  "category": "API",
+  "title": "Health Check Endpoints",
+  "description": "Implement comprehensive health check endpoints for all services. Check database connectivity, Redis, AI Engine, and external APIs.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.855Z",
+  "updatedAt": "2026-01-12T10:31:20.855Z"
+}

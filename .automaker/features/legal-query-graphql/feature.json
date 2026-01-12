@@ -1,0 +1,14 @@
+{
+  "id": "legal-query-graphql",
+  "category": "API",
+  "title": "Legal Query GraphQL Resolvers",
+  "description": "Add nestjs-query decorators to LegalQuery entity for auto-generated CRUD resolvers. Implement custom mutations for submitting new queries.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "legal-query-entity"
+  ],
+  "createdAt": "2026-01-12T10:31:20.830Z",
+  "updatedAt": "2026-01-12T10:31:20.830Z"
+}

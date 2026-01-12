@@ -1,0 +1,14 @@
+{
+  "id": "subscription-management",
+  "category": "Core",
+  "title": "Subscription Management Service",
+  "description": "Implement service for managing user subscriptions. Handle plan upgrades, downgrades, and feature access control.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "complex",
+  "dependencies": [
+    "subscription-plans-entity"
+  ],
+  "createdAt": "2026-01-12T10:31:20.851Z",
+  "updatedAt": "2026-01-12T10:31:20.851Z"
+}
