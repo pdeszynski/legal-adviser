@@ -96,17 +96,22 @@
  */
 
 export const EVENT_PATTERNS = {
-  // User events
+  // ===========================================
+  // CORE DOMAIN EVENTS
+  // ===========================================
+
+  // User events (Users Context)
   USER: {
     CREATED: 'user.created',
     UPDATED: 'user.updated',
     DELETED: 'user.deleted',
     AUTHENTICATED: 'user.authenticated',
+    PREFERENCES_UPDATED: 'user.preferences.updated',
     SESSION_STARTED: 'user.session.started',
     SESSION_ENDED: 'user.session.ended',
   },
 
-  // Document events
+  // Document events (Documents Context)
   DOCUMENT: {
     CREATED: 'document.created',
     UPDATED: 'document.updated',
@@ -115,9 +120,21 @@ export const EVENT_PATTERNS = {
     GENERATION_COMPLETED: 'document.generation.completed',
     GENERATION_FAILED: 'document.generation.failed',
     EXPORTED: 'document.exported',
+    SHARED: 'document.shared',
+    PERMISSION_GRANTED: 'document.permission.granted',
+    PERMISSION_REVOKED: 'document.permission.revoked',
+    COMMENTED: 'document.commented',
+    VERSION_CREATED: 'document.version.created',
   },
 
-  // Chat events
+  // Legal Query events (Q&A Context)
+  QUERY: {
+    ASKED: 'query.asked',
+    ANSWERED: 'query.answered',
+    FAILED: 'query.failed',
+  },
+
+  // Chat events (Q&A Context - Session management)
   CHAT: {
     QUERY_SUBMITTED: 'chat.query.submitted',
     QUERY_ANSWERED: 'chat.query.answered',
@@ -125,11 +142,96 @@ export const EVENT_PATTERNS = {
     SESSION_ENDED: 'chat.session.ended',
   },
 
-  // Search events
+  // Legal Ruling events (Case Law Context)
+  RULING: {
+    INDEXED: 'ruling.indexed',
+    SEARCH_PERFORMED: 'ruling.search.performed',
+    FOUND: 'ruling.found',
+    NOT_FOUND: 'ruling.notfound',
+  },
+
+  // Search events (Case Law Context - legacy, use RULING instead)
   SEARCH: {
     RULING_REQUESTED: 'search.ruling.requested',
     RULING_FOUND: 'search.ruling.found',
     RULING_NOT_FOUND: 'search.ruling.notfound',
+  },
+
+  // Legal Analysis events (Analysis Context)
+  ANALYSIS: {
+    STARTED: 'analysis.started',
+    COMPLETED: 'analysis.completed',
+    FAILED: 'analysis.failed',
+    GROUNDS_IDENTIFIED: 'analysis.grounds.identified',
+  },
+
+  // ===========================================
+  // SUPPORTING DOMAIN EVENTS
+  // ===========================================
+
+  // Subscription events (Billing Context)
+  SUBSCRIPTION: {
+    CREATED: 'subscription.created',
+    UPGRADED: 'subscription.upgraded',
+    DOWNGRADED: 'subscription.downgraded',
+    CANCELLED: 'subscription.cancelled',
+    RENEWED: 'subscription.renewed',
+    PAYMENT_FAILED: 'subscription.payment.failed',
+  },
+
+  // Usage events (Billing Context)
+  USAGE: {
+    RECORDED: 'usage.recorded',
+    QUOTA_WARNING: 'usage.quota.warning',
+    QUOTA_EXCEEDED: 'usage.quota.exceeded',
+  },
+
+  // API Key events (API Access Context)
+  API_KEY: {
+    CREATED: 'api_key.created',
+    REVOKED: 'api_key.revoked',
+    USED: 'api_key.used',
+    RATE_LIMITED: 'api_key.rate_limited',
+  },
+
+  // Webhook events (Webhooks Context)
+  WEBHOOK: {
+    REGISTERED: 'webhook.registered',
+    UNREGISTERED: 'webhook.unregistered',
+    DELIVERED: 'webhook.delivered',
+    DELIVERY_FAILED: 'webhook.delivery.failed',
+  },
+
+  // Notification events (Notifications Context)
+  NOTIFICATION: {
+    CREATED: 'notification.created',
+    READ: 'notification.read',
+    DISMISSED: 'notification.dismissed',
+    EMAIL_SENT: 'notification.email.sent',
+  },
+
+  // Audit log events (Audit Context - listens to all, emits sparingly)
+  AUDIT_LOG: {
+    CREATED: 'audit_log.created',
+  },
+
+  // ===========================================
+  // INFRASTRUCTURE EVENTS
+  // ===========================================
+
+  // Email events (Email Infrastructure)
+  EMAIL: {
+    QUEUED: 'email.queued',
+    SENT: 'email.sent',
+    FAILED: 'email.failed',
+    BOUNCED: 'email.bounced',
+  },
+
+  // Queue events (Queue Infrastructure)
+  QUEUE: {
+    JOB_STARTED: 'queue.job.started',
+    JOB_COMPLETED: 'queue.job.completed',
+    JOB_FAILED: 'queue.job.failed',
   },
 } as const;
 

@@ -1,0 +1,28 @@
+{
+  "name": "@legal/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "nestjs.js",
+    "nextjs.js",
+    "react-library.js"
+  ],
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.51.0",
+    "@typescript-eslint/parser": "^8.51.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-config-turbo": "^2.7.2",
+    "eslint-plugin-prettier": "^5.5.4"
+  },
+  "peerDependencies": {
+    "eslint": ">=8.0.0",
+    "typescript": ">=5.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.2",
+    "typescript": "^5.9.3"
+  }
+}

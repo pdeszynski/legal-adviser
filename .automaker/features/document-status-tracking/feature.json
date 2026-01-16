@@ -3,12 +3,15 @@
   "category": "Core",
   "title": "Real-time Document Status Updates",
   "description": "Implement GraphQL subscriptions for document status changes. Emit events when document transitions between DRAFT, GENERATING, COMPLETED, and FAILED states.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
     "ai-streaming-response"
   ],
   "createdAt": "2026-01-12T10:31:20.826Z",
-  "updatedAt": "2026-01-12T10:31:20.826Z"
+  "updatedAt": "2026-01-14T12:58:33.072Z",
+  "branchName": "automaker",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-14T12:51:43.153Z"
 }

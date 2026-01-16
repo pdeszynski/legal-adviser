@@ -6,6 +6,8 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { ObjectType, Field, ID, GraphQLISODateTime } from '@nestjs/graphql';
+import { IDField, FilterableField, QueryOptions } from '@ptc-org/nestjs-query-graphql';
 import { UserSession } from './user-session.entity';
 
 /**
@@ -13,37 +15,50 @@ import { UserSession } from './user-session.entity';
  *
  * Represents a user in the system. Managed by Auth/Identity module.
  * Referenced by UUID in other modules.
+ *
+ * Uses nestjs-query decorators for GraphQL type generation.
  */
 @Entity('users')
+@ObjectType('User')
+@QueryOptions({ enableTotalCount: true })
 export class User {
   @PrimaryGeneratedColumn('uuid')
+  @IDField(() => ID)
   id: string;
 
   @Column({ type: 'varchar', length: 255, unique: true })
+  @FilterableField()
   email: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
+  @Field(() => String, { nullable: true })
   username: string | null;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
+  @Field(() => String, { nullable: true })
   firstName: string | null;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
+  @Field(() => String, { nullable: true })
   lastName: string | null;
 
   @Column({ type: 'boolean', default: true })
+  @FilterableField()
   isActive: boolean;
 
   @Column({ type: 'boolean', default: false })
+  @Field()
   disclaimerAccepted: boolean;
 
   @OneToMany(() => UserSession, (session) => session.user, { cascade: true })
   sessions: UserSession[];
 
   @CreateDateColumn({ type: 'timestamp' })
+  @FilterableField(() => GraphQLISODateTime)
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
+  @FilterableField(() => GraphQLISODateTime)
   updatedAt: Date;
 
   /**

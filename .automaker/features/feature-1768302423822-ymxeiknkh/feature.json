@@ -1,0 +1,18 @@
+{
+  "category": "refactor",
+  "description": "Create shared kernel package in monorepo containing common value objects, base classes, interfaces, and utilities used across bounded contexts. Minimize sharing to maintain context independence.",
+  "title": "Shared Kernel Package",
+  "dependencies": [
+    "monorepo-structure-setup"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "id": "feature-1768302423822-ymxeiknkh",
+  "descriptionHistory": [
+    {
+      "description": "Create shared kernel package in monorepo containing common value objects, base classes, interfaces, and utilities used across bounded contexts. Minimize sharing to maintain context independence.",
+      "timestamp": "2026-01-13T11:07:03.823Z",
+      "source": "initial"
+    }
+  ]
+}

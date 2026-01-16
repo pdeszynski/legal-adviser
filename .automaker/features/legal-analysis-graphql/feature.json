@@ -3,12 +3,29 @@
   "category": "API",
   "title": "Legal Analysis GraphQL Resolvers",
   "description": "Add nestjs-query decorators to LegalAnalysis entity. Implement auto-generated CRUD resolvers for viewing analysis history.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "legal-analysis-entity"
   ],
+  "architecture": {
+    "boundedContext": "Analysis",
+    "aggregateRoot": "LegalAnalysis",
+    "module": "apps/backend/src/modules/documents",
+    "layer": "Presentation",
+    "patterns": [
+      "GraphQL Resolver",
+      "nestjs-query CRUD",
+      "Code-First Schema"
+    ],
+    "emits": [],
+    "listensTo": [],
+    "notes": "Presentation layer for Analysis. Auto-generated CRUD via nestjs-query. Custom mutation for analyzeCase workflow."
+  },
   "createdAt": "2026-01-12T10:31:20.836Z",
-  "updatedAt": "2026-01-12T10:31:20.836Z"
+  "updatedAt": "2026-01-15T13:33:14.100Z",
+  "branchName": "automaker",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-15T13:26:49.252Z"
 }

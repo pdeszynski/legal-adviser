@@ -1,0 +1,21 @@
+{
+  "category": "refactor",
+  "description": "Establish Domain-Driven Design structure with bounded contexts for Legal Documents, User Management, AI Operations, and Billing domains. Define aggregates, entities, value objects, and domain events for each context.",
+  "title": "DDD Domain Model Design",
+  "dependencies": [
+    "nestjs-query-migration"
+  ],
+  "priority": 1,
+  "status": "verified",
+  "id": "feature-1768302423819-msn9l7lmu",
+  "descriptionHistory": [
+    {
+      "description": "Establish Domain-Driven Design structure with bounded contexts for Legal Documents, User Management, AI Operations, and Billing domains. Define aggregates, entities, value objects, and domain events for each context.",
+      "timestamp": "2026-01-13T11:07:03.820Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "automaker",
+  "startedAt": "2026-01-14T12:58:48.148Z",
+  "updatedAt": "2026-01-14T13:02:01.563Z"
+}

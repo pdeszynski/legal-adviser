@@ -21,6 +21,7 @@ import {
   DocumentGenerationFailedEvent,
 } from '../../../shared/events/examples/document.events';
 import { EVENT_PATTERNS } from '../../../shared/events/base/event-patterns';
+import { GraphQLPubSubService } from '../../../shared/streaming';
 
 /**
  * Create Document DTO
@@ -67,6 +68,7 @@ export class DocumentsService {
     @InjectRepository(LegalDocument)
     private readonly documentRepository: Repository<LegalDocument>,
     private readonly eventEmitter: EventEmitter2,
+    private readonly graphqlPubSub: GraphQLPubSubService,
   ) {}
 
   /**
@@ -229,6 +231,7 @@ export class DocumentsService {
       );
     }
 
+    const previousStatus = document.status;
     document.markGenerating();
     const savedDocument = await this.documentRepository.save(document);
 
@@ -241,6 +244,16 @@ export class DocumentsService {
         savedDocument.type,
       ),
     );
+
+    // Emit GraphQL subscription event for status change: DRAFT -> GENERATING
+    await this.graphqlPubSub.publishDocumentStatusChange({
+      documentId: savedDocument.id,
+      sessionId: savedDocument.sessionId,
+      previousStatus,
+      newStatus: savedDocument.status,
+      timestamp: new Date(),
+      message: 'Document generation started',
+    });
 
     return savedDocument;
   }
@@ -260,6 +273,7 @@ export class DocumentsService {
       );
     }
 
+    const previousStatus = document.status;
     document.contentRaw = content;
     document.markCompleted();
 
@@ -275,6 +289,16 @@ export class DocumentsService {
         content.length,
       ),
     );
+
+    // Emit GraphQL subscription event for status change: GENERATING -> COMPLETED
+    await this.graphqlPubSub.publishDocumentStatusChange({
+      documentId: savedDocument.id,
+      sessionId: savedDocument.sessionId,
+      previousStatus,
+      newStatus: savedDocument.status,
+      timestamp: new Date(),
+      message: 'Document generation completed successfully',
+    });
 
     return savedDocument;
   }
@@ -294,6 +318,7 @@ export class DocumentsService {
       );
     }
 
+    const previousStatus = document.status;
     document.markFailed();
     const savedDocument = await this.documentRepository.save(document);
 
@@ -306,6 +331,17 @@ export class DocumentsService {
         errorMessage,
       ),
     );
+
+    // Emit GraphQL subscription event for status change: GENERATING -> FAILED
+    await this.graphqlPubSub.publishDocumentStatusChange({
+      documentId: savedDocument.id,
+      sessionId: savedDocument.sessionId,
+      previousStatus,
+      newStatus: savedDocument.status,
+      timestamp: new Date(),
+      message: 'Document generation failed',
+      error: errorMessage,
+    });
 
     return savedDocument;
   }

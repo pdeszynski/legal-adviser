@@ -1,21 +1,89 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local", "**/.env"],
+  "globalEnv": ["NODE_ENV", "CI"],
+  "ui": "tui",
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"],
+      "env": ["NODE_ENV"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "cache": true
+    },
+    "lint:fix": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "cache": false
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["^build"]
     },
     "test": {
       "dependsOn": ["^build"],
       "outputs": ["coverage/**"],
-      "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx"]
+      "inputs": [
+        "src/**/*.tsx",
+        "src/**/*.ts",
+        "test/**/*.ts",
+        "test/**/*.tsx",
+        "tests/**/*.ts",
+        "tests/**/*.tsx"
+      ],
+      "env": ["NODE_ENV", "DATABASE_URL", "REDIS_URL"]
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "outputs": ["playwright-report/**", "test-results/**"],
+      "inputs": [
+        "tests/**/*.ts",
+        "e2e/**/*.ts",
+        "playwright.config.ts"
+      ],
+      "cache": false
+    },
+    "test:integration": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"],
+      "cache": false
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "cache": true
+    },
+    "clean": {
+      "cache": false
+    },
+    "generate": {
+      "dependsOn": ["^generate"],
+      "outputs": ["src/generated/**"],
+      "cache": true
+    },
+    "@legal/backend#dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["@legal/types#build"]
+    },
+    "@legal/web#dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["@legal/types#build", "@legal/ui#build"]
+    },
+    "@legal/web#build": {
+      "dependsOn": ["@legal/types#build", "@legal/ui#build"],
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": ["NEXT_PUBLIC_API_URL", "NODE_ENV"]
+    },
+    "@legal/backend#build": {
+      "dependsOn": ["@legal/types#build"],
+      "outputs": ["dist/**"],
+      "env": ["NODE_ENV"]
     }
   }
 }

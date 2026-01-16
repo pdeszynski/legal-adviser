@@ -9,6 +9,16 @@
   "dependencies": [
     "document-sharing"
   ],
+  "architecture": {
+    "boundedContext": "Documents",
+    "aggregateRoot": "LegalDocument",
+    "module": "apps/backend/src/modules/documents",
+    "layer": "Domain",
+    "patterns": ["DDD Entity", "Junction Table", "RBAC"],
+    "emits": ["DOCUMENT.PERMISSION_GRANTED", "DOCUMENT.PERMISSION_REVOKED"],
+    "listensTo": [],
+    "notes": "Part of Documents aggregate. Manages access control. References User by ID (no direct import) per modular monolith."
+  },
   "createdAt": "2026-01-12T10:31:20.843Z",
   "updatedAt": "2026-01-12T10:31:20.843Z"
 }

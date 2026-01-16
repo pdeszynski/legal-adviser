@@ -8,34 +8,34 @@
       "register": "Registrieren",
       "divider": "oder",
       "fields": {
-        "email": "Email",
+        "email": "E-Mail",
         "password": "Passwort"
       },
       "errors": {
-        "requiredEmail": "Email ist erforderlich",
+        "requiredEmail": "E-Mail ist erforderlich",
         "requiredPassword": "Passwort ist erforderlich",
         "validEmail": "Ungültige E-Mail-Adresse"
       },
       "buttons": {
-        "submit": "Anmeldung",
+        "submit": "Anmelden",
         "forgotPassword": "Passwort vergessen?",
         "noAccount": "Sie haben kein Konto?",
-        "haveAccount": "Haben Sie ein Konto?",
-        "rememberMe": "Erinnere dich an mich"
+        "haveAccount": "Haben Sie bereits ein Konto?",
+        "rememberMe": "Angemeldet bleiben"
       }
     },
     "forgotPassword": {
       "title": "Haben Sie Ihr Passwort vergessen?",
       "signin": "Einloggen",
       "fields": {
-        "email": "Email"
+        "email": "E-Mail"
       },
       "errors": {
-        "requiredEmail": "Email ist erforderlich",
+        "requiredEmail": "E-Mail ist erforderlich",
         "validEmail": "Ungültige E-Mail-Adresse"
       },
       "buttons": {
-        "haveAccount": "Haben Sie ein Konto?",
+        "haveAccount": "Haben Sie bereits ein Konto?",
         "submit": "Anweisungen zum Zurücksetzen senden"
       }
     },
@@ -43,7 +43,7 @@
       "title": "Registrieren Sie sich für Ihr Konto",
       "signin": "Einloggen",
       "fields": {
-        "email": "Email",
+        "email": "E-Mail",
         "password": "Passwort"
       },
       "errors": {
@@ -51,14 +51,14 @@
       },
       "buttons": {
         "submit": "Registrieren",
-        "haveAccount": "Ein Konto haben?"
+        "haveAccount": "Haben Sie bereits ein Konto?"
       }
     },
     "updatePassword": {
       "title": "Kennwort aktualisieren",
       "fields": {
         "password": "Neues Passwort",
-        "confirmPassword": "Bestätige neues Passwort"
+        "confirmPassword": "Neues Passwort bestätigen"
       },
       "errors": {
         "confirmPasswordNotMatch": "Passwörter stimmen nicht überein"
@@ -68,17 +68,17 @@
       }
     },
     "error": {
-      "info": "Sie haben vergessen, {action} component zu {resource} hinzufügen.",
-      "404": "Leider existiert diese Seite nicht.",
-      "resource404": "Haben Sie die {resource} resource erstellt?",
-      "backHome": "Zurück"
+      "info": "Sie haben vergessen, die {action}-Komponente zur {resource}-Ressource hinzuzufügen.",
+      "404": "Diese Seite existiert leider nicht.",
+      "resource404": "Haben Sie die {resource}-Ressource erstellt?",
+      "backHome": "Zurück zur Startseite"
     }
   },
   "actions": {
-    "list": "Aufführen",
+    "list": "Liste",
     "create": "Erstellen",
     "edit": "Bearbeiten",
-    "show": "Zeigen",
+    "show": "Anzeigen",
     "delete": "Löschen",
     "save": "Speichern",
     "cancel": "Abbrechen"
@@ -90,30 +90,35 @@
     "delete": "Löschen",
     "edit": "Bearbeiten",
     "cancel": "Abbrechen",
-    "confirm": "Sicher?",
-    "filter": "Filter",
-    "clear": "Löschen",
-    "refresh": "Erneuern",
-    "show": "Zeigen",
-    "undo": "Undo",
+    "confirm": "Sind Sie sicher?",
+    "filter": "Filtern",
+    "clear": "Leeren",
+    "refresh": "Aktualisieren",
+    "show": "Anzeigen",
+    "undo": "Rückgängig",
     "import": "Importieren",
-    "clone": "Klon",
-    "notAccessTitle": "Sie haben keine zugriffsberechtigung"
+    "clone": "Klonen",
+    "notAccessTitle": "Sie haben keine Zugriffsberechtigung",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "back": "Zurück zur Liste",
+    "hide": "Ausblenden",
+    "showMore": "Mehr anzeigen"
   },
-  "warnWhenUnsavedChanges": "Nicht gespeicherte Änderungen werden nicht übernommen.",
+  "warnWhenUnsavedChanges": "Möchten Sie wirklich die Seite verlassen? Nicht gespeicherte Änderungen gehen verloren.",
   "notifications": {
-    "success": "Erfolg",
-    "error": "Fehler (status code: {statusCode})",
-    "undoable": "Sie haben {seconds} Sekunden Zeit für Undo.",
-    "createSuccess": "{resource} erfolgreich erstellt.",
-    "createError": "Fehler beim Erstellen {resource} (status code: {statusCode})",
-    "deleteSuccess": "{resource} erfolgreich gelöscht.",
-    "deleteError": "Fehler beim Löschen {resource} (status code: {statusCode})",
-    "editSuccess": "{resource} erfolgreich bearbeitet.",
-    "editError": "Fehler beim Bearbeiten {resource} (status code: {statusCode})",
-    "importProgress": "{processed}/{total} importiert"
+    "success": "Erfolgreich",
+    "error": "Fehler (Statuscode: {statusCode})",
+    "undoable": "Sie haben {seconds} Sekunden Zeit zum Rückgängigmachen",
+    "createSuccess": "{resource} erfolgreich erstellt",
+    "createError": "Fehler beim Erstellen von {resource} (Statuscode: {statusCode})",
+    "deleteSuccess": "{resource} erfolgreich gelöscht",
+    "deleteError": "Fehler beim Löschen von {resource} (Statuscode: {statusCode})",
+    "editSuccess": "{resource} erfolgreich bearbeitet",
+    "editError": "Fehler beim Bearbeiten von {resource} (Statuscode: {statusCode})",
+    "importProgress": "Import: {processed}/{total}"
   },
-  "loading": "Wird geladen",
+  "loading": "Wird geladen...",
   "tags": {
     "clone": "Klon"
   },
@@ -121,7 +126,7 @@
     "title": "Dashboard"
   },
   "blog_posts": {
-    "blog_posts": "Einträge",
+    "blog_posts": "Blogbeiträge",
     "form": {
       "select": {
         "category": {
@@ -130,74 +135,77 @@
       }
     },
     "fields": {
-      "id": "Id",
+      "id": "ID",
       "title": "Titel",
       "category": "Kategorie",
       "status": {
         "title": "Status",
         "published": "Veröffentlicht",
-        "draft": "Draft",
+        "draft": "Entwurf",
         "rejected": "Abgelehnt"
       },
-      "content": "Inhalh",
+      "content": "Inhalt",
       "createdAt": "Erstellt am"
     },
     "titles": {
-      "create": "Erstellen",
-      "edit": "Bearbeiten",
-      "list": "Einträge",
-      "show": "Eintrag zeigen"
+      "create": "Beitrag erstellen",
+      "edit": "Beitrag bearbeiten",
+      "list": "Beiträge",
+      "show": "Beitrag anzeigen"
     }
   },
   "categories": {
     "categories": "Kategorien",
     "fields": {
-      "id": "Id",
+      "id": "ID",
       "title": "Titel",
       "createdAt": "Erstellt am"
     },
     "titles": {
-      "create": "Erstellen",
-      "edit": "Bearbeiten",
-      "list": "Einträge",
-      "show": "Eintrag zeigen"
+      "create": "Kategorie erstellen",
+      "edit": "Kategorie bearbeiten",
+      "list": "Kategorien",
+      "show": "Kategorie anzeigen"
     }
   },
   "table": {
-    "actions": "Aktionen"
+    "actions": "Aktionen",
+    "noData": "Keine Daten vorhanden",
+    "page": "Seite {current} von {total}"
   },
   "documents": {
-    "documents": "Dokumente",
+    "documents": "Rechtsdokumente",
     "fields": {
-      "id": "ID",
+      "id": "Kennung",
       "title": "Dokumenttitel",
       "type": "Dokumenttyp",
       "status": "Status",
       "sessionId": "Sitzungs-ID",
       "plaintiffName": "Name des Klägers",
       "defendantName": "Name des Beklagten",
-      "claimAmount": "Forderungsbetrag",
+      "claimAmount": "Streitwert",
       "claimCurrency": "Währung",
       "createdAt": "Erstellt am",
-      "updatedAt": "Aktualisiert am"
+      "updatedAt": "Zuletzt geändert",
+      "content": "Dokumentinhalt"
     },
     "types": {
       "LAWSUIT": "Klage",
       "COMPLAINT": "Beschwerde",
       "CONTRACT": "Vertrag",
-      "OTHER": "Andere"
+      "OTHER": "Sonstiges"
     },
     "statuses": {
       "DRAFT": "Entwurf",
-      "GENERATING": "Generierung",
-      "COMPLETED": "Abgeschlossen",
+      "GENERATING": "Wird generiert",
+      "COMPLETED": "Fertig",
       "FAILED": "Fehlgeschlagen"
     },
     "titles": {
-      "create": "Dokument generieren",
+      "create": "Neues Dokument generieren",
       "edit": "Dokument bearbeiten",
-      "list": "Dokumente",
-      "show": "Dokument anzeigen"
+      "list": "Dokumentenliste",
+      "show": "Dokumentansicht"
     },
     "form": {
       "select": {
@@ -206,11 +214,42 @@
         }
       },
       "description": "Füllen Sie die Details aus, um ein Rechtsdokument mit KI zu generieren.",
-      "metadataSection": "Dokumentdetails",
+      "metadataSection": "Parteiangaben",
       "errors": {
         "requiredTitle": "Dokumenttitel ist erforderlich",
         "requiredSessionId": "Sitzungs-ID ist erforderlich"
+      },
+      "placeholders": {
+        "title": "z.B. Zahlungsklage",
+        "plaintiffName": "z.B. Max Mustermann",
+        "defendantName": "z.B. ABC GmbH",
+        "claimAmount": "z.B. 10000.00"
       }
+    },
+    "messages": {
+      "notFound": "Dokument nicht gefunden",
+      "generating": "Dokument wird generiert. Bitte warten...",
+      "noContent": "Noch kein Inhalt verfügbar."
     }
+  },
+  "common": {
+    "yes": "Ja",
+    "no": "Nein",
+    "or": "oder",
+    "and": "und",
+    "all": "Alle",
+    "none": "Keine",
+    "search": "Suchen",
+    "select": "Auswählen",
+    "required": "Erforderlich",
+    "optional": "Optional"
+  },
+  "validation": {
+    "required": "Dieses Feld ist erforderlich",
+    "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "minLength": "Mindestlänge beträgt {min} Zeichen",
+    "maxLength": "Maximale Länge beträgt {max} Zeichen",
+    "min": "Mindestwert ist {min}",
+    "max": "Höchstwert ist {max}"
   }
 }

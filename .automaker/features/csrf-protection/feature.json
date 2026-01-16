@@ -9,6 +9,16 @@
   "dependencies": [
     "graphql-auth-mutations"
   ],
+  "architecture": {
+    "boundedContext": "Infrastructure",
+    "aggregateRoot": null,
+    "module": "apps/backend/src/shared/middleware",
+    "layer": "Infrastructure",
+    "patterns": ["Cross-cutting Middleware", "GraphQL Security"],
+    "emits": [],
+    "listensTo": [],
+    "notes": "Infrastructure layer security middleware. Protects GraphQL mutations. Applied globally per modular monolith architecture."
+  },
   "createdAt": "2026-01-12T10:31:20.840Z",
   "updatedAt": "2026-01-12T10:31:20.840Z"
 }

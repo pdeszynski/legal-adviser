@@ -8,6 +8,7 @@
   },
   "roots": ["<rootDir>/tests/e2e"],
   "moduleNameMapper": {
-    "^@/(.*)$": "<rootDir>/src/$1"
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^uuid$": "<rootDir>/__mocks__/uuid.js"
   }
 }

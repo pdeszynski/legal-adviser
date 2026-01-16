@@ -1,74 +1,33 @@
+import { InputType, Field, Float } from '@nestjs/graphql';
 import {
-  ObjectType,
-  Field,
-  ID,
-  registerEnumType,
-  InputType,
-  Float,
-} from '@nestjs/graphql';
-import { DocumentType, DocumentStatus } from '../entities/legal-document.entity';
-
-// Register enums with GraphQL
-registerEnumType(DocumentType, {
-  name: 'DocumentType',
-  description: 'Type of legal document',
-});
-
-registerEnumType(DocumentStatus, {
-  name: 'DocumentStatus',
-  description: 'Status of document generation',
-});
+  IsString,
+  IsOptional,
+  IsUUID,
+  MaxLength,
+  MinLength,
+  IsNotEmpty,
+  ValidateNested,
+  IsNumber,
+  Min,
+  Max,
+  Matches,
+  IsEnum,
+} from 'class-validator';
+import { Type, Transform } from 'class-transformer';
+import { DocumentType } from '../entities/legal-document.entity';
 
 /**
- * GraphQL Object Type for Document Metadata
+ * Sanitize string input by trimming whitespace and removing potentially dangerous characters
  */
-@ObjectType('DocumentMetadata')
-export class DocumentMetadataType {
-  @Field(() => String, { nullable: true })
-  plaintiffName?: string;
-
-  @Field(() => String, { nullable: true })
-  defendantName?: string;
-
-  @Field(() => Float, { nullable: true })
-  claimAmount?: number;
-
-  @Field(() => String, { nullable: true })
-  claimCurrency?: string;
-}
-
-/**
- * GraphQL Object Type for Legal Document
- */
-@ObjectType('LegalDocument')
-export class LegalDocumentType {
-  @Field(() => ID)
-  id: string;
-
-  @Field(() => String)
-  sessionId: string;
-
-  @Field(() => String)
-  title: string;
-
-  @Field(() => DocumentType)
-  type: DocumentType;
-
-  @Field(() => DocumentStatus)
-  status: DocumentStatus;
-
-  @Field(() => String, { nullable: true })
-  contentRaw?: string | null;
-
-  @Field(() => DocumentMetadataType, { nullable: true })
-  metadata?: DocumentMetadataType | null;
-
-  @Field(() => Date)
-  createdAt: Date;
-
-  @Field(() => Date)
-  updatedAt: Date;
-}
+const sanitizeString = (value: unknown): string | unknown => {
+  if (typeof value === 'string') {
+    return value
+      .trim()
+      .replace(/[<>]/g, '') // Remove potential HTML tags
+      .replace(/\s+/g, ' '); // Normalize whitespace
+  }
+  return value;
+};
 
 /**
  * GraphQL Input Type for Document Metadata
@@ -76,44 +35,87 @@ export class LegalDocumentType {
 @InputType('DocumentMetadataInput')
 export class DocumentMetadataInput {
   @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200, { message: 'Plaintiff name must be at most 200 characters' })
+  @Transform(({ value }) => sanitizeString(value))
   plaintiffName?: string;
 
   @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200, { message: 'Defendant name must be at most 200 characters' })
+  @Transform(({ value }) => sanitizeString(value))
   defendantName?: string;
 
   @Field(() => Float, { nullable: true })
+  @IsOptional()
+  @IsNumber({}, { message: 'Claim amount must be a valid number' })
+  @Min(0, { message: 'Claim amount cannot be negative' })
+  @Max(999999999999, { message: 'Claim amount exceeds maximum allowed value' })
   claimAmount?: number;
 
   @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(3, { message: 'Currency code must be at most 3 characters' })
+  @Matches(/^[A-Z]{3}$/, {
+    message:
+      'Currency must be a valid 3-letter ISO currency code (e.g., PLN, EUR, USD)',
+  })
   claimCurrency?: string;
 }
 
 /**
  * GraphQL Input Type for generating a document
+ * Used for the custom generateDocument mutation
  */
 @InputType('GenerateDocumentInput')
 export class GenerateDocumentInput {
   @Field(() => String)
+  @IsUUID('4', { message: 'Session ID must be a valid UUID v4' })
+  @IsNotEmpty({ message: 'Session ID is required' })
   sessionId: string;
 
   @Field(() => String)
+  @IsString()
+  @IsNotEmpty({ message: 'Title is required' })
+  @MinLength(3, { message: 'Title must be at least 3 characters long' })
+  @MaxLength(500, { message: 'Title must be at most 500 characters long' })
+  @Transform(({ value }) => sanitizeString(value))
   title: string;
 
   @Field(() => DocumentType, { defaultValue: DocumentType.OTHER })
+  @IsOptional()
+  @IsEnum(DocumentType, {
+    message: `Document type must be one of: ${Object.values(DocumentType).join(', ')}`,
+  })
   type?: DocumentType;
 
   @Field(() => DocumentMetadataInput, { nullable: true })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DocumentMetadataInput)
   metadata?: DocumentMetadataInput;
 }
 
 /**
- * GraphQL Input Type for updating a document
+ * GraphQL Input Type for updating a document (custom mutations)
+ * Note: nestjs-query also auto-generates UpdateOneLegalDocumentInput
  */
 @InputType('UpdateDocumentInput')
 export class UpdateDocumentInput {
   @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @MinLength(3, { message: 'Title must be at least 3 characters long' })
+  @MaxLength(500, { message: 'Title must be at most 500 characters long' })
+  @Transform(({ value }) => sanitizeString(value))
   title?: string;
 
   @Field(() => DocumentMetadataInput, { nullable: true })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DocumentMetadataInput)
   metadata?: DocumentMetadataInput;
 }

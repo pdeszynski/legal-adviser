@@ -7,6 +7,16 @@
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [],
+  "architecture": {
+    "boundedContext": "Billing",
+    "aggregateRoot": "Usage",
+    "module": "apps/backend/src/modules/billing",
+    "layer": "Application",
+    "patterns": ["Application Service", "Event Listener", "Cross-cutting"],
+    "emits": ["USAGE.RECORDED", "USAGE.QUOTA_EXCEEDED"],
+    "listensTo": ["DOCUMENT.GENERATION_COMPLETED", "QUERY.ANSWERED", "ANALYSIS.COMPLETED"],
+    "notes": "Application service tracking AI usage. Listens to domain events to record usage. Part of Billing bounded context."
+  },
   "createdAt": "2026-01-12T10:31:20.848Z",
   "updatedAt": "2026-01-12T10:31:20.848Z"
 }

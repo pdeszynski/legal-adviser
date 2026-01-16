@@ -9,6 +9,16 @@
   "dependencies": [
     "ruling-search-service"
   ],
+  "architecture": {
+    "boundedContext": "CaseLaw",
+    "aggregateRoot": "LegalRuling",
+    "module": "apps/backend/src/modules/rulings",
+    "layer": "Presentation",
+    "patterns": ["GraphQL Resolver", "Custom Query", "Code-First Schema"],
+    "emits": [],
+    "listensTo": [],
+    "notes": "Presentation layer for CaseLaw search. Custom query resolver (not auto-generated) for complex search logic. GraphQL-only."
+  },
   "createdAt": "2026-01-12T10:31:20.834Z",
   "updatedAt": "2026-01-12T10:31:20.834Z"
 }

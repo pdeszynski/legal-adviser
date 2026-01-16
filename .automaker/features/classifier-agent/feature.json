@@ -9,6 +9,16 @@
   "dependencies": [
     "qa-agent-implementation"
   ],
+  "architecture": {
+    "boundedContext": "Analysis",
+    "aggregateRoot": "LegalAnalysis",
+    "module": "apps/ai-engine/src/agents",
+    "layer": "Application",
+    "patterns": ["PydanticAI Agent", "AI Service", "REST API"],
+    "emits": [],
+    "listensTo": [],
+    "notes": "AI Engine application layer. Python service using PydanticAI per constitution. Exposes REST API for Backend integration."
+  },
   "createdAt": "2026-01-12T10:31:20.835Z",
   "updatedAt": "2026-01-12T10:31:20.835Z"
 }

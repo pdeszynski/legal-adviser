@@ -9,6 +9,16 @@
   "dependencies": [
     "email-notification-service"
   ],
+  "architecture": {
+    "boundedContext": "Infrastructure",
+    "aggregateRoot": null,
+    "module": "apps/backend/src/shared/queues",
+    "layer": "Infrastructure",
+    "patterns": ["Bull Queue Processor", "Async Job Processing", "Event Listener"],
+    "emits": ["EMAIL.SENT", "EMAIL.FAILED"],
+    "listensTo": ["NOTIFICATION.EMAIL_SENT"],
+    "notes": "Infrastructure layer queue processor. Processes email jobs from Bull queue. No direct domain coupling - event-driven."
+  },
   "createdAt": "2026-01-12T10:31:20.838Z",
   "updatedAt": "2026-01-12T10:31:20.838Z"
 }

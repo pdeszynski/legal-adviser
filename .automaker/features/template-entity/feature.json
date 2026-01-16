@@ -9,6 +9,16 @@
   "dependencies": [
     "document-templates"
   ],
+  "architecture": {
+    "boundedContext": "Documents",
+    "aggregateRoot": "DocumentTemplate",
+    "module": "apps/backend/src/modules/documents",
+    "layer": "Domain",
+    "patterns": ["DDD Entity", "Template Pattern"],
+    "emits": [],
+    "listensTo": [],
+    "notes": "Aggregate root for document templates. Used by document generation workflow. Part of Documents bounded context."
+  },
   "createdAt": "2026-01-12T10:31:20.841Z",
   "updatedAt": "2026-01-12T10:31:20.841Z"
 }

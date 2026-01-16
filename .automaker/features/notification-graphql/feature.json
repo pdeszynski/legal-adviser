@@ -9,6 +9,16 @@
   "dependencies": [
     "notification-service"
   ],
+  "architecture": {
+    "boundedContext": "Notifications",
+    "aggregateRoot": "Notification",
+    "module": "apps/backend/src/modules/notifications",
+    "layer": "Presentation",
+    "patterns": ["GraphQL Resolver", "GraphQL Subscriptions", "nestjs-query CRUD"],
+    "emits": [],
+    "listensTo": [],
+    "notes": "Presentation layer for Notifications. GraphQL subscriptions for real-time updates. GraphQL-only per constitution."
+  },
   "createdAt": "2026-01-12T10:31:20.846Z",
   "updatedAt": "2026-01-12T10:31:20.846Z"
 }

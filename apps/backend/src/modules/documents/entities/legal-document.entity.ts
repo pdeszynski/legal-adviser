@@ -7,6 +7,19 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import {
+  FilterableField,
+  IDField,
+  QueryOptions,
+  Relation,
+} from '@ptc-org/nestjs-query-graphql';
+import {
+  ObjectType,
+  ID,
+  Field,
+  GraphQLISODateTime,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { UserSession } from '../../users/entities/user-session.entity';
 
 /**
@@ -41,6 +54,17 @@ export enum DocumentStatus {
   FAILED = 'FAILED',
 }
 
+// Register enums with GraphQL
+registerEnumType(DocumentType, {
+  name: 'DocumentType',
+  description: 'Type of legal document',
+});
+
+registerEnumType(DocumentStatus, {
+  name: 'DocumentStatus',
+  description: 'Status of document generation',
+});
+
 /**
  * Document Metadata Interface
  *
@@ -61,6 +85,25 @@ export interface DocumentMetadata {
 }
 
 /**
+ * GraphQL Object Type for Document Metadata
+ * Used by nestjs-query for field resolution
+ */
+@ObjectType('DocumentMetadata')
+export class DocumentMetadataType {
+  @Field(() => String, { nullable: true })
+  plaintiffName?: string;
+
+  @Field(() => String, { nullable: true })
+  defendantName?: string;
+
+  @Field(() => Number, { nullable: true })
+  claimAmount?: number;
+
+  @Field(() => String, { nullable: true })
+  claimCurrency?: string;
+}
+
+/**
  * LegalDocument Entity
  *
  * Represents a legal document generated or managed by the system.
@@ -70,13 +113,20 @@ export interface DocumentMetadata {
  * Invariants:
  *   - A document cannot be marked `COMPLETED` without content
  *   - content_raw must be a valid string
+ *
+ * Uses nestjs-query decorators for auto-generated CRUD resolvers.
  */
 @Entity('legal_documents')
+@ObjectType('LegalDocument')
+@QueryOptions({ enableTotalCount: true })
+@Relation('session', () => UserSession)
 export class LegalDocument {
   @PrimaryGeneratedColumn('uuid')
+  @IDField(() => ID)
   id: string;
 
   @Column({ type: 'uuid' })
+  @FilterableField()
   sessionId: string;
 
   @ManyToOne(() => UserSession, { onDelete: 'CASCADE' })
@@ -84,6 +134,7 @@ export class LegalDocument {
   session: UserSession;
 
   @Column({ type: 'varchar', length: 500 })
+  @FilterableField()
   title: string;
 
   @Column({
@@ -91,6 +142,7 @@ export class LegalDocument {
     enum: DocumentType,
     default: DocumentType.OTHER,
   })
+  @FilterableField(() => DocumentType)
   type: DocumentType;
 
   @Column({
@@ -98,6 +150,7 @@ export class LegalDocument {
     enum: DocumentStatus,
     default: DocumentStatus.DRAFT,
   })
+  @FilterableField(() => DocumentStatus)
   status: DocumentStatus;
 
   /**
@@ -105,6 +158,7 @@ export class LegalDocument {
    * This field stores the AI-generated content
    */
   @Column({ type: 'text', nullable: true })
+  @Field(() => String, { nullable: true })
   contentRaw: string | null;
 
   /**
@@ -112,12 +166,15 @@ export class LegalDocument {
    * Stored as JSON (e.g., defendant name, claim amount)
    */
   @Column({ type: 'jsonb', nullable: true })
+  @Field(() => DocumentMetadataType, { nullable: true })
   metadata: DocumentMetadata | null;
 
   @CreateDateColumn({ type: 'timestamp' })
+  @FilterableField(() => GraphQLISODateTime)
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
+  @FilterableField(() => GraphQLISODateTime)
   updatedAt: Date;
 
   /**

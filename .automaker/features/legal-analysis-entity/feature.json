@@ -3,12 +3,25 @@
   "category": "Database",
   "title": "Legal Analysis Entity",
   "description": "Create LegalAnalysis entity to store case classification results. Include input description, identified grounds, confidence scores, and related document links.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "nestjs-query-migration"
   ],
+  "architecture": {
+    "boundedContext": "Analysis",
+    "aggregateRoot": "LegalAnalysis",
+    "module": "apps/backend/src/modules/documents",
+    "layer": "Domain",
+    "patterns": ["DDD Entity", "JSONB Value Objects", "State Machine"],
+    "emits": ["ANALYSIS.STARTED", "ANALYSIS.COMPLETED", "ANALYSIS.FAILED"],
+    "listensTo": [],
+    "notes": "Aggregate root for case analysis. Uses JSONB for identifiedGrounds and relatedDocumentLinks. Contains domain methods (canComplete, markCompleted)."
+  },
   "createdAt": "2026-01-12T10:31:20.836Z",
-  "updatedAt": "2026-01-12T10:31:20.836Z"
+  "updatedAt": "2026-01-13T06:58:33.571Z",
+  "branchName": "automaker",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-13T06:51:56.331Z"
 }

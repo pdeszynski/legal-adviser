@@ -11,5 +11,6 @@ module.exports = {
   roots: ['<rootDir>/src'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^uuid$': '<rootDir>/__mocks__/uuid.js',
   },
 };

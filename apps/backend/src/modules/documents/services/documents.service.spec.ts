@@ -17,6 +17,7 @@ import {
   DocumentGenerationFailedEvent,
 } from '../../../shared/events/examples/document.events';
 import { EVENT_PATTERNS } from '../../../shared/events/base/event-patterns';
+import { GraphQLPubSubService } from '../../../shared/streaming';
 
 describe('DocumentsService', () => {
   let service: DocumentsService;
@@ -34,6 +35,10 @@ describe('DocumentsService', () => {
     emit: jest.fn(),
   };
 
+  const mockGraphQLPubSubService = {
+    publishDocumentStatusChange: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -45,6 +50,10 @@ describe('DocumentsService', () => {
         {
           provide: EventEmitter2,
           useValue: mockEventEmitter,
+        },
+        {
+          provide: GraphQLPubSubService,
+          useValue: mockGraphQLPubSubService,
         },
       ],
     }).compile();

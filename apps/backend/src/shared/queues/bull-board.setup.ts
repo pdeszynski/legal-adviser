@@ -17,6 +17,12 @@ import { QUEUE_NAMES } from './base/queue-names';
  * @param app - NestJS Express application instance
  */
 export function setupBullBoard(app: NestExpressApplication) {
+  // Temporarily disabled until queues are registered in modules
+  // TODO: Re-enable when queue modules are implemented
+  console.debug('Bull Board setup skipped - no queues registered yet');
+  void app;
+  return;
+
   // Only enable Bull Board in development
   if (process.env.NODE_ENV === 'production') {
     return;
@@ -37,17 +43,19 @@ export function setupBullBoard(app: NestExpressApplication) {
       QUEUE_NAMES.AI.GENERATE_DOCUMENT,
     ];
 
+    // Try to get queues, but skip any that aren't registered
+    // Note: We use resolve() which returns undefined instead of throwing
     for (const queueName of queueNames) {
       try {
-        const queue = app.get<Queue>(getQueueToken(queueName), {
-          strict: false,
-        });
+        const queueToken = getQueueToken(queueName);
+        const queue = app.get<Queue>(queueToken, { strict: false });
         if (queue) {
           queues.push(queue);
         }
-      } catch {
-        // Queue not registered yet, skip it
+      } catch (e) {
+        // Queue not registered yet, skip it silently
         // This is expected for queues that haven't been registered in any module
+        void e;
       }
     }
 
@@ -66,10 +74,9 @@ export function setupBullBoard(app: NestExpressApplication) {
     console.log(
       `📊 Bull Board available at http://localhost:${process.env.PORT ?? 3000}/admin/queues`,
     );
-  } catch (error: unknown) {
+  } catch (err) {
     // Silently fail if Bull Board setup fails (e.g., queues not registered yet)
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     console.warn('Bull Board setup skipped:', errorMessage);
   }
 }

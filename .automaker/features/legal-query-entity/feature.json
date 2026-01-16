@@ -3,12 +3,25 @@
   "category": "Database",
   "title": "Legal Query Entity",
   "description": "Create LegalQuery entity for storing Q&A conversations. Include query text, AI response, citations, user session linkage, and timestamp fields.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "nestjs-query-migration"
   ],
+  "architecture": {
+    "boundedContext": "LegalQA",
+    "aggregateRoot": "LegalQuery",
+    "module": "apps/backend/src/modules/queries",
+    "layer": "Domain",
+    "patterns": ["DDD Entity", "JSONB Value Objects"],
+    "emits": ["QUERY.ASKED", "QUERY.ANSWERED"],
+    "listensTo": [],
+    "notes": "Aggregate root for Q&A conversations. Citations stored as JSONB value objects per architecture decision."
+  },
   "createdAt": "2026-01-12T10:31:20.830Z",
-  "updatedAt": "2026-01-12T10:31:20.830Z"
+  "updatedAt": "2026-01-13T06:57:56.471Z",
+  "branchName": "automaker",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-13T06:51:57.150Z"
 }

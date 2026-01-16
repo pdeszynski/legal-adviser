@@ -1,0 +1,26 @@
+/** @type {import("eslint").Linter.Config} */
+module.exports = {
+  extends: ["./index.js"],
+  parserOptions: {
+    project: "./tsconfig.json",
+  },
+  env: {
+    node: true,
+    jest: true,
+  },
+  rules: {
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-floating-promises": "warn",
+    "@typescript-eslint/no-misused-promises": "warn",
+  },
+  ignorePatterns: [
+    "node_modules/",
+    "dist/",
+    "coverage/",
+    "*.config.js",
+    "*.config.mjs",
+  ],
+};

@@ -3,10 +3,13 @@
   "category": "Localization",
   "title": "Complete Polish Translations",
   "description": "Add comprehensive Polish translations for all UI strings, error messages, and labels. Ensure legal terminology accuracy and professional tone.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [],
   "createdAt": "2026-01-12T10:31:20.837Z",
-  "updatedAt": "2026-01-12T10:31:20.837Z"
+  "updatedAt": "2026-01-12T10:38:26.948Z",
+  "branchName": "automaker",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-12T10:32:45.075Z"
 }

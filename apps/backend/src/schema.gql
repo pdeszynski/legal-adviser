@@ -1,0 +1,1530 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AnalysisMetadata {
+  analysisVersion: String
+  modelUsed: String
+  processingTimeMs: Float
+}
+
+input AnalysisMetadataInput {
+  analysisVersion: String
+  modelUsed: String
+  processingTimeMs: Float
+}
+
+"""Status of the legal analysis process"""
+enum AnalysisStatus {
+  COMPLETED
+  FAILED
+  PENDING
+  PROCESSING
+}
+
+input AnalysisStatusFilterComparison {
+  eq: AnalysisStatus
+  gt: AnalysisStatus
+  gte: AnalysisStatus
+  iLike: AnalysisStatus
+  in: [AnalysisStatus!]
+  is: Boolean
+  isNot: Boolean
+  like: AnalysisStatus
+  lt: AnalysisStatus
+  lte: AnalysisStatus
+  neq: AnalysisStatus
+  notILike: AnalysisStatus
+  notIn: [AnalysisStatus!]
+  notLike: AnalysisStatus
+}
+
+input AnswerLegalQueryInput {
+  """The AI-generated answer in Markdown format"""
+  answerMarkdown: String!
+
+  """Citations and references for the answer"""
+  citations: [CreateCitationInput!]
+}
+
+"""Type of action performed"""
+enum AuditActionType {
+  CREATE
+  DELETE
+  EXPORT
+  LOGIN
+  LOGOUT
+  READ
+  UPDATE
+}
+
+input AuditActionTypeFilterComparison {
+  eq: AuditActionType
+  gt: AuditActionType
+  gte: AuditActionType
+  iLike: AuditActionType
+  in: [AuditActionType!]
+  is: Boolean
+  isNot: Boolean
+  like: AuditActionType
+  lt: AuditActionType
+  lte: AuditActionType
+  neq: AuditActionType
+  notILike: AuditActionType
+  notIn: [AuditActionType!]
+  notLike: AuditActionType
+}
+
+type AuditLog {
+  action: AuditActionType!
+  changeDetails: ChangeDetails
+  createdAt: DateTime!
+  errorMessage: String
+  id: ID!
+  ipAddress: String
+  resourceId: String
+  resourceType: AuditResourceType!
+  statusCode: Int
+  updatedAt: DateTime!
+  user: User
+  userAgent: String
+  userId: String
+}
+
+input AuditLogAggregateFilter {
+  action: AuditActionTypeFilterComparison
+  and: [AuditLogAggregateFilter!]
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  ipAddress: StringFieldComparison
+  or: [AuditLogAggregateFilter!]
+  resourceId: StringFieldComparison
+  resourceType: AuditResourceTypeFilterComparison
+  updatedAt: DateFieldComparison
+  userId: StringFieldComparison
+}
+
+type AuditLogAggregateGroupBy {
+  action: AuditActionType
+  createdAt(by: GroupBy! = DAY): DateTime
+  id: ID
+  ipAddress: String
+  resourceId: String
+  resourceType: AuditResourceType
+  updatedAt(by: GroupBy! = DAY): DateTime
+  userId: String
+}
+
+type AuditLogAggregateResponse {
+  count: AuditLogCountAggregate
+  groupBy: AuditLogAggregateGroupBy
+  max: AuditLogMaxAggregate
+  min: AuditLogMinAggregate
+}
+
+type AuditLogConnection {
+  """Array of edges."""
+  edges: [AuditLogEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type AuditLogCountAggregate {
+  action: Int
+  createdAt: Int
+  id: Int
+  ipAddress: Int
+  resourceId: Int
+  resourceType: Int
+  updatedAt: Int
+  userId: Int
+}
+
+type AuditLogEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the AuditLog"""
+  node: AuditLog!
+}
+
+input AuditLogFilter {
+  action: AuditActionTypeFilterComparison
+  and: [AuditLogFilter!]
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  ipAddress: StringFieldComparison
+  or: [AuditLogFilter!]
+  resourceId: StringFieldComparison
+  resourceType: AuditResourceTypeFilterComparison
+  updatedAt: DateFieldComparison
+  userId: StringFieldComparison
+}
+
+type AuditLogMaxAggregate {
+  action: AuditActionType
+  createdAt: DateTime
+  id: ID
+  ipAddress: String
+  resourceId: String
+  resourceType: AuditResourceType
+  updatedAt: DateTime
+  userId: String
+}
+
+type AuditLogMinAggregate {
+  action: AuditActionType
+  createdAt: DateTime
+  id: ID
+  ipAddress: String
+  resourceId: String
+  resourceType: AuditResourceType
+  updatedAt: DateTime
+  userId: String
+}
+
+input AuditLogSort {
+  direction: SortDirection!
+  field: AuditLogSortFields!
+  nulls: SortNulls
+}
+
+enum AuditLogSortFields {
+  action
+  createdAt
+  id
+  ipAddress
+  resourceId
+  resourceType
+  updatedAt
+  userId
+}
+
+"""Type of resource affected"""
+enum AuditResourceType {
+  DOCUMENT
+  SESSION
+  SYSTEM
+  USER
+}
+
+input AuditResourceTypeFilterComparison {
+  eq: AuditResourceType
+  gt: AuditResourceType
+  gte: AuditResourceType
+  iLike: AuditResourceType
+  in: [AuditResourceType!]
+  is: Boolean
+  isNot: Boolean
+  like: AuditResourceType
+  lt: AuditResourceType
+  lte: AuditResourceType
+  neq: AuditResourceType
+  notILike: AuditResourceType
+  notIn: [AuditResourceType!]
+  notLike: AuditResourceType
+}
+
+type ChangeDetails {
+  """JSON string of new values"""
+  after: String
+
+  """JSON string of previous values"""
+  before: String
+  changedFields: [String!]
+
+  """JSON string of additional context"""
+  context: String
+}
+
+type Citation {
+  article: String
+  excerpt: String
+  source: String!
+  url: String
+}
+
+"""Cursor for paging through collections"""
+scalar ConnectionCursor
+
+"""Type/level of court that issued the ruling"""
+enum CourtType {
+  ADMINISTRATIVE_COURT
+  APPELLATE_COURT
+  CONSTITUTIONAL_TRIBUNAL
+  DISTRICT_COURT
+  OTHER
+  REGIONAL_COURT
+  SUPREME_COURT
+}
+
+input CourtTypeFilterComparison {
+  eq: CourtType
+  gt: CourtType
+  gte: CourtType
+  iLike: CourtType
+  in: [CourtType!]
+  is: Boolean
+  isNot: Boolean
+  like: CourtType
+  lt: CourtType
+  lte: CourtType
+  neq: CourtType
+  notILike: CourtType
+  notIn: [CourtType!]
+  notLike: CourtType
+}
+
+input CreateCitationInput {
+  article: String
+  excerpt: String
+  source: String!
+  url: String
+}
+
+input CreateDocumentMetadataInput {
+  claimAmount: Float
+  claimCurrency: String
+  defendantName: String
+  plaintiffName: String
+}
+
+input CreateLegalAnalysisInput {
+  identifiedGrounds: [LegalGroundInput!]
+  inputDescription: String!
+  metadata: AnalysisMetadataInput
+  relatedDocumentLinks: [RelatedDocumentLinkInput!]
+  sessionId: String!
+  title: String!
+}
+
+input CreateLegalDocumentInput {
+  metadata: CreateDocumentMetadataInput
+  sessionId: String!
+  title: String!
+  type: DocumentType! = OTHER
+}
+
+input CreateLegalDocumentInputV2 {
+  content: String!
+  documentType: DocumentTypeV2!
+
+  """JSON metadata as string"""
+  metadataJson: String
+  ownerId: ID!
+  title: String!
+}
+
+input CreateLegalQueryInput {
+  answerMarkdown: String
+  citations: [CreateCitationInput!]
+  question: String!
+  sessionId: String!
+}
+
+input CreateLegalRulingInput {
+  courtName: String!
+  courtType: CourtType! = OTHER
+  fullText: String
+  metadata: CreateRulingMetadataInput
+  rulingDate: String!
+  signature: String!
+  summary: String
+}
+
+input CreateOneLegalAnalysisInput {
+  """The record to create"""
+  legalAnalysis: CreateLegalAnalysisInput!
+}
+
+input CreateOneLegalDocumentInput {
+  """The record to create"""
+  legalDocument: CreateLegalDocumentInput!
+}
+
+input CreateOneLegalQueryInput {
+  """The record to create"""
+  legalQuery: CreateLegalQueryInput!
+}
+
+input CreateOneLegalRulingInput {
+  """The record to create"""
+  legalRuling: CreateLegalRulingInput!
+}
+
+input CreateRulingMetadataInput {
+  keywords: [String!]
+  legalArea: String
+  relatedCases: [String!]
+  sourceReference: String
+}
+
+input CursorPaging {
+  """Paginate after opaque cursor"""
+  after: ConnectionCursor
+
+  """Paginate before opaque cursor"""
+  before: ConnectionCursor
+
+  """Paginate first"""
+  first: Int
+
+  """Paginate last"""
+  last: Int
+}
+
+input DateFieldComparison {
+  between: DateFieldComparisonBetween
+  eq: DateTime
+  gt: DateTime
+  gte: DateTime
+  in: [DateTime!]
+  is: Boolean
+  isNot: Boolean
+  lt: DateTime
+  lte: DateTime
+  neq: DateTime
+  notBetween: DateFieldComparisonBetween
+  notIn: [DateTime!]
+}
+
+input DateFieldComparisonBetween {
+  lower: DateTime!
+  upper: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input DeleteDocumentInputV2 {
+  deletedBy: ID!
+  documentId: ID!
+  reason: String
+}
+
+input DeleteOneLegalAnalysisInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneLegalDocumentInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneLegalQueryInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneLegalRulingInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+type DocumentMetadata {
+  claimAmount: Float
+  claimCurrency: String
+  defendantName: String
+  plaintiffName: String
+}
+
+input DocumentMetadataInput {
+  claimAmount: Float
+  claimCurrency: String
+  defendantName: String
+  plaintiffName: String
+}
+
+"""Status of document generation"""
+enum DocumentStatus {
+  COMPLETED
+  DRAFT
+  FAILED
+  GENERATING
+}
+
+type DocumentStatusChange {
+  """ID of the document"""
+  documentId: String!
+
+  """Error message if status is FAILED"""
+  error: String
+
+  """Optional message describing the status change"""
+  message: String
+
+  """New status after the change"""
+  newStatus: DocumentStatus!
+
+  """Previous status before the change"""
+  previousStatus: DocumentStatus!
+
+  """ID of the session"""
+  sessionId: String!
+
+  """ISO timestamp of the status change"""
+  timestamp: String!
+}
+
+input DocumentStatusFilterComparison {
+  eq: DocumentStatus
+  gt: DocumentStatus
+  gte: DocumentStatus
+  iLike: DocumentStatus
+  in: [DocumentStatus!]
+  is: Boolean
+  isNot: Boolean
+  like: DocumentStatus
+  lt: DocumentStatus
+  lte: DocumentStatus
+  neq: DocumentStatus
+  notILike: DocumentStatus
+  notIn: [DocumentStatus!]
+  notLike: DocumentStatus
+}
+
+"""Status of the document lifecycle"""
+enum DocumentStatusV2 {
+  APPROVED
+  ARCHIVED
+  DELETED
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+}
+
+"""Type of legal document"""
+enum DocumentType {
+  COMPLAINT
+  CONTRACT
+  LAWSUIT
+  OTHER
+}
+
+input DocumentTypeFilterComparison {
+  eq: DocumentType
+  gt: DocumentType
+  gte: DocumentType
+  iLike: DocumentType
+  in: [DocumentType!]
+  is: Boolean
+  isNot: Boolean
+  like: DocumentType
+  lt: DocumentType
+  lte: DocumentType
+  neq: DocumentType
+  notILike: DocumentType
+  notIn: [DocumentType!]
+  notLike: DocumentType
+}
+
+"""Type of legal document"""
+enum DocumentTypeV2 {
+  AGREEMENT
+  CONTRACT
+  COURT_RULING
+  LEGAL_OPINION
+  OTHER
+  POLICY
+  REGULATION
+  STATUTE
+}
+
+input FilterLegalRulingsInput {
+  """Filter by court name (partial match)"""
+  courtName: String
+
+  """Filter by court type"""
+  courtType: CourtType
+
+  """Filter by ruling date from (ISO 8601 date string)"""
+  dateFrom: String
+
+  """Filter by ruling date to (ISO 8601 date string)"""
+  dateTo: String
+
+  """Filter by legal area from metadata (partial match)"""
+  legalArea: String
+
+  """Maximum number of results to return (default: 20, max: 100)"""
+  limit: Int = 20
+
+  """Number of results to skip for pagination"""
+  offset: Int = 0
+}
+
+input GenerateDocumentInput {
+  metadata: DocumentMetadataInput
+  sessionId: String!
+  title: String!
+  type: DocumentType! = OTHER
+}
+
+"""Group by"""
+enum GroupBy {
+  DAY
+  MONTH
+  WEEK
+  YEAR
+}
+
+input IDFilterComparison {
+  eq: ID
+  gt: ID
+  gte: ID
+  iLike: ID
+  in: [ID!]
+  is: Boolean
+  isNot: Boolean
+  like: ID
+  lt: ID
+  lte: ID
+  neq: ID
+  notILike: ID
+  notIn: [ID!]
+  notLike: ID
+}
+
+type LegalAnalysis {
+  createdAt: DateTime!
+  errorMessage: String
+  id: ID!
+  identifiedGrounds: [LegalGround!]
+  inputDescription: String!
+  metadata: AnalysisMetadata
+  overallConfidenceScore: Float
+  recommendations: String
+  relatedDocumentLinks: [RelatedDocumentLink!]
+  session: UserSession!
+  sessionId: String!
+  status: AnalysisStatus!
+  summary: String
+  title: String!
+  updatedAt: DateTime!
+}
+
+input LegalAnalysisAggregateFilter {
+  and: [LegalAnalysisAggregateFilter!]
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  or: [LegalAnalysisAggregateFilter!]
+  sessionId: StringFieldComparison
+  status: AnalysisStatusFilterComparison
+  title: StringFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type LegalAnalysisAggregateGroupBy {
+  createdAt(by: GroupBy! = DAY): DateTime
+  id: ID
+  sessionId: String
+  status: AnalysisStatus
+  title: String
+  updatedAt(by: GroupBy! = DAY): DateTime
+}
+
+type LegalAnalysisAggregateResponse {
+  count: LegalAnalysisCountAggregate
+  groupBy: LegalAnalysisAggregateGroupBy
+  max: LegalAnalysisMaxAggregate
+  min: LegalAnalysisMinAggregate
+}
+
+type LegalAnalysisConnection {
+  """Array of edges."""
+  edges: [LegalAnalysisEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type LegalAnalysisCountAggregate {
+  createdAt: Int
+  id: Int
+  sessionId: Int
+  status: Int
+  title: Int
+  updatedAt: Int
+}
+
+type LegalAnalysisDeleteResponse {
+  createdAt: DateTime
+  errorMessage: String
+  id: ID
+  identifiedGrounds: [LegalGround!]
+  inputDescription: String
+  metadata: AnalysisMetadata
+  overallConfidenceScore: Float
+  recommendations: String
+  relatedDocumentLinks: [RelatedDocumentLink!]
+  sessionId: String
+  status: AnalysisStatus
+  summary: String
+  title: String
+  updatedAt: DateTime
+}
+
+type LegalAnalysisEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the LegalAnalysis"""
+  node: LegalAnalysis!
+}
+
+input LegalAnalysisFilter {
+  and: [LegalAnalysisFilter!]
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  or: [LegalAnalysisFilter!]
+  sessionId: StringFieldComparison
+  status: AnalysisStatusFilterComparison
+  title: StringFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type LegalAnalysisMaxAggregate {
+  createdAt: DateTime
+  id: ID
+  sessionId: String
+  status: AnalysisStatus
+  title: String
+  updatedAt: DateTime
+}
+
+type LegalAnalysisMinAggregate {
+  createdAt: DateTime
+  id: ID
+  sessionId: String
+  status: AnalysisStatus
+  title: String
+  updatedAt: DateTime
+}
+
+input LegalAnalysisSort {
+  direction: SortDirection!
+  field: LegalAnalysisSortFields!
+  nulls: SortNulls
+}
+
+enum LegalAnalysisSortFields {
+  createdAt
+  id
+  sessionId
+  status
+  title
+  updatedAt
+}
+
+type LegalDocument {
+  contentRaw: String
+  createdAt: DateTime!
+  id: ID!
+  metadata: DocumentMetadata
+  session: UserSession!
+  sessionId: String!
+  status: DocumentStatus!
+  title: String!
+  type: DocumentType!
+  updatedAt: DateTime!
+}
+
+input LegalDocumentAggregateFilter {
+  and: [LegalDocumentAggregateFilter!]
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  or: [LegalDocumentAggregateFilter!]
+  sessionId: StringFieldComparison
+  status: DocumentStatusFilterComparison
+  title: StringFieldComparison
+  type: DocumentTypeFilterComparison
+  updatedAt: DateFieldComparison
+}
+
+type LegalDocumentAggregateGroupBy {
+  createdAt(by: GroupBy! = DAY): DateTime
+  id: ID
+  sessionId: String
+  status: DocumentStatus
+  title: String
+  type: DocumentType
+  updatedAt(by: GroupBy! = DAY): DateTime
+}
+
+type LegalDocumentAggregateResponse {
+  count: LegalDocumentCountAggregate
+  groupBy: LegalDocumentAggregateGroupBy
+  max: LegalDocumentMaxAggregate
+  min: LegalDocumentMinAggregate
+}
+
+type LegalDocumentConnection {
+  """Array of edges."""
+  edges: [LegalDocumentEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type LegalDocumentCountAggregate {
+  createdAt: Int
+  id: Int
+  sessionId: Int
+  status: Int
+  title: Int
+  type: Int
+  updatedAt: Int
+}
+
+type LegalDocumentDeleteResponse {
+  contentRaw: String
+  createdAt: DateTime
+  id: ID
+  metadata: DocumentMetadata
+  sessionId: String
+  status: DocumentStatus
+  title: String
+  type: DocumentType
+  updatedAt: DateTime
+}
+
+type LegalDocumentEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the LegalDocument"""
+  node: LegalDocument!
+}
+
+input LegalDocumentFilter {
+  and: [LegalDocumentFilter!]
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  or: [LegalDocumentFilter!]
+  sessionId: StringFieldComparison
+  status: DocumentStatusFilterComparison
+  title: StringFieldComparison
+  type: DocumentTypeFilterComparison
+  updatedAt: DateFieldComparison
+}
+
+type LegalDocumentMaxAggregate {
+  createdAt: DateTime
+  id: ID
+  sessionId: String
+  status: DocumentStatus
+  title: String
+  type: DocumentType
+  updatedAt: DateTime
+}
+
+type LegalDocumentMinAggregate {
+  createdAt: DateTime
+  id: ID
+  sessionId: String
+  status: DocumentStatus
+  title: String
+  type: DocumentType
+  updatedAt: DateTime
+}
+
+input LegalDocumentSort {
+  direction: SortDirection!
+  field: LegalDocumentSortFields!
+  nulls: SortNulls
+}
+
+enum LegalDocumentSortFields {
+  createdAt
+  id
+  sessionId
+  status
+  title
+  type
+  updatedAt
+}
+
+type LegalDocumentV2 {
+  content: String!
+  createdAt: DateTime!
+  documentType: DocumentTypeV2!
+  id: ID!
+
+  """JSON metadata as string"""
+  metadataJson: String
+  ownerId: ID!
+  status: DocumentStatusV2!
+  title: String!
+  updatedAt: DateTime!
+  version: Float!
+}
+
+type LegalGround {
+  confidenceScore: Float!
+  description: String!
+  legalBasis: [String!]
+  name: String!
+  notes: String
+}
+
+input LegalGroundInput {
+  confidenceScore: Float!
+  description: String!
+  legalBasis: [String!]
+  name: String!
+  notes: String
+}
+
+type LegalQuery {
+  answerMarkdown: String
+  citations: [Citation!]
+  createdAt: DateTime!
+  id: ID!
+  question: String!
+  session: UserSession!
+  sessionId: String!
+  updatedAt: DateTime!
+}
+
+input LegalQueryAggregateFilter {
+  and: [LegalQueryAggregateFilter!]
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  or: [LegalQueryAggregateFilter!]
+  question: StringFieldComparison
+  sessionId: StringFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type LegalQueryAggregateGroupBy {
+  createdAt(by: GroupBy! = DAY): DateTime
+  id: ID
+  question: String
+  sessionId: String
+  updatedAt(by: GroupBy! = DAY): DateTime
+}
+
+type LegalQueryAggregateResponse {
+  count: LegalQueryCountAggregate
+  groupBy: LegalQueryAggregateGroupBy
+  max: LegalQueryMaxAggregate
+  min: LegalQueryMinAggregate
+}
+
+type LegalQueryConnection {
+  """Array of edges."""
+  edges: [LegalQueryEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type LegalQueryCountAggregate {
+  createdAt: Int
+  id: Int
+  question: Int
+  sessionId: Int
+  updatedAt: Int
+}
+
+type LegalQueryDeleteResponse {
+  answerMarkdown: String
+  citations: [Citation!]
+  createdAt: DateTime
+  id: ID
+  question: String
+  sessionId: String
+  updatedAt: DateTime
+}
+
+type LegalQueryEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the LegalQuery"""
+  node: LegalQuery!
+}
+
+input LegalQueryFilter {
+  and: [LegalQueryFilter!]
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  or: [LegalQueryFilter!]
+  question: StringFieldComparison
+  sessionId: StringFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type LegalQueryMaxAggregate {
+  createdAt: DateTime
+  id: ID
+  question: String
+  sessionId: String
+  updatedAt: DateTime
+}
+
+type LegalQueryMinAggregate {
+  createdAt: DateTime
+  id: ID
+  question: String
+  sessionId: String
+  updatedAt: DateTime
+}
+
+input LegalQuerySort {
+  direction: SortDirection!
+  field: LegalQuerySortFields!
+  nulls: SortNulls
+}
+
+enum LegalQuerySortFields {
+  createdAt
+  id
+  question
+  sessionId
+  updatedAt
+}
+
+type LegalRuling {
+  courtName: String!
+  courtType: CourtType!
+  createdAt: DateTime!
+  fullText: String
+  id: ID!
+  metadata: RulingMetadata
+  rulingDate: DateTime!
+  signature: String!
+  summary: String
+  updatedAt: DateTime!
+}
+
+input LegalRulingAggregateFilter {
+  and: [LegalRulingAggregateFilter!]
+  courtName: StringFieldComparison
+  courtType: CourtTypeFilterComparison
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  or: [LegalRulingAggregateFilter!]
+  rulingDate: DateFieldComparison
+  signature: StringFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type LegalRulingAggregateGroupBy {
+  courtName: String
+  courtType: CourtType
+  createdAt(by: GroupBy! = DAY): DateTime
+  id: ID
+  rulingDate(by: GroupBy! = DAY): DateTime
+  signature: String
+  updatedAt(by: GroupBy! = DAY): DateTime
+}
+
+type LegalRulingAggregateResponse {
+  count: LegalRulingCountAggregate
+  groupBy: LegalRulingAggregateGroupBy
+  max: LegalRulingMaxAggregate
+  min: LegalRulingMinAggregate
+}
+
+type LegalRulingConnection {
+  """Array of edges."""
+  edges: [LegalRulingEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type LegalRulingCountAggregate {
+  courtName: Int
+  courtType: Int
+  createdAt: Int
+  id: Int
+  rulingDate: Int
+  signature: Int
+  updatedAt: Int
+}
+
+type LegalRulingDeleteResponse {
+  courtName: String
+  courtType: CourtType
+  createdAt: DateTime
+  fullText: String
+  id: ID
+  metadata: RulingMetadata
+  rulingDate: DateTime
+  signature: String
+  summary: String
+  updatedAt: DateTime
+}
+
+type LegalRulingEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the LegalRuling"""
+  node: LegalRuling!
+}
+
+input LegalRulingFilter {
+  and: [LegalRulingFilter!]
+  courtName: StringFieldComparison
+  courtType: CourtTypeFilterComparison
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  or: [LegalRulingFilter!]
+  rulingDate: DateFieldComparison
+  signature: StringFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type LegalRulingMaxAggregate {
+  courtName: String
+  courtType: CourtType
+  createdAt: DateTime
+  id: ID
+  rulingDate: DateTime
+  signature: String
+  updatedAt: DateTime
+}
+
+type LegalRulingMinAggregate {
+  courtName: String
+  courtType: CourtType
+  createdAt: DateTime
+  id: ID
+  rulingDate: DateTime
+  signature: String
+  updatedAt: DateTime
+}
+
+type LegalRulingSearchResponse {
+  """Number of results returned"""
+  count: Int!
+
+  """Whether there are more results"""
+  hasMore: Boolean!
+
+  """Current offset"""
+  offset: Int!
+
+  """Search results with relevance ranking"""
+  results: [LegalRulingSearchResult!]!
+
+  """Total number of matching results (for pagination)"""
+  totalCount: Int!
+}
+
+type LegalRulingSearchResult {
+  """Highlighted snippet of matching content"""
+  headline: String
+
+  """Relevance score (higher is better)"""
+  rank: Float!
+
+  """The matching legal ruling"""
+  ruling: LegalRuling!
+}
+
+input LegalRulingSort {
+  direction: SortDirection!
+  field: LegalRulingSortFields!
+  nulls: SortNulls
+}
+
+enum LegalRulingSortFields {
+  courtName
+  courtType
+  createdAt
+  id
+  rulingDate
+  signature
+  updatedAt
+}
+
+type Mutation {
+  """Add a citation to an existing legal query"""
+  addCitationToQuery(citation: CreateCitationInput!, queryId: ID!): LegalQuery!
+
+  """Add AI-generated answer to a legal query"""
+  answerLegalQuery(id: ID!, input: AnswerLegalQueryInput!): LegalQuery!
+  createDocumentV2(input: CreateLegalDocumentInputV2!): LegalDocumentV2!
+  createOneLegalAnalysis(input: CreateOneLegalAnalysisInput!): LegalAnalysis!
+  createOneLegalDocument(input: CreateOneLegalDocumentInput!): LegalDocument!
+  createOneLegalQuery(input: CreateOneLegalQueryInput!): LegalQuery!
+  createOneLegalRuling(input: CreateOneLegalRulingInput!): LegalRuling!
+  deleteDocument(id: ID!): Boolean! @deprecated(reason: "Use deleteOneLegalDocument instead")
+  deleteDocumentV2(input: DeleteDocumentInputV2!): Boolean!
+
+  """Delete a legal query (deprecated)"""
+  deleteLegalQuery(id: ID!): Boolean! @deprecated(reason: "Use deleteOneLegalQuery instead")
+  deleteOneLegalAnalysis(input: DeleteOneLegalAnalysisInput!): LegalAnalysisDeleteResponse!
+  deleteOneLegalDocument(input: DeleteOneLegalDocumentInput!): LegalDocumentDeleteResponse!
+  deleteOneLegalQuery(input: DeleteOneLegalQueryInput!): LegalQueryDeleteResponse!
+  deleteOneLegalRuling(input: DeleteOneLegalRulingInput!): LegalRulingDeleteResponse!
+  generateDocument(input: GenerateDocumentInput!): LegalDocument!
+  publishDocumentV2(input: PublishDocumentInputV2!): LegalDocumentV2!
+
+  """Submit a new legal query for AI processing"""
+  submitLegalQuery(input: SubmitLegalQueryInput!): LegalQuery!
+  updateDocument(id: ID!, input: UpdateDocumentInput!): LegalDocument!
+  updateDocumentTitleV2(input: UpdateDocumentTitleInputV2!): LegalDocumentV2!
+  updateOneLegalAnalysis(input: UpdateOneLegalAnalysisInput!): LegalAnalysis!
+  updateOneLegalDocument(input: UpdateOneLegalDocumentInput!): LegalDocument!
+  updateOneLegalQuery(input: UpdateOneLegalQueryInput!): LegalQuery!
+  updateOneLegalRuling(input: UpdateOneLegalRulingInput!): LegalRuling!
+}
+
+type PageInfo {
+  """The cursor of the last returned record."""
+  endCursor: ConnectionCursor
+
+  """true if paging forward and there are more records."""
+  hasNextPage: Boolean
+
+  """true if paging backwards and there are more records."""
+  hasPreviousPage: Boolean
+
+  """The cursor of the first returned record."""
+  startCursor: ConnectionCursor
+}
+
+input PublishDocumentInputV2 {
+  documentId: ID!
+  publishedBy: ID!
+}
+
+type Query {
+  auditLog(
+    """The id of the record to find."""
+    id: ID!
+  ): AuditLog!
+  auditLogAggregate(
+    """Filter to find records to aggregate on"""
+    filter: AuditLogAggregateFilter
+  ): [AuditLogAggregateResponse!]!
+  auditLogs(
+    """Specify to filter the records returned."""
+    filter: AuditLogFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [AuditLogSort!]! = []
+  ): AuditLogConnection!
+
+  """Count legal rulings matching filter criteria"""
+  countLegalRulings(input: FilterLegalRulingsInput): Int!
+  documentV2(id: ID!): LegalDocumentV2
+  documentsByOwnerV2(ownerId: ID!, status: DocumentStatusV2): [LegalDocumentV2!]!
+  documentsBySession(sessionId: String!): [LegalDocument!]!
+
+  """Filter legal rulings by multiple criteria"""
+  filterLegalRulings(input: FilterLegalRulingsInput!): [LegalRuling!]!
+  legalAnalyses(
+    """Specify to filter the records returned."""
+    filter: LegalAnalysisFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [LegalAnalysisSort!]! = []
+  ): LegalAnalysisConnection!
+  legalAnalysis(
+    """The id of the record to find."""
+    id: ID!
+  ): LegalAnalysis!
+  legalAnalysisAggregate(
+    """Filter to find records to aggregate on"""
+    filter: LegalAnalysisAggregateFilter
+  ): [LegalAnalysisAggregateResponse!]!
+  legalDocument(
+    """The id of the record to find."""
+    id: ID!
+  ): LegalDocument!
+  legalDocumentAggregate(
+    """Filter to find records to aggregate on"""
+    filter: LegalDocumentAggregateFilter
+  ): [LegalDocumentAggregateResponse!]!
+  legalDocuments(
+    """Specify to filter the records returned."""
+    filter: LegalDocumentFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [LegalDocumentSort!]! = []
+  ): LegalDocumentConnection!
+  legalQueries(
+    """Specify to filter the records returned."""
+    filter: LegalQueryFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [LegalQuerySort!]! = []
+  ): LegalQueryConnection!
+  legalQuery(
+    """The id of the record to find."""
+    id: ID!
+  ): LegalQuery!
+  legalQueryAggregate(
+    """Filter to find records to aggregate on"""
+    filter: LegalQueryAggregateFilter
+  ): [LegalQueryAggregateResponse!]!
+  legalRuling(
+    """The id of the record to find."""
+    id: ID!
+  ): LegalRuling!
+  legalRulingAggregate(
+    """Filter to find records to aggregate on"""
+    filter: LegalRulingAggregateFilter
+  ): [LegalRulingAggregateResponse!]!
+
+  """Find a legal ruling by its unique case signature"""
+  legalRulingBySignature(signature: String!): LegalRuling
+  legalRulings(
+    """Specify to filter the records returned."""
+    filter: LegalRulingFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [LegalRulingSort!]! = []
+  ): LegalRulingConnection!
+
+  """Get legal rulings filtered by court type"""
+  legalRulingsByCourtType(courtType: CourtType!, limit: Int = 20): [LegalRuling!]!
+
+  """
+  Get legal rulings from higher courts (Supreme, Appellate, Constitutional)
+  """
+  legalRulingsFromHigherCourts(limit: Int = 20): [LegalRuling!]!
+
+  """Get legal queries that are waiting for AI answers"""
+  pendingQueries(limit: Float): [LegalQuery!]!
+
+  """Get all legal queries for a specific session"""
+  queriesBySession(sessionId: String!): [LegalQuery!]!
+
+  """Full-text search for legal rulings with relevance ranking"""
+  searchLegalRulings(input: SearchLegalRulingsInput!): LegalRulingSearchResponse!
+}
+
+type RelatedDocumentLink {
+  description: String
+  documentId: String!
+  relationshipType: String!
+  relevanceScore: Float
+}
+
+input RelatedDocumentLinkInput {
+  description: String
+  documentId: String!
+  relationshipType: String!
+  relevanceScore: Float
+}
+
+type RulingMetadata {
+  keywords: [String!]
+  legalArea: String
+  relatedCases: [String!]
+  sourceReference: String
+}
+
+input SearchLegalRulingsInput {
+  """Filter by court type"""
+  courtType: CourtType
+
+  """Filter by ruling date from (ISO 8601 date string)"""
+  dateFrom: String
+
+  """Filter by ruling date to (ISO 8601 date string)"""
+  dateTo: String
+
+  """Maximum number of results to return (default: 20, max: 100)"""
+  limit: Int = 20
+
+  """Number of results to skip for pagination"""
+  offset: Int = 0
+
+  """Search query text"""
+  query: String!
+}
+
+"""Mode of operation for a user session"""
+enum SessionMode {
+  LAWYER
+  SIMPLE
+}
+
+"""Sort Directions"""
+enum SortDirection {
+  ASC
+  DESC
+}
+
+"""Sort Nulls Options"""
+enum SortNulls {
+  NULLS_FIRST
+  NULLS_LAST
+}
+
+input StringFieldComparison {
+  eq: String
+  gt: String
+  gte: String
+  iLike: String
+  in: [String!]
+  is: Boolean
+  isNot: Boolean
+  like: String
+  lt: String
+  lte: String
+  neq: String
+  notILike: String
+  notIn: [String!]
+  notLike: String
+}
+
+input SubmitLegalQueryInput {
+  """The legal question to be answered by the AI"""
+  question: String!
+
+  """Session ID for the user submitting the query"""
+  sessionId: String!
+}
+
+type Subscription {
+  """Subscribe to document status changes"""
+  documentStatusChanged(
+    """Filter by document ID"""
+    documentId: String
+
+    """Filter by session ID"""
+    sessionId: String
+  ): DocumentStatusChange!
+}
+
+input UpdateDocumentInput {
+  metadata: DocumentMetadataInput
+  title: String
+}
+
+input UpdateDocumentTitleInputV2 {
+  documentId: ID!
+  title: String!
+  updatedBy: ID!
+}
+
+input UpdateLegalAnalysisInput {
+  identifiedGrounds: [LegalGroundInput!]
+  inputDescription: String
+  metadata: AnalysisMetadataInput
+  overallConfidenceScore: Float
+  recommendations: String
+  relatedDocumentLinks: [RelatedDocumentLinkInput!]
+  summary: String
+  title: String
+}
+
+input UpdateLegalDocumentInput {
+  contentRaw: String
+  metadata: CreateDocumentMetadataInput
+  title: String
+  type: DocumentType
+}
+
+input UpdateLegalQueryInput {
+  answerMarkdown: String
+  citations: [CreateCitationInput!]
+  question: String
+}
+
+input UpdateLegalRulingInput {
+  courtName: String
+  courtType: CourtType
+  fullText: String
+  metadata: CreateRulingMetadataInput
+  rulingDate: String
+  signature: String
+  summary: String
+}
+
+input UpdateOneLegalAnalysisInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateLegalAnalysisInput!
+}
+
+input UpdateOneLegalDocumentInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateLegalDocumentInput!
+}
+
+input UpdateOneLegalQueryInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateLegalQueryInput!
+}
+
+input UpdateOneLegalRulingInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateLegalRulingInput!
+}
+
+type User {
+  createdAt: DateTime!
+  disclaimerAccepted: Boolean!
+  email: String!
+  firstName: String
+  id: ID!
+  isActive: Boolean!
+  lastName: String
+  updatedAt: DateTime!
+  username: String
+}
+
+type UserSession {
+  createdAt: DateTime!
+  endedAt: DateTime
+  id: ID!
+  mode: SessionMode!
+  startedAt: DateTime
+  updatedAt: DateTime!
+  userId: String!
+}

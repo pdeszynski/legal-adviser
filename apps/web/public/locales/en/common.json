@@ -19,7 +19,7 @@
       "buttons": {
         "submit": "Login",
         "forgotPassword": "Forgot password?",
-        "noAccount": "Don’t have an account?",
+        "noAccount": "Don't have an account?",
         "haveAccount": "Have an account?",
         "rememberMe": "Remember me"
       }
@@ -98,7 +98,12 @@
     "undo": "Undo",
     "import": "Import",
     "clone": "Clone",
-    "notAccessTitle": "You don't have permission to access"
+    "notAccessTitle": "You don't have permission to access",
+    "previous": "Previous",
+    "next": "Next",
+    "back": "Back to list",
+    "hide": "Hide",
+    "showMore": "Show more"
   },
   "warnWhenUnsavedChanges": "Are you sure you want to leave? You have unsaved changes.",
   "notifications": {
@@ -164,10 +169,12 @@
     }
   },
   "table": {
-    "actions": "Actions"
+    "actions": "Actions",
+    "noData": "No data to display",
+    "page": "Page {current} of {total}"
   },
   "documents": {
-    "documents": "Documents",
+    "documents": "Legal Documents",
     "fields": {
       "id": "ID",
       "title": "Document Title",
@@ -179,7 +186,8 @@
       "claimAmount": "Claim Amount",
       "claimCurrency": "Currency",
       "createdAt": "Created At",
-      "updatedAt": "Updated At"
+      "updatedAt": "Updated At",
+      "content": "Document Content"
     },
     "types": {
       "LAWSUIT": "Lawsuit",
@@ -206,11 +214,42 @@
         }
       },
       "description": "Fill in the details to generate a legal document using AI.",
-      "metadataSection": "Document Details",
+      "metadataSection": "Party Details",
       "errors": {
         "requiredTitle": "Document title is required",
         "requiredSessionId": "Session ID is required"
+      },
+      "placeholders": {
+        "title": "e.g., Debt Recovery Lawsuit",
+        "plaintiffName": "e.g., John Doe",
+        "defendantName": "e.g., ABC Company Ltd.",
+        "claimAmount": "e.g., 10000.00"
       }
+    },
+    "messages": {
+      "notFound": "Document not found",
+      "generating": "Document is being generated. Please wait...",
+      "noContent": "No content available yet."
     }
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "or": "or",
+    "and": "and",
+    "all": "All",
+    "none": "None",
+    "search": "Search",
+    "select": "Select",
+    "required": "Required",
+    "optional": "Optional"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "minLength": "Minimum length is {min} characters",
+    "maxLength": "Maximum length is {max} characters",
+    "min": "Minimum value is {min}",
+    "max": "Maximum value is {max}"
   }
 }

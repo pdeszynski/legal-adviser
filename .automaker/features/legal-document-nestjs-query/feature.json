@@ -2,13 +2,39 @@
   "id": "legal-document-nestjs-query",
   "category": "API",
   "title": "Refactor LegalDocument to nestjs-query",
-  "description": "Add @QueryOptions, @FilterableField, and @Relation decorators to LegalDocument entity. Replace manual resolver with auto-generated CRUD operations from nestjs-query. Ensures type-safe GraphQL schema generation.",
-  "status": "backlog",
+  "description": "Add @QueryOptions, @FilterableField, and @Relation decorators to LegalDocument infrastructure entity. Implement repository interface in domain layer and concrete implementation in infrastructure layer using nestjs-query. Ensures type-safe GraphQL schema generation while maintaining DDD layering.",
+  "status": "verified",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
     "nestjs-query-migration"
   ],
+  "architecture": {
+    "boundedContext": "Documents",
+    "aggregateRoot": "LegalDocument",
+    "module": "apps/backend/src/modules/documents",
+    "layer": "Domain",
+    "patterns": [
+      "DDD Entity",
+      "nestjs-query CRUD"
+    ],
+    "emits": [
+      "DOCUMENT.CREATED",
+      "DOCUMENT.UPDATED",
+      "DOCUMENT.DELETED"
+    ],
+    "listensTo": [],
+    "notes": "Core aggregate root for document management. Uses nestjs-query for auto-generated GraphQL CRUD per constitution."
+  },
   "createdAt": "2026-01-12T10:31:20.824Z",
-  "updatedAt": "2026-01-12T10:31:20.824Z"
+  "updatedAt": "2026-01-13T06:55:10.848Z",
+  "branchName": "automaker",
+  "descriptionHistory": [
+    {
+      "description": "Add @QueryOptions, @FilterableField, and @Relation decorators to LegalDocument infrastructure entity. Implement repository interface in domain layer and concrete implementation in infrastructure layer using nestjs-query. Ensures type-safe GraphQL schema generation while maintaining DDD layering.",
+      "timestamp": "2026-01-13T11:07:03.824Z",
+      "source": "edit"
+    }
+  ],
+  "startedAt": "2026-01-13T06:51:56.725Z"
 }

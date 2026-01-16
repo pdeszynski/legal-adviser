@@ -9,6 +9,16 @@
   "dependencies": [
     "document-collaboration"
   ],
+  "architecture": {
+    "boundedContext": "Documents",
+    "aggregateRoot": "LegalDocument",
+    "module": "apps/backend/src/modules/documents",
+    "layer": "Domain",
+    "patterns": ["DDD Entity", "Child Entity"],
+    "emits": ["DOCUMENT.COMMENTED"],
+    "listensTo": [],
+    "notes": "Child entity within Documents aggregate. Supports collaboration features. No direct module imports per modular monolith."
+  },
   "createdAt": "2026-01-12T10:31:20.843Z",
   "updatedAt": "2026-01-12T10:31:20.843Z"
 }

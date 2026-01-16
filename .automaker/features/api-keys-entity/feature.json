@@ -7,6 +7,16 @@
   "priority": 3,
   "complexity": "simple",
   "dependencies": [],
+  "architecture": {
+    "boundedContext": "APIAccess",
+    "aggregateRoot": "ApiKey",
+    "module": "apps/backend/src/modules/api-keys",
+    "layer": "Domain",
+    "patterns": ["DDD Entity", "Security Hashing"],
+    "emits": ["API_KEY.CREATED", "API_KEY.REVOKED", "API_KEY.USED"],
+    "listensTo": [],
+    "notes": "Aggregate root for programmatic API access. Keys stored hashed. Isolated module per modular monolith."
+  },
   "createdAt": "2026-01-12T10:31:20.847Z",
   "updatedAt": "2026-01-12T10:31:20.847Z"
 }

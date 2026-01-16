@@ -2,13 +2,40 @@
   "id": "document-generation-queue",
   "category": "Core",
   "title": "Document Generation Queue Processor",
-  "description": "Implement Bull queue consumer for asynchronous document generation jobs. Handle job status updates, error recovery, and AI service communication through queue system.",
-  "status": "backlog",
+  "description": "Implement Bull queue consumer in infrastructure layer for asynchronous document generation jobs. Create application service use case to orchestrate document generation workflow. Handle job status updates, error recovery, and AI service communication through domain events and queue system following layered architecture.",
+  "status": "verified",
   "priority": 1,
   "complexity": "complex",
   "dependencies": [
     "legal-document-nestjs-query"
   ],
+  "architecture": {
+    "boundedContext": "Documents",
+    "aggregateRoot": "LegalDocument",
+    "module": "apps/backend/src/modules/documents",
+    "layer": "Application",
+    "patterns": [
+      "Bull Queue Processor",
+      "Async Job",
+      "Event Emitter"
+    ],
+    "emits": [
+      "DOCUMENT.GENERATION_STARTED",
+      "DOCUMENT.GENERATION_COMPLETED",
+      "DOCUMENT.GENERATION_FAILED"
+    ],
+    "listensTo": [],
+    "notes": "Application service for async document generation. Uses Bull queue per constitution. Emits domain events for cross-module communication."
+  },
   "createdAt": "2026-01-12T10:31:20.825Z",
-  "updatedAt": "2026-01-12T10:31:20.825Z"
+  "updatedAt": "2026-01-13T11:07:29.427Z",
+  "branchName": "automaker",
+  "descriptionHistory": [
+    {
+      "description": "Implement Bull queue consumer in infrastructure layer for asynchronous document generation jobs. Create application service use case to orchestrate document generation workflow. Handle job status updates, error recovery, and AI service communication through domain events and queue system following layered architecture.",
+      "timestamp": "2026-01-13T11:07:03.824Z",
+      "source": "edit"
+    }
+  ],
+  "startedAt": "2026-01-13T11:03:34.218Z"
 }

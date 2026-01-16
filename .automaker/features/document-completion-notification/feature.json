@@ -10,6 +10,16 @@
     "email-queue-processor",
     "document-generation-queue"
   ],
+  "architecture": {
+    "boundedContext": "Notifications",
+    "aggregateRoot": "Notification",
+    "module": "apps/backend/src/modules/notifications",
+    "layer": "Application",
+    "patterns": ["Event Listener", "Application Service"],
+    "emits": ["NOTIFICATION.CREATED", "NOTIFICATION.EMAIL_SENT"],
+    "listensTo": ["DOCUMENT.GENERATION_COMPLETED"],
+    "notes": "Event-driven notification service. Listens to DOCUMENT.GENERATION_COMPLETED event. No direct module imports - uses EventEmitter2 per modular monolith."
+  },
   "createdAt": "2026-01-12T10:31:20.838Z",
   "updatedAt": "2026-01-12T10:31:20.838Z"
 }

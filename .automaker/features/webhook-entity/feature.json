@@ -9,6 +9,16 @@
   "dependencies": [
     "webhook-system"
   ],
+  "architecture": {
+    "boundedContext": "Webhooks",
+    "aggregateRoot": "Webhook",
+    "module": "apps/backend/src/modules/webhooks",
+    "layer": "Domain",
+    "patterns": ["DDD Entity", "Event Listener", "Outbound Integration"],
+    "emits": ["WEBHOOK.DELIVERED", "WEBHOOK.DELIVERY_FAILED"],
+    "listensTo": ["DOCUMENT.*", "QUERY.*", "ANALYSIS.*"],
+    "notes": "External integration aggregate. Subscribes to domain events and delivers to external URLs. Isolated module."
+  },
   "createdAt": "2026-01-12T10:31:20.847Z",
   "updatedAt": "2026-01-12T10:31:20.847Z"
 }

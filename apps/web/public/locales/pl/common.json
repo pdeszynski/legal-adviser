@@ -8,54 +8,54 @@
       "register": "Rejestracja",
       "divider": "lub",
       "fields": {
-        "email": "Email",
+        "email": "Adres e-mail",
         "password": "Hasło"
       },
       "errors": {
-        "requiredEmail": "Email jest wymagany",
+        "requiredEmail": "Adres e-mail jest wymagany",
         "requiredPassword": "Hasło jest wymagane",
-        "validEmail": "Nieprawidłowy adres email"
+        "validEmail": "Nieprawidłowy adres e-mail"
       },
       "buttons": {
-        "submit": "Zaloguj",
-        "forgotPassword": "Zapomniałeś hasła?",
-        "noAccount": "Nie masz konta?",
+        "submit": "Zaloguj się",
+        "forgotPassword": "Nie pamiętasz hasła?",
+        "noAccount": "Nie masz jeszcze konta?",
         "haveAccount": "Masz już konto?",
         "rememberMe": "Zapamiętaj mnie"
       }
     },
     "forgotPassword": {
-      "title": "Zapomniałeś hasła?",
+      "title": "Nie pamiętasz hasła?",
       "signin": "Zaloguj się",
       "fields": {
-        "email": "Email"
+        "email": "Adres e-mail"
       },
       "errors": {
-        "requiredEmail": "Email jest wymagany",
-        "validEmail": "Nieprawidłowy adres email"
+        "requiredEmail": "Adres e-mail jest wymagany",
+        "validEmail": "Nieprawidłowy adres e-mail"
       },
       "buttons": {
         "haveAccount": "Masz już konto?",
-        "submit": "Wyślij instrukcje resetowania"
+        "submit": "Wyślij instrukcję resetowania hasła"
       }
     },
     "register": {
-      "title": "Zarejestruj się",
+      "title": "Utwórz nowe konto",
       "signin": "Zaloguj się",
       "fields": {
-        "email": "Email",
+        "email": "Adres e-mail",
         "password": "Hasło"
       },
       "errors": {
-        "validEmail": "Nieprawidłowy adres email"
+        "validEmail": "Nieprawidłowy adres e-mail"
       },
       "buttons": {
-        "submit": "Zarejestruj",
+        "submit": "Zarejestruj się",
         "haveAccount": "Masz już konto?"
       }
     },
     "updatePassword": {
-      "title": "Zaktualizuj hasło",
+      "title": "Zmień hasło",
       "fields": {
         "password": "Nowe hasło",
         "confirmPassword": "Potwierdź nowe hasło"
@@ -64,13 +64,13 @@
         "confirmPasswordNotMatch": "Hasła nie są zgodne"
       },
       "buttons": {
-        "submit": "Zaktualizuj"
+        "submit": "Zmień hasło"
       }
     },
     "error": {
-      "info": "Możesz zapomnieć dodać komponent {action} do zasobu {resource}.",
-      "404": "Przepraszamy, strona którą odwiedziłeś nie istnieje.",
-      "resource404": "Czy na pewno utworzyłeś zasób {resource}.",
+      "info": "Możliwe, że nie dodano komponentu {action} do zasobu {resource}.",
+      "404": "Przepraszamy, strona o podanym adresie nie istnieje.",
+      "resource404": "Czy na pewno utworzono zasób {resource}?",
       "backHome": "Powrót do strony głównej"
     }
   },
@@ -86,7 +86,7 @@
   "buttons": {
     "create": "Utwórz",
     "save": "Zapisz",
-    "logout": "Wyloguj",
+    "logout": "Wyloguj się",
     "delete": "Usuń",
     "edit": "Edytuj",
     "cancel": "Anuluj",
@@ -98,24 +98,29 @@
     "undo": "Cofnij",
     "import": "Importuj",
     "clone": "Klonuj",
-    "notAccessTitle": "Nie masz uprawnień do dostępu"
+    "notAccessTitle": "Brak uprawnień dostępu",
+    "previous": "Poprzednia",
+    "next": "Następna",
+    "back": "Powrót do listy",
+    "hide": "Ukryj",
+    "showMore": "Pokaż więcej"
   },
-  "warnWhenUnsavedChanges": "Czy na pewno chcesz wyjść? Masz niezapisane zmiany.",
+  "warnWhenUnsavedChanges": "Czy na pewno chcesz opuścić tę stronę? Wprowadzone zmiany nie zostały zapisane.",
   "notifications": {
-    "success": "Sukces",
-    "error": "Błąd (kod statusu: {statusCode})",
-    "undoable": "Masz {seconds} sekund na cofnięcie",
-    "createSuccess": "Pomyślnie utworzono {resource}",
-    "createError": "Wystąpił błąd podczas tworzenia {resource} (kod statusu: {statusCode})",
-    "deleteSuccess": "Pomyślnie usunięto {resource}",
-    "deleteError": "Błąd podczas usuwania {resource} (kod statusu: {statusCode})",
-    "editSuccess": "Pomyślnie edytowano {resource}",
-    "editError": "Błąd podczas edycji {resource} (kod statusu: {statusCode})",
-    "importProgress": "Importowanie: {processed}/{total}"
+    "success": "Operacja zakończona pomyślnie",
+    "error": "Wystąpił błąd (kod: {statusCode})",
+    "undoable": "Pozostało {seconds} sekund na cofnięcie operacji",
+    "createSuccess": "Pomyślnie utworzono: {resource}",
+    "createError": "Błąd podczas tworzenia: {resource} (kod: {statusCode})",
+    "deleteSuccess": "Pomyślnie usunięto: {resource}",
+    "deleteError": "Błąd podczas usuwania: {resource} (kod: {statusCode})",
+    "editSuccess": "Pomyślnie zaktualizowano: {resource}",
+    "editError": "Błąd podczas aktualizacji: {resource} (kod: {statusCode})",
+    "importProgress": "Importowanie: {processed} z {total}"
   },
-  "loading": "Ładowanie",
+  "loading": "Ładowanie...",
   "tags": {
-    "clone": "Klonuj"
+    "clone": "Kopia"
   },
   "dashboard": {
     "title": "Panel główny"
@@ -125,12 +130,12 @@
     "form": {
       "select": {
         "category": {
-          "placeholder": "Proszę wybrać kategorię"
+          "placeholder": "Wybierz kategorię"
         }
       }
     },
     "fields": {
-      "id": "Id",
+      "id": "ID",
       "title": "Tytuł",
       "category": "Kategoria",
       "status": {
@@ -146,72 +151,105 @@
       "create": "Utwórz wpis",
       "edit": "Edytuj wpis",
       "list": "Wpisy",
-      "show": "Pokaż wpis"
+      "show": "Szczegóły wpisu"
     }
   },
   "categories": {
     "categories": "Kategorie",
     "fields": {
-      "id": "Id",
-      "title": "Tytuł",
+      "id": "ID",
+      "title": "Nazwa",
       "createdAt": "Data utworzenia"
     },
     "titles": {
       "create": "Utwórz kategorię",
       "edit": "Edytuj kategorię",
       "list": "Kategorie",
-      "show": "Pokaż kategorię"
+      "show": "Szczegóły kategorii"
     }
   },
   "table": {
-    "actions": "Akcje"
+    "actions": "Akcje",
+    "noData": "Brak danych do wyświetlenia",
+    "page": "Strona {current} z {total}"
   },
   "documents": {
-    "documents": "Dokumenty",
+    "documents": "Dokumenty prawne",
     "fields": {
-      "id": "ID",
+      "id": "Identyfikator",
       "title": "Tytuł dokumentu",
-      "type": "Typ dokumentu",
+      "type": "Rodzaj dokumentu",
       "status": "Status",
-      "sessionId": "ID sesji",
-      "plaintiffName": "Nazwa powoda",
-      "defendantName": "Nazwa pozwanego",
-      "claimAmount": "Kwota roszczenia",
+      "sessionId": "Identyfikator sesji",
+      "plaintiffName": "Powód (imię i nazwisko / nazwa)",
+      "defendantName": "Pozwany (imię i nazwisko / nazwa)",
+      "claimAmount": "Wartość przedmiotu sporu",
       "claimCurrency": "Waluta",
       "createdAt": "Data utworzenia",
-      "updatedAt": "Data aktualizacji"
+      "updatedAt": "Data ostatniej modyfikacji",
+      "content": "Treść dokumentu"
     },
     "types": {
       "LAWSUIT": "Pozew",
       "COMPLAINT": "Skarga",
       "CONTRACT": "Umowa",
-      "OTHER": "Inny"
+      "OTHER": "Inny dokument"
     },
     "statuses": {
       "DRAFT": "Szkic",
-      "GENERATING": "Generowanie",
-      "COMPLETED": "Ukończony",
-      "FAILED": "Niepowodzenie"
+      "GENERATING": "W trakcie generowania",
+      "COMPLETED": "Gotowy",
+      "FAILED": "Błąd generowania"
     },
     "titles": {
-      "create": "Wygeneruj dokument",
+      "create": "Wygeneruj nowy dokument",
       "edit": "Edytuj dokument",
-      "list": "Dokumenty",
-      "show": "Zobacz dokument"
+      "list": "Lista dokumentów",
+      "show": "Podgląd dokumentu"
     },
     "form": {
       "select": {
         "type": {
-          "placeholder": "Wybierz typ dokumentu"
+          "placeholder": "Wybierz rodzaj dokumentu"
         }
       },
-      "description": "Wypełnij szczegóły, aby wygenerować dokument prawny przy użyciu AI.",
-      "metadataSection": "Szczegóły dokumentu",
+      "description": "Wypełnij poniższy formularz, aby wygenerować dokument prawny przy użyciu sztucznej inteligencji.",
+      "metadataSection": "Dane stron postępowania",
       "errors": {
         "requiredTitle": "Tytuł dokumentu jest wymagany",
-        "requiredSessionId": "ID sesji jest wymagane"
+        "requiredSessionId": "Identyfikator sesji jest wymagany"
+      },
+      "placeholders": {
+        "title": "np. Pozew o zapłatę",
+        "plaintiffName": "np. Jan Kowalski",
+        "defendantName": "np. ABC Sp. z o.o.",
+        "claimAmount": "np. 10000.00"
       }
+    },
+    "messages": {
+      "notFound": "Nie znaleziono dokumentu",
+      "generating": "Dokument jest w trakcie generowania. Proszę czekać...",
+      "noContent": "Treść dokumentu nie jest jeszcze dostępna."
     }
+  },
+  "common": {
+    "yes": "Tak",
+    "no": "Nie",
+    "or": "lub",
+    "and": "i",
+    "all": "Wszystkie",
+    "none": "Brak",
+    "search": "Szukaj",
+    "select": "Wybierz",
+    "required": "Pole wymagane",
+    "optional": "Opcjonalne"
+  },
+  "validation": {
+    "required": "To pole jest wymagane",
+    "email": "Wprowadź prawidłowy adres e-mail",
+    "minLength": "Minimalna długość to {min} znaków",
+    "maxLength": "Maksymalna długość to {max} znaków",
+    "min": "Wartość minimalna to {min}",
+    "max": "Wartość maksymalna to {max}"
   }
 }
-

@@ -61,16 +61,17 @@ export default function DocumentCreate() {
   // TODO: In production, get sessionId from authenticated user context
   const temporarySessionId = "00000000-0000-0000-0000-000000000000";
 
-  const handleFormSubmit = (data: GenerateDocumentInput) => {
+  const handleFormSubmit = (data: Record<string, unknown>) => {
     // Build the GraphQL input object matching GenerateDocumentInput
+    const formData = data as unknown as GenerateDocumentInput;
     const input: GenerateDocumentInput = {
       sessionId: temporarySessionId,
-      title: data.title,
-      type: data.type || DocumentType.OTHER,
+      title: formData.title,
+      type: formData.type || DocumentType.OTHER,
     };
 
     // Only include metadata if at least one field has a value
-    const metadata = data.metadata;
+    const metadata = formData.metadata;
     if (metadata) {
       const hasMetadata =
         metadata.plaintiffName ||

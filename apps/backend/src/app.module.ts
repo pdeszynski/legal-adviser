@@ -9,9 +9,14 @@ import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AiClientModule } from './shared/ai-client/ai-client.module';
+import { StreamingModule } from './shared/streaming';
 import { QueueRegistry } from './shared/queues';
 import { UsersModule } from './modules/users/users.module';
 import { DocumentsModule } from './modules/documents/documents.module';
+import { AuditLogModule } from './modules/audit-log/audit-log.module';
+import { QueriesModule } from './modules/queries/queries.module';
+// Strict Layered Architecture - new modules following DDD patterns
+import { PresentationModule } from './presentation/presentation.module';
 
 @Module({
   imports: [
@@ -19,12 +24,26 @@ import { DocumentsModule } from './modules/documents/documents.module';
       isGlobal: true,
     }),
     // GraphQL Module - Code-First approach per constitution
+    // Subscriptions enabled via graphql-ws for real-time document status updates
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: process.env.NODE_ENV !== 'production',
       introspection: process.env.NODE_ENV !== 'production',
+      // Enable GraphQL subscriptions via WebSocket (graphql-ws protocol)
+      subscriptions: {
+        'graphql-ws': {
+          path: '/graphql',
+          onConnect: () => {
+            // Connection established - could add auth validation here
+            console.log('GraphQL subscription client connected');
+          },
+          onDisconnect: () => {
+            console.log('GraphQL subscription client disconnected');
+          },
+        },
+      },
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -60,8 +79,13 @@ import { DocumentsModule } from './modules/documents/documents.module';
       inject: [ConfigService],
     }),
     AiClientModule,
+    StreamingModule,
     UsersModule,
     DocumentsModule,
+    AuditLogModule,
+    QueriesModule,
+    // Strict Layered Architecture Module (Presentation -> Application -> Domain <- Infrastructure)
+    PresentationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

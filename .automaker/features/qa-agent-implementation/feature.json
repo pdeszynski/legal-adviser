@@ -9,6 +9,23 @@
   "dependencies": [
     "legal-query-entity"
   ],
+  "architecture": {
+    "boundedContext": "LegalQA",
+    "aggregateRoot": "LegalQuery",
+    "module": "apps/ai-engine/src/agents",
+    "layer": "Application",
+    "patterns": [
+      "PydanticAI Agent",
+      "AI Service",
+      "REST API"
+    ],
+    "emits": [],
+    "listensTo": [],
+    "notes": "AI Engine application layer. Python service using PydanticAI per constitution. Exposes REST API for Backend integration."
+  },
   "createdAt": "2026-01-12T10:31:20.830Z",
-  "updatedAt": "2026-01-12T10:31:20.830Z"
+  "updatedAt": "2026-01-16T07:43:52.585Z",
+  "branchName": "automaker",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-16T07:43:48.401Z"
 }

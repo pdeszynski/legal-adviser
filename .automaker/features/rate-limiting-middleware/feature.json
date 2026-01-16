@@ -9,6 +9,16 @@
   "dependencies": [
     "graphql-auth-mutations"
   ],
+  "architecture": {
+    "boundedContext": "Infrastructure",
+    "aggregateRoot": null,
+    "module": "apps/backend/src/shared/middleware",
+    "layer": "Infrastructure",
+    "patterns": ["Cross-cutting Middleware", "Rate Limiting"],
+    "emits": [],
+    "listensTo": [],
+    "notes": "Infrastructure layer security middleware. Protects all GraphQL endpoints. Uses Redis for distributed rate limiting."
+  },
   "createdAt": "2026-01-12T10:31:20.839Z",
   "updatedAt": "2026-01-12T10:31:20.839Z"
 }
