@@ -1,1 +1,1 @@
-You've hit your limit · resets 12pm (Europe/Warsaw)
+You've hit your limit · resets Jan 19, 10am (Europe/Warsaw)

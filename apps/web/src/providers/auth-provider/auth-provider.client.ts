@@ -1,120 +1,112 @@
-"use client";
+'use client';
 
-import type { AuthProvider } from "@refinedev/core";
-import Cookies from "js-cookie";
+import type { AuthProvider } from '@refinedev/core';
+import Cookies from 'js-cookie';
 
-const mockUsers = [
-  {
-    email: "admin@refine.dev",
-    name: "John Doe",
-    avatar: "https://i.pravatar.cc/150?img=1",
-    roles: ["admin"],
-  },
-  {
-    email: "editor@refine.dev",
-    name: "Jane Doe",
-    avatar: "https://i.pravatar.cc/150?img=1",
-    roles: ["editor"],
-  },
-  {
-    email: "demo@refine.dev",
-    name: "Jane Doe",
-    avatar: "https://i.pravatar.cc/150?img=1",
-    roles: ["user"],
-  },
-];
+const API_URL = 'http://localhost:3000';
 
 export const authProviderClient: AuthProvider = {
-  login: async ({ email }) => {
-    // Suppose we actually send a request to the back end here.
-    const user = mockUsers.find((item) => item.email === email);
-
-    if (user) {
-      Cookies.set("auth", JSON.stringify(user), {
-        expires: 30, // 30 days
-        path: "/",
+  login: async ({ email, password }) => {
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: email, // Backend expects 'username'
+          password,
+        }),
       });
-      return {
-        success: true,
-        redirectTo: "/",
-      };
-    }
 
-    return {
-      success: false,
-      error: {
-        name: "LoginError",
-        message: "Invalid username or password",
-      },
-    };
-  },
-  register: async (params) => {
-    // Suppose we actually send a request to the back end here.
-    const user = mockUsers.find((item) => item.email === params.email);
+      if (!response.ok) {
+        // Prepare error message
+        const error = await response.json();
+        return {
+          success: false,
+          error: {
+            message: error.message || 'Invalid credentials',
+            name: 'LoginError',
+          },
+        };
+      }
 
-    if (user) {
-      Cookies.set("auth", JSON.stringify(user), {
-        expires: 30, // 30 days
-        path: "/",
-      });
-      return {
-        success: true,
-        redirectTo: "/",
-      };
-    }
-    return {
-      success: false,
-      error: {
-        message: "Register failed",
-        name: "Invalid email or password",
-      },
-    };
-  },
-  forgotPassword: async (params) => {
-    // Suppose we actually send a request to the back end here.
-    const user = mockUsers.find((item) => item.email === params.email);
+      const data = await response.json();
 
-    if (user) {
-      //we can send email with reset password link here
-      return {
-        success: true,
-      };
-    }
-    return {
-      success: false,
-      error: {
-        message: "Forgot password failed",
-        name: "Invalid email",
-      },
-    };
-  },
-  updatePassword: async (params) => {
-    // Suppose we actually send a request to the back end here.
-    const isPasswordInvalid = params.password === "123456" || !params.password;
+      if (data.access_token) {
+        Cookies.set(
+          'auth',
+          JSON.stringify({
+            ...data,
+            // Mock role for now until backend profile endpoint is ready
+            roles: ['admin'],
+            name: email,
+          }),
+          {
+            expires: 30, // 30 days
+            path: '/',
+          },
+        );
 
-    if (isPasswordInvalid) {
+        return {
+          success: true,
+          redirectTo: '/documents',
+        };
+      }
+
       return {
         success: false,
         error: {
-          message: "Update password failed",
-          name: "Invalid password",
+          name: 'LoginError',
+          message: 'No token received',
+        },
+      };
+    } catch {
+      return {
+        success: false,
+        error: {
+          name: 'NetworkError',
+          message: 'Failed to connect to server',
         },
       };
     }
-
+  },
+  register: async () => {
     return {
-      success: true,
+      success: false,
+      error: {
+        message: 'Registration not implemented yet',
+        name: 'NotImplemented',
+      },
+    };
+  },
+  forgotPassword: async () => {
+    return {
+      success: false,
+      error: {
+        message: 'Forgot password not implemented yet',
+        name: 'NotImplemented',
+      },
+    };
+  },
+  updatePassword: async () => {
+    return {
+      success: false,
+      error: {
+        message: 'Update password not implemented yet',
+        name: 'NotImplemented',
+      },
     };
   },
   logout: async () => {
-    Cookies.remove("auth", { path: "/" });
+    Cookies.remove('auth', { path: '/' });
     return {
       success: true,
-      redirectTo: "/login",
+      redirectTo: '/login',
     };
   },
   check: async () => {
-    const auth = Cookies.get("auth");
+    const auth = Cookies.get('auth');
     if (auth) {
       return {
         authenticated: true,
@@ -124,11 +116,11 @@ export const authProviderClient: AuthProvider = {
     return {
       authenticated: false,
       logout: true,
-      redirectTo: "/login",
+      redirectTo: '/login',
     };
   },
   getPermissions: async () => {
-    const auth = Cookies.get("auth");
+    const auth = Cookies.get('auth');
     if (auth) {
       const parsedUser = JSON.parse(auth);
       return parsedUser.roles;
@@ -136,7 +128,7 @@ export const authProviderClient: AuthProvider = {
     return null;
   },
   getIdentity: async () => {
-    const auth = Cookies.get("auth");
+    const auth = Cookies.get('auth');
     if (auth) {
       const parsedUser = JSON.parse(auth);
       return parsedUser;

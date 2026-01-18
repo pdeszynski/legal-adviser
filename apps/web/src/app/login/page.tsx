@@ -1,31 +1,19 @@
-import { AuthPage } from "@refinedev/core";
-import { authProviderServer } from "@providers/auth-provider/auth-provider.server";
-import { redirect } from "next/navigation";
+'use client';
 
-export default async function LoginPage() {
-  const data = await getData();
+import { Suspense } from 'react';
+import { PublicLayout } from '@components/layout/public-layout';
+import { LoginContent } from './login-content';
 
-  if (data.authenticated) {
-    redirect(data?.redirectTo || "/");
-  }
+export const dynamic = 'force-dynamic';
 
+export default function LoginPage() {
   return (
-    <div>
-      <AuthPage type="login" />
-      <div>
-        <p>Email: admin@refine.dev</p>
-        <p>Password: 123456</p>
-      </div>
-    </div>
+    <PublicLayout>
+      <Suspense
+        fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}
+      >
+        <LoginContent />
+      </Suspense>
+    </PublicLayout>
   );
-}
-
-async function getData() {
-  const { authenticated, redirectTo, error } = await authProviderServer.check();
-
-  return {
-    authenticated,
-    redirectTo,
-    error,
-  };
 }

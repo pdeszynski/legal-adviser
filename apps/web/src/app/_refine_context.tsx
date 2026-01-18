@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Suspense, type PropsWithChildren } from 'react';
-import { GitHubBanner, type I18nProvider, Refine } from '@refinedev/core';
+import { type I18nProvider, Refine } from '@refinedev/core';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 import routerProvider from '@refinedev/nextjs-router';
 import { useLocale, useTranslations } from 'next-intl';
@@ -30,7 +30,6 @@ export const RefineContext = ({ children }: PropsWithChildren) => {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <GitHubBanner />
       <RefineKbarProvider>
         <DevtoolsProvider>
           <Refine
