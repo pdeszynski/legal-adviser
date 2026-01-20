@@ -24,8 +24,93 @@ export const PublicLayout: React.FC<React.PropsWithChildren> = ({ children }) =>
         </div>
       </header>
       <main className="flex-1">{children}</main>
-      <footer className="border-t py-6 text-center text-sm text-muted-foreground bg-muted/30">
-        &copy; {new Date().getFullYear()} Legal AI. All rights reserved.
+      <footer className="border-t bg-background pt-16 pb-8">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 mb-8 text-sm">
+            <div className="space-y-4">
+              <h4 className="font-bold text-lg">Legal AI</h4>
+              <p className="text-muted-foreground max-w-xs">
+                Empowering legal professionals with next-generation AI tools. Secure, accurate, and
+                efficient.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-muted-foreground">
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Features
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Security
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-muted-foreground">
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-muted-foreground">
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="hover:text-foreground transition-colors">
+                    Cookie Policy
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t pt-8 text-center text-sm text-muted-foreground flex flex-col md:flex-row justify-between items-center gap-4">
+            <p>&copy; {new Date().getFullYear()} Legal AI. All rights reserved.</p>
+            <div className="flex gap-4">
+              {/* Social icons placeholders or simple links */}
+              <Link href="#" className="hover:text-foreground transition-colors">
+                Twitter
+              </Link>
+              <Link href="#" className="hover:text-foreground transition-colors">
+                LinkedIn
+              </Link>
+              <Link href="#" className="hover:text-foreground transition-colors">
+                GitHub
+              </Link>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   );

@@ -18,9 +18,10 @@ const LandingContent = () => {
         {/* Hero Section */}
         <section className="relative w-full pt-20 pb-20 md:pt-32 md:pb-32 overflow-hidden">
           {/* Background decoration */}
+          <div className="absolute inset-0 z-0 bg-[url('/grid.svg')] opacity-[0.02] dark:opacity-[0.05]" />
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50/50 via-background to-background" />
 
-          <div className="container px-4 md:px-6 relative z-10">
+          <div className="container mx-auto px-4 md:px-6 relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
               <div className="flex flex-col items-start space-y-8 text-left">
                 <div className="space-y-4">
@@ -90,7 +91,7 @@ const LandingContent = () => {
 
         {/* Features Section */}
         <section className="w-full py-24 bg-muted/30 relative">
-          <div className="container px-4 md:px-6">
+          <div className="container mx-auto px-4 md:px-6">
             <div className="text-center mb-20 max-w-3xl mx-auto space-y-4">
               <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
                 {t('features.title')}
@@ -157,7 +158,7 @@ const LandingContent = () => {
 
         {/* How it Works Section */}
         <section className="w-full py-24 bg-background">
-          <div className="container px-4 md:px-6">
+          <div className="container mx-auto px-4 md:px-6">
             <div className="text-center mb-16 space-y-4">
               <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
                 {t('howItWorks.title')}
@@ -171,7 +172,7 @@ const LandingContent = () => {
 
               {/* Step 1 */}
               <div className="flex flex-col items-center text-center space-y-6">
-                <div className="w-24 h-24 rounded-full bg-background border-4 border-blue-100 dark:border-blue-900 flex items-center justify-center z-10 shadow-sm">
+                <div className="w-24 h-24 rounded-full bg-background border-4 border-blue-100 dark:border-blue-900 flex items-center justify-center z-10 shadow-sm transition-transform hover:scale-110">
                   <span className="text-4xl font-black text-blue-600/50">1</span>
                 </div>
                 <div>
@@ -182,7 +183,7 @@ const LandingContent = () => {
 
               {/* Step 2 */}
               <div className="flex flex-col items-center text-center space-y-6">
-                <div className="w-24 h-24 rounded-full bg-background border-4 border-blue-100 dark:border-blue-900 flex items-center justify-center z-10 shadow-sm">
+                <div className="w-24 h-24 rounded-full bg-background border-4 border-blue-100 dark:border-blue-900 flex items-center justify-center z-10 shadow-sm transition-transform hover:scale-110">
                   <span className="text-4xl font-black text-purple-600/50">2</span>
                 </div>
                 <div>
@@ -193,7 +194,7 @@ const LandingContent = () => {
 
               {/* Step 3 */}
               <div className="flex flex-col items-center text-center space-y-6">
-                <div className="w-24 h-24 rounded-full bg-background border-4 border-blue-100 dark:border-blue-900 flex items-center justify-center z-10 shadow-sm">
+                <div className="w-24 h-24 rounded-full bg-background border-4 border-blue-100 dark:border-blue-900 flex items-center justify-center z-10 shadow-sm transition-transform hover:scale-110">
                   <span className="text-4xl font-black text-emerald-600/50">3</span>
                 </div>
                 <div>
@@ -207,7 +208,7 @@ const LandingContent = () => {
 
         {/* Testimonials (Mock) */}
         <section className="w-full py-24 bg-muted/30">
-          <div className="container px-4 md:px-6">
+          <div className="container mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
                 {t('testimonials.title')}
@@ -286,7 +287,7 @@ const LandingContent = () => {
           <div className="absolute inset-0 bg-blue-600 dark:bg-blue-900 clip-path-slant z-0"></div>
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 z-0"></div>
 
-          <div className="container px-4 md:px-6 relative z-10 text-white">
+          <div className="container mx-auto px-4 md:px-6 relative z-10 text-white">
             <div className="flex flex-col items-center space-y-8 text-center max-w-2xl mx-auto">
               <h2 className="text-3xl font-bold tracking-tight md:text-5xl">{t('cta.title')}</h2>
               <p className="text-xl text-blue-100">{t('cta.subtitle')}</p>

@@ -126,7 +126,7 @@
     "title": "Dashboard"
   },
   "blog_posts": {
-    "blog_posts": "Blog Posts",
+    "blog_posts": "Menu",
     "form": {
       "select": {
         "category": {
@@ -359,6 +359,28 @@
       "disclaimer": "No credit card required for standard trial."
     },
     "footer": {
+      "brand": {
+        "title": "Legal AI",
+        "description": "Empowering legal professionals with next-generation AI tools. Secure, accurate, and efficient."
+      },
+      "product": {
+        "title": "Product",
+        "features": "Features",
+        "pricing": "Pricing",
+        "security": "Security"
+      },
+      "company": {
+        "title": "Company",
+        "about": "About Us",
+        "careers": "Careers",
+        "contact": "Contact"
+      },
+      "legal": {
+        "title": "Legal",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "cookie": "Cookie Policy"
+      },
       "copyright": "© {year} Legal AI. All rights reserved."
     }
   }
