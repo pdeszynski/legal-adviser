@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { DevtoolsProvider } from '@providers/devtools';
 import { authProviderClient } from '@providers/auth-provider/auth-provider.client';
 import { dataProvider } from '@providers/data-provider';
+import { auditLogProvider } from '@providers/audit-log-provider';
 import { setUserLocale } from '@i18n';
 
 export const RefineContext = ({ children }: PropsWithChildren) => {
@@ -36,8 +37,17 @@ export const RefineContext = ({ children }: PropsWithChildren) => {
             routerProvider={routerProvider}
             dataProvider={dataProvider}
             authProvider={authProviderClient}
+            auditLogProvider={auditLogProvider}
             i18nProvider={i18nProvider}
             resources={[
+              {
+                name: 'dashboard',
+                list: '/dashboard',
+                meta: {
+                  label: 'Dashboard',
+                  icon: <span aria-label="dashboard">📊</span>,
+                },
+              },
               {
                 name: 'blog_posts',
                 list: '/blog-posts',
@@ -46,6 +56,7 @@ export const RefineContext = ({ children }: PropsWithChildren) => {
                 show: '/blog-posts/show/:id',
                 meta: {
                   canDelete: true,
+                  label: 'Blog Posts',
                 },
               },
               {
@@ -57,6 +68,14 @@ export const RefineContext = ({ children }: PropsWithChildren) => {
                 meta: {
                   canDelete: true,
                   label: 'Documents',
+                },
+              },
+              {
+                name: 'audit_logs',
+                list: '/audit-logs',
+                meta: {
+                  label: 'Audit Logs',
+                  canDelete: false,
                 },
               },
             ]}

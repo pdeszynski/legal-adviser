@@ -14,6 +14,7 @@ import {
 import { LegalDocument, DocumentType, DocumentStatus } from './entities/legal-document.entity';
 import { DocumentGenerationProducer } from './queues/document-generation.producer';
 import { PdfExportProducer } from './queues/pdf-export.producer';
+import { StrictThrottle, SkipThrottle } from '../../shared/throttler';
 
 /**
  * Custom GraphQL Resolver for Legal Documents
@@ -46,6 +47,7 @@ export class DocumentsResolver {
    * Query: Get documents by session ID
    * Convenience query for filtering by session - also available via legalDocuments filter
    */
+  @SkipThrottle()
   @Query(() => [LegalDocument], { name: 'documentsBySession' })
   async findBySession(
     @Args('sessionId', { type: () => String }) sessionId: string,
@@ -67,6 +69,7 @@ export class DocumentsResolver {
    * The actual content generation happens asynchronously via the Bull queue.
    * Poll the document status to check for completion.
    */
+  @StrictThrottle()
   @Mutation(() => LegalDocument, { name: 'generateDocument' })
   async generateDocument(
     @Args('input') input: GenerateDocumentInput,
@@ -146,6 +149,7 @@ export class DocumentsResolver {
    * @param input - Export options including document ID and PDF settings
    * @returns Job response with job ID for tracking
    */
+  @StrictThrottle()
   @Mutation(() => PdfExportJobResponse, {
     name: 'exportDocumentToPdf',
     description: 'Queue a document for PDF export',
@@ -211,6 +215,7 @@ export class DocumentsResolver {
    * @param jobId - The job ID returned from exportDocumentToPdf
    * @returns Current status and result if completed
    */
+  @SkipThrottle()
   @Query(() => PdfExportStatusResponse, {
     name: 'pdfExportStatus',
     description: 'Get the status of a PDF export job',
@@ -272,6 +277,7 @@ export class DocumentsResolver {
    * @param input - Export options including document ID and PDF settings
    * @returns The PDF export result with base64-encoded content
    */
+  @StrictThrottle()
   @Mutation(() => PdfExportResult, {
     name: 'exportDocumentToPdfSync',
     description: 'Export a document to PDF and wait for the result',

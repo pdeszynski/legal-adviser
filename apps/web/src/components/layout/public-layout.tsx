@@ -4,7 +4,11 @@ import React from 'react';
 import { StyledLanguageSelector } from '@components/select-language/styled-language-selector';
 import Link from 'next/link';
 
+import { useTranslations } from 'next-intl';
+
 export const PublicLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const t = useTranslations('landing.footer');
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -28,75 +32,72 @@ export const PublicLayout: React.FC<React.PropsWithChildren> = ({ children }) =>
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 mb-8 text-sm">
             <div className="space-y-4">
-              <h4 className="font-bold text-lg">Legal AI</h4>
-              <p className="text-muted-foreground max-w-xs">
-                Empowering legal professionals with next-generation AI tools. Secure, accurate, and
-                efficient.
-              </p>
+              <h4 className="font-bold text-lg">{t('brand.title')}</h4>
+              <p className="text-muted-foreground max-w-xs">{t('brand.description')}</p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
+              <h4 className="font-semibold mb-4">{t('product.title')}</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
                   <Link href="#" className="hover:text-foreground transition-colors">
-                    Features
+                    {t('product.features')}
                   </Link>
                 </li>
                 <li>
                   <Link href="#" className="hover:text-foreground transition-colors">
-                    Pricing
+                    {t('product.pricing')}
                   </Link>
                 </li>
                 <li>
                   <Link href="#" className="hover:text-foreground transition-colors">
-                    Security
+                    {t('product.security')}
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
+              <h4 className="font-semibold mb-4">{t('company.title')}</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
                   <Link href="#" className="hover:text-foreground transition-colors">
-                    About Us
+                    {t('company.about')}
                   </Link>
                 </li>
                 <li>
                   <Link href="#" className="hover:text-foreground transition-colors">
-                    Careers
+                    {t('company.careers')}
                   </Link>
                 </li>
                 <li>
                   <Link href="#" className="hover:text-foreground transition-colors">
-                    Contact
+                    {t('company.contact')}
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
+              <h4 className="font-semibold mb-4">{t('legal.title')}</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
                   <Link href="#" className="hover:text-foreground transition-colors">
-                    Privacy Policy
+                    {t('legal.privacy')}
                   </Link>
                 </li>
                 <li>
                   <Link href="#" className="hover:text-foreground transition-colors">
-                    Terms of Service
+                    {t('legal.terms')}
                   </Link>
                 </li>
                 <li>
                   <Link href="#" className="hover:text-foreground transition-colors">
-                    Cookie Policy
+                    {t('legal.cookie')}
                   </Link>
                 </li>
               </ul>
             </div>
           </div>
           <div className="border-t pt-8 text-center text-sm text-muted-foreground flex flex-col md:flex-row justify-between items-center gap-4">
-            <p>&copy; {new Date().getFullYear()} Legal AI. All rights reserved.</p>
+            <p>{t('copyright', { year: new Date().getFullYear() })}</p>
             <div className="flex gap-4">
               {/* Social icons placeholders or simple links */}
               <Link href="#" className="hover:text-foreground transition-colors">

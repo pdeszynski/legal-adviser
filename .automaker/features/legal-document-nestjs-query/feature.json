@@ -36,5 +36,8 @@
       "source": "edit"
     }
   ],
-  "startedAt": "2026-01-13T06:51:56.725Z"
+  "startedAt": "2026-01-13T06:51:56.725Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

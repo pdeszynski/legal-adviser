@@ -5,9 +5,9 @@ relevantTo: [testing]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 2
-  referenced: 1
-  successfulFeatures: 1
+  loaded: 3
+  referenced: 2
+  successfulFeatures: 2
 ---
 # testing
 
@@ -192,3 +192,20 @@ usageStats:
 - **Situation:** Created cors-verification.spec.ts as temporary verification, but Playwright test discovery would run it in CI/CD permanently if not deleted
 - **Root cause:** Playwright discovers all .spec.ts files in the test directory regardless of intent; no built-in way to mark tests as temporary or one-time verification
 - **How to avoid:** Manual deletion is simple but requires discipline; adding skip markers would keep the file but requires cleanup later
+
+#### [Gotcha] Global ThrottlerGuard fails with GraphQL context that lacks proper request object structure (Cannot read properties of undefined reading 'ip') (2026-01-20)
+- **Situation:** Playwright test for GraphQL mutations failed with throttler error, preventing validation of mutations even though schema generation worked
+- **Root cause:** ThrottlerGuard expects HTTP request object with IP address for rate limiting. GraphQL context wraps the request differently, causing undefined access. This is a configuration issue not a feature issue
+- **How to avoid:** Easier: Schema can be verified via introspection without executing mutations. Harder: Cannot do end-to-end testing without fixing throttler configuration
+
+### Created Playwright test to verify end-to-end behavior rather than unit testing the interceptor (2026-01-20)
+- **Context:** Needed to verify interceptor actually captures mutations when integrated with rest of system
+- **Why:** Interceptor only has value when integrated - unit test wouldn't catch issues with middleware ordering, missing registration, or integration with persistence. E2E test shows the feature works from user perspective.
+- **Rejected:** Pure unit tests of interceptor class - would test in isolation but not real-world execution. Manual testing - not reproducible.
+- **Trade-offs:** Easier: Confident feature works end-to-end, catches integration issues. Harder: Test requires running server, more fragile, slower to run
+- **Breaking if changed:** Without E2E test, interceptor could be registered incorrectly (wrong order, not global, etc.) and nobody would know until production.
+
+#### [Gotcha] ThrottlerGuard rejects repeated test requests in E2E tests even with different test IDs, causing verification failures despite working feature (2026-01-20)
+- **Situation:** Playwright test ran multiple GraphQL queries in sequence against production-like ThrottlerGuard configuration
+- **Root cause:** ThrottlerGuard rate limits by client IP (all test requests appear from same IP). Test environment configuration didn't exempt test client or adjust burst limits
+- **How to avoid:** Test verification skipped in favor of manual testing. Feature works correctly but confidence gap for CI/CD pipelines. Manual testing more thorough but not automated

@@ -10,5 +10,8 @@
     "admin-panel-layout"
   ],
   "createdAt": "2026-01-12T10:31:20.854Z",
-  "updatedAt": "2026-01-12T10:31:20.854Z"
+  "updatedAt": "2026-01-12T10:31:20.854Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

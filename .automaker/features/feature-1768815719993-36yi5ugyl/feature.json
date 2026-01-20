@@ -8,7 +8,7 @@
     "update-mock-credentials-configuration"
   ],
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "id": "feature-1768815719993-36yi5ugyl",
   "descriptionHistory": [
     {
@@ -18,5 +18,8 @@
     }
   ],
   "startedAt": "2026-01-19T15:10:42.959Z",
-  "updatedAt": "2026-01-19T15:19:53.328Z"
+  "updatedAt": "2026-01-19T15:19:53.328Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

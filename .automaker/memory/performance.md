@@ -5,9 +5,9 @@ relevantTo: [performance]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 67
-  referenced: 2
-  successfulFeatures: 2
+  loaded: 68
+  referenced: 3
+  successfulFeatures: 3
 ---
 # performance
 
@@ -32,3 +32,13 @@ usageStats:
 - **Situation:** Browser pages consume memory. Each PDF generation creates a page that must be explicitly closed.
 - **Root cause:** Puppeteer doesn't auto-garbage-collect pages. Without explicit page.close(), memory accumulates. Module destroy hook cleanup only catches crash case, not normal operation.
 - **How to avoid:** Explicit try-finally in processor adds boilerplate but prevents memory leaks in long-running services. Critical for high-volume PDF generation.
+
+#### [Gotcha] Default in-memory storage is suitable for single-instance only; multi-instance deployments require Redis adapter, but this was not automatically detected or warned (2026-01-20)
+- **Situation:** Implementation works locally and in single-container deployments but silently fails in horizontally-scaled scenarios
+- **Root cause:** In-memory storage is simple and works for development/single-node; migration to Redis is explicit decision not enforced by defaults. No environment detection triggers warnings
+- **How to avoid:** Simpler default setup vs silent failure in production; implementation is simpler but requires documentation/discipline to scale
+
+#### [Gotcha] Audit log creation is asynchronous (fire-and-forget) rather than awaited, but errors are caught silently (2026-01-20)
+- **Situation:** Interceptor publishes event and continues without waiting for audit persistence
+- **Root cause:** Prevents audit log creation from delaying mutations. Non-blocking is essential for user experience. Silent error catching prevents one bad audit log from failing the user's mutation.
+- **How to avoid:** Easier: Fast mutations, resilient to audit failures. Harder: Audit failures are invisible, no guarantee logs were created, harder to debug missing audits

@@ -5,7 +5,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { BullModule } from '@nestjs/bull';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { join } from 'path';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { GqlThrottlerGuard } from './shared/throttler/gql-throttler.guard';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { join } from 'node:path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AiClientModule } from './shared/ai-client/ai-client.module';
@@ -19,6 +22,8 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { QueriesModule } from './modules/queries/queries.module';
 // Strict Layered Architecture - new modules following DDD patterns
 import { PresentationModule } from './presentation/presentation.module';
+// Interceptors
+import { AuditLoggingInterceptor } from './shared/interceptors/audit-logging.interceptor';
 
 @Module({
   imports: [
@@ -33,6 +38,14 @@ import { PresentationModule } from './presentation/presentation.module';
       sortSchema: true,
       playground: process.env.NODE_ENV !== 'production',
       introspection: process.env.NODE_ENV !== 'production',
+      // Pass Express request and response to GraphQL context
+      context: ({
+        req,
+        res,
+      }: {
+        req: Record<string, any>;
+        res: Record<string, any>;
+      }) => ({ req, res }),
       // Enable GraphQL subscriptions via WebSocket (graphql-ws protocol)
       subscriptions: {
         'graphql-ws': {
@@ -80,6 +93,27 @@ import { PresentationModule } from './presentation/presentation.module';
       }),
       inject: [ConfigService],
     }),
+    // Rate limiting to protect against abuse - configurable per-IP and per-user limits
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        throttlers: [
+          {
+            name: 'default',
+            // Default rate limit: 100 requests per minute per IP
+            ttl: configService.get<number>('THROTTLE_TTL') || 60000,
+            limit: configService.get<number>('THROTTLE_LIMIT') || 100,
+          },
+          {
+            name: 'strict',
+            // Strict rate limit for expensive operations: 10 requests per minute per IP
+            ttl: 60000,
+            limit: 10,
+          },
+        ],
+      }),
+      inject: [ConfigService],
+    }),
     AiClientModule,
     StreamingModule,
     // CSRF Protection for GraphQL mutations (double-submit cookie pattern)
@@ -93,6 +127,18 @@ import { PresentationModule } from './presentation/presentation.module';
     PresentationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // Apply throttler guard globally to all GraphQL and HTTP endpoints
+    {
+      provide: APP_GUARD,
+      useClass: GqlThrottlerGuard,
+    },
+    // Apply audit logging interceptor globally to capture all GraphQL mutations
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditLoggingInterceptor,
+    },
+  ],
 })
 export class AppModule {}

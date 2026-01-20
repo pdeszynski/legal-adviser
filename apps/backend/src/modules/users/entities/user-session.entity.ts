@@ -11,6 +11,7 @@ import {
   FilterableField,
   IDField,
   QueryOptions,
+  Relation,
 } from '@ptc-org/nestjs-query-graphql';
 import {
   ObjectType,
@@ -54,6 +55,7 @@ registerEnumType(SessionMode, {
 @Entity('user_sessions')
 @ObjectType('UserSession')
 @QueryOptions({ enableTotalCount: true })
+@Relation('user', () => User)
 export class UserSession {
   @PrimaryGeneratedColumn('uuid')
   @IDField(() => ID)

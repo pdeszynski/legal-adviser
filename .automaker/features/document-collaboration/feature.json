@@ -10,5 +10,8 @@
     "document-edit-form"
   ],
   "createdAt": "2026-01-12T10:31:20.843Z",
-  "updatedAt": "2026-01-12T10:31:20.843Z"
+  "updatedAt": "2026-01-12T10:31:20.843Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

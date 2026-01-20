@@ -151,3 +151,13 @@ usageStats:
 - **Situation:** Standard HTTP behavior for successful CORS preflight is 204, but developers often expect 200
 - **Root cause:** 204 No Content is semantically correct for OPTIONS requests that have no response body—the CORS headers in the response are the only meaningful data
 - **How to avoid:** 204 is more correct but less intuitive; test assertions must specifically check for 204 or tests will fail
+
+#### [Gotcha] nestjs-query GraphQL mutations require nested input structure: input: { user: { ...fields } } not input: { ...fields } (2026-01-20)
+- **Situation:** Initial mutation testing failed because curl commands used flat input structure instead of nested structure
+- **Root cause:** nestjs-query auto-wraps the entity fields in a parent field matching the entity name (user) to allow potential future extensions and to match GraphQL best practices for input organization
+- **How to avoid:** Harder: API consumers must understand nested structure. Easier: Consistent pattern for all entities
+
+#### [Gotcha] GraphQL filter structure requires nested equality operators: {resourceType: {eq: 'USER'}} not {resourceType: 'USER'} (2026-01-20)
+- **Situation:** Data provider maps Refine filters to nestjs-query GraphQL syntax but developers expect flat filter objects
+- **Root cause:** nestjs-query generates GraphQL where every field becomes an object with operation keys (eq, ne, gt, etc) to support complex queries uniformly
+- **How to avoid:** More verbose but explicit about comparison operators. Enables advanced filtering at cost of initial confusion

@@ -6,7 +6,7 @@
     "graphql-auth-mutations"
   ],
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "id": "feature-1768815719991-8jqxm5j4g",
   "descriptionHistory": [
     {
@@ -16,5 +16,8 @@
     }
   ],
   "startedAt": "2026-01-19T15:03:17.489Z",
-  "updatedAt": "2026-01-19T15:10:11.529Z"
+  "updatedAt": "2026-01-19T15:10:11.529Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

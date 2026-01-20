@@ -123,7 +123,30 @@
     "clone": "Clone"
   },
   "dashboard": {
-    "title": "Dashboard"
+    "title": "Dashboard",
+    "subtitle": "Overview of your legal documents and activity",
+    "stats": {
+      "totalDocuments": "Total Documents",
+      "completed": "Completed",
+      "drafts": "Drafts",
+      "generating": "Generating"
+    },
+    "recentDocuments": {
+      "title": "Recent Documents",
+      "noDocuments": "No documents yet. Create your first document to get started!",
+      "viewAll": "View All Documents"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "createDocument": "Create Document",
+      "viewDocuments": "View All Documents",
+      "auditLogs": "View Audit Logs"
+    },
+    "help": {
+      "title": "Need Help?",
+      "description": "Get started with our platform or learn about advanced features.",
+      "learnMore": "Learn More"
+    }
   },
   "blog_posts": {
     "blog_posts": "Menu",

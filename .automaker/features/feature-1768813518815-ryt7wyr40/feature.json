@@ -17,5 +17,8 @@
   ],
   "branchName": "automaker",
   "startedAt": "2026-01-20T07:09:24.751Z",
-  "updatedAt": "2026-01-20T07:12:43.331Z"
+  "updatedAt": "2026-01-20T07:12:43.331Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

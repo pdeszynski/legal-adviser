@@ -4,6 +4,8 @@ import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
 import { AuditLog } from './entities/audit-log.entity';
 import { AuditLogService } from './audit-log.service';
 import { CreateAuditLogInput } from './dto/audit-log.types';
+import { CreateAuditLogUseCase } from '../../application/audit-logs/use-cases/create-audit-log.use-case';
+import { AuditLogApplicationService } from '../../application/audit-logs/services/audit-log-application.service';
 
 /**
  * Audit Log Module
@@ -16,7 +18,13 @@ import { CreateAuditLogInput } from './dto/audit-log.types';
  * - auditLog: Query single audit log by ID
  *
  * Mutations are disabled as audit logs should only be created internally.
- * Use AuditLogService for creating new audit log entries.
+ * Use AuditLogApplicationService for creating new audit log entries via use cases.
+ *
+ * Architecture:
+ * - AuditLogApplicationService (Application Layer) - orchestrates use cases
+ * - CreateAuditLogUseCase (Application Layer) - business logic for creating logs
+ * - AuditLog entity (Domain Layer) - audit log aggregate
+ * - TypeORM Repository (Infrastructure Layer) - persistence
  */
 @Module({
   imports: [
@@ -53,7 +61,11 @@ import { CreateAuditLogInput } from './dto/audit-log.types';
       ],
     }),
   ],
-  providers: [AuditLogService],
-  exports: [AuditLogService],
+  providers: [
+    AuditLogService,
+    CreateAuditLogUseCase,
+    AuditLogApplicationService,
+  ],
+  exports: [AuditLogService, AuditLogApplicationService],
 })
 export class AuditLogModule {}

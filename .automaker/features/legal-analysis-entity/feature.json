@@ -14,8 +14,16 @@
     "aggregateRoot": "LegalAnalysis",
     "module": "apps/backend/src/modules/documents",
     "layer": "Domain",
-    "patterns": ["DDD Entity", "JSONB Value Objects", "State Machine"],
-    "emits": ["ANALYSIS.STARTED", "ANALYSIS.COMPLETED", "ANALYSIS.FAILED"],
+    "patterns": [
+      "DDD Entity",
+      "JSONB Value Objects",
+      "State Machine"
+    ],
+    "emits": [
+      "ANALYSIS.STARTED",
+      "ANALYSIS.COMPLETED",
+      "ANALYSIS.FAILED"
+    ],
     "listensTo": [],
     "notes": "Aggregate root for case analysis. Uses JSONB for identifiedGrounds and relatedDocumentLinks. Contains domain methods (canComplete, markCompleted)."
   },
@@ -23,5 +31,8 @@
   "updatedAt": "2026-01-13T06:58:33.571Z",
   "branchName": "automaker",
   "descriptionHistory": [],
-  "startedAt": "2026-01-13T06:51:56.331Z"
+  "startedAt": "2026-01-13T06:51:56.331Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { authProviderServer } from '@providers/auth-provider/auth-provider.server';
 import { MainLayout } from '@components/layout/main-layout';
 
-export default async function Layout({ children }: React.PropsWithChildren) {
+export default async function AuthenticatedLayout({ children }: React.PropsWithChildren) {
   const data = await getData();
 
   if (!data.authenticated) {

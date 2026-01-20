@@ -14,8 +14,14 @@
     "aggregateRoot": "LegalQuery",
     "module": "apps/backend/src/modules/queries",
     "layer": "Domain",
-    "patterns": ["DDD Entity", "JSONB Value Objects"],
-    "emits": ["QUERY.ASKED", "QUERY.ANSWERED"],
+    "patterns": [
+      "DDD Entity",
+      "JSONB Value Objects"
+    ],
+    "emits": [
+      "QUERY.ASKED",
+      "QUERY.ANSWERED"
+    ],
     "listensTo": [],
     "notes": "Aggregate root for Q&A conversations. Citations stored as JSONB value objects per architecture decision."
   },
@@ -23,5 +29,8 @@
   "updatedAt": "2026-01-13T06:57:56.471Z",
   "branchName": "automaker",
   "descriptionHistory": [],
-  "startedAt": "2026-01-13T06:51:57.150Z"
+  "startedAt": "2026-01-13T06:51:57.150Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

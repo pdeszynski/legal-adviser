@@ -148,6 +148,75 @@ export const dataProvider: DataProvider = {
     filters?: CrudFilters;
     sorters?: CrudSorting;
   }) => {
+    if (resource === "audit_logs") {
+      const query = `
+        query GetAuditLogs($filter: AuditLogFilter, $paging: CursorPaging, $sorting: [AuditLogSort!]) {
+          auditLogs(filter: $filter, paging: $paging, sorting: $sorting) {
+            totalCount
+            edges {
+              node {
+                id
+                action
+                resourceType
+                resourceId
+                userId
+                user {
+                  id
+                  email
+                  firstName
+                  lastName
+                }
+                ipAddress
+                userAgent
+                statusCode
+                errorMessage
+                changeDetails {
+                  before
+                  after
+                }
+                createdAt
+                updatedAt
+              }
+            }
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+          }
+        }
+      `;
+
+      const graphqlFilter = buildGraphQLFilter(filters);
+      const graphqlSorting = buildGraphQLSorting(sorters) || [{ field: "createdAt", direction: "DESC" }];
+      const graphqlPaging = buildGraphQLPaging(pagination);
+
+      const data = await executeGraphQL<{
+        auditLogs: {
+          totalCount: number;
+          edges: Array<{ node: TData }>;
+          pageInfo: {
+            hasNextPage: boolean;
+            hasPreviousPage: boolean;
+            startCursor: string;
+            endCursor: string;
+          };
+        };
+      }>(query, {
+        filter: graphqlFilter || {},
+        paging: graphqlPaging,
+        sorting: graphqlSorting,
+      });
+
+      const items = data.auditLogs.edges.map((edge) => edge.node);
+
+      return {
+        data: items,
+        total: data.auditLogs.totalCount,
+      };
+    }
+
     if (resource === "documents") {
       const query = `
         query GetLegalDocuments($filter: LegalDocumentFilter, $paging: CursorPaging, $sorting: [LegalDocumentSort!]) {
@@ -223,6 +292,41 @@ export const dataProvider: DataProvider = {
     resource: string;
     id: string | number;
   }) => {
+    if (resource === "audit_logs") {
+      const query = `
+        query GetAuditLog($id: ID!) {
+          auditLog(id: $id) {
+            id
+            action
+            resourceType
+            resourceId
+            userId
+            user {
+              id
+              email
+              firstName
+              lastName
+            }
+            ipAddress
+            userAgent
+            statusCode
+            errorMessage
+            changeDetails {
+              before
+              after
+            }
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ auditLog: TData }>(query, { id });
+      return {
+        data: data.auditLog,
+      };
+    }
+
     if (resource === "documents") {
       const query = `
         query GetLegalDocument($id: ID!) {

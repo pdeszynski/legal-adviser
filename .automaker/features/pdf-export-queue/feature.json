@@ -11,5 +11,8 @@
     "document-generation-queue"
   ],
   "createdAt": "2026-01-12T10:31:20.828Z",
-  "updatedAt": "2026-01-12T10:31:20.828Z"
+  "updatedAt": "2026-01-12T10:31:20.828Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

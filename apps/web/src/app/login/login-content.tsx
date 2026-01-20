@@ -22,7 +22,7 @@ export const LoginContent = () => {
   const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
+    const searchParams = new URLSearchParams(globalThis.window.location.search);
     const error = searchParams.get('error');
     if (error) setInitialError(error);
   }, []);
@@ -30,7 +30,7 @@ export const LoginContent = () => {
   const [email, setEmail] = useState('admin@refine.dev');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     setValidationError(null);
     setInitialError(null);
@@ -60,8 +60,9 @@ export const LoginContent = () => {
   };
 
   // Priority: Validation Error > Login Hook Error > URL/Initial Error
+  const authError = error ? 'Invalid email or password' : null;
   const errorMessage =
-    validationError || error?.message || (initialError ? 'Invalid email or password.' : null);
+    validationError || authError || (initialError ? 'Invalid email or password.' : null);
 
   return (
     <div className="flex min-h-[calc(100vh-200px)] w-full items-center justify-center p-4">
@@ -92,6 +93,11 @@ export const LoginContent = () => {
                   setEmail(e.target.value);
                   if (validationError) setValidationError(null);
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSubmit(e);
+                  }
+                }}
                 className="bg-background/50 transition-colors focus:bg-background"
               />
             </div>
@@ -110,6 +116,11 @@ export const LoginContent = () => {
                 onChange={(e) => {
                   setPassword(e.target.value);
                   if (validationError) setValidationError(null);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSubmit(e);
+                  }
                 }}
                 className="bg-background/50 transition-colors focus:bg-background"
               />

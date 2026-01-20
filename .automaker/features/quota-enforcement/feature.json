@@ -10,5 +10,8 @@
     "usage-tracking"
   ],
   "createdAt": "2026-01-12T10:31:20.851Z",
-  "updatedAt": "2026-01-12T10:31:20.851Z"
+  "updatedAt": "2026-01-12T10:31:20.851Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

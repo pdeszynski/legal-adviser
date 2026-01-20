@@ -17,5 +17,8 @@
       "source": "edit"
     }
   ],
-  "startedAt": "2026-01-12T16:26:14.701Z"
+  "startedAt": "2026-01-12T16:26:14.701Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

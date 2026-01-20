@@ -14,11 +14,18 @@
     "aggregateRoot": "LegalQuery",
     "module": "apps/web/src/components/chat",
     "layer": "Presentation",
-    "patterns": ["React Component", "Refine Data Provider", "Streaming UI"],
+    "patterns": [
+      "React Component",
+      "Refine Data Provider",
+      "Streaming UI"
+    ],
     "emits": [],
     "listensTo": [],
     "notes": "Frontend presentation layer for LegalQA. Uses Refine data provider for GraphQL queries. Supports streaming responses from AI Engine."
   },
   "createdAt": "2026-01-12T10:31:20.832Z",
-  "updatedAt": "2026-01-12T10:31:20.832Z"
+  "updatedAt": "2026-01-12T10:31:20.832Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

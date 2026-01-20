@@ -12,14 +12,28 @@
     "aggregateRoot": "AuditLog",
     "module": "apps/backend/src/modules/audit-log",
     "layer": "Domain",
-    "patterns": ["DDD Entity", "Event Listener", "Cross-cutting Concern"],
-    "emits": ["AUDIT_LOG.CREATED"],
-    "listensTo": ["DOCUMENT.*", "QUERY.*", "USER.*", "ANALYSIS.*"],
+    "patterns": [
+      "DDD Entity",
+      "Event Listener",
+      "Cross-cutting Concern"
+    ],
+    "emits": [
+      "AUDIT_LOG.CREATED"
+    ],
+    "listensTo": [
+      "DOCUMENT.*",
+      "QUERY.*",
+      "USER.*",
+      "ANALYSIS.*"
+    ],
     "notes": "Cross-cutting aggregate that listens to ALL domain events for compliance tracking. Isolated module per modular monolith."
   },
   "createdAt": "2026-01-12T10:31:20.840Z",
   "updatedAt": "2026-01-12T16:44:54.470Z",
   "branchName": "automaker",
   "descriptionHistory": [],
-  "startedAt": "2026-01-12T16:34:26.468Z"
+  "startedAt": "2026-01-12T16:34:26.468Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

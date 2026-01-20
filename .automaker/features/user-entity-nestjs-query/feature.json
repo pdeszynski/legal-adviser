@@ -3,19 +3,24 @@
   "category": "API",
   "title": "Refactor User entity to nestjs-query",
   "description": "Add nestjs-query decorators to User infrastructure entity for auto-generated resolvers. Implement User repository interface in domain layer and concrete implementation in infrastructure layer. Implement FilterableField for searchable properties and proper relation handling with UserSession following DDD patterns.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [
     "nestjs-query-migration"
   ],
   "createdAt": "2026-01-12T10:31:20.824Z",
-  "updatedAt": "2026-01-12T10:31:20.824Z",
+  "updatedAt": "2026-01-20T11:59:16.796Z",
   "descriptionHistory": [
     {
       "description": "Add nestjs-query decorators to User infrastructure entity for auto-generated resolvers. Implement User repository interface in domain layer and concrete implementation in infrastructure layer. Implement FilterableField for searchable properties and proper relation handling with UserSession following DDD patterns.",
       "timestamp": "2026-01-13T11:07:03.824Z",
       "source": "edit"
     }
-  ]
+  ],
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "startedAt": "2026-01-20T11:51:45.337Z"
 }

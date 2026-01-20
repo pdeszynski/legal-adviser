@@ -14,5 +14,8 @@
       "timestamp": "2026-01-13T11:07:03.822Z",
       "source": "initial"
     }
-  ]
+  ],
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

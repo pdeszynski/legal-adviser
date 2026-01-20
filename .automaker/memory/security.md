@@ -144,3 +144,31 @@ usageStats:
 - **Rejected:** Not exposing Set-Cookie would require the frontend to rely on response body for auth token instead, losing automatic cookie handling benefits
 - **Trade-offs:** Allows cookie-based auth across origins but requires careful XSS protection since frontend can now see cookie presence; combined with credentials:true, enables cookie theft if XSS exists
 - **Breaking if changed:** Removing this header would break frontend's ability to detect successful authentication in cookie-based flows, forcing a switch to token-in-body patterns
+
+### Applied differentiated rate limiting: strict limits (10/min) on CPU-intensive operations (generateDocument, exportDocumentToPdf, submitLegalQuery) vs default limits (100/min) on standard endpoints, with read-only queries skipped entirely (2026-01-20)
+- **Context:** Rate limiting all endpoints uniformly would throttle legitimate read traffic; CPU-intensive AI operations needed stronger protection
+- **Why:** Granular rate limiting prevents brute force on expensive operations while maintaining usability for read-heavy workflows. Skipping read queries eliminates false-positive rate limit errors for data fetches
+- **Rejected:** Flat rate limiting across all endpoints (wastes quota on reads) or purely request-count based without operation type consideration (allows DOS through expensive mutations)
+- **Trade-offs:** Requires per-resolver configuration maintenance; simpler to audit but less flexible than dynamic cost-based limiting. Easier to implement than token-bucket with operation weights
+- **Breaking if changed:** Removing @SkipThrottle from status queries breaks monitoring systems that poll frequently; removing @StrictThrottle from mutations allows DOS attacks on resource-intensive operations
+
+### Implemented IP-based rate limiting (req.ip) rather than user-based, leaving per-user limits for future enhancement (2026-01-20)
+- **Context:** Current implementation has no per-user tracking; single user behind shared proxy could exhaust quota for many legitimate users
+- **Why:** IP-based is simpler to implement immediately and works for single-user scenarios; per-user requires extracting authenticated user from JWT context, which adds guard complexity
+- **Rejected:** Per-user from start (adds JWT parsing dependency to guard, complicates anonymous request handling); hybrid approach (too complex for initial implementation)
+- **Trade-offs:** IP-based is easier but vulnerable to proxy abuse; per-user is more precise but requires guard enhancement. Current approach is documented as future work
+- **Breaking if changed:** IP-based limits allow single authenticated user on shared network to DOS others; removing IP-based without adding per-user removes all limiting
+
+### Excluded passwordHash field from GraphQL schema using TypeORM select: false and omitting @Field() decorator (2026-01-20)
+- **Context:** Password hash should never be exposed via GraphQL API, but entity has passwordHash property for authentication
+- **Why:** Defense-in-depth: Multiple layers prevent exposure. select: false prevents TypeORM from loading it, @Field() absence prevents GraphQL schema inclusion. Single layer failure doesn't expose sensitive data
+- **Rejected:** Relying only on @Field() omission - TypeORM could still load the field and a developer might accidentally add @Field()
+- **Trade-offs:** Easier: Simple approach. Harder: Requires discipline across multiple frameworks
+- **Breaking if changed:** If @Field() is added without removing select: false, data is still protected. If select: false is removed and @Field() is added, password hashes are exposed
+
+### Sanitize sensitive fields (passwords, tokens) BEFORE storing in audit log, not at query time (2026-01-20)
+- **Context:** Audit logs contain mutation arguments which may include sensitive user input
+- **Why:** Prevents sensitive data from ever being persisted to database. Query-time sanitization is theater - data is already compromised if in DB. Also simpler to implement and query interface doesn't need to know about sanitization rules.
+- **Rejected:** Sanitizing at query time - doesn't prevent data breach if database is accessed directly. Requires all consumers to implement same sanitization.
+- **Trade-offs:** Easier: Single place to handle, data genuinely protected. Harder: Must know all sensitive fields upfront, if new sensitive field added must update interceptor
+- **Breaking if changed:** If sanitization logic is removed, passwords and tokens will be logged in plaintext - compliance violation and major security risk.

@@ -6,7 +6,15 @@ import {
   HttpStatus,
   Get,
   Param,
+  Sse,
+  MessageEvent,
 } from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import {
+  DocumentProgressPubSubService,
+  DocumentProgressEvent,
+} from '../../shared/streaming';
 import { DocumentsService } from './services/documents.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { LegalDocument, DocumentType } from './entities/legal-document.entity';
@@ -23,6 +31,7 @@ export class DocumentsController {
   constructor(
     private readonly documentsService: DocumentsService,
     private readonly documentGenerationProducer: DocumentGenerationProducer,
+    private readonly progressPubSub: DocumentProgressPubSubService,
   ) {}
 
   /**
@@ -86,5 +95,22 @@ export class DocumentsController {
     paused: number;
   }> {
     return this.documentGenerationProducer.getQueueStats();
+  }
+  /**
+   * Stream document generation progress
+   *
+   * Server-Sent Events (SSE) endpoint for real-time progress updates.
+   * Frontend connects here to visualize the generation process.
+   */
+  @Sse(':id/stream')
+  stream(@Param('id') id: string): Observable<MessageEvent> {
+    return this.progressPubSub.subscribeToDocument(id).pipe(
+      map(
+        (event: DocumentProgressEvent) =>
+          ({
+            data: event,
+          }) as MessageEvent,
+      ),
+    );
   }
 }

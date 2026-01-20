@@ -3,7 +3,7 @@
   "category": "Authentication",
   "title": "GraphQL Authentication Mutations",
   "description": "Migrate authentication from REST to GraphQL with login, register, and refreshToken mutations. Implement JWT token management through GraphQL resolvers following project constitution requirements.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
@@ -11,5 +11,8 @@
   ],
   "createdAt": "2026-01-12T10:31:20.825Z",
   "updatedAt": "2026-01-19T09:53:42.466Z",
-  "descriptionHistory": []
+  "descriptionHistory": [],
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

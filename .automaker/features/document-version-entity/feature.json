@@ -14,11 +14,22 @@
     "aggregateRoot": "LegalDocument",
     "module": "apps/backend/src/modules/documents",
     "layer": "Domain",
-    "patterns": ["DDD Entity", "Event Sourcing Lite", "Append-only"],
-    "emits": ["DOCUMENT.VERSION_CREATED"],
-    "listensTo": ["DOCUMENT.UPDATED"],
+    "patterns": [
+      "DDD Entity",
+      "Event Sourcing Lite",
+      "Append-only"
+    ],
+    "emits": [
+      "DOCUMENT.VERSION_CREATED"
+    ],
+    "listensTo": [
+      "DOCUMENT.UPDATED"
+    ],
     "notes": "Part of Documents aggregate. Listens to DOCUMENT.UPDATED to create snapshots. Append-only for audit compliance."
   },
   "createdAt": "2026-01-12T10:31:20.829Z",
-  "updatedAt": "2026-01-12T10:31:20.829Z"
+  "updatedAt": "2026-01-12T10:31:20.829Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

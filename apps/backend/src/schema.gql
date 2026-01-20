@@ -251,6 +251,11 @@ type AuthUser {
   username: String
 }
 
+input BooleanFieldComparison {
+  is: Boolean
+  isNot: Boolean
+}
+
 type ChangeDetails {
   """JSON string of new values"""
   after: String
@@ -378,11 +383,24 @@ input CreateOneLegalRulingInput {
   legalRuling: CreateLegalRulingInput!
 }
 
+input CreateOneUserInput {
+  """The record to create"""
+  user: CreateUserInput!
+}
+
 input CreateRulingMetadataInput {
   keywords: [String!]
   legalArea: String
   relatedCases: [String!]
   sourceReference: String
+}
+
+input CreateUserInput {
+  email: String!
+  firstName: String
+  isActive: Boolean
+  lastName: String
+  username: String
 }
 
 input CursorPaging {
@@ -446,6 +464,16 @@ input DeleteOneLegalQueryInput {
 }
 
 input DeleteOneLegalRulingInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneUserInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneUserSessionInput {
   """The id of the record to delete."""
   id: ID!
 }
@@ -1213,6 +1241,7 @@ type Mutation {
   createOneLegalDocument(input: CreateOneLegalDocumentInput!): LegalDocument!
   createOneLegalQuery(input: CreateOneLegalQueryInput!): LegalQuery!
   createOneLegalRuling(input: CreateOneLegalRulingInput!): LegalRuling!
+  createOneUser(input: CreateOneUserInput!): User!
   deleteDocument(id: ID!): Boolean! @deprecated(reason: "Use deleteOneLegalDocument instead")
   deleteDocumentV2(input: DeleteDocumentInputV2!): Boolean!
 
@@ -1222,6 +1251,8 @@ type Mutation {
   deleteOneLegalDocument(input: DeleteOneLegalDocumentInput!): LegalDocumentDeleteResponse!
   deleteOneLegalQuery(input: DeleteOneLegalQueryInput!): LegalQueryDeleteResponse!
   deleteOneLegalRuling(input: DeleteOneLegalRulingInput!): LegalRulingDeleteResponse!
+  deleteOneUser(input: DeleteOneUserInput!): UserDeleteResponse!
+  deleteOneUserSession(input: DeleteOneUserSessionInput!): UserSessionDeleteResponse!
 
   """Queue a document for PDF export"""
   exportDocumentToPdf(input: ExportDocumentToPdfInput!): PdfExportJob!
@@ -1248,6 +1279,7 @@ type Mutation {
   updateOneLegalDocument(input: UpdateOneLegalDocumentInput!): LegalDocument!
   updateOneLegalQuery(input: UpdateOneLegalQueryInput!): LegalQuery!
   updateOneLegalRuling(input: UpdateOneLegalRulingInput!): LegalRuling!
+  updateOneUser(input: UpdateOneUserInput!): User!
 }
 
 type PageInfo {
@@ -1473,6 +1505,42 @@ type Query {
 
   """Full-text search for legal rulings with relevance ranking"""
   searchLegalRulings(input: SearchLegalRulingsInput!): LegalRulingSearchResponse!
+  user(
+    """The id of the record to find."""
+    id: ID!
+  ): User!
+  userAggregate(
+    """Filter to find records to aggregate on"""
+    filter: UserAggregateFilter
+  ): [UserAggregateResponse!]!
+  userSession(
+    """The id of the record to find."""
+    id: ID!
+  ): UserSession!
+  userSessionAggregate(
+    """Filter to find records to aggregate on"""
+    filter: UserSessionAggregateFilter
+  ): [UserSessionAggregateResponse!]!
+  userSessions(
+    """Specify to filter the records returned."""
+    filter: UserSessionFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [UserSessionSort!]! = []
+  ): UserSessionConnection!
+  users(
+    """Specify to filter the records returned."""
+    filter: UserFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [UserSort!]! = []
+  ): UserConnection!
 }
 
 input RefreshTokenInput {
@@ -1550,6 +1618,23 @@ input SearchLegalRulingsInput {
 enum SessionMode {
   LAWYER
   SIMPLE
+}
+
+input SessionModeFilterComparison {
+  eq: SessionMode
+  gt: SessionMode
+  gte: SessionMode
+  iLike: SessionMode
+  in: [SessionMode!]
+  is: Boolean
+  isNot: Boolean
+  like: SessionMode
+  lt: SessionMode
+  lte: SessionMode
+  neq: SessionMode
+  notILike: SessionMode
+  notIn: [SessionMode!]
+  notLike: SessionMode
 }
 
 """Sort Directions"""
@@ -1677,6 +1762,23 @@ input UpdateOneLegalRulingInput {
   update: UpdateLegalRulingInput!
 }
 
+input UpdateOneUserInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateUserInput!
+}
+
+input UpdateUserInput {
+  disclaimerAccepted: Boolean
+  email: String
+  firstName: String
+  isActive: Boolean
+  lastName: String
+  username: String
+}
+
 type User {
   createdAt: DateTime!
   disclaimerAccepted: Boolean!
@@ -1686,8 +1788,98 @@ type User {
   id: ID!
   isActive: Boolean!
   lastName: String
+  sessions: UserSession
   updatedAt: DateTime!
   username: String
+}
+
+input UserAggregateFilter {
+  and: [UserAggregateFilter!]
+  createdAt: DateFieldComparison
+  email: StringFieldComparison
+  id: IDFilterComparison
+  isActive: BooleanFieldComparison
+  or: [UserAggregateFilter!]
+  updatedAt: DateFieldComparison
+}
+
+type UserAggregateGroupBy {
+  createdAt(by: GroupBy! = DAY): DateTime
+  email: String
+  id: ID
+  isActive: Boolean
+  updatedAt(by: GroupBy! = DAY): DateTime
+}
+
+type UserAggregateResponse {
+  count: UserCountAggregate
+  groupBy: UserAggregateGroupBy
+  max: UserMaxAggregate
+  min: UserMinAggregate
+}
+
+type UserConnection {
+  """Array of edges."""
+  edges: [UserEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type UserCountAggregate {
+  createdAt: Int
+  email: Int
+  id: Int
+  isActive: Int
+  updatedAt: Int
+}
+
+type UserDeleteResponse {
+  createdAt: DateTime
+  disclaimerAccepted: Boolean
+  disclaimerAcceptedAt: DateTime
+  email: String
+  firstName: String
+  id: ID
+  isActive: Boolean
+  lastName: String
+  updatedAt: DateTime
+  username: String
+}
+
+type UserEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the User"""
+  node: User!
+}
+
+input UserFilter {
+  and: [UserFilter!]
+  createdAt: DateFieldComparison
+  email: StringFieldComparison
+  id: IDFilterComparison
+  isActive: BooleanFieldComparison
+  or: [UserFilter!]
+  updatedAt: DateFieldComparison
+}
+
+type UserMaxAggregate {
+  createdAt: DateTime
+  email: String
+  id: ID
+  updatedAt: DateTime
+}
+
+type UserMinAggregate {
+  createdAt: DateTime
+  email: String
+  id: ID
+  updatedAt: DateTime
 }
 
 type UserSession {
@@ -1697,5 +1889,122 @@ type UserSession {
   mode: SessionMode!
   startedAt: DateTime
   updatedAt: DateTime!
+  user: User!
   userId: String!
+}
+
+input UserSessionAggregateFilter {
+  and: [UserSessionAggregateFilter!]
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  mode: SessionModeFilterComparison
+  or: [UserSessionAggregateFilter!]
+  updatedAt: DateFieldComparison
+  userId: StringFieldComparison
+}
+
+type UserSessionAggregateGroupBy {
+  createdAt(by: GroupBy! = DAY): DateTime
+  id: ID
+  mode: SessionMode
+  updatedAt(by: GroupBy! = DAY): DateTime
+  userId: String
+}
+
+type UserSessionAggregateResponse {
+  count: UserSessionCountAggregate
+  groupBy: UserSessionAggregateGroupBy
+  max: UserSessionMaxAggregate
+  min: UserSessionMinAggregate
+}
+
+type UserSessionConnection {
+  """Array of edges."""
+  edges: [UserSessionEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type UserSessionCountAggregate {
+  createdAt: Int
+  id: Int
+  mode: Int
+  updatedAt: Int
+  userId: Int
+}
+
+type UserSessionDeleteResponse {
+  createdAt: DateTime
+  endedAt: DateTime
+  id: ID
+  mode: SessionMode
+  startedAt: DateTime
+  updatedAt: DateTime
+  userId: String
+}
+
+type UserSessionEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the UserSession"""
+  node: UserSession!
+}
+
+input UserSessionFilter {
+  and: [UserSessionFilter!]
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  mode: SessionModeFilterComparison
+  or: [UserSessionFilter!]
+  updatedAt: DateFieldComparison
+  userId: StringFieldComparison
+}
+
+type UserSessionMaxAggregate {
+  createdAt: DateTime
+  id: ID
+  mode: SessionMode
+  updatedAt: DateTime
+  userId: String
+}
+
+type UserSessionMinAggregate {
+  createdAt: DateTime
+  id: ID
+  mode: SessionMode
+  updatedAt: DateTime
+  userId: String
+}
+
+input UserSessionSort {
+  direction: SortDirection!
+  field: UserSessionSortFields!
+  nulls: SortNulls
+}
+
+enum UserSessionSortFields {
+  createdAt
+  id
+  mode
+  updatedAt
+  userId
+}
+
+input UserSort {
+  direction: SortDirection!
+  field: UserSortFields!
+  nulls: SortNulls
+}
+
+enum UserSortFields {
+  createdAt
+  email
+  id
+  isActive
+  updatedAt
 }

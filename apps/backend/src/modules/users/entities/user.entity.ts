@@ -7,7 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { ObjectType, Field, ID, GraphQLISODateTime } from '@nestjs/graphql';
-import { IDField, FilterableField, QueryOptions } from '@ptc-org/nestjs-query-graphql';
+import { IDField, FilterableField, QueryOptions, Relation } from '@ptc-org/nestjs-query-graphql';
 import { UserSession } from './user-session.entity';
 
 /**
@@ -21,6 +21,7 @@ import { UserSession } from './user-session.entity';
 @Entity('users')
 @ObjectType('User')
 @QueryOptions({ enableTotalCount: true })
+@Relation('sessions', () => UserSession, { nullable: true })
 export class User {
   @PrimaryGeneratedColumn('uuid')
   @IDField(() => ID)

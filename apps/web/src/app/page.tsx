@@ -326,7 +326,7 @@ const IndexPageContent = () => {
 
   useEffect(() => {
     if (!isLoading && data?.authenticated) {
-      go({ to: '/documents', type: 'replace' });
+      go({ to: '/dashboard', type: 'replace' });
     }
   }, [data, isLoading, go]);
 

@@ -10,5 +10,8 @@
     "usage-entity"
   ],
   "createdAt": "2026-01-12T10:31:20.850Z",
-  "updatedAt": "2026-01-12T10:31:20.850Z"
+  "updatedAt": "2026-01-12T10:31:20.850Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

@@ -10,5 +10,8 @@
     "notification-graphql"
   ],
   "createdAt": "2026-01-12T10:31:20.846Z",
-  "updatedAt": "2026-01-12T10:31:20.846Z"
+  "updatedAt": "2026-01-12T10:31:20.846Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

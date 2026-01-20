@@ -12,11 +12,21 @@
     "aggregateRoot": "Subscription",
     "module": "apps/backend/src/modules/billing",
     "layer": "Domain",
-    "patterns": ["DDD Entity", "Value Objects for pricing"],
-    "emits": ["SUBSCRIPTION.CREATED", "SUBSCRIPTION.UPGRADED", "SUBSCRIPTION.CANCELLED"],
+    "patterns": [
+      "DDD Entity",
+      "Value Objects for pricing"
+    ],
+    "emits": [
+      "SUBSCRIPTION.CREATED",
+      "SUBSCRIPTION.UPGRADED",
+      "SUBSCRIPTION.CANCELLED"
+    ],
     "listensTo": [],
     "notes": "Billing bounded context aggregate. SubscriptionPlan is a reference entity, UserSubscription tracks user state."
   },
   "createdAt": "2026-01-12T10:31:20.851Z",
-  "updatedAt": "2026-01-12T10:31:20.851Z"
+  "updatedAt": "2026-01-12T10:31:20.851Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

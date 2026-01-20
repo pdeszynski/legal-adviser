@@ -22,3 +22,10 @@ usageStats:
 - **Rejected:** Component composition with separate EditActions/FailedActions components - would scatter logic and require prop drilling
 - **Trade-offs:** Single component is easier to understand and modify but could get complex if many status-specific features are added. Current approach stays readable.
 - **Breaking if changed:** Adding many more status-specific features would make this component too large - would then need to refactor into variants or composition.
+
+### Color-coded badges for Actions and ResourceTypes (CREATE=green, UPDATE=blue, DELETE=red) rather than icon-only or text-only display (2026-01-20)
+- **Context:** Audit table with many rows needs quick visual scanning to identify action patterns and resource types
+- **Why:** Color coding + text is accessible (colorblind users can read text) while enabling pattern recognition. Icons alone would require legend lookup. Text alone is slower to scan
+- **Rejected:** Icon-only indicators save space but fail accessibility. Text-only is accessible but slow to scan. Tooltip-revealed details hide critical info
+- **Trade-offs:** Takes more horizontal space but improves scanning speed. Requires consistent color scheme across app to avoid confusion
+- **Breaking if changed:** If color scheme changes or badges removed, developers lose at-a-glance action type understanding. Users with color vision deficiency would lose pattern recognition

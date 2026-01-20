@@ -12,11 +12,23 @@
     "aggregateRoot": "Notification",
     "module": "apps/backend/src/modules/notifications",
     "layer": "Domain",
-    "patterns": ["DDD Entity", "Event Listener"],
-    "emits": ["NOTIFICATION.CREATED", "NOTIFICATION.READ"],
-    "listensTo": ["DOCUMENT.GENERATION_COMPLETED", "QUERY.ANSWERED"],
+    "patterns": [
+      "DDD Entity",
+      "Event Listener"
+    ],
+    "emits": [
+      "NOTIFICATION.CREATED",
+      "NOTIFICATION.READ"
+    ],
+    "listensTo": [
+      "DOCUMENT.GENERATION_COMPLETED",
+      "QUERY.ANSWERED"
+    ],
     "notes": "Reacts to domain events to create user notifications. No direct module imports - event-driven only per constitution."
   },
   "createdAt": "2026-01-12T10:31:20.845Z",
-  "updatedAt": "2026-01-12T10:31:20.845Z"
+  "updatedAt": "2026-01-12T10:31:20.845Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

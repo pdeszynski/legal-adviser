@@ -10,5 +10,8 @@
     "chat-ui-component"
   ],
   "createdAt": "2026-01-12T10:31:20.832Z",
-  "updatedAt": "2026-01-12T10:31:20.832Z"
+  "updatedAt": "2026-01-12T10:31:20.832Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
 }

@@ -6,6 +6,7 @@ import {
   CreateCitationInput,
 } from './dto/legal-query.dto';
 import { LegalQuery, Citation } from './entities/legal-query.entity';
+import { StrictThrottle, SkipThrottle } from '../../shared/throttler';
 
 /**
  * Custom GraphQL Resolver for Legal Queries
@@ -37,6 +38,7 @@ export class QueriesResolver {
    * Query: Get queries by session ID
    * Convenience query for filtering by session - also available via legalQueries filter
    */
+  @SkipThrottle()
   @Query(() => [LegalQuery], {
     name: 'queriesBySession',
     description: 'Get all legal queries for a specific session',
@@ -51,6 +53,7 @@ export class QueriesResolver {
    * Query: Get pending queries (queries without answers)
    * Useful for monitoring AI processing queue
    */
+  @SkipThrottle()
   @Query(() => [LegalQuery], {
     name: 'pendingQueries',
     description: 'Get legal queries that are waiting for AI answers',
@@ -88,6 +91,7 @@ export class QueriesResolver {
    * }
    * ```
    */
+  @StrictThrottle()
   @Mutation(() => LegalQuery, {
     name: 'submitLegalQuery',
     description: 'Submit a new legal query for AI processing',

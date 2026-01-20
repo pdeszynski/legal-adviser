@@ -5,9 +5,9 @@ relevantTo: [database]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 69
-  referenced: 4
-  successfulFeatures: 4
+  loaded: 72
+  referenced: 5
+  successfulFeatures: 5
 ---
 # database
 
@@ -117,3 +117,15 @@ usageStats:
 - **Situation:** User password fixtures needed consistent hashing to match test credentials (admin@refine.dev / password)
 - **Root cause:** Bcrypt with random salt generates different hash each execution. For fixtures to work, same plaintext password must always hash to same value for login to work consistently. 10 rounds chosen as security/speed balance
 - **How to avoid:** Fixtures must be re-seeded when password changes (--clean flag needed). Hashing is slow (0.5s per user) but necessary for security
+
+### Configured nested @Relation decorators on both User→UserSession (one-to-many) and UserSession→User (many-to-one) relationships (2026-01-20)
+- **Context:** Enabling full relationship traversal in GraphQL queries without manual resolver implementation
+- **Why:** nestjs-query automatically generates nested query resolvers when @Relation is present. Bidirectional relations allow queries like user.sessions and session.user without extra resolver code
+- **Rejected:** Single-direction relation - would require separate resolvers to query back-references
+- **Trade-offs:** Easier: GraphQL schema automatically includes nested queries. Harder: Must maintain relation consistency on both sides, potential circular reference issues
+- **Breaking if changed:** Removing @Relation from either side breaks nested GraphQL queries on that direction, requires manual resolver implementation
+
+#### [Pattern] Storing user.author as full object with id, name, email, ipAddress in audit log rather than just user ID (2026-01-20)
+- **Problem solved:** Need to display audit log without N+1 queries joining against current Users table which may have changed
+- **Why this works:** Audit logs are immutable snapshots. Denormalizing user info preserves 'who acted' even if user record is deleted or email changed. Avoids join queries
+- **Trade-offs:** More storage (duplicate user data) but O(1) query performance and referential integrity. User changes don't affect audit log accuracy

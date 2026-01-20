@@ -5,9 +5,9 @@ relevantTo: [architecture]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 68
-  referenced: 2
-  successfulFeatures: 2
+  loaded: 69
+  referenced: 3
+  successfulFeatures: 3
 ---
 # architecture
 
@@ -604,3 +604,68 @@ Features should include:
 - **Rejected:** Single-file auth handler would be faster to write but couples transport to logic, making REST/GraphQL refactoring risky
 - **Trade-offs:** More files and imports required but enables independent testing of controller/resolver from service; service can be reused by multiple transports
 - **Breaking if changed:** If AuthService API changes, both controller AND resolver must be updated; forgetting to update one creates inconsistent behavior between REST/GraphQL
+
+#### [Gotcha] Initially created custom GqlThrottlerGuard wrapper, then reverted to standard ThrottlerGuard after discovering it handles both GraphQL and REST transparently (2026-01-20)
+- **Situation:** Assumed GraphQL required custom guard implementation due to different request structure vs HTTP
+- **Root cause:** NestJS @nestjs/throttler has built-in GraphQL support through middleware that extracts IP before execution layer. Custom wrapper added complexity without benefit
+- **How to avoid:** Standard guard is simpler but less visible in resolver code (guard is global, not decorated per-resolver). Decorators provide discovery but don't replace guard responsibility
+
+#### [Pattern] Separated rate limiting concerns into composable decorators (@SkipThrottle, @StrictThrottle) while keeping guard application global, creating a hybrid intent-declaration + global-enforcement pattern (2026-01-20)
+- **Problem solved:** Needed to express rate limit intent at resolver level for maintainability while ensuring all endpoints are covered by default
+- **Why this works:** Global guard ensures no endpoint accidentally escapes rate limiting; decorators serve as documentation of special cases. Solves 'undecorated endpoints silently bypass security' problem while keeping per-resolver control
+- **Trade-offs:** Developers must understand both global guard + decorator intent; more discoverable than config map but requires discipline. Prevents accidental gaps at cost of dual-layer thinking
+
+### Used NestjsQueryGraphQLModule.forFeature() to auto-generate CRUD resolvers instead of manually implementing resolvers (2026-01-20)
+- **Context:** Refactoring User entity to use nestjs-query framework for GraphQL API
+- **Why:** Auto-generation reduces boilerplate and ensures consistency. nestjs-query handles resolver creation, validation, filtering, and pagination automatically based on entity decorators
+- **Rejected:** Manual resolver implementation - would require writing create, read, update, delete resolvers for each entity with duplicate validation and filtering logic
+- **Trade-offs:** Easier: Less code, consistent patterns, built-in filtering/sorting. Harder: Less control over resolver behavior, must follow nestjs-query conventions, debugging generated code
+- **Breaking if changed:** Removing NestjsQueryGraphQLModule loses all auto-generated resolvers. Must revert to manual resolver implementation with significant code duplication
+
+### Created separate UserOrmEntity and UserMapper to transform between domain (UserAggregate) and persistence (TypeORM) layers (2026-01-20)
+- **Context:** Maintaining DDD pattern while integrating with nestjs-query which requires TypeORM entities with decorators
+- **Why:** DDD requires domain entities to be persistence-agnostic. nestjs-query requires entities decorated with @Entity and @Relation which are infrastructure concerns. Mapper pattern isolates these concerns
+- **Rejected:** Adding @Entity and @Relation decorators directly to UserAggregate - would violate DDD separation of domain logic from infrastructure
+- **Trade-offs:** Easier: Clean domain model, infrastructure concerns isolated. Harder: Extra mapping layer, more files to maintain, slight performance overhead
+- **Breaking if changed:** Removing mapper pattern requires either: (1) polluting domain entity with infrastructure decorators, or (2) passing ORM entities through domain layer which violates DDD
+
+#### [Pattern] Used separate CreateUserInput and UpdateUserInput DTOs instead of single UserInput DTO (2026-01-20)
+- **Problem solved:** GraphQL input validation requires different rules for creation (all fields required) vs update (all fields optional)
+- **Why this works:** Separation allows different validation rules and field requirements. Create requires email/firstName/lastName, Update makes all optional. Single DTO would require nullable fields and conditional validation
+- **Trade-offs:** Easier: Clear validation rules per operation. Harder: More DTOs to maintain, more code
+
+### Implemented audit logging via global NestJS interceptor rather than scattered mutation-level decorators (2026-01-20)
+- **Context:** Needed to audit all GraphQL mutations without modifying each resolver
+- **Why:** Interceptor provides single point of control for cross-cutting concern. Ensures 100% coverage of mutations without developer effort at call-site. Centralizes audit logic and makes it easier to evolve audit rules.
+- **Rejected:** Per-resolver decorators - would require updating every mutation, risk of missed mutations, harder to maintain consistent audit behavior
+- **Trade-offs:** Easier: Universal coverage, single maintenance point. Harder: Mutation mapping logic concentrated in one place, requires understanding interceptor execution model for debugging
+- **Breaking if changed:** Removing interceptor loses audit for ALL mutations. No way to audit selectively per mutation without re-implementing decorator approach.
+
+#### [Pattern] Separated application layer (use case + service) from presentation layer (interceptor). Interceptor delegates to application service which delegates to use case. (2026-01-20)
+- **Problem solved:** Needed to maintain layered architecture while capturing mutations at HTTP level
+- **Why this works:** Allows audit logic to be tested independently of HTTP/GraphQL transport. Domain logic stays in use case, orchestration in service, transport concerns in interceptor. Multiple transport layers (REST, gRPC) could reuse same audit logic.
+- **Trade-offs:** Easier: Testing, reusability, separation of concerns. Harder: More files and indirection to follow the flow
+
+### Map GraphQL mutation names to audit action types (CREATE, UPDATE, DELETE) via naming convention rather than explicit configuration (2026-01-20)
+- **Context:** Needed to derive action type from mutation name without per-mutation setup
+- **Why:** Scalable - works for any mutation that follows naming convention (createUser, updateDocument, deleteSession). Zero configuration overhead. Self-documenting if convention is consistent.
+- **Rejected:** Configuration map of mutation name to action - would require maintenance as new mutations added. Decorators on resolvers - couples audit logic to resolvers.
+- **Trade-offs:** Easier: No config drift, automatic for new mutations. Harder: Requires enforcing naming convention, mutation names must be semantic
+- **Breaking if changed:** If mutations don't follow naming convention, audit actions will be wrong or default to generic type. If logic for deriving action is removed, mutations won't be categorized.
+
+#### [Gotcha] Extracting user ID from JWT token in interceptor creates implicit dependency on auth implementation details (2026-01-20)
+- **Situation:** Interceptor accesses JWT payload directly from request context to get user ID for audit
+- **Root cause:** User ID needed immediately in interceptor, before resolver runs. Interceptor executes before guards/pipes that would validate token, so token structure assumed to be valid.
+- **How to avoid:** Easier: Capture user ID at right time. Harder: Tightly coupled to JWT payload structure, breaks if auth changes (switch to OIDC, different token format, etc.)
+
+### Read-only auditLogProvider implementation where create/update methods are no-ops rather than throwing errors (2026-01-20)
+- **Context:** Audit logs are immutable records created by backend interceptors, not user-facing mutations
+- **Why:** Allows seamless integration with Refine's AuditLogProvider interface without exposing a confusing error state. Backend enforcement via AuditLoggingInterceptor is the source of truth
+- **Rejected:** Throwing NotImplementedError on create/update would signal contract violation to Refine. Making auditLogProvider a separate non-mutation resource
+- **Trade-offs:** Simpler integration but obscures immutability at type level. Developers must understand that audit logs are backend-managed. Guards database constraints via backend-only logic
+- **Breaking if changed:** If audit logs become mutable in future, implementations assuming no-op behavior will silently fail to persist changes
+
+#### [Pattern] Backend auto-generates audit logs via AuditLoggingInterceptor on every mutation, frontend only reads via auditLogProvider (2026-01-20)
+- **Problem solved:** Need comprehensive 'who did what when' tracking across all resources without duplicating audit logic
+- **Why this works:** Interceptor captures full mutation context (user, timestamp, changes) at source. Frontend reading immutable logs prevents inconsistency. Single source of truth in backend
+- **Trade-offs:** Frontend can't create audit records (simpler contract) but dependent on backend always capturing them. Audit visibility lag if backend logs asynchronously
