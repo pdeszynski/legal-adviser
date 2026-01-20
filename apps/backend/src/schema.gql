@@ -229,6 +229,28 @@ input AuditResourceTypeFilterComparison {
   notLike: AuditResourceType
 }
 
+type AuthPayload {
+  """JWT access token"""
+  accessToken: String!
+
+  """JWT refresh token for obtaining new access tokens"""
+  refreshToken: String!
+
+  """Authenticated user information"""
+  user: AuthUser!
+}
+
+type AuthUser {
+  disclaimerAccepted: Boolean!
+  disclaimerAcceptedAt: DateTime
+  email: String!
+  firstName: String
+  id: ID!
+  isActive: Boolean!
+  lastName: String
+  username: String
+}
+
 type ChangeDetails {
   """JSON string of new values"""
   after: String
@@ -535,6 +557,14 @@ enum DocumentTypeV2 {
   POLICY
   REGULATION
   STATUTE
+}
+
+input ExportDocumentToPdfInput {
+  """ID of the document to export"""
+  documentId: ID!
+
+  """PDF export options"""
+  options: PdfExportOptionsInput
 }
 
 input FilterLegalRulingsInput {
@@ -1161,7 +1191,18 @@ enum LegalRulingSortFields {
   updatedAt
 }
 
+input LoginInput {
+  """User password"""
+  password: String!
+
+  """Username or email address"""
+  username: String!
+}
+
 type Mutation {
+  """Accept the legal disclaimer for the current user"""
+  acceptDisclaimer: AuthUser!
+
   """Add a citation to an existing legal query"""
   addCitationToQuery(citation: CreateCitationInput!, queryId: ID!): LegalQuery!
 
@@ -1181,8 +1222,23 @@ type Mutation {
   deleteOneLegalDocument(input: DeleteOneLegalDocumentInput!): LegalDocumentDeleteResponse!
   deleteOneLegalQuery(input: DeleteOneLegalQueryInput!): LegalQueryDeleteResponse!
   deleteOneLegalRuling(input: DeleteOneLegalRulingInput!): LegalRulingDeleteResponse!
+
+  """Queue a document for PDF export"""
+  exportDocumentToPdf(input: ExportDocumentToPdfInput!): PdfExportJob!
+
+  """Export a document to PDF and wait for the result"""
+  exportDocumentToPdfSync(input: ExportDocumentToPdfInput!): PdfExportResult!
   generateDocument(input: GenerateDocumentInput!): LegalDocument!
+
+  """Authenticate user with username/email and password"""
+  login(input: LoginInput!): AuthPayload!
   publishDocumentV2(input: PublishDocumentInputV2!): LegalDocumentV2!
+
+  """Refresh access token using a valid refresh token"""
+  refreshToken(input: RefreshTokenInput!): RefreshTokenPayload!
+
+  """Register a new user account"""
+  register(input: RegisterInput!): AuthPayload!
 
   """Submit a new legal query for AI processing"""
   submitLegalQuery(input: SubmitLegalQueryInput!): LegalQuery!
@@ -1206,6 +1262,84 @@ type PageInfo {
 
   """The cursor of the first returned record."""
   startCursor: ConnectionCursor
+}
+
+type PdfExportJob {
+  """Document ID being exported"""
+  documentId: ID!
+
+  """Unique job ID for tracking"""
+  jobId: ID!
+
+  """Message describing current state"""
+  message: String!
+
+  """Current status of the job"""
+  status: String!
+}
+
+input PdfExportOptionsInput {
+  """Page format (default: A4)"""
+  format: PdfPageFormat = A4
+
+  """Include footer with page numbers"""
+  includeFooter: Boolean = true
+
+  """Include header with document title and date"""
+  includeHeader: Boolean = true
+
+  """Include table of contents"""
+  includeTableOfContents: Boolean = false
+
+  """Language for formatting (default: "pl" for Polish)"""
+  language: String = "pl"
+
+  """Watermark text (e.g., "DRAFT")"""
+  watermark: String
+}
+
+type PdfExportResult {
+  """Document ID that was exported"""
+  documentId: ID!
+
+  """Size of the PDF file in bytes"""
+  fileSizeBytes: Float!
+
+  """Generated filename for the PDF"""
+  filename: String!
+
+  """Time taken to generate the PDF in milliseconds"""
+  generationTimeMs: Float!
+
+  """Number of pages in the PDF"""
+  pageCount: Float!
+
+  """Base64-encoded PDF content"""
+  pdfBase64: String!
+}
+
+type PdfExportStatus {
+  """Error message if job failed"""
+  error: String
+
+  """Job ID"""
+  jobId: ID!
+
+  """Job progress (0-100)"""
+  progress: Float
+
+  """Result if job is completed"""
+  result: PdfExportResult
+
+  """Current job status"""
+  status: String!
+}
+
+"""Page format for PDF export"""
+enum PdfPageFormat {
+  A4
+  LEGAL
+  LETTER
 }
 
 input PublishDocumentInputV2 {
@@ -1325,6 +1459,12 @@ type Query {
   """
   legalRulingsFromHigherCourts(limit: Int = 20): [LegalRuling!]!
 
+  """Get current authenticated user information"""
+  me: AuthUser
+
+  """Get the status of a PDF export job"""
+  pdfExportStatus(jobId: ID!): PdfExportStatus!
+
   """Get legal queries that are waiting for AI answers"""
   pendingQueries(limit: Float): [LegalQuery!]!
 
@@ -1333,6 +1473,36 @@ type Query {
 
   """Full-text search for legal rulings with relevance ranking"""
   searchLegalRulings(input: SearchLegalRulingsInput!): LegalRulingSearchResponse!
+}
+
+input RefreshTokenInput {
+  """Refresh token"""
+  refreshToken: String!
+}
+
+type RefreshTokenPayload {
+  """New JWT access token"""
+  accessToken: String!
+
+  """New JWT refresh token"""
+  refreshToken: String!
+}
+
+input RegisterInput {
+  """Email address"""
+  email: String!
+
+  """First name"""
+  firstName: String
+
+  """Last name"""
+  lastName: String
+
+  """User password"""
+  password: String!
+
+  """Optional username"""
+  username: String
 }
 
 type RelatedDocumentLink {
@@ -1510,6 +1680,7 @@ input UpdateOneLegalRulingInput {
 type User {
   createdAt: DateTime!
   disclaimerAccepted: Boolean!
+  disclaimerAcceptedAt: DateTime
   email: String!
   firstName: String
   id: ID!

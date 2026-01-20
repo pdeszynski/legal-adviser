@@ -1,0 +1,21 @@
+{
+  "category": "bug",
+  "description": "Configure CORS in NestJS main.ts by adding app.enableCors() after app creation. Set origin to allow frontend URL, enable credentials for cookie and authentication header handling. Ensures frontend can communicate with backend auth endpoints.",
+  "title": "Enable CORS in main.ts",
+  "dependencies": [
+    "debug-backend-auth-errors"
+  ],
+  "priority": 1,
+  "status": "verified",
+  "id": "feature-1768815719992-876c473nn",
+  "descriptionHistory": [
+    {
+      "description": "Configure CORS in NestJS main.ts by adding app.enableCors() after app creation. Set origin to allow frontend URL, enable credentials for cookie and authentication header handling. Ensures frontend can communicate with backend auth endpoints.",
+      "timestamp": "2026-01-19T09:41:59.993Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "automaker",
+  "startedAt": "2026-01-20T07:15:29.730Z",
+  "updatedAt": "2026-01-20T07:17:17.169Z"
+}

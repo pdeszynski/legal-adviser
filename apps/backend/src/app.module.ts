@@ -11,7 +11,9 @@ import { AppService } from './app.service';
 import { AiClientModule } from './shared/ai-client/ai-client.module';
 import { StreamingModule } from './shared/streaming';
 import { QueueRegistry } from './shared/queues';
+import { CsrfModule } from './shared/csrf';
 import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { QueriesModule } from './modules/queries/queries.module';
@@ -80,7 +82,10 @@ import { PresentationModule } from './presentation/presentation.module';
     }),
     AiClientModule,
     StreamingModule,
+    // CSRF Protection for GraphQL mutations (double-submit cookie pattern)
+    CsrfModule,
     UsersModule,
+    AuthModule,
     DocumentsModule,
     AuditLogModule,
     QueriesModule,

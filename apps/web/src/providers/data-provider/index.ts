@@ -1,6 +1,7 @@
 "use client";
 
 import type { DataProvider, BaseRecord, CrudFilters, CrudSorting, Pagination } from "@refinedev/core";
+import { getAccessToken } from "../auth-provider/auth-provider.client";
 
 /**
  * GraphQL Data Provider
@@ -8,20 +9,30 @@ import type { DataProvider, BaseRecord, CrudFilters, CrudSorting, Pagination } f
  * Per constitution: GraphQL is the primary API for data operations.
  * This provider connects to the NestJS GraphQL endpoint.
  */
-const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:4000/graphql";
+const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:3001/graphql";
 
 /**
  * Execute a GraphQL query or mutation
+ * Automatically includes authentication token if available
  */
 async function executeGraphQL<T>(
   query: string,
   variables?: Record<string, unknown>
 ): Promise<T> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  // Include access token if available
+  const accessToken = getAccessToken();
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
   const response = await fetch(GRAPHQL_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
+    credentials: "include", // Required for CORS to send/receive cookies
     body: JSON.stringify({
       query,
       variables,
@@ -120,6 +131,7 @@ function buildGraphQLPaging(pagination?: Pagination): { first: number } {
  * GraphQL Data Provider for Refine
  *
  * Implements the DataProvider interface using GraphQL queries and mutations.
+ * Automatically includes authentication tokens for protected endpoints.
  */
 export const dataProvider: DataProvider = {
   /**

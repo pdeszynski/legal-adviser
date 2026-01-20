@@ -2,11 +2,29 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { setupBullBoard } from './shared/queues/bull-board.setup';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Enable CORS for frontend access (Next.js dev server runs on different port)
+  app.enableCors({
+    origin: [
+      'http://localhost:3000', // Next.js frontend (default port)
+      'http://localhost:3001', // Alternative dev port
+      'http://localhost:4000', // Alternative dev port
+      process.env.FRONTEND_URL, // Production frontend URL
+    ].filter(Boolean) as string[],
+    credentials: true, // Allow cookies for authentication
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-CSRF-Token'],
+    exposedHeaders: ['Set-Cookie'], // Allow frontend to see Set-Cookie header
+  });
+
+  // Enable cookie parsing for CSRF token validation
+  app.use(cookieParser());
 
   // Configure helmet for security headers and XSS protection
   app.use(
@@ -65,6 +83,6 @@ async function bootstrap() {
     );
   }
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3001);
 }
 void bootstrap();

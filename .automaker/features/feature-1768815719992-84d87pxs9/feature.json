@@ -1,0 +1,21 @@
+{
+  "category": "bug",
+  "description": "Add AuthModule import to main application module. Include 'import { AuthModule } from './modules/auth/auth.module';' and add AuthModule to the imports array. This registers the /auth/login endpoint in the backend.",
+  "title": "Import AuthModule in app.module.ts",
+  "dependencies": [
+    "debug-backend-auth-errors"
+  ],
+  "priority": 1,
+  "status": "verified",
+  "id": "feature-1768815719992-84d87pxs9",
+  "descriptionHistory": [
+    {
+      "description": "Add AuthModule import to main application module. Include 'import { AuthModule } from './modules/auth/auth.module';' and add AuthModule to the imports array. This registers the /auth/login endpoint in the backend.",
+      "timestamp": "2026-01-19T09:41:59.992Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "automaker",
+  "startedAt": "2026-01-20T07:13:01.612Z",
+  "updatedAt": "2026-01-20T07:15:14.858Z"
+}

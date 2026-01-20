@@ -3,18 +3,34 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+/**
+ * JWT payload structure for authentication tokens
+ */
 interface JwtPayload {
-  sub: number;
+  sub: string; // User UUID
   username: string;
+  email: string;
+  roles: string[];
+  type?: 'access' | 'refresh';
+}
+
+/**
+ * User data extracted from validated JWT token
+ * Available in request.user after authentication
+ */
+export interface ValidatedUser {
+  userId: string; // User UUID
+  username: string;
+  email: string;
   roles: string[];
 }
 
-interface ValidatedUser {
-  userId: number;
-  username: string;
-  roles: string[];
-}
-
+/**
+ * JWT Strategy for Passport authentication
+ *
+ * Validates JWT tokens from Authorization header
+ * and extracts user information for the request context.
+ */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private configService: ConfigService) {
@@ -25,11 +41,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  /**
+   * Validate and transform JWT payload to user object
+   * Called automatically by Passport after token verification
+   */
   validate(payload: JwtPayload): ValidatedUser {
     return {
       userId: payload.sub,
       username: payload.username,
-      roles: payload.roles,
+      email: payload.email,
+      roles: payload.roles || ['user'],
     };
   }
 }

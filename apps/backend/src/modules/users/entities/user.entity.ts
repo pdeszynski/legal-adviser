@@ -50,6 +50,17 @@ export class User {
   @Field()
   disclaimerAccepted: boolean;
 
+  @Column({ type: 'timestamp', nullable: true })
+  @Field(() => GraphQLISODateTime, { nullable: true })
+  disclaimerAcceptedAt: Date | null;
+
+  /**
+   * Hashed password using bcrypt
+   * This field is not exposed via GraphQL for security reasons
+   */
+  @Column({ type: 'varchar', length: 255, nullable: true, select: false })
+  passwordHash: string | null;
+
   @OneToMany(() => UserSession, (session) => session.user, { cascade: true })
   sessions: UserSession[];
 

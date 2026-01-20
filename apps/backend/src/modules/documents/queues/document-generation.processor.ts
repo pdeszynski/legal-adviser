@@ -1,11 +1,6 @@
-import {
-  Processor,
-  Process,
-  OnQueueFailed,
-  OnQueueCompleted,
-} from '@nestjs/bull';
-import { Logger } from '@nestjs/common';
-import type { Job } from 'bull';
+import { OnQueueFailed, OnQueueCompleted, InjectQueue } from '@nestjs/bull';
+import { Logger, Injectable, OnModuleInit } from '@nestjs/common';
+import type { Job, Queue } from 'bull';
 import { QUEUE_NAMES } from '../../../shared/queues/base/queue-names';
 import { AiClientService } from '../../../shared/ai-client/ai-client.service';
 import { DocumentType as AiDocumentType } from '../../../shared/ai-client/ai-client.types';
@@ -34,8 +29,8 @@ import type {
  * - Failed jobs are logged and document status is updated to FAILED
  * - Polling timeout prevents indefinite waiting for AI service
  */
-@Processor(QUEUE_NAMES.DOCUMENT.GENERATION)
-export class DocumentGenerationProcessor {
+@Injectable()
+export class DocumentGenerationProcessor implements OnModuleInit {
   private readonly logger = new Logger(DocumentGenerationProcessor.name);
 
   /**
@@ -54,10 +49,46 @@ export class DocumentGenerationProcessor {
   private readonly MAX_POLL_INTERVAL_MS = 30000;
 
   constructor(
+    @InjectQueue(QUEUE_NAMES.DOCUMENT.GENERATION)
+    private readonly documentGenerationQueue: Queue<DocumentGenerationJobData>,
     private readonly aiClientService: AiClientService,
     private readonly documentsService: DocumentsService,
     private readonly progressPubSub: DocumentProgressPubSubService,
   ) {}
+
+  onModuleInit() {
+    // Manually register the process function to avoid double-registration errors
+    // if the module is instantiated multiple times.
+    try {
+      this.documentGenerationQueue.process(async (job) => {
+        return this.process(job);
+      });
+
+      // Register event listeners
+      this.documentGenerationQueue.on('completed', (job, result) => {
+        this.onCompleted(
+          job as Job<DocumentGenerationJobData>,
+          result as DocumentGenerationJobResult,
+        );
+      });
+
+      this.documentGenerationQueue.on('failed', (job, err) => {
+        this.onFailed(job as Job<DocumentGenerationJobData>, err);
+      });
+    } catch (error) {
+      // If handler is already set, we can ignore this error for the duplicate instance
+      if (
+        error instanceof Error &&
+        error.message.includes('Cannot define the same handler twice')
+      ) {
+        this.logger.warn(
+          'Queue handler already registered (duplicate module instantiation detected). Skipping registration.',
+        );
+      } else {
+        throw error;
+      }
+    }
+  }
 
   /**
    * Process a document generation job
@@ -65,7 +96,6 @@ export class DocumentGenerationProcessor {
    * Main entry point for processing document generation jobs.
    * Coordinates the entire generation workflow.
    */
-  @Process()
   async process(
     job: Job<DocumentGenerationJobData>,
   ): Promise<DocumentGenerationJobResult> {
@@ -80,7 +110,12 @@ export class DocumentGenerationProcessor {
     try {
       // Update job progress and emit SSE event
       await job.progress(10);
-      this.publishProgress(documentId, sessionId, 10, 'Starting document generation...');
+      this.publishProgress(
+        documentId,
+        sessionId,
+        10,
+        'Starting document generation...',
+      );
 
       // Step 1: Initiate document generation with AI service
       this.logger.debug(`Initiating AI generation for document ${documentId}`);
@@ -97,13 +132,28 @@ export class DocumentGenerationProcessor {
       );
 
       await job.progress(30);
-      this.publishProgress(documentId, sessionId, 30, 'AI engine processing request...');
+      this.publishProgress(
+        documentId,
+        sessionId,
+        30,
+        'AI engine processing request...',
+      );
 
       // Step 2: Poll for completion (with progress streaming)
-      const content = await this.pollForCompletion(job, taskId, documentId, sessionId);
+      const content = await this.pollForCompletion(
+        job,
+        taskId,
+        documentId,
+        sessionId,
+      );
 
       await job.progress(90);
-      this.publishProgress(documentId, sessionId, 90, 'Saving generated content...');
+      this.publishProgress(
+        documentId,
+        sessionId,
+        90,
+        'Saving generated content...',
+      );
 
       // Step 3: Complete document generation
       await this.documentsService.completeGeneration(documentId, content);
@@ -274,7 +324,6 @@ export class DocumentGenerationProcessor {
   /**
    * Handle job completion event
    */
-  @OnQueueCompleted()
   onCompleted(
     job: Job<DocumentGenerationJobData>,
     result: DocumentGenerationJobResult,
@@ -287,7 +336,6 @@ export class DocumentGenerationProcessor {
   /**
    * Handle job failure event
    */
-  @OnQueueFailed()
   onFailed(job: Job<DocumentGenerationJobData>, error: Error): void {
     this.logger.error(
       `Job ${job.id} failed for document ${job.data.documentId}: ${error.message}`,

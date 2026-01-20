@@ -251,5 +251,81 @@
     "maxLength": "Maksymalna długość to {max} znaków",
     "min": "Wartość minimalna to {min}",
     "max": "Wartość maksymalna to {max}"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Wczesny dostęp Beta",
+      "title": "Pomoc prawna bez",
+      "titleHighlight": "bólu głowy",
+      "subtitle": "Natychmiast twórz profesjonalne dokumenty, analizuj akta spraw i otrzymuj zweryfikowane odpowiedzi prawne. Napędzane zaawansowaną AI, zaprojektowane dla ludzi.",
+      "cta": {
+        "primary": "Zacznij za darmo",
+        "secondary": "Jak to działa"
+      },
+      "features": {
+        "secure": "Bezpieczne i prywatne",
+        "encryption": "Szyfrowanie bankowe"
+      }
+    },
+    "features": {
+      "title": "Wszystko czego potrzebujesz",
+      "subtitle": "Kompleksowe narzędzia, które zastępują drogie konsultacje natychmiastową, dokładną pomocą AI.",
+      "drafting": {
+        "title": "Inteligentne tworzenie",
+        "description": "Generuj profesjonalne pozwy, umowy i oficjalne pisma w sekundy. Po prostu opisz swoją sytuację prostym językiem."
+      },
+      "analysis": {
+        "title": "Analiza sprawy",
+        "description": "Prześlij swoje dokumenty. Nasza AI identyfikuje mocne podstawy prawne i buduje wygrywającą strategię na podstawie głębokiej analizy."
+      },
+      "qa": {
+        "title": "Zweryfikowane odpowiedzi",
+        "description": "Otrzymuj cytowane odpowiedzi na złożone pytania. Nasz system odwołuje się do aktualnych przepisów i orzeczeń, aby dostarczyć fakty, a nie domysły."
+      }
+    },
+    "howItWorks": {
+      "title": "Jak to działa",
+      "subtitle": "Trzy proste kroki do rozwiązania Twojego problemu prawnego.",
+      "step1": {
+        "title": "Opowiedz nam swoją historię",
+        "description": "Opisz swój problem prostym językiem. Nie potrzeba żargonu prawniczego."
+      },
+      "step2": {
+        "title": "Analiza AI",
+        "description": "Nasze silniki skanują tysiące przepisów i orzeczeń natychmiast."
+      },
+      "step3": {
+        "title": "Otrzymaj rozwiązanie",
+        "description": "Otrzymaj gotowy do użycia dokument lub jasny plan działania."
+      }
+    },
+    "testimonials": {
+      "title": "Zaufali nam wcześni użytkownicy",
+      "testimonial1": {
+        "quote": "Byłem zdumiony, jak szybko wygenerował formalny list reklamacyjny. Zajęłoby mi to godziny na zbadanie właściwego formatu.",
+        "author": "Jan K.",
+        "role": "Właściciel małej firmy"
+      },
+      "testimonial2": {
+        "quote": "Funkcja analizy sprawy pomogła mi zrozumieć, że faktycznie miałem ważne roszczenie o odszkodowanie za opóźniony lot.",
+        "author": "Anna S.",
+        "role": "Freelancer"
+      },
+      "testimonial3": {
+        "quote": "Wreszcie narzędzie prawne, które nie jest onieśmielające. Interfejs jest przejrzysty, a odpowiedzi łatwe do zrozumienia.",
+        "author": "Michał R.",
+        "role": "Najemca"
+      }
+    },
+    "cta": {
+      "title": "Gotowy, aby zmienić swoją praktykę?",
+      "subtitle": "Dołącz do tysięcy użytkowników wykorzystujących AI, aby zaoszczędzić czas, zmniejszyć koszty i poprawić dokładność.",
+      "primaryButton": "Rozpocznij darmowy okres próbny",
+      "secondaryButton": "Skontaktuj się z działem sprzedaży",
+      "disclaimer": "Nie wymaga karty kredytowej dla standardowego okresu próbnego."
+    },
+    "footer": {
+      "copyright": "© {year} Legal AI. Wszelkie prawa zastrzeżone."
+    }
   }
 }

@@ -1,0 +1,21 @@
+{
+  "category": "bug",
+  "description": "Verify password hashing, comparison logic, and user lookup in database during login. Ensure bcrypt or similar library is configured correctly and user entity is properly queried.",
+  "title": "Validate User Credentials Flow",
+  "dependencies": [
+    "debug-backend-auth-errors"
+  ],
+  "priority": 1,
+  "status": "verified",
+  "id": "feature-1768813518815-etz9jcq2g",
+  "descriptionHistory": [
+    {
+      "description": "Verify password hashing, comparison logic, and user lookup in database during login. Ensure bcrypt or similar library is configured correctly and user entity is properly queried.",
+      "timestamp": "2026-01-19T09:05:18.815Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "automaker",
+  "startedAt": "2026-01-19T09:42:06.707Z",
+  "updatedAt": "2026-01-19T09:50:54.958Z"
+}

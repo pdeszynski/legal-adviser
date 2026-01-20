@@ -3,12 +3,16 @@
   "category": "Authentication",
   "title": "Frontend GraphQL Auth Provider",
   "description": "Replace mock auth provider with real GraphQL-based authentication. Implement login, logout, register, and session management using GraphQL mutations and queries.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [
-    "graphql-auth-mutations"
+    "graphql-auth-mutations",
+    "end-to-end-login-flow-verification"
   ],
   "createdAt": "2026-01-12T10:31:20.825Z",
-  "updatedAt": "2026-01-12T10:31:20.825Z"
+  "updatedAt": "2026-01-19T10:01:27.391Z",
+  "descriptionHistory": [],
+  "branchName": "automaker",
+  "startedAt": "2026-01-19T09:54:00.546Z"
 }

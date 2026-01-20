@@ -1,0 +1,20 @@
+{
+  "category": "bug",
+  "description": "Investigate 404 errors in login flow. Verify data provider configuration, check if authentication should route through server-side components or directly to backend. Analyze request routing and GraphQL vs REST endpoint usage.",
+  "title": "Debug Backend Auth Errors",
+  "dependencies": [
+    "graphql-auth-mutations"
+  ],
+  "priority": 1,
+  "status": "verified",
+  "id": "feature-1768815719991-8jqxm5j4g",
+  "descriptionHistory": [
+    {
+      "description": "Investigate 404 errors in login flow. Verify data provider configuration, check if authentication should route through server-side components or directly to backend. Analyze request routing and GraphQL vs REST endpoint usage.",
+      "timestamp": "2026-01-19T09:41:59.991Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-19T15:03:17.489Z",
+  "updatedAt": "2026-01-19T15:10:11.529Z"
+}

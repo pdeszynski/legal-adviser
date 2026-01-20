@@ -5,9 +5,9 @@ relevantTo: [testing]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 1
-  referenced: 0
-  successfulFeatures: 0
+  loaded: 2
+  referenced: 1
+  successfulFeatures: 1
 ---
 # testing
 
@@ -138,3 +138,57 @@ usageStats:
 - **Problem solved:** Tests need to verify PDF generation produces valid PDFs without parsing entire PDF structure
 - **Why this works:** PDF parsing is complex; magic byte check is lightweight and catches 95% of PDF generation failures (wrong format, corruption, truncation). Balance between coverage and test speed (30s timeout for each test).
 - **Trade-offs:** Misses edge cases like corrupted PDF structure but catches major generation failures with O(1) check. Acceptable for unit tests; integration tests would do full validation.
+
+### Unit tests mock password hashing but verify actual bcrypt format, then separate e2e test validates complete flow with real hashing (2026-01-19)
+- **Context:** Can't efficiently test bcrypt password comparison in unit tests without real hashing (would be slow). Need both unit test coverage and real integration verification
+- **Why:** Unit tests use hardcoded hash values for speed. E2E tests verify bcrypt actually works. Combined approach catches both logic errors and crypto failures
+- **Rejected:** Only unit tests with mocks (misses crypto integration bugs); mocking bcrypt in all tests (defeats purpose); only e2e (too slow for frequent runs)
+- **Trade-offs:** Easier: fast feedback from unit tests. Harder: must maintain separate test files
+- **Breaking if changed:** If bcrypt verification removed from e2e tests, real authentication bugs won't be caught until production
+
+#### [Gotcha] Cannot verify GraphQL auth mutations end-to-end due to Bull queue handler conflict unrelated to auth implementation (2026-01-19)
+- **Situation:** Project has pre-existing duplicate Bull queue handler registration that prevents server startup needed for E2E tests
+- **Root cause:** External dependency initialization happens before auth routes load; test infrastructure blocked at server bootstrap stage
+- **How to avoid:** Code review and compilation verification sufficient for type safety but loses integration test coverage; future Bull fix unblocks Playwright tests
+
+#### [Gotcha] Playwright tests created to verify fix but then deleted - verification was incomplete because backend restart requirement wasn't communicated in test (2026-01-19)
+- **Situation:** Test showed 'connection refused on 3001' which was correct indicator that backend hadn't been restarted, but this wasn't documented as expected/normal state
+- **Root cause:** Configuration changes require service restart but this dependency wasn't explicit in the change set. Test cleanup removed evidence of what needed to be verified
+- **How to avoid:** Easier: cleaner state after fix. Harder: no remaining verification that restart actually completes the fix
+
+#### [Pattern] Progressive verification strategy: curl backend tests → CORS headers check → Playwright browser integration tests (2026-01-19)
+- **Problem solved:** Login flow spans GraphQL API, HTTP headers, browser cookies, and UI rendering - each layer has different failure modes
+- **Why this works:** Each layer tests different aspects (API logic, network headers, browser behavior); failures at lower layers are faster to diagnose than integration test failures
+- **Trade-offs:** Multiple test types require more setup but provide confidence that each layer works; faster debugging when issues occur
+
+#### [Gotcha] GraphQL API connection format changed from nodes/totalCount to edges.node pattern during implementation (2026-01-20)
+- **Situation:** Verification test broke when querying legalDocuments - API contract didn't match test assumptions
+- **Root cause:** Production GraphQL API uses relay-style cursor pagination (edges/nodes) rather than simple array. Test was written against expected old format before checking actual API specification
+- **How to avoid:** Test required refactoring to match actual API (map edges to nodes). Revealed mismatch between documentation and implementation
+
+### Verification test checked fixture existence via GraphQL queries instead of direct database inspection (2026-01-20)
+- **Context:** Need to validate that seeding actually created usable data accessible through the application API
+- **Why:** GraphQL endpoint is the actual contract with clients. Testing through it validates end-to-end: seeding → database → API layer → response format. Direct DB queries would miss API layer bugs (schema mismatches, authorization, pagination format)
+- **Rejected:** Direct database SQL queries would verify seed data exists but not that API exposes it correctly; unit tests of seed service alone wouldn't catch integration issues
+- **Trade-offs:** Slower than DB queries but catches more bugs. Requires running full server; can't test database-only issues
+- **Breaking if changed:** Removing GraphQL validation would miss API contract bugs (like the edges/node format issue that was discovered); tests become database-centric rather than API-centric
+
+#### [Pattern] Use Playwright for integration testing CORS + auth flows because it respects browser security models and CORS policies that unit tests/mocks would skip. (2026-01-20)
+- **Problem solved:** Manual header checking passed but actual browser CORS + cookie behavior needed verification
+- **Why this works:** CORS and cookie behavior are browser-enforced security policies. Playwright runs real browser context respecting these policies. Direct HTTP client tests skip browser validation entirely.
+- **Trade-offs:** Playwright tests are slower and require running application but catch real-world CORS failures that mock tests miss
+
+#### [Pattern] Verification approach used Playwright HTTP request API to test REST endpoints instead of direct E2E browser tests (2026-01-20)
+- **Problem solved:** AuthModule functionality needed verification but feature doesn't require browser UI interaction
+- **Why this works:** HTTP request testing is faster and more reliable than browser automation for API-only endpoints; doesn't require rendering browser context
+- **Trade-offs:** Playwright request API is lightweight and fast (no browser overhead) but cannot catch UI-layer auth bugs or integration with frontend
+
+#### [Pattern] Using Playwright request API for CORS verification instead of unit tests (2026-01-20)
+- **Problem solved:** Verifying CORS headers requires testing HTTP preflight requests (OPTIONS) and response headers, which cannot be properly tested in traditional unit tests without mocking the entire HTTP layer
+- **Why this works:** Playwright's request API makes actual HTTP calls and captures real response headers, allowing verification of CORS behavior at the integration level. Testing preflight behavior requires actual HTTP semantics that unit tests cannot verify
+- **Trade-offs:** Integration tests are slower than unit tests but provide confidence that CORS actually works end-to-end; temporary test files must be cleaned up afterward
+
+#### [Gotcha] Temporary test files need explicit deletion; test discovery doesn't distinguish temporary from permanent tests (2026-01-20)
+- **Situation:** Created cors-verification.spec.ts as temporary verification, but Playwright test discovery would run it in CI/CD permanently if not deleted
+- **Root cause:** Playwright discovers all .spec.ts files in the test directory regardless of intent; no built-in way to mark tests as temporary or one-time verification
+- **How to avoid:** Manual deletion is simple but requires discipline; adding skip markers would keep the file but requires cleanup later

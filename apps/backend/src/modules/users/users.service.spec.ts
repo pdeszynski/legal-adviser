@@ -92,6 +92,7 @@ describe('UsersService', () => {
         firstName: userData.firstName,
         lastName: userData.lastName,
         isActive: true,
+        passwordHash: null,
       });
       expect(mockUserRepository.save).toHaveBeenCalledWith(createdUser);
       expect(mockEventEmitter.emit).toHaveBeenCalledWith(
@@ -129,6 +130,7 @@ describe('UsersService', () => {
         firstName: null,
         lastName: null,
         isActive: true,
+        passwordHash: null,
       });
       expect(result).toEqual(createdUser);
     });
@@ -335,7 +337,7 @@ describe('UsersService', () => {
       expect(mockSessionRepository.find).toHaveBeenCalledWith({
         where: {
           userId: 'user-123',
-          endedAt: null,
+          endedAt: expect.objectContaining({ _type: 'isNull' }),
         },
         order: {
           startedAt: 'DESC',

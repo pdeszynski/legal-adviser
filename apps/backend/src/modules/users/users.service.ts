@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { UserSession, SessionMode } from './entities/user-session.entity';
 import {
@@ -9,6 +10,12 @@ import {
   UserUpdatedEvent,
 } from '../../shared/events/examples/user.events';
 import { EVENT_PATTERNS } from '../../shared/events/base/event-patterns';
+
+/**
+ * Number of salt rounds for bcrypt hashing
+ * 10 is a good balance between security and performance
+ */
+const BCRYPT_SALT_ROUNDS = 10;
 
 /**
  * Users Service
@@ -27,6 +34,23 @@ export class UsersService {
   ) {}
 
   /**
+   * Hash a plain text password using bcrypt
+   */
+  async hashPassword(plainPassword: string): Promise<string> {
+    return bcrypt.hash(plainPassword, BCRYPT_SALT_ROUNDS);
+  }
+
+  /**
+   * Compare a plain text password with a hashed password
+   */
+  async comparePassword(
+    plainPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  /**
    * Create a new user
    */
   async createUser(data: {
@@ -34,6 +58,7 @@ export class UsersService {
     username?: string;
     firstName?: string;
     lastName?: string;
+    password?: string;
   }): Promise<User> {
     const user = this.userRepository.create({
       email: data.email,
@@ -41,6 +66,9 @@ export class UsersService {
       firstName: data.firstName || null,
       lastName: data.lastName || null,
       isActive: true,
+      passwordHash: data.password
+        ? await this.hashPassword(data.password)
+        : null,
     });
 
     const savedUser = await this.userRepository.save(user);
@@ -73,6 +101,67 @@ export class UsersService {
    */
   async findByUsername(username: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { username } });
+  }
+
+  /**
+   * Find a user by username or email for authentication
+   * Includes the passwordHash field which is normally excluded
+   */
+  async findByUsernameOrEmailForAuth(
+    usernameOrEmail: string,
+  ): Promise<User | null> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.passwordHash')
+      .where('user.username = :usernameOrEmail', { usernameOrEmail })
+      .orWhere('user.email = :usernameOrEmail', { usernameOrEmail })
+      .getOne();
+  }
+
+  /**
+   * Validate user credentials
+   * Returns the user if credentials are valid, null otherwise
+   */
+  async validateUserCredentials(
+    usernameOrEmail: string,
+    password: string,
+  ): Promise<User | null> {
+    const user = await this.findByUsernameOrEmailForAuth(usernameOrEmail);
+
+    if (!user || !user.passwordHash) {
+      return null;
+    }
+
+    const isPasswordValid = await this.comparePassword(
+      password,
+      user.passwordHash,
+    );
+
+    if (!isPasswordValid) {
+      return null;
+    }
+
+    // Check if user is active
+    if (!user.isActive) {
+      return null;
+    }
+
+    return user;
+  }
+
+  /**
+   * Update user's password
+   */
+  async updatePassword(userId: string, newPassword: string): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    const passwordHash = await this.hashPassword(newPassword);
+    user.passwordHash = passwordHash;
+
+    return this.userRepository.save(user);
   }
 
   /**
@@ -166,6 +255,7 @@ export class UsersService {
 
   /**
    * Accept disclaimer for a user
+   * Sets disclaimerAccepted to true and records the acceptance timestamp
    */
   async acceptDisclaimer(userId: string): Promise<User> {
     const user = await this.findById(userId);
@@ -174,6 +264,7 @@ export class UsersService {
     }
 
     user.disclaimerAccepted = true;
+    user.disclaimerAcceptedAt = new Date();
     return this.userRepository.save(user);
   }
 

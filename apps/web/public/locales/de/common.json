@@ -251,5 +251,81 @@
     "maxLength": "Maximale Länge beträgt {max} Zeichen",
     "min": "Mindestwert ist {min}",
     "max": "Höchstwert ist {max}"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Früher Zugang Beta",
+      "title": "Rechtshilfe ohne",
+      "titleHighlight": "Kopfschmerzen",
+      "subtitle": "Erstellen Sie sofort professionelle Dokumente, analysieren Sie Fallakten und erhalten Sie verifizierte Rechtsantworten. Angetrieben von fortschrittlicher KI, entwickelt für Menschen.",
+      "cta": {
+        "primary": "Kostenlos starten",
+        "secondary": "Wie es funktioniert"
+      },
+      "features": {
+        "secure": "Sicher & Privat",
+        "encryption": "Verschlüsselung auf Bankniveau"
+      }
+    },
+    "features": {
+      "title": "Alles, was Sie brauchen",
+      "subtitle": "Umfassende Tools, die teure Beratungen durch sofortige, präzise KI-Unterstützung ersetzen.",
+      "drafting": {
+        "title": "Intelligente Erstellung",
+        "description": "Generieren Sie professionelle Klagen, Verträge und offizielle Schreiben in Sekunden. Beschreiben Sie einfach Ihre Situation in einfacher Sprache."
+      },
+      "analysis": {
+        "title": "Fallanalyse",
+        "description": "Laden Sie Ihre Dokumente hoch. Unsere KI identifiziert starke rechtliche Grundlagen und entwickelt eine Gewinnstrategie basierend auf tiefer Analyse."
+      },
+      "qa": {
+        "title": "Verifizierte Antworten",
+        "description": "Erhalten Sie zitierte Antworten auf komplexe Fragen. Unser System verweist auf aktuelle Vorschriften und Urteile, um Ihnen Fakten statt Vermutungen zu liefern."
+      }
+    },
+    "howItWorks": {
+      "title": "Wie es funktioniert",
+      "subtitle": "Drei einfache Schritte zur Lösung Ihres Rechtsproblems.",
+      "step1": {
+        "title": "Erzählen Sie uns Ihre Geschichte",
+        "description": "Beschreiben Sie Ihr Problem in einfachem Deutsch. Kein Juristenjargon erforderlich."
+      },
+      "step2": {
+        "title": "KI-Analyse",
+        "description": "Unsere Systeme scannen sofort Tausende von Vorschriften und Urteilen."
+      },
+      "step3": {
+        "title": "Lösung erhalten",
+        "description": "Erhalten Sie ein einsatzbereites Dokument oder einen klaren Aktionsplan."
+      }
+    },
+    "testimonials": {
+      "title": "Vertraut von Early Adopters",
+      "testimonial1": {
+        "quote": "Ich war erstaunt, wie schnell es einen formellen Beschwerdebrief generierte. Es hätte mich Stunden gekostet, das richtige Format zu recherchieren.",
+        "author": "Hans M.",
+        "role": "Kleinunternehmer"
+      },
+      "testimonial2": {
+        "quote": "Die Fallanalyse-Funktion half mir zu verstehen, dass ich tatsächlich einen gültigen Anspruch auf Entschädigung für meine Flugverspätung hatte.",
+        "author": "Anna S.",
+        "role": "Freiberuflerin"
+      },
+      "testimonial3": {
+        "quote": "Endlich ein Rechtstool, das nicht einschüchternd wirkt. Die Benutzeroberfläche ist übersichtlich und die Antworten sind leicht verständlich.",
+        "author": "Michael R.",
+        "role": "Mieter"
+      }
+    },
+    "cta": {
+      "title": "Bereit, Ihre Praxis zu transformieren?",
+      "subtitle": "Schließen Sie sich Tausenden von Nutzern an, die KI nutzen, um Zeit zu sparen, Kosten zu senken und die Genauigkeit zu verbessern.",
+      "primaryButton": "Kostenlose Testversion starten",
+      "secondaryButton": "Vertrieb kontaktieren",
+      "disclaimer": "Keine Kreditkarte für die Standardtestversion erforderlich."
+    },
+    "footer": {
+      "copyright": "© {year} Legal AI. Alle Rechte vorbehalten."
+    }
   }
 }

@@ -5,9 +5,9 @@ relevantTo: [database]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 67
-  referenced: 2
-  successfulFeatures: 2
+  loaded: 69
+  referenced: 4
+  successfulFeatures: 4
 ---
 # database
 
@@ -98,3 +98,22 @@ usageStats:
 - **Rejected:** Fetching from DB in processor (introduces race conditions, requires DB access layer in processor)
 - **Trade-offs:** Slightly larger queue messages vs complete isolation from document mutations. Better for audit trail and error recovery.
 - **Breaking if changed:** Switching to DB fetch in processor means deleted documents cause processing failures, or require complex reconciliation logic
+
+### Salt rounds set to 10 (not configurable per request) for bcrypt hashing (2026-01-19)
+- **Context:** bcrypt hashing is expensive; balance between security (higher rounds = slower attacks) and performance (user experience at login)
+- **Why:** 10 rounds = ~100ms per hash. Acceptable for human users during login. Further increases would impact UX noticeably. Making it configurable adds no value since it should never change at runtime
+- **Rejected:** Higher rounds like 12-14 (unacceptable login delay); configurable per-request (maintenance burden, inconsistent security); lower rounds like 6-8 (weakens brute force resistance)
+- **Trade-offs:** Easier: fixed, no runtime decisions. Harder: can't tune per-environment without code change
+- **Breaking if changed:** If changed to lower rounds, reduces password security against brute force attacks
+
+### Idempotent seeding with --clean flag instead of destructive migrations (2026-01-20)
+- **Context:** Database initialization for development/testing needs to be safe and repeatable without data loss
+- **Why:** Allows developers to run seeding multiple times without manual cleanup. The --clean flag provides explicit opt-in for destructive operations, preventing accidental data wipes while maintaining safety
+- **Rejected:** Always-destructive seeding would require manual rollback; separate migration system would add complexity
+- **Trade-offs:** Requires existence checks on every entity (performance cost) but gains safety and developer ergonomics. Makes seed-status command necessary for debugging
+- **Breaking if changed:** Removing idempotency check would cause errors on re-runs; removing --clean would force destructive behavior always
+
+#### [Gotcha] Bcrypt hashing requires explicit 10-round salt iterations - not idempotent hashing (2026-01-20)
+- **Situation:** User password fixtures needed consistent hashing to match test credentials (admin@refine.dev / password)
+- **Root cause:** Bcrypt with random salt generates different hash each execution. For fixtures to work, same plaintext password must always hash to same value for login to work consistently. 10 rounds chosen as security/speed balance
+- **How to avoid:** Fixtures must be re-seeded when password changes (--clean flag needed). Hashing is slow (0.5s per user) but necessary for security

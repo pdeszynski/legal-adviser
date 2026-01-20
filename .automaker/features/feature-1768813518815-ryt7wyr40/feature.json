@@ -1,0 +1,21 @@
+{
+  "category": "bug",
+  "description": "Ensure CORS is configured to allow frontend origin, credentials are enabled, and authentication cookies/headers are properly set and readable. Verify SameSite, Secure, and HttpOnly flags.",
+  "title": "Fix CORS and Cookie Configuration",
+  "dependencies": [
+    "debug-backend-auth-errors"
+  ],
+  "priority": 1,
+  "status": "verified",
+  "id": "feature-1768813518815-ryt7wyr40",
+  "descriptionHistory": [
+    {
+      "description": "Ensure CORS is configured to allow frontend origin, credentials are enabled, and authentication cookies/headers are properly set and readable. Verify SameSite, Secure, and HttpOnly flags.",
+      "timestamp": "2026-01-19T09:05:18.815Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "automaker",
+  "startedAt": "2026-01-20T07:09:24.751Z",
+  "updatedAt": "2026-01-20T07:12:43.331Z"
+}

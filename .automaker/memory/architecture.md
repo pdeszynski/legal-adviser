@@ -563,3 +563,44 @@ Features should include:
 - **Rejected:** Direct async/await (loses job persistence and retry logic), or custom queue implementation (reinventing Bull)
 - **Trade-offs:** Adds Redis dependency and Bull complexity vs clean separation of concerns and production-grade reliability. Worth it for document processing where durability matters.
 - **Breaking if changed:** Removing Bull queue loses job persistence - in-flight PDF exports are lost on crash. No retry mechanism for transient failures.
+
+#### [Pattern] Helper function exports (getAccessToken, getRefreshToken, tryRefreshToken) expose internal auth state to other providers (2026-01-19)
+- **Problem solved:** Data provider and other client code need access to tokens and refresh logic without reimplementing token management
+- **Why this works:** Centralizes token access pattern and forces consumers to use consistent refresh mechanism. Exporting functions (not raw cookie access) enforces refresh logic rather than allowing stale token usage. Enables data provider to add Bearer header without reimplementing refresh
+- **Trade-offs:** Exported functions create tighter coupling between auth provider and consumers but enforce correct token handling; harder to test consumers in isolation
+
+### Separated frontend and backend to different ports (3000 vs 3001) instead of proxying or using same port (2026-01-19)
+- **Context:** Initial setup had both services competing for port 3000, causing connection failures and 404 errors
+- **Why:** Allows independent scaling, easier local development workflow, clearer separation of concerns. Monorepo with multiple services needs explicit port allocation strategy
+- **Rejected:** Could have used single port with reverse proxy or API proxying through Next.js - but adds complexity and masks service boundaries
+- **Trade-offs:** Easier: independent service restart, clearer debugging. Harder: requires environment variable coordination, CORS must be properly configured
+- **Breaking if changed:** If ports are changed without updating all three configuration points (main.ts default, .env files, provider URLs), frontend breaks silently with 404s
+
+#### [Pattern] Separated seed data fixtures from seeding logic (data/*.seed.ts vs seed.service.ts) (2026-01-20)
+- **Problem solved:** Managing 7 different entity types with complex interdependencies and realistic test data
+- **Why this works:** Fixture files become the source of truth for test/dev data, reusable across multiple contexts (unit tests, e2e, migrations). Service layer handles orchestration logic separately, respecting single-responsibility principle
+- **Trade-offs:** More files to manage but enables fixture reuse in unit tests and migrations. Makes data updates easier since fixtures are isolated
+
+#### [Pattern] Explicit entity dependency ordering in SeedService (Users → Sessions → Documents/Analyses/Queries) (2026-01-20)
+- **Problem solved:** Multiple entities have foreign key relationships; seeding must respect referential integrity
+- **Why this works:** Database transactions/FK constraints will fail if children are created before parents. Explicit ordering in seeding makes dependency graph visible and prevents subtle race conditions. NestJS module initialization order is not guaranteed to match data dependency order
+- **Trade-offs:** Seeding is sequential (slower) but guaranteed correct. Makes explicit what the implicit data model is
+
+#### [Gotcha] CSRF guard applied globally to all contexts but failed on REST controllers because GraphQL execution context is unavailable in HTTP requests (2026-01-20)
+- **Situation:** Guard checked `info.parentType.name` without verifying context type, causing crashes when REST endpoints were executed with the global guard registered
+- **Root cause:** Initial implementation assumed all protected operations would be GraphQL mutations; REST endpoints have different execution context flow
+- **How to avoid:** Added context-type checking adds minimal overhead but prevents crashes; must explicitly skip non-GraphQL contexts rather than letting them fail
+
+### AuthModule was pre-registered in app.module.ts imports array rather than being lazily loaded or conditionally imported (2026-01-20)
+- **Context:** Feature task claimed to 'import AuthModule' but it was already imported, suggesting this is core infrastructure
+- **Why:** Authentication is a cross-cutting concern needed at application bootstrap time. Eager loading ensures auth guards and middleware are available for all routes immediately
+- **Rejected:** Lazy loading auth module per route - would require runtime guard registration and delay auth availability
+- **Trade-offs:** Eager loading increases initial bundle size but guarantees auth availability; lazy loading defers cost but complicates guard registration logic
+- **Breaking if changed:** Removing AuthModule from imports would cause 401/auth-related route guards to fail silently or throw at runtime, not compile-time
+
+### AuthModule uses NestJS module pattern with separate controller, resolver, and service layers rather than monolithic auth file (2026-01-20)
+- **Context:** File structure shows auth.controller.ts, auth.resolver.ts, auth.module.ts, auth.service.ts organization
+- **Why:** Separation of concerns allows HTTP/GraphQL transport layers to be independent from business logic; enables testing transport layer separately from auth logic
+- **Rejected:** Single-file auth handler would be faster to write but couples transport to logic, making REST/GraphQL refactoring risky
+- **Trade-offs:** More files and imports required but enables independent testing of controller/resolver from service; service can be reused by multiple transports
+- **Breaking if changed:** If AuthService API changes, both controller AND resolver must be updated; forgetting to update one creates inconsistent behavior between REST/GraphQL

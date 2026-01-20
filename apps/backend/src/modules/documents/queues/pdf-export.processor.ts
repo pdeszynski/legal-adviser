@@ -1,21 +1,13 @@
-import {
-  Processor,
-  Process,
-  OnQueueFailed,
-  OnQueueCompleted,
-} from '@nestjs/bull';
-import { Logger } from '@nestjs/common';
-import type { Job } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
+import { Logger, Injectable, OnModuleInit } from '@nestjs/common';
+import type { Job, Queue } from 'bull';
 import { QUEUE_NAMES } from '../../../shared/queues/base/queue-names';
 import {
   PdfGeneratorService,
   PdfTemplateService,
   DocumentTemplateContext,
 } from '../services/pdf';
-import type {
-  PdfExportJobData,
-  PdfExportJobResult,
-} from './pdf-export.job';
+import type { PdfExportJobData, PdfExportJobResult } from './pdf-export.job';
 
 /**
  * PDF Export Queue Processor
@@ -33,13 +25,45 @@ import type {
  * - Jobs are retried up to 3 times by default
  * - Failed jobs are logged for debugging
  */
-@Processor(QUEUE_NAMES.DOCUMENT.EXPORT_PDF)
-export class PdfExportProcessor {
+@Injectable()
+export class PdfExportProcessor implements OnModuleInit {
   private readonly logger = new Logger(PdfExportProcessor.name);
 
   constructor(
+    @InjectQueue(QUEUE_NAMES.DOCUMENT.EXPORT_PDF)
+    private readonly pdfExportQueue: Queue<PdfExportJobData>,
     private readonly pdfGeneratorService: PdfGeneratorService,
   ) {}
+
+  onModuleInit() {
+    try {
+      this.pdfExportQueue.process(async (job) => {
+        return this.process(job);
+      });
+
+      this.pdfExportQueue.on('completed', (job, result) => {
+        this.onCompleted(
+          job as Job<PdfExportJobData>,
+          result as PdfExportJobResult,
+        );
+      });
+
+      this.pdfExportQueue.on('failed', (job, err) => {
+        this.onFailed(job as Job<PdfExportJobData>, err);
+      });
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message.includes('Cannot define the same handler twice')
+      ) {
+        this.logger.warn(
+          'Queue handler already registered (duplicate module instantiation detected). Skipping registration.',
+        );
+      } else {
+        throw error;
+      }
+    }
+  }
 
   /**
    * Process a PDF export job
@@ -47,10 +71,7 @@ export class PdfExportProcessor {
    * Main entry point for processing PDF export jobs.
    * Coordinates the entire PDF generation workflow.
    */
-  @Process()
-  async process(
-    job: Job<PdfExportJobData>,
-  ): Promise<PdfExportJobResult> {
+  async process(job: Job<PdfExportJobData>): Promise<PdfExportJobResult> {
     const { documentId, sessionId, documentType, title, content, options } =
       job.data;
     const startTime = Date.now();
@@ -68,7 +89,9 @@ export class PdfExportProcessor {
         title,
         content,
         documentType,
-        createdAt: job.data.createdAt ? new Date(job.data.createdAt) : new Date(),
+        createdAt: job.data.createdAt
+          ? new Date(job.data.createdAt)
+          : new Date(),
         metadata: job.data.metadata as DocumentTemplateContext['metadata'],
       };
 
@@ -85,13 +108,16 @@ export class PdfExportProcessor {
 
       // Step 3: Convert to base64 and prepare result
       const pdfBase64 = pdfResult.buffer.toString('base64');
-      const filename = this.pdfGeneratorService.generateFilename(title, documentId);
+      const filename = this.pdfGeneratorService.generateFilename(
+        title,
+        documentId,
+      );
 
       const generationTimeMs = Date.now() - startTime;
 
       this.logger.log(
         `PDF export completed for document ${documentId} in ${generationTimeMs}ms ` +
-        `(${pdfResult.pageCount} pages, ${pdfResult.sizeBytes} bytes)`,
+          `(${pdfResult.pageCount} pages, ${pdfResult.sizeBytes} bytes)`,
       );
 
       await job.progress(100);
@@ -119,21 +145,16 @@ export class PdfExportProcessor {
   /**
    * Handle job completion event
    */
-  @OnQueueCompleted()
-  onCompleted(
-    job: Job<PdfExportJobData>,
-    result: PdfExportJobResult,
-  ): void {
+  onCompleted(job: Job<PdfExportJobData>, result: PdfExportJobResult): void {
     this.logger.log(
       `Job ${job.id} completed for document ${result.documentId} ` +
-      `(${result.pageCount} pages, ${result.fileSizeBytes} bytes, ${result.generationTimeMs}ms)`,
+        `(${result.pageCount} pages, ${result.fileSizeBytes} bytes, ${result.generationTimeMs}ms)`,
     );
   }
 
   /**
    * Handle job failure event
    */
-  @OnQueueFailed()
   onFailed(job: Job<PdfExportJobData>, error: Error): void {
     this.logger.error(
       `Job ${job.id} failed for document ${job.data.documentId}: ${error.message}`,

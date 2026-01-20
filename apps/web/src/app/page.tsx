@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect } from 'react';
 import { useIsAuthenticated, useGo } from '@refinedev/core';
+import { useTranslations } from 'next-intl';
 import { PublicLayout } from '@components/layout/public-layout';
 import { Button } from '@legal/ui';
 import Link from 'next/link';
@@ -9,6 +10,8 @@ import Image from 'next/image';
 import { ArrowRight, Shield, Lock, Star } from 'lucide-react';
 
 const LandingContent = () => {
+  const t = useTranslations('landing');
+
   return (
     <PublicLayout>
       <div className="flex flex-col items-center bg-background text-foreground overflow-hidden">
@@ -23,17 +26,16 @@ const LandingContent = () => {
                 <div className="space-y-4">
                   <div className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium transition-colors border-blue-200 bg-blue-50 text-blue-700">
                     <span className="mr-2 inline-block h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
-                    Early Access Beta
+                    {t('hero.badge')}
                   </div>
                   <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl leading-tight">
-                    Legal help without the{' '}
+                    {t('hero.title')}{' '}
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-                      headache
+                      {t('hero.titleHighlight')}
                     </span>
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground text-lg sm:text-xl leading-relaxed">
-                    Instantly draft professional documents, analyze case files, and get verified
-                    legal answers. Powered by advanced AI, designed for humans.
+                    {t('hero.subtitle')}
                   </p>
                 </div>
 
@@ -43,7 +45,7 @@ const LandingContent = () => {
                       size="lg"
                       className="w-full sm:w-auto px-8 h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-105 rounded-full text-base"
                     >
-                      Start for Free <ArrowRight className="ml-2 h-4 w-4" />
+                      {t('hero.cta.primary')} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </Link>
                   <Link href="/about" className="w-full sm:w-auto">
@@ -52,7 +54,7 @@ const LandingContent = () => {
                       size="lg"
                       className="w-full sm:w-auto px-8 h-12 border-muted-foreground/20 hover:bg-muted/50 backdrop-blur-sm rounded-full text-base"
                     >
-                      How it Works
+                      {t('hero.cta.secondary')}
                     </Button>
                   </Link>
                 </div>
@@ -60,11 +62,11 @@ const LandingContent = () => {
                 <div className="flex items-center gap-6 text-sm text-muted-foreground pt-4">
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4 text-emerald-500" />
-                    <span>Secure & Private</span>
+                    <span>{t('hero.features.secure')}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Lock className="h-4 w-4 text-emerald-500" />
-                    <span>Bank-grade Encryption</span>
+                    <span>{t('hero.features.encryption')}</span>
                   </div>
                 </div>
               </div>
@@ -90,11 +92,10 @@ const LandingContent = () => {
         <section className="w-full py-24 bg-muted/30 relative">
           <div className="container px-4 md:px-6">
             <div className="text-center mb-20 max-w-3xl mx-auto space-y-4">
-              <h2 className="text-3xl font-bold tracking-tight md:text-5xl">Everything you need</h2>
-              <p className="text-lg text-muted-foreground">
-                Comprehensive tools that replace expensive consultations with instant, accurate AI
-                assistance.
-              </p>
+              <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
+                {t('features.title')}
+              </h2>
+              <p className="text-lg text-muted-foreground">{t('features.subtitle')}</p>
             </div>
             <div className="grid gap-10 md:grid-cols-3">
               {/* Feature 1 */}
@@ -104,15 +105,14 @@ const LandingContent = () => {
                   <div className="absolute inset-0 bg-blue-500/10 rounded-2xl blur-xl group-hover:bg-blue-500/20 transition-all"></div>
                   <Image
                     src="/feature-drafting.png"
-                    alt="Smart Drafting"
+                    alt={t('features.drafting.title')}
                     fill
                     className="object-contain p-4"
                   />
                 </div>
-                <h3 className="mb-3 text-2xl font-bold">Smart Drafting</h3>
+                <h3 className="mb-3 text-2xl font-bold">{t('features.drafting.title')}</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Generate professional lawsuits, contracts, and official letters in seconds. Just
-                  describe your situation in plain language.
+                  {t('features.drafting.description')}
                 </p>
               </div>
 
@@ -123,15 +123,14 @@ const LandingContent = () => {
                   <div className="absolute inset-0 bg-purple-500/10 rounded-2xl blur-xl group-hover:bg-purple-500/20 transition-all"></div>
                   <Image
                     src="/feature-analysis.png"
-                    alt="Case Analysis"
+                    alt={t('features.analysis.title')}
                     fill
                     className="object-contain p-4"
                   />
                 </div>
-                <h3 className="mb-3 text-2xl font-bold">Case Analysis</h3>
+                <h3 className="mb-3 text-2xl font-bold">{t('features.analysis.title')}</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Upload your documents. Our AI identifies strong legal grounds and builds a winning
-                  strategy based on deep analysis.
+                  {t('features.analysis.description')}
                 </p>
               </div>
 
@@ -142,15 +141,14 @@ const LandingContent = () => {
                   <div className="absolute inset-0 bg-emerald-500/10 rounded-2xl blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
                   <Image
                     src="/feature-qa.png"
-                    alt="Legal Q&A"
+                    alt={t('features.qa.title')}
                     fill
                     className="object-contain p-4"
                   />
                 </div>
-                <h3 className="mb-3 text-2xl font-bold">Verified Answers</h3>
+                <h3 className="mb-3 text-2xl font-bold">{t('features.qa.title')}</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Get cited answers to complex questions. Our system references current regulations
-                  and rulings to give you facts, not guesses.
+                  {t('features.qa.description')}
                 </p>
               </div>
             </div>
@@ -161,10 +159,10 @@ const LandingContent = () => {
         <section className="w-full py-24 bg-background">
           <div className="container px-4 md:px-6">
             <div className="text-center mb-16 space-y-4">
-              <h2 className="text-3xl font-bold tracking-tight md:text-5xl">How it Works</h2>
-              <p className="text-lg text-muted-foreground">
-                Three simple steps to resolve your legal issue.
-              </p>
+              <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
+                {t('howItWorks.title')}
+              </h2>
+              <p className="text-lg text-muted-foreground">{t('howItWorks.subtitle')}</p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 relative">
@@ -177,10 +175,8 @@ const LandingContent = () => {
                   <span className="text-4xl font-black text-blue-600/50">1</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">Tell us your story</h3>
-                  <p className="text-muted-foreground">
-                    Describe your problem in plain English. No legal jargon needed.
-                  </p>
+                  <h3 className="text-xl font-bold mb-2">{t('howItWorks.step1.title')}</h3>
+                  <p className="text-muted-foreground">{t('howItWorks.step1.description')}</p>
                 </div>
               </div>
 
@@ -190,10 +186,8 @@ const LandingContent = () => {
                   <span className="text-4xl font-black text-purple-600/50">2</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">AI Analyzing</h3>
-                  <p className="text-muted-foreground">
-                    Our engines scan thousands of regulations and rulings instantly.
-                  </p>
+                  <h3 className="text-xl font-bold mb-2">{t('howItWorks.step2.title')}</h3>
+                  <p className="text-muted-foreground">{t('howItWorks.step2.description')}</p>
                 </div>
               </div>
 
@@ -203,10 +197,8 @@ const LandingContent = () => {
                   <span className="text-4xl font-black text-emerald-600/50">3</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">Get Solution</h3>
-                  <p className="text-muted-foreground">
-                    Receive a ready-to-use document or a clear action plan.
-                  </p>
+                  <h3 className="text-xl font-bold mb-2">{t('howItWorks.step3.title')}</h3>
+                  <p className="text-muted-foreground">{t('howItWorks.step3.description')}</p>
                 </div>
               </div>
             </div>
@@ -218,7 +210,7 @@ const LandingContent = () => {
           <div className="container px-4 md:px-6">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-                Trusted by Early Adopters
+                {t('testimonials.title')}
               </h2>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -229,16 +221,17 @@ const LandingContent = () => {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-6">
-                  "I was amazed at how quickly it generated a formal complaint letter. It would have
-                  taken me hours to research the right format."
+                  "{t('testimonials.testimonial1.quote')}"
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-700">
-                    JD
+                    {t('testimonials.testimonial1.author').substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="font-semibold">John D.</p>
-                    <p className="text-xs text-muted-foreground">Small Business Owner</p>
+                    <p className="font-semibold">{t('testimonials.testimonial1.author')}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t('testimonials.testimonial1.role')}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -249,16 +242,17 @@ const LandingContent = () => {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-6">
-                  "The case analysis feature helped me understand that I actually had a valid claim
-                  for my flight delay compensation."
+                  "{t('testimonials.testimonial2.quote')}"
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center font-bold text-purple-700">
-                    AS
+                    {t('testimonials.testimonial2.author').substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="font-semibold">Anna S.</p>
-                    <p className="text-xs text-muted-foreground">Freelancer</p>
+                    <p className="font-semibold">{t('testimonials.testimonial2.author')}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t('testimonials.testimonial2.role')}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -269,16 +263,17 @@ const LandingContent = () => {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-6">
-                  "Finally, a legal tool that doesn't feel intimidating. The interface is clean and
-                  the answers are easy to understand."
+                  "{t('testimonials.testimonial3.quote')}"
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center font-bold text-emerald-700">
-                    MR
+                    {t('testimonials.testimonial3.author').substring(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="font-semibold">Michael R.</p>
-                    <p className="text-xs text-muted-foreground">Tenant</p>
+                    <p className="font-semibold">{t('testimonials.testimonial3.author')}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t('testimonials.testimonial3.role')}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -293,13 +288,8 @@ const LandingContent = () => {
 
           <div className="container px-4 md:px-6 relative z-10 text-white">
             <div className="flex flex-col items-center space-y-8 text-center max-w-2xl mx-auto">
-              <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
-                Ready to transform your practice?
-              </h2>
-              <p className="text-xl text-blue-100">
-                Join thousands of users utilizing AI to save time, reduce costs, and improve
-                accuracy.
-              </p>
+              <h2 className="text-3xl font-bold tracking-tight md:text-5xl">{t('cta.title')}</h2>
+              <p className="text-xl text-blue-100">{t('cta.subtitle')}</p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Link href="/login">
@@ -307,7 +297,7 @@ const LandingContent = () => {
                     size="lg"
                     className="px-8 h-12 bg-white text-blue-600 hover:bg-blue-50 font-bold rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all text-lg"
                   >
-                    Start Free Trial
+                    {t('cta.primaryButton')}
                   </Button>
                 </Link>
                 <Link href="/contact">
@@ -316,13 +306,11 @@ const LandingContent = () => {
                     size="lg"
                     className="px-8 h-12 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm rounded-full text-lg"
                   >
-                    Contact Sales
+                    {t('cta.secondaryButton')}
                   </Button>
                 </Link>
               </div>
-              <p className="text-sm text-blue-200 mt-4">
-                No credit card required for standard trial.
-              </p>
+              <p className="text-sm text-blue-200 mt-4">{t('cta.disclaimer')}</p>
             </div>
           </div>
         </section>

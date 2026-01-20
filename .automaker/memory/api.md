@@ -5,7 +5,7 @@ relevantTo: [api]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 71
+  loaded: 78
   referenced: 2
   successfulFeatures: 2
 ---
@@ -94,3 +94,60 @@ usageStats:
 - **Rejected:** Single async-only mutation (forces client to poll for results), or single sync-only mutation (poor UX on slow documents)
 - **Trade-offs:** Doubles mutation surface area but prevents API timeout frustration. Sync variant suitable for <5s documents; async better for larger documents or batch exports.
 - **Breaking if changed:** Removing async variant forces clients to implement polling; removing sync variant breaks integrations expecting immediate PDF data
+
+### Made login endpoint async even though it could theoretically be sync, to support future JWT signing and database operations (2026-01-19)
+- **Context:** Current implementation synchronously generates test tokens. Real implementation needs async JWT signing and optional database session logging
+- **Why:** Prevents breaking change when JWT signing becomes async (which it should be). Establishes correct contract now
+- **Rejected:** Keeping sync API (forces breaking change later when JWT generation needs async)
+- **Trade-offs:** Easier: future-proof. Harder: added async/await boilerplate now
+- **Breaking if changed:** If reverted to sync and JWT signing becomes async later, consumers can't adapt gracefully
+
+### Three separate mutation payloads (AuthPayload, RefreshTokenPayload) vs single unified response structure (2026-01-19)
+- **Context:** refreshToken returns only accessToken while login/register return full user + tokens
+- **Why:** Schema specificity prevents over-exposing user data; refresh operation should be minimal bandwidth operation, clients already have user data
+- **Rejected:** Unified AuthPayload for all mutations (leaks unnecessary data in refresh responses, increases token refresh latency)
+- **Trade-offs:** Client code complexity handling different response shapes vs reduced query payload and narrower API surface
+- **Breaking if changed:** Clients expecting consistent response structure would break; changing to unified payload unnecessarily exposes user data on refresh which could impact security scanning
+
+### Bearer token passed in Authorization header for all authenticated GraphQL requests instead of cookies or custom headers (2026-01-19)
+- **Context:** Data provider needed to propagate access tokens from auth provider to all downstream GraphQL queries
+- **Why:** Bearer tokens in Authorization header are standard GraphQL convention and HTTP best practice. Separates authentication (token) from authorization context. Allows server-side middleware to easily extract and validate tokens without custom parsing
+- **Rejected:** Cookie-based would require httpOnly flags and CORS configuration; custom Authorization-Token header breaks client library expectations; request context object would require thread-local storage in server
+- **Trade-offs:** Authorization header visible in request logs (security consideration) but more transparent than hidden cookies; requires manual token passing in data provider vs automatic cookie handling
+- **Breaking if changed:** Removing Bearer token mechanism breaks all authenticated GraphQL requests; server middleware expecting Authorization header fails on missing token
+
+#### [Gotcha] CORS configuration with hardcoded localhost variants masking the real issue - port mismatch remained hidden until actually testing (2026-01-19)
+- **Situation:** Backend had generic CORS setup but frontend was making requests to wrong port (4000 vs actual 3001)
+- **Root cause:** CORS errors are distinct from port connection errors - the setup appeared 'correct' but was fundamentally misconfigured. CORS permissiveness can hide deeper architectural issues
+- **How to avoid:** Easier: development flexibility. Harder: bugs manifest as subtle 404s rather than clear connection errors, delayed problem identification
+
+### CORS configuration explicitly allows credentials with specific origin and methods rather than wildcard headers (2026-01-19)
+- **Context:** Frontend at http://localhost:3000 must authenticate with backend at http://localhost:3001 with token-bearing requests
+- **Why:** Credentials mode ('include') requires explicit origin matching and specific header allowlisting; wildcard CORS would reject credential requests by spec
+- **Rejected:** Wildcard CORS (Access-Control-Allow-Origin: *) - browsers reject this when credentials are included for security
+- **Trade-offs:** More configuration required but prevents credential leakage to unauthorized origins; must maintain origin whitelist
+- **Breaking if changed:** If origin whitelist is removed or made too restrictive, frontend requests fail with 403; if made too permissive (*, credentials), browser security model rejects it
+
+### Created separate REST endpoint (GET /api/csrf-token) for clients to fetch CSRF tokens instead of embedding in page responses (2026-01-20)
+- **Context:** Clients need a way to obtain CSRF tokens before making mutations without relying on form-based page rendering patterns
+- **Why:** Explicit token endpoint works for SPA/API clients that don't load HTML pages; separates concerns (token issuance from mutation handling); allows prefetching tokens on app initialization
+- **Rejected:** Embedding token in GraphQL schema as a query (couples CSRF layer to GraphQL, less accessible), returning token in response headers (client may not capture headers for first mutation)
+- **Trade-offs:** Requires one extra HTTP request on app load but gives clients full control over when/how tokens are obtained; simpler testing and debugging since token endpoint is isolated
+- **Breaking if changed:** If REST endpoint is removed or requires authentication, unauthenticated users cannot get CSRF tokens and cannot register/login; if token expiration is added, must synchronize with client-side token refresh logic
+
+#### [Gotcha] CORS response headers are case-sensitive in some HTTP clients/scenarios. Testing must normalize header names to lowercase for reliable assertions. (2026-01-20)
+- **Situation:** Playwright test was checking for exact case-sensitive header names but server returned differently-cased variants
+- **Root cause:** HTTP headers should be case-insensitive per spec, but header value extraction can return mixed case. Normalizing ensures tests pass regardless of server's capitalization choices.
+- **How to avoid:** Added slight complexity to test assertions but made them robust across different HTTP implementations
+
+### Explicitly expose Set-Cookie header via CORS exposedHeaders configuration. Without this, frontend cannot access Set-Cookie in response headers even when CORS succeeds. (2026-01-20)
+- **Context:** CORS was configured but Set-Cookie headers weren't visible to frontend JavaScript in response objects
+- **Why:** Set-Cookie is a restricted header by default in CORS - browsers block JavaScript access even from same-origin-like CORS responses. Must be explicitly exposed server-side.
+- **Rejected:** Assuming Set-Cookie would be visible by default with credentials: 'include'
+- **Trade-offs:** Adds explicit configuration but doesn't actually expose the value to JavaScript (browser security model) - only makes it present in response metadata
+- **Breaking if changed:** Without exposedHeaders configuration, CORS + cookies work for sending cookies but frontend cannot programmatically verify Set-Cookie headers were received
+
+#### [Gotcha] Preflight requests return 204 No Content, not 200 OK (2026-01-20)
+- **Situation:** Standard HTTP behavior for successful CORS preflight is 204, but developers often expect 200
+- **Root cause:** 204 No Content is semantically correct for OPTIONS requests that have no response body—the CORS headers in the response are the only meaningful data
+- **How to avoid:** 204 is more correct but less intuitive; test assertions must specifically check for 204 or tests will fail

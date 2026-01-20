@@ -17,10 +17,9 @@ import { Scale } from 'lucide-react';
 // ...
 export const LoginContent = () => {
   const { mutate: login, isPending: isLoading, error } = useLogin();
-  // const login = (creds: any) => console.log(creds);
-  // const isLoading = false;
 
   const [initialError, setInitialError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -29,15 +28,40 @@ export const LoginContent = () => {
   }, []);
 
   const [email, setEmail] = useState('admin@refine.dev');
-  const [password, setPassword] = useState('123456');
+  const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationError(null);
+    setInitialError(null);
+
+    if (!email) {
+      setValidationError('Email is required');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setValidationError('Please enter a valid email address');
+      return;
+    }
+
+    if (!password) {
+      setValidationError('Password is required');
+      return;
+    }
+
+    if (password.length < 8) {
+      setValidationError('Password must be at least 8 characters long');
+      return;
+    }
+
     login({ email, password });
   };
 
-  // Generic error message for security or real error
-  const errorMessage = error?.message || (initialError ? 'Invalid email or password.' : null);
+  // Priority: Validation Error > Login Hook Error > URL/Initial Error
+  const errorMessage =
+    validationError || error?.message || (initialError ? 'Invalid email or password.' : null);
 
   return (
     <div className="flex min-h-[calc(100vh-200px)] w-full items-center justify-center p-4">
@@ -55,7 +79,7 @@ export const LoginContent = () => {
             </CardDescription>
           </div>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -64,8 +88,10 @@ export const LoginContent = () => {
                 type="email"
                 placeholder="name@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (validationError) setValidationError(null);
+                }}
                 className="bg-background/50 transition-colors focus:bg-background"
               />
             </div>
@@ -81,13 +107,15 @@ export const LoginContent = () => {
                 type="password"
                 placeholder="Enter your password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (validationError) setValidationError(null);
+                }}
                 className="bg-background/50 transition-colors focus:bg-background"
               />
             </div>
             {errorMessage && (
-              <div className="rounded-md bg-destructive/15 p-3 text-sm font-medium text-destructive animate-in fade-in slide-in-from-top-1">
+              <div className="rounded-md bg-destructive/15 p-3 text-sm font-medium text-destructive animate-in fade-in slide-in-from-top-1 text-center">
                 {errorMessage}
               </div>
             )}
