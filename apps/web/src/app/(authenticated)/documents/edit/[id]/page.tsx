@@ -67,12 +67,12 @@ export default function DocumentEdit() {
   const [showMetadata, setShowMetadata] = useState(true);
 
   // Fetch the existing document
-  const { data: documentData, isLoading: isLoadingDocument } = useOne<LegalDocument>({
+  const { result: documentResult, query: documentQuery } = useOne<LegalDocument>({
     resource: "documents",
     id,
   });
 
-  const document = documentData?.data;
+  const document = documentResult;
 
   // Initialize form with refine's useForm hook
   const {
@@ -147,7 +147,7 @@ export default function DocumentEdit() {
   };
 
   // Loading state
-  if (isLoadingDocument) {
+  if (documentQuery.isLoading) {
     return (
       <div className="container mx-auto py-8 px-4">
         <div className="text-center">{translate("loading")}</div>
@@ -177,8 +177,7 @@ export default function DocumentEdit() {
           <p className="text-yellow-700 mb-4">
             {translate(
               "documents.errors.onlyDraftEditable",
-              "Only documents in DRAFT status can be edited. This document is currently in {status} status.",
-              { status: document.status }
+              "Only documents in DRAFT status can be edited. This document is currently in " + document.status + " status."
             )}
           </p>
           <Link
@@ -352,9 +351,9 @@ export default function DocumentEdit() {
                       },
                     })}
                   />
-                  {errors.metadata?.claimCurrency && (
+                  {errors["metadata.claimCurrency"] && (
                     <span className="text-sm text-red-600">
-                      {errors.metadata.claimCurrency.message?.toString()}
+                      {(errors["metadata.claimCurrency"] as { message?: string }).message?.toString()}
                     </span>
                   )}
                 </div>

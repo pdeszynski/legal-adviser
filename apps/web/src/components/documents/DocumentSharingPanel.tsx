@@ -48,7 +48,7 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
   const [expiresInDays, setExpiresInDays] = useState<number | "">("");
 
   // Fetch document shares
-  const { data: sharesData, isLoading: sharesLoading, refetch: refetchShares } = useCustom<DocumentShare[]>({
+  const { query: sharesQuery } = useCustom<DocumentShare[]>({
     url: "",
     method: "get",
     config: {
@@ -70,7 +70,7 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
   });
 
   // Fetch all users for sharing dropdown
-  const { data: usersData } = useCustom<{ data: User[] }>({
+  const { query: usersQuery } = useCustom<{ data: User[] }>({
     url: "",
     method: "get",
     config: {
@@ -82,7 +82,7 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
   });
 
   // Share document mutation
-  const { mutate: shareDocument, isLoading: isSharing } = useCustomMutation();
+  const { mutate: shareDocument, mutation: shareMutation } = useCustomMutation();
 
   // Revoke share mutation
   const { mutate: revokeShare } = useCustomMutation();
@@ -118,7 +118,7 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
       },
       {
         onSuccess: () => {
-          refetchShares();
+          sharesQuery.refetch();
           setShowShareModal(false);
           setSelectedUserId("");
           setSelectedPermission("VIEW");
@@ -126,7 +126,7 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
         },
       }
     );
-  }, [shareDocument, documentId, selectedUserId, selectedPermission, expiresInDays, refetchShares]);
+  }, [shareDocument, documentId, selectedUserId, selectedPermission, expiresInDays, sharesQuery.refetch]);
 
   const handleRevoke = useCallback(
     (shareId: string) => {
@@ -142,12 +142,12 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
         },
         {
           onSuccess: () => {
-            refetchShares();
+            sharesQuery.refetch();
           },
         }
       );
     },
-    [revokeShare, refetchShares]
+    [revokeShare, sharesQuery.refetch]
   );
 
   const handleUpdatePermission = useCallback(
@@ -169,16 +169,16 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
         },
         {
           onSuccess: () => {
-            refetchShares();
+            sharesQuery.refetch();
           },
         }
       );
     },
-    [updatePermission, refetchShares]
+    [updatePermission, sharesQuery.refetch]
   );
 
-  const shares = sharesData?.data || [];
-  const users = usersData?.data?.data || [];
+  const shares = sharesQuery.data?.data || [];
+  const users = usersQuery.data?.data?.data || [];
   const availableUsers = users.filter((user) => !shares.some((share) => share.sharedWithUserId === user.id));
 
   const getUserDisplayName = (user: User) => {
@@ -188,7 +188,7 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
     return user.username || user.email;
   };
 
-  if (sharesLoading) {
+  if (sharesQuery.isLoading) {
     return (
       <div className="animate-pulse">
         <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
@@ -243,7 +243,7 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
                 </label>
                 <select
                   value={selectedPermission}
-                  onChange={(e) => setSelectedPermission(e.target.value as any)}
+                  onChange={(e) => setSelectedPermission(e.target.value as "VIEW" | "COMMENT" | "EDIT" | "ADMIN")}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {Object.entries(PERMISSION_LABELS).map(([value, label]) => (
@@ -279,16 +279,16 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
                   setExpiresInDays("");
                 }}
                 className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-                disabled={isSharing}
+                disabled={shareMutation.isPending}
               >
                 {translate("buttons.cancel", "Cancel")}
               </button>
               <button
                 onClick={handleShare}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-                disabled={!selectedUserId || isSharing}
+                disabled={!selectedUserId || shareMutation.isPending}
               >
-                {isSharing ? "Sharing..." : "Share"}
+                {shareMutation.isPending ? "Sharing..." : "Share"}
               </button>
             </div>
           </div>
@@ -299,7 +299,7 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
       <div className="space-y-3">
         {shares.length === 0 ? (
           <p className="text-gray-500 text-sm py-4">
-            This document has not been shared yet. Click "Share Document" to grant access to other users.
+            This document has not been shared yet. Click &ldquo;Share Document&rdquo; to grant access to other users.
           </p>
         ) : (
           shares.map((share) => (
@@ -322,7 +322,7 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
               <div className="flex items-center gap-3">
                 <select
                   value={share.permission}
-                  onChange={(e) => handleUpdatePermission(share.id, e.target.value as any)}
+                  onChange={(e) => handleUpdatePermission(share.id, e.target.value as "VIEW" | "COMMENT" | "EDIT" | "ADMIN")}
                   className="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {Object.entries(PERMISSION_LABELS).map(([value, label]) => (

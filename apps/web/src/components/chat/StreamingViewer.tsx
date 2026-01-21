@@ -16,7 +16,7 @@ interface StreamingViewerProps {
 
 const MarkdownComponents: Components = {
   // Customize link rendering to be safer/styled
-  a: ({ node, ...props }) => (
+  a: ({ ...props }) => (
     <a
       {...props}
       className="text-blue-600 hover:underline"
@@ -27,19 +27,19 @@ const MarkdownComponents: Components = {
     </a>
   ),
   // Style tables for legal data
-  table: ({ node, ...props }) => (
+  table: ({ ...props }) => (
     <div className="overflow-x-auto my-4">
       <table {...props} className="min-w-full divide-y divide-gray-300 border">
         {props.children}
       </table>
     </div>
   ),
-  th: ({ node, ...props }) => (
+  th: ({ ...props }) => (
     <th {...props} className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 bg-gray-50">
       {props.children}
     </th>
   ),
-  td: ({ node, ...props }) => (
+  td: ({ ...props }) => (
     <td {...props} className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 border-t">
       {props.children}
     </td>

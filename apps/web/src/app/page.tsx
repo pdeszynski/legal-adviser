@@ -222,7 +222,7 @@ const LandingContent = () => {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-6">
-                  "{t('testimonials.testimonial1.quote')}"
+                  &ldquo;{t('testimonials.testimonial1.quote')}&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-700">
@@ -243,7 +243,7 @@ const LandingContent = () => {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-6">
-                  "{t('testimonials.testimonial2.quote')}"
+                  &ldquo;{t('testimonials.testimonial2.quote')}&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center font-bold text-purple-700">
@@ -264,7 +264,7 @@ const LandingContent = () => {
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-6">
-                  "{t('testimonials.testimonial3.quote')}"
+                  &ldquo;{t('testimonials.testimonial3.quote')}&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center font-bold text-emerald-700">

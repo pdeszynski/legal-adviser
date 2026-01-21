@@ -44,7 +44,7 @@ export default function DashboardPage() {
   const translate = useTranslate();
 
   // Fetch recent documents
-  const { data: documentsData, isLoading: isLoadingDocuments } = useList<LegalDocument>({
+  const { result: documentsResult, query: documentsQuery } = useList<LegalDocument>({
     resource: "documents",
     pagination: {
       pageSize: 5,
@@ -58,7 +58,7 @@ export default function DashboardPage() {
   });
 
   // Fetch all documents for statistics
-  const { data: allDocumentsData, isLoading: isLoadingStats } = useList<LegalDocument>({
+  const { result: allDocumentsResult, query: allDocumentsQuery } = useList<LegalDocument>({
     resource: "documents",
     pagination: {
       pageSize: 1000,
@@ -66,7 +66,7 @@ export default function DashboardPage() {
   });
 
   // Fetch recent audit logs for activity timeline
-  const { data: auditLogsData, isLoading: isLoadingAuditLogs } = useList<AuditLog>({
+  const { result: auditLogsResult, query: auditLogsQuery } = useList<AuditLog>({
     resource: "audit_logs",
     pagination: {
       pageSize: 10,
@@ -79,9 +79,9 @@ export default function DashboardPage() {
     ],
   });
 
-  const recentDocuments = documentsData?.data || [];
-  const allDocuments = allDocumentsData?.data || [];
-  const auditLogs = auditLogsData?.data || [];
+  const recentDocuments = documentsResult?.data || [];
+  const allDocuments = allDocumentsResult?.data || [];
+  const auditLogs = auditLogsResult?.data || [];
 
   // Calculate statistics
   const stats: DashboardStats = useMemo(() => {
@@ -115,7 +115,7 @@ export default function DashboardPage() {
         <StatCard
           title={translate("dashboard.stats.totalDocuments")}
           value={stats.totalDocuments}
-          loading={isLoadingStats}
+          loading={allDocumentsQuery.isLoading}
           iconColor="text-blue-600"
           icon={
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,7 +126,7 @@ export default function DashboardPage() {
         <StatCard
           title={translate("dashboard.stats.completed")}
           value={stats.completedDocuments}
-          loading={isLoadingStats}
+          loading={allDocumentsQuery.isLoading}
           iconColor="text-green-600"
           icon={
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,7 +137,7 @@ export default function DashboardPage() {
         <StatCard
           title={translate("dashboard.stats.drafts")}
           value={stats.draftDocuments}
-          loading={isLoadingStats}
+          loading={allDocumentsQuery.isLoading}
           iconColor="text-gray-600"
           icon={
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,7 +148,7 @@ export default function DashboardPage() {
         <StatCard
           title={translate("dashboard.stats.generating")}
           value={stats.generatingDocuments}
-          loading={isLoadingStats}
+          loading={allDocumentsQuery.isLoading}
           iconColor="text-blue-600"
           icon={
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,7 +168,7 @@ export default function DashboardPage() {
               </h2>
             </div>
             <div className="p-6">
-              {isLoadingDocuments ? (
+              {documentsQuery.isLoading ? (
                 <div className="text-center py-8 text-gray-500">
                   {translate("loading")}
                 </div>
@@ -271,7 +271,7 @@ export default function DashboardPage() {
           {/* Activity Timeline */}
           <ActivityTimeline
             activities={auditLogs}
-            loading={isLoadingAuditLogs}
+            loading={auditLogsQuery.isLoading}
             maxItems={5}
           />
         </div>
