@@ -3,15 +3,13 @@
   "category": "AI",
   "title": "Q&A FastAPI Endpoint",
   "description": "Add POST /api/v1/qa endpoint to AI Engine. Accept question text, return structured response with answer and citation array.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "simple",
-  "dependencies": [
-    "qa-langgraph-workflow"
-  ],
   "createdAt": "2026-01-12T10:31:20.831Z",
-  "updatedAt": "2026-01-12T10:31:20.831Z",
+  "updatedAt": "2026-01-21T22:58:04.364Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

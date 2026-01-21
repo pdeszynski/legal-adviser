@@ -136,3 +136,12 @@ class SemanticSearchResponse(BaseModel):
     )
     query: str = Field(..., description="Original search query")
     total: int = Field(..., description="Total number of results found")
+
+
+class QAResponse(BaseModel):
+    """Response from simple Q&A endpoint."""
+
+    answer: str = Field(..., description="Answer to the question")
+    citations: List[Citation] = Field(
+        default_factory=list, description="Legal citations supporting the answer"
+    )

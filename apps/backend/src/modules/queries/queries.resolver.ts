@@ -4,9 +4,11 @@ import {
   SubmitLegalQueryInput,
   AnswerLegalQueryInput,
   CreateCitationInput,
+  AskLegalQuestionInput,
 } from './dto/legal-query.dto';
 import { LegalQuery, Citation } from './entities/legal-query.entity';
 import { StrictThrottle, SkipThrottle } from '../../shared/throttler';
+import { AiClientService } from '../../shared/ai-client/ai-client.service';
 
 /**
  * Custom GraphQL Resolver for Legal Queries
@@ -32,7 +34,10 @@ import { StrictThrottle, SkipThrottle } from '../../shared/throttler';
  */
 @Resolver(() => LegalQuery)
 export class QueriesResolver {
-  constructor(private readonly queriesService: QueriesService) {}
+  constructor(
+    private readonly queriesService: QueriesService,
+    private readonly aiClientService: AiClientService,
+  ) {}
 
   /**
    * Query: Get queries by session ID
@@ -103,6 +108,61 @@ export class QueriesResolver {
       sessionId: input.sessionId,
       question: input.question,
     });
+  }
+
+  /**
+   * Mutation: Ask a legal question with AI (synchronous)
+   *
+   * Calls the AI engine to answer the question and stores the result.
+   * This mutation blocks until the AI response is received.
+   *
+   * Unlike submitLegalQuery (which is async and event-driven),
+   * this mutation returns the complete answer immediately.
+   *
+   * Use cases:
+   * - Direct Q&A where immediate response is needed
+   * - Simple synchronous question-answer flow
+   * - Testing AI integration
+   *
+   * @example
+   * ```graphql
+   * mutation {
+   *   askLegalQuestion(input: {
+   *     sessionId: "uuid-here"
+   *     question: "What are my rights as a tenant?"
+   *     mode: "SIMPLE"
+   *   }) {
+   *     id
+   *     question
+   *     answerMarkdown
+   *     citations { source article url }
+   *     createdAt
+   *   }
+   * }
+   * ```
+   */
+  @StrictThrottle()
+  @Mutation(() => LegalQuery, {
+    name: 'askLegalQuestion',
+    description: 'Ask a legal question and get AI answer synchronously',
+  })
+  async askQuestion(
+    @Args('input') input: AskLegalQuestionInput,
+  ): Promise<LegalQuery> {
+    return this.queriesService.askQuestion(
+      {
+        sessionId: input.sessionId,
+        question: input.question,
+        mode: input.mode,
+      },
+      async (question, sessionId, mode) => {
+        return this.aiClientService.askQuestion({
+          question,
+          session_id: sessionId,
+          mode,
+        });
+      },
+    );
   }
 
   /**

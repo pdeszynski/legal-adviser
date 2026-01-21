@@ -110,6 +110,61 @@
       "dismissed": false,
       "featureId": "husky-setup",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "f5ecacba-974c-474d-a88f-654a5a1ce304",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"lint-staged-setup\" has been verified and is complete.",
+      "createdAt": "2026-01-21T22:55:43.346Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "lint-staged-setup",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "36863a7e-9bde-4905-a192-701d50da34b2",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"commit-msg-conventional-commits\" has been verified and is complete.",
+      "createdAt": "2026-01-21T22:56:09.478Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "commit-msg-conventional-commits",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "19943580-575b-4585-b375-a1a9dc4ede19",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"qa-rest-endpoint\" has been verified and is complete.",
+      "createdAt": "2026-01-21T22:58:04.366Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "qa-rest-endpoint",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "4041b752-3d88-43dc-8f43-fe6c928ec176",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-pagination-implementation\" has been verified and is complete.",
+      "createdAt": "2026-01-21T22:58:11.911Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-pagination-implementation",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "4ad9607a-b52a-42b1-8fd5-d5eb1f77a7ca",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"pre-commit-type-check-hook\" has been verified and is complete.",
+      "createdAt": "2026-01-21T22:59:20.307Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "pre-commit-type-check-hook",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

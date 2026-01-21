@@ -19,6 +19,7 @@ from .models.requests import (
     ClassifyCaseRequest,
     GenerateEmbeddingsRequest,
     SemanticSearchRequest,
+    QARequest,
 )
 from .models.responses import (
     AnswerResponse,
@@ -31,6 +32,7 @@ from .models.responses import (
     GenerateEmbeddingsResponse,
     SemanticSearchResponse,
     SemanticSearchResult,
+    QAResponse,
 )
 from .graphs.drafting_graph import drafting_graph
 from .graphs.qa_graph import qa_graph
@@ -82,6 +84,75 @@ async def root():
 async def health_check():
     """Health check endpoint."""
     return {"status": "ok"}
+
+
+@app.post("/api/v1/qa", response_model=QAResponse)
+async def ask_question_simple(request: QARequest):
+    """Ask a legal question and receive an answer with citations.
+
+    This is a simplified Q&A endpoint that accepts a question and returns
+    a structured response with the answer and an array of citations.
+
+    The endpoint uses the QA graph to process the question and generate
+    a response with relevant legal citations.
+    """
+    try:
+        # Initialize state for the QA graph
+        initial_state = {
+            "question": request.question,
+            "session_id": "simple-qa",
+            "mode": "SIMPLE",
+            "query_type": None,
+            "key_terms": None,
+            "question_refined": None,
+            "needs_clarification": False,
+            "clarification_prompt": None,
+            "query_embedding": None,
+            "retrieved_contexts": None,
+            "context_summary": None,
+            "raw_answer": None,
+            "answer_complete": False,
+            "final_answer": None,
+            "citations": None,
+            "confidence": 0.0,
+            "error": None,
+        }
+
+        # Run the QA graph
+        result = await qa_graph.ainvoke(initial_state)
+
+        # Handle clarification case
+        if result.get("needs_clarification") and result.get("clarification_prompt"):
+            return QAResponse(
+                answer=result["clarification_prompt"],
+                citations=[],
+            )
+
+        # Handle error case
+        if result.get("error"):
+            return QAResponse(
+                answer=f"An error occurred while processing your question: {result['error']}",
+                citations=[],
+            )
+
+        # Return formatted answer with citations
+        return QAResponse(
+            answer=result.get("final_answer") or result.get("raw_answer", "No answer generated."),
+            citations=[
+                Citation(
+                    source=c.get("source", "Unknown"),
+                    article=c.get("article", ""),
+                    url=c.get("url"),
+                )
+                for c in (result.get("citations") or [])
+            ],
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Q&A processing failed: {str(e)}",
+        ) from e
 
 
 @app.post("/api/v1/documents/generate", response_model=GenerateDocumentResponse)

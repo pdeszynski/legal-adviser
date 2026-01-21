@@ -1,7 +1,13 @@
-"use client";
+'use client';
 
-import type { DataProvider, BaseRecord, CrudFilters, CrudSorting, Pagination } from "@refinedev/core";
-import { getAccessToken } from "../auth-provider/auth-provider.client";
+import type {
+  DataProvider,
+  BaseRecord,
+  CrudFilters,
+  CrudSorting,
+  Pagination,
+} from '@refinedev/core';
+import { getAccessToken } from '../auth-provider/auth-provider.client';
 
 /**
  * GraphQL Data Provider
@@ -9,30 +15,75 @@ import { getAccessToken } from "../auth-provider/auth-provider.client";
  * Per constitution: GraphQL is the primary API for data operations.
  * This provider connects to the NestJS GraphQL endpoint.
  */
-const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:3001/graphql";
+const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
+
+/**
+ * Cursor cache for pagination
+ * Maps resource + filter/sort combination to page cursors
+ */
+type CursorCacheEntry = {
+  cursors: string[]; // endCursor for each page (index = page number - 1)
+  totalCount: number;
+};
+
+const cursorCache = new Map<string, CursorCacheEntry>();
+
+/**
+ * Generate cache key from resource, filters, and sorters
+ */
+function getCacheKey(resource: string, filters?: CrudFilters, sorters?: CrudSorting): string {
+  const filterStr = filters ? JSON.stringify(filters) : 'none';
+  const sorterStr = sorters ? JSON.stringify(sorters) : 'none';
+  return `${resource}:${filterStr}:${sorterStr}`;
+}
+
+/**
+ * Get cached cursor for a specific page
+ */
+function getCachedCursor(key: string, pageNumber: number): string | undefined {
+  const entry = cursorCache.get(key);
+  // Return the endCursor of the previous page to use as "after" cursor
+  return entry?.cursors[pageNumber - 1];
+}
+
+/**
+ * Store cursor from a page response
+ */
+function storeCursor(key: string, pageNumber: number, endCursor: string, totalCount: number): void {
+  let entry = cursorCache.get(key);
+  if (!entry) {
+    entry = { cursors: [], totalCount };
+    cursorCache.set(key, entry);
+  }
+  entry.totalCount = totalCount;
+  entry.cursors[pageNumber - 1] = endCursor;
+
+  // Invalidate cache for pages after the current one when not in sequential order
+  // This ensures stale cursors aren't used
+  if (entry.cursors.length > pageNumber) {
+    entry.cursors = entry.cursors.slice(0, pageNumber);
+  }
+}
 
 /**
  * Execute a GraphQL query or mutation
  * Automatically includes authentication token if available
  */
-async function executeGraphQL<T>(
-  query: string,
-  variables?: Record<string, unknown>
-): Promise<T> {
+async function executeGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   };
 
   // Include access token if available
   const accessToken = getAccessToken();
   if (accessToken) {
-    headers["Authorization"] = `Bearer ${accessToken}`;
+    headers['Authorization'] = `Bearer ${accessToken}`;
   }
 
   const response = await fetch(GRAPHQL_URL, {
-    method: "POST",
+    method: 'POST',
     headers,
-    credentials: "include", // Required for CORS to send/receive cookies
+    credentials: 'include', // Required for CORS to send/receive cookies
     body: JSON.stringify({
       query,
       variables,
@@ -46,7 +97,7 @@ async function executeGraphQL<T>(
   const result = await response.json();
 
   if (result.errors && result.errors.length > 0) {
-    throw new Error(result.errors[0].message || "GraphQL error");
+    throw new Error(result.errors[0].message || 'GraphQL error');
   }
 
   return result.data;
@@ -61,41 +112,41 @@ function buildGraphQLFilter(filters?: CrudFilters): Record<string, unknown> | un
   const filterObj: Record<string, unknown> = {};
 
   for (const filter of filters) {
-    if ("field" in filter) {
+    if ('field' in filter) {
       const { field, operator, value } = filter;
 
       // Skip empty values
-      if (value === undefined || value === null || value === "") continue;
+      if (value === undefined || value === null || value === '') continue;
 
       switch (operator) {
-        case "eq":
+        case 'eq':
           filterObj[field] = { eq: value };
           break;
-        case "ne":
+        case 'ne':
           filterObj[field] = { neq: value };
           break;
-        case "contains":
+        case 'contains':
           filterObj[field] = { iLike: `%${value}%` };
           break;
-        case "startswith":
+        case 'startswith':
           filterObj[field] = { iLike: `${value}%` };
           break;
-        case "endswith":
+        case 'endswith':
           filterObj[field] = { iLike: `%${value}` };
           break;
-        case "in":
+        case 'in':
           filterObj[field] = { in: value };
           break;
-        case "gt":
+        case 'gt':
           filterObj[field] = { gt: value };
           break;
-        case "gte":
+        case 'gte':
           filterObj[field] = { gte: value };
           break;
-        case "lt":
+        case 'lt':
           filterObj[field] = { lt: value };
           break;
-        case "lte":
+        case 'lte':
           filterObj[field] = { lte: value };
           break;
         default:
@@ -110,20 +161,48 @@ function buildGraphQLFilter(filters?: CrudFilters): Record<string, unknown> | un
 /**
  * Convert Refine sorting to nestjs-query GraphQL sorting format
  */
-function buildGraphQLSorting(sorters?: CrudSorting): Array<{ field: string; direction: string }> | undefined {
+function buildGraphQLSorting(
+  sorters?: CrudSorting,
+): Array<{ field: string; direction: string }> | undefined {
   if (!sorters || sorters.length === 0) return undefined;
 
   return sorters.map((sorter) => ({
     field: sorter.field,
-    direction: sorter.order === "asc" ? "ASC" : "DESC",
+    direction: sorter.order === 'asc' ? 'ASC' : 'DESC',
   }));
 }
 
 /**
  * Build cursor-based paging for nestjs-query
+ *
+ * Converts offset-based pagination (page numbers) to cursor-based pagination.
+ * Uses cached cursors to navigate between pages efficiently.
  */
-function buildGraphQLPaging(pagination?: Pagination): { first: number } {
+function buildGraphQLPaging(
+  pagination?: Pagination,
+  resource?: string,
+  filters?: CrudFilters,
+  sorters?: CrudSorting,
+): { first: number; after?: string } {
   const pageSize = pagination?.pageSize || 10;
+  const current = pagination?.currentPage || 1;
+
+  // First page - no cursor needed
+  if (current <= 1) {
+    return { first: pageSize };
+  }
+
+  // Subsequent pages - use cached cursor from previous page
+  if (resource) {
+    const key = getCacheKey(resource, filters, sorters);
+    const previousPageCursor = getCachedCursor(key, current);
+
+    if (previousPageCursor) {
+      return { first: pageSize, after: previousPageCursor };
+    }
+  }
+
+  // Fallback: no cursor available, return first page
   return { first: pageSize };
 }
 
@@ -148,7 +227,7 @@ export const dataProvider: DataProvider = {
     filters?: CrudFilters;
     sorters?: CrudSorting;
   }) => {
-    if (resource === "audit_logs") {
+    if (resource === 'audit_logs') {
       const query = `
         query GetAuditLogs($filter: AuditLogFilter, $paging: CursorPaging, $sorting: [AuditLogSort!]) {
           auditLogs(filter: $filter, paging: $paging, sorting: $sorting) {
@@ -189,8 +268,10 @@ export const dataProvider: DataProvider = {
       `;
 
       const graphqlFilter = buildGraphQLFilter(filters);
-      const graphqlSorting = buildGraphQLSorting(sorters) || [{ field: "createdAt", direction: "DESC" }];
-      const graphqlPaging = buildGraphQLPaging(pagination);
+      const graphqlSorting = buildGraphQLSorting(sorters) || [
+        { field: 'createdAt', direction: 'DESC' },
+      ];
+      const graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
 
       const data = await executeGraphQL<{
         auditLogs: {
@@ -211,13 +292,23 @@ export const dataProvider: DataProvider = {
 
       const items = data.auditLogs.edges.map((edge) => edge.node);
 
+      // Store cursor for this page to enable navigation
+      const currentPage = pagination?.currentPage || 1;
+      const cacheKey = getCacheKey(resource, filters, sorters);
+      storeCursor(
+        cacheKey,
+        currentPage,
+        data.auditLogs.pageInfo.endCursor,
+        data.auditLogs.totalCount,
+      );
+
       return {
         data: items,
         total: data.auditLogs.totalCount,
       };
     }
 
-    if (resource === "documents") {
+    if (resource === 'documents') {
       const query = `
         query GetLegalDocuments($filter: LegalDocumentFilter, $paging: CursorPaging, $sorting: [LegalDocumentSort!]) {
           legalDocuments(filter: $filter, paging: $paging, sorting: $sorting) {
@@ -252,7 +343,7 @@ export const dataProvider: DataProvider = {
 
       const graphqlFilter = buildGraphQLFilter(filters);
       const graphqlSorting = buildGraphQLSorting(sorters);
-      const graphqlPaging = buildGraphQLPaging(pagination);
+      const graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
 
       const data = await executeGraphQL<{
         legalDocuments: {
@@ -273,6 +364,16 @@ export const dataProvider: DataProvider = {
 
       const items = data.legalDocuments.edges.map((edge) => edge.node);
 
+      // Store cursor for this page to enable navigation
+      const currentPage = pagination?.currentPage || 1;
+      const cacheKey = getCacheKey(resource, filters, sorters);
+      storeCursor(
+        cacheKey,
+        currentPage,
+        data.legalDocuments.pageInfo.endCursor,
+        data.legalDocuments.totalCount,
+      );
+
       return {
         data: items,
         total: data.legalDocuments.totalCount,
@@ -292,7 +393,7 @@ export const dataProvider: DataProvider = {
     resource: string;
     id: string | number;
   }) => {
-    if (resource === "audit_logs") {
+    if (resource === 'audit_logs') {
       const query = `
         query GetAuditLog($id: ID!) {
           auditLog(id: $id) {
@@ -327,7 +428,7 @@ export const dataProvider: DataProvider = {
       };
     }
 
-    if (resource === "documents") {
+    if (resource === 'documents') {
       const query = `
         query GetLegalDocument($id: ID!) {
           legalDocument(id: $id) {
@@ -369,7 +470,7 @@ export const dataProvider: DataProvider = {
     variables: TVariables;
   }) => {
     // Document generation via GraphQL mutation
-    if (resource === "documents") {
+    if (resource === 'documents') {
       const mutation = `
         mutation GenerateDocument($input: GenerateDocumentInput!) {
           generateDocument(input: $input) {
@@ -415,7 +516,7 @@ export const dataProvider: DataProvider = {
     id: string | number;
     variables: TVariables;
   }) => {
-    if (resource === "documents") {
+    if (resource === 'documents') {
       const mutation = `
         mutation UpdateDocument($id: ID!, $input: UpdateDocumentInput!) {
           updateDocument(id: $id, input: $input) {
@@ -460,7 +561,7 @@ export const dataProvider: DataProvider = {
     resource: string;
     id: string | number;
   }) => {
-    if (resource === "documents") {
+    if (resource === 'documents') {
       const mutation = `
         mutation DeleteDocument($id: ID!) {
           deleteDocument(id: $id)

@@ -225,6 +225,26 @@
       <name>Configure Husky for Git Hooks</name>
       <description>Install and configure Husky to manage Git hooks automatically. Set up .husky directory structure and initialize git hooks in the repository. Enable automatic hook execution on git operations.</description>
     </feature>
+    <feature>
+      <name>Configure lint-staged for File Filtering</name>
+      <description>Install and configure lint-staged to run commands only on staged files. Set up configuration to match TypeScript, JavaScript, and Python files. Prevents running linters on the entire codebase unnecessarily.</description>
+    </feature>
+    <feature>
+      <name>Commit Message Conventional Commits Validation</name>
+      <description>Add commit-msg Git hook to validate commit messages follow Conventional Commits specification. Use commitlint to enforce format (feat:, fix:, docs:, etc.). Block non-compliant commit messages.</description>
+    </feature>
+    <feature>
+      <name>Q&amp;A FastAPI Endpoint</name>
+      <description>Add POST /api/v1/qa endpoint to AI Engine. Accept question text, return structured response with answer and citation array.</description>
+    </feature>
+    <feature>
+      <name>Fix Pagination Implementation Across All List Views</name>
+      <description>Investigate and fix pagination issues in Refine-based list views. Verify pagination is working correctly for audit logs, documents, legal queries, and other resources. Ensure nestjs-query resolvers are properly configured with paging options and frontend is correctly passing cursor/pagination parameters.</description>
+    </feature>
+    <feature>
+      <name>Pre-commit Type Check Hook</name>
+      <description>Create pre-commit Git hook that runs TypeScript type checking (tsc --noEmit) for backend and frontend. Block commits if type errors are detected. Ensures type safety before code enters the repository.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

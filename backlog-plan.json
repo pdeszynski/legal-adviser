@@ -1,0 +1,74 @@
+{
+  "changes": [
+    {
+      "type": "add",
+      "feature": {
+        "id": "dockerfile-optimization-frontend",
+        "title": "Optimize Frontend Dockerfile for Layer Caching",
+        "description": "Refactor frontend Dockerfile to optimize layer caching. Copy package.json and pnpm-lock.yaml first, run pnpm install, then copy remaining source files. This ensures dependencies are only reinstalled when package files change, not when application code is modified.",
+        "category": "refactor",
+        "dependencies": [],
+        "priority": 2
+      },
+      "reason": "Current Dockerfile copies all files before install, causing unnecessary cache invalidation and slower builds during development"
+    },
+    {
+      "type": "add",
+      "feature": {
+        "id": "dockerfile-optimization-backend",
+        "title": "Optimize Backend Dockerfile for Layer Caching",
+        "description": "Refactor backend Dockerfile to optimize layer caching. Copy package.json and pnpm-lock.yaml first, run pnpm install --frozen-lockfile, then copy remaining source files. Separate dependency installation from application code to improve build performance.",
+        "category": "refactor",
+        "dependencies": [],
+        "priority": 2
+      },
+      "reason": "Backend Dockerfile needs same caching optimization as frontend to speed up CI/CD and development builds"
+    },
+    {
+      "type": "add",
+      "feature": {
+        "id": "dockerfile-optimization-ai-engine",
+        "title": "Optimize AI Engine Dockerfile for Layer Caching",
+        "description": "Refactor AI Engine Python Dockerfile to optimize layer caching. Copy pyproject.toml and uv.lock first, run uv sync, then copy remaining source files. Leverage uv's fast package manager with proper cache layer ordering.",
+        "category": "refactor",
+        "dependencies": [],
+        "priority": 2
+      },
+      "reason": "Python service also suffers from cache invalidation issues; optimizing pyproject.toml copy order will significantly improve rebuild times"
+    },
+    {
+      "type": "add",
+      "feature": {
+        "id": "docker-multi-stage-build-optimization",
+        "title": "Implement Multi-Stage Dockerfile Optimization",
+        "description": "Review and optimize multi-stage builds across all Dockerfiles. Ensure build dependencies are separated from runtime dependencies, minimize final image size, and properly leverage build cache across stages. Add .dockerignore files to exclude unnecessary files from build context.",
+        "category": "refactor",
+        "dependencies": [
+          "dockerfile-optimization-frontend",
+          "dockerfile-optimization-backend",
+          "dockerfile-optimization-ai-engine"
+        ],
+        "priority": 2
+      },
+      "reason": "After individual Dockerfile optimizations, ensure overall multi-stage build strategy is optimal and build contexts are minimized"
+    },
+    {
+      "type": "add",
+      "feature": {
+        "id": "docker-compose-build-optimization",
+        "title": "Optimize Docker Compose Build Configuration",
+        "description": "Update docker-compose.yml to use optimized build configurations. Add build target specifications, proper cache mount configurations for local development, and environment-specific compose files. Ensure volume mounts don't interfere with layer caching during development.",
+        "category": "refactor",
+        "dependencies": [
+          "dockerfile-optimization-frontend",
+          "dockerfile-optimization-backend",
+          "dockerfile-optimization-ai-engine"
+        ],
+        "priority": 3
+      },
+      "reason": "Docker Compose needs to align with Dockerfile optimizations to fully benefit from improved caching strategy"
+    }
+  ],
+  "summary": "Adding 5 tasks to optimize Dockerfiles across the monorepo (frontend, backend, AI Engine) for improved layer caching. Current Dockerfiles copy all source files before running package installations, causing cache invalidation on every code change. The optimization follows Docker best practices: copy dependency manifests first, install dependencies, then copy application code. This will significantly reduce rebuild times during development and CI/CD. Tasks also include multi-stage build review and docker-compose configuration alignment.",
+  "dependencyUpdates": []
+}

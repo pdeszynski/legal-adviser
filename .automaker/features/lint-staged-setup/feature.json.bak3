@@ -1,0 +1,20 @@
+{
+  "category": "refactor",
+  "description": "Install and configure lint-staged to run commands only on staged files. Set up configuration to match TypeScript, JavaScript, and Python files. Prevents running linters on the entire codebase unnecessarily.",
+  "id": "lint-staged-setup",
+  "title": "Configure lint-staged for File Filtering",
+  "dependencies": [
+    "husky-setup"
+  ],
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Install and configure lint-staged to run commands only on staged files. Set up configuration to match TypeScript, JavaScript, and Python files. Prevents running linters on the entire codebase unnecessarily.",
+      "timestamp": "2026-01-21T22:26:17.609Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-21T22:43:27.605Z"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769036397772-00d954e1",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-21T22:59:57.772Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-pagination-implementation",
+  "featureName": "Fix Pagination Implementation Across All List Views",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

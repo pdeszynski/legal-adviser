@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769036284376-0ac521b3",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-21T22:58:04.376Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "qa-rest-endpoint",
+  "featureName": "Q&A FastAPI Endpoint",
+  "error": "Feature completed in 381s - auto-verified",
+  "passes": true
+}

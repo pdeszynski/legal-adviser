@@ -9,6 +9,7 @@ import {
 } from './dto/legal-query.dto';
 import { QueriesService } from './services/queries.service';
 import { QueriesResolver } from './queries.resolver';
+import { AiClientModule } from '../../shared/ai-client/ai-client.module';
 
 /**
  * Queries Module
@@ -34,6 +35,8 @@ import { QueriesResolver } from './queries.resolver';
   imports: [
     // TypeORM repository for custom service
     TypeOrmModule.forFeature([LegalQuery]),
+    // AI Client Service for synchronous Q&A
+    AiClientModule,
     // nestjs-query auto-generated CRUD resolvers
     NestjsQueryGraphQLModule.forFeature({
       imports: [NestjsQueryTypeOrmModule.forFeature([LegalQuery])],

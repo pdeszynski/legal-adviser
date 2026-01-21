@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Create pre-commit hook to verify code formatting using Prettier for TypeScript/JavaScript and Black for Python. Either block commits on formatting issues or auto-format files using lint-staged --autofix capability.",
+  "id": "pre-commit-format-check",
+  "title": "Pre-commit Format Check",
+  "dependencies": [
+    "lint-staged-setup"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create pre-commit hook to verify code formatting using Prettier for TypeScript/JavaScript and Black for Python. Either block commits on formatting issues or auto-format files using lint-staged --autofix capability.",
+      "timestamp": "2026-01-21T22:26:17.612Z",
+      "source": "initial"
+    }
+  ]
+}

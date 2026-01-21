@@ -277,4 +277,84 @@ export class QueriesService {
   async getPendingQueries(limit?: number): Promise<LegalQuery[]> {
     return this.findAll({ hasAnswer: false, limit });
   }
+
+  /**
+   * Ask a legal question and get AI response
+   *
+   * Synchronously calls the AI engine to answer the question and stores the result.
+   * Unlike submitQuery, this method waits for the AI response before returning.
+   *
+   * @param dto - Question data with optional mode
+   * @param askQuestionFn - Function to call the AI engine (injected for testability)
+   * @returns The query with the AI-generated answer and citations
+   */
+  async askQuestion(
+    dto: SubmitQueryDto & { mode?: string },
+    askQuestionFn: (
+      question: string,
+      sessionId: string,
+      mode?: string,
+    ) => Promise<{
+      answer: string;
+      citations: Array<{ source: string; article: string; url?: string }>;
+      confidence: number;
+    }>,
+  ): Promise<LegalQuery> {
+    // Create query in pending state
+    const query = this.queryRepository.create({
+      sessionId: dto.sessionId,
+      question: dto.question,
+      answerMarkdown: null,
+      citations: null,
+    });
+
+    const savedQuery = await this.queryRepository.save(query);
+
+    try {
+      // Call AI engine synchronously
+      const aiResponse = await askQuestionFn(
+        dto.question,
+        dto.sessionId,
+        dto.mode || 'SIMPLE',
+      );
+
+      // Convert AI citations to entity format
+      const entityCitations: Citation[] = aiResponse.citations.map((c) => ({
+        source: c.source,
+        article: c.article,
+        url: c.url,
+        excerpt: undefined,
+      }));
+
+      // Update query with AI response
+      savedQuery.setAnswer(aiResponse.answer, entityCitations);
+      const updatedQuery = await this.queryRepository.save(savedQuery);
+
+      // Emit domain event
+      this.eventEmitter.emit(
+        EVENT_PATTERNS.QUERY.ANSWERED,
+        new QueryAnsweredEvent(
+          updatedQuery.id,
+          updatedQuery.sessionId,
+          updatedQuery.getCitationCount(),
+          new Date(),
+        ),
+      );
+
+      return updatedQuery;
+    } catch (error) {
+      // If AI call fails, still keep the query but with null answer
+      // The caller can retry or handle the error
+      this.eventEmitter.emit(
+        EVENT_PATTERNS.QUERY.ASKED,
+        new QuerySubmittedEvent(
+          savedQuery.id,
+          savedQuery.sessionId,
+          savedQuery.question,
+          savedQuery.createdAt,
+        ),
+      );
+      throw error;
+    }
+  }
 }

@@ -3,9 +3,6 @@
   "description": "Verify all nestjs-query resolvers have proper paging argument types configured. Check that @OffsetPaging or @CursorPaging decorators are applied correctly. Ensure GraphQL schema includes paging fields (forward, backward, limit, offset). Test pagination queries for each entity type.",
   "id": "verify-graphql-pagination-args",
   "title": "Verify GraphQL Pagination Arguments",
-  "dependencies": [
-    "fix-pagination-implementation"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

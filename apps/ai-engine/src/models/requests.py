@@ -92,3 +92,9 @@ class SemanticSearchRequest(BaseModel):
         le=1.0,
         description="Minimum similarity threshold (0-1)",
     )
+
+
+class QARequest(BaseModel):
+    """Request to ask a legal question (simplified API)."""
+
+    question: str = Field(..., description="Legal question to answer", min_length=5)

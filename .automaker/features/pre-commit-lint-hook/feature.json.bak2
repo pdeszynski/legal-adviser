@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Create pre-commit Git hook that runs ESLint for TypeScript/JavaScript files and Ruff/Black for Python files. Block commits if linting errors are found. Configure lint-staged to run appropriate linters based on file extensions.",
+  "id": "pre-commit-lint-hook",
+  "title": "Pre-commit Lint Hook",
+  "dependencies": [
+    "lint-staged-setup"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create pre-commit Git hook that runs ESLint for TypeScript/JavaScript files and Ruff/Black for Python files. Block commits if linting errors are found. Configure lint-staged to run appropriate linters based on file extensions.",
+      "timestamp": "2026-01-21T22:26:17.610Z",
+      "source": "initial"
+    }
+  ]
+}

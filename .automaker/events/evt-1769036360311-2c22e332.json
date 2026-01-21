@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769036360311-2c22e332",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-21T22:59:20.311Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "pre-commit-type-check-hook",
+  "featureName": "Pre-commit Type Check Hook",
+  "error": "Feature completed in 67s - auto-verified",
+  "passes": true
+}

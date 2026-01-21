@@ -184,3 +184,50 @@ export class AnswerLegalQueryInput {
   @Type(() => CreateCitationInput)
   citations?: CreateCitationInput[];
 }
+
+/**
+ * DTO for asking a legal question with AI
+ *
+ * Used by the askLegalQuestion mutation to synchronously query the AI
+ * and store the result. This is a blocking operation that calls the AI engine
+ * and returns the complete answer.
+ *
+ * Use cases:
+ * - Direct Q&A interaction where immediate response is needed
+ * - Simple question-answer flow without background processing
+ *
+ * For async processing with event-driven architecture, use submitLegalQuery instead.
+ */
+@InputType('AskLegalQuestionInput')
+export class AskLegalQuestionInput {
+  @Field(() => String, {
+    description: 'Session ID for the user asking the question',
+  })
+  @IsUUID('4', { message: 'Session ID must be a valid UUID v4' })
+  @IsNotEmpty({ message: 'Session ID is required' })
+  sessionId: string;
+
+  @Field(() => String, {
+    description: 'The legal question to ask the AI',
+  })
+  @IsString()
+  @IsNotEmpty({ message: 'Question is required' })
+  @MinLength(3, { message: 'Question must be at least 3 characters long' })
+  @MaxLength(10000, {
+    message: 'Question must be at most 10000 characters long',
+  })
+  @Transform(({ value }) => sanitizeString(value))
+  question: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description:
+      'Response mode: LAWYER (detailed legal analysis) or SIMPLE (layperson-friendly)',
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['LAWYER', 'SIMPLE'], {
+    message: 'Mode must be either LAWYER or SIMPLE',
+  })
+  mode?: string;
+}

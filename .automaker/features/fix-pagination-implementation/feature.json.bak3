@@ -1,0 +1,32 @@
+{
+  "category": "bug",
+  "description": "Investigate and fix pagination issues in Refine-based list views. Verify pagination is working correctly for audit logs, documents, legal queries, and other resources. Ensure nestjs-query resolvers are properly configured with paging options and frontend is correctly passing cursor/pagination parameters.\n\nPlease validate it with tests, make sure everyting's workig on e2e",
+  "id": "fix-pagination-implementation",
+  "title": "Fix Pagination Implementation Across All List Views",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Investigate and fix pagination issues in Refine-based list views. Verify pagination is working correctly for audit logs, documents, legal queries, and other resources. Ensure nestjs-query resolvers are properly configured with paging options and frontend is correctly passing cursor/pagination parameters.",
+      "timestamp": "2026-01-21T10:19:04.635Z",
+      "source": "initial"
+    },
+    {
+      "description": "Investigate and fix pagination issues in Refine-based list views. Verify pagination is working correctly for audit logs, documents, legal queries, and other resources. Ensure nestjs-query resolvers are properly configured with paging options and frontend is correctly passing cursor/pagination parameters.\n\nPlease validate it with tests, make sure everyting's workig on e2e",
+      "timestamp": "2026-01-21T22:59:49.109Z",
+      "source": "edit"
+    }
+  ],
+  "updatedAt": "2026-01-21T22:59:20.560Z",
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "custom",
+  "dependencies": []
+}

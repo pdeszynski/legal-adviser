@@ -3,11 +3,8 @@
   "description": "Create pre-commit Git hook that runs TypeScript type checking (tsc --noEmit) for backend and frontend. Block commits if type errors are detected. Ensures type safety before code enters the repository.",
   "id": "pre-commit-type-check-hook",
   "title": "Pre-commit Type Check Hook",
-  "dependencies": [
-    "lint-staged-setup"
-  ],
   "priority": 1,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -15,5 +12,6 @@
       "timestamp": "2026-01-21T22:26:17.611Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-21T22:59:20.305Z"
 }
