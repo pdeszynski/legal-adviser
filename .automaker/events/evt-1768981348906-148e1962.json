@@ -1,0 +1,11 @@
+{
+  "id": "evt-1768981348906-148e1962",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-21T07:42:28.906Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "classifier-agent",
+  "featureName": "Legal Grounds Classifier Agent",
+  "error": "Feature completed in 409s - auto-verified",
+  "passes": true
+}

@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Document Permissions Entity",
   "description": "Create DocumentPermission entity linking users to documents with access levels. Support owner, editor, viewer, and commenter roles.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "simple",
   "dependencies": [
@@ -27,8 +27,11 @@
     "notes": "Part of Documents aggregate. Manages access control. References User by ID (no direct import) per modular monolith."
   },
   "createdAt": "2026-01-12T10:31:20.843Z",
-  "updatedAt": "2026-01-12T10:31:20.843Z",
+  "updatedAt": "2026-01-20T19:07:17.470Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-20T19:00:30.958Z"
 }

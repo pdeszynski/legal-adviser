@@ -3,15 +3,13 @@
   "category": "Core",
   "title": "Classifier Backend Integration",
   "description": "Extend AI Client Service with classifyCase method. Create GraphQL mutation for case analysis and store results in new LegalAnalysis entity.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 1,
   "complexity": "moderate",
-  "dependencies": [
-    "classifier-rest-endpoint"
-  ],
   "createdAt": "2026-01-12T10:31:20.836Z",
-  "updatedAt": "2026-01-12T10:31:20.836Z",
+  "updatedAt": "2026-01-21T07:53:03.046Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

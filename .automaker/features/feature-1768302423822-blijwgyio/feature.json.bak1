@@ -1,0 +1,24 @@
+{
+  "category": "refactor",
+  "description": "Implement domain event system for inter-aggregate communication. Create event bus, event handlers, and integrate with message queue for async processing and eventual consistency.",
+  "title": "Domain Events Infrastructure",
+  "dependencies": [
+    "ddd-domain-model-design"
+  ],
+  "priority": 2,
+  "status": "in_progress",
+  "id": "feature-1768302423822-blijwgyio",
+  "descriptionHistory": [
+    {
+      "description": "Implement domain event system for inter-aggregate communication. Create event bus, event handlers, and integrate with message queue for async processing and eventual consistency.",
+      "timestamp": "2026-01-13T11:07:03.822Z",
+      "source": "initial"
+    }
+  ],
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "startedAt": "2026-01-21T07:16:12.260Z",
+  "updatedAt": "2026-01-21T07:30:21.728Z"
+}

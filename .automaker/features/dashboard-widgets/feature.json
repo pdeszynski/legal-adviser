@@ -3,15 +3,18 @@
   "category": "UI",
   "title": "Dashboard Widget Components",
   "description": "Create reusable widget components for dashboard. Include document count cards, activity timeline, and notification bell.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "simple",
   "dependencies": [
     "dashboard-page"
   ],
   "createdAt": "2026-01-12T10:31:20.844Z",
-  "updatedAt": "2026-01-12T10:31:20.844Z",
+  "updatedAt": "2026-01-20T18:41:36.883Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-20T18:32:09.899Z"
 }

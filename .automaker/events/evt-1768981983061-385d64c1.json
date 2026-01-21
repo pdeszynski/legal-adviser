@@ -1,0 +1,11 @@
+{
+  "id": "evt-1768981983061-385d64c1",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-21T07:53:03.061Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "classifier-backend-integration",
+  "featureName": "Classifier Backend Integration",
+  "error": "Feature completed in 663s - auto-verified",
+  "passes": true
+}

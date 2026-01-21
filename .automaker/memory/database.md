@@ -5,9 +5,9 @@ relevantTo: [database]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 72
-  referenced: 5
-  successfulFeatures: 5
+  loaded: 73
+  referenced: 6
+  successfulFeatures: 6
 ---
 # database
 
@@ -129,3 +129,84 @@ usageStats:
 - **Problem solved:** Need to display audit log without N+1 queries joining against current Users table which may have changed
 - **Why this works:** Audit logs are immutable snapshots. Denormalizing user info preserves 'who acted' even if user record is deleted or email changed. Avoids join queries
 - **Trade-offs:** More storage (duplicate user data) but O(1) query performance and referential integrity. User changes don't affect audit log accuracy
+
+### Activity data sourced from audit_logs resource sorted by createdAt DESC with pageSize: 10 rather than custom document events table (2026-01-20)
+- **Context:** Dashboard needed recent activity feed with audit trail compliance
+- **Why:** Audit logs provide immutable, compliance-friendly activity records automatically. Avoids building parallel event tracking system. Single source of truth for activity history.
+- **Rejected:** Creating separate document_events table with manual event creation - duplicates audit functionality and adds sync burden
+- **Trade-offs:** Limited filtering options (stuck with audit log schema) but gains automatic compliance tracking; GraphQL query complexity slightly higher due to nested data
+- **Breaking if changed:** If switched to custom events table, lose audit trail compliance and create maintenance burden to keep both systems in sync
+
+### Used composite unique index on (documentId, sharedWithUserId) instead of preventing duplicates at application layer (2026-01-20)
+- **Context:** Ensuring users cannot be shared with multiple times for same document
+- **Why:** Database constraint prevents race conditions where concurrent share requests could create duplicates; application logic alone vulnerable to concurrent requests
+- **Rejected:** Application-level uniqueness check before insert - vulnerable to race conditions in high concurrency
+- **Trade-offs:** Database constraint guarantees consistency (+) but requires handling unique violation exception in service layer (-), complicates error messages
+- **Breaking if changed:** Removing index could allow duplicate shares to be created in concurrent scenarios; application code expects unique constraint and doesn't implement distributed locking
+
+#### [Gotcha] Cascade deletion on document/user removal can silently revoke shares without audit trail if not careful with event emission (2026-01-20)
+- **Situation:** Setting up cascade delete in TypeORM for referential integrity
+- **Root cause:** Cascade delete prevents orphaned shares (correct) but database-level deletion bypasses service layer where events are emitted
+- **How to avoid:** Cascade delete is performant and maintains referential integrity (+) but can lose audit trail if document/user deleted directly in database (-)
+
+#### [Gotcha] Optional expiration date required careful NULL handling - queries must check for NULL or expired_at > NOW() (2026-01-20)
+- **Situation:** Supporting both permanent and time-limited shares
+- **Root cause:** NULL expiration_at means no expiration (permanent share); non-NULL means expires at that timestamp. Must check both in authorization queries
+- **How to avoid:** NULL explicitly represents 'infinite' (+) but queries must handle NULL checks (-), three-valued logic adds complexity
+
+### Used composite unique index on (documentId, sharedWithUserId) instead of relying on application-level duplicate prevention (2026-01-20)
+- **Context:** Preventing duplicate shares between the same user-document pair
+- **Why:** Database-level constraints are enforced at the source, preventing race conditions in concurrent scenarios where application logic alone could allow duplicates to slip through
+- **Rejected:** Application-level validation in service before insert - less reliable under concurrent load, requires transactional guarantees application must manage
+- **Trade-offs:** Simpler code (database handles constraint), but requires explicit error handling for constraint violation exceptions in service layer
+- **Breaking if changed:** Removing this constraint allows duplicate shares which breaks the assumption that each document can only be shared once per user, complicating permission checks and share revocation
+
+#### [Gotcha] Explicit index naming (IDX_document_share_unique) was required instead of relying on TypeORM's auto-generated names (2026-01-20)
+- **Situation:** Discovered naming conflicts when multiple entities had similarly named indexes during migration to database
+- **Root cause:** TypeORM's default index naming can cause collisions in large schemas with many entities using similar patterns. Explicit names provide predictable, conflict-free naming that survives schema evolution
+- **How to avoid:** More verbose entity definitions, but eliminates migration conflicts and makes schema introspection clearer
+
+#### [Gotcha] DTO validation excludes status and contentRaw fields - these must be set post-creation through separate update call (2026-01-21)
+- **Situation:** Initial implementation tried to pass status and contentRaw directly to create() but CreateDocumentDto doesn't accept these fields
+- **Root cause:** Document service separates creation (metadata only) from content updates, likely for transaction isolation and audit trail separation
+- **How to avoid:** Requires two database operations (create + update) instead of one, but maintains clean DTO contracts and allows audit trail for status changes
+
+### Soft delete via isActive flag instead of hard deletion; queries automatically exclude inactive templates (2026-01-21)
+- **Context:** Templates are referenced from generated documents (stored in metadata); hard delete would break referential integrity for historical documents
+- **Why:** Preserves audit trail and historical document context; allows template modification detection (template exists but is archived/replaced)
+- **Rejected:** Hard delete with cascade would lose template history; foreign keys would complicate schema; archive table would duplicate schema management
+- **Trade-offs:** Requires isActive filtering in all queries; unused templates remain in database forever; but enables audit and historical analysis
+- **Breaking if changed:** Hard-deleting templates would orphan references in generated document metadata and lose template evolution history
+
+### Implemented append-only pattern with immutable version records - only changeDescription is updatable, versions themselves cannot be deleted or modified (2026-01-21)
+- **Context:** Legal document versioning requires complete audit trail without tampering risk
+- **Why:** Append-only ensures compliance audit requirements. Immutability prevents accidental data loss and maintains integrity of historical record. Update-only-description provides flexibility for corrections without breaking chain of custody
+- **Rejected:** Full mutability of versions (would compromise audit trail) or complete immutability including description (would prevent correcting metadata)
+- **Trade-offs:** Easier: guaranteed audit trail, compliance, no data corruption. Harder: cannot fix content errors retroactively, must create new version
+- **Breaking if changed:** If versions become mutable, entire audit trail becomes unreliable. Chain of custody breaks for legal compliance.
+
+### Composite unique index on (documentId, versionNumber) instead of single auto-incrementing ID (2026-01-21)
+- **Context:** Need to track multiple versions of same document with sequential numbering
+- **Why:** Composite index ensures version numbers are meaningful and sequential per document. Allows querying 'latest version' via sort descending. Auto-increment would tie versions globally, breaking multi-document semantics
+- **Rejected:** Global auto-increment version ID (would lose per-document versioning context), separate sequence table (adds complexity)
+- **Trade-offs:** Easier: query for version history by document straightforward, version numbers human-readable. Harder: application must manage version number increment logic
+- **Breaking if changed:** If composite index removed, version numbers could duplicate across documents, breaking version lookup queries and sorting semantics
+
+### Rollback creates a NEW version instead of reverting to old version number or deleting history (2026-01-21)
+- **Context:** User rolls back document to version 3 when current is version 5
+- **Why:** Preserves complete audit trail - you can see that a rollback happened and who did it. Creates immutable history where each version number appears exactly once, making audits unambiguous. Prevents confusion about what 'current' is.
+- **Rejected:** Could revert version numbers (lose audit trail), or just replace content (can't tell rollback happened). Both violate audit compliance for legal documents.
+- **Trade-offs:** More storage and complexity versus legally defensible audit trail. End users see the rollback in history.
+- **Breaking if changed:** If changed to not create new version on rollback, audit trail becomes incomplete and legal compliance risk increases.
+
+#### [Pattern] Notification entity tracks full email lifecycle: queueing → sending → delivery success/failure with timestamps (2026-01-21)
+- **Problem solved:** Needed visibility into email delivery without external SendGrid API calls for debugging and analytics
+- **Why this works:** Database record becomes audit trail and recovery point. Allows queries like 'find users who never got welcome email' without calling SendGrid API. Status progression (queued→sent→delivered→failed) shows where breakdowns occur. Timestamps enable SLA monitoring.
+- **Trade-offs:** Extra database writes on every email event, but gained complete offline visibility and analytics capability
+
+### Store SendGrid message ID in notification record and use it as cross-reference key for webhook event matching (2026-01-21)
+- **Context:** Webhook events arrive with SendGrid-generated message IDs but application needs to update corresponding notification in database
+- **Why:** SendGrid webhooks contain message IDs but not application notification IDs. Storing message ID creates bidirectional mapping. Prevents ambiguity when matching incoming webhooks to database records. More reliable than email address matching (duplicate sends exist)
+- **Rejected:** Using email address as lookup key - multiple notifications to same email exist (retries, different templates), would corrupt wrong records. Using timestamps - not unique enough
+- **Trade-offs:** Requires additional field in notification entity but eliminates entire class of data corruption bugs. Minimal storage overhead for significant reliability gain
+- **Breaking if changed:** Without message ID storage, webhook system cannot reliably identify which notification to update; would default to ambiguous email-based lookups causing cross-notifications updates

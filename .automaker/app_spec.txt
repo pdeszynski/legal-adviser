@@ -185,6 +185,42 @@
         <location>apps/web/src/providers/auth-provider/auth-provider.client.ts</location>
       </file_locations>
     </feature>
+    <feature>
+      <name>Document Completion Email Notification</name>
+      <description>Send email notification when document generation completes successfully. Include document title, download link, and next steps.</description>
+    </feature>
+    <feature>
+      <name>Domain Events Infrastructure</name>
+      <description>Implement domain event system for inter-aggregate communication. Create event bus, event handlers, and integrate with message queue for async processing and eventual consistency.</description>
+    </feature>
+    <feature>
+      <name>Classifier FastAPI Endpoint</name>
+      <description>Add POST /api/v1/classify endpoint to AI Engine. Accept case description text, return array of identified legal grounds with articles and confidence.</description>
+    </feature>
+    <feature>
+      <name>Legal Grounds Classifier Agent</name>
+      <description>Create PydanticAI agent to analyze case descriptions and identify applicable legal grounds. Return structured classification with confidence scores.</description>
+    </feature>
+    <feature>
+      <name>Analyze Case Page</name>
+      <description>Create page for case analysis with textarea for description input. Display identified legal grounds as cards with article references and explanations.</description>
+    </feature>
+    <feature>
+      <name>Classifier Backend Integration</name>
+      <description>Extend AI Client Service with classifyCase method. Create GraphQL mutation for case analysis and store results in new LegalAnalysis entity.</description>
+    </feature>
+    <feature>
+      <name>RAG Vector Store Setup</name>
+      <description>Implement vector database (Pinecone, Weaviate, or pgvector) for storing legal document embeddings. Set up indexing pipeline for Polish legal texts.</description>
+    </feature>
+    <feature>
+      <name>RAG Retrieval Logic</name>
+      <description>Implement semantic search over vector store to retrieve relevant legal context. Integrate retrieval results into Q&amp;A agent prompts for grounded responses.</description>
+    </feature>
+    <feature>
+      <name>Q&amp;A LangGraph Workflow</name>
+      <description>Create LangGraph StateGraph for Q&amp;A flow with nodes for query analysis, context retrieval, answer generation, and citation formatting. Please take some ideas from a langchain graph in Flowise.ai</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

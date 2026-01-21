@@ -172,3 +172,42 @@ usageStats:
 - **Rejected:** Sanitizing at query time - doesn't prevent data breach if database is accessed directly. Requires all consumers to implement same sanitization.
 - **Trade-offs:** Easier: Single place to handle, data genuinely protected. Harder: Must know all sensitive fields upfront, if new sensitive field added must update interceptor
 - **Breaking if changed:** If sanitization logic is removed, passwords and tokens will be logged in plaintext - compliance violation and major security risk.
+
+#### [Gotcha] CSRF protection on GraphQL mutations makes automated E2E testing impractical without full auth flow (2026-01-20)
+- **Situation:** GraphQL API requires CSRF tokens for mutations, preventing simple direct API testing or Playwright tests
+- **Root cause:** CSRF protection is correct and necessary security practice. However, it means test setup must include full browser authentication flow rather than just calling mutations directly
+- **How to avoid:** Security is maintained at cost of simpler automated testing. Manual verification is recommended as pragmatic compromise rather than fighting the security layer
+
+### Implemented ownership validation (canShare check) before allowing document sharing, not relying solely on GraphQL authorization guards (2026-01-20)
+- **Context:** Preventing non-owners from sharing documents they can view
+- **Why:** GraphQL guards authenticate the user but don't authorize against specific resource ownership; service layer must verify ownership to prevent privilege escalation where a user with VIEW access tries to share a document
+- **Rejected:** Relying only on @UseGuards(JwtAuthGuard) on resolver - would allow any authenticated user to share any document they can view
+- **Trade-offs:** Adds service-layer authorization check (+security, +correctness) but creates two levels of authorization to maintain (-complexity)
+- **Breaking if changed:** Removing ownership check would allow any authenticated user to share documents; existing tests assume ownership validation exists
+
+#### [Pattern] Permission validation happens at three layers: GraphQL decorator guards, service-level ownership check, and database constraints (2026-01-20)
+- **Problem solved:** Securing multi-user document sharing against various attack vectors
+- **Why this works:** Defense in depth - each layer catches different attack vectors. Guards catch unauthenticated users, service checks authorization, database prevents logical inconsistencies
+- **Trade-offs:** Multiple layers (+security) create redundancy (-performance, -complexity) but failures don't cascade catastrophically
+
+#### [Pattern] Cascade delete configured asymmetrically: users/documents deletion cascades to shares, but shares deletion doesn't cascade (2026-01-20)
+- **Problem solved:** Maintaining referential integrity when users or documents are deleted vs. when shares are explicitly revoked
+- **Why this works:** Deleting a document should clean up all shares (no dangling permissions). Deleting a user should clean up all their shares (no orphaned records). But revoking a share is a normal operation that shouldn't trigger cascades
+- **Trade-offs:** More complex schema definition, but prevents both data loss and orphaned records
+
+#### [Pattern] Store authorUserId as reference field enabling audit of who created each version, with validation that author is provided (2026-01-21)
+- **Problem solved:** Legal documents require knowing who made changes and when
+- **Why this works:** Recording authorUserId at version creation time creates immutable audit trail. Validation at entity level prevents accidental creation of orphan versions. Links to UserSession enables reconstructing context (timezone, location) if needed for forensic analysis
+- **Trade-offs:** Easier: query author motivation complete. Harder: introduces foreign key constraint, requires user context at version creation
+
+#### [Gotcha] SendGrid API key validation happens at runtime (isConfigured check) not at startup (2026-01-21)
+- **Situation:** Service initializes even with missing/invalid SendGrid key if EMAIL_ENABLED=true, only fails when attempting to send
+- **Root cause:** Development mode needs to work without SendGrid (EMAIL_ENABLED=false). Lazy validation allows dev setup without secrets. Hard failure at startup would block entire app if email config is missing.
+- **How to avoid:** Easier dev experience, but bad config only discovered when first email queued (not at app start). Difficult to catch in testing.
+
+### HMAC SHA256 webhook signature verification using SendGrid-provided verification key (2026-01-21)
+- **Context:** Public webhook endpoint needs protection against spoofed webhook requests that could corrupt notification status
+- **Why:** Webhooks are publicly exposed HTTP endpoints. Without verification, attacker could send fake bounce events to mark emails as failed. HMAC ensures only SendGrid can trigger state changes. Standard practice for webhook security
+- **Rejected:** IP whitelisting alone - too fragile as SendGrid changes IPs. Simple shared secret without HMAC - vulnerable to replay attacks
+- **Trade-offs:** Adds verification overhead on each webhook but eliminates entire class of injection attacks. Small performance cost for significant security gain
+- **Breaking if changed:** Removing verification allows arbitrary state mutations to notification records through crafted HTTP requests to webhook endpoint

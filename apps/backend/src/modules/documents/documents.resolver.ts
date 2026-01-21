@@ -1,5 +1,4 @@
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { DocumentsService } from './services/documents.service';
 import {
   GenerateDocumentInput,
@@ -11,9 +10,9 @@ import {
   PdfExportResult,
   PdfExportStatusResponse,
 } from './dto/pdf-export.dto';
-import { LegalDocument, DocumentType, DocumentStatus } from './entities/legal-document.entity';
+import { LegalDocument, DocumentType } from './entities/legal-document.entity';
 import { DocumentGenerationProducer } from './queues/document-generation.producer';
-import { PdfExportProducer } from './queues/pdf-export.producer';
+import { PdfExportService } from './services/pdf-export.service';
 import { StrictThrottle, SkipThrottle } from '../../shared/throttler';
 
 /**
@@ -39,8 +38,8 @@ import { StrictThrottle, SkipThrottle } from '../../shared/throttler';
 export class DocumentsResolver {
   constructor(
     private readonly documentsService: DocumentsService,
+    private readonly pdfExportService: PdfExportService,
     private readonly documentGenerationProducer: DocumentGenerationProducer,
-    private readonly pdfExportProducer: PdfExportProducer,
   ) {}
 
   /**
@@ -157,53 +156,7 @@ export class DocumentsResolver {
   async exportDocumentToPdf(
     @Args('input') input: ExportDocumentToPdfInput,
   ): Promise<PdfExportJobResponse> {
-    // Step 1: Validate the document exists and is completed
-    const document = await this.documentsService.findById(input.documentId);
-
-    if (!document) {
-      throw new NotFoundException(
-        `Document with ID ${input.documentId} not found`,
-      );
-    }
-
-    if (document.status !== DocumentStatus.COMPLETED) {
-      throw new BadRequestException(
-        `Document must be in COMPLETED status to export to PDF. Current status: ${document.status}`,
-      );
-    }
-
-    if (!document.contentRaw) {
-      throw new BadRequestException(
-        'Document has no content to export',
-      );
-    }
-
-    // Step 2: Queue the PDF export job
-    const job = await this.pdfExportProducer.queuePdfExport({
-      documentId: document.id,
-      sessionId: document.sessionId,
-      documentType: document.type,
-      title: document.title,
-      content: document.contentRaw,
-      options: input.options
-        ? {
-            format: input.options.format,
-            includeHeader: input.options.includeHeader,
-            includeFooter: input.options.includeFooter,
-            includeTableOfContents: input.options.includeTableOfContents,
-            watermark: input.options.watermark,
-            language: input.options.language as 'pl' | 'en' | undefined,
-          }
-        : undefined,
-      metadata: document.metadata || undefined,
-    });
-
-    return {
-      jobId: job.id?.toString() || '',
-      documentId: document.id,
-      status: 'PENDING',
-      message: 'PDF export job queued successfully',
-    };
+    return this.pdfExportService.exportToPdf(input);
   }
 
   /**
@@ -223,48 +176,7 @@ export class DocumentsResolver {
   async getPdfExportStatus(
     @Args('jobId', { type: () => ID }) jobId: string,
   ): Promise<PdfExportStatusResponse> {
-    const job = await this.pdfExportProducer.getJobStatus(jobId);
-
-    if (!job) {
-      return {
-        jobId,
-        status: 'unknown',
-        error: `Job with ID ${jobId} not found`,
-      };
-    }
-
-    const state = await job.getState();
-    const progress = job.progress();
-
-    // Base response
-    const response: PdfExportStatusResponse = {
-      jobId,
-      status: state as PdfExportStatusResponse['status'],
-      progress: typeof progress === 'number' ? progress : undefined,
-    };
-
-    // Add result if completed
-    if (state === 'completed') {
-      const result = await this.pdfExportProducer.getJobResult(jobId);
-      if (result) {
-        response.result = {
-          documentId: result.documentId,
-          filename: result.filename,
-          pdfBase64: result.pdfBase64,
-          fileSizeBytes: result.fileSizeBytes,
-          pageCount: result.pageCount,
-          generationTimeMs: result.generationTimeMs,
-        };
-      }
-    }
-
-    // Add error if failed
-    if (state === 'failed') {
-      const failedReason = job.failedReason;
-      response.error = failedReason || 'PDF export failed';
-    }
-
-    return response;
+    return this.pdfExportService.getExportStatus(jobId);
   }
 
   /**
@@ -285,29 +197,6 @@ export class DocumentsResolver {
   async exportDocumentToPdfSync(
     @Args('input') input: ExportDocumentToPdfInput,
   ): Promise<PdfExportResult> {
-    // Step 1: Queue the export job (reuse existing validation)
-    const jobResponse = await this.exportDocumentToPdf(input);
-
-    // Step 2: Wait for the result
-    try {
-      const result = await this.pdfExportProducer.waitForResult(
-        jobResponse.jobId,
-        60000, // 60 second timeout
-      );
-
-      return {
-        documentId: result.documentId,
-        filename: result.filename,
-        pdfBase64: result.pdfBase64,
-        fileSizeBytes: result.fileSizeBytes,
-        pageCount: result.pageCount,
-        generationTimeMs: result.generationTimeMs,
-      };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      throw new BadRequestException(
-        `PDF export failed: ${errorMessage}`,
-      );
-    }
+    return this.pdfExportService.exportToPdfSync(input);
   }
 }

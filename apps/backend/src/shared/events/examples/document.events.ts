@@ -119,6 +119,8 @@ export class DocumentGenerationCompletedEvent extends BaseEvent {
     public readonly userId: string,
     public readonly documentType: string,
     public readonly generationTimeMs: number,
+    public readonly userEmail?: string,
+    public readonly firstName?: string,
   ) {
     super();
   }
@@ -129,6 +131,8 @@ export class DocumentGenerationCompletedEvent extends BaseEvent {
       userId: this.userId,
       documentType: this.documentType,
       generationTimeMs: this.generationTimeMs,
+      userEmail: this.userEmail,
+      firstName: this.firstName,
     };
   }
 }
@@ -145,6 +149,8 @@ export class DocumentGenerationFailedEvent extends BaseEvent {
     public readonly documentId: string,
     public readonly userId: string,
     public readonly error: string,
+    public readonly userEmail?: string,
+    public readonly firstName?: string,
   ) {
     super();
   }
@@ -154,6 +160,8 @@ export class DocumentGenerationFailedEvent extends BaseEvent {
       documentId: this.documentId,
       userId: this.userId,
       error: this.error,
+      userEmail: this.userEmail,
+      firstName: this.firstName,
     };
   }
 }

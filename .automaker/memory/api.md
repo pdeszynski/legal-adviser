@@ -5,9 +5,9 @@ relevantTo: [api]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 78
-  referenced: 2
-  successfulFeatures: 2
+  loaded: 84
+  referenced: 3
+  successfulFeatures: 3
 ---
 # api
 
@@ -161,3 +161,51 @@ usageStats:
 - **Situation:** Data provider maps Refine filters to nestjs-query GraphQL syntax but developers expect flat filter objects
 - **Root cause:** nestjs-query generates GraphQL where every field becomes an object with operation keys (eq, ne, gt, etc) to support complex queries uniformly
 - **How to avoid:** More verbose but explicit about comparison operators. Enables advanced filtering at cost of initial confusion
+
+#### [Pattern] Using Refine's useList hook with GraphQL to fetch documents, calculating statistics client-side with useMemo (2026-01-20)
+- **Problem solved:** Dashboard needs real-time document statistics without creating dedicated backend aggregation endpoints
+- **Why this works:** Avoids backend complexity and keeps statistics current with actual data; useMemo prevents recalculation on every render
+- **Trade-offs:** Client-side calculation transfers computation cost to browser but eliminates backend endpoint maintenance; single source of truth in data provider
+
+#### [Pattern] Relying on pre-existing GraphQL mutation (updateOneLegalDocument) rather than creating new one (2026-01-20)
+- **Problem solved:** Backend GraphQL schema already had update mutation with proper input types before feature was implemented
+- **Why this works:** No schema changes needed = no backend deployment coupling = faster iteration. Pre-existing mutation means the contract was already validated and integrated with other systems
+- **Trade-offs:** Constrained to existing mutation shape but gains speed and reduced risk. No additional backend work or coordination needed
+
+#### [Pattern] Emitted domain events from DocumentSharingService for sharing operations rather than directly calling audit service (2026-01-20)
+- **Problem solved:** Needing to log all sharing operations for compliance and auditability
+- **Why this works:** Domain events decouple sharing logic from audit concerns; service doesn't know/care about audit implementation. Allows audit system to subscribe independently, follows DDD principle of events as side effects
+- **Trade-offs:** Event-driven is loosely coupled (+) but audit gaps are harder to debug if event handler fails silently (-), requires event infrastructure
+
+### Created separate updateSharePermission mutation instead of combining with shareDocument (2026-01-20)
+- **Context:** Needing to modify existing share permissions after initial creation
+- **Why:** Separates concerns - shareDocument creates new shares, updateSharePermission modifies existing ones. Different validation logic (share must exist vs must not exist), clearer API semantics
+- **Rejected:** Single shareDocument mutation with optional ID field - would require complex conditional logic, unclear if operation creates or updates
+- **Trade-offs:** More mutations in schema (+clarity) but more API surface to maintain and test (-)
+- **Breaking if changed:** Merging mutations would break clients that distinguish between create and update operations; different error cases (already shared vs not shared)
+
+### Exposed separate queries documentShares (for owner) and documentsSharedWithMe (for recipient) instead of single unified query (2026-01-20)
+- **Context:** Querying shares from different perspectives - documents I own vs documents shared with me
+- **Why:** Separates concerns and prevents authorization logic bloat. Owner and recipient queries have different filters, sort orders, and permission requirements. Keeps query intent clear
+- **Rejected:** Single documentShares query with optional filters/parameters - would require complex authorization logic to determine if requester is owner or recipient
+- **Trade-offs:** Client calls two endpoints instead of one, but each endpoint is simpler and authorization is unambiguous
+- **Breaking if changed:** Merging into single query requires adding authorization logic that handles both perspectives, increasing complexity and maintenance burden
+
+### Special mutation `generateDocumentFromTemplate` instead of embedding template generation in document creation flow (2026-01-21)
+- **Context:** Document creation and template-based document generation are distinct business operations with different validation and processing needs
+- **Why:** Maintains single responsibility - documentsResolver handles template-agnostic operations, documentTemplatesResolver handles template-specific logic; makes audit trail clear
+- **Rejected:** Adding templateId parameter to createDocument mutation would create coupling and make template processing logic live in wrong resolver
+- **Trade-offs:** Requires two separate mutations instead of one, but makes the system more extensible for other document sources (imports, uploads, etc.)
+- **Breaking if changed:** Merging into single mutation would require moving template processing into documents resolver, creating bidirectional dependency
+
+#### [Gotcha] Delete mutations disabled at entity registration level in NestJS Query - must explicitly disable rather than relying on application logic (2026-01-21)
+- **Situation:** GraphQL auto-generation creates mutations for all CRUD operations including delete, but versions should never be deletable
+- **Root cause:** Explicit disabling at registration prevents accidental API exposure. Application-level checks alone are insufficient - need framework-level enforcement. GraphQL schema must accurately reflect business rules or client applications will request invalid operations
+- **How to avoid:** Easier: impossible to delete accidentally via GraphQL, schema is source of truth. Harder: requires understanding NestJS Query registration syntax
+
+### Exposed separate GraphQL queries (documentVersionHistory, documentLatestVersion, documentVersionByNumber) instead of single nested query (2026-01-21)
+- **Context:** Allowing clients to query version information flexibly
+- **Why:** Prevents N+1 query problems - clients get exactly what they need without over-fetching. Separate queries are easier to cache and optimize individually. Clear, explicit API surface.
+- **Rejected:** Could nest all version data on Document type, but that forces clients to receive all versions even when they only want count or latest
+- **Trade-offs:** Slightly more queries from client perspective versus predictable performance and clear API contracts
+- **Breaking if changed:** If consolidated into single nested query, client requests with documentVersionHistory will suddenly fetch ALL versions and impact performance on documents with many versions.

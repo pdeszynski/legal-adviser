@@ -3,6 +3,7 @@
 import { useGetIdentity, useLogout, useTranslation } from '@refinedev/core';
 import { SelectLanguage } from '@components/select-language';
 import { Button } from '@legal/ui';
+import { NotificationBell } from '@components/dashboard';
 
 interface UserIdentity {
   name?: string;
@@ -28,6 +29,12 @@ export const Header = () => {
 
       <div className="flex items-center gap-4">
         <SelectLanguage />
+
+        <NotificationBell
+          notifications={[]}
+          onNotificationClick={() => {}}
+          onMarkAllRead={() => {}}
+        />
 
         {displayName && (
           <span className="text-sm font-medium text-muted-foreground hidden md:inline-block">

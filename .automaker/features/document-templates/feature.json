@@ -3,15 +3,18 @@
   "category": "Core",
   "title": "Document Template System",
   "description": "Create template engine for common legal document types. Support variable interpolation, conditional sections, and Polish legal formatting standards.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "complex",
   "dependencies": [
     "legal-document-nestjs-query"
   ],
   "createdAt": "2026-01-12T10:31:20.841Z",
-  "updatedAt": "2026-01-12T10:31:20.841Z",
+  "updatedAt": "2026-01-21T06:34:22.779Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-21T06:27:44.228Z"
 }

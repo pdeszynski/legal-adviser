@@ -1,0 +1,24 @@
+{
+  "category": "refactor",
+  "description": "Implement anti-corruption layers for external integrations (SAOS, ISAP, AI Engine). Translate external models to domain models and isolate domain from external API changes.",
+  "title": "Anti-Corruption Layer for External APIs",
+  "dependencies": [
+    "layered-architecture-implementation"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "id": "feature-1768302423823-4nhwqmu6u",
+  "descriptionHistory": [
+    {
+      "description": "Implement anti-corruption layers for external integrations (SAOS, ISAP, AI Engine). Translate external models to domain models and isolate domain from external API changes.",
+      "timestamp": "2026-01-13T11:07:03.823Z",
+      "source": "initial"
+    }
+  ],
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "startedAt": "2026-01-21T07:17:47.686Z",
+  "updatedAt": "2026-01-21T07:17:51.414Z"
+}

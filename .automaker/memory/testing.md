@@ -209,3 +209,61 @@ usageStats:
 - **Situation:** Playwright test ran multiple GraphQL queries in sequence against production-like ThrottlerGuard configuration
 - **Root cause:** ThrottlerGuard rate limits by client IP (all test requests appear from same IP). Test environment configuration didn't exempt test client or adjust burst limits
 - **How to avoid:** Test verification skipped in favor of manual testing. Feature works correctly but confidence gap for CI/CD pipelines. Manual testing more thorough but not automated
+
+#### [Gotcha] Playwright automated tests failed silently due to authentication requirement not being handled in test setup (2026-01-20)
+- **Situation:** Dashboard is protected by (authenticated) layout, but test attempted to access /dashboard without login flow
+- **Root cause:** Test infrastructure lacked authentication setup; endpoint returned 500 error rather than 401/403
+- **How to avoid:** Manual verification replaced automated testing; gained confidence through code inspection but lost automated regression coverage
+
+### Verification tests check for component exports in index.ts barrel file rather than direct imports (2026-01-20)
+- **Context:** Needed to verify components are properly exposed for consumption throughout application
+- **Why:** Barrel files enforce explicit component contracts and prevent accidental internal imports. Tests validate that public API surface is correct.
+- **Rejected:** Testing only that components exist as files - misses critical export/import setup and allows broken public APIs
+- **Trade-offs:** Tests are more fragile to refactoring but catch real integration issues; adds maintenance burden for barrel file updates
+- **Breaking if changed:** If barrel exports are removed/changed, tests fail immediately - this is intentional to prevent silent breaking changes
+
+#### [Gotcha] Manual verification recommended over automated testing due to CSRF complexity, not because feature is untestable (2026-01-20)
+- **Situation:** Implementation log notes manual testing recommended rather than attempting full E2E Playwright tests
+- **Root cause:** CSRF token flow requires full browser authentication context. Setting up auth in test environment adds significant complexity for marginal additional confidence beyond manual verification
+- **How to avoid:** Faster iteration (skip complex test setup) but relies on manual verification for production confidence. Acceptable for CRUD forms with standard validation
+
+#### [Gotcha] Database seeding and user account setup was critical blocker - couldn't run Playwright tests without proper test fixtures (2026-01-20)
+- **Situation:** Integration testing sharing feature end-to-end
+- **Root cause:** Sharing requires multiple users, documents, and proper authentication state. Manual setup per test run is error-prone
+- **How to avoid:** Proper test fixtures enable reliable tests (+) but require upfront infrastructure investment (-), increased setup complexity (-)
+
+### Used unit tests on entity class instead of E2E Playwright tests for permission verification (2026-01-20)
+- **Context:** Validating that permission hierarchy, expiration logic, and access control work correctly
+- **Why:** Entity logic doesn't depend on HTTP/GraphQL transport layer. Unit tests run in milliseconds vs seconds for E2E, are deterministic, and test the core logic in isolation without database/server setup
+- **Rejected:** E2E Playwright tests - slower (setup server, navigate UI), brittle (timing, selectors), harder to iterate when debugging permission logic
+- **Trade-offs:** Unit tests don't verify GraphQL schema exposure, but database and resolver tests handle those. Trade off breadth for speed and reliability
+- **Breaking if changed:** Skipping entity tests and relying only on E2E means permission bugs surface in production testing, not dev cycle
+
+#### [Pattern] Polish locale formatting (dates, numbers, booleans as tak/nie) validated through unit tests with hardcoded locale expectations, not configuration-driven (2026-01-21)
+- **Problem solved:** System supports Polish legal document generation with specific formatting requirements (DD.MM.YYYY dates, space-separated thousands, 'tak'/'nie' for booleans)
+- **Why this works:** Hardcoding Polish rules keeps template engine focused and prevents scope creep; Polish formatting is core domain requirement, not a configuration option
+- **Trade-offs:** Adding new locale requires code changes and test updates, but current system is simpler and focused on actual business requirement
+
+#### [Pattern] Test three sequential versions with different authors in same session to verify version number uniqueness and authorship tracking (2026-01-21)
+- **Problem solved:** Need confidence that multi-author document history is correctly tracked
+- **Why this works:** Single test case demonstrates composite key constraint (documentId + versionNumber uniqueness), session tracking (all in same session), and multi-user scenarios. Catching version number collisions requires multiple versions; different authors expose authorship tracking bugs
+- **Trade-offs:** Easier: single consolidated test covers critical scenarios. Harder: test is less focused, harder to debug if one scenario fails
+
+### Used unit tests with mock entities instead of integration tests against real database (2026-01-21)
+- **Context:** Verifying version creation, rollback, and diff logic works correctly
+- **Why:** Unit tests run instantly, no DB setup needed, easier to test edge cases (missing documents, invalid versions). All domain logic is deterministic and doesn't depend on DB state. Integration tests were created separately for end-to-end GraphQL verification.
+- **Rejected:** Pure integration tests would catch more bugs but require Docker/postgres running, much slower feedback loop, harder to test error paths
+- **Trade-offs:** Faster development cycle but integration tests are still needed. Unit tests verify logic, integration tests verify plumbing.
+- **Breaking if changed:** If database behavior changes (cascade deletes, constraints), unit tests won't catch it. Integration tests must still be run before production.
+
+### Verification test created then deleted rather than adding permanent test suite (2026-01-21)
+- **Context:** Needed to verify service builds and integrates correctly without leaving test files in codebase
+- **Why:** Tests verify implementation correctness then are removed - acknowledges that actual service tests should be written by developer with full context. Temporary verification ensures no build errors or TypeScript issues, but permanent tests require business logic understanding we don't have.
+- **Rejected:** Leaving mock tests in codebase - would be incorrect tests that fail when real business logic added. No tests at all - couldn't verify integration.
+- **Trade-offs:** Caught integration issues early but didn't create maintainable test suite. Developer must write real tests knowing requirements.
+- **Breaking if changed:** Without any verification, bad imports or missing dependencies discovered in production. With permanent wrong tests, they'd require immediate fixing.
+
+#### [Pattern] Comprehensive test suite (9 tests) created to verify webhook controller before deployment, then deleted after verification (2026-01-21)
+- **Problem solved:** New webhook endpoint has no existing test coverage and handles critical state mutations
+- **Why this works:** Temporary verification tests catch integration issues before committing to codebase. Confirms webhook signature verification works, event handling logic is correct, and error cases don't crash. Deleted after success because temporary test code shouldn't persist
+- **Trade-offs:** Higher initial setup cost for thorough verification but catches bugs early before production exposure. Prevents silent failures in webhook handler

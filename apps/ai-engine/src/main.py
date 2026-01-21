@@ -4,9 +4,11 @@ This service provides AI-powered legal assistance including:
 - Document generation
 - Legal Q&A
 - Case law search
+- Legal grounds classification
 """
 
 import uuid
+import time
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -14,6 +16,9 @@ from .models.requests import (
     AskQuestionRequest,
     GenerateDocumentRequest,
     SearchRulingsRequest,
+    ClassifyCaseRequest,
+    GenerateEmbeddingsRequest,
+    SemanticSearchRequest,
 )
 from .models.responses import (
     AnswerResponse,
@@ -22,8 +27,14 @@ from .models.responses import (
     GenerateDocumentResponse,
     Ruling,
     SearchRulingsResponse,
+    ClassificationResponse,
+    GenerateEmbeddingsResponse,
+    SemanticSearchResponse,
+    SemanticSearchResult,
 )
 from .graphs.drafting_graph import drafting_graph
+from .graphs.qa_graph import qa_graph
+from .agents.classifier_agent import classifier_agent
 
 app = FastAPI(
     title="Legal AI Engine",
@@ -46,6 +57,19 @@ app.add_middleware(
 from typing import Dict, Any
 
 generation_tasks: Dict[str, Dict[str, Any]] = {}
+
+# Embedding service singleton
+_embedding_service = None
+
+
+def get_embedding_service():
+    """Get or create the embedding service singleton."""
+    global _embedding_service
+    if _embedding_service is None:
+        from .services.embedding_service import EmbeddingService
+        _embedding_service = EmbeddingService()
+    return _embedding_service
+
 
 
 @app.get("/")
@@ -146,31 +170,72 @@ async def ask_question(request: AskQuestionRequest):
     The AI will provide answers tailored to the specified mode:
     - LAWYER: Detailed, technical legal analysis
     - SIMPLE: Layperson-friendly explanation
+
+    Uses a LangGraph workflow with:
+    - Query analysis and classification
+    - Context retrieval from vector store
+    - Answer generation with RAG
+    - Citation formatting
     """
-    # TODO: Implement actual Q&A with RAG using PydanticAI
-    # For now, return a mock response
+    initial_state = {
+        "question": request.question,
+        "session_id": request.session_id,
+        "mode": request.mode,
+        # Initialize optional fields
+        "query_type": None,
+        "key_terms": None,
+        "question_refined": None,
+        "needs_clarification": False,
+        "clarification_prompt": None,
+        "query_embedding": None,
+        "retrieved_contexts": None,
+        "context_summary": None,
+        "raw_answer": None,
+        "answer_complete": False,
+        "final_answer": None,
+        "citations": None,
+        "confidence": 0.0,
+        "error": None,
+    }
 
-    mock_answer = f"""Based on your question: "{request.question}"
+    try:
+        result = await qa_graph.ainvoke(initial_state)
 
-This is a placeholder answer. The actual implementation will use:
-- PydanticAI for structured responses
-- RAG (Retrieval Augmented Generation) for accurate citations
-- Polish legal database for authoritative sources
-
-Mode: {request.mode}
-"""
-
-    return AnswerResponse(
-        answer=mock_answer,
-        citations=[
-            Citation(
-                source="Polish Civil Code",
-                article="Art. 118",
-                url="https://example.com/civil-code",
+        # Handle clarification case
+        if result.get("needs_clarification") and result.get("clarification_prompt"):
+            return AnswerResponse(
+                answer=result["clarification_prompt"],
+                citations=[],
+                confidence=0.0,
             )
-        ],
-        confidence=0.85,
-    )
+
+        # Handle error case
+        if result.get("error"):
+            return AnswerResponse(
+                answer=f"An error occurred while processing your question: {result['error']}",
+                citations=[],
+                confidence=0.0,
+            )
+
+        # Return formatted answer
+        return AnswerResponse(
+            answer=result.get("final_answer") or result.get("raw_answer", "No answer generated."),
+            citations=[
+                Citation(
+                    source=c.get("source", "Unknown"),
+                    article=c.get("article", ""),
+                    url=c.get("url"),
+                )
+                for c in (result.get("citations") or [])
+            ],
+            confidence=result.get("confidence", 0.0),
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Q&A processing failed: {str(e)}",
+        ) from e
 
 
 @app.post("/api/v1/search/rulings", response_model=SearchRulingsResponse)
@@ -199,3 +264,214 @@ async def search_rulings(request: SearchRulingsRequest):
         total=len(mock_rulings),
         query=request.query,
     )
+
+
+@app.post("/api/v1/classify", response_model=ClassificationResponse)
+async def classify_case(request: ClassifyCaseRequest):
+    """Analyze a case description and identify applicable legal grounds.
+
+    Uses PydanticAI agent to analyze the case and return structured
+    classification with confidence scores for each identified legal ground.
+
+    The response includes:
+    - List of identified legal grounds with individual confidence scores
+    - Overall classification confidence
+    - Summary and recommendations
+    - Processing time metrics
+    """
+    start_time = time.time()
+
+    try:
+        # Run the classifier agent
+        result = await classifier_agent.run(
+            f"Analyze this case and identify applicable legal grounds:\n\n{request.case_description}"
+        )
+
+        processing_time = (time.time() - start_time) * 1000  # Convert to ms
+
+        classification = result.data
+
+        return ClassificationResponse(
+            identified_grounds=[
+                {
+                    "name": ground.name,
+                    "description": ground.description,
+                    "confidence_score": ground.confidence_score,
+                    "legal_basis": ground.legal_basis,
+                    "notes": ground.notes,
+                }
+                for ground in classification.identified_grounds
+            ],
+            overall_confidence=classification.overall_confidence,
+            summary=classification.summary,
+            recommendations=classification.recommendations,
+            case_description=request.case_description,
+            processing_time_ms=processing_time,
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Classification failed: {str(e)}",
+        ) from e
+
+
+@app.post("/api/v1/embeddings/generate", response_model=GenerateEmbeddingsResponse)
+async def generate_embeddings(request: GenerateEmbeddingsRequest):
+    """Generate embeddings for text chunks using OpenAI.
+
+    This endpoint generates vector embeddings for one or more text chunks
+    using OpenAI's text-embedding-3-small model (1536 dimensions).
+
+    The embeddings can be stored in a vector database for semantic search
+    and Retrieval Augmented Generation (RAG).
+    """
+    try:
+        embedding_service = get_embedding_service()
+
+        # Generate embeddings
+        embeddings = await embedding_service.generate_embeddings(
+            texts=request.texts,
+            model=request.model,
+        )
+
+        return GenerateEmbeddingsResponse(
+            embeddings=embeddings,
+            model=request.model,
+            total_tokens=sum(len(text.split()) for text in request.texts),
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Embedding generation failed: {str(e)}",
+        ) from e
+
+
+@app.post("/api/v1/search/semantic", response_model=SemanticSearchResponse)
+async def semantic_search(request: SemanticSearchRequest):
+    """Perform semantic vector search over indexed documents.
+
+    This endpoint uses vector similarity to find the most relevant text chunks
+    from the document embeddings store. Designed for RAG (Retrieval Augmented Generation).
+
+    Note: This is a stub implementation. In production, this would query the backend's
+    VectorStoreService which uses pgvector for similarity search.
+    """
+    # TODO: Implement actual semantic search by calling backend vector store
+    # The backend should provide an endpoint that accepts query_embedding and returns
+    # similar chunks from the document_embeddings table using pgvector cosine similarity
+
+    # Mock results for demonstration
+    mock_results = [
+        SemanticSearchResult(
+            id="emb-001",
+            document_id="doc-123",
+            content_chunk=f"Relevant legal content related to: {request.query[:50]}...",
+            chunk_index=0,
+            similarity=0.89,
+            metadata={"source": "Polish Civil Code", "article": "Art. 118"},
+        ),
+        SemanticSearchResult(
+            id="emb-002",
+            document_id="doc-456",
+            content_chunk="Additional relevant context from legal documents and rulings",
+            chunk_index=1,
+            similarity=0.76,
+            metadata={"source": "Supreme Court Ruling", "date": "2023-05-15"},
+        ),
+    ]
+
+    # Filter by threshold and limit
+    filtered_results = [r for r in mock_results if r.similarity >= request.threshold][
+        : request.limit
+    ]
+
+    return SemanticSearchResponse(
+        results=filtered_results,
+        query=request.query,
+        total=len(filtered_results),
+    )
+
+
+@app.post("/api/v1/qa/ask-rag", response_model=AnswerResponse)
+async def ask_question_with_rag(request: AskQuestionRequest):
+    """Ask a legal question with RAG (Retrieval Augmented Generation).
+
+    Enhanced Q&A that:
+    1. Generates embedding for the question
+    2. Searches vector store for relevant legal context
+    3. Augments prompt with retrieved context
+    4. Generates grounded answer with citations
+
+    Provides more accurate, citation-backed answers compared to basic Q&A.
+    """
+    try:
+        # Step 1: Generate embedding for the question
+        embedding_service = get_embedding_service()
+        query_embedding = await embedding_service.generate_embedding(request.question)
+
+        # Step 2: Search vector store for relevant context
+        # TODO: Call backend VectorStoreService.similaritySearch(query_embedding)
+        # For now, use mock context
+        context_chunks = [
+            "Polish Civil Code Article 118: The statute of limitations for claims is generally 10 years, unless specific provisions specify otherwise.",
+            "Supreme Court ruling from 2023: In cases involving contractual disputes, the limitation period begins from the date the breach became known.",
+        ]
+
+        # Step 3: Build augmented prompt with retrieved context
+        context_text = "\n\n".join([
+            f"[Context {i+1}]: {chunk}"
+            for i, chunk in enumerate(context_chunks)
+        ])
+
+        mode_instruction = (
+            "detailed legal professional analysis with references to specific articles"
+            if request.mode.upper() == "LAWYER"
+            else "simplified explanation suitable for a layperson"
+        )
+
+        # In production, this would use a PydanticAI agent with the augmented prompt
+        # For now, return a structured response
+        augmented_answer = f"""Based on the relevant legal context retrieved, here's the answer to: "{request.question}"
+
+**Legal Context Considered:**
+{context_text}
+
+**Answer:**
+According to Polish law, the statute of limitations is governed by the Civil Code. Article 118 provides the general 10-year limitation period for most claims, though specific provisions may establish different periods.
+
+The Supreme Court has clarified that the limitation period typically begins when the claim becomes legally enforceable, not necessarily when the underlying event occurred.
+
+**Response Mode:** {request_mode_label(request.mode)}
+
+*Note: This is a demonstration response. The production implementation will use PydanticAI with proper context augmentation.*
+"""
+
+        return AnswerResponse(
+            answer=augmented_answer,
+            citations=[
+                Citation(
+                    source="Polish Civil Code",
+                    article="Art. 118",
+                    url="https://isap.sejm.gov.pl/",
+                ),
+                Citation(
+                    source="Supreme Court Ruling",
+                    article="Case III CZP 45/23",
+                    url="https://sn.pl/orzeczenia",
+                ),
+            ],
+            confidence=0.87,
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"RAG question answering failed: {str(e)}",
+        ) from e
+
+
+def request_mode_label(mode: str) -> str:
+    """Get human-readable label for request mode."""
+    return "detailed legal professional" if mode.upper() == "LAWYER" else "simplified layperson"

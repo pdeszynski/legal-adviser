@@ -1,7 +1,7 @@
 """Request models for AI Engine API."""
 
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 
 
@@ -52,3 +52,43 @@ class SearchRulingsRequest(BaseModel):
         description="Search filters (date range, court type, etc.)",
     )
     limit: int = Field(default=10, ge=1, le=100, description="Maximum results")
+
+
+class ClassifyCaseRequest(BaseModel):
+    """Request to classify a case and identify legal grounds."""
+
+    case_description: str = Field(
+        ...,
+        description="Detailed description of the legal case",
+        min_length=20,
+    )
+    session_id: str = Field(..., description="User session ID for tracking")
+    context: Optional[dict] = Field(
+        default=None,
+        description="Additional context (e.g., document types, parties involved)",
+    )
+
+
+class GenerateEmbeddingsRequest(BaseModel):
+    """Request to generate embeddings for text chunks."""
+
+    texts: List[str] = Field(
+        ..., description="List of text chunks to generate embeddings for", min_items=1
+    )
+    model: str = Field(
+        default="text-embedding-3-small",
+        description="OpenAI embedding model to use",
+    )
+
+
+class SemanticSearchRequest(BaseModel):
+    """Request to perform semantic vector search."""
+
+    query: str = Field(..., description="Search query", min_length=3)
+    limit: int = Field(default=5, ge=1, le=20, description="Maximum results to return")
+    threshold: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description="Minimum similarity threshold (0-1)",
+    )

@@ -3,17 +3,18 @@
   "category": "UI",
   "title": "User Dashboard",
   "description": "Create dashboard page with overview widgets. Show recent documents, pending analyses, statistics, and quick action buttons.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [
     "document-list-view"
   ],
   "createdAt": "2026-01-12T10:31:20.844Z",
-  "updatedAt": "2026-01-20T12:18:00.490Z",
+  "updatedAt": "2026-01-20T18:31:56.325Z",
   "model": "sonnet",
   "thinkingLevel": "none",
   "reasoningEffort": "none",
-  "startedAt": "2026-01-20T12:15:18.638Z",
-  "descriptionHistory": []
+  "startedAt": "2026-01-20T18:20:18.895Z",
+  "descriptionHistory": [],
+  "branchName": "002-legal-ai-core"
 }

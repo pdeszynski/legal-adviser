@@ -29,3 +29,22 @@ usageStats:
 - **Rejected:** Icon-only indicators save space but fail accessibility. Text-only is accessible but slow to scan. Tooltip-revealed details hide critical info
 - **Trade-offs:** Takes more horizontal space but improves scanning speed. Requires consistent color scheme across app to avoid confusion
 - **Breaking if changed:** If color scheme changes or badges removed, developers lose at-a-glance action type understanding. Users with color vision deficiency would lose pattern recognition
+
+#### [Gotcha] NotificationBell positioned in header requires careful spacing relative to existing UI elements (language selector, profile menu) (2026-01-20)
+- **Situation:** Adding new component to constrained header layout without redesign
+- **Root cause:** Header space is limited; icon position affects accessibility and visual balance. Placement between language selector and profile menu uses natural reading order
+- **How to avoid:** Consistent with header pattern but adds another icon; users need clear affordance that it's interactive
+
+### Status-based access control: only DRAFT documents can be edited, enforced at UI level with error page for non-DRAFT (2026-01-20)
+- **Context:** Documents have lifecycle status (DRAFT → GENERATING → COMPLETED). Need to prevent editing of finalized documents
+- **Why:** Prevents users from modifying documents in states where they shouldn't be editable. Clear error message explains the business rule rather than silently hiding the feature
+- **Rejected:** Could silently hide edit button only (confusing when accessed by URL). Could allow form loading then show error on save (wasted UX). Could have backend enforce this (correct but should also enforce at UI)
+- **Trade-offs:** Extra validation logic at UI but provides better UX feedback. Requires agreement that business rule is immutable once status changes
+- **Breaking if changed:** If status requirement changes (e.g., allowing edits on COMPLETED documents), this check needs updates in both UI and backend mutations
+
+### Implemented permission level selector with descriptions in UI component rather than simple dropdown (2026-01-20)
+- **Context:** Users need to understand what each permission level enables
+- **Why:** Descriptions prevent wrong permission assignments (security through clarity); users might select EDIT thinking it includes ADMIN rights without explanation
+- **Rejected:** Simple dropdown with just permission names (VIEW, COMMENT, EDIT, ADMIN) - unclear which level grants sharing rights
+- **Trade-offs:** UI is more complex and verbose (+clarity, +prevents mistakes) but takes more screen space (-), slower initial render (-)
+- **Breaking if changed:** Removing descriptions makes permission semantics ambiguous; users will likely misconfigure permissions without visual cues about hierarchy

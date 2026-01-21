@@ -3,7 +3,6 @@
 import { useTranslate, CrudFilter } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef, flexRender, HeaderGroup, Row, Cell, Header } from "@tanstack/react-table";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 
 /**

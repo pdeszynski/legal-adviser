@@ -146,6 +146,16 @@
       "title": "Need Help?",
       "description": "Get started with our platform or learn about advanced features.",
       "learnMore": "Learn More"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "noActivity": "No recent activity",
+      "viewAll": "View All Activity"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "noNotifications": "No notifications",
+      "markAllRead": "Mark all read"
     }
   },
   "blog_posts": {
@@ -237,10 +247,16 @@
         }
       },
       "description": "Fill in the details to generate a legal document using AI.",
+      "editDescription": "Update document details, metadata, and content",
       "metadataSection": "Party Details",
+      "contentHelp": "Edit the document content directly. Supports plain text and Markdown.",
+      "contentPlaceholder": "Enter document content...",
       "errors": {
         "requiredTitle": "Document title is required",
-        "requiredSessionId": "Session ID is required"
+        "requiredSessionId": "Session ID is required",
+        "titleMinLength": "Title must be at least 3 characters",
+        "titleMaxLength": "Title cannot exceed 500 characters",
+        "invalidCurrency": "Currency must be 3 uppercase letters (e.g., PLN, EUR, USD)"
       },
       "placeholders": {
         "title": "e.g., Debt Recovery Lawsuit",
@@ -253,6 +269,11 @@
       "notFound": "Document not found",
       "generating": "Document is being generated. Please wait...",
       "noContent": "No content available yet."
+    },
+    "errors": {
+      "notFound": "Document not found",
+      "cannotEdit": "Cannot Edit Document",
+      "onlyDraftEditable": "Only documents in DRAFT status can be edited. This document is currently in {status} status."
     }
   },
   "common": {
@@ -308,6 +329,20 @@
       "mustAccept": "You must accept the disclaimer to continue",
       "failed": "Failed to accept disclaimer. Please try again."
     }
+  },
+  "analyzeCase": {
+    "title": "Case Analysis",
+    "subtitle": "Describe your legal situation and let AI identify relevant legal grounds and articles",
+    "descriptionLabel": "Case Description",
+    "descriptionPlaceholder": "Describe your legal issue in detail. For example: 'My employer has not paid my salary for two months and I want to know what legal actions I can take...'",
+    "descriptionHint": "Provide as much detail as possible for better analysis results",
+    "analyzeButton": "Analyze Case",
+    "analyzing": "Analyzing...",
+    "resultsTitle": "Identified Legal Grounds",
+    "resultsCount": "{count} legal ground(s) found",
+    "noResults": "No specific legal grounds identified. Please provide more details or consult with a legal professional.",
+    "disclaimerTitle": "Legal Disclaimer",
+    "disclaimerText": "This analysis is AI-generated and for informational purposes only. It does not constitute legal advice. Please consult with a qualified legal professional for advice on your specific situation."
   },
   "landing": {
     "hero": {

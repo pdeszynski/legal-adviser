@@ -669,3 +669,164 @@ Features should include:
 - **Problem solved:** Need comprehensive 'who did what when' tracking across all resources without duplicating audit logic
 - **Why this works:** Interceptor captures full mutation context (user, timestamp, changes) at source. Frontend reading immutable logs prevents inconsistency. Single source of truth in backend
 - **Trade-offs:** Frontend can't create audit records (simpler contract) but dependent on backend always capturing them. Audit visibility lag if backend logs asynchronously
+
+#### [Gotcha] Dashboard page already existed from previous implementation attempt, causing confusion during verification process (2026-01-20)
+- **Situation:** Feature implementation appeared to be new task, but components were partially implemented in earlier work
+- **Root cause:** Previous implementation was not cleaned up or documented, leading to duplicate effort and verification delays
+- **How to avoid:** Required git inspection and verification instead of straightforward new implementation; reduced development time but increased verification complexity
+
+### Dashboard implemented as page component within (authenticated) route group rather than as separate sub-application (2026-01-20)
+- **Context:** Feature needed to be accessible only to authenticated users with access to user-specific data
+- **Why:** Next.js route groups provide built-in authentication boundary; shared layout inheritance; cleaner file organization
+- **Rejected:** Separate app directory; middleware-based protection; portal pattern
+- **Trade-offs:** Simplified authentication model but restricted to file-system based routing; gained layout inheritance at cost of less flexible route organization
+- **Breaking if changed:** Moving dashboard outside (authenticated) group would require explicit auth checks in page component; changing layout structure would break inherited context providers
+
+### Composite widget pattern: ActivityTimeline wraps ActivityItem components rather than flat list rendering (2026-01-20)
+- **Context:** Building reusable activity feed component that could be used in multiple pages
+- **Why:** Enables ActivityItem to be independently reusable for other contexts (e.g., inline activity in detail pages) while ActivityTimeline handles layout, pagination, and empty states. Composition over monolithic components.
+- **Rejected:** Single monolithic ActivityFeed component that renders everything - would reduce reusability and make item-level customization difficult
+- **Trade-offs:** Slight additional prop threading but significantly improved flexibility and testability; enables atomic component library
+- **Breaking if changed:** If ActivityTimeline becomes a direct renderer instead of composing ActivityItem, consumers can't substitute custom item renderers or reuse item styling elsewhere
+
+### Widget components accept optional loading/empty states as props rather than managing data fetching internally (2026-01-20)
+- **Context:** StatCard, ActivityTimeline, NotificationBell needed to work with external data sources
+- **Why:** Separates presentation from data concerns - parent components handle GraphQL queries via Refine hooks, widgets only render. Enables reuse with different data sources and makes testing/mocking trivial.
+- **Rejected:** Components fetching their own data with built-in useList hooks - creates tight coupling to data layer and makes components harder to test
+- **Trade-offs:** Requires more discipline at consumption point but enables true reusability; parent becomes slightly more complex but gains full control
+- **Breaking if changed:** If widgets internalize data fetching, they become source-specific and can't be reused across different data models or contexts
+
+#### [Pattern] Internationalization handled at component consumption level (parent imports translations) not component level (2026-01-20)
+- **Problem solved:** Adding translations for activity/notification labels and empty states
+- **Why this works:** Avoids creating translation dependencies in reusable components. Widget components remain i18n-agnostic and text-agnostic, receiving labels as props when needed.
+- **Trade-offs:** Parent becomes responsible for translation strings but components remain pure and testable; enables multi-language consumers more easily
+
+### Dedicated edit page at /documents/edit/[id] instead of inline editing on detail page (2026-01-20)
+- **Context:** Original design had inline editing on the detail page, but this was refactored to a dedicated page
+- **Why:** Separates concerns and simplifies state management. Dedicated form page allows for focused UX without mixing read and write concerns. Cleaner code by removing conditional rendering logic from detail page
+- **Rejected:** Inline edit mode toggled from detail page would require prop drilling, conditional form rendering, and complex state management for switching between view and edit modes
+- **Trade-offs:** User must navigate to new page (one extra page load) but gains clearer mental model and simpler maintenance. Detail page code becomes simpler and more readable
+- **Breaking if changed:** If changed back to inline editing, detail page component complexity increases significantly, edit state management becomes harder to track
+
+#### [Pattern] Reusing refine's useForm hook with action: 'edit' pattern rather than custom form logic (2026-01-20)
+- **Problem solved:** Project uses refine framework which provides form abstraction layer
+- **Why this works:** Leverages framework conventions = consistent with create form, automatic mutation handling, built-in loading/error states. Reduces boilerplate and maintenance
+- **Trade-offs:** Constrained by refine's API but gains consistency and less code. Form behavior mirrors create flow exactly (familiar to developers)
+
+### Avoided over-engineering: no rich text editor, auto-save, revision history, or concurrent edit detection (2026-01-20)
+- **Context:** Implementation notes explicitly call out future enhancements that were NOT implemented
+- **Why:** MVP principle: deliver core requirement (edit existing documents) without speculative features. Each omitted feature adds complexity with unclear ROI until user requests it
+- **Rejected:** Could implement rich text editor (increases complexity 3-5x, requires new dependency), auto-save (adds backend load, state sync complexity), revision history (increases storage and query complexity)
+- **Trade-offs:** Simpler, more maintainable code now. If features needed later, adding them is straightforward (not architecturally locked out). Avoids premature optimization
+- **Breaking if changed:** If requirements expand (e.g., WYSIWYG editor becomes critical), current textarea-based content field doesn't support rich formatting - would need refactoring
+
+### Implemented permission hierarchy (ADMIN > EDIT > COMMENT > VIEW) with enum-based permission levels rather than role-based access control (2026-01-20)
+- **Context:** Document sharing required granular per-user permissions independent of system-wide roles
+- **Why:** Enum-based permissions allow fine-grained control per shared relationship, avoiding complexity of RBAC matrix. Hierarchy simplifies permission validation logic - can check if permission >= required_level
+- **Rejected:** RBAC with role inheritance - would require creating new roles for each sharing combination and complex role assignment logic per document
+- **Trade-offs:** Simpler permission checks (+) but requires custom permission logic in service layer (-) instead of using framework's built-in authorization guards
+- **Breaking if changed:** Changing to role-based system would require rewriting DocumentSharingService.canUserAccessDocument() and resolver guards; existing permission validation assumes flat hierarchy
+
+#### [Pattern] Separated DocumentShare entity from Document entity with explicit foreign keys rather than embedding sharing logic in Document entity (2026-01-20)
+- **Problem solved:** Adding sharing capability to existing document system
+- **Why this works:** Separates concerns - Document focuses on document content/metadata, DocumentShare handles permission relationships. Avoids Document entity bloat and makes sharing optional conceptually
+- **Trade-offs:** Clean separation (+) requires extra join query to load shares (-), but queries are optimized with proper indexes
+
+#### [Pattern] Permission hierarchy enforced numerically (VIEW=1, COMMENT=2, EDIT=3, ADMIN=4) with comparison logic in hasRequiredPermission() (2026-01-20)
+- **Problem solved:** Determining if a user with one permission level can perform actions requiring another level
+- **Why this works:** Numeric comparison scales better than string-based permission checks or role matrix lookups. Allows single line checks like `userPermission >= requiredPermission` across the codebase
+- **Trade-offs:** Permission semantics are implicit in numeric values (developers must know the ordering), but eliminates permission lookup table and makes permission checks O(1) instead of O(n)
+
+#### [Pattern] Domain events (emitted via DomainEventsPublisher) instead of direct audit service calls in sharing operations (2026-01-20)
+- **Problem solved:** Logging who shared documents, when, and with whom for compliance and auditing
+- **Why this works:** Decouples sharing logic from audit concerns. Events can be consumed by audit, analytics, notifications, or other systems without modifying sharing code. Supports eventual consistency
+- **Trade-offs:** Slightly more code (event publishing), but gains loose coupling and ability to add audit consumers without touching sharing code
+
+### Template processing performs two-step creation: create document shell, then update with processed content, then manually assign properties to returned object (2026-01-21)
+- **Context:** Update operation doesn't return the updated document, creating impedance between service response and what resolver needs to return
+- **Why:** Maintains clean separation between document metadata persistence and content persistence; allows services to have focused responsibilities
+- **Rejected:** Modifying update() to return the updated document would work but creates inconsistent return types across service methods
+- **Trade-offs:** Requires manual property assignment on returned object (creates potential staleness), but keeps service contracts clear and allows for async content processing if needed
+- **Breaking if changed:** If update() starts returning full document, manual assignment becomes redundant but the pattern still works
+
+#### [Pattern] JSONB storage for template variables, conditional sections, and formatting rules provides schema flexibility without migration churn (2026-01-21)
+- **Problem solved:** Legal document templates need to support arbitrary variable types, validation rules, and locale-specific formatting that vary by document category
+- **Why this works:** JSONB allows template schema evolution without database migrations; supports polymorphic template types without entity inheritance complexity
+- **Trade-offs:** Trades strict schema validation for operational flexibility; query performance requires proper JSONB indexing; no schema inference in queries
+
+#### [Gotcha] Usage tracking (usageCount) incremented on template processing, but increment happens silently without transaction guarantee or visibility (2026-01-21)
+- **Situation:** Template is processed in resolver, usageCount incremented in service, but no explicit feedback or error handling if increment fails
+- **Root cause:** Usage tracking is non-critical side effect; failure shouldn't block document generation; follows fire-and-forget pattern for analytics
+- **How to avoid:** Usage counts may be inaccurate under high concurrency or failures, but document generation always succeeds; enables future async analytics
+
+### Store contentSnapshot as full text field rather than delta/diff storage (2026-01-21)
+- **Context:** Legal documents require ability to render any historical version independently
+- **Why:** Full snapshots eliminate dependency chain - don't need to replay all prior versions to reconstruct history. Critical for legal context where you may need to prove exactly what was in effect at specific timestamp. Delta compression would save space but add reconstruction latency and dependency risk
+- **Rejected:** Differential storage (like git patches), compression algorithms
+- **Trade-offs:** Easier: instant version retrieval, no reconstruction risk, audit compliance simple. Harder: storage cost scales with document count and frequency of changes
+- **Breaking if changed:** If changed to delta storage, any corruption in middle version makes all subsequent versions unrecoverable. Timestamp reconstruction becomes dependent on full history integrity.
+
+### Used append-only immutable version history with complete content snapshots rather than delta storage (2026-01-21)
+- **Context:** Designing version storage mechanism for document audit trail
+- **Why:** Ensures complete audit compliance, eliminates dependency chain problems where applying deltas in sequence could fail, enables fast point-in-time restore, simplifies rollback logic by directly swapping content without reconstruction
+- **Rejected:** Delta-based storage (storing only changes between versions) would be more space-efficient but creates brittleness: a single corrupted delta breaks all subsequent versions, and restoring requires sequential application
+- **Trade-offs:** Higher storage costs versus guaranteed data integrity and simple, reliable recovery logic. Immutability prevents accidental version deletion but requires new versions on rollback
+- **Breaking if changed:** If changed to delta-based, rollback logic must be rewritten to reconstruct versions, and corruption handling becomes critical. Audit compliance risk increases significantly.
+
+### Implemented automatic versioning via hook in DocumentsService.update() rather than database triggers or event listeners (2026-01-21)
+- **Context:** Ensuring versions are created consistently whenever document content changes
+- **Why:** Application-level logic is testable without database setup, versioning is transparent to callers, no risk of version creation being bypassed if trigger logic fails, simplifies debugging by keeping all version logic in one service layer
+- **Rejected:** Database triggers would be faster but create tight coupling to DB schema, harder to test, and version-related logic split between application and DB. Event listeners add async complexity where version creation could race with other operations.
+- **Trade-offs:** Slightly slower (application code vs native DB operation) but gains testability, debuggability, and consistency guarantees. Required detecting actual content changes to avoid duplicate versions.
+- **Breaking if changed:** Direct database updates bypass versioning. Any service or endpoint that updates document content must go through DocumentsService.update() or versioning breaks silently.
+
+#### [Gotcha] Had to use forwardRef() to resolve circular dependency between DocumentsService and DocumentVersioningService (2026-01-21)
+- **Situation:** DocumentsService needs to call DocumentVersioningService.createVersion(), but DocumentVersioningService needed DocumentsService for rollback operations
+- **Root cause:** TypeScript circular dependencies at module load time cause 'undefined' service injections. ForwardRef defers service resolution until runtime after both are instantiated.
+- **How to avoid:** ForwardRef adds minor complexity but preserves clean service separation. Without it, rollback feature would not work.
+
+#### [Pattern] Change description auto-generation from diff output (e.g., '+2 lines, -1 line, ~3 lines') instead of requiring manual description (2026-01-21)
+- **Problem solved:** Users need to understand what changed between versions
+- **Why this works:** Automatic generation ensures descriptions are always accurate and up-to-date with actual content. Manual descriptions create maintenance burden and can diverge from reality. Diff library provides structured change data.
+- **Trade-offs:** Descriptions are technical/statistical rather than business-context focused, but always accurate and maintenance-free
+
+### Event-driven email triggering via EventEmitter instead of direct service calls in domain logic (2026-01-21)
+- **Context:** Email notifications needed to trigger on user registration and document events without coupling email service to domain modules
+- **Why:** Decouples notification concerns from core business logic. Emails become optional infrastructure rather than required behavior. Allows service to be disabled (EMAIL_ENABLED=false) without affecting other modules. Follows CQRS-like pattern where events drive side effects.
+- **Rejected:** Direct service injection in user/document services - would couple multiple modules and require notification service presence
+- **Trade-offs:** Easier to disable/modify email logic, harder to guarantee delivery in transaction boundaries. Emails are eventual-consistent, not atomic with domain changes.
+- **Breaking if changed:** If removed, user registration and document events lose auto-notification. Other modules don't know emails exist (correct isolation).
+
+### Two-stage email processing: queue producer → Bull queue → processor service (2026-01-21)
+- **Context:** Needed to decouple email transmission timing from user request handling without blocking responses
+- **Why:** Bull queues with Redis provide reliable job persistence, retry logic, and worker scalability. Separating producer (async enqueue) from processor (actual sending) allows multiple workers and handles failures. Producer pattern lets any module queue emails without knowing SendGrid details.
+- **Rejected:** Direct SendGrid calls would block requests. Simple in-memory queue would lose jobs on restart. Async/await without persistence loses failed emails.
+- **Trade-offs:** Added Redis dependency and complexity, but gained failure recovery, monitoring, and scalability. Emails take milliseconds to enqueue (fast) but may take seconds to actually send.
+- **Breaking if changed:** Removing Bull queue loses retry logic, persistence, and queue monitoring. Failed emails vanish silently. All email events would need synchronous handling.
+
+#### [Pattern] EMAIL_ENABLED flag gates actual SendGrid calls but allows full service operation in dev mode (2026-01-21)
+- **Problem solved:** Backend needs to work in development without SendGrid account/API key, but system must be testable end-to-end
+- **Why this works:** Development velocity: developers can test email features without secrets management. Logging emails to console shows what would be sent. No Redis/SendGrid setup required locally. Flag is cleaner than trying to mock SendGrid or skip email-dependent code paths.
+- **Trade-offs:** Easier local development and testing, but dry-run mode can't catch SendGrid-specific errors (auth, rate limits, address validation) until production
+
+#### [Pattern] Webhook-driven status tracking integrated with Bull queue processor instead of polling SendGrid API (2026-01-21)
+- **Problem solved:** Email delivery status needs to be tracked in real-time as SendGrid processes queued emails
+- **Why this works:** Webhooks are event-driven and eliminate polling overhead. Reduces API quota consumption and provides real-time updates. Complements async queue architecture by maintaining loose coupling between SendGrid and application state
+- **Trade-offs:** Requires webhook signature verification complexity and assumes SendGrid reliability for event delivery. Gains real-time accuracy and operational efficiency
+
+#### [Gotcha] Webhook events must handle 'bounce' event type with bounce classification logic to correctly set notification status (2026-01-21)
+- **Situation:** SendGrid sends generic 'bounce' events but classifies them into permanent vs temporary. Application needs BOUNCED status regardless of bounce type
+- **Root cause:** Webhook payload structure has nested bounce classification. Code must extract and normalize this to application's simpler BOUNCED state. Different bounce types may require different user-facing messaging but all mark notification as bounced
+- **How to avoid:** Normalizes SendGrid's classification layer but loses detailed bounce type info in notification record. Must preserve full bounce data in metadata if detailed analysis needed later
+
+#### [Pattern] Event emission from webhook handler (emit EMAIL.DELIVERED, EMAIL.BOUNCED, etc.) creates secondary notification pathway for other modules (2026-01-21)
+- **Problem solved:** Webhook controller updates notification status directly but other system components may need to react to delivery status changes
+- **Why this works:** Event-driven architecture allows loose coupling. Other modules (e.g., user analytics, retry logic) can subscribe to email events without modifying webhook controller. Maintains single responsibility principle
+- **Trade-offs:** Adds abstraction layer and EventEmitter overhead but enables extensibility without modifying webhook logic. New event subscribers don't require webhook changes
+
+### Webhook handler continues processing remaining events if one event fails (graceful degradation) rather than failing entire batch (2026-01-21)
+- **Context:** SendGrid can batch multiple webhook events in single POST. If one event processing throws error, decision needed: fail entire batch or skip failed event
+- **Why:** Partial failure should not block entire webhook delivery. Single malformed event shouldn't prevent processing of 9 valid events in batch. Aligns with fault-tolerance principles. Failed events logged for investigation
+- **Rejected:** Fail entire batch on first error - single bad webhook event would block all subsequent notifications from being updated until retry succeeds. Cascading failure
+- **Trade-offs:** Requires error handling and logging but ensures webhook resilience. Failed events must be tracked separately for monitoring
+- **Breaking if changed:** If changed to fail-fast behavior, single problematic webhook event stops all batch processing; notification status updates lag or fail completely until problem resolved

@@ -275,6 +275,20 @@ type Citation {
   url: String
 }
 
+input ClassifyCaseInput {
+  """Detailed description of the legal case to analyze"""
+  caseDescription: String!
+
+  """Additional context for the analysis"""
+  context: String
+
+  """User session ID for tracking"""
+  sessionId: String!
+
+  """Title or brief summary of the analysis"""
+  title: String!
+}
+
 """Cursor for paging through collections"""
 scalar ConnectionCursor
 
@@ -320,6 +334,14 @@ input CreateDocumentMetadataInput {
   plaintiffName: String
 }
 
+input CreateDocumentVersionInput {
+  authorUserId: ID
+  changeDescription: String
+  contentSnapshot: String!
+  documentId: ID!
+  sessionId: ID!
+}
+
 input CreateLegalAnalysisInput {
   identifiedGrounds: [LegalGroundInput!]
   inputDescription: String!
@@ -363,6 +385,11 @@ input CreateLegalRulingInput {
   summary: String
 }
 
+input CreateOneDocumentVersionInput {
+  """The record to create"""
+  documentVersion: CreateDocumentVersionInput!
+}
+
 input CreateOneLegalAnalysisInput {
   """The record to create"""
   legalAnalysis: CreateLegalAnalysisInput!
@@ -393,6 +420,17 @@ input CreateRulingMetadataInput {
   legalArea: String
   relatedCases: [String!]
   sourceReference: String
+}
+
+input CreateTemplateInput {
+  category: TemplateCategory!
+  conditionalSections: JSON
+  content: String!
+  description: String
+  isActive: Boolean = true
+  name: String!
+  polishFormattingRules: JSON
+  variables: JSON!
 }
 
 input CreateUserInput {
@@ -492,6 +530,17 @@ input DocumentMetadataInput {
   plaintiffName: String
 }
 
+type DocumentShare {
+  createdAt: DateTime!
+  documentId: String!
+  expiresAt: DateTime
+  id: ID!
+  permission: SharePermission!
+  sharedByUserId: String!
+  sharedWithUserId: String!
+  updatedAt: DateTime!
+}
+
 """Status of document generation"""
 enum DocumentStatus {
   COMPLETED
@@ -550,6 +599,86 @@ enum DocumentStatusV2 {
   PUBLISHED
 }
 
+type DocumentTemplate {
+  category: TemplateCategory!
+  conditionalSections: JSON
+  content: String!
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  isActive: Boolean!
+  name: String!
+  polishFormattingRules: JSON
+  updatedAt: DateTime!
+  usageCount: Float!
+  variables: JSON!
+}
+
+input DocumentTemplateAggregateFilter {
+  and: [DocumentTemplateAggregateFilter!]
+  category: TemplateCategoryFilterComparison
+  createdAt: DateFieldComparison
+  description: StringFieldComparison
+  id: IDFilterComparison
+  isActive: BooleanFieldComparison
+  name: StringFieldComparison
+  or: [DocumentTemplateAggregateFilter!]
+  updatedAt: DateFieldComparison
+}
+
+type DocumentTemplateAggregateGroupBy {
+  category: TemplateCategory
+  createdAt(by: GroupBy! = DAY): DateTime
+  description: String
+  id: ID
+  isActive: Boolean
+  name: String
+  updatedAt(by: GroupBy! = DAY): DateTime
+}
+
+type DocumentTemplateAggregateResponse {
+  count: DocumentTemplateCountAggregate
+  groupBy: DocumentTemplateAggregateGroupBy
+  max: DocumentTemplateMaxAggregate
+  min: DocumentTemplateMinAggregate
+}
+
+type DocumentTemplateCountAggregate {
+  category: Int
+  createdAt: Int
+  description: Int
+  id: Int
+  isActive: Int
+  name: Int
+  updatedAt: Int
+}
+
+type DocumentTemplateEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the DocumentTemplate"""
+  node: DocumentTemplate!
+}
+
+type DocumentTemplateMaxAggregate {
+  category: TemplateCategory
+  createdAt: DateTime
+  description: String
+  id: ID
+  name: String
+  updatedAt: DateTime
+}
+
+type DocumentTemplateMinAggregate {
+  category: TemplateCategory
+  createdAt: DateTime
+  description: String
+  id: ID
+  name: String
+  updatedAt: DateTime
+}
+
 """Type of legal document"""
 enum DocumentType {
   COMPLAINT
@@ -585,6 +714,128 @@ enum DocumentTypeV2 {
   POLICY
   REGULATION
   STATUTE
+}
+
+type DocumentVersion {
+  authorUserId: String
+  changeDescription: String
+  contentSnapshot: String!
+  createdAt: DateTime!
+  document: LegalDocument!
+  documentId: String!
+  id: ID!
+  session: UserSession!
+  sessionId: String!
+  versionNumber: Float!
+}
+
+input DocumentVersionAggregateFilter {
+  and: [DocumentVersionAggregateFilter!]
+  authorUserId: StringFieldComparison
+  createdAt: DateFieldComparison
+  documentId: StringFieldComparison
+  id: IDFilterComparison
+  or: [DocumentVersionAggregateFilter!]
+  sessionId: StringFieldComparison
+  versionNumber: NumberFieldComparison
+}
+
+type DocumentVersionAggregateGroupBy {
+  authorUserId: String
+  createdAt(by: GroupBy! = DAY): DateTime
+  documentId: String
+  id: ID
+  sessionId: String
+  versionNumber: Float
+}
+
+type DocumentVersionAggregateResponse {
+  avg: DocumentVersionAvgAggregate
+  count: DocumentVersionCountAggregate
+  groupBy: DocumentVersionAggregateGroupBy
+  max: DocumentVersionMaxAggregate
+  min: DocumentVersionMinAggregate
+  sum: DocumentVersionSumAggregate
+}
+
+type DocumentVersionAvgAggregate {
+  versionNumber: Float
+}
+
+type DocumentVersionConnection {
+  """Array of edges."""
+  edges: [DocumentVersionEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type DocumentVersionCountAggregate {
+  authorUserId: Int
+  createdAt: Int
+  documentId: Int
+  id: Int
+  sessionId: Int
+  versionNumber: Int
+}
+
+type DocumentVersionEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the DocumentVersion"""
+  node: DocumentVersion!
+}
+
+input DocumentVersionFilter {
+  and: [DocumentVersionFilter!]
+  authorUserId: StringFieldComparison
+  createdAt: DateFieldComparison
+  documentId: StringFieldComparison
+  id: IDFilterComparison
+  or: [DocumentVersionFilter!]
+  sessionId: StringFieldComparison
+  versionNumber: NumberFieldComparison
+}
+
+type DocumentVersionMaxAggregate {
+  authorUserId: String
+  createdAt: DateTime
+  documentId: String
+  id: ID
+  sessionId: String
+  versionNumber: Float
+}
+
+type DocumentVersionMinAggregate {
+  authorUserId: String
+  createdAt: DateTime
+  documentId: String
+  id: ID
+  sessionId: String
+  versionNumber: Float
+}
+
+input DocumentVersionSort {
+  direction: SortDirection!
+  field: DocumentVersionSortFields!
+  nulls: SortNulls
+}
+
+enum DocumentVersionSortFields {
+  authorUserId
+  createdAt
+  documentId
+  id
+  sessionId
+  versionNumber
+}
+
+type DocumentVersionSumAggregate {
+  versionNumber: Float
 }
 
 input ExportDocumentToPdfInput {
@@ -625,6 +876,13 @@ input GenerateDocumentInput {
   type: DocumentType! = OTHER
 }
 
+input GenerateFromTemplateInput {
+  sessionId: String!
+  templateId: String!
+  title: String!
+  variables: JSON!
+}
+
 """Group by"""
 enum GroupBy {
   DAY
@@ -649,6 +907,11 @@ input IDFilterComparison {
   notIn: [ID!]
   notLike: ID
 }
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
 
 type LegalAnalysis {
   createdAt: DateTime!
@@ -1236,13 +1499,21 @@ type Mutation {
 
   """Add AI-generated answer to a legal query"""
   answerLegalQuery(id: ID!, input: AnswerLegalQueryInput!): LegalQuery!
+
+  """
+  Analyze a case description using AI and identify applicable legal grounds
+  """
+  classifyCase(input: ClassifyCaseInput!): LegalAnalysis!
+  createDocumentTemplate(input: CreateTemplateInput!): DocumentTemplate!
   createDocumentV2(input: CreateLegalDocumentInputV2!): LegalDocumentV2!
+  createOneDocumentVersion(input: CreateOneDocumentVersionInput!): DocumentVersion!
   createOneLegalAnalysis(input: CreateOneLegalAnalysisInput!): LegalAnalysis!
   createOneLegalDocument(input: CreateOneLegalDocumentInput!): LegalDocument!
   createOneLegalQuery(input: CreateOneLegalQueryInput!): LegalQuery!
   createOneLegalRuling(input: CreateOneLegalRulingInput!): LegalRuling!
   createOneUser(input: CreateOneUserInput!): User!
   deleteDocument(id: ID!): Boolean! @deprecated(reason: "Use deleteOneLegalDocument instead")
+  deleteDocumentTemplate(id: ID!): Boolean!
   deleteDocumentV2(input: DeleteDocumentInputV2!): Boolean!
 
   """Delete a legal query (deprecated)"""
@@ -1260,6 +1531,7 @@ type Mutation {
   """Export a document to PDF and wait for the result"""
   exportDocumentToPdfSync(input: ExportDocumentToPdfInput!): PdfExportResult!
   generateDocument(input: GenerateDocumentInput!): LegalDocument!
+  generateDocumentFromTemplate(input: GenerateFromTemplateInput!): LegalDocument!
 
   """Authenticate user with username/email and password"""
   login(input: LoginInput!): AuthPayload!
@@ -1271,15 +1543,51 @@ type Mutation {
   """Register a new user account"""
   register(input: RegisterInput!): AuthPayload!
 
+  """Revoke a document share"""
+  revokeDocumentShare(shareId: ID!): Boolean!
+
+  """
+  Rollback a document to a previous version. Creates a new version with the old content.
+  """
+  rollbackDocumentToVersion(authorUserId: ID, documentId: ID!, sessionId: ID!, versionNumber: Float!): LegalDocument!
+
+  """Share a document with a user"""
+  shareDocument(input: ShareDocumentInput!): DocumentShare!
+
   """Submit a new legal query for AI processing"""
   submitLegalQuery(input: SubmitLegalQueryInput!): LegalQuery!
   updateDocument(id: ID!, input: UpdateDocumentInput!): LegalDocument!
+
+  """Update the permission level of a document share"""
+  updateDocumentSharePermission(input: UpdateSharePermissionInput!): DocumentShare!
+  updateDocumentTemplate(id: ID!, input: UpdateTemplateInput!): DocumentTemplate!
   updateDocumentTitleV2(input: UpdateDocumentTitleInputV2!): LegalDocumentV2!
+  updateOneDocumentVersion(input: UpdateOneDocumentVersionInput!): DocumentVersion!
   updateOneLegalAnalysis(input: UpdateOneLegalAnalysisInput!): LegalAnalysis!
   updateOneLegalDocument(input: UpdateOneLegalDocumentInput!): LegalDocument!
   updateOneLegalQuery(input: UpdateOneLegalQueryInput!): LegalQuery!
   updateOneLegalRuling(input: UpdateOneLegalRulingInput!): LegalRuling!
   updateOneUser(input: UpdateOneUserInput!): User!
+}
+
+input NumberFieldComparison {
+  between: NumberFieldComparisonBetween
+  eq: Float
+  gt: Float
+  gte: Float
+  in: [Float!]
+  is: Boolean
+  isNot: Boolean
+  lt: Float
+  lte: Float
+  neq: Float
+  notBetween: NumberFieldComparisonBetween
+  notIn: [Float!]
+}
+
+input NumberFieldComparisonBetween {
+  lower: Float!
+  upper: Float!
 }
 
 type PageInfo {
@@ -1401,9 +1709,51 @@ type Query {
 
   """Count legal rulings matching filter criteria"""
   countLegalRulings(input: FilterLegalRulingsInput): Int!
+
+  """Get the latest version of a document"""
+  documentLatestVersion(documentId: ID!): DocumentVersion
+
+  """Get all shares for a document"""
+  documentShares(documentId: ID!): [DocumentShare!]!
+  documentTemplate(id: ID!): DocumentTemplate!
+  documentTemplateAggregate(
+    """Filter to find records to aggregate on"""
+    filter: DocumentTemplateAggregateFilter
+  ): [DocumentTemplateAggregateResponse!]!
+  documentTemplates: [DocumentTemplate!]!
   documentV2(id: ID!): LegalDocumentV2
+  documentVersion(
+    """The id of the record to find."""
+    id: ID!
+  ): DocumentVersion!
+  documentVersionAggregate(
+    """Filter to find records to aggregate on"""
+    filter: DocumentVersionAggregateFilter
+  ): [DocumentVersionAggregateResponse!]!
+
+  """Get a specific version of a document"""
+  documentVersionByNumber(documentId: ID!, versionNumber: Float!): DocumentVersion!
+
+  """Count total versions for a document"""
+  documentVersionCount(documentId: ID!): Float!
+
+  """Get all versions for a document, ordered by version number descending"""
+  documentVersionHistory(documentId: ID!): [DocumentVersion!]!
+  documentVersions(
+    """Specify to filter the records returned."""
+    filter: DocumentVersionFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [DocumentVersionSort!]! = []
+  ): DocumentVersionConnection!
   documentsByOwnerV2(ownerId: ID!, status: DocumentStatusV2): [LegalDocumentV2!]!
   documentsBySession(sessionId: String!): [LegalDocument!]!
+
+  """Get all documents shared with the current user"""
+  documentsSharedWithMe(permission: SharePermission): [DocumentShare!]!
 
   """Filter legal rulings by multiple criteria"""
   filterLegalRulings(input: FilterLegalRulingsInput!): [LegalRuling!]!
@@ -1637,6 +1987,28 @@ input SessionModeFilterComparison {
   notLike: SessionMode
 }
 
+input ShareDocumentInput {
+  """ID of the document to share"""
+  documentId: ID!
+
+  """Optional expiration date for the share (ISO 8601 format)"""
+  expiresAt: String
+
+  """Permission level to grant"""
+  permission: SharePermission! = VIEW
+
+  """ID of the user to share the document with"""
+  sharedWithUserId: ID!
+}
+
+"""Permission level for document sharing"""
+enum SharePermission {
+  ADMIN
+  COMMENT
+  EDIT
+  VIEW
+}
+
 """Sort Directions"""
 enum SortDirection {
   ASC
@@ -1685,6 +2057,33 @@ type Subscription {
   ): DocumentStatusChange!
 }
 
+"""Category of legal document template"""
+enum TemplateCategory {
+  COMPLAINT
+  CONTRACT
+  LAWSUIT
+  LETTER
+  MOTION
+  OTHER
+}
+
+input TemplateCategoryFilterComparison {
+  eq: TemplateCategory
+  gt: TemplateCategory
+  gte: TemplateCategory
+  iLike: TemplateCategory
+  in: [TemplateCategory!]
+  is: Boolean
+  isNot: Boolean
+  like: TemplateCategory
+  lt: TemplateCategory
+  lte: TemplateCategory
+  neq: TemplateCategory
+  notILike: TemplateCategory
+  notIn: [TemplateCategory!]
+  notLike: TemplateCategory
+}
+
 input UpdateDocumentInput {
   metadata: DocumentMetadataInput
   title: String
@@ -1694,6 +2093,10 @@ input UpdateDocumentTitleInputV2 {
   documentId: ID!
   title: String!
   updatedBy: ID!
+}
+
+input UpdateDocumentVersionInput {
+  changeDescription: String
 }
 
 input UpdateLegalAnalysisInput {
@@ -1728,6 +2131,14 @@ input UpdateLegalRulingInput {
   rulingDate: String
   signature: String
   summary: String
+}
+
+input UpdateOneDocumentVersionInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateDocumentVersionInput!
 }
 
 input UpdateOneLegalAnalysisInput {
@@ -1768,6 +2179,25 @@ input UpdateOneUserInput {
 
   """The update to apply."""
   update: UpdateUserInput!
+}
+
+input UpdateSharePermissionInput {
+  """New permission level"""
+  permission: SharePermission!
+
+  """ID of the share to update"""
+  shareId: ID!
+}
+
+input UpdateTemplateInput {
+  category: TemplateCategory
+  conditionalSections: JSON
+  content: String
+  description: String
+  isActive: Boolean
+  name: String
+  polishFormattingRules: JSON
+  variables: JSON
 }
 
 input UpdateUserInput {

@@ -5,11 +5,23 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { LegalDocument } from './entities/legal-document.entity';
 import { LegalAnalysis } from './entities/legal-analysis.entity';
 import { LegalRuling } from './entities/legal-ruling.entity';
+import { DocumentShare } from './entities/document-share.entity';
+import { DocumentTemplate } from './entities/document-template.entity';
+import { DocumentVersion } from './entities/document-version.entity';
+import { DocumentEmbedding } from './entities/document-embedding.entity';
 import { DocumentsService } from './services/documents.service';
 import { LegalRulingService } from './services/legal-ruling.service';
+import { DocumentSharingService } from './services/document-sharing.service';
+import { TemplateEngineService } from './services/template-engine.service';
+import { DocumentVersioningService } from './services/document-versioning.service';
+import { VectorStoreService } from './services/vector-store.service';
 import { DocumentsResolver } from './documents.resolver';
 import { LegalRulingResolver } from './legal-ruling.resolver';
 import { DocumentSubscriptionResolver } from './documents-subscription.resolver';
+import { DocumentSharingResolver } from './document-sharing.resolver';
+import { DocumentTemplatesResolver } from './document-templates.resolver';
+import { DocumentVersioningResolver } from './document-versioning.resolver';
+import { LegalAnalysisResolver } from './legal-analysis.resolver';
 import { DocumentsController } from './documents.controller';
 import { DocumentStreamController } from './controllers/document-stream.controller';
 import {
@@ -24,6 +36,12 @@ import {
   CreateLegalRulingInput,
   UpdateLegalRulingInput,
 } from './dto/legal-ruling.dto';
+import { CreateTemplateInput } from './dto/create-template.input';
+import { UpdateTemplateInput } from './dto/update-template.input';
+import {
+  CreateDocumentVersionInput,
+  UpdateDocumentVersionInput,
+} from './dto/document-version.dto';
 import { BullModule } from '@nestjs/bull';
 import { QUEUE_NAMES } from '../../shared/queues';
 import { AiClientModule } from '../../shared/ai-client/ai-client.module';
@@ -33,6 +51,8 @@ import { DocumentGenerationProducer } from './queues/document-generation.produce
 import { PdfExportProcessor } from './queues/pdf-export.processor';
 import { PdfExportProducer } from './queues/pdf-export.producer';
 import { PdfTemplateService, PdfGeneratorService } from './services/pdf';
+import { PdfExportService } from './services/pdf-export.service';
+import { UserSession } from '../users/entities/user-session.entity';
 
 /**
  * Documents Module
@@ -72,14 +92,26 @@ import { PdfTemplateService, PdfGeneratorService } from './services/pdf';
     }),
     // AI client for communication with AI engine
     AiClientModule,
-    // TypeORM for direct repository access (needed for LegalRulingService full-text search)
-    TypeOrmModule.forFeature([LegalRuling]),
+    // TypeORM for direct repository access (needed for LegalRulingService full-text search and DocumentSharingService)
+    TypeOrmModule.forFeature([
+      LegalRuling,
+      LegalDocument,
+      LegalAnalysis,
+      DocumentShare,
+      DocumentTemplate,
+      DocumentVersion,
+      DocumentEmbedding,
+      UserSession,
+    ]),
     NestjsQueryGraphQLModule.forFeature({
       imports: [
         NestjsQueryTypeOrmModule.forFeature([
           LegalDocument,
           LegalAnalysis,
           LegalRuling,
+          DocumentShare,
+          DocumentTemplate,
+          DocumentVersion,
         ]),
       ],
       resolvers: [
@@ -167,15 +199,80 @@ import { PdfTemplateService, PdfGeneratorService } from './services/pdf';
             many: { disabled: true },
           },
         },
+        {
+          DTOClass: DocumentTemplate,
+          EntityClass: DocumentTemplate,
+          CreateDTOClass: CreateTemplateInput,
+          UpdateDTOClass: UpdateTemplateInput,
+          enableTotalCount: true,
+          enableAggregate: true,
+          read: {
+            // Custom resolver handles queries
+            many: { disabled: true },
+            one: { disabled: true },
+          },
+          create: {
+            // Custom resolver handles mutations
+            one: { disabled: true },
+            many: { disabled: true },
+          },
+          update: {
+            // Custom resolver handles mutations
+            one: { disabled: true },
+            many: { disabled: true },
+          },
+          delete: {
+            // Custom resolver handles mutations
+            one: { disabled: true },
+            many: { disabled: true },
+          },
+        },
+        {
+          DTOClass: DocumentVersion,
+          EntityClass: DocumentVersion,
+          CreateDTOClass: CreateDocumentVersionInput,
+          UpdateDTOClass: UpdateDocumentVersionInput,
+          enableTotalCount: true,
+          enableAggregate: true,
+          read: {
+            // Enable standard read operations
+            many: { name: 'documentVersions' },
+            one: { name: 'documentVersion' },
+          },
+          create: {
+            // Enable create mutation
+            one: { name: 'createOneDocumentVersion' },
+            many: { disabled: true },
+          },
+          update: {
+            // Enable update mutation (only for changeDescription)
+            one: { name: 'updateOneDocumentVersion' },
+            many: { disabled: true },
+          },
+          delete: {
+            // Disable delete - versions are immutable
+            one: { disabled: true },
+            many: { disabled: true },
+          },
+        },
       ],
     }),
   ],
   providers: [
     DocumentsService,
     LegalRulingService,
+    DocumentSharingService,
+    TemplateEngineService,
+    DocumentVersioningService,
+    VectorStoreService,
+    PdfExportService,
     DocumentsResolver,
     LegalRulingResolver,
     DocumentSubscriptionResolver,
+    DocumentSharingResolver,
+    DocumentTemplatesResolver,
+    DocumentVersioningResolver,
+    LegalAnalysisResolver,
     // Document Generation Queue
     DocumentGenerationProcessor,
     DocumentGenerationProducer,
@@ -189,6 +286,11 @@ import { PdfTemplateService, PdfGeneratorService } from './services/pdf';
   exports: [
     DocumentsService,
     LegalRulingService,
+    DocumentSharingService,
+    TemplateEngineService,
+    DocumentVersioningService,
+    VectorStoreService,
+    PdfExportService,
     DocumentGenerationProducer,
     PdfExportProducer,
     PdfGeneratorService,

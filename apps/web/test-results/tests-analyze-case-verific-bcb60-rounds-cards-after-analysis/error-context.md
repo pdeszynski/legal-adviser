@@ -1,0 +1,111 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "Legal AI" [ref=e5] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e6]:
+          - generic [ref=e7]:
+            - img [ref=e8]
+            - combobox [ref=e11] [cursor=pointer]:
+              - option "🇬🇧 English" [selected]
+              - option "🇩🇪 Deutsch"
+              - option "🇵🇱 Polski"
+          - link "Sign In" [ref=e12] [cursor=pointer]:
+            - /url: /login
+    - main [ref=e13]:
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - img [ref=e19]
+          - generic [ref=e23]:
+            - heading "Welcome Back" [level=3] [ref=e24]
+            - paragraph [ref=e25]: Sign in to your legal workspace
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - generic [ref=e28]:
+              - text: Email
+              - textbox "Email" [ref=e29]:
+                - /placeholder: name@example.com
+                - text: admin@refine.dev
+            - generic [ref=e30]:
+              - generic [ref=e31]:
+                - generic [ref=e32]: Password
+                - generic [ref=e33] [cursor=pointer]: Forgot password?
+              - textbox "Password" [ref=e34]:
+                - /placeholder: Enter your password
+          - generic [ref=e35]:
+            - button "Sign In" [ref=e36] [cursor=pointer]
+            - generic [ref=e37]: Don't have an account? Request access
+    - contentinfo [ref=e38]:
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - heading "Legal AI" [level=4] [ref=e42]
+            - paragraph [ref=e43]: Empowering legal professionals with next-generation AI tools. Secure, accurate, and efficient.
+          - generic [ref=e44]:
+            - heading "Product" [level=4] [ref=e45]
+            - list [ref=e46]:
+              - listitem [ref=e47]:
+                - link "Features" [ref=e48] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=e49]:
+                - link "Pricing" [ref=e50] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=e51]:
+                - link "Security" [ref=e52] [cursor=pointer]:
+                  - /url: "#"
+          - generic [ref=e53]:
+            - heading "Company" [level=4] [ref=e54]
+            - list [ref=e55]:
+              - listitem [ref=e56]:
+                - link "About Us" [ref=e57] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=e58]:
+                - link "Careers" [ref=e59] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=e60]:
+                - link "Contact" [ref=e61] [cursor=pointer]:
+                  - /url: "#"
+          - generic [ref=e62]:
+            - heading "Legal" [level=4] [ref=e63]
+            - list [ref=e64]:
+              - listitem [ref=e65]:
+                - link "Privacy Policy" [ref=e66] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=e67]:
+                - link "Terms of Service" [ref=e68] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=e69]:
+                - link "Cookie Policy" [ref=e70] [cursor=pointer]:
+                  - /url: "#"
+        - generic [ref=e71]:
+          - paragraph [ref=e72]: © 2026 Legal AI. All rights reserved.
+          - generic [ref=e73]:
+            - link "Twitter" [ref=e74] [cursor=pointer]:
+              - /url: "#"
+            - link "LinkedIn" [ref=e75] [cursor=pointer]:
+              - /url: "#"
+            - link "GitHub" [ref=e76] [cursor=pointer]:
+              - /url: "#"
+  - button "Open Next.js Dev Tools" [ref=e82] [cursor=pointer]:
+    - img [ref=e83]
+  - alert [ref=e86]
+  - generic [ref=e87]:
+    - button [ref=e88] [cursor=pointer]:
+      - img [ref=e89]
+      - button "Element Selector" [ref=e97]:
+        - img
+    - generic:
+      - iframe
+      - generic:
+        - img
+      - generic:
+        - img
+      - generic:
+        - img
+      - generic:
+        - img
+```

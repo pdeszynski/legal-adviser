@@ -42,3 +42,17 @@ usageStats:
 - **Situation:** Interceptor publishes event and continues without waiting for audit persistence
 - **Root cause:** Prevents audit log creation from delaying mutations. Non-blocking is essential for user experience. Silent error catching prevents one bad audit log from failing the user's mutation.
 - **How to avoid:** Easier: Fast mutations, resilient to audit failures. Harder: Audit failures are invisible, no guarantee logs were created, harder to debug missing audits
+
+### Statistics calculation uses useMemo despite simple operations, activity timeline uses pageSize: 10 limit despite having 1000+ records (2026-01-20)
+- **Context:** Dashboard renders frequently with real-time data updates possible
+- **Why:** Statistics recalculation from 1000 documents on every render becomes expensive at scale. Pagination prevents rendering massive lists. Defensive optimization pattern - low cost, prevents future pain.
+- **Rejected:** Calculating stats inline and fetching unlimited audit logs - works initially but becomes bottleneck as data grows
+- **Trade-offs:** Slightly more code complexity now vs significant performance cliff later; pagination requires 'view all' handling
+- **Breaking if changed:** If pagination removed, dashboard becomes slow with modest data growth; if stats recalculation moved inline, re-renders trigger expensive calculations
+
+### Template rendering happens at send-time, not pre-compiled at module initialization (2026-01-21)
+- **Context:** Email templates use string substitution for variables (${userEmail}, ${userName}) requiring runtime rendering
+- **Why:** Simpler implementation, templates change independently of code. No need for template precompilation infrastructure. Rendering is fast (simple string replacement) and only happens when sending actual emails (which are already async).
+- **Rejected:** Handlebars/EJS compilation - more features but higher startup cost and dependency bloat. Pre-compiled templates - requires template versioning and cache invalidation.
+- **Trade-offs:** Easier to maintain and modify templates, but rendering adds small latency to email send (not visible since emails are async anyway)
+- **Breaking if changed:** Removing template rendering and using raw HTML would lose variable substitution. Pre-compiling would require template caching strategy.

@@ -1,0 +1,15 @@
+{
+  "id": "rag-vector-store",
+  "category": "AI",
+  "title": "RAG Vector Store Setup",
+  "description": "Implement vector database (Pinecone, Weaviate, or pgvector) for storing legal document embeddings. Set up indexing pipeline for Polish legal texts.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "complex",
+  "createdAt": "2026-01-12T10:31:20.831Z",
+  "updatedAt": "2026-01-12T10:31:20.831Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

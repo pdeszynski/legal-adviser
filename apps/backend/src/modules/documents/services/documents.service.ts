@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere } from 'typeorm';
@@ -22,6 +24,7 @@ import {
 } from '../../../shared/events/examples/document.events';
 import { EVENT_PATTERNS } from '../../../shared/events/base/event-patterns';
 import { GraphQLPubSubService } from '../../../shared/streaming';
+import { DocumentVersioningService } from './document-versioning.service';
 
 /**
  * Create Document DTO
@@ -69,6 +72,8 @@ export class DocumentsService {
     private readonly documentRepository: Repository<LegalDocument>,
     private readonly eventEmitter: EventEmitter2,
     private readonly graphqlPubSub: GraphQLPubSubService,
+    @Inject(forwardRef(() => DocumentVersioningService))
+    private readonly versioningService: DocumentVersioningService,
   ) {}
 
   /**
@@ -156,11 +161,13 @@ export class DocumentsService {
 
   /**
    * Update a document
+   * Automatically creates a version if content is updated
    */
-  async update(id: string, dto: UpdateDocumentDto): Promise<LegalDocument> {
+  async update(id: string, dto: UpdateDocumentDto, authorUserId?: string): Promise<LegalDocument> {
     const document = await this.findByIdOrFail(id);
 
     const updatedFields: string[] = [];
+    let contentChanged = false;
 
     if (dto.title !== undefined && document.title !== dto.title) {
       document.title = dto.title;
@@ -178,6 +185,7 @@ export class DocumentsService {
     ) {
       document.contentRaw = dto.contentRaw;
       updatedFields.push('contentRaw');
+      contentChanged = true;
     }
 
     if (dto.metadata !== undefined) {
@@ -186,6 +194,16 @@ export class DocumentsService {
     }
 
     const savedDocument = await this.documentRepository.save(document);
+
+    // Create version if content changed
+    if (contentChanged && dto.contentRaw) {
+      await this.versioningService.createVersionOnUpdate(
+        savedDocument.id,
+        savedDocument.sessionId,
+        dto.contentRaw,
+        authorUserId,
+      );
+    }
 
     // Emit domain event if any fields were updated
     if (updatedFields.length > 0) {
@@ -260,12 +278,20 @@ export class DocumentsService {
 
   /**
    * Complete document generation with content
+   * Automatically creates a version for the generated content
    */
   async completeGeneration(
     id: string,
     content: string,
   ): Promise<LegalDocument> {
-    const document = await this.findByIdOrFail(id);
+    const document = await this.documentRepository.findOne({
+      where: { id },
+      relations: ['session', 'session.user'],
+    });
+
+    if (!document) {
+      throw new NotFoundException(`Document with ID ${id} not found`);
+    }
 
     if (!document.isGenerating()) {
       throw new BadRequestException(
@@ -279,6 +305,18 @@ export class DocumentsService {
 
     const savedDocument = await this.documentRepository.save(document);
 
+    // Create version for the generated content
+    await this.versioningService.createVersionOnUpdate(
+      savedDocument.id,
+      savedDocument.sessionId,
+      content,
+      undefined, // No specific author for AI-generated content
+    );
+
+    // Get user information for email notification
+    const userEmail = document.session?.user?.email ?? undefined;
+    const firstName = document.session?.user?.firstName ?? undefined;
+
     // Emit domain event
     this.eventEmitter.emit(
       EVENT_PATTERNS.DOCUMENT.GENERATION_COMPLETED,
@@ -287,6 +325,8 @@ export class DocumentsService {
         savedDocument.sessionId,
         savedDocument.type,
         content.length,
+        userEmail,
+        firstName,
       ),
     );
 
@@ -310,7 +350,14 @@ export class DocumentsService {
     id: string,
     errorMessage: string,
   ): Promise<LegalDocument> {
-    const document = await this.findByIdOrFail(id);
+    const document = await this.documentRepository.findOne({
+      where: { id },
+      relations: ['session', 'session.user'],
+    });
+
+    if (!document) {
+      throw new NotFoundException(`Document with ID ${id} not found`);
+    }
 
     if (!document.isGenerating()) {
       throw new BadRequestException(
@@ -322,6 +369,10 @@ export class DocumentsService {
     document.markFailed();
     const savedDocument = await this.documentRepository.save(document);
 
+    // Get user information for email notification
+    const userEmail = document.session?.user?.email ?? undefined;
+    const firstName = document.session?.user?.firstName ?? undefined;
+
     // Emit domain event
     this.eventEmitter.emit(
       EVENT_PATTERNS.DOCUMENT.GENERATION_FAILED,
@@ -329,6 +380,8 @@ export class DocumentsService {
         savedDocument.id,
         savedDocument.sessionId,
         errorMessage,
+        userEmail,
+        firstName,
       ),
     );
 

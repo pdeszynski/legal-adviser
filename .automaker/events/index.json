@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "events": [
+    {
+      "id": "evt-1768984056062-9f9370de",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-21T08:27:36.062Z",
+      "featureName": "Q&A LangGraph Workflow",
+      "featureId": "qa-langgraph-workflow"
+    },
+    {
+      "id": "evt-1768983412109-3dfa4336",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-21T08:16:52.109Z",
+      "featureName": "Q&A LangGraph Workflow",
+      "featureId": "qa-langgraph-workflow"
+    },
+    {
+      "id": "evt-1768982443471-e3078db4",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-21T08:00:43.471Z",
+      "featureName": "RAG Retrieval Logic",
+      "featureId": "rag-retrieval-logic"
+    },
+    {
+      "id": "evt-1768982267719-44ee4312",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-21T07:57:47.719Z",
+      "featureName": "RAG Vector Store Setup",
+      "featureId": "rag-vector-store"
+    },
+    {
+      "id": "evt-1768981983061-385d64c1",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-21T07:53:03.061Z",
+      "featureName": "Classifier Backend Integration",
+      "featureId": "classifier-backend-integration"
+    },
+    {
+      "id": "evt-1768981870788-33aba367",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-21T07:51:10.788Z",
+      "featureName": "Analyze Case Page",
+      "featureId": "analyze-case-page"
+    },
+    {
+      "id": "evt-1768981348906-148e1962",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-21T07:42:28.906Z",
+      "featureName": "Legal Grounds Classifier Agent",
+      "featureId": "classifier-agent"
+    },
+    {
+      "id": "evt-1768981325228-7721ec76",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-21T07:42:05.228Z",
+      "featureName": "Classifier FastAPI Endpoint",
+      "featureId": "classifier-rest-endpoint"
+    },
+    {
+      "id": "evt-1768981317586-a9a17f92",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-21T07:41:57.586Z",
+      "featureName": "Domain Events Infrastructure",
+      "featureId": "feature-1768302423822-blijwgyio"
+    },
+    {
+      "id": "evt-1768981084203-bfb16603",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-21T07:38:04.203Z",
+      "featureName": "Document Completion Email Notification",
+      "featureId": "document-completion-notification"
+    }
+  ]
+}

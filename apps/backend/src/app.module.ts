@@ -20,10 +20,12 @@ import { AuthModule } from './modules/auth/auth.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { QueriesModule } from './modules/queries/queries.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 // Strict Layered Architecture - new modules following DDD patterns
 import { PresentationModule } from './presentation/presentation.module';
 // Interceptors
 import { AuditLoggingInterceptor } from './shared/interceptors/audit-logging.interceptor';
+import { EventDispatcherModule } from './shared/events/event-dispatcher.module';
 
 @Module({
   imports: [
@@ -71,6 +73,10 @@ import { AuditLoggingInterceptor } from './shared/interceptors/audit-logging.int
         database: configService.get<string>('DB_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: configService.get<string>('NODE_ENV') !== 'production', // true for dev, false for prod
+        extra: {
+          max: 20, // Connection pool max size
+          idleTimeoutMillis: 30000,
+        },
       }),
       inject: [ConfigService],
     }),
@@ -123,6 +129,9 @@ import { AuditLoggingInterceptor } from './shared/interceptors/audit-logging.int
     DocumentsModule,
     AuditLogModule,
     QueriesModule,
+    NotificationsModule,
+    // Domain Event System - Event dispatcher for reliable event delivery
+    EventDispatcherModule,
     // Strict Layered Architecture Module (Presentation -> Application -> Domain <- Infrastructure)
     PresentationModule,
   ],

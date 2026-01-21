@@ -1,0 +1,11 @@
+{
+  "id": "evt-1768984056062-9f9370de",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-21T08:27:36.062Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "qa-langgraph-workflow",
+  "featureName": "Q&A LangGraph Workflow",
+  "error": "Feature completed in 522s - auto-verified",
+  "passes": true
+}

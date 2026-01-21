@@ -1,0 +1,15 @@
+{
+  "id": "classifier-rest-endpoint",
+  "category": "AI",
+  "title": "Classifier FastAPI Endpoint",
+  "description": "Add POST /api/v1/classify endpoint to AI Engine. Accept case description text, return array of identified legal grounds with articles and confidence.",
+  "status": "in_progress",
+  "priority": 1,
+  "complexity": "simple",
+  "createdAt": "2026-01-12T10:31:20.835Z",
+  "updatedAt": "2026-01-21T07:38:07.161Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

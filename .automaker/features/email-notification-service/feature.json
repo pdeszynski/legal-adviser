@@ -3,13 +3,16 @@
   "category": "Core",
   "title": "Email Notification Service",
   "description": "Implement email service using SendGrid or similar provider. Support templated emails for document completion, account actions, and system notifications.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [],
   "createdAt": "2026-01-12T10:31:20.837Z",
-  "updatedAt": "2026-01-12T10:31:20.837Z",
+  "updatedAt": "2026-01-21T07:04:05.965Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-21T06:54:13.432Z"
 }

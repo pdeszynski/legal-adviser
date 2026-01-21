@@ -2,16 +2,39 @@
   "id": "qa-langgraph-workflow",
   "category": "AI",
   "title": "Q&A LangGraph Workflow",
-  "description": "Create LangGraph StateGraph for Q&A flow with nodes for query analysis, context retrieval, answer generation, and citation formatting.",
-  "status": "backlog",
+  "description": "Create LangGraph StateGraph for Q&A flow with nodes for query analysis, context retrieval, answer generation, and citation formatting. Please take some ideas from a langchain graph in Flowise.ai",
+  "status": "verified",
   "priority": 1,
   "complexity": "complex",
   "dependencies": [
     "rag-retrieval-logic"
   ],
   "createdAt": "2026-01-12T10:31:20.831Z",
-  "updatedAt": "2026-01-12T10:31:20.831Z",
-  "model": "sonnet",
-  "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "updatedAt": "2026-01-21T08:27:36.053Z",
+  "model": "claude-opus",
+  "thinkingLevel": "high",
+  "reasoningEffort": "none",
+  "startedAt": "2026-01-21T08:18:54.174Z",
+  "completedAt": "2026-01-21T08:30:00.000Z",
+  "descriptionHistory": [
+    {
+      "description": "Create LangGraph StateGraph for Q&A flow with nodes for query analysis, context retrieval, answer generation, and citation formatting. Please take some ideas from a langchain graph in Flowise.ai",
+      "timestamp": "2026-01-21T08:18:51.357Z",
+      "source": "edit"
+    }
+  ],
+  "skipTests": false,
+  "imagePaths": [
+    {
+      "id": "img-1768983491110-isoejnvdy",
+      "path": "/Users/piteer/workspace/radca-prawny/legal/.automaker/features/qa-langgraph-workflow/images/Zrzut_ekranu_2026-01-21_o_09_18_04-1768983491106.png",
+      "filename": "Zrzut_ekranu_2026-01-21_o_09_18_04.png",
+      "mimeType": "image/png"
+    }
+  ],
+  "textFilePaths": [],
+  "branchName": "002-legal-ai-core",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current"
 }

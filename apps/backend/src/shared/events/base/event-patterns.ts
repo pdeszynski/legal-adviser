@@ -225,6 +225,10 @@ export const EVENT_PATTERNS = {
     SENT: 'email.sent',
     FAILED: 'email.failed',
     BOUNCED: 'email.bounced',
+    DELIVERED: 'email.delivered',
+    DEFERRED: 'email.deferred',
+    SPAM_REPORTED: 'email.spam_reported',
+    UNSUBSCRIBED: 'email.unsubscribed',
   },
 
   // Queue events (Queue Infrastructure)

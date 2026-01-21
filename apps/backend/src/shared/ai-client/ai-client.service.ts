@@ -10,6 +10,10 @@ import {
   AnswerResponse,
   SearchRulingsRequest,
   SearchRulingsResponse,
+  ClassifyCaseRequest,
+  ClassifyCaseResponse,
+  SemanticSearchRequest,
+  SemanticSearchResponse,
 } from './ai-client.types';
 
 /**
@@ -105,6 +109,78 @@ export class AiClientService {
     } catch (error) {
       this.logger.error('Failed to search rulings', error);
       throw new Error('Ruling search failed');
+    }
+  }
+
+  /**
+   * Classify a case and identify applicable legal grounds
+   */
+  async classifyCase(request: ClassifyCaseRequest): Promise<ClassifyCaseResponse> {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post<ClassifyCaseResponse>(
+          `${this.aiEngineUrl}/api/v1/classify`,
+          request,
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error('Failed to classify case', error);
+      throw new Error('Case classification failed');
+    }
+  }
+
+  /**
+   * Generate embeddings for text chunks
+   */
+  async generateEmbeddings(texts: string[]): Promise<number[][]> {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post<{ embeddings: number[][]; model: string; total_tokens: number }>(
+          `${this.aiEngineUrl}/api/v1/embeddings/generate`,
+          { texts, model: 'text-embedding-3-small' },
+        ),
+      );
+      return response.data.embeddings;
+    } catch (error) {
+      this.logger.error('Failed to generate embeddings', error);
+      throw new Error('Embedding generation failed');
+    }
+  }
+
+  /**
+   * Perform semantic search over document embeddings
+   */
+  async semanticSearch(request: SemanticSearchRequest): Promise<SemanticSearchResponse> {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post<SemanticSearchResponse>(
+          `${this.aiEngineUrl}/api/v1/search/semantic`,
+          request,
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error('Failed to perform semantic search', error);
+      throw new Error('Semantic search failed');
+    }
+  }
+
+  /**
+   * Ask a legal question with RAG (Retrieval Augmented Generation)
+   */
+  async askQuestionWithRag(request: AskQuestionRequest): Promise<AnswerResponse> {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post<AnswerResponse>(
+          `${this.aiEngineUrl}/api/v1/qa/ask-rag`,
+          request,
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.logger.error('Failed to ask question with RAG', error);
+      throw new Error('RAG question answering failed');
     }
   }
 

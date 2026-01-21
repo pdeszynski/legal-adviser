@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import Link from "next/link";
 import { DocumentGenerationProgress } from "@/components/DocumentGenerationProgress";
+import { DocumentSharingPanel } from "@/components/documents/DocumentSharingPanel";
 
 interface DocumentMetadata {
   plaintiffName?: string;
@@ -33,8 +34,6 @@ export default function DocumentShow() {
   const id = params?.id as string;
   const invalidate = useInvalidate();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedContent, setEditedContent] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { query, result } = useOne<LegalDocument>({
@@ -92,24 +91,6 @@ export default function DocumentShow() {
       }
     );
   }, [deleteDocument, id, router]);
-
-  /**
-   * Start editing mode for DRAFT documents
-   */
-  const handleStartEdit = useCallback(() => {
-    if (document?.contentRaw) {
-      setEditedContent(document.contentRaw);
-    }
-    setIsEditing(true);
-  }, [document?.contentRaw]);
-
-  /**
-   * Cancel editing mode
-   */
-  const handleCancelEdit = useCallback(() => {
-    setIsEditing(false);
-    setEditedContent("");
-  }, []);
 
   // Check if document is currently generating
   const isGenerating = document?.status === "GENERATING";
@@ -198,15 +179,14 @@ export default function DocumentShow() {
           {/* Action Buttons */}
           <div className="flex gap-2">
             {canEdit && (
-              <button
-                onClick={handleStartEdit}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                {translate("buttons.edit", "Edit")}
-              </button>
+              <Link href={`/documents/edit/${id}`}>
+                <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  {translate("buttons.edit", "Edit")}
+                </button>
+              </Link>
             )}
             {canRegenerate && (
               <Link href={`/documents/create?regenerate=${document.id}`}>
@@ -320,35 +300,8 @@ export default function DocumentShow() {
             <h2 className="text-lg font-semibold">
               {translate("documents.fields.content", "Document Content")}
             </h2>
-            {isEditing && (
-              <div className="flex gap-2">
-                <button
-                  onClick={handleCancelEdit}
-                  className="px-3 py-1 text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors text-sm"
-                >
-                  {translate("buttons.cancel", "Cancel")}
-                </button>
-                <button
-                  onClick={() => {
-                    // Save functionality would be implemented here
-                    // For now, just exit edit mode
-                    setIsEditing(false);
-                  }}
-                  className="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm"
-                >
-                  {translate("buttons.save", "Save")}
-                </button>
-              </div>
-            )}
           </div>
-          {isEditing ? (
-            <textarea
-              value={editedContent}
-              onChange={(e) => setEditedContent(e.target.value)}
-              className="w-full h-96 p-4 border border-gray-300 rounded-md font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter document content..."
-            />
-          ) : document.contentRaw ? (
+          {document.contentRaw ? (
             <div className="prose max-w-none bg-gray-50 p-6 rounded-md">
               <pre className="whitespace-pre-wrap text-sm">{document.contentRaw}</pre>
             </div>
@@ -396,6 +349,9 @@ export default function DocumentShow() {
             )}
           </div>
         </div>
+
+        {/* Document Sharing Panel */}
+        <DocumentSharingPanel documentId={document.id} />
       </div>
     </div>
   );

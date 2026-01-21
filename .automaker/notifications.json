@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "notifications": [
+    {
+      "id": "61bfcc7e-9c88-436b-8a97-baca9324fbab",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"document-completion-notification\" has been verified and is complete.",
+      "createdAt": "2026-01-21T07:38:04.196Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "document-completion-notification",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "9a58d2f0-c83d-4b4f-89af-f15409f6d2c8",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1768302423822-blijwgyio\" has been verified and is complete.",
+      "createdAt": "2026-01-21T07:41:57.580Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1768302423822-blijwgyio",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "18179dd4-08ef-4d60-9462-1bae26621bdf",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"classifier-rest-endpoint\" has been verified and is complete.",
+      "createdAt": "2026-01-21T07:42:05.221Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "classifier-rest-endpoint",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "6fd80860-736b-4dbc-8d8f-25123286cde3",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"classifier-agent\" has been verified and is complete.",
+      "createdAt": "2026-01-21T07:42:28.902Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "classifier-agent",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "8e4c835a-4f97-4364-a9ba-2f8d01cb9000",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"analyze-case-page\" has been verified and is complete.",
+      "createdAt": "2026-01-21T07:51:10.783Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "analyze-case-page",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "11e88d22-d27f-444b-ad21-d84cc6dd45c3",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"classifier-backend-integration\" has been verified and is complete.",
+      "createdAt": "2026-01-21T07:53:03.048Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "classifier-backend-integration",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "7f3943e5-39a7-440e-8808-1baf655329c6",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"rag-vector-store\" has been verified and is complete.",
+      "createdAt": "2026-01-21T07:57:47.710Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "rag-vector-store",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "0f309b56-96d0-4735-9040-605fb3f0e38f",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"rag-retrieval-logic\" has been verified and is complete.",
+      "createdAt": "2026-01-21T08:00:43.466Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "rag-retrieval-logic",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "d58e512e-8c0e-44ec-a6f9-a20a16c01bcd",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"qa-langgraph-workflow\" has been verified and is complete.",
+      "createdAt": "2026-01-21T08:27:36.055Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "qa-langgraph-workflow",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    }
+  ]
+}
