@@ -17,10 +17,11 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
     "clean": "turbo run clean && rm -rf node_modules",
     "clean:turbo": "rm -rf .turbo && rm -rf apps/*/.turbo && rm -rf packages/*/.turbo",
-    "prepare": "turbo run build --filter='./packages/*'"
+    "prepare": "husky && turbo run build --filter='./packages/*'"
   },
   "devDependencies": {
     "eslint-config-turbo": "^2.7.2",
+    "husky": "^9.1.7",
     "prettier": "latest",
     "turbo": "latest"
   },

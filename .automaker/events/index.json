@@ -2,6 +2,13 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769034708685-13560596",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-21T22:31:48.685Z",
+      "featureName": "Configure Husky for Git Hooks",
+      "featureId": "husky-setup"
+    },
+    {
       "id": "evt-1768984056062-9f9370de",
       "trigger": "feature_success",
       "timestamp": "2026-01-21T08:27:36.062Z",

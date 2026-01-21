@@ -99,6 +99,17 @@
       "dismissed": false,
       "featureId": "qa-langgraph-workflow",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "36676596-6e78-4d2d-9b3e-e373416a1928",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"husky-setup\" has been verified and is complete.",
+      "createdAt": "2026-01-21T22:31:48.678Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "husky-setup",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

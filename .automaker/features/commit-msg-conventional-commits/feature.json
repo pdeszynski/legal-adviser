@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Add commit-msg Git hook to validate commit messages follow Conventional Commits specification. Use commitlint to enforce format (feat:, fix:, docs:, etc.). Block non-compliant commit messages.",
+  "id": "commit-msg-conventional-commits",
+  "title": "Commit Message Conventional Commits Validation",
+  "dependencies": [
+    "husky-setup"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Add commit-msg Git hook to validate commit messages follow Conventional Commits specification. Use commitlint to enforce format (feat:, fix:, docs:, etc.). Block non-compliant commit messages.",
+      "timestamp": "2026-01-21T22:26:17.613Z",
+      "source": "initial"
+    }
+  ]
+}

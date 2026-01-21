@@ -221,6 +221,10 @@
       <name>Q&amp;A LangGraph Workflow</name>
       <description>Create LangGraph StateGraph for Q&amp;A flow with nodes for query analysis, context retrieval, answer generation, and citation formatting. Please take some ideas from a langchain graph in Flowise.ai</description>
     </feature>
+    <feature>
+      <name>Configure Husky for Git Hooks</name>
+      <description>Install and configure Husky to manage Git hooks automatically. Set up .husky directory structure and initialize git hooks in the repository. Enable automatic hook execution on git operations.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

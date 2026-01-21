@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769034708685-13560596",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-21T22:31:48.685Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "husky-setup",
+  "featureName": "Configure Husky for Git Hooks",
+  "error": "Feature completed in 209s - auto-verified",
+  "passes": true
+}
