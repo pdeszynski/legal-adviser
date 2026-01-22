@@ -956,6 +956,17 @@
       "dismissed": false,
       "featureId": "debug-build-failure",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "26091157-406b-4435-85b4-70b4875d3e95",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769035186585-q67kgmbio\" has been verified and is complete.",
+      "createdAt": "2026-01-22T06:40:20.686Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769035186585-q67kgmbio",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

@@ -6,8 +6,8 @@ importance: 0.7
 relatedFiles: []
 usageStats:
   loaded: 8
-  referenced: 7
-  successfulFeatures: 7
+  referenced: 8
+  successfulFeatures: 8
 ---
 # authentication
 

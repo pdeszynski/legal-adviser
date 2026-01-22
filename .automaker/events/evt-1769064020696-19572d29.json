@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769064020696-19572d29",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T06:40:20.696Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769035186585-q67kgmbio",
+  "featureName": "Optimize Docker layer caching with reordered Dockerfile instructions",
+  "error": "Feature completed in 919s - auto-verified",
+  "passes": true
+}

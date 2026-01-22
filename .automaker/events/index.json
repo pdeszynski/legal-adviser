@@ -2,6 +2,13 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769064020696-19572d29",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-22T06:40:20.696Z",
+      "featureName": "Optimize Docker layer caching with reordered Dockerfile instructions",
+      "featureId": "feature-1769035186585-q67kgmbio"
+    },
+    {
       "id": "evt-1769063623593-e2468922",
       "trigger": "feature_success",
       "timestamp": "2026-01-22T06:33:43.593Z",
