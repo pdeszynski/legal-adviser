@@ -14,8 +14,14 @@ export class LoggingInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
+
+    // Handle cases where request is not available (e.g., GraphQL, subscriptions, etc.)
+    if (!request) {
+      return next.handle();
+    }
+
     const { method, url, ip } = request;
-    const userAgent = request.get('user-agent') || '';
+    const userAgent = request.get?.('user-agent') || '';
     const correlationId = request.correlationId || 'N/A';
 
     this.logger.log(

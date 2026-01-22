@@ -967,6 +967,17 @@
       "dismissed": false,
       "featureId": "feature-1769035186585-q67kgmbio",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "df8231ca-99b8-41eb-af57-711a2ddaf916",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769086120587-awha6lzfb\" has been verified and is complete.",
+      "createdAt": "2026-01-22T12:48:46.285Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769086120587-awha6lzfb",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }
