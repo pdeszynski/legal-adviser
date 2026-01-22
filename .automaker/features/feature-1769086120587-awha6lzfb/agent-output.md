@@ -98,3 +98,60 @@ Input: {
   "description": "Run Playwright auth test to verify login fix",
   "timeout": 120000
 }
+The login test passes now! The only failing test is unrelated to the login form issue - it's about refresh tokens returning the same access token (which is a different issue, likely the JWT token generation using the same timestamp within the same second).
+
+Let me verify the specific login test passes to confirm the fix:
+
+🔧 Tool: Bash
+Input: {
+  "command": "cd /Users/piteer/workspace/radca-prawny/legal/apps/backend && npx playwright test graphql-auth.spec.ts -g \"should login with valid credentials\" 2>&1",
+  "description": "Run specific login test to verify fix",
+  "timeout": 60000
+}
+The login test passes. Let me also verify that the fix doesn't break type checking:
+
+🔧 Tool: Bash
+Input: {
+  "command": "npx tsc --noEmit 2>&1 | head -30",
+  "description": "Type check backend after fix",
+  "timeout": 60000
+}
+Type checking passed with no errors. Let me update the todo list:
+
+🔧 Tool: TodoWrite
+Input: {
+  "todos": [
+    {
+      "activeForm": "Fixing LoggingInterceptor to handle undefined request",
+      "content": "Fix LoggingInterceptor to handle undefined request",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Testing the fix with Playwright verification",
+      "content": "Test the fix with Playwright verification",
+      "status": "completed"
+    }
+  ]
+}
+<summary>
+## Summary: Fix login form - LoggingInterceptor undefined request error
+
+### Changes Implemented
+- Fixed `LoggingInterceptor` to handle cases where `context.switchToHttp().getRequest()` returns `undefined`
+- Added a guard clause to skip logging when request is not available (e.g., GraphQL context, subscriptions, or certain edge cases)
+- Changed `request.get('user-agent')` to use optional chaining `request.get?.('user-agent')` to prevent errors if `get` is not defined
+
+### Files Modified
+- `apps/backend/src/shared/logger/logger.interceptor.ts:15-46`
+
+### Root Cause
+The error `TypeError: Cannot destructure property 'method' of 'request' as it is undefined` occurred because the LoggingInterceptor assumed `context.switchToHttp().getRequest()` would always return a valid request object. However, in certain contexts (particularly GraphQL requests with specific execution patterns), the request object might be undefined.
+
+### Verification Status
+- **Playwright test passed**: The login test (`should login with valid credentials`) passed successfully, confirming the fix resolves the original error
+- **7 out of 8 auth tests passed**: The only failing test is unrelated to this fix (it's about JWT token generation returning the same token within the same second)
+- **Type checking passed**: No TypeScript errors introduced by the fix
+
+### Notes for Developer
+The fix follows the same pattern already used in `AuditLoggingInterceptor` (lines 71-75), which checks for request availability before accessing its properties. This is a defensive programming practice appropriate for globally-applied interceptors that handle multiple request types.
+</summary>

@@ -768,6 +768,22 @@ Validation:
     at Observable.Observable._trySubscribe (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/Observable.ts:235:19)
     at &lt;anonymous&gt; (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/Observable.ts:225:18)
     at Object.errorContext (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/util/errorContext.ts:29:5)
+    at Observable.Observable.subscribe (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/Observable.ts:211:5)</description>
+    </feature>
+    <feature>
+      <name>Fix login</name>
+      <description>Fix login form - when trying to use credentials to log in into the service (through login form) backend is erroring:
+
+[Nest] 49356  - 22.01.2026, 13:47:37   ERROR [ExceptionsHandler] TypeError: Cannot destructure property &apos;method&apos; of &apos;request&apos; as it is undefined.
+    at LoggingInterceptor.intercept (/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/shared/logger/logger.interceptor.ts:17:13)
+    at nextFn (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/interceptors/interceptors-consumer.js:23:36)
+    at /Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/interceptors/interceptors-consumer.js:21:88
+    at AsyncResource.runInAsyncScope (node:async_hooks:213:14)
+    at bound (node:async_hooks:244:16)
+    at Observable._subscribe (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/observable/defer.ts:54:15)
+    at Observable.Observable._trySubscribe (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/Observable.ts:235:19)
+    at &lt;anonymous&gt; (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/Observable.ts:225:18)
+    at Object.errorContext (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/util/errorContext.ts:29:5)
     at Observable.Observable.subscribe (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/Observable.ts:211:5)
 </description>
     </feature>
