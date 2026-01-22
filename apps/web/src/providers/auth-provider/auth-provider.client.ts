@@ -26,6 +26,7 @@ interface AuthUser {
   isActive: boolean;
   disclaimerAccepted: boolean;
   disclaimerAcceptedAt?: string;
+  role: string;
 }
 
 interface AuthPayload {
@@ -100,6 +101,7 @@ const LOGIN_MUTATION = `
         isActive
         disclaimerAccepted
         disclaimerAcceptedAt
+        role
       }
     }
   }
@@ -119,6 +121,7 @@ const REGISTER_MUTATION = `
         isActive
         disclaimerAccepted
         disclaimerAcceptedAt
+        role
       }
     }
   }
@@ -144,6 +147,7 @@ const ME_QUERY = `
       isActive
       disclaimerAccepted
       disclaimerAcceptedAt
+      role
     }
   }
 `;
@@ -159,6 +163,7 @@ const ACCEPT_DISCLAIMER_MUTATION = `
       isActive
       disclaimerAccepted
       disclaimerAcceptedAt
+      role
     }
   }
 `;
@@ -185,7 +190,7 @@ function storeAuthData(payload: AuthPayload): void {
     AUTH_COOKIE,
     JSON.stringify({
       user: payload.user,
-      roles: ['user'], // Default role, can be enhanced with actual roles from backend
+      roles: [payload.user.role || 'user'], // Use role from backend
     }),
     {
       expires: REFRESH_TOKEN_EXPIRY,

@@ -1,6 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { IUseCase, NotFoundError, BusinessRuleViolationError } from '../../common';
+import {
+  IUseCase,
+  NotFoundError,
+  BusinessRuleViolationError,
+} from '../../common';
 import { SuspendUserDto, UserDto } from '../dto';
 import type { IUserRepository } from '../../../domain/user-management/repositories';
 

@@ -1,6 +1,3 @@
-// Base DDD building blocks
-export * from './entity.base';
-export * from './aggregate-root.base';
-export * from './value-object.base';
-export * from './domain-event.base';
-export * from './repository.interface';
+// Re-export DDD building blocks from shared-kernel package
+// This maintains backward compatibility while migrating to the centralized package
+export * from '@legal/shared-kernel';

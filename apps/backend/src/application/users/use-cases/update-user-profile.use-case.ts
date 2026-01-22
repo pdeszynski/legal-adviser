@@ -12,9 +12,10 @@ import type { IUserRepository } from '../../../domain/user-management/repositori
  * 3. Persists the updated aggregate
  */
 @Injectable()
-export class UpdateUserProfileUseCase
-  implements IUseCase<UpdateUserProfileDto, UserDto>
-{
+export class UpdateUserProfileUseCase implements IUseCase<
+  UpdateUserProfileDto,
+  UserDto
+> {
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,

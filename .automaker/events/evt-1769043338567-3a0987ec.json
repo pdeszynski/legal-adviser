@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769043338567-3a0987ec",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T00:55:38.567Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "api-keys-entity",
+  "featureName": "API Keys Entity",
+  "error": "Feature completed in 364s - auto-verified",
+  "passes": true
+}

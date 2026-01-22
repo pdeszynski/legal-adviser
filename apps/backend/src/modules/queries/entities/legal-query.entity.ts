@@ -7,6 +7,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
 import {
   FilterableField,
@@ -74,6 +76,7 @@ export class CitationType {
 @Relation('session', () => UserSession)
 @Index(['sessionId'])
 @Index(['createdAt'])
+@Index('idx_legal_query_search', { synchronize: false }) // Full-text search index, created manually via migration/SQL
 export class LegalQuery {
   @PrimaryGeneratedColumn('uuid')
   @IDField(() => ID)
@@ -126,6 +129,65 @@ export class LegalQuery {
   @UpdateDateColumn({ type: 'timestamp' })
   @FilterableField(() => GraphQLISODateTime)
   updatedAt: Date;
+
+  /**
+   * PostgreSQL tsvector column for full-text search
+   * This column is automatically populated via trigger or application code
+   * Searchable fields: question, answerMarkdown, citations
+   * Note: This column is not exposed via GraphQL, it's internal for search queries
+   */
+  @Column({
+    type: 'tsvector',
+    nullable: true,
+    select: false, // Don't select by default as it's internal
+  })
+  searchVector: string | null;
+
+  /**
+   * Lifecycle hook to prepare search content before insert/update
+   * The actual tsvector is computed by PostgreSQL via raw query in the service
+   */
+  @BeforeInsert()
+  @BeforeUpdate()
+  prepareSearchContent(): void {
+    // Search vector will be updated via raw SQL in the service
+    // This hook is a placeholder for any pre-processing if needed
+  }
+
+  /**
+   * Get searchable text content for full-text search indexing
+   * Combines all searchable fields into a single text for tsvector creation
+   */
+  getSearchableContent(): string {
+    const parts: string[] = [];
+
+    // Add question
+    if (this.question) {
+      parts.push(this.question);
+    }
+
+    // Add answer
+    if (this.answerMarkdown) {
+      parts.push(this.answerMarkdown);
+    }
+
+    // Add citation sources
+    if (this.citations) {
+      this.citations.forEach((citation) => {
+        if (citation.source) {
+          parts.push(citation.source);
+        }
+        if (citation.article) {
+          parts.push(citation.article);
+        }
+        if (citation.excerpt) {
+          parts.push(citation.excerpt);
+        }
+      });
+    }
+
+    return parts.join(' ');
+  }
 
   /**
    * Check if the query has been answered

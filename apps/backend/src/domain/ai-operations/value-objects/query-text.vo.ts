@@ -14,9 +14,7 @@ export class QueryText extends SimpleValueObject<string> {
       );
     }
     if (value.length > QueryText.MAX_LENGTH) {
-      throw new Error(
-        `Query cannot exceed ${QueryText.MAX_LENGTH} characters`,
-      );
+      throw new Error(`Query cannot exceed ${QueryText.MAX_LENGTH} characters`);
     }
   }
 

@@ -245,6 +245,320 @@
       <name>Pre-commit Type Check Hook</name>
       <description>Create pre-commit Git hook that runs TypeScript type checking (tsc --noEmit) for backend and frontend. Block commits if type errors are detected. Ensures type safety before code enters the repository.</description>
     </feature>
+    <feature>
+      <name>Pre-commit Lint Hook</name>
+      <description>Create pre-commit Git hook that runs ESLint for TypeScript/JavaScript files and Ruff/Black for Python files. Block commits if linting errors are found. Configure lint-staged to run appropriate linters based on file extensions.</description>
+    </feature>
+    <feature>
+      <name>Q&amp;A Backend Integration</name>
+      <description>Extend AI Client Service with askQuestion method. Implement GraphQL mutation in backend to trigger Q&amp;A workflow and store results.</description>
+    </feature>
+    <feature>
+      <name>Optimize Docker layer caching with reordered Dockerfile instructions</name>
+      <description>Optimize Dockerfiles for Layer Caching
+
+Restructure Dockerfile COPY instructions to maximize Docker layer cache efficiency by separating dependency installation from source code changes.
+
+Technical Implementation:
+- Reorder Dockerfile instructions to copy dependency manifests first (package.json, requirements.txt, go.mod, Gemfile, etc.)
+- Run dependency installation commands (npm install, pip install, go mod download, bundle install)
+- Copy remaining application source code last
+- Ensure .dockerignore excludes build artifacts, node_modules, and development files
+
+Pattern to Apply:
+```
+# Before: Cache-busting pattern
+COPY . /app
+RUN npm install
+
+# After: Cache-optimized pattern
+COPY package*.json /app/
+RUN npm install
+COPY . /app/
+```
+
+Files to Modify:
+- All Dockerfiles in repository (./Dockerfile, services/*/Dockerfile, etc.)
+- Update .dockerignore if missing (exclude node_modules, .git, dist/, build/, __pycache__)
+
+Language-Specific Considerations:
+- Node.js: Copy package.json + package-lock.json before npm ci/install
+- Python: Copy requirements.txt/Pipfile before pip install
+- Go: Copy go.mod + go.sum before go mod download
+- Java/Maven: Copy pom.xml before mvn dependency:resolve
+- Ruby: Copy Gemfile + Gemfile.lock before bundle install
+
+Additional Optimizations:
+- Use multi-stage builds to separate build dependencies from runtime
+- Combine RUN commands to reduce layers where appropriate
+- Consider BuildKit cache mounts for further optimization
+- Add --no-cache flags for production builds in CI/CD
+
+Validation:
+- Test builds with and without cache to verify layer reuse
+- Measure build time improvement (expect 50-90% reduction on cached builds)
+- Ensure application functionality unchanged after restructuring</description>
+    </feature>
+    <feature>
+      <name>Chat Interface Component</name>
+      <description>Create chat UI component with message history, input field, and streaming support. Display user questions and AI responses with citations.</description>
+    </feature>
+    <feature>
+      <name>Ruling Search Service</name>
+      <description>Create search service aggregating results from SAOS, ISAP, and local database. Implement ranking algorithm prioritizing relevance and recency.</description>
+    </feature>
+    <feature>
+      <name>Ruling Search GraphQL Query</name>
+      <description>Implement custom GraphQL query for searching rulings with filters for date range, court type, and keywords. Return paginated results with highlights.</description>
+    </feature>
+    <feature>
+      <name>Legal Q&amp;A Chat Page</name>
+      <description>Implement dedicated Q&amp;A page with chat interface. Include session management, conversation history, and mode toggle for Pro/Simple chat modes.</description>
+    </feature>
+    <feature>
+      <name>Ruling Detail Page</name>
+      <description>Implement detail view for individual court rulings. Display full text, metadata, related rulings, and export options.</description>
+    </feature>
+    <feature>
+      <name>Verify GraphQL Pagination Arguments</name>
+      <description>Verify all nestjs-query resolvers have proper paging argument types configured. Check that @OffsetPaging or @CursorPaging decorators are applied correctly. Ensure GraphQL schema includes paging fields (forward, backward, limit, offset). Test pagination queries for each entity type.</description>
+    </feature>
+    <feature>
+      <name>Case Law Search Page</name>
+      <description>Create search page with advanced filters and result list. Include search input, filter sidebar, and result cards with ruling summaries.</description>
+    </feature>
+    <feature>
+      <name>Verify Refine Paginator Configuration</name>
+      <description>Check that Refine data provider is correctly mapping pagination parameters to GraphQL queries. Verify useTable hook pagination mode matches backend implementation (offset vs cursor). Ensure pagination metadata (total, pageCount) is being properly extracted from GraphQL responses.</description>
+    </feature>
+    <feature>
+      <name>Citation Rendering Component</name>
+      <description>Create component to display legal citations with proper formatting. Support links to source documents and hover previews of cited text.</description>
+    </feature>
+    <feature>
+      <name>Error Tracking Integration</name>
+      <description>Integrate Sentry or similar error tracking service. Capture exceptions from frontend, backend, and AI engine with context.</description>
+    </feature>
+    <feature>
+      <name>Shared Kernel Package</name>
+      <description>Create shared kernel package in monorepo containing common value objects, base classes, interfaces, and utilities used across bounded contexts. Minimize sharing to maintain context independence.</description>
+    </feature>
+    <feature>
+      <name>Update Mock Credentials Configuration</name>
+      <description>Synchronize mock credentials between frontend and backend. Either update auth.service.ts to accept admin@refine.dev/123456 or update frontend login-content.tsx to use admin/password. Ensure consistency for demo/development authentication.</description>
+    </feature>
+    <feature>
+      <name>Complete German Translations</name>
+      <description>Add comprehensive German translations for all UI strings. Support German-speaking users accessing the platform.</description>
+    </feature>
+    <feature>
+      <name>Anti-Corruption Layer for External APIs</name>
+      <description>Implement anti-corruption layers for external integrations (SAOS, ISAP, AI Engine). Translate external models to domain models and isolate domain from external API changes.</description>
+    </feature>
+    <feature>
+      <name>ISAP API Integration</name>
+      <description>Implement integration with ISAP (Internetowy System Aktów Prawnych) for legal act search. Create service layer for fetching Polish legislation.</description>
+    </feature>
+    <feature>
+      <name>Health Check Endpoints</name>
+      <description>Implement comprehensive health check endpoints for all services. Check database connectivity, Redis, AI Engine, and external APIs.</description>
+    </feature>
+    <feature>
+      <name>Legal Grounds Suggestion Component</name>
+      <description>Create reusable component displaying suggested legal grounds with confidence indicators. Support inline usage in document creation form.</description>
+    </feature>
+    <feature>
+      <name>Structured Logging Infrastructure</name>
+      <description>Implement structured logging with Winston or Pino. Use consistent log format with correlation IDs across services.</description>
+    </feature>
+    <feature>
+      <name>Notification Entity</name>
+      <description>Create Notification entity for in-app notifications. Store notification type, message, read status, action link, and timestamp.</description>
+    </feature>
+    <feature>
+      <name>Locale Switcher Component</name>
+      <description>Create dropdown component for switching between English, Polish, and German. Store preference in user settings and URL param.</description>
+    </feature>
+    <feature>
+      <name>Notification Service</name>
+      <description>Implement service for creating and managing notifications. Support different notification types with templates and delivery rules.</description>
+    </feature>
+    <feature>
+      <name>Application Monitoring</name>
+      <description>Set up APM monitoring with Datadog or New Relic. Track request latency, database queries, and AI API performance.</description>
+    </feature>
+    <feature>
+      <name>Notification GraphQL Resolvers</name>
+      <description>Add nestjs-query decorators to Notification entity. Implement subscription for real-time notifications and mutation to mark as read.</description>
+    </feature>
+    <feature>
+      <name>Notification Bell Component</name>
+      <description>Create notification bell icon in header with unread count badge. Show dropdown with recent notifications on click.</description>
+    </feature>
+    <feature>
+      <name>PDF Export Queue Processor</name>
+      <description>Create Bull queue consumer for asynchronous PDF generation. Handle large documents, template rendering, and file storage integration.</description>
+    </feature>
+    <feature>
+      <name>PDF Download GraphQL Field</name>
+      <description>Add pdfUrl field to LegalDocument GraphQL type. Implement resolver that triggers PDF generation if needed and returns signed download URL.</description>
+    </feature>
+    <feature>
+      <name>Pre-commit Format Check</name>
+      <description>Create pre-commit hook to verify code formatting using Prettier for TypeScript/JavaScript and Black for Python. Either block commits on formatting issues or auto-format files using lint-staged --autofix capability.</description>
+    </feature>
+    <feature>
+      <name>Document Permission Guards</name>
+      <description>Implement NestJS guards checking document access permissions on all resolvers. Enforce read/write access control based on user roles.</description>
+    </feature>
+    <feature>
+      <name>Ruling Indexing Background Job</name>
+      <description>Create Bull queue processor for periodically fetching and indexing new rulings from external sources. Schedule daily sync jobs.</description>
+    </feature>
+    <feature>
+      <name>Global Search Bar</name>
+      <description>Create omnisearch component in header with autocomplete. Show mixed results from documents, rulings, and templates with type indicators.</description>
+    </feature>
+    <feature>
+      <name>Global Search Service</name>
+      <description>Implement full-text search across documents, rulings, and queries using PostgreSQL full-text search or Elasticsearch. Support fuzzy matching and ranking.</description>
+    </feature>
+    <feature>
+      <name>Share Document Dialog</name>
+      <description>Create modal for sharing documents with user selection, role assignment, and link generation. Display list of current collaborators.</description>
+    </feature>
+    <feature>
+      <name>Document Template Entity</name>
+      <description>Create DocumentTemplate entity for storing reusable templates. Include template name, type, content with variables, and metadata schema.</description>
+    </feature>
+    <feature>
+      <name>Template GraphQL Resolvers</name>
+      <description>Add nestjs-query decorators to DocumentTemplate entity. Implement custom mutations for template rendering with variable substitution.</description>
+    </feature>
+    <feature>
+      <name>Template Library Page</name>
+      <description>Create page displaying available document templates. Support filtering by type, preview, and &apos;Use Template&apos; action to start document creation.</description>
+    </feature>
+    <feature>
+      <name>Usage Tracking Service</name>
+      <description>Implement service tracking AI API usage per user. Store token counts, request counts, and costs for billing purposes.</description>
+    </feature>
+    <feature>
+      <name>Usage Records Entity</name>
+      <description>Create UsageRecord entity storing per-request AI usage. Include user ID, operation type, tokens used, cost, and timestamp.</description>
+    </feature>
+    <feature>
+      <name>Usage Quota Enforcement</name>
+      <description>Implement quota checking before AI operations. Block requests exceeding user&apos;s plan limits with clear error messages.</description>
+    </feature>
+    <feature>
+      <name>User Preferences Entity</name>
+      <description>Create UserPreferences entity for storing user settings. Include notification preferences, default locale, theme preference, and AI model selection.</description>
+    </feature>
+    <feature>
+      <name>User Settings Page</name>
+      <description>Create settings page with tabs for profile, preferences, security, and notifications. Support updating email, password, and all preference fields.</description>
+    </feature>
+    <feature>
+      <name>User Preferences GraphQL Resolvers</name>
+      <description>Add nestjs-query decorators to UserPreferences entity. Implement mutations for updating preferences.</description>
+    </feature>
+    <feature>
+      <name>Admin Panel Layout</name>
+      <description>Create separate admin area with navigation and role-based access. Use Refine admin templates for CRUD operations.</description>
+    </feature>
+    <feature>
+      <name>Analytics Dashboard</name>
+      <description>Create admin dashboard with platform analytics. Show user growth, document generation metrics, and system health indicators.</description>
+    </feature>
+    <feature>
+      <name>API Keys Entity</name>
+      <description>Create ApiKey entity for programmatic access. Store hashed keys, scopes, rate limits, and expiration dates.</description>
+    </feature>
+    <feature>
+      <name>Advanced Search Page</name>
+      <description>Create dedicated search page with advanced filters. Support boolean operators, date ranges, document type filters, and field-specific search.</description>
+    </feature>
+    <feature>
+      <name>API Key Authentication</name>
+      <description>Implement API key authentication strategy for GraphQL API. Support both JWT and API key auth methods.</description>
+    </feature>
+    <feature>
+      <name>Database Backup Strategy</name>
+      <description>Implement automated database backup with point-in-time recovery. Store backups in secure cloud storage with retention policy.</description>
+    </feature>
+    <feature>
+      <name>API Key Management Interface</name>
+      <description>Create settings page section for managing API keys. Support creating, revoking, and viewing key usage statistics.</description>
+    </feature>
+    <feature>
+      <name>Document Collaboration System</name>
+      <description>Implement real-time collaborative editing using WebSockets or CRDTs. Support multiple users editing documents simultaneously with conflict resolution.</description>
+    </feature>
+    <feature>
+      <name>Document Comments Entity</name>
+      <description>Create DocumentComment entity for inline document feedback. Store comment text, position/anchor, author, timestamp, and resolution status.</description>
+    </feature>
+    <feature>
+      <name>Disaster Recovery Procedures</name>
+      <description>Document and test disaster recovery procedures. Include database restoration, service failover, and data integrity verification.</description>
+    </feature>
+    <feature>
+      <name>Comment System UI</name>
+      <description>Create commenting interface with inline annotations. Display comment threads, reply chains, and resolve/unresolve actions.</description>
+    </feature>
+    <feature>
+      <name>Notification Center Page</name>
+      <description>Create dedicated page showing all notifications with filtering. Support bulk mark as read and notification preferences.</description>
+    </feature>
+    <feature>
+      <name>Document Moderation Interface</name>
+      <description>Create admin interface for reviewing flagged documents. Support approval, rejection, and user notification workflows.</description>
+    </feature>
+    <feature>
+      <name>Subscription Plans Entity</name>
+      <description>Create SubscriptionPlan and UserSubscription entities. Define plan tiers with feature flags, quotas, and pricing.</description>
+    </feature>
+    <feature>
+      <name>Subscription Management Service</name>
+      <description>Implement service for managing user subscriptions. Handle plan upgrades, downgrades, and feature access control.</description>
+    </feature>
+    <feature>
+      <name>Payment Gateway Integration</name>
+      <description>Integrate Stripe or similar payment provider. Handle subscription payments, webhooks, and invoice generation.</description>
+    </feature>
+    <feature>
+      <name>Billing and Subscription Page</name>
+      <description>Create page for viewing subscription status and payment history. Support plan changes and payment method updates.</description>
+    </feature>
+    <feature>
+      <name>System Settings Admin Panel</name>
+      <description>Create interface for configuring system-wide settings. Include AI model selection, feature flags, and maintenance mode.</description>
+    </feature>
+    <feature>
+      <name>Template Editor Interface</name>
+      <description>Create admin interface for creating and editing templates. Include rich text editor with variable insertion and preview mode.</description>
+    </feature>
+    <feature>
+      <name>Usage Dashboard</name>
+      <description>Create page showing user&apos;s AI usage statistics. Display charts for daily usage, remaining quota, and cost breakdown.</description>
+    </feature>
+    <feature>
+      <name>Admin User Management</name>
+      <description>Create admin interface for managing users. Support viewing, editing, suspending accounts, and resetting passwords.</description>
+    </feature>
+    <feature>
+      <name>Webhook Delivery Queue</name>
+      <description>Create Bull queue processor for delivering webhooks with retry logic. Log delivery attempts and handle failures gracefully.</description>
+    </feature>
+    <feature>
+      <name>Webhook Configuration Entity</name>
+      <description>Create WebhookConfig entity storing endpoint URLs, event subscriptions, authentication headers, and status.</description>
+    </feature>
+    <feature>
+      <name>Webhook System</name>
+      <description>Implement webhook delivery system for external integrations. Support subscribing to events like document.completed and query.answered.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

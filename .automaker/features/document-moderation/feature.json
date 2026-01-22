@@ -3,15 +3,13 @@
   "category": "UI",
   "title": "Document Moderation Interface",
   "description": "Create admin interface for reviewing flagged documents. Support approval, rejection, and user notification workflows.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 3,
   "complexity": "moderate",
-  "dependencies": [
-    "admin-panel-layout"
-  ],
   "createdAt": "2026-01-12T10:31:20.854Z",
-  "updatedAt": "2026-01-12T10:31:20.854Z",
+  "updatedAt": "2026-01-22T01:24:00.989Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

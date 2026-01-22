@@ -76,7 +76,10 @@ describe('AuthService', () => {
     it('should return null for invalid credentials', async () => {
       mockUsersService.validateUserCredentials.mockResolvedValue(null);
 
-      const result = await service.validateUser('test@example.com', 'wrongpassword');
+      const result = await service.validateUser(
+        'test@example.com',
+        'wrongpassword',
+      );
 
       expect(result).toBeNull();
     });

@@ -17,15 +17,18 @@ export interface GetRecentQueriesInput {
  * This use case retrieves the most recent queries for a user.
  */
 @Injectable()
-export class GetRecentQueriesUseCase
-  implements IUseCase<GetRecentQueriesInput, LegalQuerySummaryDto[]>
-{
+export class GetRecentQueriesUseCase implements IUseCase<
+  GetRecentQueriesInput,
+  LegalQuerySummaryDto[]
+> {
   constructor(
     @Inject('ILegalQueryRepository')
     private readonly queryRepository: ILegalQueryRepository,
   ) {}
 
-  async execute(request: GetRecentQueriesInput): Promise<LegalQuerySummaryDto[]> {
+  async execute(
+    request: GetRecentQueriesInput,
+  ): Promise<LegalQuerySummaryDto[]> {
     const limit = request.limit ?? 10;
 
     const queries = await this.queryRepository.findRecentByUserId(

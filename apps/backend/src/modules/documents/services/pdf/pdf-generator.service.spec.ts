@@ -6,7 +6,10 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { PdfGeneratorService } from './pdf-generator.service';
-import { PdfTemplateService, DocumentTemplateContext } from './pdf-template.service';
+import {
+  PdfTemplateService,
+  DocumentTemplateContext,
+} from './pdf-template.service';
 import { DocumentType } from '../../entities/legal-document.entity';
 import { PdfPageFormat } from '../../queues/pdf-export.job';
 
@@ -35,7 +38,9 @@ describe('PdfGeneratorService', () => {
         '123e4567-e89b-12d3-a456-426614174000',
       );
 
-      expect(filename).toMatch(/^pozew-o-zapłatę-123e4567-\d{4}-\d{2}-\d{2}\.pdf$/);
+      expect(filename).toMatch(
+        /^pozew-o-zapłatę-123e4567-\d{4}-\d{2}-\d{2}\.pdf$/,
+      );
     });
 
     it('should handle special characters in title', () => {

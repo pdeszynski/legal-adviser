@@ -66,14 +66,11 @@ export class DocumentGenerationProcessor implements OnModuleInit {
 
       // Register event listeners
       this.documentGenerationQueue.on('completed', (job, result) => {
-        this.onCompleted(
-          job as Job<DocumentGenerationJobData>,
-          result as DocumentGenerationJobResult,
-        );
+        this.onCompleted(job, result as DocumentGenerationJobResult);
       });
 
       this.documentGenerationQueue.on('failed', (job, err) => {
-        this.onFailed(job as Job<DocumentGenerationJobData>, err);
+        this.onFailed(job, err);
       });
     } catch (error) {
       // If handler is already set, we can ignore this error for the duplicate instance

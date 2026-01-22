@@ -6,10 +6,9 @@ importance: 0.7
 relatedFiles: []
 usageStats:
   loaded: 4
-  referenced: 2
-  successfulFeatures: 2
+  referenced: 3
+  successfulFeatures: 3
 ---
-
 # testing
 
 #### [Gotcha] Translation file validation requires deep key comparison across nested objects; shallow equality checks miss structural mismatches between locales (2026-01-12)

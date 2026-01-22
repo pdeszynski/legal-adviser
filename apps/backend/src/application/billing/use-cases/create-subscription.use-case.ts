@@ -15,9 +15,10 @@ import type { ISubscriptionRepository } from '../../../domain/billing/repositori
  * 3. Publishes domain events
  */
 @Injectable()
-export class CreateSubscriptionUseCase
-  implements IUseCase<CreateSubscriptionDto, CreateSubscriptionResultDto>
-{
+export class CreateSubscriptionUseCase implements IUseCase<
+  CreateSubscriptionDto,
+  CreateSubscriptionResultDto
+> {
   constructor(
     @Inject('ISubscriptionRepository')
     private readonly subscriptionRepository: ISubscriptionRepository,

@@ -17,9 +17,10 @@ import type { ILegalQueryRepository } from '../../../domain/ai-operations/reposi
  * Note: Actual AI processing is handled by a separate processor/worker
  */
 @Injectable()
-export class SubmitQueryUseCase
-  implements IUseCase<SubmitQueryDto, SubmitQueryResultDto>
-{
+export class SubmitQueryUseCase implements IUseCase<
+  SubmitQueryDto,
+  SubmitQueryResultDto
+> {
   constructor(
     @Inject('ILegalQueryRepository')
     private readonly queryRepository: ILegalQueryRepository,

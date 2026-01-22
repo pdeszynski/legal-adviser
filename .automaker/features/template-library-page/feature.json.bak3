@@ -1,0 +1,17 @@
+{
+  "id": "template-library-page",
+  "category": "UI",
+  "title": "Template Library Page",
+  "description": "Create page displaying available document templates. Support filtering by type, preview, and 'Use Template' action to start document creation.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "template-graphql"
+  ],
+  "createdAt": "2026-01-12T10:31:20.842Z",
+  "updatedAt": "2026-01-12T10:31:20.842Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

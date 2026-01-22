@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769038137304-88996d65",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-21T23:28:57.304Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "error-tracking-integration",
+  "featureName": "Error Tracking Integration",
+  "error": "Feature completed in 331s - auto-verified",
+  "passes": true
+}

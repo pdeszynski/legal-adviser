@@ -1,0 +1,17 @@
+{
+  "id": "ruling-detail-page",
+  "category": "UI",
+  "title": "Ruling Detail Page",
+  "description": "Implement detail view for individual court rulings. Display full text, metadata, related rulings, and export options.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "ruling-search-page"
+  ],
+  "createdAt": "2026-01-12T10:31:20.834Z",
+  "updatedAt": "2026-01-12T10:31:20.834Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

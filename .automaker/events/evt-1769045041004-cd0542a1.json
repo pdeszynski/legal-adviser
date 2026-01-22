@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769045041004-cd0542a1",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T01:24:01.004Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "document-moderation",
+  "featureName": "Document Moderation Interface",
+  "error": "Feature completed in 665s - auto-verified",
+  "passes": true
+}

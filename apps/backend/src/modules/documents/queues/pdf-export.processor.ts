@@ -42,14 +42,11 @@ export class PdfExportProcessor implements OnModuleInit {
       });
 
       this.pdfExportQueue.on('completed', (job, result) => {
-        this.onCompleted(
-          job as Job<PdfExportJobData>,
-          result as PdfExportJobResult,
-        );
+        this.onCompleted(job, result as PdfExportJobResult);
       });
 
       this.pdfExportQueue.on('failed', (job, err) => {
-        this.onFailed(job as Job<PdfExportJobData>, err);
+        this.onFailed(job, err);
       });
     } catch (error) {
       if (

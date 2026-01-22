@@ -1,5 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { IUseCase, NotFoundError, BusinessRuleViolationError } from '../../common';
+import {
+  IUseCase,
+  NotFoundError,
+  BusinessRuleViolationError,
+} from '../../common';
 import { LegalQueryDto } from '../dto';
 import type { ILegalQueryRepository } from '../../../domain/ai-operations/repositories';
 
@@ -16,9 +20,10 @@ export interface RetryQueryInput {
  * This use case orchestrates retrying a failed query by resetting its status.
  */
 @Injectable()
-export class RetryQueryUseCase
-  implements IUseCase<RetryQueryInput, LegalQueryDto>
-{
+export class RetryQueryUseCase implements IUseCase<
+  RetryQueryInput,
+  LegalQueryDto
+> {
   constructor(
     @Inject('ILegalQueryRepository')
     private readonly queryRepository: ILegalQueryRepository,

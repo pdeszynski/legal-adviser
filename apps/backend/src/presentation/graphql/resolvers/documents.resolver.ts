@@ -61,7 +61,10 @@ export class DocumentsResolverV2 {
     @Args('status', { type: () => DocumentStatusEnum, nullable: true })
     status?: DocumentStatusEnum,
   ): Promise<LegalDocumentGraphQL[]> {
-    const results = await this.listDocumentsUseCase.execute({ ownerId, status });
+    const results = await this.listDocumentsUseCase.execute({
+      ownerId,
+      status,
+    });
     return results.map((doc) => ({
       id: doc.id,
       title: doc.title,
@@ -82,7 +85,9 @@ export class DocumentsResolverV2 {
   async createDocument(
     @Args('input') input: CreateLegalDocumentInputV2,
   ): Promise<LegalDocumentGraphQL> {
-    const metadata = input.metadataJson ? JSON.parse(input.metadataJson) : undefined;
+    const metadata = input.metadataJson
+      ? JSON.parse(input.metadataJson)
+      : undefined;
     const result = await this.createDocumentUseCase.execute({
       title: input.title,
       content: input.content,

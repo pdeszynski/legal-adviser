@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769038228033-5b02b1c7",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-21T23:30:28.033Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1768302423822-ymxeiknkh",
+  "featureName": "Shared Kernel Package",
+  "error": "Feature completed in 299s - auto-verified",
+  "passes": true
+}

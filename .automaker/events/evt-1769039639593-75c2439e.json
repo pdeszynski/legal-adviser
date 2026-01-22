@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769039639593-75c2439e",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-21T23:53:59.593Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "locale-switcher-component",
+  "featureName": "Locale Switcher Component",
+  "error": "Feature completed in 903s - auto-verified",
+  "passes": true
+}

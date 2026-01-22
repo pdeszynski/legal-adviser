@@ -1,0 +1,30 @@
+{
+  "id": "user-preferences-entity",
+  "category": "Database",
+  "title": "User Preferences Entity",
+  "description": "Create UserPreferences entity for storing user settings. Include notification preferences, default locale, theme preference, and AI model selection.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "architecture": {
+    "boundedContext": "Users",
+    "aggregateRoot": "User",
+    "module": "apps/backend/src/modules/users",
+    "layer": "Domain",
+    "patterns": [
+      "DDD Entity",
+      "One-to-One Relation"
+    ],
+    "emits": [
+      "USER.PREFERENCES_UPDATED"
+    ],
+    "listensTo": [],
+    "notes": "Part of User aggregate. One-to-one relation with User entity. Supports i18n locale per constitution."
+  },
+  "createdAt": "2026-01-12T10:31:20.838Z",
+  "updatedAt": "2026-01-12T10:31:20.838Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

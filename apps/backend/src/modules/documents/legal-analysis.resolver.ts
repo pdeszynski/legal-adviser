@@ -1,7 +1,10 @@
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { Logger } from '@nestjs/common';
 import { AiClientService } from '../../shared/ai-client/ai-client.service';
-import { LegalAnalysis, AnalysisStatus } from './entities/legal-analysis.entity';
+import {
+  LegalAnalysis,
+  AnalysisStatus,
+} from './entities/legal-analysis.entity';
 import { ClassifyCaseInput } from './dto/classify-case.dto';
 import { StrictThrottle } from '../../shared/throttler';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -53,7 +56,8 @@ export class LegalAnalysisResolver {
   @StrictThrottle()
   @Mutation(() => LegalAnalysis, {
     name: 'classifyCase',
-    description: 'Analyze a case description using AI and identify applicable legal grounds',
+    description:
+      'Analyze a case description using AI and identify applicable legal grounds',
   })
   async classifyCase(
     @Args('input') input: ClassifyCaseInput,
@@ -79,27 +83,25 @@ export class LegalAnalysisResolver {
 
     try {
       // Step 3: Call AI Engine for classification
-      const classificationResult =
-        await this.aiClientService.classifyCase({
-          case_description: input.caseDescription,
-          session_id: input.sessionId,
-          context: input.context ? { notes: input.context } : undefined,
-        });
+      const classificationResult = await this.aiClientService.classifyCase({
+        case_description: input.caseDescription,
+        session_id: input.sessionId,
+        context: input.context ? { notes: input.context } : undefined,
+      });
 
       this.logger.log(
         `AI classification completed for analysis ${savedAnalysis.id}`,
       );
 
       // Step 4: Update entity with classification results
-      savedAnalysis.identifiedGrounds = classificationResult.identified_grounds.map(
-        (ground) => ({
+      savedAnalysis.identifiedGrounds =
+        classificationResult.identified_grounds.map((ground) => ({
           name: ground.name,
           description: ground.description,
           confidenceScore: ground.confidence_score,
           legalBasis: ground.legal_basis,
           notes: ground.notes,
-        }),
-      );
+        }));
 
       savedAnalysis.overallConfidenceScore =
         classificationResult.overall_confidence;

@@ -1,0 +1,17 @@
+{
+  "id": "document-collaboration",
+  "category": "Core",
+  "title": "Document Collaboration System",
+  "description": "Implement real-time collaborative editing using WebSockets or CRDTs. Support multiple users editing documents simultaneously with conflict resolution.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "complex",
+  "dependencies": [
+    "document-edit-form"
+  ],
+  "createdAt": "2026-01-12T10:31:20.843Z",
+  "updatedAt": "2026-01-12T10:31:20.843Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

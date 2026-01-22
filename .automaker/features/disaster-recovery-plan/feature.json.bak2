@@ -1,0 +1,15 @@
+{
+  "id": "disaster-recovery-plan",
+  "category": "Core",
+  "title": "Disaster Recovery Procedures",
+  "description": "Document and test disaster recovery procedures. Include database restoration, service failover, and data integrity verification.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "moderate",
+  "createdAt": "2026-01-12T10:31:20.856Z",
+  "updatedAt": "2026-01-12T10:31:20.856Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

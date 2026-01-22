@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { AiClientService } from './ai-client.service';
+import { UsageTrackingModule } from '../../modules/usage-tracking/usage-tracking.module';
 
 /**
  * AI Client Module
@@ -11,6 +12,8 @@ import { AiClientService } from './ai-client.service';
  * - Document generation
  * - Legal Q&A
  * - Case law search
+ *
+ * Integrates with UsageTrackingModule for automatic usage tracking.
  */
 @Module({
   imports: [
@@ -19,6 +22,7 @@ import { AiClientService } from './ai-client.service';
       maxRedirects: 5,
     }),
     ConfigModule,
+    UsageTrackingModule,
   ],
   providers: [AiClientService],
   exports: [AiClientService],

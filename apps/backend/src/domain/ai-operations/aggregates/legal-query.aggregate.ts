@@ -136,7 +136,10 @@ export class LegalQueryAggregate extends AggregateRoot<string> {
           )
         : undefined,
       tokenUsage: tokenUsage
-        ? TokenUsage.create(tokenUsage.promptTokens, tokenUsage.completionTokens)
+        ? TokenUsage.create(
+            tokenUsage.promptTokens,
+            tokenUsage.completionTokens,
+          )
         : undefined,
       errorMessage,
       metadata,

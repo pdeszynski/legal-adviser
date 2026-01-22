@@ -1,8 +1,15 @@
 import { Resolver, Mutation, Query, Args, ID, Context } from '@nestjs/graphql';
 import { UseGuards, UnauthorizedException } from '@nestjs/common';
-import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
+import {
+  GqlAuthGuard,
+  DocumentPermissionGuard,
+  DocumentPermission,
+} from '../auth/guards';
 import { DocumentSharingService } from './services/document-sharing.service';
-import { DocumentShare, SharePermission } from './entities/document-share.entity';
+import {
+  DocumentShare,
+  SharePermission,
+} from './entities/document-share.entity';
 import { ShareDocumentInput } from './dto/share-document.input';
 import { UpdateSharePermissionInput } from './dto/update-share-permission.input';
 
@@ -13,6 +20,7 @@ import { UpdateSharePermissionInput } from './dto/update-share-permission.input'
  * Sharing operations are tracked via domain events for audit logging.
  */
 @Resolver(() => DocumentShare)
+@UseGuards(GqlAuthGuard)
 export class DocumentSharingResolver {
   constructor(private readonly sharingService: DocumentSharingService) {}
 
@@ -107,7 +115,9 @@ export class DocumentSharingResolver {
       userId,
     );
     if (!canAccess) {
-      throw new UnauthorizedException('You do not have access to this document');
+      throw new UnauthorizedException(
+        'You do not have access to this document',
+      );
     }
 
     return this.sharingService.getDocumentShares(documentId);

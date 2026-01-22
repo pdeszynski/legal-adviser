@@ -106,7 +106,9 @@ export class SubscriptionPlan extends ValueObject<SubscriptionPlanProps> {
     );
   }
 
-  static basic(billingPeriod: BillingPeriodEnum = BillingPeriodEnum.MONTHLY): SubscriptionPlan {
+  static basic(
+    billingPeriod: BillingPeriodEnum = BillingPeriodEnum.MONTHLY,
+  ): SubscriptionPlan {
     const price =
       billingPeriod === BillingPeriodEnum.MONTHLY
         ? Money.pln(49)

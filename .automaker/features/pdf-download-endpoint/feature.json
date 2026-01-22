@@ -3,15 +3,13 @@
   "category": "API",
   "title": "PDF Download GraphQL Field",
   "description": "Add pdfUrl field to LegalDocument GraphQL type. Implement resolver that triggers PDF generation if needed and returns signed download URL.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "simple",
-  "dependencies": [
-    "pdf-export-queue"
-  ],
   "createdAt": "2026-01-12T10:31:20.829Z",
-  "updatedAt": "2026-01-12T10:31:20.829Z",
+  "updatedAt": "2026-01-22T00:05:27.779Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

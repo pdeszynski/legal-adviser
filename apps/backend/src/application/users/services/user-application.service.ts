@@ -7,7 +7,10 @@ import {
   PaginatedResult,
   paginatedResult,
 } from '../../common';
-import { ApplicationError, NotFoundError } from '../../common/application-error';
+import {
+  ApplicationError,
+  NotFoundError,
+} from '../../common/application-error';
 import {
   RegisterUserDto,
   RegisterUserResultDto,
@@ -21,7 +24,10 @@ import {
 import { RegisterUserUseCase } from '../use-cases/register-user.use-case';
 import { GetUserUseCase, GetUserInput } from '../use-cases/get-user.use-case';
 import { GetUserByEmailUseCase } from '../use-cases/get-user-by-email.use-case';
-import { ListUsersUseCase, ListUsersInput } from '../use-cases/list-users.use-case';
+import {
+  ListUsersUseCase,
+  ListUsersInput,
+} from '../use-cases/list-users.use-case';
 import { ActivateUserUseCase } from '../use-cases/activate-user.use-case';
 import { SuspendUserUseCase } from '../use-cases/suspend-user.use-case';
 import { ChangeUserRoleUseCase } from '../use-cases/change-user-role.use-case';
@@ -117,7 +123,9 @@ export class UserApplicationService {
    * @param input - Filter and pagination options
    * @returns Service result with paginated user list
    */
-  async listUsers(input: ListUsersInput): Promise<ServiceResult<PaginatedUsersDto>> {
+  async listUsers(
+    input: ListUsersInput,
+  ): Promise<ServiceResult<PaginatedUsersDto>> {
     try {
       this.logger.log(
         `Listing users - page: ${input.page}, role: ${input.role}, status: ${input.status}`,
@@ -205,7 +213,9 @@ export class UserApplicationService {
    * @param dto - Role change data
    * @returns Service result with updated user data
    */
-  async changeUserRole(dto: ChangeUserRoleDto): Promise<ServiceResult<UserDto>> {
+  async changeUserRole(
+    dto: ChangeUserRoleDto,
+  ): Promise<ServiceResult<UserDto>> {
     try {
       this.logger.log(
         `Changing role for user: ${dto.userId} to ${dto.newRole} by ${dto.changedBy}`,
@@ -224,7 +234,9 @@ export class UserApplicationService {
    * @param dto - Profile update data
    * @returns Service result with updated user data
    */
-  async updateUserProfile(dto: UpdateUserProfileDto): Promise<ServiceResult<UserDto>> {
+  async updateUserProfile(
+    dto: UpdateUserProfileDto,
+  ): Promise<ServiceResult<UserDto>> {
     try {
       this.logger.log(`Updating profile for user: ${dto.userId}`);
       const result = await this.updateUserProfileUseCase.execute(dto);
@@ -304,11 +316,14 @@ export class UserApplicationService {
     }
 
     if (error instanceof ApplicationError) {
-      this.logger.warn(`Application error during ${operation}: ${error.message}`);
+      this.logger.warn(
+        `Application error during ${operation}: ${error.message}`,
+      );
       return failureResult(error.code, error.message, error.details);
     }
 
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     this.logger.error(`Unexpected error during ${operation}: ${errorMessage}`);
     return failureResult('INTERNAL_ERROR', `Failed to ${operation}`, {
       originalError: errorMessage,

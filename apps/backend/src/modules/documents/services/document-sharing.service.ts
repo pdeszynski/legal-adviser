@@ -7,7 +7,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { DocumentShare, SharePermission } from '../entities/document-share.entity';
+import {
+  DocumentShare,
+  SharePermission,
+} from '../entities/document-share.entity';
 import { LegalDocument } from '../entities/legal-document.entity';
 import { UserSession } from '../../users/entities/user-session.entity';
 import { ShareDocumentInput } from '../dto/share-document.input';

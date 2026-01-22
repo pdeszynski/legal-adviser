@@ -1,13 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Logger } from '@nestjs/common';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import * as Sentry from '@sentry/node';
 import { AppModule } from './app.module';
 import { setupBullBoard } from './shared/queues/bull-board.setup';
+import { AppLogger } from './shared/logger';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const logger = new Logger('Bootstrap');
+
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+  });
 
   // Enable CORS for frontend access (Next.js dev server runs on different port)
   app.enableCors({
@@ -77,12 +83,22 @@ async function bootstrap() {
   try {
     setupBullBoard(app);
   } catch (error) {
-    console.warn(
+    logger.warn(
       'Bull Board setup skipped:',
       error instanceof Error ? error.message : 'Unknown error',
     );
   }
 
-  await app.listen(process.env.PORT ?? 3001);
+  // Setup Sentry error handler (must be after all other middleware)
+  if (process.env.SENTRY_DSN) {
+    // Sentry error handler is automatically setup by the SDK in v10
+    // No need to manually add middleware
+  }
+
+  const port = process.env.PORT ?? 3001;
+  await app.listen(port);
+
+  logger.log(`Application is running on: http://localhost:${port}`);
+  logger.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 }
 void bootstrap();

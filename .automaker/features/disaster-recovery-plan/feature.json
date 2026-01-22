@@ -3,15 +3,13 @@
   "category": "Core",
   "title": "Disaster Recovery Procedures",
   "description": "Document and test disaster recovery procedures. Include database restoration, service failover, and data integrity verification.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 3,
   "complexity": "moderate",
-  "dependencies": [
-    "backup-strategy"
-  ],
   "createdAt": "2026-01-12T10:31:20.856Z",
-  "updatedAt": "2026-01-12T10:31:20.856Z",
+  "updatedAt": "2026-01-22T01:13:22.899Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

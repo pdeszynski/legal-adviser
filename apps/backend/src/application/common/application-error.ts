@@ -48,10 +48,14 @@ export class BusinessRuleViolationError extends ApplicationError {
  */
 export class ValidationError extends ApplicationError {
   constructor(field: string, reason: string) {
-    super(`Validation failed for field '${field}': ${reason}`, 'VALIDATION_ERROR', {
-      field,
-      reason,
-    });
+    super(
+      `Validation failed for field '${field}': ${reason}`,
+      'VALIDATION_ERROR',
+      {
+        field,
+        reason,
+      },
+    );
   }
 }
 

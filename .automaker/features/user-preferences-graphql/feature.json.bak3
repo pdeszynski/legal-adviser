@@ -1,0 +1,31 @@
+{
+  "id": "user-preferences-graphql",
+  "category": "API",
+  "title": "User Preferences GraphQL Resolvers",
+  "description": "Add nestjs-query decorators to UserPreferences entity. Implement mutations for updating preferences.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "user-preferences-entity"
+  ],
+  "architecture": {
+    "boundedContext": "Users",
+    "aggregateRoot": "User",
+    "module": "apps/backend/src/modules/users",
+    "layer": "Presentation",
+    "patterns": [
+      "GraphQL Resolver",
+      "nestjs-query CRUD",
+      "Code-First Schema"
+    ],
+    "emits": [],
+    "listensTo": [],
+    "notes": "Presentation layer for User preferences. Auto-generated CRUD via nestjs-query. Supports i18n locale settings."
+  },
+  "createdAt": "2026-01-12T10:31:20.839Z",
+  "updatedAt": "2026-01-12T10:31:20.839Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

@@ -577,10 +577,7 @@ export class PdfTemplateService {
   /**
    * Get document type label in the specified language
    */
-  private getDocumentTypeLabel(
-    type: DocumentType,
-    language: string,
-  ): string {
+  private getDocumentTypeLabel(type: DocumentType, language: string): string {
     const labels: Record<DocumentType, { pl: string; en: string }> = {
       [DocumentType.LAWSUIT]: { pl: 'Pozew', en: 'Lawsuit' },
       [DocumentType.COMPLAINT]: { pl: 'Skarga', en: 'Complaint' },
@@ -588,7 +585,10 @@ export class PdfTemplateService {
       [DocumentType.OTHER]: { pl: 'Dokument', en: 'Document' },
     };
 
-    return labels[type]?.[language as 'pl' | 'en'] || labels[DocumentType.OTHER][language as 'pl' | 'en'];
+    return (
+      labels[type]?.[language as 'pl' | 'en'] ||
+      labels[DocumentType.OTHER][language as 'pl' | 'en']
+    );
   }
 
   /**
@@ -615,7 +615,10 @@ export class PdfTemplateService {
       day: 'numeric',
     };
 
-    return date.toLocaleDateString(language === 'pl' ? 'pl-PL' : 'en-US', options);
+    return date.toLocaleDateString(
+      language === 'pl' ? 'pl-PL' : 'en-US',
+      options,
+    );
   }
 
   /**

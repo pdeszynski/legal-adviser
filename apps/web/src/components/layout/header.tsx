@@ -1,11 +1,14 @@
 'use client';
 
 import { useGetIdentity, useLogout, useTranslation } from '@refinedev/core';
-import { SelectLanguage } from '@components/select-language';
+import { LocaleSwitcher } from '@components/locale-switcher';
 import { Button } from '@legal/ui';
 import { NotificationBell } from '@components/dashboard';
+import { useNotifications, type InAppNotification } from '@/hooks/useNotifications';
+import { OmnisearchBar } from '@components/search';
 
 interface UserIdentity {
+  id?: string;
   name?: string;
   firstName?: string;
   lastName?: string;
@@ -16,24 +19,38 @@ export const Header = () => {
   const { translate } = useTranslation();
   const { mutate: logout } = useLogout();
   const { data: user } = useGetIdentity<UserIdentity>();
+  const {
+    notifications,
+    unreadCount,
+    isLoading,
+    markAsRead,
+    markAllAsRead,
+  } = useNotifications();
 
   const displayName =
     user?.name ||
     (user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.email);
 
+  const handleNotificationClick = (notification: InAppNotification) => {
+    // Mark the notification as read
+    markAsRead(notification.id);
+  };
+
   return (
     <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-6 shadow-sm">
       <div className="flex flex-1 items-center gap-4">
-        {/* Placeholder for future specific header content (e.g. Breadcrumbs) */}
+        <OmnisearchBar />
       </div>
 
       <div className="flex items-center gap-4">
-        <SelectLanguage />
+        <LocaleSwitcher />
 
         <NotificationBell
-          notifications={[]}
-          onNotificationClick={() => {}}
-          onMarkAllRead={() => {}}
+          notifications={notifications}
+          unreadCount={unreadCount}
+          isLoading={isLoading}
+          onNotificationClick={handleNotificationClick}
+          onMarkAllRead={markAllAsRead}
         />
 
         {displayName && (

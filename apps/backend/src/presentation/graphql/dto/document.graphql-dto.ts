@@ -1,5 +1,14 @@
-import { Field, ObjectType, ID, InputType, registerEnumType } from '@nestjs/graphql';
-import { DocumentTypeEnum, DocumentStatusEnum } from '../../../domain/legal-documents/value-objects';
+import {
+  Field,
+  ObjectType,
+  ID,
+  InputType,
+  registerEnumType,
+} from '@nestjs/graphql';
+import {
+  DocumentTypeEnum,
+  DocumentStatusEnum,
+} from '../../../domain/legal-documents/value-objects';
 
 // Register enums for GraphQL
 registerEnumType(DocumentTypeEnum, {
@@ -35,7 +44,10 @@ export class LegalDocumentGraphQL {
   @Field(() => ID)
   ownerId!: string;
 
-  @Field(() => String, { nullable: true, description: 'JSON metadata as string' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'JSON metadata as string',
+  })
   metadataJson?: string;
 
   @Field()
@@ -65,7 +77,10 @@ export class CreateLegalDocumentInputV2 {
   @Field(() => ID)
   ownerId!: string;
 
-  @Field(() => String, { nullable: true, description: 'JSON metadata as string' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'JSON metadata as string',
+  })
   metadataJson?: string;
 }
 

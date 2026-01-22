@@ -105,7 +105,9 @@ export class DocumentVersion {
    * Check if the version has content
    */
   hasContent(): boolean {
-    return this.contentSnapshot !== null && this.contentSnapshot.trim().length > 0;
+    return (
+      this.contentSnapshot !== null && this.contentSnapshot.trim().length > 0
+    );
   }
 
   /**

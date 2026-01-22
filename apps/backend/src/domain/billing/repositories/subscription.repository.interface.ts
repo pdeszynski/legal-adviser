@@ -5,8 +5,10 @@ import { SubscriptionStatusEnum, PlanTypeEnum } from '../value-objects';
 /**
  * Repository interface for Subscription aggregate
  */
-export interface ISubscriptionRepository
-  extends IRepository<SubscriptionAggregate, string> {
+export interface ISubscriptionRepository extends IRepository<
+  SubscriptionAggregate,
+  string
+> {
   findByUserId(userId: string): Promise<SubscriptionAggregate | null>;
   findByStatus(
     status: SubscriptionStatusEnum,

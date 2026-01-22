@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769045894681-bd78ad79",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T01:38:14.681Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "billing-page",
+  "featureName": "Billing and Subscription Page",
+  "error": "Feature completed in 459s - auto-verified",
+  "passes": true
+}

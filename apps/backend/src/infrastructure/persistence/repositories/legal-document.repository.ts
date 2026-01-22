@@ -50,7 +50,9 @@ export class LegalDocumentRepository implements ILegalDocumentRepository {
     return LegalDocumentMapper.toDomainList(entities);
   }
 
-  async findByStatus(status: DocumentStatusEnum): Promise<LegalDocumentAggregate[]> {
+  async findByStatus(
+    status: DocumentStatusEnum,
+  ): Promise<LegalDocumentAggregate[]> {
     const entities = await this.repository.find({
       where: { status },
       order: { createdAt: 'DESC' },
@@ -79,10 +81,7 @@ export class LegalDocumentRepository implements ILegalDocumentRepository {
 
   async search(query: string): Promise<LegalDocumentAggregate[]> {
     const entities = await this.repository.find({
-      where: [
-        { title: Like(`%${query}%`) },
-        { content: Like(`%${query}%`) },
-      ],
+      where: [{ title: Like(`%${query}%`) }, { content: Like(`%${query}%`) }],
       order: { createdAt: 'DESC' },
       take: 50,
     });

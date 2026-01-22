@@ -82,7 +82,9 @@ export class DocumentsControllerV2 {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<DocumentResponse> {
     try {
-      const document = await this.getDocumentUseCase.execute({ documentId: id });
+      const document = await this.getDocumentUseCase.execute({
+        documentId: id,
+      });
       return this.mapToResponse(document);
     } catch (error) {
       this.handleError(error);
@@ -94,7 +96,10 @@ export class DocumentsControllerV2 {
     @Query('ownerId', ParseUUIDPipe) ownerId: string,
     @Query('status') status?: DocumentStatusEnum,
   ): Promise<DocumentSummaryResponse[]> {
-    const documents = await this.listDocumentsUseCase.execute({ ownerId, status });
+    const documents = await this.listDocumentsUseCase.execute({
+      ownerId,
+      status,
+    });
     return documents.map((doc) => ({
       id: doc.id,
       title: doc.title,

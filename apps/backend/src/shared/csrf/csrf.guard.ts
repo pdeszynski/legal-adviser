@@ -94,7 +94,10 @@ export class CsrfGuard implements CanActivate {
    * Handles both parsed cookies and raw cookie header
    */
   private getCookieValue(
-    request: { cookies?: Record<string, string>; headers?: Record<string, string> },
+    request: {
+      cookies?: Record<string, string>;
+      headers?: Record<string, string>;
+    },
     name: string,
   ): string | undefined {
     // Try parsed cookies first (if cookie-parser middleware is used)

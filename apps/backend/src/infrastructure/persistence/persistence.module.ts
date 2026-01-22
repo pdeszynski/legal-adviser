@@ -20,9 +20,6 @@ import { LegalDocumentRepository } from './repositories';
       useClass: LegalDocumentRepository,
     },
   ],
-  exports: [
-    'ILegalDocumentRepository',
-    LegalDocumentRepository,
-  ],
+  exports: ['ILegalDocumentRepository', LegalDocumentRepository],
 })
 export class PersistenceModule {}

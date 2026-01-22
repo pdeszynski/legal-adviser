@@ -1,5 +1,17 @@
-import { Field, InputType, ObjectType, ID, registerEnumType } from '@nestjs/graphql';
-import { IsUUID, IsOptional, IsEnum, IsString, IsBoolean } from 'class-validator';
+import {
+  Field,
+  InputType,
+  ObjectType,
+  ID,
+  registerEnumType,
+} from '@nestjs/graphql';
+import {
+  IsUUID,
+  IsOptional,
+  IsEnum,
+  IsString,
+  IsBoolean,
+} from 'class-validator';
 import { PdfPageFormat } from '../queues/pdf-export.job';
 
 // Register enum with GraphQL
@@ -130,7 +142,9 @@ export class PdfExportResult {
   @Field(() => Number, { description: 'Number of pages in the PDF' })
   pageCount: number;
 
-  @Field(() => Number, { description: 'Time taken to generate the PDF in milliseconds' })
+  @Field(() => Number, {
+    description: 'Time taken to generate the PDF in milliseconds',
+  })
   generationTimeMs: number;
 }
 
@@ -153,7 +167,14 @@ export class PdfExportStatusResponse {
   jobId: string;
 
   @Field(() => String, { description: 'Current job status' })
-  status: 'waiting' | 'active' | 'completed' | 'failed' | 'delayed' | 'paused' | 'unknown';
+  status:
+    | 'waiting'
+    | 'active'
+    | 'completed'
+    | 'failed'
+    | 'delayed'
+    | 'paused'
+    | 'unknown';
 
   @Field(() => Number, {
     nullable: true,

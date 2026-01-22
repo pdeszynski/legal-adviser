@@ -10,9 +10,9 @@ import type { ILegalQueryRepository } from '../../../domain/ai-operations/reposi
  * Used by the query processor to find work.
  */
 @Injectable()
-export class GetPendingQueriesUseCase
-  implements IUseCaseNoInput<LegalQuerySummaryDto[]>
-{
+export class GetPendingQueriesUseCase implements IUseCaseNoInput<
+  LegalQuerySummaryDto[]
+> {
   constructor(
     @Inject('ILegalQueryRepository')
     private readonly queryRepository: ILegalQueryRepository,

@@ -1,0 +1,36 @@
+{
+  "id": "usage-entity",
+  "category": "Database",
+  "title": "Usage Records Entity",
+  "description": "Create UsageRecord entity storing per-request AI usage. Include user ID, operation type, tokens used, cost, and timestamp.",
+  "status": "in_progress",
+  "priority": 2,
+  "complexity": "simple",
+  "architecture": {
+    "boundedContext": "Billing",
+    "aggregateRoot": "Usage",
+    "module": "apps/backend/src/modules/billing",
+    "layer": "Domain",
+    "patterns": [
+      "DDD Entity",
+      "Event Listener",
+      "Append-only Log"
+    ],
+    "emits": [
+      "USAGE.RECORDED",
+      "USAGE.QUOTA_EXCEEDED"
+    ],
+    "listensTo": [
+      "DOCUMENT.GENERATION_COMPLETED",
+      "QUERY.ANSWERED",
+      "ANALYSIS.COMPLETED"
+    ],
+    "notes": "Part of Billing bounded context. Listens to AI completion events to record usage. Append-only for audit trail."
+  },
+  "createdAt": "2026-01-12T10:31:20.850Z",
+  "updatedAt": "2026-01-22T00:25:49.094Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

@@ -123,7 +123,87 @@
     "clone": "Klon"
   },
   "dashboard": {
-    "title": "Dashboard"
+    "title": "Dashboard",
+    "subtitle": "Übersicht über Ihre rechtlichen Dokumente und Aktivitäten",
+    "stats": {
+      "totalDocuments": "Gesamtdokumente",
+      "completed": "Abgeschlossen",
+      "drafts": "Entwürfe",
+      "generating": "Wird generiert"
+    },
+    "recentDocuments": {
+      "title": "Aktuelle Dokumente",
+      "noDocuments": "Noch keine Dokumente. Erstellen Sie Ihr erstes Dokument, um loszulegen!",
+      "viewAll": "Alle Dokumente anzeigen"
+    },
+    "quickActions": {
+      "title": "Schnellaktionen",
+      "createDocument": "Dokument erstellen",
+      "viewDocuments": "Alle Dokumente anzeigen",
+      "auditLogs": "Audit-Logs anzeigen"
+    },
+    "help": {
+      "title": "Benötigen Sie Hilfe?",
+      "description": "Erste Schritte mit unserer Plattform oder erfahren Sie mehr über erweiterte Funktionen.",
+      "learnMore": "Mehr erfahren"
+    },
+    "activity": {
+      "title": "Aktuelle Aktivität",
+      "noActivity": "Keine aktuellen Aktivitäten",
+      "viewAll": "Alle Aktivitäten anzeigen"
+    },
+    "notifications": {
+      "title": "Benachrichtigungen",
+      "noNotifications": "Keine Benachrichtigungen",
+      "markAllRead": "Alle als gelesen markieren"
+    }
+  },
+  "rulingSearch": {
+    "title": "Rechtssuche",
+    "subtitle": "Durchsuchen Sie Tausende von Rechtsentscheidungen aus mehreren Quellen mit erweiterten Filtern.",
+    "fields": {
+      "query": "Suchanfrage",
+      "courtType": "Gerichtstyp",
+      "dateFrom": "Datum von",
+      "dateTo": "Datum bis",
+      "sources": "Datenquellen"
+    },
+    "placeholders": {
+      "query": "Schlüsselwörter, Aktenzeichen oder Rechtsbegriffe eingeben..."
+    },
+    "buttons": {
+      "search": "Suchen",
+      "searching": "Suchen..."
+    },
+    "errors": {
+      "title": "Fehler",
+      "queryRequired": "Bitte geben Sie eine Suchanfrage ein"
+    },
+    "results": {
+      "summary": "{count} von {total} Ergebnissen anzeigen",
+      "noResults": "Keine Ergebnisse gefunden",
+      "tryDifferent": "Versuchen Sie, Ihre Suchbegriffe oder Filter anzupassen",
+      "relevance": "Relevanz"
+    },
+    "courtTypes": {
+      "ADMINISTRATIVE_COURT": "Verwaltungsgericht",
+      "APPELLATE_COURT": "Berufungsgericht",
+      "CONSTITUTIONAL_TRIBUNAL": "Verfassungsgericht",
+      "DISTRICT_COURT": "Amtsgericht",
+      "OTHER": "Sonstiges",
+      "REGIONAL_COURT": "Landgericht",
+      "SUPREME_COURT": "Oberstes Gericht"
+    }
+  },
+  "omnisearch": {
+    "placeholder": "Dokumente, Urteile, Vorlagen suchen...",
+    "seeAll": "Alle Ergebnisse anzeigen",
+    "noResults": "Keine Ergebnisse gefunden",
+    "types": {
+      "document": "Dokument",
+      "ruling": "Urteil",
+      "template": "Vorlage"
+    }
   },
   "blog_posts": {
     "blog_posts": "Blogbeiträge",
@@ -207,6 +287,49 @@
       "list": "Dokumentenliste",
       "show": "Dokumentansicht"
     },
+  "templates": {
+    "templates": "Dokumentvorlagen",
+    "description": "Wählen Sie aus unserer Sammlung professioneller Rechtsdokumentvorlagen, um schnell loszulegen.",
+    "fields": {
+      "search": "Suche",
+      "category": "Kategorie"
+    },
+    "placeholders": {
+      "search": "Vorlagen durchsuchen..."
+    },
+    "categories": {
+      "LAWSUIT": "Klage",
+      "COMPLAINT": "Beschwerde",
+      "CONTRACT": "Vertrag",
+      "MOTION": "Antrag",
+      "LETTER": "Brief",
+      "OTHER": "Sonstiges"
+    },
+    "titles": {
+      "library": "Dokumentvorlagen",
+      "variables": "Erforderliche Informationen",
+      "contentPreview": "Inhaltsvorschau"
+    },
+    "buttons": {
+      "preview": "Vorschau",
+      "useTemplate": "Vorlage verwenden"
+    },
+    "info": {
+      "used": "{count} Mal verwendet"
+    },
+    "errors": {
+      "loadingFailed": "Fehler beim Laden der Vorlagen"
+    },
+    "noTemplates": "Keine Vorlagen verfügbar",
+    "noFilteredResults": "Keine Vorlagen entsprechen Ihren Filterkriterien",
+    "variableTypes": {
+      "text": "Text",
+      "number": "Nummer",
+      "date": "Datum",
+      "currency": "Währung",
+      "boolean": "Ja/Nein"
+    }
+  },
     "form": {
       "select": {
         "type": {
@@ -214,10 +337,16 @@
         }
       },
       "description": "Füllen Sie die Details aus, um ein Rechtsdokument mit KI zu generieren.",
+      "editDescription": "Dokumentdetails, Metadaten und Inhalte aktualisieren",
       "metadataSection": "Parteiangaben",
+      "contentHelp": "Bearbeiten Sie den Dokumentinhalt direkt. Unterstützt Nur-Text und Markdown.",
+      "contentPlaceholder": "Dokumentinhalt eingeben...",
       "errors": {
         "requiredTitle": "Dokumenttitel ist erforderlich",
-        "requiredSessionId": "Sitzungs-ID ist erforderlich"
+        "requiredSessionId": "Sitzungs-ID ist erforderlich",
+        "titleMinLength": "Titel muss mindestens 3 Zeichen lang sein",
+        "titleMaxLength": "Titel darf 500 Zeichen nicht überschreiten",
+        "invalidCurrency": "Währung muss aus 3 Großbuchstaben bestehen (z.B. PLN, EUR, USD)"
       },
       "placeholders": {
         "title": "z.B. Zahlungsklage",
@@ -230,6 +359,11 @@
       "notFound": "Dokument nicht gefunden",
       "generating": "Dokument wird generiert. Bitte warten...",
       "noContent": "Noch kein Inhalt verfügbar."
+    },
+    "errors": {
+      "notFound": "Dokument nicht gefunden",
+      "cannotEdit": "Dokument kann nicht bearbeitet werden",
+      "onlyDraftEditable": "Nur Dokumente mit dem Status ENTWURF können bearbeitet werden. Dieses Dokument hat derzeit den Status {status}."
     }
   },
   "common": {
@@ -251,6 +385,54 @@
     "maxLength": "Maximale Länge beträgt {max} Zeichen",
     "min": "Mindestwert ist {min}",
     "max": "Höchstwert ist {max}"
+  },
+  "disclaimer": {
+    "title": "Rechtlicher Haftungsausschluss",
+    "subtitle": "Bitte lesen und akzeptieren, bevor Sie KI-gestützte Funktionen nutzen",
+    "scrollToRead": "Bitte scrollen Sie, um den gesamten Haftungsausschluss zu lesen",
+    "checkboxLabel": "Ich habe die oben genannten Geschäftsbedingungen gelesen, verstanden und akzeptiert. Ich bestätige, dass von der KI generierte Inhalte von einem qualifizierten Rechtsprofessionellen überprüft werden sollten.",
+    "acceptButton": "Akzeptieren und fortfahren",
+    "accepting": "Wird akzeptiert...",
+    "sections": {
+      "important": {
+        "title": "Wichtiger Hinweis",
+        "content": "Dieser KI-gestützte juristische Assistent ist darauf ausgelegt, Ihnen beim Verfassen von Dokumenten und bei der Bereitstellung allgemeiner rechtlicher Informationen zu helfen. Er ist jedoch kein Ersatz für professionelle Rechtsberatung durch einen qualifizierten Anwalt."
+      },
+      "noLegalAdvice": {
+        "title": "Keine Rechtsberatung",
+        "content": "Die von diesem Dienst generierten Informationen und Dokumente stellen keine Rechtsberatung dar. Das KI-System bietet allgemeine Anleitungen basierend auf den von Ihnen bereitgestellten Informationen, kann aber nicht alle Nuancen Ihrer spezifischen Situation oder Gerichtsbarkeit berücksichtigen."
+      },
+      "aiLimitations": {
+        "title": "KI-Einschränkungen",
+        "content": "Obwohl unsere KI fortschrittliche Technologie verwendet, können ungenaue, unvollständige oder veraltete Informationen produziert werden. Von der KI generierte Inhalte sollten immer von einem qualifizierten Rechtsprofessionellen überprüft werden, bevor sie in irgendwelchen Gerichtsverfahren oder offiziellen Funktionen verwendet werden."
+      },
+      "userResponsibility": {
+        "title": "Benutzerverantwortung",
+        "content": "Sie sind allein verantwortlich für die Überprüfung und Verifizierung aller Dokumente oder Informationen, die von diesem Dienst generiert werden. Durch die Nutzung dieser Plattform erklären Sie sich damit einverstanden, einen lizenzierten Anwalt für Fragen zu konsultieren, die Rechtsberatung erfordern."
+      },
+      "dataUsage": {
+        "title": "Datennutzung",
+        "content": "Informationen, die Sie bereitstellen, können von KI-Systemen verarbeitet werden, um Antworten zu generieren. Bitte geben Sie keine sensiblen persönlichen Informationen weiter, es sei denn, es ist unbedingt erforderlich. Wir implementieren Sicherheitsmaßnahmen zum Schutz Ihrer Daten, aber kein System ist völlig sicher."
+      }
+    },
+    "errors": {
+      "mustAccept": "Sie müssen den Haftungsausschluss akzeptieren, um fortzufahren",
+      "failed": "Fehler beim Akzeptieren des Haftungsausschlusses. Bitte versuchen Sie es erneut."
+    }
+  },
+  "analyzeCase": {
+    "title": "Fallanalyse",
+    "subtitle": "Beschreiben Sie Ihre rechtliche Situation und lassen Sie KI relevante rechtliche Grundlagen und Artikel identifizieren",
+    "descriptionLabel": "Fallbeschreibung",
+    "descriptionPlaceholder": "Beschreiben Sie Ihr rechtliches Problem im Detail. Zum Beispiel: 'Mein Arbeitgeber hat meinen Gehalt seit zwei Monaten nicht gezahlt und ich möchte wissen, welche rechtlichen Schritte ich unternehmen kann...'",
+    "descriptionHint": "Geben Sie so viele Details wie möglich für bessere Analyseergebnisse an",
+    "analyzeButton": "Fall analysieren",
+    "analyzing": "Analyse läuft...",
+    "resultsTitle": "Identifizierte rechtliche Grundlagen",
+    "resultsCount": "{count} rechtliche Grundlage(n) gefunden",
+    "noResults": "Keine spezifischen rechtlichen Grundlagen identifiziert. Bitte geben Sie mehr Details an oder konsultieren Sie einen Rechtsprofessionellen.",
+    "disclaimerTitle": "Rechtlicher Haftungsausschluss",
+    "disclaimerText": "Diese Analyse wird von KI generiert und dient nur zu Informationszwecken. Sie stellt keine Rechtsberatung dar. Bitte konsultieren Sie einen qualifizierten Rechtsprofessionellen für Beratung zu Ihrer spezifischen Situation."
   },
   "landing": {
     "hero": {
@@ -325,7 +507,150 @@
       "disclaimer": "Keine Kreditkarte für die Standardtestversion erforderlich."
     },
     "footer": {
+      "brand": {
+        "title": "Legal AI",
+        "description": "Befähigt Rechtsprofessionelle mit KI-Tools der nächsten Generation. Sicher, genau und effizient."
+      },
+      "product": {
+        "title": "Produkt",
+        "features": "Funktionen",
+        "pricing": "Preise",
+        "security": "Sicherheit"
+      },
+      "company": {
+        "title": "Unternehmen",
+        "about": "Über uns",
+        "careers": "Karriere",
+        "contact": "Kontakt"
+      },
+      "legal": {
+        "title": "Rechtliches",
+        "privacy": "Datenschutzrichtlinie",
+        "terms": "Nutzungsbedingungen",
+        "cookie": "Cookie-Richtlinie"
+      },
       "copyright": "© {year} Legal AI. Alle Rechte vorbehalten."
     }
+  },
+  "legalGroundsSuggestions": {
+    "title": "Vorgeschlagene Rechtsgrundlagen",
+    "count": "{count} Vorschlag/Vorschläge",
+    "confidence": "Vertrauen",
+    "disclaimer": "KI-generierte Vorschläge. Mit Jurist besprechen."
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Verwalten Sie Ihre Kontoeinstellungen und -präferenzen",
+    "tabs": {
+      "profile": "Profil",
+      "preferences": "Präferenzen",
+      "security": "Sicherheit",
+      "notifications": "Benachrichtigungen",
+      "apiKeys": "API-Schlüssel"
+    },
+    "apiKeys": {
+      "title": "API-Schlüssel",
+      "description": "Verwalten Sie Ihre API-Schlüssel für programmatischen Zugriff",
+      "createButton": "API-Schlüssel erstellen",
+      "createFirstButton": "Erstellen Sie Ihren ersten API-Schlüssel",
+      "createModalTitle": "Neuen API-Schlüssel erstellen",
+      "creating": "Erstellung...",
+      "cancelButton": "Abbrechen",
+      "revokeButton": "Widerrufen",
+      "deleteButton": "Löschen",
+      "confirmRevoke": "Möchten Sie diesen API-Schlüssel wirklich widerrufen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "confirmDelete": "Möchten Sie diesen API-Schlüssel wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "noKeys": "Sie haben noch keine API-Schlüssel.",
+      "copiedToClipboard": "API-Schlüssel in die Zwischenablage kopiert",
+      "createSuccess": "API-Schlüssel erfolgreich erstellt",
+      "createError": "Fehler beim Erstellen des API-Schlüssels",
+      "revokeSuccess": "API-Schlüssel erfolgreich widerrufen",
+      "revokeError": "Fehler beim Widerrufen des API-Schlüssels",
+      "deleteSuccess": "API-Schlüssel erfolgreich gelöscht",
+      "deleteError": "Fehler beim Löschen des API-Schlüssels",
+      "newKeyTitle": "API-Schlüssel erstellt",
+      "newKeyWarning": "Kopieren Sie diesen Schlüssel jetzt. Sie werden ihn nicht wiedersehen können.",
+      "status": {
+        "active": "Aktiv",
+        "revoked": "Widerrufen",
+        "expired": "Abgelaufen"
+      },
+      "usageCount": "Verwendungsanzahl",
+      "lastUsed": "Zuletzt verwendet",
+      "never": "Nie",
+      "expires": "Läuft ab",
+      "fields": {
+        "name": "Name",
+        "namePlaceholder": "z.B. Produktions-App, Testskript",
+        "description": "Beschreibung",
+        "descriptionPlaceholder": "Optionale Hinweise zum Zweck dieses Schlüssels",
+        "scopes": "Bereiche",
+        "rateLimit": "Rate-Limit (Anfragen pro Minute)",
+        "rateLimitHint": "Auf 0 setzen für unbegrenzt (nicht empfohlen)",
+        "expiresAt": "Ablaufdatum",
+        "expiresAtHint": "Leer lassen für kein Ablaufdatum"
+      },
+      "errors": {
+        "noScopes": "Bitte wählen Sie mindestens einen Bereich aus"
+      },
+      "securityNotice": {
+        "title": "Sicherheitsbewährte Verfahren",
+        "tip1": "Bewahren Sie Ihre API-Schlüssel geheim auf und geben Sie sie niemals in öffentlichen Repositories weiter",
+        "tip2": "Rotieren Sie Ihre API-Schlüssel regelmäßig für bessere Sicherheit",
+        "tip3": "Verwenden Sie die minimal erforderlichen Bereiche für jeden Schlüssel"
+      }
+    }
+  },
+  "notificationCenter": {
+    "title": "Benachrichtigungszentrum",
+    "description": "Alle Benachrichtigungen anzeigen und verwalten",
+    "stats": {
+      "total": "Alle Benachrichtigungen",
+      "unread": "Ungelesen"
+    },
+    "types": {
+      "info": "Info",
+      "success": "Erfolg",
+      "warning": "Warnung",
+      "error": "Fehler",
+      "system": "System"
+    },
+    "filters": {
+      "type": "Typ",
+      "status": "Status"
+    },
+    "status": {
+      "all": "Alle",
+      "read": "Gelesen",
+      "unread": "Ungelesen"
+    },
+    "selectedCount": "{count} ausgewählt",
+    "actions": {
+      "deselect": "Abwählen"
+    },
+    "headers": {
+      "notifications": "Benachrichtigungen"
+    },
+    "errors": {
+      "loadingFailed": "Benachrichtigungen konnten nicht geladen werden"
+    },
+    "noFilteredResults": "Keine Benachrichtigungen passen zu Ihren Filtern",
+    "noNotifications": "Noch keine Benachrichtigungen"
+  },
+  "usage": {
+    "title": "Nutzungs-Dashboard",
+    "subtitle": "Verfolgen Sie Ihre KI-Nutzung und Kosten",
+    "totalRequests": "Gesamtanfragen",
+    "totalTokens": "Gesamt-Token",
+    "totalCost": "Gesamtkosten",
+    "dailyUsage": "Tägliche Nutzung",
+    "tokensByDay": "Token nach Tag",
+    "costByOperation": "Kosten nach Operation",
+    "operationBreakdown": "Operationsaufschlüsselung",
+    "operation": "Operation",
+    "requests": "Anfragen",
+    "tokens": "Token",
+    "cost": "Kosten",
+    "noData": "Keine Nutzungsdaten für diesen Zeitraum verfügbar"
   }
 }

@@ -16,9 +16,10 @@ import type { ILegalDocumentRepository } from '../../../domain/legal-documents/r
  * 4. Publishes domain events
  */
 @Injectable()
-export class CreateDocumentUseCase
-  implements IUseCase<CreateDocumentDto, CreateDocumentResultDto>
-{
+export class CreateDocumentUseCase implements IUseCase<
+  CreateDocumentDto,
+  CreateDocumentResultDto
+> {
   constructor(
     @Inject('ILegalDocumentRepository')
     private readonly documentRepository: ILegalDocumentRepository,

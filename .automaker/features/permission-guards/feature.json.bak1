@@ -3,15 +3,13 @@
   "category": "Security",
   "title": "Document Permission Guards",
   "description": "Implement NestJS guards checking document access permissions on all resolvers. Enforce read/write access control based on user roles.",
-  "status": "backlog",
+  "status": "in_progress",
   "priority": 2,
   "complexity": "moderate",
-  "dependencies": [
-    "document-permissions-entity"
-  ],
   "createdAt": "2026-01-12T10:31:20.844Z",
-  "updatedAt": "2026-01-12T10:31:20.844Z",
+  "updatedAt": "2026-01-22T00:03:21.030Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

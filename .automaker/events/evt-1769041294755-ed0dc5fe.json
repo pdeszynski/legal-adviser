@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769041294755-ed0dc5fe",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T00:21:34.755Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "template-graphql",
+  "featureName": "Template GraphQL Resolvers",
+  "error": "Feature completed in 296s - auto-verified",
+  "passes": true
+}

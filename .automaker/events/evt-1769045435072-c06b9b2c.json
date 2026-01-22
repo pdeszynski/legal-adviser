@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769045435072-c06b9b2c",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T01:30:35.072Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "subscription-plans-entity",
+  "featureName": "Subscription Plans Entity",
+  "error": "Feature completed in 658s - auto-verified",
+  "passes": true
+}

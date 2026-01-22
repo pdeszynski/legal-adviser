@@ -1,0 +1,17 @@
+{
+  "id": "notification-bell",
+  "category": "UI",
+  "title": "Notification Bell Component",
+  "description": "Create notification bell icon in header with unread count badge. Show dropdown with recent notifications on click.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "notification-graphql"
+  ],
+  "createdAt": "2026-01-12T10:31:20.846Z",
+  "updatedAt": "2026-01-12T10:31:20.846Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

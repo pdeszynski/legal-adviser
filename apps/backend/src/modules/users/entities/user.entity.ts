@@ -7,7 +7,12 @@ import {
   OneToMany,
 } from 'typeorm';
 import { ObjectType, Field, ID, GraphQLISODateTime } from '@nestjs/graphql';
-import { IDField, FilterableField, QueryOptions, Relation } from '@ptc-org/nestjs-query-graphql';
+import {
+  IDField,
+  FilterableField,
+  QueryOptions,
+  Relation,
+} from '@ptc-org/nestjs-query-graphql';
 import { UserSession } from './user-session.entity';
 
 /**
@@ -56,11 +61,36 @@ export class User {
   disclaimerAcceptedAt: Date | null;
 
   /**
+   * User role for access control
+   * Roles: 'user' | 'admin'
+   */
+  @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
+  @FilterableField(() => String)
+  role: 'user' | 'admin';
+
+  /**
    * Hashed password using bcrypt
    * This field is not exposed via GraphQL for security reasons
    */
   @Column({ type: 'varchar', length: 255, nullable: true, select: false })
   passwordHash: string | null;
+
+  /**
+   * Stripe customer ID for payment processing
+   */
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Field(() => String, { nullable: true })
+  stripeCustomerId: string | null;
+
+  /**
+   * Computed name property for convenience
+   */
+  get name(): string {
+    if (this.firstName && this.lastName) {
+      return `${this.firstName} ${this.lastName}`;
+    }
+    return this.username || this.email;
+  }
 
   @OneToMany(() => UserSession, (session) => session.user, { cascade: true })
   sessions: UserSession[];

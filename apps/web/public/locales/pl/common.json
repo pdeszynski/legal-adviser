@@ -125,6 +125,53 @@
   "dashboard": {
     "title": "Panel główny"
   },
+  "rulingSearch": {
+    "title": "Wyszukiwanie orzeczeń",
+    "subtitle": "Przeszukuj tysiące orzeczeń sądowych z wielu źródeł z zaawansowanymi filtrami.",
+    "fields": {
+      "query": "Wyszukiwane hasło",
+      "courtType": "Rodzaj sądu",
+      "dateFrom": "Data od",
+      "dateTo": "Data do",
+      "sources": "Źródła danych"
+    },
+    "placeholders": {
+      "query": "Wpisz słowa kluczowe, sygnatury spraw lub terminy prawne..."
+    },
+    "buttons": {
+      "search": "Szukaj",
+      "searching": "Wyszukiwanie..."
+    },
+    "errors": {
+      "title": "Błąd",
+      "queryRequired": "Wprowadź wyszukiwane hasło"
+    },
+    "results": {
+      "summary": "Wyświetlono {count} z {total} wyników",
+      "noResults": "Brak wyników",
+      "tryDifferent": "Spróbuj zmienić wyszukiwane hasło lub filtry",
+      "relevance": "Trafność"
+    },
+    "courtTypes": {
+      "ADMINISTRATIVE_COURT": "Sąd administracyjny",
+      "APPELLATE_COURT": "Sąd okręgowy",
+      "CONSTITUTIONAL_TRIBUNAL": "Trybunał Konstytucyjny",
+      "DISTRICT_COURT": "Sąd rejonowy",
+      "OTHER": "Inny",
+      "REGIONAL_COURT": "Sąd regionalny",
+      "SUPREME_COURT": "Sąd Najwyższy"
+    }
+  },
+  "omnisearch": {
+    "placeholder": "Szukaj dokumentów, orzeczeń, wzorów...",
+    "seeAll": "Zobacz wszystkie wyniki",
+    "noResults": "Brak wyników",
+    "types": {
+      "document": "Dokument",
+      "ruling": "Orzeczenie",
+      "template": "Wzór"
+    }
+  },
   "blog_posts": {
     "blog_posts": "Wpisy na blogu",
     "form": {
@@ -207,6 +254,49 @@
       "list": "Lista dokumentów",
       "show": "Podgląd dokumentu"
     },
+  "templates": {
+    "templates": "Wzory dokumentów",
+    "description": "Wybierz z naszej kolekcji profesjonalnych wzorów dokumentów prawnych, aby szybko rozpocząć pracę.",
+    "fields": {
+      "search": "Szukaj",
+      "category": "Kategoria"
+    },
+    "placeholders": {
+      "search": "Szukaj wzorów..."
+    },
+    "categories": {
+      "LAWSUIT": "Pozew",
+      "COMPLAINT": "Skarga",
+      "CONTRACT": "Umowa",
+      "MOTION": "Wniosek",
+      "LETTER": "Pismo",
+      "OTHER": "Inny"
+    },
+    "titles": {
+      "library": "Wzory dokumentów",
+      "variables": "Wymagane informacje",
+      "contentPreview": "Podgląd treści"
+    },
+    "buttons": {
+      "preview": "Podgląd",
+      "useTemplate": "Użyj wzoru"
+    },
+    "info": {
+      "used": "Użyto {count} razy"
+    },
+    "errors": {
+      "loadingFailed": "Nie udało się załadować wzorów"
+    },
+    "noTemplates": "Brak dostępnych wzorów",
+    "noFilteredResults": "Brak wzorów spełniających kryteria filtrowania",
+    "variableTypes": {
+      "text": "Tekst",
+      "number": "Liczba",
+      "date": "Data",
+      "currency": "Kwota",
+      "boolean": "Tak/Nie"
+    }
+  },
     "form": {
       "select": {
         "type": {
@@ -327,5 +417,213 @@
     "footer": {
       "copyright": "© {year} Legal AI. Wszelkie prawa zastrzeżone."
     }
+  },
+  "legalGroundsSuggestions": {
+    "title": "Sugerowane podstawy prawne",
+    "count": "{count} sugestia(e)",
+    "confidence": "Pewność",
+    "disclaimer": "Sugestie generowane przez AI. Skonsultuj z prawnikiem."
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "subtitle": "Zarządzaj ustawieniami konta i preferencjami",
+    "tabs": {
+      "profile": "Profil",
+      "preferences": "Preferencje",
+      "security": "Bezpieczeństwo",
+      "notifications": "Powiadomienia",
+      "apiKeys": "Klucze API"
+    },
+    "apiKeys": {
+      "title": "Klucze API",
+      "description": "Zarządzaj kluczami API do programistycznego dostępu",
+      "createButton": "Utwórz klucz API",
+      "createFirstButton": "Utwórz pierwszy klucz API",
+      "createModalTitle": "Utwórz nowy klucz API",
+      "creating": "Tworzenie...",
+      "cancelButton": "Anuluj",
+      "revokeButton": "Unieważnij",
+      "deleteButton": "Usuń",
+      "confirmRevoke": "Czy na pewno chcesz unieważnić ten klucz API? Tej czynności nie można cofnąć.",
+      "confirmDelete": "Czy na pewno chcesz usunąć ten klucz API? Tej czynności nie można cofnąć.",
+      "noKeys": "Nie masz jeszcze żadnych kluczy API.",
+      "copiedToClipboard": "Klucz API skopiowany do schowka",
+      "createSuccess": "Klucz API utworzony pomyślnie",
+      "createError": "Nie udało się utworzyć klucza API",
+      "revokeSuccess": "Klucz API unieważniony pomyślnie",
+      "revokeError": "Nie udało się unieważnić klucza API",
+      "deleteSuccess": "Klucz API usunięty pomyślnie",
+      "deleteError": "Nie udało się usunąć klucza API",
+      "newKeyTitle": "Klucz API utworzony",
+      "newKeyWarning": "Skopiuj ten klucz teraz. Nie będziesz mógł go zobaczyć ponownie.",
+      "status": {
+        "active": "Aktywny",
+        "revoked": "Unieważniony",
+        "expired": "Wygasły"
+      },
+      "usageCount": "Liczba użycć",
+      "lastUsed": "Ostatnio użyty",
+      "never": "Nigdy",
+      "expires": "Wygasa",
+      "fields": {
+        "name": "Nazwa",
+        "namePlaceholder": "np. Aplikacja produkcyjna, Skrypt testowy",
+        "description": "Opis",
+        "descriptionPlaceholder": "Opcjonalne notatki o przeznaczeniu tego klucza",
+        "scopes": "Zakresy",
+        "rateLimit": "Limit żądań (żądań na minutę)",
+        "rateLimitHint": "Ustaw na 0 dla nieograniczonego (niezalecane)",
+        "expiresAt": "Data wygaśnięcia",
+        "expiresAtHint": "Pozostaw puste dla bezterminowego"
+      },
+      "errors": {
+        "noScopes": "Wybierz przynajmniej jeden zakres"
+      },
+      "securityNotice": {
+        "title": "Najlepsze praktyki bezpieczeństwa",
+        "tip1": "Zachowuj swoje klucze API w tajemnicy i nigdy nie udostępniaj ich w publicznych repozytoriach",
+        "tip2": "Regularnie rotuj swoje klucze API dla lepszego bezpieczeństwa",
+        "tip3": "Używaj minimalnych wymaganych zakresów dla każdego klucza"
+      }
+    }
+  },
+  "notificationCenter": {
+    "title": "Centrum Powiadomień",
+    "description": "Przeglądaj i zarządzaj wszystkimi powiadomieniami",
+    "stats": {
+      "total": "Wszystkie powiadomienia",
+      "unread": "Nieprzeczytane"
+    },
+    "types": {
+      "info": "Informacja",
+      "success": "Sukces",
+      "warning": "Ostrzeżenie",
+      "error": "Błąd",
+      "system": "System"
+    },
+    "filters": {
+      "type": "Typ",
+      "status": "Status"
+    },
+    "status": {
+      "all": "Wszystkie",
+      "read": "Przeczytane",
+      "unread": "Nieprzeczytane"
+    },
+    "selectedCount": "{count} wybranych",
+    "actions": {
+      "deselect": "Odznacz"
+    },
+    "headers": {
+      "notifications": "Powiadomienia"
+    },
+    "errors": {
+      "loadingFailed": "Nie udało się załadować powiadomień"
+    },
+    "noFilteredResults": "Brak powiadomień pasujących do filtrów",
+    "noNotifications": "Brak powiadomień"
+  },
+  "billing": {
+    "title": "Płatności",
+    "subtitle": "Zarządzaj swoją subskrypcją i historią płatności",
+    "tabs": {
+      "subscription": "Subskrypcja",
+      "paymentHistory": "Historia płatności",
+      "planChange": "Zmień plan",
+      "paymentMethods": "Metody płatności"
+    },
+    "noSubscription": "Nie masz aktywnej subskrypcji",
+    "status": {
+      "active": "Aktywna",
+      "trialing": "Okres próbny",
+      "past_due": "Zaległa",
+      "canceled": "Anulowana",
+      "expired": "Wygasła"
+    },
+    "paymentMethod": {
+      "credit_card": "Karta kredytowa",
+      "debit_card": "Karta debetowa",
+      "paypal": "PayPal",
+      "bank_transfer": "Przelew bankowy",
+      "other": "Inne"
+    },
+    "paymentStatus": {
+      "pending": "Oczekująca",
+      "completed": "Zakończona",
+      "failed": "Nieudana",
+      "refunded": "Zwrócona",
+      "partially_refunded": "Częściowo zwrócona"
+    },
+    "subscription": {
+      "title": "Szczegóły subskrypcji",
+      "currentPlan": "Aktualny plan",
+      "billingPeriod": "Okres rozliczeniowy",
+      "daysRemaining": "{days} dni pozostało",
+      "nextBilling": "Następna płatność: {amount}",
+      "willCancel": "Twoja subskrypcja zostanie anulowana na koniec okresu rozliczeniowego",
+      "usage": "Użycie w tym okresie",
+      "cancelPlan": "Anuluj subskrypcję",
+      "cancelling": "Anulowanie...",
+      "resumePlan": "Wznów subskrypcję",
+      "resuming": "Wznawianie..."
+    },
+    "cancelConfirmation": "Czy na pewno chcesz anulować subskrypcję? Stracisz dostęp do funkcji premium na koniec okresu rozliczeniowego.",
+    "cancelSuccess": "Subskrypcja została anulowana pomyślnie",
+    "cancelError": "Nie udało się anulować subskrypcji",
+    "resumeSuccess": "Subskrypcja została wznowiona pomyślnie",
+    "resumeError": "Nie udało się wznowić subskrypcji",
+    "paymentHistory": {
+      "title": "Historia płatności",
+      "noPayments": "Brak płatności",
+      "date": "Data",
+      "description": "Opis",
+      "amount": "Kwota",
+      "method": "Metoda",
+      "status": "Status",
+      "invoice": "Faktura",
+      "subscriptionPayment": "Płatność subskrypcji",
+      "refundedOn": "Zwrócono {date}",
+      "refundAmount": "Zwrot: {amount}",
+      "viewInvoice": "Pokaż"
+    },
+    "planChange": {
+      "title": "Zmień swój plan",
+      "currentPlan": "Aktualny plan: {plan}",
+      "selectPlan": "Proszę wybrać plan",
+      "current": "Aktualny",
+      "changing": "Zmienianie...",
+      "changePlan": "Zmień plan",
+      "cancel": "Anuluj",
+      "success": "Plan został zmieniony pomyślnie",
+      "error": "Nie udało się zmienić planu"
+    },
+    "paymentMethods": {
+      "title": "Metody płatności",
+      "add": "Dodaj metodę płatności",
+      "adding": "Dodawanie...",
+      "noMethods": "Brak metod płatności",
+      "addMethodPrompt": "Dodaj metodę płatności, aby zarządzać subskrypcją",
+      "default": "Domyślna",
+      "expires": "Wygasa",
+      "note": "Uwaga",
+      "secureNote": "Twoje dane płatności są bezpiecznie przetwarzane przez Stripe. Nigdy nie przechowujemy pełnych danych karty na naszych serwerach.",
+      "notImplemented": "Zarządzanie metodami płatności nie jest jeszcze zaimplementowane. Skontaktuj się z pomocą techniczną."
+    }
+  },
+  "usage": {
+    "title": "Pulpit użycia",
+    "subtitle": "Śledź swoje użycie AI i koszty",
+    "totalRequests": "Całkowita liczba żądań",
+    "totalTokens": "Całkowita liczba tokenów",
+    "totalCost": "Całkowity koszt",
+    "dailyUsage": "Dzienne użycie",
+    "tokensByDay": "Tokeny według dni",
+    "costByOperation": "Koszt według operacji",
+    "operationBreakdown": "Podział operacji",
+    "operation": "Operacja",
+    "requests": "Żądania",
+    "tokens": "Tokeny",
+    "cost": "Koszt",
+    "noData": "Brak danych o użyciu dla tego okresu"
   }
 }

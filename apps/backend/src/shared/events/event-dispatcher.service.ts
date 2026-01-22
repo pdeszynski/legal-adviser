@@ -141,7 +141,8 @@ export class EventDispatcherService {
       // Update event store with failure information
       eventStore.status = 'FAILED';
       eventStore.attempts += 1;
-      eventStore.errorMessage = error instanceof Error ? error.message : String(error);
+      eventStore.errorMessage =
+        error instanceof Error ? error.message : String(error);
 
       // Schedule retry if we haven't exceeded max attempts
       if (eventStore.attempts < this.MAX_ATTEMPTS) {

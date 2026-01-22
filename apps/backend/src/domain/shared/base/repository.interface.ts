@@ -13,8 +13,10 @@ export interface IRepository<T extends AggregateRoot<TId>, TId> {
 /**
  * Extended repository interface with common query methods
  */
-export interface IExtendedRepository<T extends AggregateRoot<TId>, TId>
-  extends IRepository<T, TId> {
+export interface IExtendedRepository<
+  T extends AggregateRoot<TId>,
+  TId,
+> extends IRepository<T, TId> {
   findAll(): Promise<T[]>;
   exists(id: TId): Promise<boolean>;
   count(): Promise<number>;

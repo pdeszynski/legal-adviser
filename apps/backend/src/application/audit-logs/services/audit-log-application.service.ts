@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAuditLogUseCase } from '../use-cases/create-audit-log.use-case';
-import { CreateAuditLogDto, CreateAuditLogResultDto } from '../dto/create-audit-log.dto';
+import {
+  CreateAuditLogDto,
+  CreateAuditLogResultDto,
+} from '../dto/create-audit-log.dto';
 
 /**
  * Audit Log Application Service

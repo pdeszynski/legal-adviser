@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769045517134-b7b7d79b",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T01:31:57.134Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "payment-integration",
+  "featureName": "Payment Gateway Integration",
+  "error": "Feature completed in 475s - auto-verified",
+  "passes": true
+}

@@ -9,6 +9,7 @@ import {
   ValidateNested,
   IsArray,
   IsUrl,
+  IsIn,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 

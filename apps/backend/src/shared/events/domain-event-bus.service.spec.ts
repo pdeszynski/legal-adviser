@@ -69,10 +69,7 @@ describe('DomainEventBus', () => {
       await service.publish(event);
 
       // Verify EventEmitter2 was called
-      expect(eventEmitter.emit).toHaveBeenCalledWith(
-        'test.event',
-        event,
-      );
+      expect(eventEmitter.emit).toHaveBeenCalledWith('test.event', event);
 
       // Verify Bull queue was called
       expect(domainEventQueue.add).toHaveBeenCalledWith(

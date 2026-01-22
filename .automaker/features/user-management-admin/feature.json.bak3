@@ -1,0 +1,17 @@
+{
+  "id": "user-management-admin",
+  "category": "UI",
+  "title": "Admin User Management",
+  "description": "Create admin interface for managing users. Support viewing, editing, suspending accounts, and resetting passwords.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [
+    "admin-panel-layout"
+  ],
+  "createdAt": "2026-01-12T10:31:20.853Z",
+  "updatedAt": "2026-01-12T10:31:20.853Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

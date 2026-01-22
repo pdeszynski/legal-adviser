@@ -16,9 +16,10 @@ export interface GetDocumentInput {
  * This use case retrieves a single document by its unique identifier.
  */
 @Injectable()
-export class GetDocumentUseCase
-  implements IUseCase<GetDocumentInput, DocumentDto>
-{
+export class GetDocumentUseCase implements IUseCase<
+  GetDocumentInput,
+  DocumentDto
+> {
   constructor(
     @Inject('ILegalDocumentRepository')
     private readonly documentRepository: ILegalDocumentRepository,

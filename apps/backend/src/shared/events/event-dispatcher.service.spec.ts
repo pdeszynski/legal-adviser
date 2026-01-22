@@ -66,7 +66,10 @@ describe('EventDispatcherService', () => {
       ];
 
       eventStoreRepository.find.mockResolvedValue(pendingEvents);
-      eventStoreRepository.save.mockResolvedValue({ ...pendingEvents[0], status: 'PUBLISHED' });
+      eventStoreRepository.save.mockResolvedValue({
+        ...pendingEvents[0],
+        status: 'PUBLISHED',
+      });
 
       await service.processPendingEvents();
 

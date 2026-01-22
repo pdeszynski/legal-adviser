@@ -7,7 +7,10 @@ import {
   PaginatedResult,
   paginatedResult,
 } from '../../common';
-import { ApplicationError, NotFoundError } from '../../common/application-error';
+import {
+  ApplicationError,
+  NotFoundError,
+} from '../../common/application-error';
 import {
   CreateDocumentDto,
   CreateDocumentResultDto,
@@ -18,7 +21,10 @@ import {
   DeleteDocumentDto,
 } from '../dto';
 import { CreateDocumentUseCase } from '../use-cases/create-document.use-case';
-import { GetDocumentUseCase, GetDocumentInput } from '../use-cases/get-document.use-case';
+import {
+  GetDocumentUseCase,
+  GetDocumentInput,
+} from '../use-cases/get-document.use-case';
 import {
   ListDocumentsByOwnerUseCase,
   ListDocumentsByOwnerInput,
@@ -70,7 +76,10 @@ export class DocumentApplicationService {
       this.logger.log(`Document created successfully: ${result.id}`);
       return successResult(result);
     } catch (error) {
-      return this.handleError<CreateDocumentResultDto>(error, 'create document');
+      return this.handleError<CreateDocumentResultDto>(
+        error,
+        'create document',
+      );
     }
   }
 
@@ -102,7 +111,9 @@ export class DocumentApplicationService {
     status?: DocumentStatusEnum,
   ): Promise<ServiceResult<DocumentSummaryDto[]>> {
     try {
-      this.logger.log(`Listing documents for owner: ${ownerId}, status: ${status || 'all'}`);
+      this.logger.log(
+        `Listing documents for owner: ${ownerId}, status: ${status || 'all'}`,
+      );
       const input: ListDocumentsByOwnerInput = { ownerId, status };
       const result = await this.listDocumentsByOwnerUseCase.execute(input);
       return successResult(result);
@@ -134,14 +145,20 @@ export class DocumentApplicationService {
 
       // Get all documents (in a real app, pagination would be handled at repository level)
       const input: ListDocumentsByOwnerInput = { ownerId, status };
-      const allDocuments = await this.listDocumentsByOwnerUseCase.execute(input);
+      const allDocuments =
+        await this.listDocumentsByOwnerUseCase.execute(input);
 
       // Apply pagination
       const total = allDocuments.length;
       const startIndex = (page - 1) * limit;
-      const paginatedDocuments = allDocuments.slice(startIndex, startIndex + limit);
+      const paginatedDocuments = allDocuments.slice(
+        startIndex,
+        startIndex + limit,
+      );
 
-      return successResult(paginatedResult(paginatedDocuments, total, page, limit));
+      return successResult(
+        paginatedResult(paginatedDocuments, total, page, limit),
+      );
     } catch (error) {
       return this.handleError<PaginatedResult<DocumentSummaryDto>>(
         error,
@@ -175,7 +192,9 @@ export class DocumentApplicationService {
    * @param dto - Publish document data
    * @returns Service result with published document
    */
-  async publishDocument(dto: PublishDocumentDto): Promise<ServiceResult<DocumentDto>> {
+  async publishDocument(
+    dto: PublishDocumentDto,
+  ): Promise<ServiceResult<DocumentDto>> {
     try {
       this.logger.log(`Publishing document: ${dto.documentId}`);
       const result = await this.publishDocumentUseCase.execute(dto);
@@ -231,9 +250,7 @@ export class DocumentApplicationService {
    * @param ownerId - The owner ID
    * @returns Service result with document statistics
    */
-  async getDocumentStatistics(
-    ownerId: string,
-  ): Promise<
+  async getDocumentStatistics(ownerId: string): Promise<
     ServiceResult<{
       total: number;
       byStatus: Record<DocumentStatusEnum, number>;
@@ -275,11 +292,14 @@ export class DocumentApplicationService {
     }
 
     if (error instanceof ApplicationError) {
-      this.logger.warn(`Application error during ${operation}: ${error.message}`);
+      this.logger.warn(
+        `Application error during ${operation}: ${error.message}`,
+      );
       return failureResult(error.code, error.message, error.details);
     }
 
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     this.logger.error(`Unexpected error during ${operation}: ${errorMessage}`);
     return failureResult('INTERNAL_ERROR', `Failed to ${operation}`, {
       originalError: errorMessage,

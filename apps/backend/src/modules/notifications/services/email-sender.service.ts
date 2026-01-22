@@ -24,8 +24,7 @@ export class EmailSenderService {
       this.configService.get<string>('EMAIL_FROM_ADDRESS') ||
       'noreply@legal-ai.com';
     this.fromName =
-      this.configService.get<string>('EMAIL_FROM_NAME') ||
-      'Legal AI Platform';
+      this.configService.get<string>('EMAIL_FROM_NAME') || 'Legal AI Platform';
     this.isEnabled =
       this.configService.get<string>('EMAIL_ENABLED', 'false') === 'true';
 
@@ -131,6 +130,8 @@ export class EmailSenderService {
    * Check if email service is enabled and configured
    */
   isConfigured(): boolean {
-    return this.isEnabled && !!this.configService.get<string>('SENDGRID_API_KEY');
+    return (
+      this.isEnabled && !!this.configService.get<string>('SENDGRID_API_KEY')
+    );
   }
 }

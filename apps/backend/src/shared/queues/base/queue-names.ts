@@ -44,6 +44,20 @@ export const QUEUE_NAMES = {
     PROCESS_QUERY: 'ai-process-query',
     GENERATE_DOCUMENT: 'ai-generate-document',
   },
+
+  /**
+   * Ruling-related queues
+   */
+  RULING: {
+    INDEX: 'ruling-index',
+  },
+
+  /**
+   * Webhook-related queues
+   */
+  WEBHOOK: {
+    DELIVER: 'webhook-deliver',
+  },
 } as const;
 
 /**

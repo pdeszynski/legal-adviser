@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769039149642-83a6835f",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-21T23:45:49.642Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "legal-grounds-suggestions",
+  "featureName": "Legal Grounds Suggestion Component",
+  "error": "Feature completed in 480s - auto-verified",
+  "passes": true
+}

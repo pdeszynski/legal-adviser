@@ -1,6 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { IUseCaseNoOutput, NotFoundError, BusinessRuleViolationError } from '../../common';
+import {
+  IUseCaseNoOutput,
+  NotFoundError,
+  BusinessRuleViolationError,
+} from '../../common';
 import { DeleteDocumentDto } from '../dto';
 import type { ILegalDocumentRepository } from '../../../domain/legal-documents/repositories';
 
@@ -15,9 +19,7 @@ import type { ILegalDocumentRepository } from '../../../domain/legal-documents/r
  * 5. Emits domain events
  */
 @Injectable()
-export class DeleteDocumentUseCase
-  implements IUseCaseNoOutput<DeleteDocumentDto>
-{
+export class DeleteDocumentUseCase implements IUseCaseNoOutput<DeleteDocumentDto> {
   constructor(
     @Inject('ILegalDocumentRepository')
     private readonly documentRepository: ILegalDocumentRepository,

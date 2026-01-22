@@ -296,4 +296,105 @@ export class UsersService {
     session.end();
     return this.sessionRepository.save(session);
   }
+
+  /**
+   * Suspend a user account (admin only)
+   * Sets isActive to false
+   */
+  async suspendUser(
+    userId: string,
+    reason: string,
+    suspendedBy: string,
+  ): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    user.isActive = false;
+    const savedUser = await this.userRepository.save(user);
+
+    // Emit domain event for suspension
+    this.eventEmitter.emit(
+      EVENT_PATTERNS.USER.UPDATED,
+      new UserUpdatedEvent(userId, ['isActive', 'suspension']),
+    );
+
+    return savedUser;
+  }
+
+  /**
+   * Activate a user account (admin only)
+   * Sets isActive to true
+   */
+  async activateUser(userId: string, activatedBy: string): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    user.isActive = true;
+    const savedUser = await this.userRepository.save(user);
+
+    // Emit domain event for activation
+    this.eventEmitter.emit(
+      EVENT_PATTERNS.USER.UPDATED,
+      new UserUpdatedEvent(userId, ['isActive']),
+    );
+
+    return savedUser;
+  }
+
+  /**
+   * Change user role (admin only)
+   * Updates user role to 'user' or 'admin'
+   */
+  async changeUserRole(
+    userId: string,
+    newRole: 'user' | 'admin',
+    changedBy: string,
+  ): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    user.role = newRole;
+    const savedUser = await this.userRepository.save(user);
+
+    // Emit domain event for role change
+    this.eventEmitter.emit(
+      EVENT_PATTERNS.USER.UPDATED,
+      new UserUpdatedEvent(userId, ['role']),
+    );
+
+    return savedUser;
+  }
+
+  /**
+   * Reset user password (admin only)
+   * Resets the password to a new value
+   */
+  async resetUserPassword(
+    userId: string,
+    newPassword: string,
+    resetBy: string,
+  ): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    const passwordHash = await this.hashPassword(newPassword);
+    user.passwordHash = passwordHash;
+    const savedUser = await this.userRepository.save(user);
+
+    // Emit domain event for password reset
+    this.eventEmitter.emit(
+      EVENT_PATTERNS.USER.UPDATED,
+      new UserUpdatedEvent(userId, ['password']),
+    );
+
+    return savedUser;
+  }
 }

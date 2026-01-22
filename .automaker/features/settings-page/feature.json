@@ -3,15 +3,13 @@
   "category": "UI",
   "title": "User Settings Page",
   "description": "Create settings page with tabs for profile, preferences, security, and notifications. Support updating email, password, and all preference fields.",
-  "status": "backlog",
+  "status": "verified",
   "priority": 2,
   "complexity": "moderate",
-  "dependencies": [
-    "user-preferences-graphql"
-  ],
   "createdAt": "2026-01-12T10:31:20.839Z",
-  "updatedAt": "2026-01-12T10:31:20.839Z",
+  "updatedAt": "2026-01-22T00:44:04.356Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

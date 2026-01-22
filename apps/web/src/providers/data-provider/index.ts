@@ -380,6 +380,74 @@ export const dataProvider: DataProvider = {
       };
     }
 
+    if (resource === 'legalRulings') {
+      const query = `
+        query GetLegalRulings($filter: LegalRulingFilter, $paging: CursorPaging, $sorting: [LegalRulingSort!]) {
+          legalRulings(filter: $filter, paging: $paging, sorting: $sorting) {
+            totalCount
+            edges {
+              node {
+                id
+                signature
+                courtName
+                courtType
+                rulingDate
+                summary
+                caseNumber
+                keywords
+                createdAt
+                updatedAt
+              }
+            }
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+          }
+        }
+      `;
+
+      const graphqlFilter = buildGraphQLFilter(filters);
+      const graphqlSorting = buildGraphQLSorting(sorters);
+      const graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+
+      const data = await executeGraphQL<{
+        legalRulings: {
+          totalCount: number;
+          edges: Array<{ node: TData }>;
+          pageInfo: {
+            hasNextPage: boolean;
+            hasPreviousPage: boolean;
+            startCursor: string;
+            endCursor: string;
+          };
+        };
+      }>(query, {
+        filter: graphqlFilter || {},
+        paging: graphqlPaging,
+        sorting: graphqlSorting || [],
+      });
+
+      const items = data.legalRulings.edges.map((edge) => edge.node);
+
+      // Store cursor for this page to enable navigation
+      const currentPage = pagination?.currentPage || 1;
+      const cacheKey = getCacheKey(resource, filters, sorters);
+      storeCursor(
+        cacheKey,
+        currentPage,
+        data.legalRulings.pageInfo.endCursor,
+        data.legalRulings.totalCount,
+      );
+
+      return {
+        data: items,
+        total: data.legalRulings.totalCount,
+      };
+    }
+
     throw new Error(`Unknown resource: ${resource}`);
   },
 
@@ -453,6 +521,35 @@ export const dataProvider: DataProvider = {
       const data = await executeGraphQL<{ legalDocument: TData }>(query, { id });
       return {
         data: data.legalDocument,
+      };
+    }
+
+    if (resource === 'legalRulings') {
+      const query = `
+        query GetLegalRuling($id: ID!) {
+          legalRuling(id: $id) {
+            id
+            signature
+            courtName
+            courtType
+            rulingDate
+            summary
+            fullText
+            metadata {
+              legalArea
+              keywords
+              relatedCases
+              sourceReference
+            }
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ legalRuling: TData }>(query, { id });
+      return {
+        data: data.legalRuling,
       };
     }
 

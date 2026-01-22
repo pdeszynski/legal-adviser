@@ -5,11 +5,10 @@ relevantTo: [auth]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 8
-  referenced: 6
-  successfulFeatures: 6
+  loaded: 11
+  referenced: 11
+  successfulFeatures: 11
 ---
-
 # auth
 
 #### [Pattern] Created dedicated `findByUsernameOrEmailForAuth()` method instead of adding credentials to standard `findByUsername()`/`findByEmail()` (2026-01-19)

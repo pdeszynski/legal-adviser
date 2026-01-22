@@ -1,0 +1,15 @@
+{
+  "id": "pdf-download-endpoint",
+  "category": "API",
+  "title": "PDF Download GraphQL Field",
+  "description": "Add pdfUrl field to LegalDocument GraphQL type. Implement resolver that triggers PDF generation if needed and returns signed download URL.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "createdAt": "2026-01-12T10:31:20.829Z",
+  "updatedAt": "2026-01-12T10:31:20.829Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

@@ -18,6 +18,23 @@ export interface DocumentStatusChangeEvent {
 }
 
 /**
+ * In-App Notification Created Event
+ *
+ * Represents an in-app notification being created for a user.
+ * Emitted when a new notification is created for real-time updates.
+ */
+export interface InAppNotificationCreatedEvent {
+  notificationId: string;
+  userId: string;
+  type: string;
+  message: string;
+  actionLink?: string;
+  actionLabel?: string;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+}
+
+/**
  * GraphQL PubSub Topics
  *
  * Constants for subscription topics to ensure consistency
@@ -28,6 +45,8 @@ export const SUBSCRIPTION_TOPICS = {
   DOCUMENT_STATUS_CHANGED: 'documentStatusChanged',
   /** Topic for document generation progress */
   DOCUMENT_PROGRESS: 'documentProgress',
+  /** Topic for in-app notification created events */
+  IN_APP_NOTIFICATION_CREATED: 'inAppNotificationCreated',
 } as const;
 
 /**
@@ -87,6 +106,38 @@ export class GraphQLPubSubService implements OnModuleDestroy {
   getDocumentStatusChangeIterator(): AsyncIterator<unknown> {
     return this.pubSub.asyncIterableIterator(
       SUBSCRIPTION_TOPICS.DOCUMENT_STATUS_CHANGED,
+    );
+  }
+
+  /**
+   * Publish an in-app notification created event
+   *
+   * Called when a new in-app notification is created for a user.
+   * All subscribers listening for that user's notifications will receive the event.
+   *
+   * @param event - In-app notification created event
+   */
+  async publishInAppNotificationCreated(
+    event: InAppNotificationCreatedEvent,
+  ): Promise<void> {
+    await this.pubSub.publish(SUBSCRIPTION_TOPICS.IN_APP_NOTIFICATION_CREATED, {
+      inAppNotificationCreated: {
+        ...event,
+        createdAt: event.createdAt.toISOString(),
+      },
+    });
+  }
+
+  /**
+   * Get async iterator for in-app notification created events
+   *
+   * Used by GraphQL subscription resolvers.
+   *
+   * @returns AsyncIterator for in-app notification created events
+   */
+  getInAppNotificationCreatedIterator(): AsyncIterator<unknown> {
+    return this.pubSub.asyncIterableIterator(
+      SUBSCRIPTION_TOPICS.IN_APP_NOTIFICATION_CREATED,
     );
   }
 

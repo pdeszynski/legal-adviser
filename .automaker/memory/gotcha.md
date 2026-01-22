@@ -5,11 +5,10 @@ relevantTo: [gotcha]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 2
-  referenced: 1
-  successfulFeatures: 1
+  loaded: 3
+  referenced: 3
+  successfulFeatures: 3
 ---
-
 # gotcha
 
 #### [Gotcha] Email processor doesn't validate sender address format, delegates to SendGrid (2026-01-21)

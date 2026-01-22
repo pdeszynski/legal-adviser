@@ -6,8 +6,18 @@ import {
   UpdateDateColumn,
   Index,
 } from 'typeorm';
-import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
-import { FilterableField } from '@ptc-org/nestjs-query-graphql';
+import {
+  ObjectType,
+  Field,
+  ID,
+  registerEnumType,
+  GraphQLISODateTime,
+} from '@nestjs/graphql';
+import {
+  FilterableField,
+  IDField,
+  QueryOptions,
+} from '@ptc-org/nestjs-query-graphql';
 import GraphQLJSON from 'graphql-type-json';
 
 export enum TemplateCategory {
@@ -58,8 +68,9 @@ export interface PolishFormattingRules {
 @Entity('document_templates')
 @Index(['category'])
 @Index(['isActive'])
+@QueryOptions({ enableTotalCount: true })
 export class DocumentTemplate {
-  @FilterableField(() => ID)
+  @IDField(() => ID)
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -103,11 +114,11 @@ export class DocumentTemplate {
   @Column({ type: 'int', default: 0 })
   usageCount: number;
 
-  @FilterableField()
+  @FilterableField(() => GraphQLISODateTime)
   @CreateDateColumn()
   createdAt: Date;
 
-  @FilterableField()
+  @FilterableField(() => GraphQLISODateTime)
   @UpdateDateColumn()
   updatedAt: Date;
 

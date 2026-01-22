@@ -23,6 +23,7 @@ export interface GenerateDocumentResponse {
   task_id: string;
   status: string;
   message: string;
+  tokens_used?: number;
 }
 
 export interface DocumentGenerationStatus {
@@ -31,6 +32,7 @@ export interface DocumentGenerationStatus {
   content?: string;
   metadata?: Record<string, any>;
   error?: string;
+  tokens_used?: number;
 }
 
 export interface AskQuestionRequest {
@@ -49,6 +51,8 @@ export interface AnswerResponse {
   answer: string;
   citations: Citation[];
   confidence: number;
+  tokens_used?: number;
+  request_id?: string;
 }
 
 export interface SearchRulingsRequest {
@@ -94,6 +98,7 @@ export interface ClassifyCaseResponse {
   recommendations: string;
   case_description: string;
   processing_time_ms: number;
+  tokens_used?: number;
 }
 
 // RAG / Embedding types
@@ -106,6 +111,7 @@ export interface GenerateEmbeddingsResponse {
   embeddings: number[][];
   model: string;
   total_tokens: number;
+  tokens_used?: number;
 }
 
 export interface SemanticSearchRequest {

@@ -208,6 +208,10 @@ export const EVENT_PATTERNS = {
     READ: 'notification.read',
     DISMISSED: 'notification.dismissed',
     EMAIL_SENT: 'notification.email.sent',
+    SENT: 'notification.sent',
+    IN_APP_CREATED: 'notification.in_app.created',
+    PREFERENCES_UPDATED: 'notification.preferences.updated',
+    BULK_SENT: 'notification.bulk.sent',
   },
 
   // Audit log events (Audit Context - listens to all, emits sparingly)

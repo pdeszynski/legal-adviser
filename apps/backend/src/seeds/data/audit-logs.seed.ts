@@ -28,7 +28,8 @@ export const auditLogsSeedData: AuditLogSeedData[] = [
     resourceType: AuditResourceType.SESSION,
     resourceId: null,
     ipAddress: '192.168.1.100',
-    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+    userAgent:
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
     statusCode: 200,
     errorMessage: null,
     changeDetails: null,
@@ -40,7 +41,8 @@ export const auditLogsSeedData: AuditLogSeedData[] = [
     resourceType: AuditResourceType.DOCUMENT,
     resourceId: null, // Will be set dynamically
     ipAddress: '192.168.1.100',
-    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+    userAgent:
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
     statusCode: 201,
     errorMessage: null,
     changeDetails: {
@@ -103,7 +105,8 @@ export const auditLogsSeedData: AuditLogSeedData[] = [
     resourceType: AuditResourceType.SESSION,
     resourceId: null,
     ipAddress: '172.16.0.25',
-    userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Safari/605.1.15',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Safari/605.1.15',
     statusCode: 200,
     errorMessage: null,
     changeDetails: null,
@@ -131,7 +134,8 @@ export const auditLogsSeedData: AuditLogSeedData[] = [
     resourceType: AuditResourceType.DOCUMENT,
     resourceId: null,
     ipAddress: '192.168.1.100',
-    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+    userAgent:
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
     statusCode: 200,
     errorMessage: null,
     changeDetails: {
@@ -148,7 +152,8 @@ export const auditLogsSeedData: AuditLogSeedData[] = [
     resourceType: AuditResourceType.USER,
     resourceId: null,
     ipAddress: '192.168.1.100',
-    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+    userAgent:
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
     statusCode: 200,
     errorMessage: null,
     changeDetails: {

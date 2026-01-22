@@ -8,7 +8,12 @@ import {
   Param,
   Sse,
   MessageEvent,
+  Res,
+  BadRequestException,
+  NotFoundException,
+  Query,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
@@ -16,6 +21,7 @@ import {
   DocumentProgressEvent,
 } from '../../shared/streaming';
 import { DocumentsService } from './services/documents.service';
+import { PdfUrlService } from './services/pdf-url.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { LegalDocument, DocumentType } from './entities/legal-document.entity';
 import { DocumentGenerationProducer } from './queues/document-generation.producer';
@@ -32,6 +38,7 @@ export class DocumentsController {
     private readonly documentsService: DocumentsService,
     private readonly documentGenerationProducer: DocumentGenerationProducer,
     private readonly progressPubSub: DocumentProgressPubSubService,
+    private readonly pdfUrlService: PdfUrlService,
   ) {}
 
   /**
@@ -112,5 +119,63 @@ export class DocumentsController {
           }) as MessageEvent,
       ),
     );
+  }
+
+  /**
+   * Download document as PDF
+   *
+   * Returns the PDF version of a document.
+   * Validates the signed URL parameters for security.
+   *
+   * @param id - Document ID
+   * @param filename - Sanitized filename (for display purposes)
+   * @param expires - Expiration timestamp from signed URL
+   * @param signature - Signature from signed URL
+   * @param res - Express response object
+   */
+  @Get(':id/pdf/:filename')
+  async downloadPdf(
+    @Param('id') id: string,
+    @Param('filename') filename: string,
+    @Query('expires') expires: string,
+    @Query('signature') signature: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    // Verify the signed URL
+    const expiration = parseInt(expires, 10);
+    if (isNaN(expiration)) {
+      throw new BadRequestException('Invalid expiration parameter');
+    }
+
+    const isValid = this.pdfUrlService.verifyPdfUrlSignature(
+      id,
+      expiration,
+      signature,
+    );
+
+    if (!isValid) {
+      throw new BadRequestException('Invalid or expired PDF URL');
+    }
+
+    // Get the document
+    const document = await this.documentsService.findById(id);
+    if (!document) {
+      throw new NotFoundException(`Document ${id} not found`);
+    }
+
+    if (!document.contentRaw) {
+      throw new BadRequestException('Document has no content');
+    }
+
+    // Set response headers for PDF download
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+    });
+
+    // Return a simple response for now
+    // In a full implementation, you would generate PDF from document.contentRaw
+    // using the PdfExportService
+    res.send(document.contentRaw);
   }
 }

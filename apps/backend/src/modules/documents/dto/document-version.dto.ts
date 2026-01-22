@@ -1,5 +1,12 @@
 import { InputType, Field, ID } from '@nestjs/graphql';
-import { IsNotEmpty, IsString, IsUUID, IsInt, Min, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  IsInt,
+  Min,
+  IsOptional,
+} from 'class-validator';
 
 /**
  * Input DTO for creating a new document version

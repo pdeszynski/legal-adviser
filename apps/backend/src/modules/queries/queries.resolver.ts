@@ -1,14 +1,21 @@
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
-import { QueriesService } from './services/queries.service';
+import { UseGuards } from '@nestjs/common';
+import { QueriesService, QuerySearchOptions } from './services/queries.service';
 import {
   SubmitLegalQueryInput,
   AnswerLegalQueryInput,
   CreateCitationInput,
   AskLegalQuestionInput,
 } from './dto/legal-query.dto';
+import {
+  SearchLegalQueriesInput,
+  LegalQuerySearchResponse,
+} from './dto/legal-query-search.dto';
 import { LegalQuery, Citation } from './entities/legal-query.entity';
 import { StrictThrottle, SkipThrottle } from '../../shared/throttler';
 import { AiClientService } from '../../shared/ai-client/ai-client.service';
+import { QuotaGuard, RequireQuota, QuotaType } from '../../shared';
+import { GqlAuthGuard } from '../auth/guards';
 
 /**
  * Custom GraphQL Resolver for Legal Queries
@@ -33,6 +40,7 @@ import { AiClientService } from '../../shared/ai-client/ai-client.service';
  * Part of User Story 2: AI-Powered Legal Q&A
  */
 @Resolver(() => LegalQuery)
+@UseGuards(GqlAuthGuard, QuotaGuard)
 export class QueriesResolver {
   constructor(
     private readonly queriesService: QueriesService,
@@ -52,6 +60,53 @@ export class QueriesResolver {
     @Args('sessionId', { type: () => String }) sessionId: string,
   ): Promise<LegalQuery[]> {
     return this.queriesService.findBySessionId(sessionId);
+  }
+
+  /**
+   * Query: Full-text search for legal queries
+   *
+   * Searches across questions, answers, and citations.
+   * Returns results ranked by relevance with highlighted snippets.
+   *
+   * @param input - Search options including query string and filters
+   * @returns Paginated search results with relevance ranking
+   */
+  @SkipThrottle()
+  @Query(() => LegalQuerySearchResponse, {
+    name: 'searchLegalQueries',
+    description: 'Full-text search across queries with relevance ranking',
+  })
+  async searchQueries(
+    @Args('input') input: SearchLegalQueriesInput,
+  ): Promise<LegalQuerySearchResponse> {
+    const limit = input.limit ?? 20;
+    const offset = input.offset ?? 0;
+
+    const searchOptions: QuerySearchOptions = {
+      query: input.query,
+      sessionId: input.sessionId ?? undefined,
+      startDate: input.startDate ?? undefined,
+      endDate: input.endDate ?? undefined,
+      limit,
+      offset,
+    };
+
+    const [results, totalCount] = await Promise.all([
+      this.queriesService.search(searchOptions),
+      this.queriesService.countSearchResults(searchOptions),
+    ]);
+
+    return {
+      results: results.map((r) => ({
+        ...r.query,
+        rank: r.rank,
+        headline: r.headline ?? null,
+      })),
+      totalCount,
+      count: results.length,
+      offset,
+      hasMore: offset + results.length < totalCount,
+    };
   }
 
   /**
@@ -81,6 +136,8 @@ export class QueriesResolver {
    * 3. Frontend can poll or subscribe for updates
    * 4. Use answerLegalQuery to add the AI response
    *
+   * Quota check: Requires one query quota
+   *
    * @example
    * ```graphql
    * mutation {
@@ -97,6 +154,7 @@ export class QueriesResolver {
    * ```
    */
   @StrictThrottle()
+  @RequireQuota(QuotaType.QUERY)
   @Mutation(() => LegalQuery, {
     name: 'submitLegalQuery',
     description: 'Submit a new legal query for AI processing',
@@ -124,6 +182,8 @@ export class QueriesResolver {
    * - Simple synchronous question-answer flow
    * - Testing AI integration
    *
+   * Quota check: Requires one query quota
+   *
    * @example
    * ```graphql
    * mutation {
@@ -142,6 +202,7 @@ export class QueriesResolver {
    * ```
    */
   @StrictThrottle()
+  @RequireQuota(QuotaType.QUERY)
   @Mutation(() => LegalQuery, {
     name: 'askLegalQuestion',
     description: 'Ask a legal question and get AI answer synchronously',

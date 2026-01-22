@@ -5,11 +5,10 @@ relevantTo: [api]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 84
-  referenced: 4
-  successfulFeatures: 4
+  loaded: 91
+  referenced: 11
+  successfulFeatures: 11
 ---
-
 # api
 
 ### Used separate DTO classes for REST (CreateDocumentDto) and GraphQL input types (CreateLegalDocumentInput) despite identical validation rules. Decorators duplicated rather than shared. (2026-01-12)

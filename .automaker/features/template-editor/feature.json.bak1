@@ -1,0 +1,15 @@
+{
+  "id": "template-editor",
+  "category": "UI",
+  "title": "Template Editor Interface",
+  "description": "Create admin interface for creating and editing templates. Include rich text editor with variable insertion and preview mode.",
+  "status": "in_progress",
+  "priority": 3,
+  "complexity": "complex",
+  "createdAt": "2026-01-12T10:31:20.842Z",
+  "updatedAt": "2026-01-22T01:32:00.199Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

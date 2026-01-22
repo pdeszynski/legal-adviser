@@ -2,7 +2,10 @@ import { Injectable, Inject } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { v4 as uuidv4 } from 'uuid';
 import { IUseCase } from '../../common';
-import { CreateTrialSubscriptionDto, CreateSubscriptionResultDto } from '../dto';
+import {
+  CreateTrialSubscriptionDto,
+  CreateSubscriptionResultDto,
+} from '../dto';
 import { SubscriptionAggregate } from '../../../domain/billing/aggregates';
 import type { ISubscriptionRepository } from '../../../domain/billing/repositories';
 
@@ -15,9 +18,10 @@ import type { ISubscriptionRepository } from '../../../domain/billing/repositori
  * 3. Publishes domain events
  */
 @Injectable()
-export class CreateTrialSubscriptionUseCase
-  implements IUseCase<CreateTrialSubscriptionDto, CreateSubscriptionResultDto>
-{
+export class CreateTrialSubscriptionUseCase implements IUseCase<
+  CreateTrialSubscriptionDto,
+  CreateSubscriptionResultDto
+> {
   constructor(
     @Inject('ISubscriptionRepository')
     private readonly subscriptionRepository: ISubscriptionRepository,

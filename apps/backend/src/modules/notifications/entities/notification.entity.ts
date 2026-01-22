@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import {
   Column,
   CreateDateColumn,
@@ -6,6 +6,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import {
+  FilterableField,
+  IDField,
+  QueryOptions,
+} from '@ptc-org/nestjs-query-graphql';
 import { EmailTemplateType } from '../dto/send-email.input';
 
 /**
@@ -19,68 +24,78 @@ export enum NotificationStatus {
   BOUNCED = 'bounced',
 }
 
+// Register enum with GraphQL
+registerEnumType(NotificationStatus, {
+  name: 'NotificationStatus',
+  description: 'Status of email notifications',
+});
+
 /**
  * Notification entity for tracking sent notifications
+ *
+ * Uses nestjs-query decorators for auto-generated CRUD resolvers.
+ * This entity tracks email notifications sent through the system.
  */
-@ObjectType()
+@ObjectType('Notification')
+@QueryOptions({ enableTotalCount: true })
 @Entity('notifications')
 export class Notification {
-  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
+  @IDField(() => ID)
   id: string;
 
-  @Field(() => String)
   @Column()
+  @FilterableField()
   recipientEmail: string;
 
-  @Field(() => String, { nullable: true })
   @Column({ nullable: true })
+  @FilterableField({ nullable: true })
   userId?: string;
 
-  @Field(() => String)
   @Column()
+  @FilterableField()
   subject: string;
 
-  @Field(() => String)
   @Column({
     type: 'enum',
     enum: EmailTemplateType,
   })
+  @FilterableField(() => EmailTemplateType)
   template: EmailTemplateType;
 
-  @Field(() => String)
   @Column({
     type: 'enum',
     enum: NotificationStatus,
     default: NotificationStatus.PENDING,
   })
+  @FilterableField(() => NotificationStatus)
   status: NotificationStatus;
 
-  @Field(() => String, { nullable: true })
   @Column({ type: 'jsonb', nullable: true })
+  @Field(() => String, { nullable: true })
   templateData?: Record<string, any>;
 
-  @Field(() => String, { nullable: true })
   @Column({ nullable: true })
+  @FilterableField({ nullable: true })
   messageId?: string;
 
-  @Field(() => String, { nullable: true })
   @Column({ type: 'text', nullable: true })
+  @FilterableField({ nullable: true })
   errorMessage?: string;
 
-  @Field(() => String, { nullable: true })
   @Column({ type: 'jsonb', nullable: true })
+  @Field(() => String, { nullable: true })
   metadata?: Record<string, any>;
 
-  @Field(() => Date, { nullable: true })
   @Column({ type: 'timestamp', nullable: true })
+  @FilterableField({ nullable: true })
   sentAt?: Date;
 
-  @Field(() => Date)
   @CreateDateColumn()
+  @FilterableField()
   createdAt: Date;
 
-  @Field(() => Date)
   @UpdateDateColumn()
+  @FilterableField()
   updatedAt: Date;
 }

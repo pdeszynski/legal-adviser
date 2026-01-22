@@ -16,9 +16,10 @@ export interface GetUserByEmailInput {
  * This use case retrieves a single user by their email address.
  */
 @Injectable()
-export class GetUserByEmailUseCase
-  implements IUseCase<GetUserByEmailInput, UserDto>
-{
+export class GetUserByEmailUseCase implements IUseCase<
+  GetUserByEmailInput,
+  UserDto
+> {
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,

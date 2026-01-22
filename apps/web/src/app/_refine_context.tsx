@@ -49,6 +49,15 @@ export const RefineContext = ({ children }: PropsWithChildren) => {
                 },
               },
               {
+                name: 'settings',
+                list: '/settings',
+                meta: {
+                  label: 'Settings',
+                  icon: <span aria-label="settings">⚙️</span>,
+                  canDelete: false,
+                },
+              },
+              {
                 name: 'blog_posts',
                 list: '/blog-posts',
                 create: '/blog-posts/create',
@@ -71,10 +80,52 @@ export const RefineContext = ({ children }: PropsWithChildren) => {
                 },
               },
               {
+                name: 'templates',
+                list: '/templates',
+                meta: {
+                  label: 'Templates',
+                  canDelete: false,
+                },
+              },
+              {
                 name: 'audit_logs',
                 list: '/audit-logs',
                 meta: {
                   label: 'Audit Logs',
+                  canDelete: false,
+                },
+              },
+              {
+                name: 'chat',
+                list: '/chat',
+                meta: {
+                  label: 'Legal Q&A Chat',
+                  canDelete: false,
+                },
+              },
+              {
+                name: 'notifications',
+                list: '/notifications',
+                meta: {
+                  label: 'Notifications',
+                  canDelete: false,
+                },
+              },
+              {
+                name: 'billing',
+                list: '/billing',
+                meta: {
+                  label: 'Billing',
+                  icon: <span aria-label="billing">💳</span>,
+                  canDelete: false,
+                },
+              },
+              {
+                name: 'usage',
+                list: '/usage',
+                meta: {
+                  label: 'Usage',
+                  icon: <span aria-label="usage">📈</span>,
                   canDelete: false,
                 },
               },

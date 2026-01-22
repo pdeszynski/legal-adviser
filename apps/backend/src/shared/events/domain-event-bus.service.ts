@@ -147,9 +147,7 @@ export class DomainEventBus {
       return;
     }
 
-    this.logger.debug(
-      `Publishing ${events.length} domain events in batch`,
-    );
+    this.logger.debug(`Publishing ${events.length} domain events in batch`);
 
     // Publish all events in parallel for better performance
     await Promise.all(events.map((event) => this.publish(event)));
@@ -163,18 +161,17 @@ export class DomainEventBus {
    *
    * @param aggregate - The aggregate root with events to publish
    */
-  async publishAggregateEvents(
-    aggregate: { domainEvents: ReadonlyArray<DomainEvent>; clearDomainEvents: () => DomainEvent[] },
-  ): Promise<void> {
+  async publishAggregateEvents(aggregate: {
+    domainEvents: ReadonlyArray<DomainEvent>;
+    clearDomainEvents: () => DomainEvent[];
+  }): Promise<void> {
     const events = aggregate.domainEvents;
 
     if (events.length === 0) {
       return;
     }
 
-    this.logger.debug(
-      `Publishing ${events.length} events from aggregate`,
-    );
+    this.logger.debug(`Publishing ${events.length} events from aggregate`);
 
     await this.publishBatch([...events]);
 

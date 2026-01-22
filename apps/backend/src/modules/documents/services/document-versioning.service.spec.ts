@@ -3,7 +3,11 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DocumentVersioningService } from './document-versioning.service';
 import { DocumentVersion } from '../entities/document-version.entity';
-import { LegalDocument, DocumentStatus, DocumentType } from '../entities/legal-document.entity';
+import {
+  LegalDocument,
+  DocumentStatus,
+  DocumentType,
+} from '../entities/legal-document.entity';
 import { NotFoundException } from '@nestjs/common';
 
 describe('DocumentVersioningService', () => {
@@ -68,8 +72,12 @@ describe('DocumentVersioningService', () => {
     }).compile();
 
     service = module.get<DocumentVersioningService>(DocumentVersioningService);
-    versionRepository = module.get<Repository<DocumentVersion>>(getRepositoryToken(DocumentVersion));
-    documentRepository = module.get<Repository<LegalDocument>>(getRepositoryToken(LegalDocument));
+    versionRepository = module.get<Repository<DocumentVersion>>(
+      getRepositoryToken(DocumentVersion),
+    );
+    documentRepository = module.get<Repository<LegalDocument>>(
+      getRepositoryToken(LegalDocument),
+    );
   });
 
   it('should be defined', () => {
@@ -78,13 +86,19 @@ describe('DocumentVersioningService', () => {
 
   describe('createVersion', () => {
     it('should create a version with sequential version number', async () => {
-      jest.spyOn(documentRepository, 'findOne').mockResolvedValue(mockDocument as LegalDocument);
-      jest.spyOn(versionRepository, 'findOne').mockResolvedValue(mockVersion1 as DocumentVersion);
+      jest
+        .spyOn(documentRepository, 'findOne')
+        .mockResolvedValue(mockDocument as LegalDocument);
+      jest
+        .spyOn(versionRepository, 'findOne')
+        .mockResolvedValue(mockVersion1 as DocumentVersion);
       jest.spyOn(versionRepository, 'create').mockReturnValue({
         ...mockVersion2,
         validate: jest.fn(),
       } as any);
-      jest.spyOn(versionRepository, 'save').mockResolvedValue(mockVersion2 as DocumentVersion);
+      jest
+        .spyOn(versionRepository, 'save')
+        .mockResolvedValue(mockVersion2 as DocumentVersion);
 
       const result = await service.createVersion(
         'doc-123',
@@ -95,7 +109,9 @@ describe('DocumentVersioningService', () => {
       );
 
       expect(result).toBeDefined();
-      expect(documentRepository.findOne).toHaveBeenCalledWith({ where: { id: 'doc-123' } });
+      expect(documentRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 'doc-123' },
+      });
       expect(versionRepository.findOne).toHaveBeenCalledWith({
         where: { documentId: 'doc-123' },
         order: { versionNumber: 'DESC' },
@@ -104,13 +120,17 @@ describe('DocumentVersioningService', () => {
     });
 
     it('should create version 1 when no previous versions exist', async () => {
-      jest.spyOn(documentRepository, 'findOne').mockResolvedValue(mockDocument as LegalDocument);
+      jest
+        .spyOn(documentRepository, 'findOne')
+        .mockResolvedValue(mockDocument as LegalDocument);
       jest.spyOn(versionRepository, 'findOne').mockResolvedValue(null);
       jest.spyOn(versionRepository, 'create').mockReturnValue({
         ...mockVersion1,
         validate: jest.fn(),
       } as any);
-      jest.spyOn(versionRepository, 'save').mockResolvedValue(mockVersion1 as DocumentVersion);
+      jest
+        .spyOn(versionRepository, 'save')
+        .mockResolvedValue(mockVersion1 as DocumentVersion);
 
       const result = await service.createVersion(
         'doc-123',
@@ -135,20 +155,32 @@ describe('DocumentVersioningService', () => {
       jest.spyOn(documentRepository, 'findOne').mockResolvedValue(null);
 
       await expect(
-        service.createVersion('doc-999', 'session-123', 'Content', 'Description', 'user-123'),
+        service.createVersion(
+          'doc-999',
+          'session-123',
+          'Content',
+          'Description',
+          'user-123',
+        ),
       ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('createVersionOnUpdate', () => {
     it('should create a version when content changes', async () => {
-      jest.spyOn(versionRepository, 'findOne').mockResolvedValue(mockVersion1 as DocumentVersion);
-      jest.spyOn(documentRepository, 'findOne').mockResolvedValue(mockDocument as LegalDocument);
+      jest
+        .spyOn(versionRepository, 'findOne')
+        .mockResolvedValue(mockVersion1 as DocumentVersion);
+      jest
+        .spyOn(documentRepository, 'findOne')
+        .mockResolvedValue(mockDocument as LegalDocument);
       jest.spyOn(versionRepository, 'create').mockReturnValue({
         ...mockVersion2,
         validate: jest.fn(),
       } as any);
-      jest.spyOn(versionRepository, 'save').mockResolvedValue(mockVersion2 as DocumentVersion);
+      jest
+        .spyOn(versionRepository, 'save')
+        .mockResolvedValue(mockVersion2 as DocumentVersion);
 
       const result = await service.createVersionOnUpdate(
         'doc-123',
@@ -163,7 +195,9 @@ describe('DocumentVersioningService', () => {
     });
 
     it('should not create a version when content is unchanged', async () => {
-      jest.spyOn(versionRepository, 'findOne').mockResolvedValue(mockVersion1 as DocumentVersion);
+      jest
+        .spyOn(versionRepository, 'findOne')
+        .mockResolvedValue(mockVersion1 as DocumentVersion);
 
       const result = await service.createVersionOnUpdate(
         'doc-123',
@@ -178,12 +212,16 @@ describe('DocumentVersioningService', () => {
 
     it('should create initial version when no versions exist', async () => {
       jest.spyOn(versionRepository, 'findOne').mockResolvedValue(null);
-      jest.spyOn(documentRepository, 'findOne').mockResolvedValue(mockDocument as LegalDocument);
+      jest
+        .spyOn(documentRepository, 'findOne')
+        .mockResolvedValue(mockDocument as LegalDocument);
       jest.spyOn(versionRepository, 'create').mockReturnValue({
         ...mockVersion1,
         validate: jest.fn(),
       } as any);
-      jest.spyOn(versionRepository, 'save').mockResolvedValue(mockVersion1 as DocumentVersion);
+      jest
+        .spyOn(versionRepository, 'save')
+        .mockResolvedValue(mockVersion1 as DocumentVersion);
 
       const result = await service.createVersionOnUpdate(
         'doc-123',
@@ -199,7 +237,9 @@ describe('DocumentVersioningService', () => {
 
   describe('getVersionHistory', () => {
     it('should return all versions for a document ordered descending', async () => {
-      jest.spyOn(versionRepository, 'find').mockResolvedValue([mockVersion2, mockVersion1] as DocumentVersion[]);
+      jest
+        .spyOn(versionRepository, 'find')
+        .mockResolvedValue([mockVersion2, mockVersion1] as DocumentVersion[]);
 
       const result = await service.getVersionHistory('doc-123');
 
@@ -215,7 +255,9 @@ describe('DocumentVersioningService', () => {
 
   describe('getVersion', () => {
     it('should return a specific version', async () => {
-      jest.spyOn(versionRepository, 'findOne').mockResolvedValue(mockVersion1 as DocumentVersion);
+      jest
+        .spyOn(versionRepository, 'findOne')
+        .mockResolvedValue(mockVersion1 as DocumentVersion);
 
       const result = await service.getVersion('doc-123', 1);
 
@@ -228,16 +270,21 @@ describe('DocumentVersioningService', () => {
     it('should throw NotFoundException when version does not exist', async () => {
       jest.spyOn(versionRepository, 'findOne').mockResolvedValue(null);
 
-      await expect(service.getVersion('doc-123', 999)).rejects.toThrow(NotFoundException);
+      await expect(service.getVersion('doc-123', 999)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('rollbackToVersion', () => {
     it('should rollback document and create new version', async () => {
-      jest.spyOn(versionRepository, 'findOne')
+      jest
+        .spyOn(versionRepository, 'findOne')
         .mockResolvedValueOnce(mockVersion1 as DocumentVersion) // getVersion call
         .mockResolvedValueOnce(mockVersion2 as DocumentVersion); // latest version for createVersion
-      jest.spyOn(documentRepository, 'findOne').mockResolvedValue(mockDocument as LegalDocument);
+      jest
+        .spyOn(documentRepository, 'findOne')
+        .mockResolvedValue(mockDocument as LegalDocument);
       jest.spyOn(documentRepository, 'save').mockResolvedValue({
         ...mockDocument,
         contentRaw: 'Initial content',
@@ -255,7 +302,12 @@ describe('DocumentVersioningService', () => {
         versionNumber: 3,
       } as DocumentVersion);
 
-      const result = await service.rollbackToVersion('doc-123', 1, 'session-123', 'user-123');
+      const result = await service.rollbackToVersion(
+        'doc-123',
+        1,
+        'session-123',
+        'user-123',
+      );
 
       expect(result).toBeDefined();
       expect(result.document).toBeDefined();
@@ -272,7 +324,9 @@ describe('DocumentVersioningService', () => {
     });
 
     it('should throw NotFoundException when document does not exist', async () => {
-      jest.spyOn(versionRepository, 'findOne').mockResolvedValue(mockVersion1 as DocumentVersion);
+      jest
+        .spyOn(versionRepository, 'findOne')
+        .mockResolvedValue(mockVersion1 as DocumentVersion);
       jest.spyOn(documentRepository, 'findOne').mockResolvedValue(null);
 
       await expect(
@@ -283,7 +337,9 @@ describe('DocumentVersioningService', () => {
 
   describe('getLatestVersion', () => {
     it('should return the latest version', async () => {
-      jest.spyOn(versionRepository, 'findOne').mockResolvedValue(mockVersion2 as DocumentVersion);
+      jest
+        .spyOn(versionRepository, 'findOne')
+        .mockResolvedValue(mockVersion2 as DocumentVersion);
 
       const result = await service.getLatestVersion('doc-123');
 
@@ -326,7 +382,8 @@ describe('DocumentVersioningService', () => {
 
   describe('getDiff', () => {
     it('should calculate diff between two versions', async () => {
-      jest.spyOn(versionRepository, 'findOne')
+      jest
+        .spyOn(versionRepository, 'findOne')
         .mockResolvedValueOnce(mockVersion1 as DocumentVersion)
         .mockResolvedValueOnce(mockVersion2 as DocumentVersion);
 

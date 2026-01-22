@@ -1,0 +1,15 @@
+{
+  "id": "ruling-indexing-job",
+  "category": "Core",
+  "title": "Ruling Indexing Background Job",
+  "description": "Create Bull queue processor for periodically fetching and indexing new rulings from external sources. Schedule daily sync jobs.",
+  "status": "in_progress",
+  "priority": 2,
+  "complexity": "moderate",
+  "createdAt": "2026-01-12T10:31:20.835Z",
+  "updatedAt": "2026-01-22T00:05:30.658Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

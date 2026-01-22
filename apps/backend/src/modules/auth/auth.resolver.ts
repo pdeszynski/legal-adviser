@@ -1,5 +1,9 @@
 import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql';
-import { UseGuards, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import {
+  UseGuards,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { GqlAuthGuard } from './guards/gql-auth.guard';
 import { AuthService } from './auth.service';
 import { SkipCsrf } from '../../shared/csrf';
@@ -10,6 +14,8 @@ import {
   AuthPayload,
   RefreshTokenPayload,
   AuthUserPayload,
+  UpdateProfileInput,
+  ChangePasswordInput,
 } from './dto/auth.graphql-dto';
 
 /**
@@ -127,6 +133,7 @@ export class AuthResolver {
       isActive: user.isActive,
       disclaimerAccepted: user.disclaimerAccepted,
       disclaimerAcceptedAt: user.disclaimerAcceptedAt || undefined,
+      role: 'USER', // Default role
     };
   }
 
@@ -158,6 +165,62 @@ export class AuthResolver {
       isActive: user.isActive,
       disclaimerAccepted: user.disclaimerAccepted,
       disclaimerAcceptedAt: user.disclaimerAcceptedAt || undefined,
+      role: 'USER', // Default role
     };
+  }
+
+  /**
+   * Mutation: Update user profile
+   * Updates email, username, firstName, or lastName for the current user
+   */
+  @Mutation(() => AuthUserPayload, {
+    name: 'updateProfile',
+    description: 'Update profile information for the current user',
+  })
+  @UseGuards(GqlAuthGuard)
+  async updateProfile(
+    @Context() context: { req: { user: { userId: string } } },
+    @Args('input') input: UpdateProfileInput,
+  ): Promise<AuthUserPayload> {
+    const userId = context.req.user?.userId;
+    if (!userId) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+
+    const user = await this.authService.updateProfile(userId, input);
+
+    return {
+      id: user.id,
+      email: user.email,
+      username: user.username || undefined,
+      firstName: user.firstName || undefined,
+      lastName: user.lastName || undefined,
+      isActive: user.isActive,
+      disclaimerAccepted: user.disclaimerAccepted,
+      disclaimerAcceptedAt: user.disclaimerAcceptedAt || undefined,
+      role: 'USER', // Default role
+    };
+  }
+
+  /**
+   * Mutation: Change password
+   * Updates the password for the current user after validating current password
+   */
+  @Mutation(() => Boolean, {
+    name: 'changePassword',
+    description: 'Change password for the current user',
+  })
+  @UseGuards(GqlAuthGuard)
+  async changePassword(
+    @Context() context: { req: { user: { userId: string } } },
+    @Args('input') input: ChangePasswordInput,
+  ): Promise<boolean> {
+    const userId = context.req.user?.userId;
+    if (!userId) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+
+    await this.authService.changePassword(userId, input);
+    return true;
   }
 }

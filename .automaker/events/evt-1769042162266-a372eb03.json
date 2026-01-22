@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769042162266-a372eb03",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T00:36:02.266Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "quota-enforcement",
+  "featureName": "Usage Quota Enforcement",
+  "error": "Feature completed in 866s - auto-verified",
+  "passes": true
+}

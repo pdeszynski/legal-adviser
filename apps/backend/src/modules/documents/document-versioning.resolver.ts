@@ -14,16 +14,15 @@ import { LegalDocument } from './entities/legal-document.entity';
  */
 @Resolver(() => DocumentVersion)
 export class DocumentVersioningResolver {
-  constructor(
-    private readonly versioningService: DocumentVersioningService,
-  ) {}
+  constructor(private readonly versioningService: DocumentVersioningService) {}
 
   /**
    * Get all versions for a document
    */
   @Query(() => [DocumentVersion], {
     name: 'documentVersionHistory',
-    description: 'Get all versions for a document, ordered by version number descending',
+    description:
+      'Get all versions for a document, ordered by version number descending',
   })
   async getVersionHistory(
     @Args('documentId', { type: () => ID }) documentId: string,
@@ -50,13 +49,15 @@ export class DocumentVersioningResolver {
    */
   @Mutation(() => LegalDocument, {
     name: 'rollbackDocumentToVersion',
-    description: 'Rollback a document to a previous version. Creates a new version with the old content.',
+    description:
+      'Rollback a document to a previous version. Creates a new version with the old content.',
   })
   async rollbackToVersion(
     @Args('documentId', { type: () => ID }) documentId: string,
     @Args('versionNumber', { type: () => Number }) versionNumber: number,
     @Args('sessionId', { type: () => ID }) sessionId: string,
-    @Args('authorUserId', { type: () => ID, nullable: true }) authorUserId?: string,
+    @Args('authorUserId', { type: () => ID, nullable: true })
+    authorUserId?: string,
   ): Promise<LegalDocument> {
     const result = await this.versioningService.rollbackToVersion(
       documentId,

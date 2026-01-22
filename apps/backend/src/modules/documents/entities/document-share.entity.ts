@@ -62,7 +62,9 @@ registerEnumType(SharePermission, {
 @Entity('document_shares')
 @ObjectType('DocumentShare')
 @QueryOptions({ enableTotalCount: true })
-@Index('IDX_document_share_unique', ['documentId', 'sharedWithUserId'], { unique: true })
+@Index('IDX_document_share_unique', ['documentId', 'sharedWithUserId'], {
+  unique: true,
+})
 @Index('IDX_document_share_lookup', ['sharedWithUserId', 'documentId'])
 @Relation('document', () => LegalDocument)
 @Relation('sharedWithUser', () => User)

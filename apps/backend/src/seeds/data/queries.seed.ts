@@ -42,16 +42,19 @@ Zgodnie z **Kodeksem cywilnym**, terminy przedawnienia roszczeń kształtują si
       {
         source: 'Kodeks cywilny',
         article: 'Art. 118',
-        excerpt: 'Jeżeli przepis szczególny nie stanowi inaczej, termin przedawnienia wynosi sześć lat...',
+        excerpt:
+          'Jeżeli przepis szczególny nie stanowi inaczej, termin przedawnienia wynosi sześć lat...',
       },
       {
         source: 'Kodeks cywilny',
         article: 'Art. 123',
-        excerpt: 'Bieg przedawnienia przerywa się przez każdą czynność przed sądem...',
+        excerpt:
+          'Bieg przedawnienia przerywa się przez każdą czynność przed sądem...',
       },
       {
         source: 'Ustawa z dnia 13 kwietnia 2018 r.',
-        excerpt: 'o zmianie ustawy - Kodeks cywilny oraz niektórych innych ustaw',
+        excerpt:
+          'o zmianie ustawy - Kodeks cywilny oraz niektórych innych ustaw',
         url: 'https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU20180001104',
       },
     ],
@@ -83,12 +86,14 @@ Oświadczenie musi zawierać pouczenie o prawie odwołania do sądu pracy (21 dn
       {
         source: 'Kodeks pracy',
         article: 'Art. 52',
-        excerpt: 'Pracodawca może rozwiązać umowę o pracę bez wypowiedzenia z winy pracownika...',
+        excerpt:
+          'Pracodawca może rozwiązać umowę o pracę bez wypowiedzenia z winy pracownika...',
       },
       {
         source: 'Kodeks pracy',
         article: 'Art. 30 § 4',
-        excerpt: 'W oświadczeniu pracodawcy o wypowiedzeniu umowy o pracę lub jej rozwiązaniu bez wypowiedzenia powinna być wskazana przyczyna...',
+        excerpt:
+          'W oświadczeniu pracodawcy o wypowiedzeniu umowy o pracę lub jej rozwiązaniu bez wypowiedzenia powinna być wskazana przyczyna...',
       },
     ],
   },
@@ -122,12 +127,14 @@ Roszczenie o zachowek przedawnia się z upływem **5 lat** od ogłoszenia testam
       {
         source: 'Kodeks cywilny',
         article: 'Art. 991',
-        excerpt: 'Zstępnym, małżonkowi oraz rodzicom spadkodawcy, którzy byliby powołani do spadku z ustawy, należą się...',
+        excerpt:
+          'Zstępnym, małżonkowi oraz rodzicom spadkodawcy, którzy byliby powołani do spadku z ustawy, należą się...',
       },
       {
         source: 'Kodeks cywilny',
         article: 'Art. 1007',
-        excerpt: 'Roszczenia uprawnionego z tytułu zachowku przedawniają się z upływem lat pięciu...',
+        excerpt:
+          'Roszczenia uprawnionego z tytułu zachowku przedawniają się z upływem lat pięciu...',
       },
     ],
   },
@@ -165,13 +172,15 @@ Zgodnie z **ustawą o prawach konsumenta**, jako konsument masz prawo odstąpić
       {
         source: 'Ustawa o prawach konsumenta',
         article: 'Art. 27',
-        excerpt: 'Konsument, który zawarł umowę na odległość, może w terminie 14 dni odstąpić od niej bez podawania przyczyny...',
+        excerpt:
+          'Konsument, który zawarł umowę na odległość, może w terminie 14 dni odstąpić od niej bez podawania przyczyny...',
         url: 'https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU20140000827',
       },
       {
         source: 'Ustawa o prawach konsumenta',
         article: 'Art. 38',
-        excerpt: 'Prawo odstąpienia od umowy zawartej poza lokalem przedsiębiorstwa lub na odległość nie przysługuje konsumentowi w odniesieniu do umów...',
+        excerpt:
+          'Prawo odstąpienia od umowy zawartej poza lokalem przedsiębiorstwa lub na odległość nie przysługuje konsumentowi w odniesieniu do umów...',
       },
     ],
   },
@@ -207,7 +216,8 @@ Rejestracja w CEIDG jest **bezpłatna**!
 Wpis do CEIDG następuje **następnego dnia roboczego** po złożeniu wniosku.`,
     citations: [
       {
-        source: 'Ustawa o Centralnej Ewidencji i Informacji o Działalności Gospodarczej',
+        source:
+          'Ustawa o Centralnej Ewidencji i Informacji o Działalności Gospodarczej',
         url: 'https://www.biznes.gov.pl/pl/opisy-procedur/-/proc/739',
         excerpt: 'Wniosek o wpis do CEIDG można złożyć drogą elektroniczną...',
       },

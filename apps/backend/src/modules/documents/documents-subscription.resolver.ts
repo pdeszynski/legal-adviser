@@ -75,8 +75,9 @@ export class DocumentSubscriptionResolver {
       // If no filters provided or all filters match, include the event
       return true;
     },
-    resolve: (payload: { documentStatusChanged: DocumentStatusChangePayload }) =>
-      payload.documentStatusChanged,
+    resolve: (payload: {
+      documentStatusChanged: DocumentStatusChangePayload;
+    }) => payload.documentStatusChanged,
   })
   documentStatusChanged(
     @Args('documentId', {

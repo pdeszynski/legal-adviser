@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DocumentVersion } from '../entities/document-version.entity';
@@ -61,7 +65,9 @@ export class DocumentVersioningService {
       order: { versionNumber: 'DESC' },
     });
 
-    const nextVersionNumber = latestVersion ? latestVersion.versionNumber + 1 : 1;
+    const nextVersionNumber = latestVersion
+      ? latestVersion.versionNumber + 1
+      : 1;
 
     // Create the new version
     const version = this.versionRepository.create({

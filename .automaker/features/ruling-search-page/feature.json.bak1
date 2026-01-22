@@ -1,0 +1,15 @@
+{
+  "id": "ruling-search-page",
+  "category": "UI",
+  "title": "Case Law Search Page",
+  "description": "Create search page with advanced filters and result list. Include search input, filter sidebar, and result cards with ruling summaries.",
+  "status": "in_progress",
+  "priority": 1,
+  "complexity": "moderate",
+  "createdAt": "2026-01-12T10:31:20.834Z",
+  "updatedAt": "2026-01-21T23:15:08.775Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

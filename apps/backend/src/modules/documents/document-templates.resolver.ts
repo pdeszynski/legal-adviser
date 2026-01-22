@@ -7,6 +7,7 @@ import { DocumentsService } from './services/documents.service';
 import { CreateTemplateInput } from './dto/create-template.input';
 import { UpdateTemplateInput } from './dto/update-template.input';
 import { GenerateFromTemplateInput } from './dto/generate-from-template.input';
+import { RenderTemplateInput } from './dto/render-template.dto';
 import { LegalDocument } from './entities/legal-document.entity';
 import { DocumentType, DocumentStatus } from './entities/legal-document.entity';
 
@@ -53,15 +54,31 @@ export class DocumentTemplatesResolver {
     return true;
   }
 
+  @Mutation(() => String, {
+    description:
+      'Render a template with variable substitution without creating a document',
+  })
+  async renderTemplate(
+    @Args('input') input: RenderTemplateInput,
+  ): Promise<string> {
+    const { templateId, variables } = input;
+
+    const processedContent = await this.templateEngineService.processTemplate(
+      templateId,
+      variables,
+    );
+
+    return processedContent;
+  }
+
   @Mutation(() => LegalDocument)
   async generateDocumentFromTemplate(
     @Args('input') input: GenerateFromTemplateInput,
   ): Promise<LegalDocument> {
     const { templateId, sessionId, title, variables } = input;
 
-    const template = await this.templateEngineService.findByIdOrFail(
-      templateId,
-    );
+    const template =
+      await this.templateEngineService.findByIdOrFail(templateId);
 
     const processedContent = await this.templateEngineService.processTemplate(
       templateId,

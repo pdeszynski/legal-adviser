@@ -43,9 +43,10 @@ export class DocumentStatus extends SimpleValueObject<DocumentStatusEnum> {
   }
 
   isEditable(): boolean {
-    return [DocumentStatusEnum.DRAFT, DocumentStatusEnum.PENDING_REVIEW].includes(
-      this.value,
-    );
+    return [
+      DocumentStatusEnum.DRAFT,
+      DocumentStatusEnum.PENDING_REVIEW,
+    ].includes(this.value);
   }
 
   canTransitionTo(newStatus: DocumentStatusEnum): boolean {

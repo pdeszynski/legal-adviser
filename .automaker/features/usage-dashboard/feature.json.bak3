@@ -1,0 +1,17 @@
+{
+  "id": "usage-dashboard",
+  "category": "UI",
+  "title": "Usage Dashboard",
+  "description": "Create page showing user's AI usage statistics. Display charts for daily usage, remaining quota, and cost breakdown.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "moderate",
+  "dependencies": [
+    "usage-entity"
+  ],
+  "createdAt": "2026-01-12T10:31:20.850Z",
+  "updatedAt": "2026-01-12T10:31:20.850Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

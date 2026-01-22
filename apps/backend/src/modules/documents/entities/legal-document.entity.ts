@@ -6,6 +6,9 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
+  BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
 import {
   FilterableField,
@@ -54,6 +57,20 @@ export enum DocumentStatus {
   FAILED = 'FAILED',
 }
 
+/**
+ * Moderation Status Enum
+ *
+ * Defines the moderation status of a document:
+ * - PENDING: Document is flagged and pending moderation review
+ * - APPROVED: Document has been approved by moderator
+ * - REJECTED: Document has been rejected by moderator
+ */
+export enum ModerationStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
 // Register enums with GraphQL
 registerEnumType(DocumentType, {
   name: 'DocumentType',
@@ -63,6 +80,11 @@ registerEnumType(DocumentType, {
 registerEnumType(DocumentStatus, {
   name: 'DocumentStatus',
   description: 'Status of document generation',
+});
+
+registerEnumType(ModerationStatus, {
+  name: 'ModerationStatus',
+  description: 'Moderation status of document',
 });
 
 /**
@@ -120,6 +142,11 @@ export class DocumentMetadataType {
 @ObjectType('LegalDocument')
 @QueryOptions({ enableTotalCount: true })
 @Relation('session', () => UserSession)
+@Index(['sessionId'])
+@Index(['type'])
+@Index(['status'])
+@Index(['createdAt'])
+@Index('idx_legal_document_search', { synchronize: false }) // Full-text search index, created manually via migration/SQL
 export class LegalDocument {
   @PrimaryGeneratedColumn('uuid')
   @IDField(() => ID)
@@ -169,6 +196,74 @@ export class LegalDocument {
   @Field(() => DocumentMetadataType, { nullable: true })
   metadata: DocumentMetadata | null;
 
+  /**
+   * URL to download the PDF version of this document
+   * This field stores a signed URL that can be used to download the PDF
+   * The URL is generated on-demand when the pdfUrl field is requested
+   */
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Signed URL to download the PDF version of this document',
+  })
+  pdfUrl: string | null;
+
+  /**
+   * Moderation status of the document
+   * Documents can be flagged for moderation review
+   */
+  @Column({
+    type: 'enum',
+    enum: ModerationStatus,
+    nullable: true,
+  })
+  @FilterableField(() => ModerationStatus, {
+    nullable: true,
+    description: 'Moderation status of the document',
+  })
+  moderationStatus: ModerationStatus | null;
+
+  /**
+   * Reason for moderation action (approval/rejection)
+   * Stores the moderator's explanation
+   */
+  @Column({ type: 'text', nullable: true })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Reason for moderation decision',
+  })
+  moderationReason: string | null;
+
+  /**
+   * ID of the admin user who moderated this document
+   */
+  @Column({ type: 'uuid', nullable: true })
+  @Field(() => ID, {
+    nullable: true,
+    description: 'ID of the admin who moderated this document',
+  })
+  moderatedById: string | null;
+
+  /**
+   * Timestamp when document was flagged for moderation
+   */
+  @Column({ type: 'timestamp', nullable: true })
+  @Field(() => GraphQLISODateTime, {
+    nullable: true,
+    description: 'When the document was flagged for moderation',
+  })
+  flaggedAt: Date | null;
+
+  /**
+   * Timestamp when moderation action was taken
+   */
+  @Column({ type: 'timestamp', nullable: true })
+  @Field(() => GraphQLISODateTime, {
+    nullable: true,
+    description: 'When the document was moderated',
+  })
+  moderatedAt: Date | null;
+
   @CreateDateColumn({ type: 'timestamp' })
   @FilterableField(() => GraphQLISODateTime)
   createdAt: Date;
@@ -176,6 +271,60 @@ export class LegalDocument {
   @UpdateDateColumn({ type: 'timestamp' })
   @FilterableField(() => GraphQLISODateTime)
   updatedAt: Date;
+
+  /**
+   * PostgreSQL tsvector column for full-text search
+   * This column is automatically populated via trigger or application code
+   * Searchable fields: title, contentRaw, metadata fields
+   * Note: This column is not exposed via GraphQL, it's internal for search queries
+   */
+  @Column({
+    type: 'tsvector',
+    nullable: true,
+    select: false, // Don't select by default as it's internal
+  })
+  searchVector: string | null;
+
+  /**
+   * Lifecycle hook to prepare search content before insert/update
+   * The actual tsvector is computed by PostgreSQL via raw query in the service
+   */
+  @BeforeInsert()
+  @BeforeUpdate()
+  prepareSearchContent(): void {
+    // Search vector will be updated via raw SQL in the service
+    // This hook is a placeholder for any pre-processing if needed
+  }
+
+  /**
+   * Get searchable text content for full-text search indexing
+   * Combines all searchable fields into a single text for tsvector creation
+   */
+  getSearchableContent(): string {
+    const parts: string[] = [];
+
+    // Add title with higher weight
+    if (this.title) {
+      parts.push(this.title);
+    }
+
+    // Add content
+    if (this.contentRaw) {
+      parts.push(this.contentRaw);
+    }
+
+    // Add metadata fields
+    if (this.metadata) {
+      if (this.metadata.plaintiffName) {
+        parts.push(this.metadata.plaintiffName);
+      }
+      if (this.metadata.defendantName) {
+        parts.push(this.metadata.defendantName);
+      }
+    }
+
+    return parts.join(' ');
+  }
 
   /**
    * Check if the document can be marked as completed
@@ -229,5 +378,72 @@ export class LegalDocument {
    */
   hasFailed(): boolean {
     return this.status === DocumentStatus.FAILED;
+  }
+
+  /**
+   * Flag document for moderation review
+   */
+  flagForModeration(): void {
+    this.moderationStatus = ModerationStatus.PENDING;
+    this.flaggedAt = new Date();
+  }
+
+  /**
+   * Approve the document after moderation review
+   * @param moderatorId - ID of the admin approving the document
+   * @param reason - Optional reason for approval
+   */
+  approve(moderatorId: string, reason?: string): void {
+    this.moderationStatus = ModerationStatus.APPROVED;
+    this.moderatedById = moderatorId;
+    this.moderatedAt = new Date();
+    this.moderationReason = reason ?? null;
+  }
+
+  /**
+   * Reject the document after moderation review
+   * @param moderatorId - ID of the admin rejecting the document
+   * @param reason - Reason for rejection (required)
+   */
+  reject(moderatorId: string, reason: string): void {
+    if (!reason || reason.trim().length === 0) {
+      throw new Error('Rejection reason is required');
+    }
+    this.moderationStatus = ModerationStatus.REJECTED;
+    this.moderatedById = moderatorId;
+    this.moderatedAt = new Date();
+    this.moderationReason = reason;
+  }
+
+  /**
+   * Check if document is pending moderation
+   */
+  isPendingModeration(): boolean {
+    return this.moderationStatus === ModerationStatus.PENDING;
+  }
+
+  /**
+   * Check if document is approved
+   */
+  isApproved(): boolean {
+    return this.moderationStatus === ModerationStatus.APPROVED;
+  }
+
+  /**
+   * Check if document is rejected
+   */
+  isRejected(): boolean {
+    return this.moderationStatus === ModerationStatus.REJECTED;
+  }
+
+  /**
+   * Reset moderation status (allows re-moderation)
+   */
+  resetModeration(): void {
+    this.moderationStatus = null;
+    this.moderatedById = null;
+    this.moderatedAt = null;
+    this.moderationReason = null;
+    this.flaggedAt = null;
   }
 }

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769044772834-7ac37904",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T01:19:32.834Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "comment-system-ui",
+  "featureName": "Comment System UI",
+  "error": "Feature completed in 439s - auto-verified",
+  "passes": true
+}

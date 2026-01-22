@@ -16,9 +16,10 @@ export interface GetUserSubscriptionInput {
  * This use case retrieves the subscription for a specific user.
  */
 @Injectable()
-export class GetUserSubscriptionUseCase
-  implements IUseCase<GetUserSubscriptionInput, SubscriptionDto>
-{
+export class GetUserSubscriptionUseCase implements IUseCase<
+  GetUserSubscriptionInput,
+  SubscriptionDto
+> {
   constructor(
     @Inject('ISubscriptionRepository')
     private readonly subscriptionRepository: ISubscriptionRepository,

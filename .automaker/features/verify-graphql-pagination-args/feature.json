@@ -4,7 +4,7 @@
   "id": "verify-graphql-pagination-args",
   "title": "Verify GraphQL Pagination Arguments",
   "priority": 1,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-21T10:19:04.636Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-21T23:22:02.473Z"
 }

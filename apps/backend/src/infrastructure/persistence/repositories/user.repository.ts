@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserAggregate } from '../../../domain/user-management/aggregates';
 import { IUserRepository } from '../../../domain/user-management/repositories';
-import { UserRoleEnum, UserStatusEnum } from '../../../domain/user-management/value-objects';
+import {
+  UserRoleEnum,
+  UserStatusEnum,
+} from '../../../domain/user-management/value-objects';
 import { UserOrmEntity } from '../entities/user.orm-entity';
 import { UserMapper } from '../mappers/user.mapper';
 

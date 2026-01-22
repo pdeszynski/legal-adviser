@@ -5,38 +5,32 @@ This service provides AI-powered legal assistance including:
 - Legal Q&A
 - Case law search
 - Legal grounds classification
+
+Features distributed tracing with Sentry for APM.
 """
 
 import uuid
 import time
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+from .sentry_init import init_sentry, start_ai_span, set_transaction_name
 
-from .models.requests import (
-    AskQuestionRequest,
-    GenerateDocumentRequest,
-    SearchRulingsRequest,
-    ClassifyCaseRequest,
-    GenerateEmbeddingsRequest,
-    SemanticSearchRequest,
-    QARequest,
-)
-from .models.responses import (
-    AnswerResponse,
-    Citation,
-    DocumentGenerationStatus,
-    GenerateDocumentResponse,
-    Ruling,
-    SearchRulingsResponse,
-    ClassificationResponse,
-    GenerateEmbeddingsResponse,
-    SemanticSearchResponse,
-    SemanticSearchResult,
-    QAResponse,
-)
-from .graphs.drafting_graph import drafting_graph
-from .graphs.qa_graph import qa_graph
-from .agents.classifier_agent import classifier_agent
+# Initialize Sentry for error tracking and APM
+init_sentry()
+
+import sentry_sdk
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for startup/shutdown events."""
+    # Startup
+    print("Legal AI Engine starting up...")
+    yield
+    # Shutdown
+    print("Legal AI Engine shutting down...")
+
 
 app = FastAPI(
     title="Legal AI Engine",
@@ -44,7 +38,25 @@ app = FastAPI(
     version="0.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
+
+
+# Middleware for distributed tracing
+@app.middleware("http")
+async def sentry_middleware(request: Request, call_next):
+    """Middleware to propagate Sentry traces for distributed tracing."""
+    # Extract sentry-trace header from incoming request
+    sentry_trace = request.headers.get("sentry-trace")
+
+    if sentry_trace:
+        # Continue the trace from the incoming header
+        with sentry_sdk.continue_trace({"sentry-trace": sentry_trace}):
+            return await call_next(request)
+
+    # No trace to continue, proceed normally
+    return await call_next(request)
+
 
 # CORS middleware for development
 app.add_middleware(

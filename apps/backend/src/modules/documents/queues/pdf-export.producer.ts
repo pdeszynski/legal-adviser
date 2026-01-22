@@ -107,9 +107,7 @@ export class PdfExportProducer {
    * @param jobId - The ID of the job to check
    * @returns The job if found, null otherwise
    */
-  async getJobStatus(
-    jobId: string,
-  ): Promise<Job<PdfExportJobData> | null> {
+  async getJobStatus(jobId: string): Promise<Job<PdfExportJobData> | null> {
     return this.pdfExportQueue.getJob(jobId);
   }
 
@@ -119,9 +117,7 @@ export class PdfExportProducer {
    * @param jobId - The ID of the job
    * @returns The job result if completed, null otherwise
    */
-  async getJobResult(
-    jobId: string,
-  ): Promise<PdfExportJobResult | null> {
+  async getJobResult(jobId: string): Promise<PdfExportJobResult | null> {
     const job = await this.getJobStatus(jobId);
     if (!job) return null;
 

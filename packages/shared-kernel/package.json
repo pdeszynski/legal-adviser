@@ -1,0 +1,36 @@
+{
+  "name": "@legal/shared-kernel",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "uuid": "^11.0.5"
+  },
+  "devDependencies": {
+    "@legal/eslint-config": "workspace:*",
+    "@legal/tsconfig": "workspace:*",
+    "eslint": "^9.39.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  }
+}

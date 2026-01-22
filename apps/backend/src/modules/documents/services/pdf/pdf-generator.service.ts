@@ -1,7 +1,10 @@
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import puppeteer, { Browser, Page, PDFOptions } from 'puppeteer';
 import { PdfExportOptions, PdfPageFormat } from '../../queues/pdf-export.job';
-import { PdfTemplateService, DocumentTemplateContext } from './pdf-template.service';
+import {
+  PdfTemplateService,
+  DocumentTemplateContext,
+} from './pdf-template.service';
 
 /**
  * PDF Generation Result
@@ -95,8 +98,12 @@ export class PdfGeneratorService implements OnModuleDestroy {
         sizeBytes: pdfBuffer.length,
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`PDF generation failed: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `PDF generation failed: ${errorMessage}`,
+        error instanceof Error ? error.stack : undefined,
+      );
       throw new Error(`Failed to generate PDF: ${errorMessage}`);
     } finally {
       // Close the page to free resources

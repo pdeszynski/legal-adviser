@@ -13,3 +13,9 @@ export * from './document-generation.producer';
 export * from './pdf-export.job';
 export * from './pdf-export.processor';
 export * from './pdf-export.producer';
+
+// Ruling Indexing Queue
+export * from './ruling-index.job';
+export * from './ruling-index.processor';
+export * from './ruling-index.producer';
+export * from './ruling-index.scheduler';

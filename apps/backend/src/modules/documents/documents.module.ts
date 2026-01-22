@@ -9,6 +9,7 @@ import { DocumentShare } from './entities/document-share.entity';
 import { DocumentTemplate } from './entities/document-template.entity';
 import { DocumentVersion } from './entities/document-version.entity';
 import { DocumentEmbedding } from './entities/document-embedding.entity';
+import { DocumentComment } from './entities/document-comment.entity';
 import { DocumentsService } from './services/documents.service';
 import { LegalRulingService } from './services/legal-ruling.service';
 import { DocumentSharingService } from './services/document-sharing.service';
@@ -22,6 +23,8 @@ import { DocumentSharingResolver } from './document-sharing.resolver';
 import { DocumentTemplatesResolver } from './document-templates.resolver';
 import { DocumentVersioningResolver } from './document-versioning.resolver';
 import { LegalAnalysisResolver } from './legal-analysis.resolver';
+import { PdfUrlResolver } from './pdf-url.resolver';
+import { DocumentModerationResolver } from './document-moderation.resolver';
 import { DocumentsController } from './documents.controller';
 import { DocumentStreamController } from './controllers/document-stream.controller';
 import {
@@ -36,12 +39,18 @@ import {
   CreateLegalRulingInput,
   UpdateLegalRulingInput,
 } from './dto/legal-ruling.dto';
-import { CreateTemplateInput } from './dto/create-template.input';
-import { UpdateTemplateInput } from './dto/update-template.input';
+import {
+  CreateDocumentTemplateInput,
+  UpdateDocumentTemplateInput,
+} from './dto/document-template.dto';
 import {
   CreateDocumentVersionInput,
   UpdateDocumentVersionInput,
 } from './dto/document-version.dto';
+import {
+  CreateDocumentCommentInput,
+  UpdateDocumentCommentInput,
+} from './dto/document-comment.dto';
 import { BullModule } from '@nestjs/bull';
 import { QUEUE_NAMES } from '../../shared/queues';
 import { AiClientModule } from '../../shared/ai-client/ai-client.module';
@@ -50,9 +59,26 @@ import { DocumentGenerationProducer } from './queues/document-generation.produce
 // PDF Export Services
 import { PdfExportProcessor } from './queues/pdf-export.processor';
 import { PdfExportProducer } from './queues/pdf-export.producer';
+// Ruling Indexing Services
+import { RulingIndexingProcessor } from './queues/ruling-index.processor';
+import { RulingIndexingProducer } from './queues/ruling-index.producer';
+import { RulingIndexingScheduler } from './queues/ruling-index.scheduler';
 import { PdfTemplateService, PdfGeneratorService } from './services/pdf';
 import { PdfExportService } from './services/pdf-export.service';
+import { PdfUrlService } from './services/pdf-url.service';
+import { DocumentModerationService } from './services/document-moderation.service';
 import { UserSession } from '../users/entities/user-session.entity';
+import { RulingSearchAggregatorService } from './services/ruling-search-aggregator.service';
+import { AdvancedLegalRulingSearchService } from './services/advanced-legal-ruling-search.service';
+// Anti-Corruption Layer
+import { SaosModule } from '../../infrastructure/anti-corruption/saos/saos.module';
+import { IsapModule } from '../../infrastructure/anti-corruption/isap/isap.module';
+// Auth Guards
+import {
+  GqlAuthGuard,
+  DocumentPermissionGuard,
+  DocumentPermission,
+} from '../auth/guards';
 
 /**
  * Documents Module
@@ -76,6 +102,13 @@ import { UserSession } from '../users/entities/user-session.entity';
  * Queue Processing:
  * - DocumentGenerationProcessor: Handles async document generation via Bull queue
  * - DocumentGenerationProducer: Adds document generation jobs to the queue
+ * - RulingIndexingProcessor: Handles async ruling indexing from external sources
+ * - RulingIndexingProducer: Adds ruling indexing jobs to the queue
+ * - RulingIndexingScheduler: Schedules periodic ruling sync jobs
+ *
+ * Document Moderation:
+ * - DocumentModerationService: Handles flag/approve/reject workflow
+ * - DocumentModerationResolver: Admin-only mutations for moderation
  *
  * This module will be expanded with:
  * - PdfExportService (PDF generation) - T020
@@ -90,8 +123,15 @@ import { UserSession } from '../users/entities/user-session.entity';
     BullModule.registerQueue({
       name: QUEUE_NAMES.DOCUMENT.EXPORT_PDF,
     }),
+    // Register ruling indexing queue
+    BullModule.registerQueue({
+      name: QUEUE_NAMES.RULING.INDEX,
+    }),
     // AI client for communication with AI engine
     AiClientModule,
+    // Anti-corruption layer for external integrations
+    SaosModule,
+    IsapModule,
     // TypeORM for direct repository access (needed for LegalRulingService full-text search and DocumentSharingService)
     TypeOrmModule.forFeature([
       LegalRuling,
@@ -101,6 +141,7 @@ import { UserSession } from '../users/entities/user-session.entity';
       DocumentTemplate,
       DocumentVersion,
       DocumentEmbedding,
+      DocumentComment,
       UserSession,
     ]),
     NestjsQueryGraphQLModule.forFeature({
@@ -112,6 +153,7 @@ import { UserSession } from '../users/entities/user-session.entity';
           DocumentShare,
           DocumentTemplate,
           DocumentVersion,
+          DocumentComment,
         ]),
       ],
       resolvers: [
@@ -122,6 +164,7 @@ import { UserSession } from '../users/entities/user-session.entity';
           UpdateDTOClass: UpdateLegalDocumentInput,
           enableTotalCount: true,
           enableAggregate: true,
+          guards: [GqlAuthGuard],
           read: {
             // Enable standard read operations
             many: { name: 'legalDocuments' },
@@ -202,28 +245,29 @@ import { UserSession } from '../users/entities/user-session.entity';
         {
           DTOClass: DocumentTemplate,
           EntityClass: DocumentTemplate,
-          CreateDTOClass: CreateTemplateInput,
-          UpdateDTOClass: UpdateTemplateInput,
+          CreateDTOClass: CreateDocumentTemplateInput,
+          UpdateDTOClass: UpdateDocumentTemplateInput,
           enableTotalCount: true,
           enableAggregate: true,
+          guards: [GqlAuthGuard],
           read: {
-            // Custom resolver handles queries
-            many: { disabled: true },
-            one: { disabled: true },
+            // Enable standard read operations with filtering, sorting, paging
+            many: { name: 'documentTemplates' },
+            one: { name: 'documentTemplate' },
           },
           create: {
-            // Custom resolver handles mutations
-            one: { disabled: true },
+            // Enable create mutation
+            one: { name: 'createOneDocumentTemplate' },
             many: { disabled: true },
           },
           update: {
-            // Custom resolver handles mutations
-            one: { disabled: true },
+            // Enable update mutation
+            one: { name: 'updateOneDocumentTemplate' },
             many: { disabled: true },
           },
           delete: {
-            // Custom resolver handles mutations
-            one: { disabled: true },
+            // Enable delete mutation
+            one: { name: 'deleteOneDocumentTemplate' },
             many: { disabled: true },
           },
         },
@@ -255,6 +299,35 @@ import { UserSession } from '../users/entities/user-session.entity';
             many: { disabled: true },
           },
         },
+        {
+          DTOClass: DocumentComment,
+          EntityClass: DocumentComment,
+          CreateDTOClass: CreateDocumentCommentInput,
+          UpdateDTOClass: UpdateDocumentCommentInput,
+          enableTotalCount: true,
+          enableAggregate: true,
+          guards: [GqlAuthGuard],
+          read: {
+            // Enable standard read operations with filtering, sorting, paging
+            many: { name: 'documentComments' },
+            one: { name: 'documentComment' },
+          },
+          create: {
+            // Enable create mutation
+            one: { name: 'createOneDocumentComment' },
+            many: { disabled: true },
+          },
+          update: {
+            // Enable update mutation
+            one: { name: 'updateOneDocumentComment' },
+            many: { disabled: true },
+          },
+          delete: {
+            // Enable delete mutation
+            one: { name: 'deleteOneDocumentComment' },
+            many: { disabled: true },
+          },
+        },
       ],
     }),
   ],
@@ -266,13 +339,19 @@ import { UserSession } from '../users/entities/user-session.entity';
     DocumentVersioningService,
     VectorStoreService,
     PdfExportService,
+    PdfUrlService,
+    DocumentModerationService,
+    RulingSearchAggregatorService,
+    AdvancedLegalRulingSearchService,
     DocumentsResolver,
     LegalRulingResolver,
     DocumentSubscriptionResolver,
+    PdfUrlResolver,
     DocumentSharingResolver,
     DocumentTemplatesResolver,
     DocumentVersioningResolver,
     LegalAnalysisResolver,
+    DocumentModerationResolver,
     // Document Generation Queue
     DocumentGenerationProcessor,
     DocumentGenerationProducer,
@@ -281,6 +360,10 @@ import { UserSession } from '../users/entities/user-session.entity';
     PdfGeneratorService,
     PdfExportProcessor,
     PdfExportProducer,
+    // Ruling Indexing Queue
+    RulingIndexingProcessor,
+    RulingIndexingProducer,
+    RulingIndexingScheduler,
   ],
   controllers: [DocumentsController, DocumentStreamController],
   exports: [
@@ -291,9 +374,14 @@ import { UserSession } from '../users/entities/user-session.entity';
     DocumentVersioningService,
     VectorStoreService,
     PdfExportService,
+    PdfUrlService,
+    DocumentModerationService,
+    RulingSearchAggregatorService,
+    AdvancedLegalRulingSearchService,
     DocumentGenerationProducer,
     PdfExportProducer,
     PdfGeneratorService,
+    RulingIndexingProducer,
   ],
 })
 export class DocumentsModule {}

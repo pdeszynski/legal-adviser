@@ -3,16 +3,13 @@
   "category": "Core",
   "title": "Global Search Service",
   "description": "Implement full-text search across documents, rulings, and queries using PostgreSQL full-text search or Elasticsearch. Support fuzzy matching and ranking.",
-  "status": "backlog",
+  "status": "in_progress",
   "priority": 2,
   "complexity": "complex",
-  "dependencies": [
-    "legal-document-nestjs-query",
-    "legal-ruling-entity"
-  ],
   "createdAt": "2026-01-12T10:31:20.845Z",
-  "updatedAt": "2026-01-12T10:31:20.845Z",
+  "updatedAt": "2026-01-22T00:07:33.189Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

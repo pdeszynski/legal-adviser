@@ -32,9 +32,7 @@ export class EmailSendProducer {
         removeOnFail: false,
       });
 
-      this.logger.log(
-        `Email queued for ${jobData.to}: ${jobData.subject}`,
-      );
+      this.logger.log(`Email queued for ${jobData.to}: ${jobData.subject}`);
     } catch (error) {
       this.logger.error('Failed to queue email:', error);
       throw error;

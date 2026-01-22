@@ -1,8 +1,20 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
-import { AuthPayload, RefreshTokenPayload, AuthUserPayload } from './dto/auth.graphql-dto';
+import {
+  AuthPayload,
+  RefreshTokenPayload,
+  AuthUserPayload,
+  UpdateProfileInput,
+  ChangePasswordInput,
+} from './dto/auth.graphql-dto';
+import { AppLogger } from '../../shared/logger';
 
 export interface UserPayload {
   userId: string;
@@ -28,10 +40,13 @@ interface JwtTokenPayload {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new AppLogger({});
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
-  ) {}
+  ) {
+    this.logger.setContext('AuthService');
+  }
 
   /**
    * Validate user credentials against the database
@@ -52,12 +67,11 @@ export class AuthService {
     }
 
     // Map User entity to UserPayload
-    // Default role is 'user', can be extended with a roles table in the future
     return {
       userId: user.id,
       username: user.username || user.email,
       email: user.email,
-      roles: ['user'], // Default role, can be extended with user roles from DB
+      roles: [user.role || 'user'], // Use role from database
     };
   }
 
@@ -111,17 +125,19 @@ export class AuthService {
       sub: user.id,
       username: user.username || user.email,
       email: user.email,
-      roles: ['user'], // Default role
+      roles: [user.role || 'user'], // Use role from database
     };
 
     // Use type assertion to work around JwtService generic type issues
-    const accessToken = this.jwtService.sign(
-      { ...basePayload, type: 'access' as const },
-    );
+    const accessToken = this.jwtService.sign({
+      ...basePayload,
+      type: 'access' as const,
+    });
 
-    const refreshToken = this.jwtService.sign(
-      { ...basePayload, type: 'refresh' as const },
-    );
+    const refreshToken = this.jwtService.sign({
+      ...basePayload,
+      type: 'refresh' as const,
+    });
 
     return { accessToken, refreshToken };
   }
@@ -139,6 +155,7 @@ export class AuthService {
       isActive: user.isActive,
       disclaimerAccepted: user.disclaimerAccepted,
       disclaimerAcceptedAt: user.disclaimerAcceptedAt || undefined,
+      role: user.role || 'user',
     };
   }
 
@@ -255,5 +272,73 @@ export class AuthService {
    */
   async acceptDisclaimer(userId: string): Promise<User> {
     return this.usersService.acceptDisclaimer(userId);
+  }
+
+  /**
+   * Update user profile
+   * Used by GraphQL updateProfile mutation
+   */
+  async updateProfile(
+    userId: string,
+    input: UpdateProfileInput,
+  ): Promise<User> {
+    // Check if email is being changed and if it's already taken
+    if (input.email) {
+      const existingUser = await this.usersService.findByEmail(input.email);
+      if (existingUser && existingUser.id !== userId) {
+        throw new ConflictException('Email is already in use');
+      }
+    }
+
+    // Check if username is being changed and if it's already taken
+    if (input.username) {
+      const existingUsername = await this.usersService.findByUsername(
+        input.username,
+      );
+      if (existingUsername && existingUsername.id !== userId) {
+        throw new ConflictException('Username is already taken');
+      }
+    }
+
+    return this.usersService.updateUser(userId, {
+      email: input.email,
+      username: input.username,
+      firstName: input.firstName,
+      lastName: input.lastName,
+    });
+  }
+
+  /**
+   * Change user password
+   * Used by GraphQL changePassword mutation
+   */
+  async changePassword(
+    userId: string,
+    input: ChangePasswordInput,
+  ): Promise<void> {
+    // Validate current password
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // Get user with password hash for validation
+    const userWithPassword =
+      await this.usersService.findByUsernameOrEmailForAuth(user.email);
+    if (!userWithPassword || !userWithPassword.passwordHash) {
+      throw new BadRequestException('Unable to validate current password');
+    }
+
+    const isCurrentPasswordValid = await this.usersService.comparePassword(
+      input.currentPassword,
+      userWithPassword.passwordHash,
+    );
+
+    if (!isCurrentPasswordValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    // Update password
+    await this.usersService.updatePassword(userId, input.newPassword);
   }
 }

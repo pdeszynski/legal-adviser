@@ -5,9 +5,9 @@
   "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
   "branchName": null,
   "runningFeatureIds": [
-    "feature-1769035186585-q67kgmbio",
-    "pre-commit-lint-hook",
-    "qa-backend-integration"
+    "webhook-system",
+    "webhook-entity",
+    "webhook-delivery-queue"
   ],
-  "savedAt": "2026-01-21T22:59:59.784Z"
+  "savedAt": "2026-01-22T01:47:19.239Z"
 }

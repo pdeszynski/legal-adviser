@@ -1,10 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ServiceResult, successResult, failureResult } from '../../common';
 import {
-  ServiceResult,
-  successResult,
-  failureResult,
-} from '../../common';
-import { ApplicationError, NotFoundError } from '../../common/application-error';
+  ApplicationError,
+  NotFoundError,
+} from '../../common/application-error';
 import {
   CreateTrialSubscriptionDto,
   CreateSubscriptionDto,
@@ -114,7 +113,9 @@ export class BillingApplicationService {
   ): Promise<ServiceResult<SubscriptionDto>> {
     try {
       this.logger.log(`Getting subscription: ${subscriptionId}`);
-      const result = await this.getSubscriptionUseCase.execute({ subscriptionId });
+      const result = await this.getSubscriptionUseCase.execute({
+        subscriptionId,
+      });
       return successResult(result);
     } catch (error) {
       return this.handleError<SubscriptionDto>(error, 'get subscription');
@@ -127,7 +128,9 @@ export class BillingApplicationService {
    * @param userId - The user ID
    * @returns Service result with subscription data
    */
-  async getUserSubscription(userId: string): Promise<ServiceResult<SubscriptionDto>> {
+  async getUserSubscription(
+    userId: string,
+  ): Promise<ServiceResult<SubscriptionDto>> {
     try {
       this.logger.log(`Getting subscription for user: ${userId}`);
       const result = await this.getUserSubscriptionUseCase.execute({ userId });
@@ -149,7 +152,9 @@ export class BillingApplicationService {
     try {
       this.logger.log(`Activating subscription: ${dto.subscriptionId}`);
       const result = await this.activateSubscriptionUseCase.execute(dto);
-      this.logger.log(`Subscription activated successfully: ${dto.subscriptionId}`);
+      this.logger.log(
+        `Subscription activated successfully: ${dto.subscriptionId}`,
+      );
       return successResult(result);
     } catch (error) {
       return this.handleError<SubscriptionDto>(error, 'activate subscription');
@@ -170,7 +175,9 @@ export class BillingApplicationService {
         `Cancelling subscription: ${dto.subscriptionId}, reason: ${dto.reason}`,
       );
       const result = await this.cancelSubscriptionUseCase.execute(dto);
-      this.logger.log(`Subscription cancelled successfully: ${dto.subscriptionId}`);
+      this.logger.log(
+        `Subscription cancelled successfully: ${dto.subscriptionId}`,
+      );
       return successResult(result);
     } catch (error) {
       return this.handleError<SubscriptionDto>(error, 'cancel subscription');
@@ -191,7 +198,9 @@ export class BillingApplicationService {
         `Upgrading subscription: ${dto.subscriptionId} to plan: ${dto.newPlanType}`,
       );
       const result = await this.upgradeSubscriptionUseCase.execute(dto);
-      this.logger.log(`Subscription upgraded successfully: ${dto.subscriptionId}`);
+      this.logger.log(
+        `Subscription upgraded successfully: ${dto.subscriptionId}`,
+      );
       return successResult(result);
     } catch (error) {
       return this.handleError<SubscriptionDto>(error, 'upgrade subscription');
@@ -204,13 +213,17 @@ export class BillingApplicationService {
    * @param dto - Payment data
    * @returns Service result with updated subscription
    */
-  async processPayment(dto: ProcessPaymentDto): Promise<ServiceResult<SubscriptionDto>> {
+  async processPayment(
+    dto: ProcessPaymentDto,
+  ): Promise<ServiceResult<SubscriptionDto>> {
     try {
       this.logger.log(
         `Processing payment for subscription: ${dto.subscriptionId}, amount: ${dto.amount} ${dto.currency}`,
       );
       const result = await this.processPaymentUseCase.execute(dto);
-      this.logger.log(`Payment processed successfully for: ${dto.subscriptionId}`);
+      this.logger.log(
+        `Payment processed successfully for: ${dto.subscriptionId}`,
+      );
       return successResult(result);
     } catch (error) {
       return this.handleError<SubscriptionDto>(error, 'process payment');
@@ -312,9 +325,7 @@ export class BillingApplicationService {
    * @param userId - The user ID
    * @returns Service result with subscription statistics
    */
-  async getSubscriptionStatistics(
-    userId: string,
-  ): Promise<
+  async getSubscriptionStatistics(userId: string): Promise<
     ServiceResult<{
       planType: PlanTypeEnum;
       status: SubscriptionStatusEnum;
@@ -360,11 +371,14 @@ export class BillingApplicationService {
     }
 
     if (error instanceof ApplicationError) {
-      this.logger.warn(`Application error during ${operation}: ${error.message}`);
+      this.logger.warn(
+        `Application error during ${operation}: ${error.message}`,
+      );
       return failureResult(error.code, error.message, error.details);
     }
 
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     this.logger.error(`Unexpected error during ${operation}: ${errorMessage}`);
     return failureResult('INTERNAL_ERROR', `Failed to ${operation}`, {
       originalError: errorMessage,

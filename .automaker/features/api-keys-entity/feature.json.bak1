@@ -1,0 +1,32 @@
+{
+  "id": "api-keys-entity",
+  "category": "Database",
+  "title": "API Keys Entity",
+  "description": "Create ApiKey entity for programmatic access. Store hashed keys, scopes, rate limits, and expiration dates.",
+  "status": "in_progress",
+  "priority": 3,
+  "complexity": "simple",
+  "dependencies": [],
+  "architecture": {
+    "boundedContext": "APIAccess",
+    "aggregateRoot": "ApiKey",
+    "module": "apps/backend/src/modules/api-keys",
+    "layer": "Domain",
+    "patterns": [
+      "DDD Entity",
+      "Security Hashing"
+    ],
+    "emits": [
+      "API_KEY.CREATED",
+      "API_KEY.REVOKED",
+      "API_KEY.USED"
+    ],
+    "listensTo": [],
+    "notes": "Aggregate root for programmatic API access. Keys stored hashed. Isolated module per modular monolith."
+  },
+  "createdAt": "2026-01-12T10:31:20.847Z",
+  "updatedAt": "2026-01-22T00:49:34.094Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

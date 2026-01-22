@@ -1,0 +1,32 @@
+{
+  "id": "subscription-plans-entity",
+  "category": "Database",
+  "title": "Subscription Plans Entity",
+  "description": "Create SubscriptionPlan and UserSubscription entities. Define plan tiers with feature flags, quotas, and pricing.",
+  "status": "in_progress",
+  "priority": 3,
+  "complexity": "moderate",
+  "dependencies": [],
+  "architecture": {
+    "boundedContext": "Billing",
+    "aggregateRoot": "Subscription",
+    "module": "apps/backend/src/modules/billing",
+    "layer": "Domain",
+    "patterns": [
+      "DDD Entity",
+      "Value Objects for pricing"
+    ],
+    "emits": [
+      "SUBSCRIPTION.CREATED",
+      "SUBSCRIPTION.UPGRADED",
+      "SUBSCRIPTION.CANCELLED"
+    ],
+    "listensTo": [],
+    "notes": "Billing bounded context aggregate. SubscriptionPlan is a reference entity, UserSubscription tracks user state."
+  },
+  "createdAt": "2026-01-12T10:31:20.851Z",
+  "updatedAt": "2026-01-22T01:19:36.951Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

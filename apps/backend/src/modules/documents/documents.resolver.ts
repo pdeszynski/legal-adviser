@@ -1,5 +1,9 @@
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
-import { DocumentsService } from './services/documents.service';
+import { UseGuards } from '@nestjs/common';
+import {
+  DocumentsService,
+  DocumentSearchOptions,
+} from './services/documents.service';
 import {
   GenerateDocumentInput,
   UpdateDocumentInput,
@@ -10,10 +14,21 @@ import {
   PdfExportResult,
   PdfExportStatusResponse,
 } from './dto/pdf-export.dto';
+import {
+  SearchLegalDocumentsInput,
+  LegalDocumentSearchResponse,
+} from './dto/legal-document-search.dto';
 import { LegalDocument, DocumentType } from './entities/legal-document.entity';
 import { DocumentGenerationProducer } from './queues/document-generation.producer';
 import { PdfExportService } from './services/pdf-export.service';
 import { StrictThrottle, SkipThrottle } from '../../shared/throttler';
+import {
+  GqlAuthGuard,
+  DocumentPermissionGuard,
+  RequireDocumentPermission,
+  DocumentPermission,
+} from '../auth/guards';
+import { QuotaGuard, RequireQuota, QuotaType } from '../../shared';
 
 /**
  * Custom GraphQL Resolver for Legal Documents
@@ -33,8 +48,13 @@ import { StrictThrottle, SkipThrottle } from '../../shared/throttler';
  * - generateDocument: Create document and start AI generation
  * - updateDocument: Update with custom business logic
  * - deleteDocument: Delete with event emission (deprecated - use deleteOneLegalDocument)
+ *
+ * Security:
+ * - All operations require authentication
+ * - Document access is controlled via ownership and sharing permissions
  */
 @Resolver(() => LegalDocument)
+@UseGuards(GqlAuthGuard, QuotaGuard)
 export class DocumentsResolver {
   constructor(
     private readonly documentsService: DocumentsService,
@@ -45,6 +65,7 @@ export class DocumentsResolver {
   /**
    * Query: Get documents by session ID
    * Convenience query for filtering by session - also available via legalDocuments filter
+   * Requires authentication
    */
   @SkipThrottle()
   @Query(() => [LegalDocument], { name: 'documentsBySession' })
@@ -52,6 +73,55 @@ export class DocumentsResolver {
     @Args('sessionId', { type: () => String }) sessionId: string,
   ): Promise<LegalDocument[]> {
     return this.documentsService.findBySessionId(sessionId);
+  }
+
+  /**
+   * Query: Full-text search for legal documents
+   *
+   * Searches across document titles, content, and metadata fields.
+   * Returns results ranked by relevance with highlighted snippets.
+   *
+   * @param input - Search options including query string and filters
+   * @returns Paginated search results with relevance ranking
+   */
+  @SkipThrottle()
+  @Query(() => LegalDocumentSearchResponse, {
+    name: 'searchLegalDocuments',
+    description: 'Full-text search across documents with relevance ranking',
+  })
+  async searchDocuments(
+    @Args('input') input: SearchLegalDocumentsInput,
+  ): Promise<LegalDocumentSearchResponse> {
+    const limit = input.limit ?? 20;
+    const offset = input.offset ?? 0;
+
+    const searchOptions: DocumentSearchOptions = {
+      query: input.query,
+      type: input.type ?? undefined,
+      status: input.status ?? undefined,
+      sessionId: input.sessionId ?? undefined,
+      startDate: input.startDate ?? undefined,
+      endDate: input.endDate ?? undefined,
+      limit,
+      offset,
+    };
+
+    const [results, totalCount] = await Promise.all([
+      this.documentsService.search(searchOptions),
+      this.documentsService.countSearchResults(searchOptions),
+    ]);
+
+    return {
+      results: results.map((r) => ({
+        ...r.document,
+        rank: r.rank,
+        headline: r.headline ?? null,
+      })),
+      totalCount,
+      count: results.length,
+      offset,
+      hasMore: offset + results.length < totalCount,
+    };
   }
 
   /**
@@ -67,8 +137,11 @@ export class DocumentsResolver {
    *
    * The actual content generation happens asynchronously via the Bull queue.
    * Poll the document status to check for completion.
+   *
+   * Quota check: Requires one document generation quota
    */
   @StrictThrottle()
+  @RequireQuota(QuotaType.DOCUMENT)
   @Mutation(() => LegalDocument, { name: 'generateDocument' })
   async generateDocument(
     @Args('input') input: GenerateDocumentInput,
@@ -103,8 +176,10 @@ export class DocumentsResolver {
    *
    * Note: For simple field updates, prefer updateOneLegalDocument from nestjs-query.
    * This mutation is for updates that require business logic validation.
+   * Requires WRITE permission (owner or shared with EDIT/ADMIN).
    */
   @Mutation(() => LegalDocument, { name: 'updateDocument' })
+  @RequireDocumentPermission(DocumentPermission.WRITE)
   async updateDocument(
     @Args('id', { type: () => ID }) id: string,
     @Args('input') input: UpdateDocumentInput,
@@ -120,11 +195,13 @@ export class DocumentsResolver {
    *
    * @deprecated Use deleteOneLegalDocument from nestjs-query instead.
    * This mutation is kept for backward compatibility with existing clients.
+   * Requires OWNER permission.
    */
   @Mutation(() => Boolean, {
     name: 'deleteDocument',
     deprecationReason: 'Use deleteOneLegalDocument instead',
   })
+  @RequireDocumentPermission(DocumentPermission.OWNER)
   async deleteDocument(
     @Args('id', { type: () => ID }) id: string,
   ): Promise<boolean> {
@@ -147,12 +224,14 @@ export class DocumentsResolver {
    *
    * @param input - Export options including document ID and PDF settings
    * @returns Job response with job ID for tracking
+   * Requires READ permission.
    */
   @StrictThrottle()
   @Mutation(() => PdfExportJobResponse, {
     name: 'exportDocumentToPdf',
     description: 'Queue a document for PDF export',
   })
+  @RequireDocumentPermission(DocumentPermission.READ)
   async exportDocumentToPdf(
     @Args('input') input: ExportDocumentToPdfInput,
   ): Promise<PdfExportJobResponse> {
@@ -188,12 +267,14 @@ export class DocumentsResolver {
    *
    * @param input - Export options including document ID and PDF settings
    * @returns The PDF export result with base64-encoded content
+   * Requires READ permission.
    */
   @StrictThrottle()
   @Mutation(() => PdfExportResult, {
     name: 'exportDocumentToPdfSync',
     description: 'Export a document to PDF and wait for the result',
   })
+  @RequireDocumentPermission(DocumentPermission.READ)
   async exportDocumentToPdfSync(
     @Args('input') input: ExportDocumentToPdfInput,
   ): Promise<PdfExportResult> {

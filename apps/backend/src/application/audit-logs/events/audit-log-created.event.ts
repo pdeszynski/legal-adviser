@@ -1,6 +1,9 @@
 import { BaseEvent } from '../../../shared/events/base/base.event';
 import { EVENT_PATTERNS } from '../../../shared/events/base/event-patterns';
-import { AuditActionType, AuditResourceType } from '../../../modules/audit-log/entities/audit-log.entity';
+import {
+  AuditActionType,
+  AuditResourceType,
+} from '../../../modules/audit-log/entities/audit-log.entity';
 
 /**
  * Domain Event: Audit Log Created

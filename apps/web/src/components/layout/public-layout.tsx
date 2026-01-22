@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { StyledLanguageSelector } from '@components/select-language/styled-language-selector';
+import { LocaleSwitcher } from '@components/locale-switcher';
 import Link from 'next/link';
 
 import { useTranslations } from 'next-intl';
@@ -17,7 +17,7 @@ export const PublicLayout: React.FC<React.PropsWithChildren> = ({ children }) =>
             Legal AI
           </Link>
           <div className="flex items-center gap-4">
-            <StyledLanguageSelector />
+            <LocaleSwitcher />
             <Link
               href="/login"
               className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"

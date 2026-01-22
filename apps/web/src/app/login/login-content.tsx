@@ -28,7 +28,7 @@ export const LoginContent = () => {
   }, []);
 
   const [email, setEmail] = useState('admin@refine.dev');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState('password');
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();

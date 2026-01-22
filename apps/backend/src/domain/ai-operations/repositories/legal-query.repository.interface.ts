@@ -5,8 +5,10 @@ import { QueryStatusEnum } from '../value-objects';
 /**
  * Repository interface for Legal Query aggregate
  */
-export interface ILegalQueryRepository
-  extends IRepository<LegalQueryAggregate, string> {
+export interface ILegalQueryRepository extends IRepository<
+  LegalQueryAggregate,
+  string
+> {
   findByUserId(userId: string): Promise<LegalQueryAggregate[]>;
   findByStatus(status: QueryStatusEnum): Promise<LegalQueryAggregate[]>;
   findByUserAndStatus(
@@ -15,5 +17,8 @@ export interface ILegalQueryRepository
   ): Promise<LegalQueryAggregate[]>;
   findPendingQueries(): Promise<LegalQueryAggregate[]>;
   countByUserId(userId: string): Promise<number>;
-  findRecentByUserId(userId: string, limit: number): Promise<LegalQueryAggregate[]>;
+  findRecentByUserId(
+    userId: string,
+    limit: number,
+  ): Promise<LegalQueryAggregate[]>;
 }

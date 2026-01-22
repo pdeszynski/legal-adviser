@@ -14,9 +14,10 @@ import type { IUserRepository } from '../../../domain/user-management/repositori
  * 4. Publishes domain events
  */
 @Injectable()
-export class ChangeUserRoleUseCase
-  implements IUseCase<ChangeUserRoleDto, UserDto>
-{
+export class ChangeUserRoleUseCase implements IUseCase<
+  ChangeUserRoleDto,
+  UserDto
+> {
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,

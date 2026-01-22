@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769046862179-845ee4bd",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T01:54:22.179Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "webhook-delivery-queue",
+  "featureName": "Webhook Delivery Queue",
+  "error": "Feature completed in 423s - auto-verified",
+  "passes": true
+}

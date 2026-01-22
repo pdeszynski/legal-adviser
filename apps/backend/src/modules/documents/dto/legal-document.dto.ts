@@ -130,4 +130,12 @@ export class UpdateLegalDocumentInput {
   @ValidateNested()
   @Type(() => CreateDocumentMetadataInput)
   metadata?: CreateDocumentMetadataInput;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Signed URL to download the PDF version of this document',
+  })
+  @IsOptional()
+  @IsString()
+  pdfUrl?: string;
 }

@@ -57,7 +57,8 @@ export class VectorStoreService {
 
         // Start new chunk with overlap
         const overlapText = currentChunk.slice(-chunkOverlap);
-        currentChunk = overlapText + (overlapText.length > 0 ? '\n\n' : '') + paragraph;
+        currentChunk =
+          overlapText + (overlapText.length > 0 ? '\n\n' : '') + paragraph;
         currentSize = currentChunk.length;
       } else {
         // Add paragraph to current chunk
@@ -82,7 +83,11 @@ export class VectorStoreService {
     content: string,
     options: IndexDocumentOptions = {},
   ): Promise<DocumentEmbedding[]> {
-    const { chunkSize = this.DEFAULT_CHUNK_SIZE, chunkOverlap = this.DEFAULT_CHUNK_OVERLAP, metadata = {} } = options;
+    const {
+      chunkSize = this.DEFAULT_CHUNK_SIZE,
+      chunkOverlap = this.DEFAULT_CHUNK_OVERLAP,
+      metadata = {},
+    } = options;
 
     this.logger.log(`Indexing document ${documentId} with vector store`);
 
@@ -111,7 +116,9 @@ export class VectorStoreService {
 
     // Save to database
     const saved = await this.embeddingRepository.save(embeddingRecords);
-    this.logger.log(`Successfully indexed ${saved.length} chunks for document ${documentId}`);
+    this.logger.log(
+      `Successfully indexed ${saved.length} chunks for document ${documentId}`,
+    );
 
     return saved;
   }
@@ -138,17 +145,23 @@ export class VectorStoreService {
         'embedding.metadata',
         `1 - (embedding.embedding <=> '${embeddingJson}'::vector) AS similarity`,
       ])
-      .where(`1 - (embedding.embedding <=> '${embeddingJson}'::vector) >= :threshold`, {
-        threshold,
-      })
+      .where(
+        `1 - (embedding.embedding <=> '${embeddingJson}'::vector) >= :threshold`,
+        {
+          threshold,
+        },
+      )
       .orderBy('similarity', 'DESC')
       .limit(limit);
 
     // Filter by document ID if provided
     if (documentId) {
-      queryBuilder = queryBuilder.andWhere('embedding.documentId = :documentId', {
-        documentId,
-      });
+      queryBuilder = queryBuilder.andWhere(
+        'embedding.documentId = :documentId',
+        {
+          documentId,
+        },
+      );
     }
 
     const results = await queryBuilder.getRawMany();

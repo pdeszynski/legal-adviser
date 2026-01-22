@@ -25,9 +25,7 @@ export class NotificationService {
   /**
    * Create a notification record
    */
-  async createNotification(
-    jobData: EmailJobData,
-  ): Promise<Notification> {
+  async createNotification(jobData: EmailJobData): Promise<Notification> {
     try {
       const notification = this.notificationRepository.create({
         recipientEmail: jobData.to,

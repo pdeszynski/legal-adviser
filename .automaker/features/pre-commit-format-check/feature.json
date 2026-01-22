@@ -4,7 +4,7 @@
   "id": "pre-commit-format-check",
   "title": "Pre-commit Format Check",
   "priority": 2,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-21T22:26:17.612Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-22T00:07:32.774Z"
 }

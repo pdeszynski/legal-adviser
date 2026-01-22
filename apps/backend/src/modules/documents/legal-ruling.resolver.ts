@@ -1,10 +1,20 @@
 import { Resolver, Query, Args, Int } from '@nestjs/graphql';
 import { LegalRulingService } from './services/legal-ruling.service';
+import {
+  RulingSearchAggregatorService,
+  AggregatedSearchResult,
+} from './services/ruling-search-aggregator.service';
+import { AdvancedLegalRulingSearchService } from './services/advanced-legal-ruling-search.service';
 import { LegalRuling, CourtType } from './entities/legal-ruling.entity';
 import {
   SearchLegalRulingsInput,
   FilterLegalRulingsInput,
   LegalRulingSearchResponse,
+  AggregatedSearchLegalRulingsInput,
+  AggregatedLegalRulingSearchResponse,
+  SearchSource,
+  AdvancedSearchLegalRulingsInput,
+  AdvancedLegalRulingSearchResponse,
 } from './dto/legal-ruling-search.dto';
 
 /**
@@ -28,7 +38,11 @@ import {
  */
 @Resolver(() => LegalRuling)
 export class LegalRulingResolver {
-  constructor(private readonly legalRulingService: LegalRulingService) {}
+  constructor(
+    private readonly legalRulingService: LegalRulingService,
+    private readonly aggregatorService: RulingSearchAggregatorService,
+    private readonly advancedSearchService: AdvancedLegalRulingSearchService,
+  ) {}
 
   /**
    * Query: Full-text search for legal rulings
@@ -189,5 +203,151 @@ export class LegalRulingResolver {
       dateFrom: input.dateFrom ? new Date(input.dateFrom) : undefined,
       dateTo: input.dateTo ? new Date(input.dateTo) : undefined,
     });
+  }
+
+  /**
+   * Query: Aggregated search across multiple sources (LOCAL, SAOS, ISAP)
+   *
+   * Searches across local database and external legal databases (SAOS, ISAP).
+   * Results are aggregated, deduplicated, and ranked by relevance and recency.
+   *
+   * Example GraphQL query:
+   * ```graphql
+   * query {
+   *   aggregatedSearchLegalRulings(input: {
+   *     query: "konstytucja"
+   *     sources: [LOCAL, SAOS]
+   *     courtType: CONSTITUTIONAL_TRIBUNAL
+   *     limit: 10
+   *   }) {
+   *     results {
+   *       ruling {
+   *         id
+   *         signature
+   *         courtName
+   *         summary
+   *       }
+   *       rank
+   *       source
+   *       headline
+   *     }
+   *     totalCount
+   *     hasMore
+   *   }
+   * }
+   * ```
+   */
+  @Query(() => AggregatedLegalRulingSearchResponse, {
+    name: 'aggregatedSearchLegalRulings',
+    description:
+      'Search legal rulings across multiple sources (LOCAL, SAOS, ISAP) with relevance ranking',
+  })
+  async aggregatedSearchLegalRulings(
+    @Args('input') input: AggregatedSearchLegalRulingsInput,
+  ): Promise<AggregatedLegalRulingSearchResponse> {
+    const searchOptions = {
+      query: input.query,
+      courtType: input.courtType,
+      dateFrom: input.dateFrom ? new Date(input.dateFrom) : undefined,
+      dateTo: input.dateTo ? new Date(input.dateTo) : undefined,
+      limit: input.limit ?? 20,
+      offset: input.offset ?? 0,
+      sources:
+        input.sources ??
+        (['LOCAL', 'SAOS', 'ISAP'] as Array<'LOCAL' | 'SAOS' | 'ISAP'>),
+    };
+
+    const result = await this.aggregatorService.aggregateSearch(searchOptions);
+
+    // Map source strings to SearchSource enum
+    const results = result.results.map((r) => ({
+      ...r,
+      source: r.source as SearchSource,
+    }));
+
+    return {
+      results,
+      totalCount: result.totalCount,
+      count: result.count,
+      offset: result.offset,
+      hasMore: result.hasMore,
+    };
+  }
+
+  /**
+   * Query: Advanced search with boolean operators and field-specific search
+   *
+   * Provides advanced search capabilities including:
+   * - Boolean operators (AND, OR, NOT) to combine multiple search terms
+   * - Field-specific search (signature, court name, summary, full text, keywords, legal area)
+   * - Legal area filter
+   * - Keywords filter (must match all)
+   * - Query explanation for users
+   *
+   * Example GraphQL query:
+   * ```graphql
+   * query {
+   *   advancedSearchLegalRulings(input: {
+   *     searchTerms: [
+   *       { term: "konstytucja", field: ALL, operator: AND },
+   *       { term: "trybunal", field: COURT_NAME, operator: AND },
+   *       { term: "nakaz", field: SUMMARY, operator: NOT }
+   *     ]
+   *     legalArea: "constitutional"
+   *     courtType: CONSTITUTIONAL_TRIBUNAL
+   *     limit: 10
+   *   }) {
+   *     results {
+   *       ruling {
+   *         id
+   *         signature
+   *         courtName
+   *         summary
+   *       }
+   *       rank
+   *       source
+   *       headline
+   *     }
+   *     totalCount
+   *     hasMore
+   *     queryExplanation
+   *   }
+   * }
+   * ```
+   */
+  @Query(() => AdvancedLegalRulingSearchResponse, {
+    name: 'advancedSearchLegalRulings',
+    description:
+      'Advanced search with boolean operators (AND, OR, NOT) and field-specific search',
+  })
+  async advancedSearchLegalRulings(
+    @Args('input') input: AdvancedSearchLegalRulingsInput,
+  ): Promise<AdvancedLegalRulingSearchResponse> {
+    const searchOptions = {
+      searchTerms: input.searchTerms,
+      courtType: input.courtType,
+      legalArea: input.legalArea,
+      keywords: input.keywords,
+      dateFrom: input.dateFrom ? new Date(input.dateFrom) : undefined,
+      dateTo: input.dateTo ? new Date(input.dateTo) : undefined,
+      sources: (input.sources ?? ['LOCAL', 'SAOS', 'ISAP']) as Array<
+        'LOCAL' | 'SAOS' | 'ISAP'
+      >,
+      limit: input.limit ?? 20,
+      offset: input.offset ?? 0,
+    };
+
+    const result =
+      await this.advancedSearchService.advancedSearch(searchOptions);
+
+    return {
+      results:
+        result.results as unknown as AggregatedLegalRulingSearchResponse['results'],
+      totalCount: result.totalCount,
+      count: result.count,
+      offset: result.offset,
+      hasMore: result.hasMore,
+      queryExplanation: result.queryExplanation,
+    };
   }
 }

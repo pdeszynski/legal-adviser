@@ -240,6 +240,49 @@
       "list": "Documents",
       "show": "View Document"
     },
+  "templates": {
+    "templates": "Document Templates",
+    "description": "Choose from our collection of professional legal document templates to get started quickly.",
+    "fields": {
+      "search": "Search",
+      "category": "Category"
+    },
+    "placeholders": {
+      "search": "Search templates..."
+    },
+    "categories": {
+      "LAWSUIT": "Lawsuit",
+      "COMPLAINT": "Complaint",
+      "CONTRACT": "Contract",
+      "MOTION": "Motion",
+      "LETTER": "Letter",
+      "OTHER": "Other"
+    },
+    "titles": {
+      "library": "Document Templates",
+      "variables": "Required Information",
+      "contentPreview": "Content Preview"
+    },
+    "buttons": {
+      "preview": "Preview",
+      "useTemplate": "Use Template"
+    },
+    "info": {
+      "used": "Used {count} times"
+    },
+    "errors": {
+      "loadingFailed": "Failed to load templates"
+    },
+    "noTemplates": "No templates available",
+    "noFilteredResults": "No templates match your filters",
+    "variableTypes": {
+      "text": "Text",
+      "number": "Number",
+      "date": "Date",
+      "currency": "Currency",
+      "boolean": "Yes/No"
+    }
+  },
     "form": {
       "select": {
         "type": {
@@ -344,6 +387,59 @@
     "disclaimerTitle": "Legal Disclaimer",
     "disclaimerText": "This analysis is AI-generated and for informational purposes only. It does not constitute legal advice. Please consult with a qualified legal professional for advice on your specific situation."
   },
+  "legalGroundsSuggestions": {
+    "title": "Suggested Legal Grounds",
+    "count": "{count} suggestion(s)",
+    "confidence": "Confidence",
+    "disclaimer": "AI-generated suggestions. Review with legal professional."
+  },
+  "rulingSearch": {
+    "title": "Legal Ruling Search",
+    "subtitle": "Search across thousands of legal rulings from multiple sources with advanced filters.",
+    "fields": {
+      "query": "Search Query",
+      "courtType": "Court Type",
+      "dateFrom": "Date From",
+      "dateTo": "Date To",
+      "sources": "Data Sources"
+    },
+    "placeholders": {
+      "query": "Enter keywords, case numbers, or legal terms..."
+    },
+    "buttons": {
+      "search": "Search",
+      "searching": "Searching..."
+    },
+    "errors": {
+      "title": "Error",
+      "queryRequired": "Please enter a search query"
+    },
+    "results": {
+      "summary": "Showing {count} of {total} results",
+      "noResults": "No results found",
+      "tryDifferent": "Try adjusting your search terms or filters",
+      "relevance": "Relevance"
+    },
+    "courtTypes": {
+      "ADMINISTRATIVE_COURT": "Administrative Court",
+      "APPELLATE_COURT": "Appellate Court",
+      "CONSTITUTIONAL_TRIBUNAL": "Constitutional Tribunal",
+      "DISTRICT_COURT": "District Court",
+      "OTHER": "Other",
+      "REGIONAL_COURT": "Regional Court",
+      "SUPREME_COURT": "Supreme Court"
+    }
+  },
+  "omnisearch": {
+    "placeholder": "Search documents, rulings, templates...",
+    "seeAll": "See all results",
+    "noResults": "No results found",
+    "types": {
+      "document": "Document",
+      "ruling": "Ruling",
+      "template": "Template"
+    }
+  },
   "landing": {
     "hero": {
       "badge": "Early Access Beta",
@@ -441,5 +537,314 @@
       },
       "copyright": "© {year} Legal AI. All rights reserved."
     }
+  },
+  "notificationCenter": {
+    "title": "Notification Center",
+    "description": "View and manage all your notifications",
+    "stats": {
+      "total": "Total Notifications",
+      "unread": "Unread"
+    },
+    "types": {
+      "info": "Info",
+      "success": "Success",
+      "warning": "Warning",
+      "error": "Error",
+      "system": "System"
+    },
+    "filters": {
+      "type": "Type",
+      "status": "Status"
+    },
+    "status": {
+      "all": "All",
+      "read": "Read",
+      "unread": "Unread"
+    },
+    "selectedCount": "{count} selected",
+    "actions": {
+      "deselect": "Deselect"
+    },
+    "headers": {
+      "notifications": "Notifications"
+    },
+    "errors": {
+      "loadingFailed": "Failed to load notifications"
+    },
+    "noFilteredResults": "No notifications match your filters",
+    "noNotifications": "No notifications yet"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account settings and preferences",
+    "tabs": {
+      "profile": "Profile",
+      "preferences": "Preferences",
+      "security": "Security",
+      "notifications": "Notifications",
+      "apiKeys": "API Keys"
+    },
+    "profile": {
+      "title": "Profile Settings",
+      "description": "Update your personal information",
+      "fields": {
+        "email": "Email",
+        "username": "Username",
+        "firstName": "First Name",
+        "lastName": "Last Name"
+      },
+      "errors": {
+        "invalidUsername": "Username can only contain letters, numbers, underscores, dots, and hyphens"
+      },
+      "saveButton": "Save Changes",
+      "saving": "Saving...",
+      "successMessage": "Profile updated successfully",
+      "errorMessage": "Failed to update profile"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "description": "Customize your application experience",
+      "fields": {
+        "locale": "Language",
+        "theme": "Theme",
+        "aiModel": "AI Model",
+        "timezone": "Timezone",
+        "dateFormat": "Date Format"
+      },
+      "saveButton": "Save Changes",
+      "saving": "Saving...",
+      "successMessage": "Preferences updated successfully",
+      "errorMessage": "Failed to update preferences"
+    },
+    "security": {
+      "title": "Security",
+      "description": "Change your password and security settings",
+      "fields": {
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm New Password"
+      },
+      "errors": {
+        "passwordsDoNotMatch": "Passwords do not match"
+      },
+      "passwordHint": "Password must be at least 8 characters long",
+      "tips": {
+        "title": "Security Tips",
+        "tip1": "Use a strong password with at least 8 characters",
+        "tip2": "Include a mix of letters, numbers, and symbols",
+        "tip3": "Don't reuse passwords from other sites"
+      },
+      "changeButton": "Change Password",
+      "changing": "Changing...",
+      "successMessage": "Password changed successfully",
+      "errorMessage": "Failed to change password"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Manage your notification preferences",
+      "sections": {
+        "types": "Notification Types",
+        "channels": "Notification Channels",
+        "legacy": "Additional Settings"
+      },
+      "fields": {
+        "documentUpdates": "Document updates",
+        "queryResponses": "Query responses",
+        "systemAlerts": "System alerts",
+        "marketingEmails": "Marketing emails",
+        "email": "Email notifications",
+        "inApp": "In-app notifications",
+        "push": "Push notifications",
+        "emailNotifications": "Email notifications (legacy)",
+        "inAppNotifications": "In-app notifications (legacy)"
+      },
+      "saveButton": "Save Changes",
+      "saving": "Saving...",
+      "successMessage": "Notification preferences updated successfully",
+      "errorMessage": "Failed to update notification preferences"
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "description": "Manage your API keys for programmatic access",
+      "createButton": "Create API Key",
+      "createFirstButton": "Create Your First API Key",
+      "createModalTitle": "Create New API Key",
+      "creating": "Creating...",
+      "cancelButton": "Cancel",
+      "revokeButton": "Revoke",
+      "deleteButton": "Delete",
+      "confirmRevoke": "Are you sure you want to revoke this API key? This action cannot be undone.",
+      "confirmDelete": "Are you sure you want to delete this API key? This action cannot be undone.",
+      "noKeys": "You don't have any API keys yet.",
+      "copiedToClipboard": "API key copied to clipboard",
+      "createSuccess": "API key created successfully",
+      "createError": "Failed to create API key",
+      "revokeSuccess": "API key revoked successfully",
+      "revokeError": "Failed to revoke API key",
+      "deleteSuccess": "API key deleted successfully",
+      "deleteError": "Failed to delete API key",
+      "newKeyTitle": "API Key Created",
+      "newKeyWarning": "Copy this key now. You won't be able to see it again.",
+      "status": {
+        "active": "Active",
+        "revoked": "Revoked",
+        "expired": "Expired"
+      },
+      "usageCount": "Usage count",
+      "lastUsed": "Last used",
+      "never": "Never",
+      "expires": "Expires",
+      "fields": {
+        "name": "Name",
+        "namePlaceholder": "e.g., Production App, Testing Script",
+        "description": "Description",
+        "descriptionPlaceholder": "Optional notes about this key's purpose",
+        "scopes": "Scopes",
+        "rateLimit": "Rate Limit (requests per minute)",
+        "rateLimitHint": "Set to 0 for unlimited (not recommended)",
+        "expiresAt": "Expiration Date",
+        "expiresAtHint": "Leave empty for no expiration"
+      },
+      "errors": {
+        "noScopes": "Please select at least one scope"
+      },
+      "securityNotice": {
+        "title": "Security Best Practices",
+        "tip1": "Keep your API keys secret and never share them in public repositories",
+        "tip2": "Rotate your API keys regularly for better security",
+        "tip3": "Use the minimum required scopes for each key"
+      }
+    },
+    "comments": {
+      "title": "Comments",
+      "all": "All",
+      "open": "Open",
+      "resolved": "Resolved",
+      "loading": "Loading comments...",
+      "error": "Error loading comments",
+      "noComments": "No comments yet",
+      "noOpen": "No open comments",
+      "noResolved": "No resolved comments",
+      "anonymous": "Anonymous",
+      "resolved": "Resolved",
+      "reopen": "Reopen",
+      "edit": "Edit",
+      "delete": "Delete",
+      "resolve": "Resolve",
+      "resolvedAt": "Resolved at",
+      "newComment": "New Comment",
+      "selectedText": "Selected text:",
+      "placeholder": "Write your comment here...",
+      "characters": "Characters",
+      "remaining": "remaining",
+      "submit": "Submit",
+      "toSubmit": "to submit",
+      "toCancel": "to cancel",
+      "deleteConfirm": "Are you sure you want to delete this comment?",
+      "selectTextHint": "Select text in the document to add a comment"
+    }
+  },
+  "billing": {
+    "title": "Billing",
+    "subtitle": "Manage your subscription and payment history",
+    "tabs": {
+      "subscription": "Subscription",
+      "paymentHistory": "Payment History",
+      "planChange": "Change Plan",
+      "paymentMethods": "Payment Methods"
+    },
+    "noSubscription": "You don't have an active subscription",
+    "status": {
+      "active": "Active",
+      "trialing": "Trial",
+      "past_due": "Past Due",
+      "canceled": "Canceled",
+      "expired": "Expired"
+    },
+    "paymentMethod": {
+      "credit_card": "Credit Card",
+      "debit_card": "Debit Card",
+      "paypal": "PayPal",
+      "bank_transfer": "Bank Transfer",
+      "other": "Other"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "completed": "Completed",
+      "failed": "Failed",
+      "refunded": "Refunded",
+      "partially_refunded": "Partially Refunded"
+    },
+    "subscription": {
+      "title": "Subscription Details",
+      "currentPlan": "Current Plan",
+      "billingPeriod": "Billing Period",
+      "daysRemaining": "{days} days remaining",
+      "nextBilling": "Next billing: ${amount}",
+      "willCancel": "Your subscription will be canceled at the end of the billing period",
+      "usage": "Usage This Period",
+      "cancelPlan": "Cancel Subscription",
+      "cancelling": "Canceling...",
+      "resumePlan": "Resume Subscription",
+      "resuming": "Resuming..."
+    },
+    "cancelConfirmation": "Are you sure you want to cancel your subscription? You will lose access to premium features at the end of the billing period.",
+    "cancelSuccess": "Subscription canceled successfully",
+    "cancelError": "Failed to cancel subscription",
+    "resumeSuccess": "Subscription resumed successfully",
+    "resumeError": "Failed to resume subscription",
+    "paymentHistory": {
+      "title": "Payment History",
+      "noPayments": "No payments found",
+      "date": "Date",
+      "description": "Description",
+      "amount": "Amount",
+      "method": "Method",
+      "status": "Status",
+      "invoice": "Invoice",
+      "subscriptionPayment": "Subscription Payment",
+      "refundedOn": "Refunded on {date}",
+      "refundAmount": "Refund: ${amount}",
+      "viewInvoice": "View"
+    },
+    "planChange": {
+      "title": "Change Your Plan",
+      "currentPlan": "Current Plan: {plan}",
+      "selectPlan": "Please select a plan",
+      "current": "Current",
+      "changing": "Changing...",
+      "changePlan": "Change Plan",
+      "cancel": "Cancel",
+      "success": "Plan changed successfully",
+      "error": "Failed to change plan"
+    },
+    "paymentMethods": {
+      "title": "Payment Methods",
+      "add": "Add Payment Method",
+      "adding": "Adding...",
+      "noMethods": "No payment methods available",
+      "addMethodPrompt": "Add a payment method to manage your subscription",
+      "default": "Default",
+      "expires": "Expires",
+      "note": "Note",
+      "secureNote": "Your payment information is securely processed by Stripe. We never store your full card details on our servers.",
+      "notImplemented": "Payment method management is not yet implemented. Please contact support for assistance."
+    }
+  },
+  "usage": {
+    "title": "Usage Dashboard",
+    "subtitle": "Track your AI usage and costs",
+    "totalRequests": "Total Requests",
+    "totalTokens": "Total Tokens",
+    "totalCost": "Total Cost",
+    "dailyUsage": "Daily Usage",
+    "tokensByDay": "Tokens by Day",
+    "costByOperation": "Cost by Operation",
+    "operationBreakdown": "Operation Breakdown",
+    "operation": "Operation",
+    "requests": "Requests",
+    "tokens": "Tokens",
+    "cost": "Cost",
+    "noData": "No usage data available for this period"
   }
 }

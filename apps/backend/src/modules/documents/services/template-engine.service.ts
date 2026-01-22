@@ -27,15 +27,11 @@ export class TemplateEngineService {
     });
 
     if (!template) {
-      throw new BadRequestException(
-        `Template with ID ${templateId} not found`,
-      );
+      throw new BadRequestException(`Template with ID ${templateId} not found`);
     }
 
     if (!template.isActive) {
-      throw new BadRequestException(
-        `Template ${template.name} is not active`,
-      );
+      throw new BadRequestException(`Template ${template.name} is not active`);
     }
 
     this.validateContext(template, context);
@@ -155,16 +151,13 @@ export class TemplateEngineService {
     let processed = content;
 
     const ifRegex = /{{#if\s+(\w+)}}([\s\S]*?){{\/if}}/g;
-    processed = processed.replace(
-      ifRegex,
-      (match, condition, innerContent) => {
-        const value = context[condition];
-        if (this.isTruthy(value)) {
-          return innerContent;
-        }
-        return '';
-      },
-    );
+    processed = processed.replace(ifRegex, (match, condition, innerContent) => {
+      const value = context[condition];
+      if (this.isTruthy(value)) {
+        return innerContent;
+      }
+      return '';
+    });
 
     const unlessRegex = /{{#unless\s+(\w+)}}([\s\S]*?){{\/unless}}/g;
     processed = processed.replace(

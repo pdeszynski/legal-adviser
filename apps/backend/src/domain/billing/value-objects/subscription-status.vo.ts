@@ -58,7 +58,10 @@ export class SubscriptionStatus extends SimpleValueObject<SubscriptionStatusEnum
   }
 
   canTransitionTo(newStatus: SubscriptionStatusEnum): boolean {
-    const transitions: Record<SubscriptionStatusEnum, SubscriptionStatusEnum[]> = {
+    const transitions: Record<
+      SubscriptionStatusEnum,
+      SubscriptionStatusEnum[]
+    > = {
       [SubscriptionStatusEnum.TRIAL]: [
         SubscriptionStatusEnum.ACTIVE,
         SubscriptionStatusEnum.EXPIRED,

@@ -196,7 +196,9 @@ describe('DocumentShare Entity', () => {
       // Verify all properties are set correctly
       expect(share.id).toBe('123e4567-e89b-12d3-a456-426614174000');
       expect(share.documentId).toBe('123e4567-e89b-12d3-a456-426614174001');
-      expect(share.sharedWithUserId).toBe('123e4567-e89b-12d3-a456-426614174002');
+      expect(share.sharedWithUserId).toBe(
+        '123e4567-e89b-12d3-a456-426614174002',
+      );
       expect(share.sharedByUserId).toBe('123e4567-e89b-12d3-a456-426614174003');
       expect(share.permission).toBe(SharePermission.EDIT);
       expect(share.expiresAt).toBeInstanceOf(Date);

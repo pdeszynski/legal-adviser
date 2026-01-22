@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769039204449-2f75a6b7",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-21T23:46:44.449Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "logging-infrastructure",
+  "featureName": "Structured Logging Infrastructure",
+  "error": "Feature completed in 426s - auto-verified",
+  "passes": true
+}

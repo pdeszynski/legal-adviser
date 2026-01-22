@@ -1,0 +1,29 @@
+{
+  "id": "ruling-search-graphql",
+  "category": "API",
+  "title": "Ruling Search GraphQL Query",
+  "description": "Implement custom GraphQL query for searching rulings with filters for date range, court type, and keywords. Return paginated results with highlights.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "architecture": {
+    "boundedContext": "CaseLaw",
+    "aggregateRoot": "LegalRuling",
+    "module": "apps/backend/src/modules/rulings",
+    "layer": "Presentation",
+    "patterns": [
+      "GraphQL Resolver",
+      "Custom Query",
+      "Code-First Schema"
+    ],
+    "emits": [],
+    "listensTo": [],
+    "notes": "Presentation layer for CaseLaw search. Custom query resolver (not auto-generated) for complex search logic. GraphQL-only."
+  },
+  "createdAt": "2026-01-12T10:31:20.834Z",
+  "updatedAt": "2026-01-12T10:31:20.834Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

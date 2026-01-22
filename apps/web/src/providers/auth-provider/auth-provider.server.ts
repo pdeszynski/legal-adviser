@@ -16,7 +16,7 @@ const REFRESH_TOKEN_COOKIE = 'refresh_token';
  * For full authentication functionality (login, logout, register, etc.),
  * use the client-side auth provider.
  */
-export const authProviderServer: Pick<AuthProvider, 'check' | 'getIdentity'> = {
+export const authProviderServer: Pick<AuthProvider, 'check' | 'getIdentity' | 'getPermissions'> = {
   /**
    * Check if the user is authenticated on the server side
    *
@@ -83,6 +83,27 @@ export const authProviderServer: Pick<AuthProvider, 'check' | 'getIdentity'> = {
         email: user.email,
         ...user,
       };
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Get user permissions (roles) from server-side cookies
+   *
+   * Returns the user's roles from the auth cookie.
+   */
+  getPermissions: async () => {
+    const cookieStore = await cookies();
+    const auth = cookieStore.get(AUTH_COOKIE);
+
+    if (!auth?.value) {
+      return null;
+    }
+
+    try {
+      const parsedAuth = JSON.parse(auth.value);
+      return parsedAuth.roles || [];
     } catch {
       return null;
     }

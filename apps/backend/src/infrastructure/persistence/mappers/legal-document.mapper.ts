@@ -32,7 +32,9 @@ export class LegalDocumentMapper {
   /**
    * Convert Domain Aggregate to ORM Entity
    */
-  static toPersistence(aggregate: LegalDocumentAggregate): LegalDocumentOrmEntity {
+  static toPersistence(
+    aggregate: LegalDocumentAggregate,
+  ): LegalDocumentOrmEntity {
     const entity = new LegalDocumentOrmEntity();
     entity.id = aggregate.id;
     entity.title = aggregate.title.toValue();
@@ -50,7 +52,9 @@ export class LegalDocumentMapper {
   /**
    * Convert array of ORM Entities to Domain Aggregates
    */
-  static toDomainList(entities: LegalDocumentOrmEntity[]): LegalDocumentAggregate[] {
+  static toDomainList(
+    entities: LegalDocumentOrmEntity[],
+  ): LegalDocumentAggregate[] {
     return entities.map(this.toDomain);
   }
 }

@@ -3,6 +3,10 @@
 import { useForm } from "@refinedev/react-hook-form";
 import { Link, useTranslate } from "@refinedev/core";
 import { useState } from "react";
+import {
+  LegalGroundSuggestions,
+  type LegalGroundSuggestion,
+} from "@/components/legal-grounds-suggestions";
 
 /**
  * Document Type enum matching backend GraphQL schema
@@ -43,6 +47,8 @@ interface GenerateDocumentInput {
 export default function DocumentCreate() {
   const translate = useTranslate();
   const [showMetadata, setShowMetadata] = useState(true);
+  const [suggestions, setSuggestions] = useState<LegalGroundSuggestion[]>([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
 
   const {
     refineCore: { onFinish, formLoading },
@@ -60,6 +66,33 @@ export default function DocumentCreate() {
   // For MVP, we'll use a temporary session ID
   // TODO: In production, get sessionId from authenticated user context
   const temporarySessionId = "00000000-0000-0000-0000-000000000000";
+
+  // Mock function to load suggestions based on form input
+  // TODO: Integrate with AI backend for real suggestions
+  const loadSuggestions = async () => {
+    setIsLoadingSuggestions(true);
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    setSuggestions([
+      {
+        id: "1",
+        article: "Art. 361 § 1 K.c.",
+        title: "Termination of contract without notice",
+        explanation:
+          "In case of a serious breach of contract by the employer, the employee has the right to terminate the employment contract without notice.",
+        confidence: "high",
+      },
+      {
+        id: "2",
+        article: "Art. 94 § 1 K.p.",
+        title: "Employer's information obligations",
+        explanation:
+          "The employer is obliged to inform the employee about the type of work, place of work, and date of commencement of employment.",
+        confidence: "medium",
+      },
+    ]);
+    setIsLoadingSuggestions(false);
+  };
 
   const handleFormSubmit = (data: Record<string, unknown>) => {
     // Build the GraphQL input object matching GenerateDocumentInput
@@ -146,6 +179,47 @@ export default function DocumentCreate() {
             </span>
           )}
         </div>
+
+        {/* Legal Grounds Suggestions */}
+        {(suggestions.length > 0 || isLoadingSuggestions) && (
+          <div className="space-y-2">
+            <LegalGroundSuggestions
+              suggestions={suggestions}
+              loading={isLoadingSuggestions}
+              inline={true}
+              onSelect={() => {
+                // Handle suggestion selection
+                // TODO: Integrate with form to pre-fill or apply suggestion
+              }}
+            />
+          </div>
+        )}
+
+        {/* Suggest Legal Grounds Button */}
+        {suggestions.length === 0 && !isLoadingSuggestions && (
+          <div className="flex items-center gap-2 py-2">
+            <button
+              type="button"
+              onClick={loadSuggestions}
+              className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+              Get AI suggestions for legal grounds
+            </button>
+          </div>
+        )}
 
         {/* Metadata Section */}
         <div className="border-t pt-6">

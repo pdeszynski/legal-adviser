@@ -5,11 +5,10 @@ relevantTo: [authentication]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 3
-  referenced: 1
-  successfulFeatures: 1
+  loaded: 7
+  referenced: 7
+  successfulFeatures: 7
 ---
-
 # authentication
 
 ### Service layer validates permissions (canUserAccessDocument) rather than resolver only checking authentication (2026-01-20)

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769046349259-4097abb0",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T01:45:49.259Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "usage-dashboard",
+  "featureName": "Usage Dashboard",
+  "error": "Feature completed in 451s - auto-verified",
+  "passes": true
+}

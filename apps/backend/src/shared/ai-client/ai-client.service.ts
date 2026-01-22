@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Scope, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import * as Sentry from '@sentry/node';
 import {
   GenerateDocumentRequest,
   GenerateDocumentResponse,
@@ -15,14 +16,21 @@ import {
   SemanticSearchRequest,
   SemanticSearchResponse,
 } from './ai-client.types';
+import { UsageTrackingService } from '../../modules/usage-tracking/services/usage-tracking.service';
+import { AiOperationType } from '../../modules/usage-tracking/entities/ai-usage-record.entity';
 
 /**
  * AI Client Service
  *
  * Handles all communication with the AI Engine (FastAPI service).
  * Provides typed methods for document generation, Q&A, and search.
+ *
+ * Features:
+ * - Distributed tracing via sentry-trace header propagation
+ * - Performance monitoring for all AI operations
+ * - Error tracking with context
  */
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class AiClientService {
   private readonly logger = new Logger(AiClientService.name);
   private readonly aiEngineUrl: string;
@@ -30,6 +38,8 @@ export class AiClientService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    @Inject(UsageTrackingService)
+    private readonly usageTrackingService: UsageTrackingService,
   ) {
     this.aiEngineUrl =
       this.configService.get<string>('AI_ENGINE_URL') ||
@@ -38,19 +48,64 @@ export class AiClientService {
   }
 
   /**
+   * Get headers for distributed tracing
+   * Propagates sentry-trace header for cross-service tracing
+   */
+  private getTracingHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    // Propagate Sentry trace for distributed tracing
+    const traceHeader = Sentry.getTraceData();
+    if (traceHeader) {
+      headers['sentry-trace'] = traceHeader['sentry-trace'] || '';
+    }
+
+    return headers;
+  }
+
+  /**
    * Generate a legal document from natural language description
    */
   async generateDocument(
     request: GenerateDocumentRequest,
+    userId?: string,
   ): Promise<GenerateDocumentResponse> {
+    // Start a span for AI operation tracking
+    const span = Sentry.startSpan(
+      {
+        name: 'ai-engine.documents.generate',
+        op: 'http.client',
+      },
+      () => {
+        return firstValueFrom(
+          this.httpService.post<GenerateDocumentResponse>(
+            `${this.aiEngineUrl}/api/v1/documents/generate`,
+            request,
+            { headers: this.getTracingHeaders() },
+          ),
+        );
+      },
+    );
+
     try {
-      const response = await firstValueFrom(
-        this.httpService.post<GenerateDocumentResponse>(
-          `${this.aiEngineUrl}/api/v1/documents/generate`,
-          request,
-        ),
-      );
-      return response.data;
+      const response = await span;
+      const responseData = response.data;
+
+      // Track usage if userId is provided
+      if (userId && responseData.tokens_used) {
+        await this.usageTrackingService.recordUsage(
+          userId,
+          AiOperationType.DOCUMENT_GENERATION,
+          responseData.tokens_used,
+          1,
+          responseData.task_id,
+          { document_type: request.document_type },
+        );
+      }
+
+      return responseData;
     } catch (error) {
       this.logger.error('Failed to generate document', error);
       throw new Error('Document generation failed');
@@ -65,6 +120,7 @@ export class AiClientService {
       const response = await firstValueFrom(
         this.httpService.get<DocumentGenerationStatus>(
           `${this.aiEngineUrl}/api/v1/documents/status/${taskId}`,
+          { headers: this.getTracingHeaders() },
         ),
       );
       return response.data;
@@ -77,15 +133,34 @@ export class AiClientService {
   /**
    * Ask a legal question and receive an answer with citations
    */
-  async askQuestion(request: AskQuestionRequest): Promise<AnswerResponse> {
+  async askQuestion(
+    request: AskQuestionRequest,
+    userId?: string,
+  ): Promise<AnswerResponse> {
     try {
       const response = await firstValueFrom(
         this.httpService.post<AnswerResponse>(
           `${this.aiEngineUrl}/api/v1/qa/ask`,
           request,
+          { headers: this.getTracingHeaders() },
         ),
       );
-      return response.data;
+
+      const responseData = response.data;
+
+      // Track usage if userId is provided
+      if (userId && responseData.tokens_used) {
+        await this.usageTrackingService.recordUsage(
+          userId,
+          AiOperationType.QUESTION_ANSWERING,
+          responseData.tokens_used,
+          1,
+          request.session_id,
+          { mode: request.mode },
+        );
+      }
+
+      return responseData;
     } catch (error) {
       this.logger.error('Failed to ask question', error);
       throw new Error('Question answering failed');
@@ -103,6 +178,7 @@ export class AiClientService {
         this.httpService.post<SearchRulingsResponse>(
           `${this.aiEngineUrl}/api/v1/search/rulings`,
           request,
+          { headers: this.getTracingHeaders() },
         ),
       );
       return response.data;
@@ -115,15 +191,34 @@ export class AiClientService {
   /**
    * Classify a case and identify applicable legal grounds
    */
-  async classifyCase(request: ClassifyCaseRequest): Promise<ClassifyCaseResponse> {
+  async classifyCase(
+    request: ClassifyCaseRequest,
+    userId?: string,
+  ): Promise<ClassifyCaseResponse> {
     try {
       const response = await firstValueFrom(
         this.httpService.post<ClassifyCaseResponse>(
           `${this.aiEngineUrl}/api/v1/classify`,
           request,
+          { headers: this.getTracingHeaders() },
         ),
       );
-      return response.data;
+
+      const responseData = response.data;
+
+      // Track usage if userId is provided
+      if (userId && responseData.tokens_used) {
+        await this.usageTrackingService.recordUsage(
+          userId,
+          AiOperationType.CASE_CLASSIFICATION,
+          responseData.tokens_used,
+          1,
+          request.session_id,
+          { processing_time_ms: responseData.processing_time_ms },
+        );
+      }
+
+      return responseData;
     } catch (error) {
       this.logger.error('Failed to classify case', error);
       throw new Error('Case classification failed');
@@ -136,9 +231,14 @@ export class AiClientService {
   async generateEmbeddings(texts: string[]): Promise<number[][]> {
     try {
       const response = await firstValueFrom(
-        this.httpService.post<{ embeddings: number[][]; model: string; total_tokens: number }>(
+        this.httpService.post<{
+          embeddings: number[][];
+          model: string;
+          total_tokens: number;
+        }>(
           `${this.aiEngineUrl}/api/v1/embeddings/generate`,
           { texts, model: 'text-embedding-3-small' },
+          { headers: this.getTracingHeaders() },
         ),
       );
       return response.data.embeddings;
@@ -151,12 +251,15 @@ export class AiClientService {
   /**
    * Perform semantic search over document embeddings
    */
-  async semanticSearch(request: SemanticSearchRequest): Promise<SemanticSearchResponse> {
+  async semanticSearch(
+    request: SemanticSearchRequest,
+  ): Promise<SemanticSearchResponse> {
     try {
       const response = await firstValueFrom(
         this.httpService.post<SemanticSearchResponse>(
           `${this.aiEngineUrl}/api/v1/search/semantic`,
           request,
+          { headers: this.getTracingHeaders() },
         ),
       );
       return response.data;
@@ -169,15 +272,34 @@ export class AiClientService {
   /**
    * Ask a legal question with RAG (Retrieval Augmented Generation)
    */
-  async askQuestionWithRag(request: AskQuestionRequest): Promise<AnswerResponse> {
+  async askQuestionWithRag(
+    request: AskQuestionRequest,
+    userId?: string,
+  ): Promise<AnswerResponse> {
     try {
       const response = await firstValueFrom(
         this.httpService.post<AnswerResponse>(
           `${this.aiEngineUrl}/api/v1/qa/ask-rag`,
           request,
+          { headers: this.getTracingHeaders() },
         ),
       );
-      return response.data;
+
+      const responseData = response.data;
+
+      // Track usage if userId is provided
+      if (userId && responseData.tokens_used) {
+        await this.usageTrackingService.recordUsage(
+          userId,
+          AiOperationType.RAG_QUESTION_ANSWERING,
+          responseData.tokens_used,
+          1,
+          request.session_id,
+          { mode: request.mode },
+        );
+      }
+
+      return responseData;
     } catch (error) {
       this.logger.error('Failed to ask question with RAG', error);
       throw new Error('RAG question answering failed');
@@ -190,7 +312,9 @@ export class AiClientService {
   async healthCheck(): Promise<{ status: string }> {
     try {
       const response = await firstValueFrom(
-        this.httpService.get<{ status: string }>(`${this.aiEngineUrl}/health`),
+        this.httpService.get<{ status: string }>(`${this.aiEngineUrl}/health`, {
+          headers: this.getTracingHeaders(),
+        }),
       );
       return response.data;
     } catch (error) {

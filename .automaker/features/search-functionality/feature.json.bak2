@@ -1,0 +1,15 @@
+{
+  "id": "search-functionality",
+  "category": "Core",
+  "title": "Global Search Service",
+  "description": "Implement full-text search across documents, rulings, and queries using PostgreSQL full-text search or Elasticsearch. Support fuzzy matching and ranking.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "complex",
+  "createdAt": "2026-01-12T10:31:20.845Z",
+  "updatedAt": "2026-01-12T10:31:20.845Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

@@ -16,9 +16,10 @@ import type { IUserRepository } from '../../../domain/user-management/repositori
  * 4. Publishes domain events
  */
 @Injectable()
-export class RegisterUserUseCase
-  implements IUseCase<RegisterUserDto, RegisterUserResultDto>
-{
+export class RegisterUserUseCase implements IUseCase<
+  RegisterUserDto,
+  RegisterUserResultDto
+> {
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,

@@ -1,0 +1,36 @@
+{
+  "id": "notification-service",
+  "category": "Core",
+  "title": "Notification Service",
+  "description": "Implement service for creating and managing notifications. Support different notification types with templates and delivery rules.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "architecture": {
+    "boundedContext": "Notifications",
+    "aggregateRoot": "Notification",
+    "module": "apps/backend/src/modules/notifications",
+    "layer": "Application",
+    "patterns": [
+      "Application Service",
+      "Event Listener",
+      "Domain Service"
+    ],
+    "emits": [
+      "NOTIFICATION.CREATED",
+      "NOTIFICATION.EMAIL_SENT"
+    ],
+    "listensTo": [
+      "DOCUMENT.GENERATION_COMPLETED",
+      "QUERY.ANSWERED",
+      "ANALYSIS.COMPLETED"
+    ],
+    "notes": "Application service orchestrating notification creation. Listens to domain events via EventEmitter2. No direct module imports."
+  },
+  "createdAt": "2026-01-12T10:31:20.846Z",
+  "updatedAt": "2026-01-12T10:31:20.846Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

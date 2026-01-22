@@ -1,5 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { IUseCase, NotFoundError, BusinessRuleViolationError } from '../../common';
+import {
+  IUseCase,
+  NotFoundError,
+  BusinessRuleViolationError,
+} from '../../common';
 import { LegalQueryDto } from '../dto';
 import type { ILegalQueryRepository } from '../../../domain/ai-operations/repositories';
 
@@ -16,9 +20,10 @@ export interface StartProcessingQueryInput {
  * This use case marks a query as being processed by the AI system.
  */
 @Injectable()
-export class StartProcessingQueryUseCase
-  implements IUseCase<StartProcessingQueryInput, LegalQueryDto>
-{
+export class StartProcessingQueryUseCase implements IUseCase<
+  StartProcessingQueryInput,
+  LegalQueryDto
+> {
   constructor(
     @Inject('ILegalQueryRepository')
     private readonly queryRepository: ILegalQueryRepository,
@@ -36,7 +41,9 @@ export class StartProcessingQueryUseCase
       query.startProcessing();
     } catch (error) {
       throw new BusinessRuleViolationError(
-        error instanceof Error ? error.message : 'Cannot start processing query',
+        error instanceof Error
+          ? error.message
+          : 'Cannot start processing query',
         { queryId: request.queryId },
       );
     }

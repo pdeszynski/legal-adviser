@@ -1,0 +1,17 @@
+{
+  "id": "quota-enforcement",
+  "category": "Core",
+  "title": "Usage Quota Enforcement",
+  "description": "Implement quota checking before AI operations. Block requests exceeding user's plan limits with clear error messages.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "usage-tracking"
+  ],
+  "createdAt": "2026-01-12T10:31:20.851Z",
+  "updatedAt": "2026-01-12T10:31:20.851Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

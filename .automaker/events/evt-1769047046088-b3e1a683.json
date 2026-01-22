@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769047046088-b3e1a683",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T01:57:26.088Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "webhook-system",
+  "featureName": "Webhook System",
+  "error": "Feature completed in 902s - auto-verified",
+  "passes": true
+}

@@ -3,15 +3,13 @@
   "category": "Localization",
   "title": "Complete German Translations",
   "description": "Add comprehensive German translations for all UI strings. Support German-speaking users accessing the platform.",
-  "status": "backlog",
+  "status": "in_progress",
   "priority": 2,
   "complexity": "moderate",
-  "dependencies": [
-    "polish-translations"
-  ],
   "createdAt": "2026-01-12T10:31:20.837Z",
-  "updatedAt": "2026-01-12T10:31:20.837Z",
+  "updatedAt": "2026-01-21T23:30:31.171Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

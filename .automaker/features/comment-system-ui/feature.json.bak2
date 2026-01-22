@@ -1,0 +1,15 @@
+{
+  "id": "comment-system-ui",
+  "category": "UI",
+  "title": "Comment System UI",
+  "description": "Create commenting interface with inline annotations. Display comment threads, reply chains, and resolve/unresolve actions.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "moderate",
+  "createdAt": "2026-01-12T10:31:20.843Z",
+  "updatedAt": "2026-01-12T10:31:20.843Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

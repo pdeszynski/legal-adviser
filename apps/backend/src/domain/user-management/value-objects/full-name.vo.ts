@@ -47,9 +47,7 @@ export class FullName extends ValueObject<FullNameProps> {
       trimmedFirst.length > FullName.MAX_LENGTH ||
       trimmedLast.length > FullName.MAX_LENGTH
     ) {
-      throw new Error(
-        `Name cannot exceed ${FullName.MAX_LENGTH} characters`,
-      );
+      throw new Error(`Name cannot exceed ${FullName.MAX_LENGTH} characters`);
     }
 
     return new FullName({

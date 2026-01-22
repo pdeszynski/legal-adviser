@@ -127,13 +127,13 @@ export class AuditLoggingInterceptor implements NestInterceptor {
             userId,
             ipAddress,
             userAgent,
-            statusCode: (error as any).status || 500,
-            errorMessage: (error as any).message || 'Unknown error',
+            statusCode: error.status || 500,
+            errorMessage: error.message || 'Unknown error',
             changeDetails: {
               context: {
                 mutation: mutationName,
                 args: this.sanitizeArgs(args),
-                error: (error as any).message,
+                error: error.message,
               },
             },
           })

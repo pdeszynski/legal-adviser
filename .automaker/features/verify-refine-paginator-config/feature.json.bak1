@@ -3,11 +3,8 @@
   "description": "Check that Refine data provider is correctly mapping pagination parameters to GraphQL queries. Verify useTable hook pagination mode matches backend implementation (offset vs cursor). Ensure pagination metadata (total, pageCount) is being properly extracted from GraphQL responses.",
   "id": "verify-refine-paginator-config",
   "title": "Verify Refine Paginator Configuration",
-  "dependencies": [
-    "fix-pagination-implementation"
-  ],
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -15,5 +12,6 @@
       "timestamp": "2026-01-21T10:19:04.637Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-21T23:18:50.946Z"
 }

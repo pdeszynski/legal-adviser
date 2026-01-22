@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere, DataSource, ILike } from 'typeorm';
-import { LegalRuling, CourtType, RulingMetadata } from '../entities/legal-ruling.entity';
+import {
+  LegalRuling,
+  CourtType,
+  RulingMetadata,
+} from '../entities/legal-ruling.entity';
 
 /**
  * Search result with relevance score
@@ -241,7 +245,14 @@ export class LegalRulingService {
    * @returns Array of search results with relevance ranking
    */
   async search(options: SearchOptions): Promise<SearchResult[]> {
-    const { query, courtType, dateFrom, dateTo, limit = 20, offset = 0 } = options;
+    const {
+      query,
+      courtType,
+      dateFrom,
+      dateTo,
+      limit = 20,
+      offset = 0,
+    } = options;
 
     // Sanitize the search query for PostgreSQL
     const sanitizedQuery = this.sanitizeSearchQuery(query);
@@ -272,7 +283,10 @@ export class LegalRulingService {
       )
     `;
 
-    const params: (string | Date | number)[] = [sanitizedQuery, `%${sanitizedQuery}%`];
+    const params: (string | Date | number)[] = [
+      sanitizedQuery,
+      `%${sanitizedQuery}%`,
+    ];
     let paramIndex = 3;
 
     // Add court type filter
@@ -306,17 +320,21 @@ export class LegalRulingService {
     const results = await this.dataSource.query(sql, params);
 
     // Map results to SearchResult objects
-    return results.map((row: Record<string, unknown> & { rank: number; headline: string }) => ({
-      ruling: this.mapRowToRuling(row),
-      rank: parseFloat(row.rank?.toString() || '0'),
-      headline: row.headline,
-    }));
+    return results.map(
+      (row: Record<string, unknown> & { rank: number; headline: string }) => ({
+        ruling: this.mapRowToRuling(row),
+        rank: parseFloat(row.rank?.toString() || '0'),
+        headline: row.headline,
+      }),
+    );
   }
 
   /**
    * Count search results for pagination
    */
-  async countSearchResults(options: Omit<SearchOptions, 'limit' | 'offset'>): Promise<number> {
+  async countSearchResults(
+    options: Omit<SearchOptions, 'limit' | 'offset'>,
+  ): Promise<number> {
     const { query, courtType, dateFrom, dateTo } = options;
 
     const sanitizedQuery = this.sanitizeSearchQuery(query);
@@ -362,7 +380,10 @@ export class LegalRulingService {
   /**
    * Find rulings by court type
    */
-  async findByCourtType(courtType: CourtType, limit?: number): Promise<LegalRuling[]> {
+  async findByCourtType(
+    courtType: CourtType,
+    limit?: number,
+  ): Promise<LegalRuling[]> {
     return this.findAll({ courtType, limit });
   }
 
@@ -391,7 +412,9 @@ export class LegalRulingService {
   /**
    * Count rulings with optional filtering
    */
-  async count(options?: Omit<RulingQueryOptions, 'limit' | 'offset'>): Promise<number> {
+  async count(
+    options?: Omit<RulingQueryOptions, 'limit' | 'offset'>,
+  ): Promise<number> {
     const queryBuilder = this.rulingRepository.createQueryBuilder('ruling');
 
     if (options?.courtType) {

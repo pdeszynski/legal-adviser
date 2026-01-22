@@ -63,7 +63,10 @@ export class ClassifyCaseInput {
   @Transform(({ value }) => sanitizeString(value))
   caseDescription: string;
 
-  @Field(() => String, { nullable: true, description: 'Additional context for the analysis' })
+  @Field(() => String, {
+    nullable: true,
+    description: 'Additional context for the analysis',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(5000, {

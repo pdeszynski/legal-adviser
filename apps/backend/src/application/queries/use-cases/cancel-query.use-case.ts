@@ -1,5 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { IUseCase, NotFoundError, BusinessRuleViolationError } from '../../common';
+import {
+  IUseCase,
+  NotFoundError,
+  BusinessRuleViolationError,
+} from '../../common';
 import { LegalQueryDto } from '../dto';
 import type { ILegalQueryRepository } from '../../../domain/ai-operations/repositories';
 
@@ -16,9 +20,10 @@ export interface CancelQueryInput {
  * This use case orchestrates cancelling a pending or processing query.
  */
 @Injectable()
-export class CancelQueryUseCase
-  implements IUseCase<CancelQueryInput, LegalQueryDto>
-{
+export class CancelQueryUseCase implements IUseCase<
+  CancelQueryInput,
+  LegalQueryDto
+> {
   constructor(
     @Inject('ILegalQueryRepository')
     private readonly queryRepository: ILegalQueryRepository,

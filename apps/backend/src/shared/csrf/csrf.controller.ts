@@ -27,7 +27,9 @@ export class CsrfController {
    * @returns Object containing the CSRF token for client-side storage
    */
   @Get('csrf-token')
-  getCsrfToken(@Res({ passthrough: true }) response: Response): { token: string } {
+  getCsrfToken(@Res({ passthrough: true }) response: Response): {
+    token: string;
+  } {
     const { token, signedToken } = this.csrfService.generateToken();
 
     // Set the signed token as a cookie

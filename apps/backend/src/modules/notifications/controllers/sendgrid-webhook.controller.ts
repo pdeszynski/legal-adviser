@@ -297,7 +297,9 @@ export class SendGridWebhookController {
     notificationId: string,
     event: SendGridWebhookEvent,
   ): Promise<void> {
-    this.logger.log(`Unsubscribe received for ${event.email} (${notificationId})`);
+    this.logger.log(
+      `Unsubscribe received for ${event.email} (${notificationId})`,
+    );
 
     // Update notification with metadata
     const notification =

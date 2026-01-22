@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { IUseCase } from '../../common';
-import { CreateAuditLogDto, CreateAuditLogResultDto } from '../dto/create-audit-log.dto';
+import {
+  CreateAuditLogDto,
+  CreateAuditLogResultDto,
+} from '../dto/create-audit-log.dto';
 import { AuditLog } from '../../../modules/audit-log/entities/audit-log.entity';
 import { AuditLogCreatedEvent } from '../events/audit-log-created.event';
 
@@ -22,9 +25,10 @@ import { AuditLogCreatedEvent } from '../events/audit-log-created.event';
  * - Infrastructure Layer (Repository) → persists to database
  */
 @Injectable()
-export class CreateAuditLogUseCase
-  implements IUseCase<CreateAuditLogDto, CreateAuditLogResultDto>
-{
+export class CreateAuditLogUseCase implements IUseCase<
+  CreateAuditLogDto,
+  CreateAuditLogResultDto
+> {
   constructor(
     @InjectRepository(AuditLog)
     private readonly auditLogRepository: Repository<AuditLog>,

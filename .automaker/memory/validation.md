@@ -5,11 +5,10 @@ relevantTo: [validation]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 2
-  referenced: 1
-  successfulFeatures: 1
+  loaded: 3
+  referenced: 4
+  successfulFeatures: 4
 ---
-
 # validation
 
 ### Validation constraints match exactly to backend schema (title 3-500 chars, currency 3-letter ISO code pattern) (2026-01-20)

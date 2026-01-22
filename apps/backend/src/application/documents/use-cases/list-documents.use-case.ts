@@ -19,15 +19,18 @@ export interface ListDocumentsByOwnerInput {
  * optionally filtered by status.
  */
 @Injectable()
-export class ListDocumentsByOwnerUseCase
-  implements IUseCase<ListDocumentsByOwnerInput, DocumentSummaryDto[]>
-{
+export class ListDocumentsByOwnerUseCase implements IUseCase<
+  ListDocumentsByOwnerInput,
+  DocumentSummaryDto[]
+> {
   constructor(
     @Inject('ILegalDocumentRepository')
     private readonly documentRepository: ILegalDocumentRepository,
   ) {}
 
-  async execute(request: ListDocumentsByOwnerInput): Promise<DocumentSummaryDto[]> {
+  async execute(
+    request: ListDocumentsByOwnerInput,
+  ): Promise<DocumentSummaryDto[]> {
     let documents;
 
     if (request.status) {

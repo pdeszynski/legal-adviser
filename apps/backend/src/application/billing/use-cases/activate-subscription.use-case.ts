@@ -1,6 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { IUseCase, NotFoundError, BusinessRuleViolationError } from '../../common';
+import {
+  IUseCase,
+  NotFoundError,
+  BusinessRuleViolationError,
+} from '../../common';
 import { ActivateSubscriptionDto, SubscriptionDto } from '../dto';
 import type { ISubscriptionRepository } from '../../../domain/billing/repositories';
 
@@ -14,9 +18,10 @@ import type { ISubscriptionRepository } from '../../../domain/billing/repositori
  * 4. Publishes domain events
  */
 @Injectable()
-export class ActivateSubscriptionUseCase
-  implements IUseCase<ActivateSubscriptionDto, SubscriptionDto>
-{
+export class ActivateSubscriptionUseCase implements IUseCase<
+  ActivateSubscriptionDto,
+  SubscriptionDto
+> {
   constructor(
     @Inject('ISubscriptionRepository')
     private readonly subscriptionRepository: ISubscriptionRepository,

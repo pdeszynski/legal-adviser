@@ -1,0 +1,15 @@
+{
+  "id": "ruling-search-service",
+  "category": "Core",
+  "title": "Ruling Search Service",
+  "description": "Create search service aggregating results from SAOS, ISAP, and local database. Implement ranking algorithm prioritizing relevance and recency.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "complex",
+  "createdAt": "2026-01-12T10:31:20.834Z",
+  "updatedAt": "2026-01-12T10:31:20.834Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

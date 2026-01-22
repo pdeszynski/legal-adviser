@@ -5,7 +5,10 @@ import {
   failureResult,
   PaginationParams,
 } from '../../common';
-import { ApplicationError, NotFoundError } from '../../common/application-error';
+import {
+  ApplicationError,
+  NotFoundError,
+} from '../../common/application-error';
 import {
   SubmitQueryDto,
   SubmitQueryResultDto,
@@ -14,7 +17,10 @@ import {
   PaginatedQueriesDto,
 } from '../dto';
 import { SubmitQueryUseCase } from '../use-cases/submit-query.use-case';
-import { GetQueryUseCase, GetQueryInput } from '../use-cases/get-query.use-case';
+import {
+  GetQueryUseCase,
+  GetQueryInput,
+} from '../use-cases/get-query.use-case';
 import {
   ListUserQueriesUseCase,
   ListUserQueriesInput,
@@ -136,11 +142,19 @@ export class QueryApplicationService {
     limit: number = 10,
   ): Promise<ServiceResult<LegalQuerySummaryDto[]>> {
     try {
-      this.logger.log(`Getting recent queries for user: ${userId}, limit: ${limit}`);
-      const result = await this.getRecentQueriesUseCase.execute({ userId, limit });
+      this.logger.log(
+        `Getting recent queries for user: ${userId}, limit: ${limit}`,
+      );
+      const result = await this.getRecentQueriesUseCase.execute({
+        userId,
+        limit,
+      });
       return successResult(result);
     } catch (error) {
-      return this.handleError<LegalQuerySummaryDto[]>(error, 'get recent queries');
+      return this.handleError<LegalQuerySummaryDto[]>(
+        error,
+        'get recent queries',
+      );
     }
   }
 
@@ -155,7 +169,9 @@ export class QueryApplicationService {
   ): Promise<ServiceResult<LegalQueryDto>> {
     try {
       this.logger.log(`Starting processing for query: ${queryId}`);
-      const result = await this.startProcessingQueryUseCase.execute({ queryId });
+      const result = await this.startProcessingQueryUseCase.execute({
+        queryId,
+      });
       this.logger.log(`Query processing started: ${queryId}`);
       return successResult(result);
     } catch (error) {
@@ -246,7 +262,10 @@ export class QueryApplicationService {
         return failureResult('NOT_FOUND', 'Query not found');
       }
       if (queryResult.data.userId !== userId) {
-        return failureResult('FORBIDDEN', 'Not authorized to cancel this query');
+        return failureResult(
+          'FORBIDDEN',
+          'Not authorized to cancel this query',
+        );
       }
 
       const result = await this.cancelQueryUseCase.execute({ queryId });
@@ -299,7 +318,10 @@ export class QueryApplicationService {
       const result = await this.getPendingQueriesUseCase.execute();
       return successResult(result);
     } catch (error) {
-      return this.handleError<LegalQuerySummaryDto[]>(error, 'get pending queries');
+      return this.handleError<LegalQuerySummaryDto[]>(
+        error,
+        'get pending queries',
+      );
     }
   }
 
@@ -331,9 +353,7 @@ export class QueryApplicationService {
    * @param userId - The user ID
    * @returns Service result with query statistics
    */
-  async getQueryStatistics(
-    userId: string,
-  ): Promise<
+  async getQueryStatistics(userId: string): Promise<
     ServiceResult<{
       total: number;
       byStatus: Record<QueryStatusEnum, number>;
@@ -381,11 +401,14 @@ export class QueryApplicationService {
     }
 
     if (error instanceof ApplicationError) {
-      this.logger.warn(`Application error during ${operation}: ${error.message}`);
+      this.logger.warn(
+        `Application error during ${operation}: ${error.message}`,
+      );
       return failureResult(error.code, error.message, error.details);
     }
 
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     this.logger.error(`Unexpected error during ${operation}: ${errorMessage}`);
     return failureResult('INTERNAL_ERROR', `Failed to ${operation}`, {
       originalError: errorMessage,

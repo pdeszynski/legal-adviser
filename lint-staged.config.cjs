@@ -20,8 +20,8 @@ module.exports = {
   ],
 
   // TypeScript and JavaScript files in packages
+  // Note: packages/shared-kernel doesn't have ESLint configured - Prettier only
   'packages/**/*.{js,jsx,ts,tsx}': [
-    'eslint --fix', // Root eslint works for packages
     'prettier --write', // Format with Prettier
   ],
 

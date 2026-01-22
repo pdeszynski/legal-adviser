@@ -6,6 +6,7 @@ import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { UserSession } from './entities/user-session.entity';
 import { CreateUserInput, UpdateUserInput } from './dto';
+import { UsersAdminResolver } from './users-admin.resolver';
 
 /**
  * Users Module
@@ -89,7 +90,7 @@ import { CreateUserInput, UpdateUserInput } from './dto';
       ],
     }),
   ],
-  providers: [UsersService],
+  providers: [UsersService, UsersAdminResolver],
   exports: [UsersService],
 })
 export class UsersModule {}

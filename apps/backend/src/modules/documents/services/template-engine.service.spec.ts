@@ -339,8 +339,8 @@ describe('TemplateEngineService', () => {
       });
 
       // Polish locale formatting may vary by system
-      expect(result).toContain('1')
-      expect(result).toContain('234')
+      expect(result).toContain('1');
+      expect(result).toContain('234');
       expect(result).toContain('567');
     });
 

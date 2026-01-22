@@ -2,6 +2,60 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AggregatedLegalRulingSearchResponse {
+  """Number of results returned"""
+  count: Int!
+
+  """Whether there are more results"""
+  hasMore: Boolean!
+
+  """Current offset"""
+  offset: Int!
+
+  """Search results with relevance ranking from multiple sources"""
+  results: [AggregatedLegalRulingSearchResult!]!
+
+  """Total number of matching results (for pagination)"""
+  totalCount: Int!
+}
+
+type AggregatedLegalRulingSearchResult {
+  """Highlighted snippet of matching content"""
+  headline: String
+
+  """Relevance score (higher is better)"""
+  rank: Float!
+
+  """The matching legal ruling"""
+  ruling: LegalRuling!
+
+  """Source of the result"""
+  source: SearchSource!
+}
+
+input AggregatedSearchLegalRulingsInput {
+  """Filter by court type"""
+  courtType: CourtType
+
+  """Filter by ruling date from (ISO 8601 date string)"""
+  dateFrom: String
+
+  """Filter by ruling date to (ISO 8601 date string)"""
+  dateTo: String
+
+  """Maximum number of results to return (default: 20, max: 100)"""
+  limit: Int = 20
+
+  """Number of results to skip for pagination"""
+  offset: Int = 0
+
+  """Search query text"""
+  query: String!
+
+  """Sources to search (default: all sources)"""
+  sources: [SearchSource!] = [LOCAL, SAOS, ISAP]
+}
+
 type AnalysisMetadata {
   analysisVersion: String
   modelUsed: String
@@ -45,6 +99,19 @@ input AnswerLegalQueryInput {
 
   """Citations and references for the answer"""
   citations: [CreateCitationInput!]
+}
+
+input AskLegalQuestionInput {
+  """
+  Response mode: LAWYER (detailed legal analysis) or SIMPLE (layperson-friendly)
+  """
+  mode: String
+
+  """The legal question to ask the AI"""
+  question: String!
+
+  """Session ID for the user asking the question"""
+  sessionId: String!
 }
 
 """Type of action performed"""
@@ -1500,6 +1567,9 @@ type Mutation {
   """Add AI-generated answer to a legal query"""
   answerLegalQuery(id: ID!, input: AnswerLegalQueryInput!): LegalQuery!
 
+  """Ask a legal question and get AI answer synchronously"""
+  askLegalQuestion(input: AskLegalQuestionInput!): LegalQuery!
+
   """
   Analyze a case description using AI and identify applicable legal grounds
   """
@@ -1688,6 +1758,10 @@ input PublishDocumentInputV2 {
 }
 
 type Query {
+  """
+  Search legal rulings across multiple sources (LOCAL, SAOS, ISAP) with relevance ranking
+  """
+  aggregatedSearchLegalRulings(input: AggregatedSearchLegalRulingsInput!): AggregatedLegalRulingSearchResponse!
   auditLog(
     """The id of the record to find."""
     id: ID!
@@ -1962,6 +2036,13 @@ input SearchLegalRulingsInput {
 
   """Search query text"""
   query: String!
+}
+
+"""Source of the search result (LOCAL, SAOS, or ISAP)"""
+enum SearchSource {
+  ISAP
+  LOCAL
+  SAOS
 }
 
 """Mode of operation for a user session"""

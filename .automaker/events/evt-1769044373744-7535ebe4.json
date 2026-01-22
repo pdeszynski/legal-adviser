@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769044373744-7535ebe4",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T01:12:53.744Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "document-comments-entity",
+  "featureName": "Document Comments Entity",
+  "error": "Feature completed in 343s - auto-verified",
+  "passes": true
+}

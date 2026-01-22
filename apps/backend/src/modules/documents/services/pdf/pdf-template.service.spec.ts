@@ -4,7 +4,10 @@
  * Tests the HTML template generation for Polish legal documents.
  */
 
-import { PdfTemplateService, DocumentTemplateContext } from './pdf-template.service';
+import {
+  PdfTemplateService,
+  DocumentTemplateContext,
+} from './pdf-template.service';
 import { DocumentType } from '../../entities/legal-document.entity';
 import { PdfPageFormat } from '../../queues/pdf-export.job';
 

@@ -1,4 +1,9 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import {
+  Field,
+  InputType,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 /**
@@ -10,6 +15,12 @@ export enum EmailTemplateType {
   DOCUMENT_FAILED = 'document_failed',
   SYSTEM_NOTIFICATION = 'system_notification',
 }
+
+// Register enum with GraphQL
+registerEnumType(EmailTemplateType, {
+  name: 'EmailTemplateType',
+  description: 'Email template types available in the system',
+});
 
 /**
  * Input for sending an email notification

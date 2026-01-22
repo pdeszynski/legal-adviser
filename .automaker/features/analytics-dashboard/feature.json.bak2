@@ -1,0 +1,15 @@
+{
+  "id": "analytics-dashboard",
+  "category": "UI",
+  "title": "Analytics Dashboard",
+  "description": "Create admin dashboard with platform analytics. Show user growth, document generation metrics, and system health indicators.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "complex",
+  "createdAt": "2026-01-12T10:31:20.854Z",
+  "updatedAt": "2026-01-12T10:31:20.854Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

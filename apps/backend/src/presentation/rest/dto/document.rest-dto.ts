@@ -1,5 +1,8 @@
 import { IsString, IsUUID, IsEnum, IsOptional } from 'class-validator';
-import { DocumentTypeEnum, DocumentStatusEnum } from '../../../domain/legal-documents/value-objects';
+import {
+  DocumentTypeEnum,
+  DocumentStatusEnum,
+} from '../../../domain/legal-documents/value-objects';
 
 /**
  * REST DTO for creating a document

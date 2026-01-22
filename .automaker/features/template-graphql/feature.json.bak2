@@ -1,0 +1,15 @@
+{
+  "id": "template-graphql",
+  "category": "API",
+  "title": "Template GraphQL Resolvers",
+  "description": "Add nestjs-query decorators to DocumentTemplate entity. Implement custom mutations for template rendering with variable substitution.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "moderate",
+  "createdAt": "2026-01-12T10:31:20.842Z",
+  "updatedAt": "2026-01-12T10:31:20.842Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

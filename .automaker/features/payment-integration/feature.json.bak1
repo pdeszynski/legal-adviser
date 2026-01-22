@@ -1,0 +1,15 @@
+{
+  "id": "payment-integration",
+  "category": "Integration",
+  "title": "Payment Gateway Integration",
+  "description": "Integrate Stripe or similar payment provider. Handle subscription payments, webhooks, and invoice generation.",
+  "status": "in_progress",
+  "priority": 3,
+  "complexity": "complex",
+  "createdAt": "2026-01-12T10:31:20.852Z",
+  "updatedAt": "2026-01-22T01:24:02.142Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}

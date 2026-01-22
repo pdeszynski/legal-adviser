@@ -146,7 +146,10 @@ export class SeedService {
         continue;
       }
 
-      const passwordHash = await bcrypt.hash(userData.password, BCRYPT_SALT_ROUNDS);
+      const passwordHash = await bcrypt.hash(
+        userData.password,
+        BCRYPT_SALT_ROUNDS,
+      );
 
       const user = this.userRepository.create({
         email: userData.email,
@@ -175,14 +178,18 @@ export class SeedService {
     for (const sessionData of sessionsSeedData) {
       const user = this.userMap.get(sessionData.userEmail);
       if (!user) {
-        this.logger.warn(`User ${sessionData.userEmail} not found for session, skipping`);
+        this.logger.warn(
+          `User ${sessionData.userEmail} not found for session, skipping`,
+        );
         continue;
       }
 
       const session = this.sessionRepository.create({
         userId: user.id,
         mode: sessionData.mode,
-        startedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000), // Random time in last 7 days
+        startedAt: new Date(
+          Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000,
+        ), // Random time in last 7 days
         endedAt: sessionData.isActive ? null : new Date(),
       });
 
@@ -204,7 +211,9 @@ export class SeedService {
     for (const docData of documentsSeedData) {
       const session = this.sessionList[docData.sessionIndex];
       if (!session) {
-        this.logger.warn(`Session index ${docData.sessionIndex} not found, skipping document`);
+        this.logger.warn(
+          `Session index ${docData.sessionIndex} not found, skipping document`,
+        );
         continue;
       }
 
@@ -235,7 +244,9 @@ export class SeedService {
     for (const analysisData of analysesSeedData) {
       const session = this.sessionList[analysisData.sessionIndex];
       if (!session) {
-        this.logger.warn(`Session index ${analysisData.sessionIndex} not found, skipping analysis`);
+        this.logger.warn(
+          `Session index ${analysisData.sessionIndex} not found, skipping analysis`,
+        );
         continue;
       }
 
@@ -274,7 +285,9 @@ export class SeedService {
       });
 
       if (existingRuling) {
-        this.logger.debug(`Ruling ${rulingData.signature} already exists, skipping`);
+        this.logger.debug(
+          `Ruling ${rulingData.signature} already exists, skipping`,
+        );
         continue;
       }
 
@@ -306,7 +319,9 @@ export class SeedService {
     for (const queryData of queriesSeedData) {
       const session = this.sessionList[queryData.sessionIndex];
       if (!session) {
-        this.logger.warn(`Session index ${queryData.sessionIndex} not found, skipping query`);
+        this.logger.warn(
+          `Session index ${queryData.sessionIndex} not found, skipping query`,
+        );
         continue;
       }
 
@@ -319,7 +334,9 @@ export class SeedService {
 
       await this.queryRepository.save(query);
       count++;
-      this.logger.debug(`Created query: ${queryData.question.substring(0, 50)}...`);
+      this.logger.debug(
+        `Created query: ${queryData.question.substring(0, 50)}...`,
+      );
     }
 
     this.logger.log(`Seeded ${count} queries`);
@@ -333,7 +350,9 @@ export class SeedService {
 
     let count = 0;
     for (const logData of auditLogsSeedData) {
-      const user = logData.userEmail ? this.userMap.get(logData.userEmail) : null;
+      const user = logData.userEmail
+        ? this.userMap.get(logData.userEmail)
+        : null;
 
       const auditLog = this.auditLogRepository.create({
         userId: user?.id || null,
@@ -407,6 +426,14 @@ export class SeedService {
         this.auditLogRepository.count(),
       ]);
 
-    return { users, sessions, documents, analyses, rulings, queries, auditLogs };
+    return {
+      users,
+      sessions,
+      documents,
+      analyses,
+      rulings,
+      queries,
+      auditLogs,
+    };
   }
 }

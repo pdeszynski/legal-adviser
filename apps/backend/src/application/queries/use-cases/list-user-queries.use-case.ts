@@ -20,9 +20,10 @@ export interface ListUserQueriesInput {
  * This use case retrieves a paginated list of queries for a user.
  */
 @Injectable()
-export class ListUserQueriesUseCase
-  implements IUseCase<ListUserQueriesInput, PaginatedQueriesDto>
-{
+export class ListUserQueriesUseCase implements IUseCase<
+  ListUserQueriesInput,
+  PaginatedQueriesDto
+> {
   constructor(
     @Inject('ILegalQueryRepository')
     private readonly queryRepository: ILegalQueryRepository,

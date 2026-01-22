@@ -2,7 +2,10 @@ import { Injectable, Inject } from '@nestjs/common';
 import { IUseCase } from '../../common';
 import { UserSummaryDto, PaginatedUsersDto } from '../dto';
 import type { IUserRepository } from '../../../domain/user-management/repositories';
-import { UserRoleEnum, UserStatusEnum } from '../../../domain/user-management/value-objects';
+import {
+  UserRoleEnum,
+  UserStatusEnum,
+} from '../../../domain/user-management/value-objects';
 
 /**
  * Input for listing users with filters
@@ -20,9 +23,10 @@ export interface ListUsersInput {
  * This use case retrieves a paginated list of users with optional filtering.
  */
 @Injectable()
-export class ListUsersUseCase
-  implements IUseCase<ListUsersInput, PaginatedUsersDto>
-{
+export class ListUsersUseCase implements IUseCase<
+  ListUsersInput,
+  PaginatedUsersDto
+> {
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,

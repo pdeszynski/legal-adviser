@@ -40,7 +40,8 @@ Klient domaga się odszkodowania za zniszczony pojazd, zadośćuczynienia za doz
           'Na podstawie art. 415 KC sprawca wypadku ponosi odpowiedzialność za szkodę wyrządzoną z winy własnej',
         confidenceScore: 0.95,
         legalBasis: ['Art. 415 KC', 'Art. 436 KC'],
-        notes: 'Silna podstawa prawna, sprawca naruszył przepisy ruchu drogowego',
+        notes:
+          'Silna podstawa prawna, sprawca naruszył przepisy ruchu drogowego',
       },
       {
         name: 'Odpowiedzialność ubezpieczyciela OC',
@@ -163,7 +164,8 @@ Możesz żądać naprawy, wymiany lub zwrotu pieniędzy.`,
     identifiedGrounds: null,
     summary: null,
     recommendations: null,
-    errorMessage: 'AI service timeout - request exceeded maximum processing time',
+    errorMessage:
+      'AI service timeout - request exceeded maximum processing time',
     metadata: {
       modelUsed: 'gpt-4-turbo',
       analysisVersion: '1.0.0',

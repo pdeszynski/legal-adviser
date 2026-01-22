@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769037801154-dff36953",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-21T23:23:21.154Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "ruling-search-page",
+  "featureName": "Case Law Search Page",
+  "error": "Feature completed in 492s - auto-verified",
+  "passes": true
+}

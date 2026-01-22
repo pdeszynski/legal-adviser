@@ -1,5 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { IUseCase, NotFoundError, BusinessRuleViolationError } from '../../common';
+import {
+  IUseCase,
+  NotFoundError,
+  BusinessRuleViolationError,
+} from '../../common';
 import { UpgradeSubscriptionDto, SubscriptionDto } from '../dto';
 import type { ISubscriptionRepository } from '../../../domain/billing/repositories';
 
@@ -12,9 +16,10 @@ import type { ISubscriptionRepository } from '../../../domain/billing/repositori
  * 3. Persists the updated aggregate
  */
 @Injectable()
-export class UpgradeSubscriptionUseCase
-  implements IUseCase<UpgradeSubscriptionDto, SubscriptionDto>
-{
+export class UpgradeSubscriptionUseCase implements IUseCase<
+  UpgradeSubscriptionDto,
+  SubscriptionDto
+> {
   constructor(
     @Inject('ISubscriptionRepository')
     private readonly subscriptionRepository: ISubscriptionRepository,

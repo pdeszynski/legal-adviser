@@ -1,5 +1,8 @@
 import { UserAggregate } from '../../../domain/user-management/aggregates';
-import { UserRoleEnum, UserStatusEnum } from '../../../domain/user-management/value-objects';
+import {
+  UserRoleEnum,
+  UserStatusEnum,
+} from '../../../domain/user-management/value-objects';
 import { UserOrmEntity } from '../entities/user.orm-entity';
 
 /**

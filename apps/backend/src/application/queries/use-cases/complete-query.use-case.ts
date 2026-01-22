@@ -1,6 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { IUseCase, NotFoundError, BusinessRuleViolationError } from '../../common';
+import {
+  IUseCase,
+  NotFoundError,
+  BusinessRuleViolationError,
+} from '../../common';
 import { CompleteQueryDto, LegalQueryDto } from '../dto';
 import type { ILegalQueryRepository } from '../../../domain/ai-operations/repositories';
 
@@ -14,9 +18,10 @@ import type { ILegalQueryRepository } from '../../../domain/ai-operations/reposi
  * 4. Publishes domain events
  */
 @Injectable()
-export class CompleteQueryUseCase
-  implements IUseCase<CompleteQueryDto, LegalQueryDto>
-{
+export class CompleteQueryUseCase implements IUseCase<
+  CompleteQueryDto,
+  LegalQueryDto
+> {
   constructor(
     @Inject('ILegalQueryRepository')
     private readonly queryRepository: ILegalQueryRepository,

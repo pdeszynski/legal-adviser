@@ -6,14 +6,18 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
+import { ApiKeyStrategy } from './strategies/api-key.strategy';
 import { UsersModule } from '../users/users.module';
+import { ApiKeysModule } from '../api-keys/api-keys.module';
 import { GqlAuthGuard } from './guards/gql-auth.guard';
+import { GqlHybridAuthGuard } from './guards/gql-hybrid-auth.guard';
 
 @Module({
   imports: [
     PassportModule,
     ConfigModule,
     UsersModule,
+    ApiKeysModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -24,7 +28,14 @@ import { GqlAuthGuard } from './guards/gql-auth.guard';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, AuthResolver, GqlAuthGuard],
-  exports: [AuthService, GqlAuthGuard],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    ApiKeyStrategy,
+    AuthResolver,
+    GqlAuthGuard,
+    GqlHybridAuthGuard,
+  ],
+  exports: [AuthService, GqlAuthGuard, GqlHybridAuthGuard],
 })
 export class AuthModule {}

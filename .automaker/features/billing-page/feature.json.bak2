@@ -1,0 +1,15 @@
+{
+  "id": "billing-page",
+  "category": "UI",
+  "title": "Billing and Subscription Page",
+  "description": "Create page for viewing subscription status and payment history. Support plan changes and payment method updates.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "moderate",
+  "createdAt": "2026-01-12T10:31:20.852Z",
+  "updatedAt": "2026-01-12T10:31:20.852Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "descriptionHistory": []
+}
