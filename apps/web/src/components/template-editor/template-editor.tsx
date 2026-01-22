@@ -3,10 +3,7 @@
 import { useState, useCallback } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useTranslate } from "@refinedev/core";
-import { Button } from "@legal/ui/components/Button";
-import { Input } from "@legal/ui/components/Input";
-import { Label } from "@legal/ui/components/Label";
-import { Card } from "@legal/ui/components/Card";
+import { Button, Input, Label, Card } from "@legal/ui";
 
 /**
  * Template Category enum matching backend GraphQL schema

@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useNavigation, useTranslate, useOne } from "@refinedev/core";
-import { useMutation } from "@refinedev/core";
+import { useNavigation, useTranslate, useOne, useUpdate } from "@refinedev/core";
 import { TemplateEditor, DocumentTemplateFormData, TemplateCategory } from "@/components/template-editor";
-import { Button } from "@legal/ui/components/Button";
+import { Button } from "@legal/ui";
 
 interface TemplateVariable {
   name: string;
@@ -61,7 +60,7 @@ export default function EditTemplatePage({ params }: { params: { id: string } })
     id: params.id,
   });
 
-  const { mutate: updateTemplate, isLoading: isUpdating } = useMutation();
+  const { mutate: updateTemplate, isLoading: isUpdating } = useUpdate();
 
   const handleSave = async (data: DocumentTemplateFormData) => {
     setError(null);

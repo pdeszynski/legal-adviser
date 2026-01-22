@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useNavigation, useTranslate } from "@refinedev/core";
-import { useMutation } from "@refinedev/core";
+import { useNavigation, useTranslate, useCreate } from "@refinedev/core";
 import { TemplateEditor, DocumentTemplateFormData } from "@/components/template-editor";
-import { Button } from "@legal/ui/components/Button";
+import { Button } from "@legal/ui";
 
 export default function NewTemplatePage() {
   const translate = useTranslate();
   const { push } = useNavigation();
   const [error, setError] = useState<string | null>(null);
 
-  const { mutate: createTemplate, isLoading } = useMutation();
+  const { mutate: createTemplate, isLoading } = useCreate();
 
   const handleSave = async (data: DocumentTemplateFormData) => {
     setError(null);

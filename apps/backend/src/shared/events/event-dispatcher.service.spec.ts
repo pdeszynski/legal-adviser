@@ -57,13 +57,18 @@ describe('EventDispatcherService', () => {
           eventId: 'event-1',
           eventName: 'test.event',
           eventVersion: 1,
+          aggregateId: 'aggregate-1',
+          aggregateType: 'TestAggregate',
           occurredAt: new Date(),
           payload: { data: 'test' },
-          status: 'PENDING',
+          status: 'PENDING' as const,
           attempts: 0,
+          errorMessage: null,
+          createdAt: new Date(),
+          publishedAt: null,
           nextRetryAt: null,
-        } as EventStore,
-      ];
+        },
+      ] as EventStore[];
 
       eventStoreRepository.find.mockResolvedValue(pendingEvents);
       eventStoreRepository.save.mockResolvedValue({
@@ -98,10 +103,16 @@ describe('EventDispatcherService', () => {
         eventId: 'event-1',
         eventName: 'test.event',
         eventVersion: 1,
+        aggregateId: 'aggregate-1',
+        aggregateType: 'TestAggregate',
         occurredAt: new Date(),
         payload: { data: 'test' },
         status: 'PENDING' as const,
         attempts: 0,
+        errorMessage: null,
+        createdAt: new Date(),
+        publishedAt: null,
+        nextRetryAt: null,
       } as EventStore;
 
       eventStoreRepository.find.mockResolvedValue([pendingEvent]);
@@ -121,10 +132,15 @@ describe('EventDispatcherService', () => {
         eventId: 'event-1',
         eventName: 'test.event',
         eventVersion: 1,
+        aggregateId: 'aggregate-1',
+        aggregateType: 'TestAggregate',
         occurredAt: new Date(),
         payload: { data: 'test' },
         status: 'FAILED' as const,
         attempts: 1,
+        errorMessage: 'Queue error',
+        createdAt: new Date(),
+        publishedAt: null,
         nextRetryAt: new Date(Date.now() - 1000),
       } as EventStore;
 

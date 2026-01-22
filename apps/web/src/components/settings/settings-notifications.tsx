@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslate, useMutation } from "@refinedev/core";
+import { useTranslate, useCustomMutation } from "@refinedev/core";
 import { useForm } from "react-hook-form";
 
 interface UserPreferences {
@@ -48,7 +48,7 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { mutate, isLoading } = useMutation();
+  const { mutate, isLoading } = useCustomMutation();
 
   const {
     register,
@@ -81,7 +81,8 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
 
     mutate(
       {
-        resource: "updateMyPreferences",
+        url: "/updateMyPreferences",
+        method: "post",
         values: {
           input: data,
         },

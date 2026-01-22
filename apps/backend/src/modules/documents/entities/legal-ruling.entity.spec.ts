@@ -263,7 +263,8 @@ describe('LegalRuling Entity', () => {
       ruling.addKeyword('firstKeyword');
 
       expect(ruling.metadata).not.toBeNull();
-      expect(ruling.metadata?.keywords).toEqual(['firstKeyword']);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      expect(ruling.metadata!.keywords).toEqual(['firstKeyword']);
     });
 
     it('should initialize keywords array if metadata exists but keywords is null', () => {
@@ -307,7 +308,8 @@ describe('LegalRuling Entity', () => {
       ruling.addRelatedCase('III CZP 1/20');
 
       expect(ruling.metadata).not.toBeNull();
-      expect(ruling.metadata?.relatedCases).toEqual(['III CZP 1/20']);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      expect(ruling.metadata!.relatedCases).toEqual(['III CZP 1/20']);
     });
 
     it('should initialize relatedCases array if metadata exists but relatedCases is null', () => {
