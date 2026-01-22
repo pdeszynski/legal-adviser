@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769063623593-e2468922",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-22T06:33:43.593Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "debug-build-failure",
+  "featureName": "Debug Build Process Failure",
+  "error": "Feature completed in 3972s - auto-verified",
+  "passes": true
+}

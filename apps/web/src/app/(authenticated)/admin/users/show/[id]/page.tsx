@@ -24,12 +24,13 @@ export default function AdminUserShowPage() {
   const router = useRouter();
   const userId = params.id as string;
 
-  const { data: userData, isLoading, isError } = useOne<User>({
+  const { query, result } = useOne<User>({
     resource: 'users',
     id: userId,
   });
 
-  const user = userData?.data;
+  const { isLoading, isError } = query;
+  const user = result;
 
   if (isLoading) {
     return (
@@ -52,9 +53,7 @@ export default function AdminUserShowPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">User Details</h1>
-          <p className="text-muted-foreground">
-            View user information and account details
-          </p>
+          <p className="text-muted-foreground">View user information and account details</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -80,43 +79,29 @@ export default function AdminUserShowPage() {
         <div className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                User ID
-              </label>
+              <label className="text-sm font-medium text-muted-foreground">User ID</label>
               <p className="mt-1 text-sm">{user.id}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Email
-              </label>
+              <label className="text-sm font-medium text-muted-foreground">Email</label>
               <p className="mt-1 text-sm">{user.email}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Username
-              </label>
+              <label className="text-sm font-medium text-muted-foreground">Username</label>
               <p className="mt-1 text-sm">{user.username || '-'}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Full Name
-              </label>
+              <label className="text-sm font-medium text-muted-foreground">Full Name</label>
               <p className="mt-1 text-sm">
-                {user.firstName && user.lastName
-                  ? `${user.firstName} ${user.lastName}`
-                  : '-'}
+                {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : '-'}
               </p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                First Name
-              </label>
+              <label className="text-sm font-medium text-muted-foreground">First Name</label>
               <p className="mt-1 text-sm">{user.firstName || '-'}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Last Name
-              </label>
+              <label className="text-sm font-medium text-muted-foreground">Last Name</label>
               <p className="mt-1 text-sm">{user.lastName || '-'}</p>
             </div>
           </div>
@@ -131,9 +116,7 @@ export default function AdminUserShowPage() {
         <div className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Role
-              </label>
+              <label className="text-sm font-medium text-muted-foreground">Role</label>
               <div className="mt-1">
                 <span
                   className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${
@@ -147,9 +130,7 @@ export default function AdminUserShowPage() {
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Status
-              </label>
+              <label className="text-sm font-medium text-muted-foreground">Status</label>
               <div className="mt-1">
                 <span
                   className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${
@@ -166,9 +147,7 @@ export default function AdminUserShowPage() {
               <label className="text-sm font-medium text-muted-foreground">
                 Disclaimer Accepted
               </label>
-              <p className="mt-1 text-sm">
-                {user.disclaimerAccepted ? 'Yes' : 'No'}
-              </p>
+              <p className="mt-1 text-sm">{user.disclaimerAccepted ? 'Yes' : 'No'}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-muted-foreground">
@@ -184,9 +163,7 @@ export default function AdminUserShowPage() {
               <label className="text-sm font-medium text-muted-foreground">
                 Stripe Customer ID
               </label>
-              <p className="mt-1 text-sm font-mono">
-                {user.stripeCustomerId || '-'}
-              </p>
+              <p className="mt-1 text-sm font-mono">{user.stripeCustomerId || '-'}</p>
             </div>
           </div>
         </div>
@@ -200,20 +177,12 @@ export default function AdminUserShowPage() {
         <div className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Created At
-              </label>
-              <p className="mt-1 text-sm">
-                {new Date(user.createdAt).toLocaleString()}
-              </p>
+              <label className="text-sm font-medium text-muted-foreground">Created At</label>
+              <p className="mt-1 text-sm">{new Date(user.createdAt).toLocaleString()}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Updated At
-              </label>
-              <p className="mt-1 text-sm">
-                {new Date(user.updatedAt).toLocaleString()}
-              </p>
+              <label className="text-sm font-medium text-muted-foreground">Updated At</label>
+              <p className="mt-1 text-sm">{new Date(user.updatedAt).toLocaleString()}</p>
             </div>
           </div>
         </div>

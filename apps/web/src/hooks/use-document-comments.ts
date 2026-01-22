@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useList, useInvalidate, useCreate, useUpdate, useDelete } from "@refinedev/core";
-import { useCallback } from "react";
+import { useList, useInvalidate, useCreate, useUpdate, useDelete } from '@refinedev/core';
+import { useCallback } from 'react';
 
 /**
  * Comment resolution status enum
  */
 export enum CommentResolutionStatus {
-  OPEN = "OPEN",
-  RESOLVED = "RESOLVED",
+  OPEN = 'OPEN',
+  RESOLVED = 'RESOLVED',
 }
 
 /**
@@ -83,40 +83,39 @@ export interface UseDocumentCommentsReturn {
  * Hook for managing document comments
  * Provides CRUD operations and resolution status management
  */
-export function useDocumentComments(
-  documentId: string | undefined
-): UseDocumentCommentsReturn {
+export function useDocumentComments(documentId: string | undefined): UseDocumentCommentsReturn {
   const invalidate = useInvalidate();
 
   // Fetch comments for the document
-  const { data, isLoading, error } = useList<DocumentComment>({
-    resource: "documentComments",
+  const { query, result } = useList<DocumentComment>({
+    resource: 'documentComments',
     queryOptions: {
       enabled: !!documentId,
       staleTime: 5000, // Cache for 5 seconds
     },
     pagination: {
-      current: 1,
+      currentPage: 1,
       pageSize: 100, // Load all comments at once
     },
     sorters: [
       {
-        field: "createdAt",
-        order: "asc",
+        field: 'createdAt',
+        order: 'asc',
       },
     ],
     filters: documentId
       ? [
           {
-            field: "documentId",
-            operator: "eq",
+            field: 'documentId',
+            operator: 'eq',
             value: documentId,
           },
         ]
       : [],
   });
 
-  const comments = data?.data || [];
+  const { data, isLoading, error } = query;
+  const comments = result?.data || [];
 
   // Mutations
   const { mutate: createMutation } = useCreate();
@@ -132,24 +131,24 @@ export function useDocumentComments(
 
       createMutation(
         {
-          resource: "documentComments",
+          resource: 'documentComments',
           values: {
             ...input,
             documentId,
-            authorId: "current-user-id", // TODO: Get from auth context
+            authorId: 'current-user-id', // TODO: Get from auth context
           },
         },
         {
           onSuccess: () => {
             invalidate({
-              resource: "documentComments",
-              invalidates: ["list"],
+              resource: 'documentComments',
+              invalidates: ['list'],
             });
           },
-        }
+        },
       );
     },
-    [documentId, createMutation, invalidate]
+    [documentId, createMutation, invalidate],
   );
 
   /**
@@ -159,21 +158,21 @@ export function useDocumentComments(
     async (id: string, input: UpdateCommentInput) => {
       updateMutation(
         {
-          resource: "documentComments",
+          resource: 'documentComments',
           id,
           values: input,
         },
         {
           onSuccess: () => {
             invalidate({
-              resource: "documentComments",
-              invalidates: ["list"],
+              resource: 'documentComments',
+              invalidates: ['list'],
             });
           },
-        }
+        },
       );
     },
-    [updateMutation, invalidate]
+    [updateMutation, invalidate],
   );
 
   /**
@@ -183,20 +182,20 @@ export function useDocumentComments(
     async (id: string) => {
       deleteMutation(
         {
-          resource: "documentComments",
+          resource: 'documentComments',
           id,
         },
         {
           onSuccess: () => {
             invalidate({
-              resource: "documentComments",
-              invalidates: ["list"],
+              resource: 'documentComments',
+              invalidates: ['list'],
             });
           },
-        }
+        },
       );
     },
-    [deleteMutation, invalidate]
+    [deleteMutation, invalidate],
   );
 
   /**
@@ -206,10 +205,10 @@ export function useDocumentComments(
     async (id: string) => {
       updateComment(id, {
         resolutionStatus: CommentResolutionStatus.RESOLVED,
-        resolvedBy: "current-user-id", // TODO: Get from auth context
+        resolvedBy: 'current-user-id', // TODO: Get from auth context
       });
     },
-    [updateComment]
+    [updateComment],
   );
 
   /**
@@ -222,7 +221,7 @@ export function useDocumentComments(
         resolvedBy: undefined,
       });
     },
-    [updateComment]
+    [updateComment],
   );
 
   /**
@@ -230,8 +229,8 @@ export function useDocumentComments(
    */
   const refetch = useCallback(() => {
     invalidate({
-      resource: "documentComments",
-      invalidates: ["list"],
+      resource: 'documentComments',
+      invalidates: ['list'],
     });
   }, [invalidate]);
 

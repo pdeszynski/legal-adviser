@@ -21,7 +21,7 @@ async function getData() {
   const { authenticated, redirectTo } = await authProviderServer.check();
   const permissions = await authProviderServer.getPermissions?.();
 
-  const isAdmin = permissions?.includes?.('admin') || false;
+  const isAdmin = Array.isArray(permissions) && permissions.includes('admin');
 
   return {
     authenticated,

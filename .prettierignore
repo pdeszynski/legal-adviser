@@ -10,3 +10,4 @@ out/
 __pycache__/
 .venv/
 .turbo/
+.automaker

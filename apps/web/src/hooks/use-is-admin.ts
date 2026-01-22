@@ -8,7 +8,7 @@ import { useGetIdentity, usePermissions } from '@refinedev/core';
  */
 export const useIsAdmin = () => {
   const { data: identity } = useGetIdentity<{ role?: string }>();
-  const { data: permissions } = usePermissions<string[]>();
+  const { data: permissions } = usePermissions<string[]>({});
 
   const isAdmin = identity?.role === 'admin' || permissions?.includes('admin') || false;
 

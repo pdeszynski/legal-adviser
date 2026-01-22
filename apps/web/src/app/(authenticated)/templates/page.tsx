@@ -1,19 +1,20 @@
-"use client";
+'use client';
 
-import { useTranslate, useList, useNavigation } from "@refinedev/core";
-import { useMemo, useState } from "react";
-import Link from "next/link";
+import { useTranslate, useList } from '@refinedev/core';
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 /**
  * Template Category enum matching backend GraphQL schema
  */
 enum TemplateCategory {
-  LAWSUIT = "LAWSUIT",
-  COMPLAINT = "COMPLAINT",
-  CONTRACT = "CONTRACT",
-  MOTION = "MOTION",
-  LETTER = "LETTER",
-  OTHER = "OTHER",
+  LAWSUIT = 'LAWSUIT',
+  COMPLAINT = 'COMPLAINT',
+  CONTRACT = 'CONTRACT',
+  MOTION = 'MOTION',
+  LETTER = 'LETTER',
+  OTHER = 'OTHER',
 }
 
 /**
@@ -22,7 +23,7 @@ enum TemplateCategory {
 interface TemplateVariable {
   name: string;
   label: string;
-  type: "text" | "number" | "date" | "currency" | "boolean";
+  type: 'text' | 'number' | 'date' | 'currency' | 'boolean';
   required: boolean;
   defaultValue?: string | number | boolean;
   description?: string;
@@ -58,12 +59,12 @@ interface DocumentTemplate {
  * Category color mapping for badges
  */
 const categoryColors: Record<string, string> = {
-  LAWSUIT: "bg-red-100 text-red-800",
-  COMPLAINT: "bg-orange-100 text-orange-800",
-  CONTRACT: "bg-blue-100 text-blue-800",
-  MOTION: "bg-purple-100 text-purple-800",
-  LETTER: "bg-green-100 text-green-800",
-  OTHER: "bg-gray-100 text-gray-800",
+  LAWSUIT: 'bg-red-100 text-red-800',
+  COMPLAINT: 'bg-orange-100 text-orange-800',
+  CONTRACT: 'bg-blue-100 text-blue-800',
+  MOTION: 'bg-purple-100 text-purple-800',
+  LETTER: 'bg-green-100 text-green-800',
+  OTHER: 'bg-gray-100 text-gray-800',
 };
 
 /**
@@ -74,32 +75,34 @@ const categoryColors: Record<string, string> = {
  */
 export default function TemplateLibrary() {
   const translate = useTranslate();
-  const { push } = useNavigation();
+  const router = useRouter();
 
   // Filter state
-  const [categoryFilter, setCategoryFilter] = useState<string>("");
-  const [searchFilter, setSearchFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [searchFilter, setSearchFilter] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState<DocumentTemplate | null>(null);
 
   // Fetch templates
-  const { data, isLoading, error } = useList<DocumentTemplate>({
-    resource: "documentTemplates",
+  const { query, result } = useList<DocumentTemplate>({
+    resource: 'documentTemplates',
     pagination: {
       pageSize: 100,
     },
     sorters: [
       {
-        field: "usageCount",
-        order: "desc",
+        field: 'usageCount',
+        order: 'desc',
       },
     ],
   });
 
+  const { data, isLoading, error } = query;
+
   // Filter templates
   const filteredTemplates = useMemo(() => {
-    if (!data?.data) return [];
+    if (!result?.data) return [];
 
-    let templates = [...data.data];
+    let templates = [...result.data];
 
     // Filter by category
     if (categoryFilter) {
@@ -112,24 +115,24 @@ export default function TemplateLibrary() {
       templates = templates.filter(
         (t) =>
           t.name.toLowerCase().includes(searchLower) ||
-          t.description?.toLowerCase().includes(searchLower)
+          t.description?.toLowerCase().includes(searchLower),
       );
     }
 
     return templates;
-  }, [data, categoryFilter, searchFilter]);
+  }, [result, categoryFilter, searchFilter]);
 
   // Get unique categories
   const categories = useMemo(() => {
-    if (!data?.data) return [];
-    const uniqueCategories = new Set(data.data.map((t) => t.category));
+    if (!result?.data) return [];
+    const uniqueCategories = new Set(result.data.map((t) => t.category));
     return Array.from(uniqueCategories);
-  }, [data]);
+  }, [result]);
 
   // Handle filter clear
   const handleClearFilters = () => {
-    setCategoryFilter("");
-    setSearchFilter("");
+    setCategoryFilter('');
+    setSearchFilter('');
   };
 
   // Handle template preview
@@ -139,7 +142,7 @@ export default function TemplateLibrary() {
 
   // Handle use template
   const handleUseTemplate = (templateId: string) => {
-    push(`/documents/create?templateId=${templateId}`);
+    router.push(`/documents/create?templateId=${templateId}`);
   };
 
   const hasActiveFilters = categoryFilter || searchFilter;
@@ -149,11 +152,11 @@ export default function TemplateLibrary() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">
-          {translate("templates.titles.library") || "Document Templates"}
+          {translate('templates.titles.library') || 'Document Templates'}
         </h1>
         <p className="text-gray-600">
-          {translate("templates.description") ||
-            "Choose from our collection of professional legal document templates to get started quickly."}
+          {translate('templates.description') ||
+            'Choose from our collection of professional legal document templates to get started quickly.'}
         </p>
       </div>
 
@@ -163,11 +166,11 @@ export default function TemplateLibrary() {
           {/* Search Filter */}
           <div className="flex-1 min-w-[200px]">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translate("templates.fields.search") || "Search"}
+              {translate('templates.fields.search') || 'Search'}
             </label>
             <input
               type="text"
-              placeholder={translate("templates.placeholders.search") || "Search templates..."}
+              placeholder={translate('templates.placeholders.search') || 'Search templates...'}
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -177,14 +180,14 @@ export default function TemplateLibrary() {
           {/* Category Filter */}
           <div className="min-w-[200px]">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translate("templates.fields.category") || "Category"}
+              {translate('templates.fields.category') || 'Category'}
             </label>
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="">{translate("common.all") || "All"}</option>
+              <option value="">{translate('common.all') || 'All'}</option>
               {Object.values(TemplateCategory).map((category) => (
                 <option key={category} value={category}>
                   {translate(`templates.categories.${category}`) || category}
@@ -199,7 +202,7 @@ export default function TemplateLibrary() {
               onClick={handleClearFilters}
               className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
             >
-              {translate("buttons.clear") || "Clear"}
+              {translate('buttons.clear') || 'Clear'}
             </button>
           )}
         </div>
@@ -209,20 +212,20 @@ export default function TemplateLibrary() {
       {isLoading ? (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">{translate("loading") || "Loading..."}</p>
+          <p className="mt-4 text-gray-600">{translate('loading') || 'Loading...'}</p>
         </div>
       ) : error ? (
         <div className="text-center py-12">
           <p className="text-red-600">
-            {translate("templates.errors.loadingFailed") || "Failed to load templates"}
+            {translate('templates.errors.loadingFailed') || 'Failed to load templates'}
           </p>
         </div>
       ) : filteredTemplates.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500">
             {hasActiveFilters
-              ? (translate("templates.noFilteredResults") || "No templates match your filters")
-              : (translate("templates.noTemplates") || "No templates available")}
+              ? translate('templates.noFilteredResults') || 'No templates match your filters'
+              : translate('templates.noTemplates') || 'No templates available'}
           </p>
         </div>
       ) : (
@@ -235,9 +238,7 @@ export default function TemplateLibrary() {
               {/* Header */}
               <div className="mb-4">
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 flex-1">
-                    {template.name}
-                  </h3>
+                  <h3 className="text-lg font-semibold text-gray-900 flex-1">{template.name}</h3>
                   <span
                     className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${
                       categoryColors[template.category] || categoryColors.OTHER
@@ -247,21 +248,14 @@ export default function TemplateLibrary() {
                   </span>
                 </div>
                 {template.description && (
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {template.description}
-                  </p>
+                  <p className="text-sm text-gray-600 line-clamp-2">{template.description}</p>
                 )}
               </div>
 
               {/* Metadata */}
               <div className="mb-4 flex items-center gap-4 text-sm text-gray-500">
                 <div className="flex items-center gap-1">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -272,12 +266,7 @@ export default function TemplateLibrary() {
                   <span>{template.variables.length}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -301,13 +290,13 @@ export default function TemplateLibrary() {
                   onClick={() => handlePreview(template)}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-sm font-medium"
                 >
-                  {translate("templates.buttons.preview") || "Preview"}
+                  {translate('templates.buttons.preview') || 'Preview'}
                 </button>
                 <button
                   onClick={() => handleUseTemplate(template.id)}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
                 >
-                  {translate("templates.buttons.useTemplate") || "Use Template"}
+                  {translate('templates.buttons.useTemplate') || 'Use Template'}
                 </button>
               </div>
             </div>
@@ -340,7 +329,7 @@ export default function TemplateLibrary() {
                         selectedTemplate.category}
                     </span>
                     <span className="text-sm text-gray-500">
-                      {translate("templates.info.used", { count: selectedTemplate.usageCount }) ||
+                      {translate('templates.info.used', { count: selectedTemplate.usageCount }) ||
                         `Used ${selectedTemplate.usageCount} times`}
                     </span>
                   </div>
@@ -349,12 +338,7 @@ export default function TemplateLibrary() {
                   onClick={() => setSelectedTemplate(null)}
                   className="text-gray-400 hover:text-gray-600"
                 >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -375,19 +359,14 @@ export default function TemplateLibrary() {
               {selectedTemplate.variables.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold mb-3">
-                    {translate("templates.titles.variables") || "Required Information"}
+                    {translate('templates.titles.variables') || 'Required Information'}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {selectedTemplate.variables.map((variable, index) => (
-                      <div
-                        key={index}
-                        className="p-3 bg-gray-50 rounded-md border border-gray-200"
-                      >
+                      <div key={index} className="p-3 bg-gray-50 rounded-md border border-gray-200">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-medium text-gray-900">{variable.label}</span>
-                          {variable.required && (
-                            <span className="text-red-500 text-xs">*</span>
-                          )}
+                          {variable.required && <span className="text-red-500 text-xs">*</span>}
                         </div>
                         {variable.description && (
                           <p className="text-sm text-gray-600">{variable.description}</p>
@@ -404,12 +383,12 @@ export default function TemplateLibrary() {
               {/* Content Preview */}
               <div>
                 <h3 className="text-lg font-semibold mb-3">
-                  {translate("templates.titles.contentPreview") || "Content Preview"}
+                  {translate('templates.titles.contentPreview') || 'Content Preview'}
                 </h3>
                 <div className="p-4 bg-gray-50 rounded-md border border-gray-200">
                   <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans">
                     {selectedTemplate.content.substring(0, 500)}
-                    {selectedTemplate.content.length > 500 && "..."}
+                    {selectedTemplate.content.length > 500 && '...'}
                   </pre>
                 </div>
               </div>
@@ -421,7 +400,7 @@ export default function TemplateLibrary() {
                 onClick={() => setSelectedTemplate(null)}
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
               >
-                {translate("buttons.cancel") || "Cancel"}
+                {translate('buttons.cancel') || 'Cancel'}
               </button>
               <button
                 onClick={() => {
@@ -430,7 +409,7 @@ export default function TemplateLibrary() {
                 }}
                 className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
-                {translate("templates.buttons.useTemplate") || "Use Template"}
+                {translate('templates.buttons.useTemplate') || 'Use Template'}
               </button>
             </div>
           </div>

@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Address TypeScript compilation errors, missing imports, incorrect type definitions, or decorator usage issues in NestJS backend. Verify all @nestjs-query decorators are properly configured and GraphQL schema generation works. Fix any circular dependency issues between modules.",
+  "id": "fix-backend-build-errors",
+  "title": "Fix Backend-Specific Build Errors",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Address TypeScript compilation errors, missing imports, incorrect type definitions, or decorator usage issues in NestJS backend. Verify all @nestjs-query decorators are properly configured and GraphQL schema generation works. Fix any circular dependency issues between modules.",
+      "timestamp": "2026-01-22T05:27:29.661Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-22T05:34:36.067Z"
+}

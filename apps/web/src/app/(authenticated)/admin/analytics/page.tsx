@@ -1,8 +1,7 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useQuery } from "@refinedev/core";
-import { useTranslate } from "@refinedev/core";
+import React from 'react';
+import { useCustom, useTranslate } from '@refinedev/core';
 
 interface UserGrowthMetrics {
   totalUsers: number;
@@ -80,14 +79,13 @@ interface AnalyticsDashboard {
 export default function AnalyticsPage() {
   const translate = useTranslate();
 
-  const { data, isLoading, isError } = useQuery<AnalyticsDashboard>({
-    resource: "analyticsDashboard",
-    queryOptions: {
-      enabled: true,
-    },
+  const { query, result } = useCustom<AnalyticsDashboard>({
+    url: '/analyticsDashboard',
+    method: 'get',
   });
 
-  const dashboard = data?.data;
+  const { data, isLoading, isError } = query;
+  const dashboard = result?.data;
 
   if (isLoading) {
     return (
@@ -131,9 +129,7 @@ export default function AnalyticsPage() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-        <p className="text-muted-foreground">
-          Platform-wide analytics and metrics
-        </p>
+        <p className="text-muted-foreground">Platform-wide analytics and metrics</p>
       </div>
 
       {/* User Growth Metrics */}
@@ -144,9 +140,13 @@ export default function AnalyticsPage() {
           icon="👥"
           trend={
             dashboard.userGrowth.growthRate > 0 ? (
-              <span className="text-green-600">+{formatPercentage(dashboard.userGrowth.growthRate)}</span>
+              <span className="text-green-600">
+                +{formatPercentage(dashboard.userGrowth.growthRate)}
+              </span>
             ) : (
-              <span className="text-red-600">{formatPercentage(dashboard.userGrowth.growthRate)}</span>
+              <span className="text-red-600">
+                {formatPercentage(dashboard.userGrowth.growthRate)}
+              </span>
             )
           }
           trendLabel="vs. previous period"
@@ -183,15 +183,21 @@ export default function AnalyticsPage() {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Completed</p>
-            <p className="text-2xl font-bold">{formatNumber(dashboard.documents.completedDocuments)}</p>
+            <p className="text-2xl font-bold">
+              {formatNumber(dashboard.documents.completedDocuments)}
+            </p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Success Rate</p>
-            <p className="text-2xl font-bold">{formatPercentage(dashboard.documents.successRate)}</p>
+            <p className="text-2xl font-bold">
+              {formatPercentage(dashboard.documents.successRate)}
+            </p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Generating</p>
-            <p className="text-2xl font-bold">{formatNumber(dashboard.documents.generatingDocuments)}</p>
+            <p className="text-2xl font-bold">
+              {formatNumber(dashboard.documents.generatingDocuments)}
+            </p>
           </div>
         </div>
         {dashboard.documentTypeDistribution.length > 0 && (
@@ -216,9 +222,7 @@ export default function AnalyticsPage() {
       <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col space-y-1.5 p-6">
           <h3 className="font-semibold leading-none tracking-tight">Query Activity</h3>
-          <p className="text-sm text-muted-foreground">
-            Legal question and answer metrics
-          </p>
+          <p className="text-sm text-muted-foreground">Legal question and answer metrics</p>
         </div>
         <div className="p-6 pt-0 grid gap-4 md:grid-cols-4">
           <div>
@@ -244,9 +248,7 @@ export default function AnalyticsPage() {
       <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col space-y-1.5 p-6">
           <h3 className="font-semibold leading-none tracking-tight">AI Usage & Costs</h3>
-          <p className="text-sm text-muted-foreground">
-            Token usage and cost breakdown
-          </p>
+          <p className="text-sm text-muted-foreground">Token usage and cost breakdown</p>
         </div>
         <div className="p-6 pt-0 grid gap-4 md:grid-cols-4">
           <div>
@@ -263,7 +265,9 @@ export default function AnalyticsPage() {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Avg Cost/Request</p>
-            <p className="text-2xl font-bold">{formatCurrency(dashboard.aiUsage.avgCostPerRequest)}</p>
+            <p className="text-2xl font-bold">
+              {formatCurrency(dashboard.aiUsage.avgCostPerRequest)}
+            </p>
           </div>
         </div>
         {dashboard.aiOperationBreakdown.length > 0 && (
@@ -272,12 +276,16 @@ export default function AnalyticsPage() {
             <div className="space-y-2">
               {dashboard.aiOperationBreakdown.map((op) => (
                 <div key={op.operationType} className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{op.operationType.replace(/_/g, ' ')}</span>
+                  <span className="text-muted-foreground">
+                    {op.operationType.replace(/_/g, ' ')}
+                  </span>
                   <div className="flex items-center gap-4">
                     <span>{formatNumber(op.requestCount)} reqs</span>
                     <span>{formatNumber(op.totalTokens)} tokens</span>
                     <span className="font-medium">{formatCurrency(op.totalCost)}</span>
-                    <span className="text-xs text-muted-foreground">({formatPercentage(op.costPercentage)})</span>
+                    <span className="text-xs text-muted-foreground">
+                      ({formatPercentage(op.costPercentage)})
+                    </span>
                   </div>
                 </div>
               ))}
@@ -290,18 +298,20 @@ export default function AnalyticsPage() {
       <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col space-y-1.5 p-6">
           <h3 className="font-semibold leading-none tracking-tight">System Health</h3>
-          <p className="text-sm text-muted-foreground">
-            Platform performance indicators
-          </p>
+          <p className="text-sm text-muted-foreground">Platform performance indicators</p>
         </div>
         <div className="p-6 pt-0 grid gap-4 md:grid-cols-3">
           <div>
             <p className="text-sm text-muted-foreground">Document Success Rate</p>
-            <p className="text-2xl font-bold">{formatPercentage(dashboard.systemHealth.documentSuccessRate)}</p>
+            <p className="text-2xl font-bold">
+              {formatPercentage(dashboard.systemHealth.documentSuccessRate)}
+            </p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Active Sessions</p>
-            <p className="text-2xl font-bold">{formatNumber(dashboard.systemHealth.activeSessions)}</p>
+            <p className="text-2xl font-bold">
+              {formatNumber(dashboard.systemHealth.activeSessions)}
+            </p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Last Updated</p>
@@ -317,9 +327,7 @@ export default function AnalyticsPage() {
         <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
           <div className="flex flex-col space-y-1.5 p-6">
             <h3 className="font-semibold leading-none tracking-tight">Quick Actions</h3>
-            <p className="text-sm text-muted-foreground">
-              Common admin tasks
-            </p>
+            <p className="text-sm text-muted-foreground">Common admin tasks</p>
           </div>
           <div className="p-6 pt-0 space-y-2">
             <a
@@ -340,9 +348,7 @@ export default function AnalyticsPage() {
         <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
           <div className="flex flex-col space-y-1.5 p-6">
             <h3 className="font-semibold leading-none tracking-tight">Data Range</h3>
-            <p className="text-sm text-muted-foreground">
-              Analytics period coverage
-            </p>
+            <p className="text-sm text-muted-foreground">Analytics period coverage</p>
           </div>
           <div className="p-6 pt-0">
             <dl className="space-y-2 text-sm">

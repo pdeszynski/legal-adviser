@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useOne, useUpdate, useInvalidate, useMutation } from '@refinedev/core';
+import React, { useState, useEffect } from 'react';
+import { useOne, useUpdate, useInvalidate, useCustomMutation } from '@refinedev/core';
 import { useRouter, useParams } from 'next/navigation';
 
 interface User {
@@ -20,15 +20,27 @@ interface User {
 export default function AdminUserEditPage() {
   const params = useParams();
   const router = useRouter();
-  const userId = params.id as string;
+  const [userId, setUserId] = useState<string | null>(null);
   const invalidate = useInvalidate();
 
-  const { data: userData, isLoading, isError } = useOne<User>({
+  // Handle Next.js 15 params (could be string or string[] or undefined)
+  useEffect(() => {
+    const id = params.id;
+    if (id && typeof id === 'string') {
+      setUserId(id);
+    }
+  }, [params.id]);
+
+  const { query, result } = useOne<User>({
     resource: 'users',
-    id: userId,
+    id: userId ?? '',
+    queryOptions: {
+      enabled: !!userId,
+    },
   });
 
-  const user = userData?.data;
+  const { data: userData, isLoading, isError } = query;
+  const user = result;
 
   const [formData, setFormData] = useState({
     email: user?.email || '',
@@ -48,71 +60,25 @@ export default function AdminUserEditPage() {
   const [suspendReason, setSuspendReason] = useState('');
   const [showSuspendDialog, setShowSuspendDialog] = useState(false);
 
-  const { mutate: updateUser, isLoading: isUpdating } = useUpdate();
+  const { mutate: updateUser, mutation: updateMutation } = useUpdate();
+  const isUpdating =
+    (updateMutation as any).isLoading ?? (updateMutation as any).isPending ?? false;
 
-  const { mutate: suspendUser, isLoading: isSuspending } = useMutation({
-    resource: 'users',
-    action: 'suspendUser',
-    method: 'post',
-    onSuccess: () => {
-      invalidate({
-        resource: 'users',
-        id: userId,
-      });
-      setShowSuspendDialog(false);
-      setSuspendReason('');
-      alert('User suspended successfully');
-    },
-    onError: (error: Error) => {
-      alert(`Failed to suspend user: ${error.message}`);
-    },
-  });
+  const { mutate: suspendUser, mutation: suspendMutation } = useCustomMutation();
+  const isSuspending =
+    (suspendMutation as any).isLoading ?? (suspendMutation as any).isPending ?? false;
 
-  const { mutate: activateUser, isLoading: isActivating } = useMutation({
-    resource: 'users',
-    action: 'activateUser',
-    method: 'post',
-    onSuccess: () => {
-      invalidate({
-        resource: 'users',
-        id: userId,
-      });
-      alert('User activated successfully');
-    },
-    onError: (error: Error) => {
-      alert(`Failed to activate user: ${error.message}`);
-    },
-  });
+  const { mutate: activateUser, mutation: activateMutation } = useCustomMutation();
+  const isActivating =
+    (activateMutation as any).isLoading ?? (activateMutation as any).isPending ?? false;
 
-  const { mutate: changeUserRole, isLoading: isChangingRole } = useMutation({
-    resource: 'users',
-    action: 'changeUserRole',
-    method: 'post',
-    onSuccess: () => {
-      invalidate({
-        resource: 'users',
-        id: userId,
-      });
-      alert('User role changed successfully');
-    },
-    onError: (error: Error) => {
-      alert(`Failed to change user role: ${error.message}`);
-    },
-  });
+  const { mutate: changeUserRole, mutation: changeRoleMutation } = useCustomMutation();
+  const isChangingRole =
+    (changeRoleMutation as any).isLoading ?? (changeRoleMutation as any).isPending ?? false;
 
-  const { mutate: resetPassword, isLoading: isResetting } = useMutation({
-    resource: 'users',
-    action: 'resetUserPassword',
-    method: 'post',
-    onSuccess: () => {
-      setPasswordData({ newPassword: '', confirmPassword: '' });
-      setShowPasswordReset(false);
-      alert('Password reset successfully');
-    },
-    onError: (error: Error) => {
-      alert(`Failed to reset password: ${error.message}`);
-    },
-  });
+  const { mutate: resetPassword, mutation: resetPasswordMutation } = useCustomMutation();
+  const isResetting =
+    (resetPasswordMutation as any).isLoading ?? (resetPasswordMutation as any).isPending ?? false;
 
   React.useEffect(() => {
     if (user) {
@@ -129,6 +95,7 @@ export default function AdminUserEditPage() {
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userId) return;
     updateUser(
       {
         resource: 'users',
@@ -145,10 +112,11 @@ export default function AdminUserEditPage() {
           invalidate({
             resource: 'users',
             id: userId,
+            invalidates: ['list', 'detail'],
           });
           alert('User updated successfully');
         },
-        onError: (error: Error) => {
+        onError: (error: any) => {
           alert(`Failed to update user: ${error.message}`);
         },
       },
@@ -156,29 +124,72 @@ export default function AdminUserEditPage() {
   };
 
   const handleRoleChange = (newRole: 'user' | 'admin') => {
-    changeUserRole({
-      input: {
-        userId,
-        role: newRole,
+    if (!userId) return;
+    changeUserRole(
+      {
+        url: '/changeUserRole',
+        method: 'post',
+        values: {
+          input: {
+            userId,
+            role: newRole,
+          },
+        },
       },
-    });
+      {
+        onSuccess: () => {
+          invalidate({
+            resource: 'users',
+            id: userId,
+            invalidates: ['list', 'detail'],
+          });
+          alert('User role changed successfully');
+        },
+        onError: (error: any) => {
+          alert(`Failed to change user role: ${error.message}`);
+        },
+      },
+    );
   };
 
   const handleSuspend = () => {
+    if (!userId) return;
     if (!suspendReason.trim()) {
       alert('Please provide a reason for suspension');
       return;
     }
-    suspendUser({
-      input: {
-        userId,
-        reason: suspendReason,
+    suspendUser(
+      {
+        url: '/suspendUser',
+        method: 'post',
+        values: {
+          input: {
+            userId,
+            reason: suspendReason,
+          },
+        },
       },
-    });
+      {
+        onSuccess: () => {
+          invalidate({
+            resource: 'users',
+            id: userId,
+            invalidates: ['list', 'detail'],
+          });
+          setShowSuspendDialog(false);
+          setSuspendReason('');
+          alert('User suspended successfully');
+        },
+        onError: (error: any) => {
+          alert(`Failed to suspend user: ${error.message}`);
+        },
+      },
+    );
   };
 
   const handleResetPassword = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userId) return;
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       alert('Passwords do not match');
       return;
@@ -187,12 +198,28 @@ export default function AdminUserEditPage() {
       alert('Password must be at least 8 characters long');
       return;
     }
-    resetPassword({
-      input: {
-        userId,
-        newPassword: passwordData.newPassword,
+    resetPassword(
+      {
+        url: '/resetUserPassword',
+        method: 'post',
+        values: {
+          input: {
+            userId,
+            newPassword: passwordData.newPassword,
+          },
+        },
       },
-    });
+      {
+        onSuccess: () => {
+          setPasswordData({ newPassword: '', confirmPassword: '' });
+          setShowPasswordReset(false);
+          alert('Password reset successfully');
+        },
+        onError: (error: any) => {
+          alert(`Failed to reset password: ${error.message}`);
+        },
+      },
+    );
   };
 
   if (isLoading) {
@@ -216,9 +243,7 @@ export default function AdminUserEditPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Edit User</h1>
-          <p className="text-muted-foreground">
-            Manage user account settings and permissions
-          </p>
+          <p className="text-muted-foreground">Manage user account settings and permissions</p>
         </div>
         <button
           onClick={() => router.back()}
@@ -271,9 +296,7 @@ export default function AdminUserEditPage() {
               <input
                 type="email"
                 value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-3 py-2 border rounded-md"
                 required
               />
@@ -283,9 +306,7 @@ export default function AdminUserEditPage() {
               <input
                 type="text"
                 value={formData.username}
-                onChange={(e) =>
-                  setFormData({ ...formData, username: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 className="w-full px-3 py-2 border rounded-md"
               />
             </div>
@@ -294,9 +315,7 @@ export default function AdminUserEditPage() {
               <input
                 type="text"
                 value={formData.firstName}
-                onChange={(e) =>
-                  setFormData({ ...formData, firstName: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 className="w-full px-3 py-2 border rounded-md"
               />
             </div>
@@ -305,9 +324,7 @@ export default function AdminUserEditPage() {
               <input
                 type="text"
                 value={formData.lastName}
-                onChange={(e) =>
-                  setFormData({ ...formData, lastName: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 className="w-full px-3 py-2 border rounded-md"
               />
             </div>
@@ -373,7 +390,31 @@ export default function AdminUserEditPage() {
             </button>
           ) : (
             <button
-              onClick={() => activateUser({ input: { userId } })}
+              onClick={() =>
+                userId &&
+                activateUser(
+                  {
+                    url: '/activateUser',
+                    method: 'post',
+                    values: {
+                      input: { userId },
+                    },
+                  },
+                  {
+                    onSuccess: () => {
+                      invalidate({
+                        resource: 'users',
+                        id: userId,
+                        invalidates: ['list', 'detail'],
+                      });
+                      alert('User activated successfully');
+                    },
+                    onError: (error: any) => {
+                      alert(`Failed to activate user: ${error.message}`);
+                    },
+                  },
+                )
+              }
               disabled={isActivating}
               className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
             >
@@ -384,9 +425,7 @@ export default function AdminUserEditPage() {
           {showSuspendDialog && (
             <div className="border rounded-md p-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Reason for Suspension
-                </label>
+                <label className="block text-sm font-medium mb-1">Reason for Suspension</label>
                 <textarea
                   value={suspendReason}
                   onChange={(e) => setSuspendReason(e.target.value)}
@@ -435,9 +474,7 @@ export default function AdminUserEditPage() {
           <form onSubmit={handleResetPassword} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  New Password
-                </label>
+                <label className="block text-sm font-medium mb-1">New Password</label>
                 <input
                   type="password"
                   value={passwordData.newPassword}
@@ -453,9 +490,7 @@ export default function AdminUserEditPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Confirm Password
-                </label>
+                <label className="block text-sm font-medium mb-1">Confirm Password</label>
                 <input
                   type="password"
                   value={passwordData.confirmPassword}

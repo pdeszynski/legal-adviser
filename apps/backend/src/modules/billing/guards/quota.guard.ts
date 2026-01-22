@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   UnauthorizedException,
   SetMetadata,
+  Inject,
 } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Reflector } from '@nestjs/core';
@@ -45,6 +46,7 @@ export enum QuotaType {
 export class QuotaGuard {
   constructor(
     private reflector: Reflector,
+    @Inject('ISubscriptionRepository')
     private readonly subscriptionRepository: ISubscriptionRepository,
   ) {}
 

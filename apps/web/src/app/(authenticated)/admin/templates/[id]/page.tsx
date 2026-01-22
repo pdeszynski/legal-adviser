@@ -1,14 +1,19 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useNavigation, useTranslate, useOne, useUpdate } from "@refinedev/core";
-import { TemplateEditor, DocumentTemplateFormData, TemplateCategory } from "@/components/template-editor";
-import { Button } from "@legal/ui";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTranslate, useOne, useUpdate } from '@refinedev/core';
+import {
+  TemplateEditor,
+  DocumentTemplateFormData,
+  TemplateCategory,
+} from '@/components/template-editor';
+import { Button } from '@legal/ui';
 
 interface TemplateVariable {
   name: string;
   label: string;
-  type: "text" | "number" | "date" | "currency" | "boolean";
+  type: 'text' | 'number' | 'date' | 'currency' | 'boolean';
   required: boolean;
   defaultValue?: string | number | boolean;
   description?: string;
@@ -28,10 +33,10 @@ interface ConditionalSection {
 }
 
 interface PolishFormattingRules {
-  dateFormat?: "DD.MM.YYYY" | "D MMMM YYYY";
-  currencyFormat?: "PLN" | "EUR" | "USD";
-  addressFormat?: "polish" | "standard";
-  numberFormat?: "pl" | "en";
+  dateFormat?: 'DD.MM.YYYY' | 'D MMMM YYYY';
+  currencyFormat?: 'PLN' | 'EUR' | 'USD';
+  addressFormat?: 'polish' | 'standard';
+  numberFormat?: 'pl' | 'en';
   legalCitations?: boolean;
 }
 
@@ -50,41 +55,55 @@ interface DocumentTemplate {
   updatedAt: string;
 }
 
-export default function EditTemplatePage({ params }: { params: { id: string } }) {
+export default function EditTemplatePage({ params }: { params: Promise<{ id: string }> }) {
   const translate = useTranslate();
-  const { push } = useNavigation();
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [templateId, setTemplateId] = useState<string | null>(null);
 
-  const { data: templateData, isLoading: isLoadingTemplate, error: templateError } = useOne<DocumentTemplate>({
-    resource: "documentTemplates",
-    id: params.id,
+  // Next.js 15: params is a Promise
+  useEffect(() => {
+    params.then((p) => setTemplateId(p.id));
+  }, [params]);
+
+  const { query, result } = useOne<DocumentTemplate>({
+    resource: 'documentTemplates',
+    id: templateId ?? '',
+    queryOptions: {
+      enabled: !!templateId,
+    },
   });
 
-  const { mutate: updateTemplate, isLoading: isUpdating } = useUpdate();
+  const { data: templateData, isLoading: isLoadingTemplate, error: templateError } = query;
+
+  const { mutate: updateTemplate, mutation: updateMutation } = useUpdate();
+  const isUpdating =
+    (updateMutation as any).isLoading ?? (updateMutation as any).isPending ?? false;
 
   const handleSave = async (data: DocumentTemplateFormData) => {
+    if (!templateId) return;
     setError(null);
     try {
       await updateTemplate(
         {
-          resource: "documentTemplates",
-          id: params.id,
+          resource: 'documentTemplates',
+          id: templateId,
           values: data,
           meta: {
-            operation: "updateOneDocumentTemplate",
+            operation: 'updateOneDocumentTemplate',
           },
         },
         {
           onSuccess: () => {
-            push("/admin/templates");
+            router.push('/admin/templates');
           },
           onError: (err: any) => {
-            setError(err.message || "Failed to update template");
+            setError(err.message || 'Failed to update template');
           },
-        }
+        },
       );
     } catch (err: any) {
-      setError(err.message || "Failed to update template");
+      setError(err.message || 'Failed to update template');
     }
   };
 
@@ -99,13 +118,13 @@ export default function EditTemplatePage({ params }: { params: { id: string } })
     );
   }
 
-  if (templateError || !templateData?.data) {
+  if (templateError || !result) {
     return (
       <div className="text-center py-12">
         <p className="text-red-600">Failed to load template</p>
         <Button
           type="button"
-          onClick={() => push("/admin/templates")}
+          onClick={() => router.push('/admin/templates')}
           className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
         >
           Back to Templates
@@ -114,20 +133,18 @@ export default function EditTemplatePage({ params }: { params: { id: string } })
     );
   }
 
-  const template = templateData.data;
+  const template = result;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Edit Template</h1>
-          <p className="text-gray-600 mt-1">
-            Editing: {template.name}
-          </p>
+          <p className="text-gray-600 mt-1">Editing: {template.name}</p>
         </div>
         <Button
           type="button"
-          onClick={() => push("/admin/templates")}
+          onClick={() => router.push('/admin/templates')}
           className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
         >
           Back to Templates
@@ -144,7 +161,7 @@ export default function EditTemplatePage({ params }: { params: { id: string } })
         initialData={template}
         onSave={handleSave}
         isLoading={isUpdating}
-        onCancel={() => push("/admin/templates")}
+        onCancel={() => router.push('/admin/templates')}
       />
     </div>
   );

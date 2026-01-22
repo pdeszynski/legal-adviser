@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useTranslate, useMutation } from "@refinedev/core";
-import { useForm } from "react-hook-form";
+import { useState } from 'react';
+import { useTranslate, useCustomMutation } from '@refinedev/core';
+import { useForm } from 'react-hook-form';
 
 interface User {
   id: string;
@@ -24,7 +24,8 @@ export function SettingsProfile({ user }: { user: User }) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { mutate, isLoading } = useMutation();
+  const { mutate, mutation } = useCustomMutation();
+  const isLoading = (mutation as any).isLoading ?? (mutation as any).isPending ?? false;
 
   const {
     register,
@@ -33,9 +34,9 @@ export function SettingsProfile({ user }: { user: User }) {
   } = useForm<UpdateProfileInput>({
     defaultValues: {
       email: user.email,
-      username: user.username || "",
-      firstName: user.firstName || "",
-      lastName: user.lastName || "",
+      username: user.username || '',
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
     },
   });
 
@@ -45,13 +46,14 @@ export function SettingsProfile({ user }: { user: User }) {
 
     mutate(
       {
-        resource: "updateProfile",
+        url: '/updateProfile',
+        method: 'post',
         values: {
           input: data,
         },
         successNotification: {
-          message: translate("settings.profile.successMessage"),
-          type: "success",
+          message: translate('settings.profile.successMessage'),
+          type: 'success',
         },
       },
       {
@@ -60,7 +62,7 @@ export function SettingsProfile({ user }: { user: User }) {
           setTimeout(() => setIsSuccess(false), 3000);
         },
         onError: (err: unknown) => {
-          setError(err instanceof Error ? err.message : translate("settings.profile.errorMessage"));
+          setError(err instanceof Error ? err.message : translate('settings.profile.errorMessage'));
         },
       },
     );
@@ -69,17 +71,13 @@ export function SettingsProfile({ user }: { user: User }) {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold mb-2">
-          {translate("settings.profile.title")}
-        </h2>
-        <p className="text-gray-600">
-          {translate("settings.profile.description")}
-        </p>
+        <h2 className="text-2xl font-semibold mb-2">{translate('settings.profile.title')}</h2>
+        <p className="text-gray-600">{translate('settings.profile.description')}</p>
       </div>
 
       {isSuccess && (
         <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
-          {translate("settings.profile.successMessage")}
+          {translate('settings.profile.successMessage')}
         </div>
       )}
 
@@ -93,45 +91,43 @@ export function SettingsProfile({ user }: { user: User }) {
         {/* Email */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            {translate("settings.profile.fields.email")}
+            {translate('settings.profile.fields.email')}
           </label>
           <input
             id="email"
             type="email"
-            {...register("email", {
-              required: translate("validation.required"),
+            {...register('email', {
+              required: translate('validation.required'),
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: translate("validation.email"),
+                message: translate('validation.email'),
               },
             })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-          )}
+          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
         </div>
 
         {/* Username */}
         <div>
           <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-            {translate("settings.profile.fields.username")}
+            {translate('settings.profile.fields.username')}
           </label>
           <input
             id="username"
             type="text"
-            {...register("username", {
+            {...register('username', {
               minLength: {
                 value: 3,
-                message: translate("validation.minLength", { min: 3 }),
+                message: translate('validation.minLength', { min: 3 }),
               },
               maxLength: {
                 value: 50,
-                message: translate("validation.maxLength", { max: 50 }),
+                message: translate('validation.maxLength', { max: 50 }),
               },
               pattern: {
                 value: /^[a-zA-Z0-9_.\-]+$/,
-                message: translate("settings.profile.errors.invalidUsername"),
+                message: translate('settings.profile.errors.invalidUsername'),
               },
             })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -144,15 +140,15 @@ export function SettingsProfile({ user }: { user: User }) {
         {/* First Name */}
         <div>
           <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-            {translate("settings.profile.fields.firstName")}
+            {translate('settings.profile.fields.firstName')}
           </label>
           <input
             id="firstName"
             type="text"
-            {...register("firstName", {
+            {...register('firstName', {
               maxLength: {
                 value: 255,
-                message: translate("validation.maxLength", { max: 255 }),
+                message: translate('validation.maxLength', { max: 255 }),
               },
             })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -165,15 +161,15 @@ export function SettingsProfile({ user }: { user: User }) {
         {/* Last Name */}
         <div>
           <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-            {translate("settings.profile.fields.lastName")}
+            {translate('settings.profile.fields.lastName')}
           </label>
           <input
             id="lastName"
             type="text"
-            {...register("lastName", {
+            {...register('lastName', {
               maxLength: {
                 value: 255,
-                message: translate("validation.maxLength", { max: 255 }),
+                message: translate('validation.maxLength', { max: 255 }),
               },
             })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -191,8 +187,8 @@ export function SettingsProfile({ user }: { user: User }) {
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading
-              ? translate("settings.profile.saving")
-              : translate("settings.profile.saveButton")}
+              ? translate('settings.profile.saving')
+              : translate('settings.profile.saveButton')}
           </button>
         </div>
       </form>

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769059664800-99a210cc",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-22T05:27:44.800Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "debug-docker-build-failure",
+  "featureName": "Debug Docker Compose Build Failure",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

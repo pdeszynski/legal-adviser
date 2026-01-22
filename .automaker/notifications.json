@@ -924,6 +924,38 @@
       "dismissed": false,
       "featureId": "webhook-system",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "bf0a6cf0-8aa3-4a9f-8f35-1c3a47bf48f3",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-backend-build-errors\" has been verified and is complete.",
+      "createdAt": "2026-01-22T05:34:36.069Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-backend-build-errors",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "a90a7390-3451-448f-8d04-7a49b3390802",
+      "type": "spec_regeneration_complete",
+      "title": "Spec Sync Complete",
+      "message": "Added 47 implemented features",
+      "createdAt": "2026-01-22T06:32:21.064Z",
+      "read": false,
+      "dismissed": false,
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "f2944e37-629f-49f9-8fca-f4a123b203ab",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"debug-build-failure\" has been verified and is complete.",
+      "createdAt": "2026-01-22T06:33:43.572Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "debug-build-failure",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

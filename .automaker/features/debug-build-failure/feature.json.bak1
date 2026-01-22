@@ -1,0 +1,18 @@
+{
+  "category": "bug",
+  "description": "Investigate why pnpm dlx turbo build fails. Check TypeScript compilation errors, dependency resolution issues, and build configuration. Review turbo.json configuration and package.json build scripts. Identify root cause of build failures across all packages (backend, web, ai-engine, shared).",
+  "id": "debug-build-failure",
+  "title": "Debug Build Process Failure",
+  "dependencies": [],
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Investigate why pnpm dlx turbo build fails. Check TypeScript compilation errors, dependency resolution issues, and build configuration. Review turbo.json configuration and package.json build scripts. Identify root cause of build failures across all packages (backend, web, ai-engine, shared).",
+      "timestamp": "2026-01-22T05:27:29.659Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-22T05:27:31.740Z"
+}

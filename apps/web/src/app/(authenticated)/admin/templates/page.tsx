@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useList, useNavigation, useTranslate } from "@refinedev/core";
-import Link from "next/link";
-import { TemplateCategory } from "@/components/template-editor";
+import { useState } from 'react';
+import { useList, useTranslate } from '@refinedev/core';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { TemplateCategory } from '@/components/template-editor';
 
 interface DocumentTemplate {
   id: string;
@@ -29,48 +30,48 @@ interface DocumentTemplate {
 }
 
 const categoryColors: Record<string, string> = {
-  LAWSUIT: "bg-red-100 text-red-800",
-  COMPLAINT: "bg-orange-100 text-orange-800",
-  CONTRACT: "bg-blue-100 text-blue-800",
-  MOTION: "bg-purple-100 text-purple-800",
-  LETTER: "bg-green-100 text-green-800",
-  OTHER: "bg-gray-100 text-gray-800",
+  LAWSUIT: 'bg-red-100 text-red-800',
+  COMPLAINT: 'bg-orange-100 text-orange-800',
+  CONTRACT: 'bg-blue-100 text-blue-800',
+  MOTION: 'bg-purple-100 text-purple-800',
+  LETTER: 'bg-green-100 text-green-800',
+  OTHER: 'bg-gray-100 text-gray-800',
 };
 
 export default function AdminTemplatesPage() {
   const translate = useTranslate();
-  const { push } = useNavigation();
-  const [searchFilter, setSearchFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const router = useRouter();
+  const [searchFilter, setSearchFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
 
-  const { data, isLoading, error } = useList<DocumentTemplate>({
-    resource: "documentTemplates",
+  const { query, result } = useList<DocumentTemplate>({
+    resource: 'documentTemplates',
     pagination: {
       pageSize: 100,
     },
     sorters: [
       {
-        field: "updatedAt",
-        order: "desc",
+        field: 'updatedAt',
+        order: 'desc',
       },
     ],
   });
 
-  const filteredTemplates = data?.data?.filter((template) => {
-    const matchesSearch =
-      !searchFilter ||
-      template.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
-      template.description?.toLowerCase().includes(searchFilter.toLowerCase());
+  const { data, isLoading, error } = query;
 
-    const matchesCategory =
-      !categoryFilter || template.category === categoryFilter;
+  const filteredTemplates =
+    result?.data?.filter((template) => {
+      const matchesSearch =
+        !searchFilter ||
+        template.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+        template.description?.toLowerCase().includes(searchFilter.toLowerCase());
 
-    return matchesSearch && matchesCategory;
-  }) || [];
+      const matchesCategory = !categoryFilter || template.category === categoryFilter;
 
-  const categories = Array.from(
-    new Set(data?.data?.map((t) => t.category) || [])
-  );
+      return matchesSearch && matchesCategory;
+    }) || [];
+
+  const categories = Array.from(new Set(result?.data?.map((t) => t.category) || []));
 
   return (
     <div className="space-y-6">
@@ -78,9 +79,7 @@ export default function AdminTemplatesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Template Management</h1>
-          <p className="text-gray-600 mt-1">
-            Create and manage document templates
-          </p>
+          <p className="text-gray-600 mt-1">Create and manage document templates</p>
         </div>
         <Link
           href="/admin/templates/new"
@@ -94,9 +93,7 @@ export default function AdminTemplatesPage() {
       <div className="bg-white rounded-lg shadow p-4">
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex-1 min-w-[200px]">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Search
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
             <input
               type="text"
               placeholder="Search templates..."
@@ -106,9 +103,7 @@ export default function AdminTemplatesPage() {
             />
           </div>
           <div className="min-w-[200px]">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
@@ -139,8 +134,8 @@ export default function AdminTemplatesPage() {
         <div className="text-center py-12">
           <p className="text-gray-500">
             {searchFilter || categoryFilter
-              ? "No templates match your filters"
-              : "No templates yet. Create your first template!"}
+              ? 'No templates match your filters'
+              : 'No templates yet. Create your first template!'}
           </p>
         </div>
       ) : (
@@ -172,9 +167,7 @@ export default function AdminTemplatesPage() {
               {filteredTemplates.map((template) => (
                 <tr key={template.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {template.name}
-                    </div>
+                    <div className="text-sm font-medium text-gray-900">{template.name}</div>
                     {template.description && (
                       <div className="text-sm text-gray-500 truncate max-w-xs">
                         {template.description}
@@ -187,8 +180,7 @@ export default function AdminTemplatesPage() {
                         categoryColors[template.category] || categoryColors.OTHER
                       }`}
                     >
-                      {translate(`templates.categories.${template.category}`) ||
-                        template.category}
+                      {translate(`templates.categories.${template.category}`) || template.category}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -201,11 +193,11 @@ export default function AdminTemplatesPage() {
                     <span
                       className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                         template.isActive
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-800"
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-800'
                       }`}
                     >
-                      {template.isActive ? "Active" : "Inactive"}
+                      {template.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">

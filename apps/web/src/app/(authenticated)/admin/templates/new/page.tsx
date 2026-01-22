@@ -1,39 +1,41 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useNavigation, useTranslate, useCreate } from "@refinedev/core";
-import { TemplateEditor, DocumentTemplateFormData } from "@/components/template-editor";
-import { Button } from "@legal/ui";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTranslate, useCreate } from '@refinedev/core';
+import { TemplateEditor, DocumentTemplateFormData } from '@/components/template-editor';
+import { Button } from '@legal/ui';
 
 export default function NewTemplatePage() {
   const translate = useTranslate();
-  const { push } = useNavigation();
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
-  const { mutate: createTemplate, isLoading } = useCreate();
+  const { mutate: createTemplate, mutation: createMutation } = useCreate();
+  const isLoading = (createMutation as any).isLoading ?? (createMutation as any).isPending ?? false;
 
   const handleSave = async (data: DocumentTemplateFormData) => {
     setError(null);
     try {
       await createTemplate(
         {
-          resource: "documentTemplates",
+          resource: 'documentTemplates',
           values: data,
           meta: {
-            operation: "createOneDocumentTemplate",
+            operation: 'createOneDocumentTemplate',
           },
         },
         {
           onSuccess: () => {
-            push("/admin/templates");
+            router.push('/admin/templates');
           },
           onError: (err: any) => {
-            setError(err.message || "Failed to create template");
+            setError(err.message || 'Failed to create template');
           },
-        }
+        },
       );
     } catch (err: any) {
-      setError(err.message || "Failed to create template");
+      setError(err.message || 'Failed to create template');
     }
   };
 
@@ -48,7 +50,7 @@ export default function NewTemplatePage() {
         </div>
         <Button
           type="button"
-          onClick={() => push("/admin/templates")}
+          onClick={() => router.push('/admin/templates')}
           className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
         >
           Back to Templates
@@ -61,7 +63,11 @@ export default function NewTemplatePage() {
         </div>
       )}
 
-      <TemplateEditor onSave={handleSave} isLoading={isLoading} onCancel={() => push("/admin/templates")} />
+      <TemplateEditor
+        onSave={handleSave}
+        isLoading={isLoading}
+        onCancel={() => router.push('/admin/templates')}
+      />
     </div>
   );
 }

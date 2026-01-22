@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useTranslate, useCustom } from "@refinedev/core";
+import { useState } from 'react';
+import { useTranslate, useCustom } from '@refinedev/core';
 import {
   LineChart,
   Line,
@@ -16,7 +16,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts";
+} from 'recharts';
 
 interface DailyUsageData {
   date: string;
@@ -46,62 +46,62 @@ interface UsageStatsFull {
 }
 
 // Colors for charts
-const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 // Format date for display
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr);
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 // Format currency
 function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
   }).format(amount);
 }
 
 // Format large numbers
 function formatNumber(num: number): string {
   if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + "M";
+    return (num / 1000000).toFixed(1) + 'M';
   }
   if (num >= 1000) {
-    return (num / 1000).toFixed(1) + "K";
+    return (num / 1000).toFixed(1) + 'K';
   }
   return num.toString();
 }
 
 export default function UsageDashboardPage() {
   const translate = useTranslate();
-  const [selectedPeriod, setSelectedPeriod] = useState<"7d" | "30d" | "90d">("30d");
+  const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d'>('30d');
 
   // Calculate date range based on selected period
   const getStartDate = () => {
     const now = new Date();
-    const days = selectedPeriod === "7d" ? 7 : selectedPeriod === "30d" ? 30 : 90;
+    const days = selectedPeriod === '7d' ? 7 : selectedPeriod === '30d' ? 30 : 90;
     const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
     return startDate.toISOString();
   };
 
   // Fetch daily usage data
-  const { data: dailyUsageData, isLoading: isLoadingDaily } = useCustom<UsageStatsResponse>({
-    url: "",
-    method: "get",
+  const { query: dailyQuery, result: dailyUsageData } = useCustom<UsageStatsResponse>({
+    url: '',
+    method: 'get',
     config: {
       query: {
-        operation: "myDailyUsage",
+        operation: 'myDailyUsage',
         args: {
           startDate: getStartDate(),
         },
         fields: [
-          "dailyUsage { date totalRequests totalTokens totalCost }",
-          "totalRequests",
-          "totalTokens",
-          "totalCost",
-          "periodStart",
-          "periodEnd",
+          'dailyUsage { date totalRequests totalTokens totalCost }',
+          'totalRequests',
+          'totalTokens',
+          'totalCost',
+          'periodStart',
+          'periodEnd',
         ],
       },
     },
@@ -110,24 +110,25 @@ export default function UsageDashboardPage() {
       refetchOnWindowFocus: false,
     },
   });
+  const { data: _, isLoading: isLoadingDaily } = dailyQuery;
 
   // Fetch usage stats with breakdown
-  const { data: statsData, isLoading: isLoadingStats } = useCustom<UsageStatsFull>({
-    url: "",
-    method: "get",
+  const { query: statsQuery, result: statsData } = useCustom<UsageStatsFull>({
+    url: '',
+    method: 'get',
     config: {
       query: {
-        operation: "myUsageStats",
+        operation: 'myUsageStats',
         args: {
           query: {
             startDate: getStartDate(),
           },
         },
         fields: [
-          "totalRequests",
-          "totalTokens",
-          "totalCost",
-          "breakdownByOperation { operationType requestCount tokenCount cost }",
+          'totalRequests',
+          'totalTokens',
+          'totalCost',
+          'breakdownByOperation { operationType requestCount tokenCount cost }',
         ],
       },
     },
@@ -136,50 +137,51 @@ export default function UsageDashboardPage() {
       refetchOnWindowFocus: false,
     },
   });
+  const { data: __, isLoading: isLoadingStats } = statsQuery;
 
   const dailyUsage = dailyUsageData?.data;
   const stats = statsData?.data;
 
   // Transform daily usage data for charts
-  const chartData = dailyUsage?.dailyUsage?.map((day) => ({
-    ...day,
-    formattedDate: formatDate(day.date),
-  })) || [];
+  const chartData =
+    dailyUsage?.dailyUsage?.map((day) => ({
+      ...day,
+      formattedDate: formatDate(day.date),
+    })) || [];
 
   // Transform breakdown data for pie chart
-  const pieChartData = stats?.breakdownByOperation?.map((op) => ({
-    name: op.operationType.replace(/_/g, " "),
-    value: op.cost,
-    requests: op.requestCount,
-    tokens: op.tokenCount,
-  })) || [];
+  const pieChartData =
+    stats?.breakdownByOperation?.map((op) => ({
+      name: op.operationType.replace(/_/g, ' '),
+      value: op.cost,
+      requests: op.requestCount,
+      tokens: op.tokenCount,
+    })) || [];
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
-          {translate("usage.title") || "Usage Dashboard"}
-        </h1>
+        <h1 className="text-3xl font-bold mb-2">{translate('usage.title') || 'Usage Dashboard'}</h1>
         <p className="text-gray-600">
-          {translate("usage.subtitle") || "Track your AI usage and costs"}
+          {translate('usage.subtitle') || 'Track your AI usage and costs'}
         </p>
       </div>
 
       {/* Period Selector */}
       <div className="mb-6 flex gap-2">
         {[
-          { value: "7d" as const, label: "7 Days" },
-          { value: "30d" as const, label: "30 Days" },
-          { value: "90d" as const, label: "90 Days" },
+          { value: '7d' as const, label: '7 Days' },
+          { value: '30d' as const, label: '30 Days' },
+          { value: '90d' as const, label: '90 Days' },
         ].map((period) => (
           <button
             key={period.value}
             onClick={() => setSelectedPeriod(period.value)}
             className={`px-4 py-2 rounded-md font-medium transition-colors ${
               selectedPeriod === period.value
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
             {period.label}
@@ -194,10 +196,10 @@ export default function UsageDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 text-sm font-medium">
-                {translate("usage.totalRequests") || "Total Requests"}
+                {translate('usage.totalRequests') || 'Total Requests'}
               </p>
               <p className="text-3xl font-bold mt-2">
-                {isLoadingDaily ? "..." : formatNumber(dailyUsage?.totalRequests || 0)}
+                {isLoadingDaily ? '...' : formatNumber(dailyUsage?.totalRequests || 0)}
               </p>
             </div>
             <div className="bg-blue-100 p-3 rounded-full">
@@ -223,10 +225,10 @@ export default function UsageDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 text-sm font-medium">
-                {translate("usage.totalTokens") || "Total Tokens"}
+                {translate('usage.totalTokens') || 'Total Tokens'}
               </p>
               <p className="text-3xl font-bold mt-2">
-                {isLoadingDaily ? "..." : formatNumber(dailyUsage?.totalTokens || 0)}
+                {isLoadingDaily ? '...' : formatNumber(dailyUsage?.totalTokens || 0)}
               </p>
             </div>
             <div className="bg-green-100 p-3 rounded-full">
@@ -252,10 +254,10 @@ export default function UsageDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 text-sm font-medium">
-                {translate("usage.totalCost") || "Total Cost"}
+                {translate('usage.totalCost') || 'Total Cost'}
               </p>
               <p className="text-3xl font-bold mt-2">
-                {isLoadingDaily ? "..." : formatCurrency(dailyUsage?.totalCost || 0)}
+                {isLoadingDaily ? '...' : formatCurrency(dailyUsage?.totalCost || 0)}
               </p>
             </div>
             <div className="bg-yellow-100 p-3 rounded-full">
@@ -282,15 +284,12 @@ export default function UsageDashboardPage() {
         {/* Daily Usage Chart */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4">
-            {translate("usage.dailyUsage") || "Daily Usage"}
+            {translate('usage.dailyUsage') || 'Daily Usage'}
           </h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="formattedDate"
-                tick={{ fontSize: 12 }}
-              />
+              <XAxis dataKey="formattedDate" tick={{ fontSize: 12 }} />
               <YAxis yAxisId="tokens" tick={{ fontSize: 12 }} />
               <YAxis yAxisId="cost" orientation="right" tick={{ fontSize: 12 }} />
               <Tooltip />
@@ -300,7 +299,7 @@ export default function UsageDashboardPage() {
                 type="monotone"
                 dataKey="totalTokens"
                 stroke="#3b82f6"
-                name={translate("usage.tokens") || "Tokens"}
+                name={translate('usage.tokens') || 'Tokens'}
                 strokeWidth={2}
               />
               <Line
@@ -308,7 +307,7 @@ export default function UsageDashboardPage() {
                 type="monotone"
                 dataKey="totalCost"
                 stroke="#10b981"
-                name={translate("usage.cost") || "Cost ($)"}
+                name={translate('usage.cost') || 'Cost ($)'}
                 strokeWidth={2}
               />
             </LineChart>
@@ -318,7 +317,7 @@ export default function UsageDashboardPage() {
         {/* Cost by Operation Type */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4">
-            {translate("usage.costByOperation") || "Cost by Operation"}
+            {translate('usage.costByOperation') || 'Cost by Operation'}
           </h2>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
@@ -327,9 +326,7 @@ export default function UsageDashboardPage() {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) =>
-                  `${name}: ${(percent * 100).toFixed(0)}%`
-                }
+                label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
@@ -338,7 +335,7 @@ export default function UsageDashboardPage() {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: number) => formatCurrency(value)} />
+              <Tooltip formatter={(value?: number) => (value ? formatCurrency(value) : '')} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
@@ -348,7 +345,7 @@ export default function UsageDashboardPage() {
       {/* Tokens by Day Bar Chart */}
       <div className="bg-white rounded-lg shadow p-6 mb-8">
         <h2 className="text-lg font-semibold mb-4">
-          {translate("usage.tokensByDay") || "Tokens by Day"}
+          {translate('usage.tokensByDay') || 'Tokens by Day'}
         </h2>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
@@ -360,7 +357,7 @@ export default function UsageDashboardPage() {
             <Bar
               dataKey="totalTokens"
               fill="#3b82f6"
-              name={translate("usage.tokens") || "Tokens"}
+              name={translate('usage.tokens') || 'Tokens'}
             />
           </BarChart>
         </ResponsiveContainer>
@@ -370,41 +367,35 @@ export default function UsageDashboardPage() {
       {stats?.breakdownByOperation && stats.breakdownByOperation.length > 0 && (
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4">
-            {translate("usage.operationBreakdown") || "Operation Breakdown"}
+            {translate('usage.operationBreakdown') || 'Operation Breakdown'}
           </h2>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b">
                   <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
-                    {translate("usage.operation") || "Operation"}
+                    {translate('usage.operation') || 'Operation'}
                   </th>
                   <th className="text-right py-3 px-4 text-sm font-medium text-gray-600">
-                    {translate("usage.requests") || "Requests"}
+                    {translate('usage.requests') || 'Requests'}
                   </th>
                   <th className="text-right py-3 px-4 text-sm font-medium text-gray-600">
-                    {translate("usage.tokens") || "Tokens"}
+                    {translate('usage.tokens') || 'Tokens'}
                   </th>
                   <th className="text-right py-3 px-4 text-sm font-medium text-gray-600">
-                    {translate("usage.cost") || "Cost"}
+                    {translate('usage.cost') || 'Cost'}
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {stats.breakdownByOperation.map((op) => (
                   <tr key={op.operationType} className="border-b hover:bg-gray-50">
-                    <td className="py-3 px-4 text-sm">
-                      {op.operationType.replace(/_/g, " ")}
-                    </td>
+                    <td className="py-3 px-4 text-sm">{op.operationType.replace(/_/g, ' ')}</td>
                     <td className="py-3 px-4 text-sm text-right">
                       {formatNumber(op.requestCount)}
                     </td>
-                    <td className="py-3 px-4 text-sm text-right">
-                      {formatNumber(op.tokenCount)}
-                    </td>
-                    <td className="py-3 px-4 text-sm text-right">
-                      {formatCurrency(op.cost)}
-                    </td>
+                    <td className="py-3 px-4 text-sm text-right">{formatNumber(op.tokenCount)}</td>
+                    <td className="py-3 px-4 text-sm text-right">{formatCurrency(op.cost)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -430,7 +421,7 @@ export default function UsageDashboardPage() {
             />
           </svg>
           <p className="text-gray-600 text-lg">
-            {translate("usage.noData") || "No usage data available for this period"}
+            {translate('usage.noData') || 'No usage data available for this period'}
           </p>
         </div>
       )}

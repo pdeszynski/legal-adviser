@@ -10,8 +10,7 @@
     <technology>Turborepo - Monorepo orchestration</technology>
     <technology>PNPM - Node.js package management</technology>
     <technology>UV - Python package management</technology>
-    <technology>Next.js 15 - Frontend framework with React 19</technology>
-    <technology>Refine.dev - Data framework for admin/CRUD operations</technology>
+    <technology>Refine.dev backed up with Next.js - Data framework for admin/CRUD operations</technology>
     <technology>Tailwind CSS - Utility-first styling</technology>
     <technology>shadcn/ui - UI component library</technology>
     <technology>next-intl - Internationalization (i18n) support</technology>
@@ -558,6 +557,202 @@ Validation:
     <feature>
       <name>Webhook System</name>
       <description>Implement webhook delivery system for external integrations. Support subscribing to events like document.completed and query.answered.</description>
+    </feature>
+    <feature>
+      <name>Fix Backend-Specific Build Errors</name>
+      <description>Address TypeScript compilation errors, missing imports, incorrect type definitions, or decorator usage issues in NestJS backend. Verify all @nestjs-query decorators are properly configured and GraphQL schema generation works. Fix any circular dependency issues between modules.</description>
+    </feature>
+    <feature>
+      <name>AI Streaming Response Handler</name>
+      <description>Implement server-sent events or GraphQL subscriptions for real-time document generation progress. Stream partial results from AI Engine to frontend for improved UX.</description>
+    </feature>
+    <feature>
+      <name>Audit Log Entity</name>
+      <description>Create AuditLog entity for tracking all user actions. Store action type, resource ID, user ID, timestamp, IP address, and change details.</description>
+    </feature>
+    <feature>
+      <name>Refine Audit Log Provider</name>
+      <description>Implement Refine auditLogProvider to display action history in UI. Show &apos;who did what when&apos; across all resources.</description>
+    </feature>
+    <feature>
+      <name>Audit Logging Interceptor</name>
+      <description>Create NestJS interceptor in presentation layer to capture GraphQL mutations. Implement application service for audit log creation following use case pattern. Publish domain events for audit tracking and store in AuditLog entity through repository, maintaining layered architecture separation.</description>
+    </feature>
+    <feature>
+      <name>Frontend GraphQL Auth Provider</name>
+      <description>Replace mock auth provider with real GraphQL-based authentication. Implement login, logout, register, and session management using GraphQL mutations and queries.</description>
+    </feature>
+    <feature>
+      <name>CSRF Protection</name>
+      <description>Implement CSRF token validation for state-changing GraphQL mutations. Use double-submit cookie pattern with SameSite flag.</description>
+    </feature>
+    <feature>
+      <name>User Dashboard</name>
+      <description>Create dashboard page with overview widgets. Show recent documents, pending analyses, statistics, and quick action buttons.</description>
+    </feature>
+    <feature>
+      <name>Dashboard Widget Components</name>
+      <description>Create reusable widget components for dashboard. Include document count cards, activity timeline, and notification bell.</description>
+    </feature>
+    <feature>
+      <name>Document Detail View</name>
+      <description>Create document detail page showing full document content, metadata, generation history, and action buttons. Support editing for DRAFT status documents.</description>
+    </feature>
+    <feature>
+      <name>Document Edit Form</name>
+      <description>Implement form for editing existing documents with validation. Support updating title, type, metadata fields, and content for documents in DRAFT status.</description>
+    </feature>
+    <feature>
+      <name>Document Generation Queue Processor</name>
+      <description>Implement Bull queue consumer in infrastructure layer for asynchronous document generation jobs. Create application service use case to orchestrate document generation workflow. Handle job status updates, error recovery, and AI service communication through domain events and queue system following layered architecture.</description>
+    </feature>
+    <feature>
+      <name>Document List View with Refine</name>
+      <description>Implement document listing page using Refine&apos;s useTable hook with GraphQL data provider. Include filtering, sorting, pagination, and status badges.</description>
+    </feature>
+    <feature>
+      <name>Document Permissions Entity</name>
+      <description>Create DocumentPermission entity linking users to documents with access levels. Support owner, editor, viewer, and commenter roles.</description>
+    </feature>
+    <feature>
+      <name>Document Sharing System</name>
+      <description>Implement secure document sharing with granular permissions. Generate shareable links with view-only or edit access and expiration dates.</description>
+    </feature>
+    <feature>
+      <name>Real-time Document Status Updates</name>
+      <description>Implement GraphQL subscriptions for document status changes. Emit events when document transitions between DRAFT, GENERATING, COMPLETED, and FAILED states.</description>
+    </feature>
+    <feature>
+      <name>Document Template System</name>
+      <description>Create template engine for common legal document types. Support variable interpolation, conditional sections, and Polish legal formatting standards.</description>
+    </feature>
+    <feature>
+      <name>Document Version Entity</name>
+      <description>Create DocumentVersion entity to track document revision history. Store content snapshots, timestamps, and author information for audit trail.</description>
+    </feature>
+    <feature>
+      <name>Document Versioning Logic</name>
+      <description>Implement version creation on document updates. Maintain version history with diff calculation and rollback capability.</description>
+    </feature>
+    <feature>
+      <name>Email Notification Service</name>
+      <description>Implement email service using SendGrid or similar provider. Support templated emails for document completion, account actions, and system notifications.</description>
+    </feature>
+    <feature>
+      <name>Email Queue Processor</name>
+      <description>Create Bull queue consumer for sending emails asynchronously. Handle retry logic, bounce tracking, and delivery status updates.</description>
+    </feature>
+    <feature>
+      <name>DDD Domain Model Design</name>
+      <description>Establish Domain-Driven Design structure with bounded contexts for Legal Documents, User Management, AI Operations, and Billing domains. Define aggregates, entities, value objects, and domain events for each context.</description>
+    </feature>
+    <feature>
+      <name>Monorepo Structure Setup</name>
+      <description>Configure monorepo using Nx or Turborepo with separate packages for backend, frontend, AI engine, and shared libraries. Establish workspace dependencies, build orchestration, and shared tooling configuration.</description>
+    </feature>
+    <feature>
+      <name>Layered Architecture Implementation</name>
+      <description>Implement strict layered architecture with Presentation (Controllers/Resolvers), Application (Use Cases/Services), Domain (Business Logic), and Infrastructure (Repositories/External APIs) layers. Enforce dependency rules and establish clear boundaries.</description>
+    </feature>
+    <feature>
+      <name>Domain Repository Interfaces</name>
+      <description>Create repository interfaces in domain layer for each aggregate root (LegalDocument, User, LegalAnalysis, etc.). Implement repository pattern to abstract data persistence from domain logic.</description>
+    </feature>
+    <feature>
+      <name>Application Service Layer</name>
+      <description>Create application service layer implementing use cases as orchestrators. Services coordinate between domain models, repositories, and external services without containing business logic.</description>
+    </feature>
+    <feature>
+      <name>Validate User Credentials Flow</name>
+      <description>Verify password hashing, comparison logic, and user lookup in database during login. Ensure bcrypt or similar library is configured correctly and user entity is properly queried.</description>
+    </feature>
+    <feature>
+      <name>Fix CORS and Cookie Configuration</name>
+      <description>Ensure CORS is configured to allow frontend origin, credentials are enabled, and authentication cookies/headers are properly set and readable. Verify SameSite, Secure, and HttpOnly flags.</description>
+    </feature>
+    <feature>
+      <name>Debug Backend Auth Errors</name>
+      <description>Investigate 404 errors in login flow. Verify data provider configuration, check if authentication should route through server-side components or directly to backend. Analyze request routing and GraphQL vs REST endpoint usage.</description>
+    </feature>
+    <feature>
+      <name>Import AuthModule in app.module.ts</name>
+      <description>Add AuthModule import to main application module. Include &apos;import { AuthModule } from &apos;./modules/auth/auth.module&apos;;&apos; and add AuthModule to the imports array. This registers the /auth/login endpoint in the backend.</description>
+    </feature>
+    <feature>
+      <name>Enable CORS in main.ts</name>
+      <description>Configure CORS in NestJS main.ts by adding app.enableCors() after app creation. Set origin to allow frontend URL, enable credentials for cookie and authentication header handling. Ensures frontend can communicate with backend auth endpoints.</description>
+    </feature>
+    <feature>
+      <name>End-to-End Login Flow Verification</name>
+      <description>Verify complete login flow functionality. Test backend endpoint with curl, verify CORS headers with OPTIONS request, test full browser-based login flow. Document working authentication flow and any remaining issues.</description>
+    </feature>
+    <feature>
+      <name>Database Fixtures with Initial User</name>
+      <description>Create database seeding system with fixtures for development and testing. Include initial admin user (admin@refine.dev / password) and sample data for all entities. Use TypeORM seeding or custom seed scripts to populate database with realistic test data.</description>
+    </feature>
+    <feature>
+      <name>GraphQL Authentication Mutations</name>
+      <description>Migrate authentication from REST to GraphQL with login, register, and refreshToken mutations. Implement JWT token management through GraphQL resolvers following project constitution requirements.</description>
+    </feature>
+    <feature>
+      <name>Input Validation Decorators</name>
+      <description>Add class-validator decorators to all DTOs and input types. Enforce maximum lengths, format validation, and sanitization rules.</description>
+    </feature>
+    <feature>
+      <name>Legal Analysis Entity</name>
+      <description>Create LegalAnalysis entity to store case classification results. Include input description, identified grounds, confidence scores, and related document links.</description>
+    </feature>
+    <feature>
+      <name>Legal Analysis GraphQL Resolvers</name>
+      <description>Add nestjs-query decorators to LegalAnalysis entity. Implement auto-generated CRUD resolvers for viewing analysis history.</description>
+    </feature>
+    <feature>
+      <name>Refactor LegalDocument to nestjs-query</name>
+      <description>Add @QueryOptions, @FilterableField, and @Relation decorators to LegalDocument infrastructure entity. Implement repository interface in domain layer and concrete implementation in infrastructure layer using nestjs-query. Ensures type-safe GraphQL schema generation while maintaining DDD layering.</description>
+    </feature>
+    <feature>
+      <name>Legal Query Entity</name>
+      <description>Create LegalQuery entity for storing Q&amp;A conversations. Include query text, AI response, citations, user session linkage, and timestamp fields.</description>
+    </feature>
+    <feature>
+      <name>Legal Query GraphQL Resolvers</name>
+      <description>Add nestjs-query decorators to LegalQuery entity for auto-generated CRUD resolvers. Implement custom mutations for submitting new queries.</description>
+    </feature>
+    <feature>
+      <name>Legal Ruling Entity</name>
+      <description>Create LegalRuling entity for storing case law and court decisions. Include fields for signature, date, court name, summary, and full text.</description>
+    </feature>
+    <feature>
+      <name>Legal Ruling GraphQL Resolvers</name>
+      <description>Add nestjs-query decorators to LegalRuling entity. Implement auto-generated CRUD resolvers with filtering and full-text search capabilities.</description>
+    </feature>
+    <feature>
+      <name>Migrate to @ptc-org/nestjs-query</name>
+      <description>Upgrade all nestjs-query packages to @ptc-org scoped versions. Replace manual GraphQL resolvers with auto-generated CRUD resolvers using QueryService pattern. Refactor to align with DDD principles by separating infrastructure concerns from domain logic in layered architecture.</description>
+    </feature>
+    <feature>
+      <name>PDF Export Service</name>
+      <description>Implement PDF generation service using library like Puppeteer or PDFKit. Create professional legal document templates with proper formatting and Polish legal standards.</description>
+    </feature>
+    <feature>
+      <name>Complete Polish Translations</name>
+      <description>Add comprehensive Polish translations for all UI strings, error messages, and labels. Ensure legal terminology accuracy and professional tone.</description>
+    </feature>
+    <feature>
+      <name>Rate Limiting Middleware</name>
+      <description>Implement rate limiting on GraphQL endpoints using @nestjs/throttler. Protect against abuse with per-user and per-IP limits.</description>
+    </feature>
+    <feature>
+      <name>Refactor User entity to nestjs-query</name>
+      <description>Add nestjs-query decorators to User infrastructure entity for auto-generated resolvers. Implement User repository interface in domain layer and concrete implementation in infrastructure layer. Implement FilterableField for searchable properties and proper relation handling with UserSession following DDD patterns.</description>
+    </feature>
+    <feature>
+      <name>XSS Protection Middleware</name>
+      <description>Implement XSS protection by sanitizing user inputs and outputs. Use helmet.js for security headers and content security policy.</description>
+    </feature>
+    <feature>
+      <name>Debug Build Process Failure</name>
+      <description>Investigate why pnpm dlx turbo build fails. Check TypeScript compilation errors, dependency resolution issues, and build configuration. Review turbo.json configuration and package.json build scripts. Identify root cause of build failures across all packages (backend, web, ai-engine, shared).</description>
     </feature>
   </implemented_features>
 

@@ -4,22 +4,20 @@ import React from 'react';
 import { useList } from '@refinedev/core';
 
 export default function AdminAuditLogsPage() {
-  const { queryResult } = useList({
+  const { query, result } = useList({
     resource: 'audit_logs',
     pagination: { pageSize: 20 },
     sorters: [{ field: 'timestamp', order: 'desc' }],
   });
 
-  const { data, isLoading } = queryResult;
-  const logs = data?.data || [];
+  const { data, isLoading } = query;
+  const logs = result?.data || [];
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Audit Logs</h1>
-        <p className="text-muted-foreground">
-          System activity and user actions
-        </p>
+        <p className="text-muted-foreground">System activity and user actions</p>
       </div>
 
       {isLoading ? (
@@ -52,23 +50,15 @@ export default function AdminAuditLogsPage() {
               <tbody>
                 {logs.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan={5}
-                      className="p-4 text-center text-muted-foreground"
-                    >
+                    <td colSpan={5} className="p-4 text-center text-muted-foreground">
                       No audit logs found
                     </td>
                   </tr>
                 ) : (
                   logs.map((log: any) => (
-                    <tr
-                      key={log.id}
-                      className="border-b transition-colors hover:bg-muted/50"
-                    >
+                    <tr key={log.id} className="border-b transition-colors hover:bg-muted/50">
                       <td className="p-4 align-middle whitespace-nowrap">
-                        {log.timestamp
-                          ? new Date(log.timestamp).toLocaleString()
-                          : '-'}
+                        {log.timestamp ? new Date(log.timestamp).toLocaleString() : '-'}
                       </td>
                       <td className="p-4 align-middle font-medium">
                         {log.userEmail || log.userId || '-'}
@@ -90,9 +80,7 @@ export default function AdminAuditLogsPage() {
                           {log.action}
                         </span>
                       </td>
-                      <td className="p-4 align-middle">
-                        {log.resourceType || '-'}
-                      </td>
+                      <td className="p-4 align-middle">{log.resourceType || '-'}</td>
                       <td className="p-4 align-middle font-mono text-xs">
                         {log.resourceId || '-'}
                       </td>

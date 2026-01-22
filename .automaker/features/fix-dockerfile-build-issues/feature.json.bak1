@@ -1,0 +1,19 @@
+{
+  "category": "bug",
+  "description": "Fix Dockerfile issues identified during debugging. This may include correcting COPY instruction order for better layer caching (as per optimize-docker-layer-caching feature), fixing base image versions, correcting WORKDIR paths, resolving dependency installation failures, or fixing multi-stage build configuration.",
+  "id": "fix-dockerfile-build-issues",
+  "title": "Fix Dockerfile Build Issues",
+  "dependencies": [
+    "debug-docker-build-failure"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Fix Dockerfile issues identified during debugging. This may include correcting COPY instruction order for better layer caching (as per optimize-docker-layer-caching feature), fixing base image versions, correcting WORKDIR paths, resolving dependency installation failures, or fixing multi-stage build configuration.",
+      "timestamp": "2026-01-22T05:27:29.662Z",
+      "source": "initial"
+    }
+  ]
+}

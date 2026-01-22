@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useTranslate, useCustom, useCustomMutation, useNotification } from "@refinedev/core";
-import { Copy, Eye, EyeOff, Trash2, Plus } from "lucide-react";
+import { useState, type Dispatch } from 'react';
+import { useTranslate, useCustom, useCustomMutation, useNotification } from '@refinedev/core';
+import { Copy, Eye, EyeOff, Trash2, Plus } from 'lucide-react';
 
 interface ApiKey {
   id: string;
@@ -42,20 +42,20 @@ interface CreateApiKeyResponse {
 }
 
 const API_KEY_SCOPES = [
-  { value: "documents:read", label: "Documents: Read" },
-  { value: "documents:write", label: "Documents: Write" },
-  { value: "documents:delete", label: "Documents: Delete" },
-  { value: "queries:read", label: "Queries: Read" },
-  { value: "queries:write", label: "Queries: Write" },
-  { value: "queries:delete", label: "Queries: Delete" },
-  { value: "templates:read", label: "Templates: Read" },
-  { value: "templates:write", label: "Templates: Write" },
-  { value: "rulings:read", label: "Rulings: Read" },
-  { value: "rulings:search", label: "Rulings: Search" },
-  { value: "ai:generate", label: "AI: Generate" },
-  { value: "ai:analyze", label: "AI: Analyze" },
-  { value: "profile:read", label: "Profile: Read" },
-  { value: "profile:write", label: "Profile: Write" },
+  { value: 'documents:read', label: 'Documents: Read' },
+  { value: 'documents:write', label: 'Documents: Write' },
+  { value: 'documents:delete', label: 'Documents: Delete' },
+  { value: 'queries:read', label: 'Queries: Read' },
+  { value: 'queries:write', label: 'Queries: Write' },
+  { value: 'queries:delete', label: 'Queries: Delete' },
+  { value: 'templates:read', label: 'Templates: Read' },
+  { value: 'templates:write', label: 'Templates: Write' },
+  { value: 'rulings:read', label: 'Rulings: Read' },
+  { value: 'rulings:search', label: 'Rulings: Search' },
+  { value: 'ai:generate', label: 'AI: Generate' },
+  { value: 'ai:analyze', label: 'AI: Analyze' },
+  { value: 'profile:read', label: 'Profile: Read' },
+  { value: 'profile:write', label: 'Profile: Write' },
 ];
 
 export function SettingsApiKeys() {
@@ -67,89 +67,77 @@ export function SettingsApiKeys() {
   const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
 
   // Fetch API keys for current user
-  const { data: apiKeysData, isLoading, refetch } = useCustom<ApiKey[]>({
-    url: "",
-    method: "get",
+  const { query: apiKeysQuery, result: apiKeysData } = useCustom<ApiKey[]>({
+    url: '',
+    method: 'get',
     config: {
       query: {
-        operation: "myApiKeys",
+        operation: 'myApiKeys',
         fields: [
-          "id",
-          "name",
-          "keyPrefix",
-          "scopes",
-          "rateLimitPerMinute",
-          "status",
-          "expiresAt",
-          "lastUsedAt",
-          "usageCount",
-          "description",
-          "createdAt",
-          "updatedAt",
+          'id',
+          'name',
+          'keyPrefix',
+          'scopes',
+          'rateLimitPerMinute',
+          'status',
+          'expiresAt',
+          'lastUsedAt',
+          'usageCount',
+          'description',
+          'createdAt',
+          'updatedAt',
         ],
       },
     },
   });
+  const { isLoading, refetch } = apiKeysQuery;
 
   const apiKeys = apiKeysData?.data ?? [];
 
   // Create API key mutation
-  const { mutate: createApiKey, isLoading: isCreating } = useCustomMutation<CreateApiKeyResponse>();
+  const { mutate: createApiKey, mutation: createMutation } =
+    useCustomMutation<CreateApiKeyResponse>();
+  const isCreating =
+    (createMutation as any).isLoading ?? (createMutation as any).isPending ?? false;
 
   // Revoke API key mutation
-  const { mutate: revokeApiKey, isLoading: isRevoking } = useCustomMutation<ApiKey>();
+  const { mutate: revokeApiKey, mutation: revokeMutation } = useCustomMutation<ApiKey>();
+  const isRevoking =
+    (revokeMutation as any).isLoading ?? (revokeMutation as any).isPending ?? false;
 
   // Delete API key mutation
-  const { mutate: deleteApiKey, isLoading: isDeleting } = useCustomMutation<boolean>();
+  const { mutate: deleteApiKey, mutation: deleteMutation } = useCustomMutation();
+  const isDeleting =
+    (deleteMutation as any).isLoading ?? (deleteMutation as any).isPending ?? false;
 
   const handleCreateApiKey = (data: CreateApiKeyInput) => {
     createApiKey(
       {
-        url: "",
-        method: "post",
-        config: {
-          query: {
-            operation: "createApiKey",
-            variables: {
-              input: {
-                name: data.name,
-                scopes: selectedScopes,
-                rateLimitPerMinute: data.rateLimitPerMinute,
-                expiresAt: data.expiresAt,
-                description: data.description,
-              },
-            },
-            fields: [
-              "id",
-              "rawKey",
-              "keyPrefix",
-              "name",
-              "scopes",
-              "rateLimitPerMinute",
-              "status",
-              "expiresAt",
-              "description",
-              "createdAt",
-              "updatedAt",
-            ],
-          },
+        url: '',
+        method: 'post',
+        values: {
+          name: data.name,
+          scopes: selectedScopes,
+          rateLimitPerMinute: data.rateLimitPerMinute,
+          expiresAt: data.expiresAt,
+          description: data.description,
         },
       },
       {
-        onSuccess: (response) => {
+        onSuccess: (response: any) => {
           setNewlyCreatedKey(response.data);
           setShowRawKey(true);
           setIsCreateModalOpen(false);
           refetch();
           open?.({
-            type: "success",
-            message: translate("settings.apiKeys.createSuccess"),
+            type: 'success',
+            message: translate('settings.apiKeys.createSuccess'),
           });
         },
         onError: (err: unknown) => {
           open?.({
-            type: "error",
-            message: err instanceof Error ? err.message : translate("settings.apiKeys.createError"),
+            type: 'error',
+            message: err instanceof Error ? err.message : translate('settings.apiKeys.createError'),
           });
         },
       },
@@ -157,34 +145,28 @@ export function SettingsApiKeys() {
   };
 
   const handleRevokeApiKey = (id: string) => {
-    if (!confirm(translate("settings.apiKeys.confirmRevoke"))) {
+    if (!confirm(translate('settings.apiKeys.confirmRevoke'))) {
       return;
     }
 
     revokeApiKey(
       {
-        url: "",
-        method: "post",
-        config: {
-          query: {
-            operation: "revokeApiKey",
-            variables: { id },
-            fields: ["id", "status"],
-          },
-        },
+        url: '',
+        method: 'post',
+        values: { id },
       },
       {
         onSuccess: () => {
           refetch();
           open?.({
-            type: "success",
-            message: translate("settings.apiKeys.revokeSuccess"),
+            type: 'success',
+            message: translate('settings.apiKeys.revokeSuccess'),
           });
         },
         onError: (err: unknown) => {
           open?.({
-            type: "error",
-            message: err instanceof Error ? err.message : translate("settings.apiKeys.revokeError"),
+            type: 'error',
+            message: err instanceof Error ? err.message : translate('settings.apiKeys.revokeError'),
           });
         },
       },
@@ -192,33 +174,28 @@ export function SettingsApiKeys() {
   };
 
   const handleDeleteApiKey = (id: string) => {
-    if (!confirm(translate("settings.apiKeys.confirmDelete"))) {
+    if (!confirm(translate('settings.apiKeys.confirmDelete'))) {
       return;
     }
 
     deleteApiKey(
       {
-        url: "",
-        method: "post",
-        config: {
-          query: {
-            operation: "deleteApiKey",
-            variables: { id },
-          },
-        },
+        url: '',
+        method: 'post',
+        values: { id },
       },
       {
         onSuccess: () => {
           refetch();
           open?.({
-            type: "success",
-            message: translate("settings.apiKeys.deleteSuccess"),
+            type: 'success',
+            message: translate('settings.apiKeys.deleteSuccess'),
           });
         },
         onError: (err: unknown) => {
           open?.({
-            type: "error",
-            message: err instanceof Error ? err.message : translate("settings.apiKeys.deleteError"),
+            type: 'error',
+            message: err instanceof Error ? err.message : translate('settings.apiKeys.deleteError'),
           });
         },
       },
@@ -228,33 +205,33 @@ export function SettingsApiKeys() {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     open?.({
-      type: "success",
-      message: translate("settings.apiKeys.copiedToClipboard"),
+      type: 'success',
+      message: translate('settings.apiKeys.copiedToClipboard'),
     });
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return translate("settings.apiKeys.never");
+    if (!dateString) return translate('settings.apiKeys.never');
     return new Date(dateString).toLocaleDateString();
   };
 
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800";
-      case "revoked":
-        return "bg-red-100 text-red-800";
-      case "expired":
-        return "bg-gray-100 text-gray-800";
+      case 'active':
+        return 'bg-green-100 text-green-800';
+      case 'revoked':
+        return 'bg-red-100 text-red-800';
+      case 'expired':
+        return 'bg-gray-100 text-gray-800';
       default:
-        return "bg-gray-100 text-gray-800";
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   if (isLoading) {
     return (
       <div className="p-8">
-        <div className="text-center text-gray-500">{translate("loading")}</div>
+        <div className="text-center text-gray-500">{translate('loading')}</div>
       </div>
     );
   }
@@ -263,19 +240,15 @@ export function SettingsApiKeys() {
     <div className="p-8">
       <div className="mb-6 flex justify-between items-start">
         <div>
-          <h2 className="text-2xl font-semibold mb-2">
-            {translate("settings.apiKeys.title")}
-          </h2>
-          <p className="text-gray-600">
-            {translate("settings.apiKeys.description")}
-          </p>
+          <h2 className="text-2xl font-semibold mb-2">{translate('settings.apiKeys.title')}</h2>
+          <p className="text-gray-600">{translate('settings.apiKeys.description')}</p>
         </div>
         <button
           onClick={() => setIsCreateModalOpen(true)}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-4 h-4" />
-          {translate("settings.apiKeys.createButton")}
+          {translate('settings.apiKeys.createButton')}
         </button>
       </div>
 
@@ -285,10 +258,10 @@ export function SettingsApiKeys() {
           <div className="flex justify-between items-start mb-2">
             <div>
               <h3 className="font-medium text-yellow-900">
-                {translate("settings.apiKeys.newKeyTitle")}
+                {translate('settings.apiKeys.newKeyTitle')}
               </h3>
               <p className="text-sm text-yellow-700">
-                {translate("settings.apiKeys.newKeyWarning")}
+                {translate('settings.apiKeys.newKeyWarning')}
               </p>
             </div>
             <button
@@ -303,7 +276,7 @@ export function SettingsApiKeys() {
           </div>
           <div className="mt-3 flex gap-2">
             <code className="flex-1 px-3 py-2 bg-white border border-yellow-300 rounded text-sm font-mono">
-              {showRawKey ? newlyCreatedKey.rawKey : "••••••••••••"}
+              {showRawKey ? newlyCreatedKey.rawKey : '••••••••••••'}
             </code>
             <button
               onClick={() => setShowRawKey(!showRawKey)}
@@ -324,23 +297,28 @@ export function SettingsApiKeys() {
       {/* API Keys List */}
       {apiKeys.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-500 mb-4">{translate("settings.apiKeys.noKeys")}</p>
+          <p className="text-gray-500 mb-4">{translate('settings.apiKeys.noKeys')}</p>
           <button
             onClick={() => setIsCreateModalOpen(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            {translate("settings.apiKeys.createFirstButton")}
+            {translate('settings.apiKeys.createFirstButton')}
           </button>
         </div>
       ) : (
         <div className="space-y-4">
           {apiKeys.map((apiKey) => (
-            <div key={apiKey.id} className="p-4 border rounded-lg hover:border-gray-300 transition-colors">
+            <div
+              key={apiKey.id}
+              className="p-4 border rounded-lg hover:border-gray-300 transition-colors"
+            >
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="font-medium text-lg">{apiKey.name}</h3>
-                    <span className={`px-2 py-1 text-xs font-medium rounded ${getStatusBadgeClass(apiKey.status)}`}>
+                    <span
+                      className={`px-2 py-1 text-xs font-medium rounded ${getStatusBadgeClass(apiKey.status)}`}
+                    >
                       {translate(`settings.apiKeys.status.${apiKey.status}`)}
                     </span>
                   </div>
@@ -350,14 +328,14 @@ export function SettingsApiKeys() {
                   <div className="flex items-center gap-4 text-sm text-gray-500">
                     <span className="font-mono">{apiKey.keyPrefix}...</span>
                     <span>
-                      {translate("settings.apiKeys.usageCount")}: {apiKey.usageCount}
+                      {translate('settings.apiKeys.usageCount')}: {apiKey.usageCount}
                     </span>
                     <span>
-                      {translate("settings.apiKeys.lastUsed")}: {formatDate(apiKey.lastUsedAt)}
+                      {translate('settings.apiKeys.lastUsed')}: {formatDate(apiKey.lastUsedAt)}
                     </span>
                     {apiKey.expiresAt && (
                       <span>
-                        {translate("settings.apiKeys.expires")}: {formatDate(apiKey.expiresAt)}
+                        {translate('settings.apiKeys.expires')}: {formatDate(apiKey.expiresAt)}
                       </span>
                     )}
                   </div>
@@ -373,22 +351,22 @@ export function SettingsApiKeys() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  {apiKey.status === "active" && (
+                  {apiKey.status === 'active' && (
                     <button
                       onClick={() => handleRevokeApiKey(apiKey.id)}
                       disabled={isRevoking}
                       className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
-                      title={translate("settings.apiKeys.revokeButton")}
+                      title={translate('settings.apiKeys.revokeButton')}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   )}
-                  {apiKey.status !== "active" && (
+                  {apiKey.status !== 'active' && (
                     <button
                       onClick={() => handleDeleteApiKey(apiKey.id)}
                       disabled={isDeleting}
                       className="p-2 text-gray-600 hover:bg-gray-50 rounded transition-colors"
-                      title={translate("settings.apiKeys.deleteButton")}
+                      title={translate('settings.apiKeys.deleteButton')}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -407,7 +385,7 @@ export function SettingsApiKeys() {
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold">
-                  {translate("settings.apiKeys.createModalTitle")}
+                  {translate('settings.apiKeys.createModalTitle')}
                 </h3>
                 <button
                   onClick={() => setIsCreateModalOpen(false)}
@@ -431,12 +409,12 @@ export function SettingsApiKeys() {
       {/* Security Notice */}
       <div className="mt-8 p-4 bg-blue-50 rounded-lg">
         <h3 className="font-medium text-gray-900 mb-2">
-          {translate("settings.apiKeys.securityNotice.title")}
+          {translate('settings.apiKeys.securityNotice.title')}
         </h3>
         <ul className="text-sm text-gray-700 space-y-1">
-          <li>• {translate("settings.apiKeys.securityNotice.tip1")}</li>
-          <li>• {translate("settings.apiKeys.securityNotice.tip2")}</li>
-          <li>• {translate("settings.apiKeys.securityNotice.tip3")}</li>
+          <li>• {translate('settings.apiKeys.securityNotice.tip1')}</li>
+          <li>• {translate('settings.apiKeys.securityNotice.tip2')}</li>
+          <li>• {translate('settings.apiKeys.securityNotice.tip3')}</li>
         </ul>
       </div>
     </div>
@@ -448,7 +426,7 @@ interface CreateApiKeyFormProps {
   onCancel: () => void;
   isLoading: boolean;
   selectedScopes: string[];
-  setSelectedScopes: (scopes: string[]) => void;
+  setSelectedScopes: Dispatch<React.SetStateAction<string[]>>;
 }
 
 function CreateApiKeyForm({
@@ -460,17 +438,17 @@ function CreateApiKeyForm({
 }: CreateApiKeyFormProps) {
   const translate = useTranslate();
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
+    name: '',
+    description: '',
     rateLimitPerMinute: 60,
-    expiresAt: "",
+    expiresAt: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (selectedScopes.length === 0) {
-      alert(translate("settings.apiKeys.errors.noScopes"));
+      alert(translate('settings.apiKeys.errors.noScopes'));
       return;
     }
 
@@ -484,8 +462,8 @@ function CreateApiKeyForm({
   };
 
   const toggleScope = (scope: string) => {
-    setSelectedScopes((prev) =>
-      prev.includes(scope) ? prev.filter((s) => s !== scope) : [...prev, scope]
+    setSelectedScopes((prev: string[]) =>
+      prev.includes(scope) ? prev.filter((s) => s !== scope) : [...prev, scope],
     );
   };
 
@@ -494,7 +472,7 @@ function CreateApiKeyForm({
       {/* Name */}
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-          {translate("settings.apiKeys.fields.name")} *
+          {translate('settings.apiKeys.fields.name')} *
         </label>
         <input
           id="name"
@@ -503,14 +481,14 @@ function CreateApiKeyForm({
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder={translate("settings.apiKeys.fields.namePlaceholder")}
+          placeholder={translate('settings.apiKeys.fields.namePlaceholder')}
         />
       </div>
 
       {/* Description */}
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-          {translate("settings.apiKeys.fields.description")}
+          {translate('settings.apiKeys.fields.description')}
         </label>
         <textarea
           id="description"
@@ -518,14 +496,14 @@ function CreateApiKeyForm({
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           rows={2}
-          placeholder={translate("settings.apiKeys.fields.descriptionPlaceholder")}
+          placeholder={translate('settings.apiKeys.fields.descriptionPlaceholder')}
         />
       </div>
 
       {/* Scopes */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {translate("settings.apiKeys.fields.scopes")} *
+          {translate('settings.apiKeys.fields.scopes')} *
         </label>
         <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-lg p-3">
           {API_KEY_SCOPES.map((scope) => (
@@ -545,23 +523,27 @@ function CreateApiKeyForm({
       {/* Rate Limit */}
       <div>
         <label htmlFor="rateLimit" className="block text-sm font-medium text-gray-700 mb-1">
-          {translate("settings.apiKeys.fields.rateLimit")}
+          {translate('settings.apiKeys.fields.rateLimit')}
         </label>
         <input
           id="rateLimit"
           type="number"
           min="1"
           value={formData.rateLimitPerMinute}
-          onChange={(e) => setFormData({ ...formData, rateLimitPerMinute: parseInt(e.target.value) || 0 })}
+          onChange={(e) =>
+            setFormData({ ...formData, rateLimitPerMinute: parseInt(e.target.value) || 0 })
+          }
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
-        <p className="mt-1 text-xs text-gray-500">{translate("settings.apiKeys.fields.rateLimitHint")}</p>
+        <p className="mt-1 text-xs text-gray-500">
+          {translate('settings.apiKeys.fields.rateLimitHint')}
+        </p>
       </div>
 
       {/* Expiration */}
       <div>
         <label htmlFor="expiresAt" className="block text-sm font-medium text-gray-700 mb-1">
-          {translate("settings.apiKeys.fields.expiresAt")}
+          {translate('settings.apiKeys.fields.expiresAt')}
         </label>
         <input
           id="expiresAt"
@@ -570,7 +552,9 @@ function CreateApiKeyForm({
           onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
-        <p className="mt-1 text-xs text-gray-500">{translate("settings.apiKeys.fields.expiresAtHint")}</p>
+        <p className="mt-1 text-xs text-gray-500">
+          {translate('settings.apiKeys.fields.expiresAtHint')}
+        </p>
       </div>
 
       {/* Actions */}
@@ -581,14 +565,16 @@ function CreateApiKeyForm({
           disabled={isLoading}
           className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
         >
-          {translate("settings.apiKeys.cancelButton")}
+          {translate('settings.apiKeys.cancelButton')}
         </button>
         <button
           type="submit"
           disabled={isLoading || selectedScopes.length === 0}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
         >
-          {isLoading ? translate("settings.apiKeys.creating") : translate("settings.apiKeys.createButton")}
+          {isLoading
+            ? translate('settings.apiKeys.creating')
+            : translate('settings.apiKeys.createButton')}
         </button>
       </div>
     </form>

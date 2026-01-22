@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useList, useInvalidate, useMutation } from '@refinedev/core';
+import { useList, useInvalidate, useCustomMutation } from '@refinedev/core';
 
 interface User {
   id: string;
@@ -21,7 +21,7 @@ export default function AdminUsersPage() {
   const [roleFilter, setRoleFilter] = useState<'all' | 'user' | 'admin'>('all');
   const invalidate = useInvalidate();
 
-  const { queryResult } = useList<User>({
+  const { query, result } = useList<User>({
     resource: 'users',
     pagination: { pageSize: 20 },
     filters: [
@@ -46,50 +46,58 @@ export default function AdminUsersPage() {
     ],
   });
 
-  const { data, isLoading, refetch } = queryResult;
-  const users = data?.data || [];
+  const { data, isLoading, refetch } = query;
+  const users = result?.data || [];
 
-  const { mutate: suspendUser } = useMutation({
-    resource: 'users',
-    action: 'suspendUser',
-    method: 'post',
-    onSuccess: () => {
-      invalidate({
-        resource: 'users',
-        invalidates: ['list'],
-      });
-    },
-  });
+  const { mutate: suspendUser } = useCustomMutation();
 
-  const { mutate: activateUser } = useMutation({
-    resource: 'users',
-    action: 'activateUser',
-    method: 'post',
-    onSuccess: () => {
-      invalidate({
-        resource: 'users',
-        invalidates: ['list'],
-      });
-    },
-  });
+  const { mutate: activateUser } = useCustomMutation();
 
   const handleQuickToggle = (user: User) => {
     if (user.isActive) {
       const reason = prompt('Enter reason for suspension:');
       if (reason) {
-        suspendUser({
-          input: {
-            userId: user.id,
-            reason,
+        suspendUser(
+          {
+            url: '/suspendUser',
+            method: 'post',
+            values: {
+              input: {
+                userId: user.id,
+                reason,
+              },
+            },
           },
-        });
+          {
+            onSuccess: () => {
+              invalidate({
+                resource: 'users',
+                invalidates: ['list'],
+              });
+            },
+          },
+        );
       }
     } else {
-      activateUser({
-        input: {
-          userId: user.id,
+      activateUser(
+        {
+          url: '/activateUser',
+          method: 'post',
+          values: {
+            input: {
+              userId: user.id,
+            },
+          },
         },
-      });
+        {
+          onSuccess: () => {
+            invalidate({
+              resource: 'users',
+              invalidates: ['list'],
+            });
+          },
+        },
+      );
     }
   };
 
@@ -99,9 +107,7 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-        <p className="text-muted-foreground">
-          Manage user accounts, permissions, and access
-        </p>
+        <p className="text-muted-foreground">Manage user accounts, permissions, and access</p>
       </div>
 
       {/* Filters */}
@@ -110,9 +116,7 @@ export default function AdminUsersPage() {
           <label className="text-sm font-medium">Status:</label>
           <select
             value={filter}
-            onChange={(e) =>
-              setFilter(e.target.value as 'all' | 'active' | 'inactive')
-            }
+            onChange={(e) => setFilter(e.target.value as 'all' | 'active' | 'inactive')}
             className="ml-2 px-3 py-2 border rounded-md"
           >
             <option value="all">All</option>
@@ -124,9 +128,7 @@ export default function AdminUsersPage() {
           <label className="text-sm font-medium">Role:</label>
           <select
             value={roleFilter}
-            onChange={(e) =>
-              setRoleFilter(e.target.value as 'all' | 'user' | 'admin')
-            }
+            onChange={(e) => setRoleFilter(e.target.value as 'all' | 'user' | 'admin')}
             className="ml-2 px-3 py-2 border rounded-md"
           >
             <option value="all">All</option>
@@ -172,25 +174,15 @@ export default function AdminUsersPage() {
               <tbody>
                 {filteredUsers.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan={7}
-                      className="p-4 text-center text-muted-foreground"
-                    >
+                    <td colSpan={7} className="p-4 text-center text-muted-foreground">
                       No users found
                     </td>
                   </tr>
                 ) : (
                   filteredUsers.map((user) => (
-                    <tr
-                      key={user.id}
-                      className="border-b transition-colors hover:bg-muted/50"
-                    >
-                      <td className="p-4 align-middle font-medium">
-                        {user.email}
-                      </td>
-                      <td className="p-4 align-middle">
-                        {user.username || '-'}
-                      </td>
+                    <tr key={user.id} className="border-b transition-colors hover:bg-muted/50">
+                      <td className="p-4 align-middle font-medium">{user.email}</td>
+                      <td className="p-4 align-middle">{user.username || '-'}</td>
                       <td className="p-4 align-middle">
                         {user.firstName && user.lastName
                           ? `${user.firstName} ${user.lastName}`

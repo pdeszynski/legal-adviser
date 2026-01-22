@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Investigate why docker compose up --build fails. Check Dockerfile syntax, base image availability, dependency installation during build, and multi-stage build configuration. Verify docker-compose.yml service configuration and volume mounts. Test building individual services to isolate the failing container.",
+  "id": "debug-docker-build-failure",
+  "title": "Debug Docker Compose Build Failure",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Investigate why docker compose up --build fails. Check Dockerfile syntax, base image availability, dependency installation during build, and multi-stage build configuration. Verify docker-compose.yml service configuration and volume mounts. Test building individual services to isolate the failing container.",
+      "timestamp": "2026-01-22T05:27:29.660Z",
+      "source": "initial"
+    }
+  ]
+}

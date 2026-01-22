@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
-import { useCustomMutation, useCustom, useTranslate } from "@refinedev/core";
-import { Button } from "@legal/ui";
-import { Copy, Link, Plus, Share2, Users, X } from "lucide-react";
+import { useState, useCallback } from 'react';
+import { useCustomMutation, useCustom, useTranslate } from '@refinedev/core';
+import { Button } from '@legal/ui';
+import { Copy, Link, Plus, Share2, Users, X } from 'lucide-react';
 
 interface User {
   id: string;
@@ -19,7 +19,7 @@ interface DocumentShare {
   sharedWithUser: User;
   sharedByUserId: string;
   sharedByUser: User;
-  permission: "VIEW" | "COMMENT" | "EDIT" | "ADMIN";
+  permission: 'VIEW' | 'COMMENT' | 'EDIT' | 'ADMIN';
   expiresAt?: string | null;
   createdAt: string;
 }
@@ -32,17 +32,17 @@ interface ShareDialogProps {
 }
 
 const PERMISSION_LABELS: Record<string, string> = {
-  VIEW: "View Only",
-  COMMENT: "Can Comment",
-  EDIT: "Can Edit",
-  ADMIN: "Admin",
+  VIEW: 'View Only',
+  COMMENT: 'Can Comment',
+  EDIT: 'Can Edit',
+  ADMIN: 'Admin',
 };
 
 const PERMISSION_DESCRIPTIONS: Record<string, string> = {
-  VIEW: "Can view the document",
-  COMMENT: "Can view and comment on the document",
-  EDIT: "Can view and edit the document",
-  ADMIN: "Full access including sharing with others",
+  VIEW: 'Can view the document',
+  COMMENT: 'Can view and comment on the document',
+  EDIT: 'Can view and edit the document',
+  ADMIN: 'Full access including sharing with others',
 };
 
 /**
@@ -51,53 +51,54 @@ const PERMISSION_DESCRIPTIONS: Record<string, string> = {
  * Modal dialog for sharing documents with users and generating shareable links.
  * Displays current collaborators and allows adding new ones with role assignment.
  */
-export function ShareDialog({
-  open,
-  onClose,
-  documentId,
-  documentTitle,
-}: ShareDialogProps) {
+export function ShareDialog({ open, onClose, documentId, documentTitle }: ShareDialogProps) {
   const translate = useTranslate();
-  const [activeTab, setActiveTab] = useState<"people" | "link">("people");
-  const [selectedUserId, setSelectedUserId] = useState("");
-  const [selectedPermission, setSelectedPermission] = useState<"VIEW" | "COMMENT" | "EDIT" | "ADMIN">("VIEW");
-  const [expiresInDays, setExpiresInDays] = useState<number | "">("");
+  const [activeTab, setActiveTab] = useState<'people' | 'link'>('people');
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [selectedPermission, setSelectedPermission] = useState<
+    'VIEW' | 'COMMENT' | 'EDIT' | 'ADMIN'
+  >('VIEW');
+  const [expiresInDays, setExpiresInDays] = useState<number | ''>('');
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
   // Fetch document shares
   const { query: sharesQuery } = useCustom<DocumentShare[]>({
-    url: "",
-    method: "get",
+    url: '',
+    method: 'get',
     config: {
       query: {
-        operation: "documentShares",
+        operation: 'documentShares',
         variables: { documentId },
         fields: [
-          "id",
-          "sharedWithUserId",
-          "sharedByUserId",
-          "permission",
-          "expiresAt",
-          "createdAt",
-          { sharedWithUser: ["id", "email", "username", "firstName", "lastName"] },
-          { sharedByUser: ["id", "email", "username", "firstName", "lastName"] },
+          'id',
+          'sharedWithUserId',
+          'sharedByUserId',
+          'permission',
+          'expiresAt',
+          'createdAt',
+          { sharedWithUser: ['id', 'email', 'username', 'firstName', 'lastName'] },
+          { sharedByUser: ['id', 'email', 'username', 'firstName', 'lastName'] },
         ],
       },
     },
-    enabled: open,
+    queryOptions: {
+      enabled: open,
+    },
   });
 
   // Fetch all users for sharing dropdown
   const { query: usersQuery } = useCustom<{ data: User[] }>({
-    url: "",
-    method: "get",
+    url: '',
+    method: 'get',
     config: {
       query: {
-        operation: "users",
-        fields: ["data { id email username firstName lastName }"],
+        operation: 'users',
+        fields: ['data { id email username firstName lastName }'],
       },
     },
-    enabled: open,
+    queryOptions: {
+      enabled: open,
+    },
   });
 
   // Share document mutation
@@ -120,10 +121,10 @@ export function ShareDialog({
 
     shareDocument(
       {
-        url: "",
-        method: "post",
+        url: '',
+        method: 'post',
         values: {
-          operation: "shareDocument",
+          operation: 'shareDocument',
           variables: {
             input: {
               documentId,
@@ -132,17 +133,17 @@ export function ShareDialog({
               ...(expiresAt && { expiresAt }),
             },
           },
-          fields: ["id", "permission", "createdAt"],
+          fields: ['id', 'permission', 'createdAt'],
         },
       },
       {
         onSuccess: () => {
           sharesQuery.refetch();
-          setSelectedUserId("");
-          setSelectedPermission("VIEW");
-          setExpiresInDays("");
+          setSelectedUserId('');
+          setSelectedPermission('VIEW');
+          setExpiresInDays('');
         },
-      }
+      },
     );
   }, [shareDocument, documentId, selectedUserId, selectedPermission, expiresInDays, sharesQuery]);
 
@@ -150,53 +151,54 @@ export function ShareDialog({
     (shareId: string) => {
       revokeShare(
         {
-          url: "",
-          method: "post",
+          url: '',
+          method: 'post',
           values: {
-            operation: "revokeDocumentShare",
+            operation: 'revokeDocumentShare',
             variables: { shareId },
-            fields: ["success"],
+            fields: ['success'],
           },
         },
         {
           onSuccess: () => {
             sharesQuery.refetch();
           },
-        }
+        },
       );
     },
-    [revokeShare, sharesQuery.refetch]
+    [revokeShare, sharesQuery.refetch],
   );
 
   const handleUpdatePermission = useCallback(
-    (shareId: string, newPermission: "VIEW" | "COMMENT" | "EDIT" | "ADMIN") => {
+    (shareId: string, newPermission: 'VIEW' | 'COMMENT' | 'EDIT' | 'ADMIN') => {
       updatePermission(
         {
-          url: "",
-          method: "post",
+          url: '',
+          method: 'post',
           values: {
-            operation: "updateDocumentSharePermission",
+            operation: 'updateDocumentSharePermission',
             variables: {
               input: {
                 shareId,
                 permission: newPermission,
               },
             },
-            fields: ["id", "permission"],
+            fields: ['id', 'permission'],
           },
         },
         {
           onSuccess: () => {
             sharesQuery.refetch();
           },
-        }
+        },
       );
     },
-    [updatePermission, sharesQuery.refetch]
+    [updatePermission, sharesQuery.refetch],
   );
 
   const handleCopyLink = useCallback(() => {
-    const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/documents/${documentId}` : "";
+    const shareUrl =
+      typeof window !== 'undefined' ? `${window.location.origin}/documents/${documentId}` : '';
     navigator.clipboard.writeText(shareUrl);
     setCopiedToClipboard(true);
     setTimeout(() => setCopiedToClipboard(false), 2000);
@@ -204,7 +206,9 @@ export function ShareDialog({
 
   const shares = sharesQuery.data?.data || [];
   const users = usersQuery.data?.data?.data || [];
-  const availableUsers = users.filter((user) => !shares.some((share) => share.sharedWithUserId === user.id));
+  const availableUsers = users.filter(
+    (user) => !shares.some((share) => share.sharedWithUserId === user.id),
+  );
 
   const getUserDisplayName = (user: User) => {
     if (user.firstName && user.lastName) {
@@ -238,13 +242,14 @@ export function ShareDialog({
         {/* Header */}
         <div className="px-6 py-4 border-b flex items-center justify-between">
           <div>
-            <h2 id="share-dialog-title" className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+            <h2
+              id="share-dialog-title"
+              className="text-xl font-semibold text-gray-900 flex items-center gap-2"
+            >
               <Share2 className="w-5 h-5" />
               Share "{documentTitle}"
             </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Manage who has access to this document
-            </p>
+            <p className="text-sm text-gray-600 mt-1">Manage who has access to this document</p>
           </div>
           <button
             onClick={onClose}
@@ -259,11 +264,11 @@ export function ShareDialog({
         <div className="px-6 pt-4 border-b">
           <div className="flex gap-4">
             <button
-              onClick={() => setActiveTab("people")}
+              onClick={() => setActiveTab('people')}
               className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors border-b-2 ${
-                activeTab === "people"
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                activeTab === 'people'
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
               <Users className="w-4 h-4" />
@@ -275,11 +280,11 @@ export function ShareDialog({
               )}
             </button>
             <button
-              onClick={() => setActiveTab("link")}
+              onClick={() => setActiveTab('link')}
               className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors border-b-2 ${
-                activeTab === "link"
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                activeTab === 'link'
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
               <Link className="w-4 h-4" />
@@ -290,7 +295,7 @@ export function ShareDialog({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-6 py-4">
-          {activeTab === "people" ? (
+          {activeTab === 'people' ? (
             <div className="space-y-4">
               {/* Add People Section */}
               <div className="p-4 bg-gray-50 rounded-lg">
@@ -321,7 +326,9 @@ export function ShareDialog({
                     <select
                       value={selectedPermission}
                       onChange={(e) =>
-                        setSelectedPermission(e.target.value as "VIEW" | "COMMENT" | "EDIT" | "ADMIN")
+                        setSelectedPermission(
+                          e.target.value as 'VIEW' | 'COMMENT' | 'EDIT' | 'ADMIN',
+                        )
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
@@ -341,7 +348,9 @@ export function ShareDialog({
                       type="number"
                       min="1"
                       value={expiresInDays}
-                      onChange={(e) => setExpiresInDays(e.target.value ? parseInt(e.target.value) : "")}
+                      onChange={(e) =>
+                        setExpiresInDays(e.target.value ? parseInt(e.target.value) : '')
+                      }
                       placeholder="Never expires"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -353,7 +362,7 @@ export function ShareDialog({
                     disabled={!selectedUserId || shareMutation.isPending}
                     className="w-full"
                   >
-                    {shareMutation.isPending ? "Sharing..." : "Share"}
+                    {shareMutation.isPending ? 'Sharing...' : 'Share'}
                   </Button>
                 </div>
               </div>
@@ -399,7 +408,7 @@ export function ShareDialog({
                             onChange={(e) =>
                               handleUpdatePermission(
                                 share.id,
-                                e.target.value as "VIEW" | "COMMENT" | "EDIT" | "ADMIN"
+                                e.target.value as 'VIEW' | 'COMMENT' | 'EDIT' | 'ADMIN',
                               )
                             }
                             className="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -440,12 +449,12 @@ export function ShareDialog({
                   <input
                     type="text"
                     readOnly
-                    value={`${typeof window !== "undefined" ? window.location.origin : ""}/documents/${documentId}`}
+                    value={`${typeof window !== 'undefined' ? window.location.origin : ''}/documents/${documentId}`}
                     className="flex-1 px-3 py-2 border border-blue-300 rounded-md bg-white text-sm"
                   />
                   <Button
                     onClick={handleCopyLink}
-                    variant={copiedToClipboard ? "outline" : "default"}
+                    variant={copiedToClipboard ? 'outline' : 'default'}
                     className="min-w-[100px]"
                   >
                     {copiedToClipboard ? (
@@ -464,9 +473,7 @@ export function ShareDialog({
               </div>
 
               <div className="p-4 bg-gray-50 rounded-lg">
-                <h4 className="text-sm font-semibold text-gray-900 mb-2">
-                  Important Notes
-                </h4>
+                <h4 className="text-sm font-semibold text-gray-900 mb-2">Important Notes</h4>
                 <ul className="text-sm text-gray-600 space-y-2">
                   <li className="flex items-start gap-2">
                     <span className="text-blue-600 mt-0.5">•</span>

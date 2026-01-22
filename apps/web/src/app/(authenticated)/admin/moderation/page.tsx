@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useList, useCustom } from '@refinedev/core';
+import { useList, useCustomMutation } from '@refinedev/core';
 
 type ModerationStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | null;
 
@@ -19,29 +19,37 @@ interface Document {
 }
 
 export default function DocumentModerationPage() {
-  const [statusFilter, setStatusFilter] = useState<'all' | 'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'PENDING' | 'APPROVED' | 'REJECTED'>(
+    'PENDING',
+  );
   const [selectedDoc, setSelectedDoc] = useState<Document | null>(null);
   const [actionReason, setActionReason] = useState('');
   const [showDialog, setShowDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState<'approve' | 'reject' | null>(null);
 
-  const { data, isLoading, refetch } = useList<Document>({
+  const { query, result } = useList<Document>({
     resource: 'legalDocuments',
     pagination: { pageSize: 50 },
     sorters: [{ field: 'flaggedAt', order: 'asc' }],
-    filters: statusFilter === 'all' ? [] : [
-      {
-        field: 'moderationStatus',
-        operator: 'eq',
-        value: statusFilter,
-      },
-    ],
+    filters:
+      statusFilter === 'all'
+        ? []
+        : [
+            {
+              field: 'moderationStatus',
+              operator: 'eq',
+              value: statusFilter,
+            },
+          ],
   });
 
-  const { mutate: approveMutation, isLoading: isApproving } = useCustom();
-  const { mutate: rejectMutation, isLoading: isRejecting } = useCustom();
+  const { data, isLoading, refetch } = query;
+  const { mutation: approveMutationResult, mutate: approveMutation } = useCustomMutation();
+  const { mutation: rejectMutationResult, mutate: rejectMutation } = useCustomMutation();
+  const isApproving = approveMutationResult.isPending;
+  const isRejecting = rejectMutationResult.isPending;
 
-  const documents = data?.data?.filter((d: Document) => d.moderationStatus) || [];
+  const documents = result?.data?.filter((d: Document) => d.moderationStatus) || [];
 
   const handleApprove = async () => {
     if (!selectedDoc) return;
@@ -50,14 +58,12 @@ export default function DocumentModerationPage() {
       {
         url: '',
         method: 'post',
+        values: {
+          documentId: selectedDoc.id,
+          reason: actionReason || null,
+        },
         meta: {
           operation: 'approveDocument',
-          variables: {
-            input: {
-              documentId: selectedDoc.id,
-              reason: actionReason || null,
-            },
-          },
         },
       },
       {
@@ -68,7 +74,7 @@ export default function DocumentModerationPage() {
           setActionReason('');
           setPendingAction(null);
         },
-      }
+      },
     );
   };
 
@@ -79,14 +85,12 @@ export default function DocumentModerationPage() {
       {
         url: '',
         method: 'post',
+        values: {
+          documentId: selectedDoc.id,
+          reason: actionReason,
+        },
         meta: {
           operation: 'rejectDocument',
-          variables: {
-            input: {
-              documentId: selectedDoc.id,
-              reason: actionReason,
-            },
-          },
         },
       },
       {
@@ -97,7 +101,7 @@ export default function DocumentModerationPage() {
           setActionReason('');
           setPendingAction(null);
         },
-      }
+      },
     );
   };
 
@@ -111,11 +115,23 @@ export default function DocumentModerationPage() {
   const getStatusBadge = (status: ModerationStatus) => {
     switch (status) {
       case 'PENDING':
-        return <span className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-600/20">Pending</span>;
+        return (
+          <span className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-600/20">
+            Pending
+          </span>
+        );
       case 'APPROVED':
-        return <span className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20">Approved</span>;
+        return (
+          <span className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20">
+            Approved
+          </span>
+        );
       case 'REJECTED':
-        return <span className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20">Rejected</span>;
+        return (
+          <span className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20">
+            Rejected
+          </span>
+        );
       default:
         return null;
     }
@@ -126,9 +142,7 @@ export default function DocumentModerationPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Document Moderation</h1>
-          <p className="text-muted-foreground">
-            Review and moderate flagged documents
-          </p>
+          <p className="text-muted-foreground">Review and moderate flagged documents</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -245,7 +259,11 @@ export default function DocumentModerationPage() {
                   id="reason"
                   value={actionReason}
                   onChange={(e) => setActionReason(e.target.value)}
-                  placeholder={pendingAction === 'approve' ? 'Optional approval reason...' : 'Required rejection reason...'}
+                  placeholder={
+                    pendingAction === 'approve'
+                      ? 'Optional approval reason...'
+                      : 'Required rejection reason...'
+                  }
                   rows={3}
                   className="mt-2 w-full rounded-md border bg-background px-3 py-2 text-sm"
                 />

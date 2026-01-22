@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useTranslate, useCustomMutation } from "@refinedev/core";
-import { useForm } from "react-hook-form";
+import { useState } from 'react';
+import { useTranslate, useCustomMutation } from '@refinedev/core';
+import { useForm } from 'react-hook-form';
 
 interface UserPreferences {
   id: string;
@@ -48,7 +48,8 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { mutate, isLoading } = useCustomMutation();
+  const { mutate, mutation } = useCustomMutation();
+  const isLoading = (mutation as any).isLoading ?? (mutation as any).isPending ?? false;
 
   const {
     register,
@@ -73,7 +74,7 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
     },
   });
 
-  const watchedChannels = watch("notificationPreferences.channels");
+  const watchedChannels = watch('notificationPreferences.channels');
 
   const onSubmit = (data: UpdateNotificationsInput) => {
     setIsSuccess(false);
@@ -81,14 +82,14 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
 
     mutate(
       {
-        url: "/updateMyPreferences",
-        method: "post",
+        url: '/updateMyPreferences',
+        method: 'post',
         values: {
           input: data,
         },
         successNotification: {
-          message: translate("settings.notifications.successMessage"),
-          type: "success",
+          message: translate('settings.notifications.successMessage'),
+          type: 'success',
         },
       },
       {
@@ -97,7 +98,9 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
           setTimeout(() => setIsSuccess(false), 3000);
         },
         onError: (err: unknown) => {
-          setError(err instanceof Error ? err.message : translate("settings.notifications.errorMessage"));
+          setError(
+            err instanceof Error ? err.message : translate('settings.notifications.errorMessage'),
+          );
         },
       },
     );
@@ -106,17 +109,13 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold mb-2">
-          {translate("settings.notifications.title")}
-        </h2>
-        <p className="text-gray-600">
-          {translate("settings.notifications.description")}
-        </p>
+        <h2 className="text-2xl font-semibold mb-2">{translate('settings.notifications.title')}</h2>
+        <p className="text-gray-600">{translate('settings.notifications.description')}</p>
       </div>
 
       {isSuccess && (
         <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
-          {translate("settings.notifications.successMessage")}
+          {translate('settings.notifications.successMessage')}
         </div>
       )}
 
@@ -130,50 +129,50 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
         {/* Notification Types */}
         <div>
           <h3 className="text-lg font-medium text-gray-900 mb-3">
-            {translate("settings.notifications.sections.types")}
+            {translate('settings.notifications.sections.types')}
           </h3>
           <div className="space-y-3">
             <label className="flex items-center">
               <input
                 type="checkbox"
-                {...register("notificationPreferences.documentUpdates")}
+                {...register('notificationPreferences.documentUpdates')}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <span className="ml-3 text-sm text-gray-700">
-                {translate("settings.notifications.fields.documentUpdates")}
+                {translate('settings.notifications.fields.documentUpdates')}
               </span>
             </label>
 
             <label className="flex items-center">
               <input
                 type="checkbox"
-                {...register("notificationPreferences.queryResponses")}
+                {...register('notificationPreferences.queryResponses')}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <span className="ml-3 text-sm text-gray-700">
-                {translate("settings.notifications.fields.queryResponses")}
+                {translate('settings.notifications.fields.queryResponses')}
               </span>
             </label>
 
             <label className="flex items-center">
               <input
                 type="checkbox"
-                {...register("notificationPreferences.systemAlerts")}
+                {...register('notificationPreferences.systemAlerts')}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <span className="ml-3 text-sm text-gray-700">
-                {translate("settings.notifications.fields.systemAlerts")}
+                {translate('settings.notifications.fields.systemAlerts')}
               </span>
             </label>
 
             <label className="flex items-center">
               <input
                 type="checkbox"
-                {...register("notificationPreferences.marketingEmails")}
+                {...register('notificationPreferences.marketingEmails')}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <span className="ml-3 text-sm text-gray-700">
-                {translate("settings.notifications.fields.marketingEmails")}
+                {translate('settings.notifications.fields.marketingEmails')}
               </span>
             </label>
           </div>
@@ -182,39 +181,39 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
         {/* Notification Channels */}
         <div>
           <h3 className="text-lg font-medium text-gray-900 mb-3">
-            {translate("settings.notifications.sections.channels")}
+            {translate('settings.notifications.sections.channels')}
           </h3>
           <div className="space-y-3">
             <label className="flex items-center">
               <input
                 type="checkbox"
-                {...register("notificationPreferences.channels.email")}
+                {...register('notificationPreferences.channels.email')}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <span className="ml-3 text-sm text-gray-700">
-                {translate("settings.notifications.fields.email")}
+                {translate('settings.notifications.fields.email')}
               </span>
             </label>
 
             <label className="flex items-center">
               <input
                 type="checkbox"
-                {...register("notificationPreferences.channels.inApp")}
+                {...register('notificationPreferences.channels.inApp')}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <span className="ml-3 text-sm text-gray-700">
-                {translate("settings.notifications.fields.inApp")}
+                {translate('settings.notifications.fields.inApp')}
               </span>
             </label>
 
             <label className="flex items-center">
               <input
                 type="checkbox"
-                {...register("notificationPreferences.channels.push")}
+                {...register('notificationPreferences.channels.push')}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <span className="ml-3 text-sm text-gray-700">
-                {translate("settings.notifications.fields.push")}
+                {translate('settings.notifications.fields.push')}
               </span>
             </label>
           </div>
@@ -223,28 +222,28 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
         {/* Legacy Settings (for backward compatibility) */}
         <div className="pt-4 border-t">
           <h3 className="text-lg font-medium text-gray-900 mb-3">
-            {translate("settings.notifications.sections.legacy")}
+            {translate('settings.notifications.sections.legacy')}
           </h3>
           <div className="space-y-3">
             <label className="flex items-center">
               <input
                 type="checkbox"
-                {...register("emailNotifications")}
+                {...register('emailNotifications')}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <span className="ml-3 text-sm text-gray-700">
-                {translate("settings.notifications.fields.emailNotifications")}
+                {translate('settings.notifications.fields.emailNotifications')}
               </span>
             </label>
 
             <label className="flex items-center">
               <input
                 type="checkbox"
-                {...register("inAppNotifications")}
+                {...register('inAppNotifications')}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <span className="ml-3 text-sm text-gray-700">
-                {translate("settings.notifications.fields.inAppNotifications")}
+                {translate('settings.notifications.fields.inAppNotifications')}
               </span>
             </label>
           </div>
@@ -258,8 +257,8 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading
-              ? translate("settings.notifications.saving")
-              : translate("settings.notifications.saveButton")}
+              ? translate('settings.notifications.saving')
+              : translate('settings.notifications.saveButton')}
           </button>
         </div>
       </form>

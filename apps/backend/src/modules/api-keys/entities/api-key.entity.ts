@@ -14,7 +14,13 @@ import {
   QueryOptions,
   Relation,
 } from '@ptc-org/nestjs-query-graphql';
-import { ObjectType, ID, Field, GraphQLISODateTime } from '@nestjs/graphql';
+import {
+  ObjectType,
+  ID,
+  Field,
+  GraphQLISODateTime,
+  Int,
+} from '@nestjs/graphql';
 import { User } from '../../users/entities/user.entity';
 
 /**
@@ -139,7 +145,7 @@ export class ApiKey {
    * null = no limit (use with caution)
    */
   @Column({ type: 'int', nullable: true, default: 60 })
-  @FilterableField()
+  @FilterableField(() => Int, { nullable: true })
   rateLimitPerMinute: number | null;
 
   /**
