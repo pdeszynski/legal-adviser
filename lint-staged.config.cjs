@@ -40,4 +40,14 @@ module.exports = {
     'cd apps/ai-engine && uv run ruff check --fix', // Run Ruff with auto-fix
     'cd apps/ai-engine && uv run ruff format', // Format with Ruff
   ],
+
+  // === Type checking (runs once per affected app) ===
+  // When any TS file in backend changes, typecheck the whole backend
+  'apps/backend/**/*.{ts,tsx}': () => 'cd apps/backend && npx tsc --noEmit',
+
+  // When any TS file in web changes, typecheck the whole web
+  'apps/web/**/*.{ts,tsx}': () => 'cd apps/web && npx tsc --noEmit',
+
+  // When any TS file in packages changes, typecheck all packages
+  'packages/**/*.{ts,tsx}': () => 'pnpm typecheck --filter="./packages/*"',
 };

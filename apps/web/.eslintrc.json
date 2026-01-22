@@ -2,6 +2,8 @@
   "extends": ["next/core-web-vitals", "next/typescript"],
   "rules": {
     "@typescript-eslint/triple-slash-reference": "off",
-    "@typescript-eslint/no-require-imports": "off"
+    "@typescript-eslint/no-require-imports": "off",
+    "no-console": "warn",
+    "max-lines": ["warn", { "max": 500, "skipBlankLines": true, "skipComments": true }]
   }
 }
