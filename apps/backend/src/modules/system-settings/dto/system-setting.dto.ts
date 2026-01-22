@@ -40,8 +40,8 @@ export class SystemSettingInput {
   @Field(() => String, { nullable: true })
   description?: string | null;
 
-  @Field(() => Object, { nullable: true })
-  metadata?: Record<string, unknown> | null;
+  @Field(() => String, { nullable: true })
+  metadata?: string | null;
 }
 
 /**

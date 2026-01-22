@@ -20,6 +20,7 @@ import {
   Field,
   GraphQLISODateTime,
   Int,
+  registerEnumType,
 } from '@nestjs/graphql';
 import { User } from '../../users/entities/user.entity';
 
@@ -63,6 +64,16 @@ export enum ApiKeyStatus {
   REVOKED = 'revoked',
   EXPIRED = 'expired',
 }
+
+registerEnumType(ApiKeyScope, {
+  name: 'ApiKeyScope',
+  description: 'API key scopes/permissions',
+});
+
+registerEnumType(ApiKeyStatus, {
+  name: 'ApiKeyStatus',
+  description: 'API key status',
+});
 
 /**
  * ApiKey Entity

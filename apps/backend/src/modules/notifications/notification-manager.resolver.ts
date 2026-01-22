@@ -1,10 +1,20 @@
-import { Resolver, Mutation, Query, Args, Context } from '@nestjs/graphql';
+import {
+  Resolver,
+  Mutation,
+  Query,
+  Args,
+  Context,
+  ObjectType,
+} from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { NotificationManagerService } from './services/notification-manager.service';
 import {
   SendNotificationInput,
-  NotificationPreferencesInput,
+  NotificationDeliveryPreferencesInput,
   BulkSendNotificationInput,
+  SendNotificationResponse,
+  BulkSendNotificationResponse,
+  NotificationDeliveryPreferences,
 } from './dto/notification.dto';
 import { InAppNotification } from './entities/in-app-notification.entity';
 
@@ -23,10 +33,12 @@ export class NotificationManagerResolver {
   /**
    * Send a unified notification across channels
    */
-  @Mutation(() => Object, {
+  @Mutation(() => SendNotificationResponse, {
     description: 'Send a notification to a user across specified channels',
   })
-  async sendNotification(@Args('input') input: SendNotificationInput) {
+  async sendNotification(
+    @Args('input') input: SendNotificationInput,
+  ): Promise<SendNotificationResponse> {
     return this.notificationManager.sendNotification(input);
   }
 
@@ -37,7 +49,7 @@ export class NotificationManagerResolver {
     description: 'Update notification preferences for a user',
   })
   async updateNotificationPreferences(
-    @Args('input') input: NotificationPreferencesInput,
+    @Args('input') input: NotificationDeliveryPreferencesInput,
   ): Promise<string> {
     await this.notificationManager.updatePreferences(input);
     return 'Preferences updated successfully';
@@ -46,11 +58,21 @@ export class NotificationManagerResolver {
   /**
    * Get user notification preferences
    */
-  @Query(() => Object, {
+  @Query(() => NotificationDeliveryPreferences, {
     description: 'Get notification preferences for a user',
   })
-  async notificationPreferences(@Args('userId') userId: string) {
-    return this.notificationManager.getPreferences(userId);
+  async notificationPreferences(
+    @Args('userId') userId: string,
+  ): Promise<NotificationDeliveryPreferences> {
+    const prefs = this.notificationManager.getPreferences(userId);
+    // Convert to proper output type with defaults
+    return {
+      userId: prefs.userId,
+      emailEnabled: prefs.emailEnabled ?? true,
+      inAppEnabled: prefs.inAppEnabled ?? true,
+      excludeEmailTypes: prefs.excludeEmailTypes,
+      excludeInAppTypes: prefs.excludeInAppTypes,
+    };
   }
 
   /**
@@ -112,10 +134,12 @@ export class NotificationManagerResolver {
   /**
    * Send bulk notifications
    */
-  @Mutation(() => Object, {
+  @Mutation(() => BulkSendNotificationResponse, {
     description: 'Send bulk notifications to multiple users',
   })
-  async sendBulkNotifications(@Args('input') input: BulkSendNotificationInput) {
+  async sendBulkNotifications(
+    @Args('input') input: BulkSendNotificationInput,
+  ): Promise<BulkSendNotificationResponse> {
     return this.notificationManager.sendBulkNotification(input);
   }
 }

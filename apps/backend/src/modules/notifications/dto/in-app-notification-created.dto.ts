@@ -53,7 +53,7 @@ export class InAppNotificationCreatedPayload {
     nullable: true,
     description: 'Additional metadata',
   })
-  metadata?: Record<string, any>;
+  metadata?: string;
 
   @Field(() => GraphQLISODateTime, { description: 'Creation timestamp' })
   createdAt: Date;

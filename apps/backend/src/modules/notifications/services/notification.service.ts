@@ -32,8 +32,12 @@ export class NotificationService {
         userId: jobData.userId,
         subject: jobData.subject,
         template: jobData.template,
-        templateData: jobData.templateData,
-        metadata: jobData.metadata,
+        templateData: jobData.templateData
+          ? JSON.stringify(jobData.templateData)
+          : undefined,
+        metadata: jobData.metadata
+          ? JSON.stringify(jobData.metadata)
+          : undefined,
         status: NotificationStatus.PENDING,
       });
 

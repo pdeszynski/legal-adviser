@@ -112,7 +112,7 @@ export class CreateBackupInput {
   @IsString()
   description?: string;
 
-  @Field({ nullable: true, description: 'Tags for the backup' })
+  @Field(() => [String], { nullable: true, description: 'Tags for the backup' })
   @IsOptional()
   tags?: string[];
 }

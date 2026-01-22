@@ -20,6 +20,7 @@ import {
   GraphQLISODateTime,
   Int,
   Float,
+  registerEnumType,
 } from '@nestjs/graphql';
 import { User } from '../../users/entities/user.entity';
 
@@ -36,6 +37,10 @@ export enum AiOperationType {
   SEMANTIC_SEARCH = 'SEMANTIC_SEARCH',
   RAG_QUESTION_ANSWERING = 'RAG_QUESTION_ANSWERING',
 }
+
+registerEnumType(AiOperationType, {
+  name: 'AiOperationType',
+});
 
 /**
  * GraphQL Object Type for AI Usage Statistics

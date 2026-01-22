@@ -106,10 +106,10 @@ export class VectorStoreService {
         contentChunk: chunk,
         chunkIndex: index,
         chunkSize: chunk.length,
-        metadata: {
+        metadata: JSON.stringify({
           ...metadata,
           totalChunks: chunks.length,
-        },
+        }),
       });
       return record;
     });

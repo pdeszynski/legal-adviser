@@ -1,6 +1,7 @@
 import {
   Field,
   ObjectType,
+  InputType,
   ID,
   GraphQLISODateTime,
   Int,
@@ -12,7 +13,7 @@ import { AiOperationType } from '../entities/ai-usage-record.entity';
  * Create AiUsageRecord DTO
  * Input for creating a new usage record
  */
-@ObjectType('CreateAiUsageRecordInput')
+@InputType('CreateAiUsageRecordInput')
 export class CreateAiUsageRecordInput {
   @Field(() => AiOperationType)
   operationType: AiOperationType;
@@ -68,7 +69,7 @@ export class AiUsageRecordDTO {
  * Usage Statistics Query DTO
  * Input for querying usage statistics
  */
-@ObjectType('UsageStatsQueryInput')
+@InputType('UsageStatsQueryInput')
 export class UsageStatsQueryInput {
   @Field(() => ID, { nullable: true })
   userId?: string;

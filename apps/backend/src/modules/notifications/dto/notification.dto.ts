@@ -1,4 +1,11 @@
-import { InputType, Field, Int, ArgsType } from '@nestjs/graphql';
+import {
+  InputType,
+  Field,
+  Int,
+  ArgsType,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import {
   IsEnum,
   IsUUID,
@@ -59,6 +66,21 @@ export enum NotificationTemplateType {
   RULING_INDEXED = 'ruling_indexed',
   RULING_SEARCH_READY = 'ruling_search_ready',
 }
+
+registerEnumType(NotificationChannel, {
+  name: 'NotificationChannel',
+  description: 'Notification channel types',
+});
+
+registerEnumType(NotificationPriority, {
+  name: 'NotificationPriority',
+  description: 'Priority levels for notifications',
+});
+
+registerEnumType(NotificationTemplateType, {
+  name: 'NotificationTemplateType',
+  description: 'Notification template types',
+});
 
 /**
  * DTO for sending a unified notification
@@ -269,10 +291,10 @@ export const TEMPLATE_CONFIGS: Record<
 };
 
 /**
- * User notification preferences
+ * User notification delivery preferences input
  */
 @InputType()
-export class NotificationPreferencesInput {
+export class NotificationDeliveryPreferencesInput {
   @Field(() => String, { description: 'User ID' })
   @IsUUID('4')
   userId: string;
@@ -311,6 +333,33 @@ export class NotificationPreferencesInput {
   @IsOptional()
   @IsArray()
   @IsEnum(NotificationTemplateType, { each: true })
+  excludeInAppTypes?: NotificationTemplateType[];
+}
+
+/**
+ * User notification delivery preferences output type
+ */
+@ObjectType('NotificationDeliveryPreferences')
+export class NotificationDeliveryPreferences {
+  @Field(() => String, { description: 'User ID' })
+  userId: string;
+
+  @Field(() => Boolean, { description: 'Enable email notifications' })
+  emailEnabled: boolean;
+
+  @Field(() => Boolean, { description: 'Enable in-app notifications' })
+  inAppEnabled: boolean;
+
+  @Field(() => [NotificationTemplateType], {
+    description: 'Notification types to exclude from email',
+    nullable: true,
+  })
+  excludeEmailTypes?: NotificationTemplateType[];
+
+  @Field(() => [NotificationTemplateType], {
+    description: 'Notification types to exclude from in-app',
+    nullable: true,
+  })
   excludeInAppTypes?: NotificationTemplateType[];
 }
 
@@ -358,7 +407,7 @@ export class BulkSendNotificationInput {
 /**
  * Response for bulk notification send
  */
-@ArgsType()
+@ObjectType('BulkSendNotificationResponse')
 export class BulkSendNotificationResponse {
   @Field(() => Int, { description: 'Total number of notifications sent' })
   totalSent: number;
@@ -374,4 +423,26 @@ export class BulkSendNotificationResponse {
     nullable: true,
   })
   failedUserIds?: string[];
+}
+
+/**
+ * Response for single notification send
+ */
+@ObjectType('SendNotificationResponse')
+export class SendNotificationResponse {
+  @Field(() => Boolean, {
+    description: 'Whether the email notification was sent',
+  })
+  emailSent: boolean;
+
+  @Field(() => Boolean, {
+    description: 'Whether the in-app notification was created',
+  })
+  inAppCreated: boolean;
+
+  @Field(() => String, {
+    description: 'ID of the created in-app notification',
+    nullable: true,
+  })
+  notificationId?: string;
 }

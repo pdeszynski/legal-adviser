@@ -13,7 +13,13 @@ import {
   QueryOptions,
   Relation,
 } from '@ptc-org/nestjs-query-graphql';
-import { ObjectType, ID, GraphQLISODateTime, Int } from '@nestjs/graphql';
+import {
+  ObjectType,
+  ID,
+  GraphQLISODateTime,
+  Int,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { Webhook } from './webhook.entity';
 
 /**
@@ -25,6 +31,11 @@ export enum DeliveryStatus {
   FAILED = 'failed',
   RETRYING = 'retrying',
 }
+
+registerEnumType(DeliveryStatus, {
+  name: 'DeliveryStatus',
+  description: 'Webhook delivery status',
+});
 
 /**
  * WebhookDelivery Entity

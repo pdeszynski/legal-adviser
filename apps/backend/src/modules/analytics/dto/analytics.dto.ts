@@ -1,5 +1,6 @@
 import {
   ObjectType,
+  InputType,
   Field,
   ID,
   GraphQLISODateTime,
@@ -251,7 +252,7 @@ export class AnalyticsDashboard {
 /**
  * Input for dashboard analytics query
  */
-@ObjectType('DashboardAnalyticsInput')
+@InputType('DashboardAnalyticsInput')
 export class DashboardAnalyticsInput {
   @Field(() => GraphQLISODateTime, { nullable: true })
   startDate?: Date;

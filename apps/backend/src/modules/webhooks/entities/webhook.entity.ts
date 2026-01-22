@@ -14,7 +14,13 @@ import {
   QueryOptions,
   Relation,
 } from '@ptc-org/nestjs-query-graphql';
-import { ObjectType, ID, Field, GraphQLISODateTime } from '@nestjs/graphql';
+import {
+  ObjectType,
+  ID,
+  Field,
+  GraphQLISODateTime,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { User } from '../../users/entities/user.entity';
 
 /**
@@ -50,6 +56,16 @@ export enum WebhookStatus {
   INACTIVE = 'inactive',
   DISABLED = 'disabled',
 }
+
+registerEnumType(WebhookEvent, {
+  name: 'WebhookEvent',
+  description: 'Events that can be subscribed to',
+});
+
+registerEnumType(WebhookStatus, {
+  name: 'WebhookStatus',
+  description: 'Webhook status',
+});
 
 /**
  * Webhook Entity

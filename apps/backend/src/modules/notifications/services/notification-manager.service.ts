@@ -17,7 +17,7 @@ import {
   NotificationPriority,
   NotificationTemplateType,
   TEMPLATE_CONFIGS,
-  NotificationPreferencesInput,
+  NotificationDeliveryPreferencesInput,
   BulkSendNotificationInput,
 } from '../dto/notification.dto';
 import { EmailSendProducer } from '../queues/email-send.producer';
@@ -47,7 +47,10 @@ export class NotificationManagerService {
   private readonly logger = new Logger(NotificationManagerService.name);
 
   // In-memory user preferences cache (consider moving to Redis for production)
-  private userPreferences = new Map<string, NotificationPreferencesInput>();
+  private userPreferences = new Map<
+    string,
+    NotificationDeliveryPreferencesInput
+  >();
 
   constructor(
     @InjectRepository(InAppNotification)
@@ -188,10 +191,10 @@ export class NotificationManagerService {
    * Update user notification preferences
    */
   async updatePreferences(
-    preferences: NotificationPreferencesInput,
+    preferences: NotificationDeliveryPreferencesInput,
   ): Promise<void> {
     // Normalize preferences
-    const normalized: NotificationPreferencesInput = {
+    const normalized: NotificationDeliveryPreferencesInput = {
       userId: preferences.userId,
       emailEnabled: preferences.emailEnabled ?? true,
       inAppEnabled: preferences.inAppEnabled ?? true,
@@ -210,7 +213,7 @@ export class NotificationManagerService {
   /**
    * Get user notification preferences
    */
-  getPreferences(userId: string): NotificationPreferencesInput {
+  getPreferences(userId: string): NotificationDeliveryPreferencesInput {
     return (
       this.userPreferences.get(userId) ?? {
         userId,
@@ -340,14 +343,16 @@ export class NotificationManagerService {
       read: false,
       actionLink: input.actionLink,
       actionLabel: input.actionLabel,
-      metadata: {
+      metadata: JSON.stringify({
         templateType: input.templateType,
         priority: input.priority,
         ...input.metadata,
-      },
+      }),
     });
 
-    const saved = await this.inAppNotificationRepository.save(notification);
+    const saved = (await this.inAppNotificationRepository.save(
+      notification,
+    )) as InAppNotification;
 
     // Publish GraphQL subscription event
     await this.pubSubService.publishInAppNotificationCreated({
@@ -357,7 +362,9 @@ export class NotificationManagerService {
       message: saved.message,
       actionLink: saved.actionLink ?? undefined,
       actionLabel: saved.actionLabel ?? undefined,
-      metadata: saved.metadata ?? undefined,
+      metadata: saved.metadata
+        ? (JSON.parse(saved.metadata) as Record<string, any>)
+        : undefined,
       createdAt: saved.createdAt,
     });
 

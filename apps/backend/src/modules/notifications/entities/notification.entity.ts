@@ -73,7 +73,7 @@ export class Notification {
 
   @Column({ type: 'jsonb', nullable: true })
   @Field(() => String, { nullable: true })
-  templateData?: Record<string, any>;
+  templateData?: string;
 
   @Column({ nullable: true })
   @FilterableField({ nullable: true })
@@ -85,7 +85,7 @@ export class Notification {
 
   @Column({ type: 'jsonb', nullable: true })
   @Field(() => String, { nullable: true })
-  metadata?: Record<string, any>;
+  metadata?: string;
 
   @Column({ type: 'timestamp', nullable: true })
   @FilterableField({ nullable: true })

@@ -1,4 +1,13 @@
-import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql';
+import {
+  Resolver,
+  Mutation,
+  Args,
+  Query,
+  Context,
+  InputType,
+  Field,
+  ID,
+} from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
@@ -8,31 +17,45 @@ import { AdminGuard } from '../auth/guards/admin.guard';
 /**
  * Input for suspending a user account
  */
+@InputType()
 class SuspendUserInput {
+  @Field(() => ID)
   userId: string;
+
+  @Field()
   reason: string;
 }
 
 /**
  * Input for activating a user account
  */
+@InputType()
 class ActivateUserInput {
+  @Field(() => ID)
   userId: string;
 }
 
 /**
  * Input for changing user role
  */
+@InputType()
 class ChangeUserRoleInput {
+  @Field(() => ID)
   userId: string;
+
+  @Field()
   role: 'user' | 'admin';
 }
 
 /**
  * Input for resetting user password
  */
+@InputType()
 class ResetUserPasswordInput {
+  @Field(() => ID)
   userId: string;
+
+  @Field()
   newPassword: string;
 }
 

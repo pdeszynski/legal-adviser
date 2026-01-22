@@ -13,7 +13,13 @@ import {
   QueryOptions,
   Relation,
 } from '@ptc-org/nestjs-query-graphql';
-import { ObjectType, ID, Field, GraphQLISODateTime } from '@nestjs/graphql';
+import {
+  ObjectType,
+  ID,
+  Field,
+  GraphQLISODateTime,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { User } from '../../users/entities/user.entity';
 import { UserSubscription } from './user-subscription.entity';
 
@@ -38,6 +44,16 @@ export enum PaymentMethod {
   BANK_TRANSFER = 'BANK_TRANSFER',
   OTHER = 'OTHER',
 }
+
+registerEnumType(PaymentStatus, {
+  name: 'PaymentStatus',
+  description: 'Payment status',
+});
+
+registerEnumType(PaymentMethod, {
+  name: 'PaymentMethod',
+  description: 'Payment method',
+});
 
 /**
  * Payment Entity

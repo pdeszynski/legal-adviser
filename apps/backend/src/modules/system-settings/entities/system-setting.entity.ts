@@ -76,8 +76,8 @@ export class SystemSetting {
   description: string | null;
 
   @Column({ type: 'jsonb', nullable: true })
-  @Field(() => Object, { nullable: true })
-  metadata: Record<string, unknown> | null;
+  @Field(() => String, { nullable: true })
+  metadata: string | null;
 
   @CreateDateColumn({ type: 'timestamp' })
   @FilterableField(() => GraphQLISODateTime)

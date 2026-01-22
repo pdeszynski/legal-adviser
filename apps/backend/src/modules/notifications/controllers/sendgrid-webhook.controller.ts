@@ -271,14 +271,17 @@ export class SendGridWebhookController {
     const notification =
       await this.notificationService.findById(notificationId);
     if (notification) {
+      const existingMetadata = notification.metadata
+        ? JSON.parse(notification.metadata)
+        : {};
       await this.notificationService.updateNotification(notificationId, {
-        metadata: {
-          ...notification.metadata,
+        metadata: JSON.stringify({
+          ...existingMetadata,
           spamReport: {
             timestamp: event.timestamp,
             reportedAt: new Date(event.timestamp * 1000),
           },
-        },
+        }),
       });
     }
 
@@ -305,14 +308,17 @@ export class SendGridWebhookController {
     const notification =
       await this.notificationService.findById(notificationId);
     if (notification) {
+      const existingMetadata = notification.metadata
+        ? JSON.parse(notification.metadata)
+        : {};
       await this.notificationService.updateNotification(notificationId, {
-        metadata: {
-          ...notification.metadata,
+        metadata: JSON.stringify({
+          ...existingMetadata,
           unsubscribed: {
             timestamp: event.timestamp,
             unsubscribedAt: new Date(event.timestamp * 1000),
           },
-        },
+        }),
       });
     }
 

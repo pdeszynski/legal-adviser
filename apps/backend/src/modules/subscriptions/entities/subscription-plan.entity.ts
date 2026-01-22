@@ -17,6 +17,7 @@ import {
   Field,
   GraphQLISODateTime,
   Int,
+  registerEnumType,
 } from '@nestjs/graphql';
 
 /**
@@ -37,6 +38,16 @@ export enum BillingInterval {
   MONTHLY = 'MONTHLY',
   YEARLY = 'YEARLY',
 }
+
+registerEnumType(PlanTier, {
+  name: 'PlanTier',
+  description: 'Subscription plan tiers',
+});
+
+registerEnumType(BillingInterval, {
+  name: 'BillingInterval',
+  description: 'Billing interval options',
+});
 
 /**
  * Subscription Feature Flags
@@ -169,7 +180,7 @@ export class SubscriptionPlan {
    * null = unlimited
    */
   @Column({ type: 'int', nullable: true })
-  @FilterableField()
+  @FilterableField(() => Int, { nullable: true })
   maxUsers: number | null;
 
   /**

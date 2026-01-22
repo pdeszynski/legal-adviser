@@ -134,7 +134,7 @@ export class InAppNotification {
    */
   @Column({ type: 'jsonb', nullable: true, default: {} })
   @Field(() => String, { nullable: true })
-  metadata?: Record<string, any> | null;
+  metadata?: string | null;
 
   /**
    * Timestamp when the notification was created

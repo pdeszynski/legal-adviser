@@ -35,8 +35,8 @@ export class DocumentEmbedding {
   chunkSize: number;
 
   @Column({ type: 'jsonb', nullable: true })
-  @Field(() => Object, { nullable: true })
-  metadata?: Record<string, unknown>;
+  @Field(() => String, { nullable: true })
+  metadata?: string;
 
   @CreateDateColumn({ name: 'created_at' })
   @Field()

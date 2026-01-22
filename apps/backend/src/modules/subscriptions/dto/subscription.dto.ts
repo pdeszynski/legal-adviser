@@ -5,6 +5,7 @@ import {
   type PlanFeatures,
 } from '../entities/subscription-plan.entity';
 import { SubscriptionStatus } from '../entities/user-subscription.entity';
+import { PaymentStatus, PaymentMethod } from '../entities/payment.entity';
 
 /**
  * Input for creating a new subscription plan
@@ -373,26 +374,4 @@ export class BillingInfo {
 
   @Field(() => String, { nullable: true })
   nextBillingAmount: string | null;
-}
-
-/**
- * Enum for PaymentStatus
- */
-export enum PaymentStatus {
-  PENDING = 'PENDING',
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED',
-  REFUNDED = 'REFUNDED',
-  PARTIALLY_REFUNDED = 'PARTIALLY_REFUNDED',
-}
-
-/**
- * Enum for PaymentMethod
- */
-export enum PaymentMethod {
-  CREDIT_CARD = 'CREDIT_CARD',
-  DEBIT_CARD = 'DEBIT_CARD',
-  PAYPAL = 'PAYPAL',
-  BANK_TRANSFER = 'BANK_TRANSFER',
-  OTHER = 'OTHER',
 }

@@ -20,6 +20,7 @@ import {
   Field,
   GraphQLISODateTime,
   Int,
+  registerEnumType,
 } from '@nestjs/graphql';
 import { User } from '../../users/entities/user.entity';
 import { SubscriptionPlan, PlanTier } from './subscription-plan.entity';
@@ -34,6 +35,11 @@ export enum SubscriptionStatus {
   CANCELED = 'CANCELED',
   EXPIRED = 'EXPIRED',
 }
+
+registerEnumType(SubscriptionStatus, {
+  name: 'SubscriptionStatus',
+  description: 'Subscription status',
+});
 
 /**
  * UserSubscription Entity

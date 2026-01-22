@@ -2,6 +2,70 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input ActivateUserInput {
+  userId: ID!
+}
+
+type AdvancedLegalRulingSearchResponse {
+  """Number of results returned"""
+  count: Int!
+
+  """Whether there are more results"""
+  hasMore: Boolean!
+
+  """Current offset"""
+  offset: Int!
+
+  """Human-readable explanation of the search query that was executed"""
+  queryExplanation: String
+
+  """Search results with relevance ranking"""
+  results: [AggregatedLegalRulingSearchResult!]!
+
+  """Total number of matching results (for pagination)"""
+  totalCount: Int!
+}
+
+input AdvancedSearchLegalRulingsInput {
+  """Filter by court type"""
+  courtType: CourtType
+
+  """Filter by ruling date from (ISO 8601 date string)"""
+  dateFrom: String
+
+  """Filter by ruling date to (ISO 8601 date string)"""
+  dateTo: String
+
+  """Filter by keywords (must match all)"""
+  keywords: [String!]
+
+  """Filter by legal area from metadata"""
+  legalArea: String
+
+  """Maximum number of results to return (default: 20, max: 100)"""
+  limit: Int = 20
+
+  """Number of results to skip for pagination"""
+  offset: Int = 0
+
+  """Array of search terms with operators and field specifications"""
+  searchTerms: [AdvancedSearchTermInput!]!
+
+  """Sources to search (default: all sources)"""
+  sources: [SearchSource!] = [LOCAL, SAOS, ISAP]
+}
+
+input AdvancedSearchTermInput {
+  """Field to search in (default: ALL)"""
+  field: SearchField! = ALL
+
+  """Boolean operator to combine with previous term (default: AND)"""
+  operator: BooleanOperator! = AND
+
+  """Search term text"""
+  term: String!
+}
+
 type AggregatedLegalRulingSearchResponse {
   """Number of results returned"""
   count: Int!
@@ -56,6 +120,78 @@ input AggregatedSearchLegalRulingsInput {
   sources: [SearchSource!] = [LOCAL, SAOS, ISAP]
 }
 
+"""Available AI models for legal operations"""
+enum AiModelType {
+  CLAUDE_3_OPUS
+  CLAUDE_3_SONNET
+  GPT_3_5_TURBO
+  GPT_4
+  GPT_4_TURBO
+}
+
+input AiModelTypeFilterComparison {
+  eq: AiModelType
+  gt: AiModelType
+  gte: AiModelType
+  iLike: AiModelType
+  in: [AiModelType!]
+  is: Boolean
+  isNot: Boolean
+  like: AiModelType
+  lt: AiModelType
+  lte: AiModelType
+  neq: AiModelType
+  notILike: AiModelType
+  notIn: [AiModelType!]
+  notLike: AiModelType
+}
+
+type AiOperationBreakdown {
+  """Percentage of total cost"""
+  costPercentage: Float!
+  operationType: String!
+  requestCount: Int!
+  totalCost: Float!
+  totalTokens: Int!
+}
+
+enum AiOperationType {
+  CASE_CLASSIFICATION
+  DOCUMENT_GENERATION
+  EMBEDDING_GENERATION
+  QUESTION_ANSWERING
+  RAG_QUESTION_ANSWERING
+  RULING_SEARCH
+  SEMANTIC_SEARCH
+}
+
+type AiUsageMetrics {
+  """Average cost per request"""
+  avgCostPerRequest: Float!
+
+  """Average tokens per request"""
+  avgTokensPerRequest: Int!
+  periodEnd: DateTime!
+  periodStart: DateTime!
+
+  """Total cost in USD"""
+  totalCost: Float!
+  totalRequests: Int!
+  totalTokens: Int!
+}
+
+type AiUsageRecord {
+  costCalculated: Float!
+  createdAt: DateTime!
+  id: ID!
+  metadata: String
+  operationType: AiOperationType!
+  requestCount: Float!
+  resourceId: ID
+  tokensUsed: Float!
+  userId: String!
+}
+
 type AnalysisMetadata {
   analysisVersion: String
   modelUsed: String
@@ -93,12 +229,82 @@ input AnalysisStatusFilterComparison {
   notLike: AnalysisStatus
 }
 
+type AnalyticsDashboard {
+  aiOperationBreakdown: [AiOperationBreakdown!]!
+  aiUsage: AiUsageMetrics!
+  documentTypeDistribution: [DocumentTypeDistribution!]!
+  documents: DocumentMetrics!
+  generatedAt: DateTime!
+  queries: QueryMetrics!
+  systemHealth: SystemHealthMetrics!
+  userGrowth: UserGrowthMetrics!
+}
+
+"""Time period granularity for analytics data"""
+enum AnalyticsPeriod {
+  DAILY
+  HOURLY
+  MONTHLY
+  WEEKLY
+  YEARLY
+}
+
 input AnswerLegalQueryInput {
   """The AI-generated answer in Markdown format"""
   answerMarkdown: String!
 
   """Citations and references for the answer"""
   citations: [CreateCitationInput!]
+}
+
+type ApiKey {
+  createdAt: DateTime!
+  description: String
+  expiresAt: DateTime
+  id: ID!
+  keyPrefix: String!
+  lastUsedAt: DateTime
+  lastUsedIp: String
+  name: String!
+  rateLimitPerMinute: Int
+  scopes: [ApiKeyScope!]!
+  status: ApiKeyStatus!
+  updatedAt: DateTime!
+  usageCount: Float!
+  userId: String!
+}
+
+"""API key scopes/permissions"""
+enum ApiKeyScope {
+  AI_ANALYZE
+  AI_GENERATE
+  DOCUMENTS_DELETE
+  DOCUMENTS_READ
+  DOCUMENTS_WRITE
+  PROFILE_READ
+  PROFILE_WRITE
+  QUERIES_DELETE
+  QUERIES_READ
+  QUERIES_WRITE
+  RULINGS_READ
+  RULINGS_SEARCH
+  TEMPLATES_READ
+  TEMPLATES_WRITE
+}
+
+"""API key status"""
+enum ApiKeyStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+input ApproveDocumentInput {
+  """Document ID to approve"""
+  documentId: ID!
+
+  """Optional reason for approval"""
+  reason: String
 }
 
 input AskLegalQuestionInput {
@@ -315,12 +521,114 @@ type AuthUser {
   id: ID!
   isActive: Boolean!
   lastName: String
+  role: String!
   username: String
+}
+
+type Backup {
+  createdAt: Timestamp
+  expiresAt: Timestamp
+  filename: String!
+  id: ID!
+  isRestored: Boolean!
+  metadata: BackupMetadata
+  restoreDate: Timestamp
+  sizeBytes: Int!
+
+  """Size in human-readable format (MB)"""
+  sizeMB: Float!
+  status: String!
+  storagePath: String
+  storageType: String!
+}
+
+type BackupMetadata {
+  compression: String
+  database: String!
+  host: String!
+  pgVersion: String
+}
+
+type BackupStats {
+  activeBackups: Int!
+  failedBackups: Int!
+  lastBackupDate: Timestamp
+  lastSuccessfulBackupDate: Timestamp
+  successfulBackups: Int!
+  totalBackups: Int!
+  totalSizeMB: Float!
+}
+
+type BillingInfo {
+  cancelAtPeriodEnd: Boolean!
+  currentPeriodEnd: String!
+  currentPeriodStart: String!
+  daysRemaining: Int!
+  nextBillingAmount: String
+  paymentHistory: [PaymentHistoryItem!]!
+  paymentMethods: [PaymentMethodInfo!]
+  planName: String!
+  planTier: PlanTier!
+  status: SubscriptionStatus!
+  subscriptionId: ID!
+  usage: String!
+}
+
+"""Billing interval options"""
+enum BillingInterval {
+  MONTHLY
+  YEARLY
 }
 
 input BooleanFieldComparison {
   is: Boolean
   isNot: Boolean
+}
+
+"""Boolean operators for combining search terms"""
+enum BooleanOperator {
+  AND
+  NOT
+  OR
+}
+
+input BulkSendNotificationInput {
+  """Channel to send notification through"""
+  channel: NotificationChannel
+
+  """Custom message override"""
+  customMessage: String
+
+  """Data for template rendering (JSON string)"""
+  templateData: String
+
+  """Type of notification template to use"""
+  templateType: NotificationTemplateType!
+
+  """List of user IDs"""
+  userIds: [String!]!
+}
+
+type BulkSendNotificationResponse {
+  """Number of failed notifications"""
+  failed: Int!
+
+  """List of user IDs that failed"""
+  failedUserIds: [String!]
+
+  """Number of successful notifications"""
+  successful: Int!
+
+  """Total number of notifications sent"""
+  totalSent: Int!
+}
+
+input BulkUpdateSettingsInput {
+  settings: [SystemSettingInput!]!
+}
+
+input CancelSubscriptionInput {
+  immediately: Boolean! = false
 }
 
 type ChangeDetails {
@@ -333,6 +641,31 @@ type ChangeDetails {
 
   """JSON string of additional context"""
   context: String
+}
+
+input ChangePasswordInput {
+  """Current password"""
+  currentPassword: String!
+
+  """New password"""
+  newPassword: String!
+}
+
+input ChangeUserRoleInput {
+  role: String!
+  userId: ID!
+}
+
+input CheckQuotaInput {
+  amount: Int = 1
+  quotaKey: String!
+}
+
+type CheckQuotaResponse {
+  allowed: Boolean!
+  limit: Int!
+  message: String
+  remaining: Int!
 }
 
 type Citation {
@@ -354,6 +687,42 @@ input ClassifyCaseInput {
 
   """Title or brief summary of the analysis"""
   title: String!
+}
+
+type CommentPosition {
+  endOffset: Float!
+  section: String
+  startOffset: Float!
+  text: String
+}
+
+"""Resolution status of a document comment"""
+enum CommentResolutionStatus {
+  OPEN
+  RESOLVED
+}
+
+input CommentResolutionStatusFilterComparison {
+  eq: CommentResolutionStatus
+  gt: CommentResolutionStatus
+  gte: CommentResolutionStatus
+  iLike: CommentResolutionStatus
+  in: [CommentResolutionStatus!]
+  is: Boolean
+  isNot: Boolean
+  like: CommentResolutionStatus
+  lt: CommentResolutionStatus
+  lte: CommentResolutionStatus
+  neq: CommentResolutionStatus
+  notILike: CommentResolutionStatus
+  notIn: [CommentResolutionStatus!]
+  notLike: CommentResolutionStatus
+}
+
+input ConditionalSectionInput {
+  condition: String!
+  description: String
+  id: String!
 }
 
 """Cursor for paging through collections"""
@@ -387,11 +756,67 @@ input CourtTypeFilterComparison {
   notLike: CourtType
 }
 
+input CreateAiUsageRecordInput {
+  metadata: String
+  operationType: AiOperationType!
+  requestCount: Int = 1
+  resourceId: ID
+  tokensUsed: Int!
+}
+
+input CreateApiKeyInput {
+  description: String
+  expiresAt: String
+  name: String!
+  rateLimitPerMinute: Int = 60
+  scopes: [ApiKeyScope!]!
+}
+
+type CreateApiKeyResponse {
+  createdAt: String!
+  description: String
+  expiresAt: String
+  id: ID!
+  keyPrefix: String!
+  name: String!
+  rateLimitPerMinute: Int!
+  rawKey: String!
+  scopes: [ApiKeyScope!]!
+  status: ApiKeyStatus!
+  updatedAt: String!
+}
+
+input CreateBackupInput {
+  """Description of the backup"""
+  description: String
+
+  """Optional custom name for the backup"""
+  name: String
+
+  """Tags for the backup"""
+  tags: [String!]
+}
+
 input CreateCitationInput {
   article: String
   excerpt: String
   source: String!
   url: String
+}
+
+input CreateCommentPositionInput {
+  endOffset: Float!
+  section: String
+  startOffset: Float!
+  text: String
+}
+
+input CreateDocumentCommentInput {
+  authorId: String!
+  documentId: String!
+  position: CreateCommentPositionInput!
+  resolutionStatus: CommentResolutionStatus = OPEN
+  text: String!
 }
 
 input CreateDocumentMetadataInput {
@@ -401,12 +826,46 @@ input CreateDocumentMetadataInput {
   plaintiffName: String
 }
 
+input CreateDocumentTemplateInput {
+  category: TemplateCategory!
+  conditionalSections: [ConditionalSectionInput!]
+  content: String!
+  description: String
+  isActive: Boolean = true
+  name: String!
+  polishFormattingRules: PolishFormattingRulesInput
+  variables: [TemplateVariableInput!]!
+}
+
 input CreateDocumentVersionInput {
   authorUserId: ID
   changeDescription: String
   contentSnapshot: String!
   documentId: ID!
   sessionId: ID!
+}
+
+input CreateInAppNotificationInput {
+  """Optional action label for the action link button"""
+  actionLabel: String
+
+  """Optional action link for navigation (e.g., /documents/123)"""
+  actionLink: String
+
+  """The notification message content"""
+  message: String!
+
+  """Additional metadata for extensibility (JSON string)"""
+  metadata: String
+
+  """Read status - defaults to false (unread)"""
+  read: Boolean
+
+  """Type of notification for UI styling"""
+  type: String
+
+  """User ID to receive the notification"""
+  userId: String!
 }
 
 input CreateLegalAnalysisInput {
@@ -452,9 +911,56 @@ input CreateLegalRulingInput {
   summary: String
 }
 
+input CreateNotificationInput {
+  """Error message if sending failed"""
+  errorMessage: String
+
+  """SendGrid message ID"""
+  messageId: String
+
+  """Additional metadata (JSON string)"""
+  metadata: String
+
+  """Recipient email address"""
+  recipientEmail: String!
+
+  """Timestamp when email was sent"""
+  sentAt: String
+
+  """Notification status"""
+  status: NotificationStatus = PENDING
+
+  """Email subject line"""
+  subject: String!
+
+  """Email template type"""
+  template: EmailTemplateType!
+
+  """Template data for rendering (JSON string)"""
+  templateData: String
+
+  """User ID (if notification is for a registered user)"""
+  userId: String
+}
+
+input CreateOneDocumentCommentInput {
+  """The record to create"""
+  documentComment: CreateDocumentCommentInput!
+}
+
+input CreateOneDocumentTemplateInput {
+  """The record to create"""
+  documentTemplate: CreateDocumentTemplateInput!
+}
+
 input CreateOneDocumentVersionInput {
   """The record to create"""
   documentVersion: CreateDocumentVersionInput!
+}
+
+input CreateOneInAppNotificationInput {
+  """The record to create"""
+  inAppNotification: CreateInAppNotificationInput!
 }
 
 input CreateOneLegalAnalysisInput {
@@ -477,9 +983,19 @@ input CreateOneLegalRulingInput {
   legalRuling: CreateLegalRulingInput!
 }
 
+input CreateOneNotificationInput {
+  """The record to create"""
+  notification: CreateNotificationInput!
+}
+
 input CreateOneUserInput {
   """The record to create"""
   user: CreateUserInput!
+}
+
+input CreateOneUserPreferencesInput {
+  """The record to create"""
+  userPreferences: CreateUserPreferencesInput!
 }
 
 input CreateRulingMetadataInput {
@@ -487,6 +1003,21 @@ input CreateRulingMetadataInput {
   legalArea: String
   relatedCases: [String!]
   sourceReference: String
+}
+
+input CreateSubscriptionPlanInput {
+  billingInterval: BillingInterval = MONTHLY
+  description: String
+  displayOrder: Int = 0
+  features: String!
+  maxUsers: Int
+  name: String!
+  price: Int!
+  stripePriceId: String
+  stripeYearlyPriceId: String
+  tier: PlanTier!
+  trialDays: Int = 0
+  yearlyDiscount: Int = 0
 }
 
 input CreateTemplateInput {
@@ -508,6 +1039,63 @@ input CreateUserInput {
   username: String
 }
 
+input CreateUserPreferencesInput {
+  aiModel: AiModelType = GPT_4_TURBO
+  dateFormat: String
+  emailNotifications: Boolean = true
+  inAppNotifications: Boolean = true
+  locale: String = "en"
+  notificationPreferences: NotificationPreferencesInput
+  theme: ThemePreference = SYSTEM
+  timezone: String
+  userId: String!
+}
+
+input CreateUserSubscriptionInput {
+  planId: ID!
+  stripeCustomerId: String
+  stripeSubscriptionId: String
+}
+
+input CreateWebhookInput {
+  description: String
+  events: [WebhookEvent!]!
+  headers: String
+  maxRetries: Int = 3
+  name: String!
+  timeoutMs: Int = 30000
+  url: String!
+}
+
+type CreateWebhookResponse {
+  createdAt: String!
+  description: String
+  events: [WebhookEvent!]!
+  failureCount: Int!
+  headers: String
+  id: ID!
+  lastDeliveryAt: String
+  lastSuccessAt: String
+  maxRetries: Int!
+  name: String!
+  secret: String!
+  status: WebhookStatus!
+  successCount: Int!
+  timeoutMs: Int!
+  updatedAt: String!
+  url: String!
+}
+
+type CursorEventPayload {
+  color: String
+  documentId: ID!
+  position: Float!
+  selectionLength: Float!
+  timestamp: DateTime!
+  userId: ID!
+  userName: String!
+}
+
 input CursorPaging {
   """Paginate after opaque cursor"""
   after: ConnectionCursor
@@ -520,6 +1108,28 @@ input CursorPaging {
 
   """Paginate last"""
   last: Int
+}
+
+type DailyUsage {
+  date: DateTime!
+  totalCost: Float!
+  totalRequests: Int!
+  totalTokens: Int!
+}
+
+type DailyUsageResponse {
+  dailyUsage: [DailyUsage!]!
+  periodEnd: DateTime!
+  periodStart: DateTime!
+  totalCost: Float!
+  totalRequests: Int!
+  totalTokens: Int!
+}
+
+input DashboardAnalyticsInput {
+  endDate: DateTime
+  period: AnalyticsPeriod = DAILY
+  startDate: DateTime
 }
 
 input DateFieldComparison {
@@ -553,6 +1163,21 @@ input DeleteDocumentInputV2 {
   reason: String
 }
 
+input DeleteOneDocumentCommentInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneDocumentTemplateInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneInAppNotificationInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
 input DeleteOneLegalAnalysisInput {
   """The id of the record to delete."""
   id: ID!
@@ -578,9 +1203,172 @@ input DeleteOneUserInput {
   id: ID!
 }
 
+input DeleteOneUserPreferencesInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
 input DeleteOneUserSessionInput {
   """The id of the record to delete."""
   id: ID!
+}
+
+"""Webhook delivery status"""
+enum DeliveryStatus {
+  FAILED
+  PENDING
+  RETRYING
+  SUCCESS
+}
+
+type DocumentComment {
+  author: User!
+  authorId: String!
+  createdAt: DateTime!
+  document: LegalDocument!
+  documentId: String!
+  id: ID!
+  position: CommentPosition!
+  resolutionStatus: CommentResolutionStatus!
+  resolvedAt: DateTime
+  resolvedBy: ID
+  text: String!
+  updatedAt: DateTime!
+}
+
+input DocumentCommentAggregateFilter {
+  and: [DocumentCommentAggregateFilter!]
+  authorId: StringFieldComparison
+  createdAt: DateFieldComparison
+  documentId: StringFieldComparison
+  id: IDFilterComparison
+  or: [DocumentCommentAggregateFilter!]
+  resolutionStatus: CommentResolutionStatusFilterComparison
+  resolvedBy: IDFilterComparison
+  text: StringFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type DocumentCommentAggregateGroupBy {
+  authorId: String
+  createdAt(by: GroupBy! = DAY): DateTime
+  documentId: String
+  id: ID
+  resolutionStatus: CommentResolutionStatus
+  resolvedBy: ID
+  text: String
+  updatedAt(by: GroupBy! = DAY): DateTime
+}
+
+type DocumentCommentAggregateResponse {
+  count: DocumentCommentCountAggregate
+  groupBy: DocumentCommentAggregateGroupBy
+  max: DocumentCommentMaxAggregate
+  min: DocumentCommentMinAggregate
+}
+
+type DocumentCommentConnection {
+  """Array of edges."""
+  edges: [DocumentCommentEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type DocumentCommentCountAggregate {
+  authorId: Int
+  createdAt: Int
+  documentId: Int
+  id: Int
+  resolutionStatus: Int
+  resolvedBy: Int
+  text: Int
+  updatedAt: Int
+}
+
+type DocumentCommentDeleteResponse {
+  authorId: String
+  createdAt: DateTime
+  documentId: String
+  id: ID
+  position: CommentPosition
+  resolutionStatus: CommentResolutionStatus
+  resolvedAt: DateTime
+  resolvedBy: ID
+  text: String
+  updatedAt: DateTime
+}
+
+type DocumentCommentEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the DocumentComment"""
+  node: DocumentComment!
+}
+
+input DocumentCommentFilter {
+  and: [DocumentCommentFilter!]
+  authorId: StringFieldComparison
+  createdAt: DateFieldComparison
+  documentId: StringFieldComparison
+  id: IDFilterComparison
+  or: [DocumentCommentFilter!]
+  resolutionStatus: CommentResolutionStatusFilterComparison
+  resolvedBy: IDFilterComparison
+  text: StringFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type DocumentCommentMaxAggregate {
+  authorId: String
+  createdAt: DateTime
+  documentId: String
+  id: ID
+  resolutionStatus: CommentResolutionStatus
+  resolvedBy: ID
+  text: String
+  updatedAt: DateTime
+}
+
+type DocumentCommentMinAggregate {
+  authorId: String
+  createdAt: DateTime
+  documentId: String
+  id: ID
+  resolutionStatus: CommentResolutionStatus
+  resolvedBy: ID
+  text: String
+  updatedAt: DateTime
+}
+
+input DocumentCommentSort {
+  direction: SortDirection!
+  field: DocumentCommentSortFields!
+  nulls: SortNulls
+}
+
+enum DocumentCommentSortFields {
+  authorId
+  createdAt
+  documentId
+  id
+  resolutionStatus
+  resolvedBy
+  text
+  updatedAt
+}
+
+type DocumentEditEventPayload {
+  documentId: ID!
+  operation: String!
+  timestamp: DateTime!
+  userId: ID!
+  userName: String!
+  version: Float!
 }
 
 type DocumentMetadata {
@@ -595,6 +1383,21 @@ input DocumentMetadataInput {
   claimCurrency: String
   defendantName: String
   plaintiffName: String
+}
+
+type DocumentMetrics {
+  completedDocuments: Int!
+  draftDocuments: Int!
+  failedDocuments: Int!
+
+  """Documents currently generating"""
+  generatingDocuments: Int!
+  periodEnd: DateTime!
+  periodStart: DateTime!
+
+  """Success rate as percentage"""
+  successRate: Float!
+  totalDocuments: Int!
 }
 
 type DocumentShare {
@@ -710,6 +1513,17 @@ type DocumentTemplateAggregateResponse {
   min: DocumentTemplateMinAggregate
 }
 
+type DocumentTemplateConnection {
+  """Array of edges."""
+  edges: [DocumentTemplateEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
 type DocumentTemplateCountAggregate {
   category: Int
   createdAt: Int
@@ -720,12 +1534,39 @@ type DocumentTemplateCountAggregate {
   updatedAt: Int
 }
 
+type DocumentTemplateDeleteResponse {
+  category: TemplateCategory
+  conditionalSections: JSON
+  content: String
+  createdAt: DateTime
+  description: String
+  id: ID
+  isActive: Boolean
+  name: String
+  polishFormattingRules: JSON
+  updatedAt: DateTime
+  usageCount: Float
+  variables: JSON
+}
+
 type DocumentTemplateEdge {
   """Cursor for this node."""
   cursor: ConnectionCursor!
 
   """The node containing the DocumentTemplate"""
   node: DocumentTemplate!
+}
+
+input DocumentTemplateFilter {
+  and: [DocumentTemplateFilter!]
+  category: TemplateCategoryFilterComparison
+  createdAt: DateFieldComparison
+  description: StringFieldComparison
+  id: IDFilterComparison
+  isActive: BooleanFieldComparison
+  name: StringFieldComparison
+  or: [DocumentTemplateFilter!]
+  updatedAt: DateFieldComparison
 }
 
 type DocumentTemplateMaxAggregate {
@@ -746,12 +1587,36 @@ type DocumentTemplateMinAggregate {
   updatedAt: DateTime
 }
 
+input DocumentTemplateSort {
+  direction: SortDirection!
+  field: DocumentTemplateSortFields!
+  nulls: SortNulls
+}
+
+enum DocumentTemplateSortFields {
+  category
+  createdAt
+  description
+  id
+  isActive
+  name
+  updatedAt
+}
+
 """Type of legal document"""
 enum DocumentType {
   COMPLAINT
   CONTRACT
   LAWSUIT
   OTHER
+}
+
+type DocumentTypeDistribution {
+  count: Int!
+  documentType: String!
+
+  """Percentage of total"""
+  percentage: Float!
 }
 
 input DocumentTypeFilterComparison {
@@ -905,6 +1770,31 @@ type DocumentVersionSumAggregate {
   versionNumber: Float
 }
 
+"""Email template types available in the system"""
+enum EmailTemplateType {
+  DOCUMENT_COMPLETED
+  DOCUMENT_FAILED
+  SYSTEM_NOTIFICATION
+  WELCOME
+}
+
+input EmailTemplateTypeFilterComparison {
+  eq: EmailTemplateType
+  gt: EmailTemplateType
+  gte: EmailTemplateType
+  iLike: EmailTemplateType
+  in: [EmailTemplateType!]
+  is: Boolean
+  isNot: Boolean
+  like: EmailTemplateType
+  lt: EmailTemplateType
+  lte: EmailTemplateType
+  neq: EmailTemplateType
+  notILike: EmailTemplateType
+  notIn: [EmailTemplateType!]
+  notLike: EmailTemplateType
+}
+
 input ExportDocumentToPdfInput {
   """ID of the document to export"""
   documentId: ID!
@@ -934,6 +1824,14 @@ input FilterLegalRulingsInput {
 
   """Number of results to skip for pagination"""
   offset: Int = 0
+}
+
+input FlagDocumentForModerationInput {
+  """Document ID to flag for moderation"""
+  documentId: ID!
+
+  """Reason for flagging the document"""
+  reason: String
 }
 
 input GenerateDocumentInput {
@@ -973,6 +1871,180 @@ input IDFilterComparison {
   notILike: ID
   notIn: [ID!]
   notLike: ID
+}
+
+type InAppNotification {
+  actionLabel: String
+  actionLink: String
+  createdAt: DateTime!
+  id: ID!
+  message: String!
+  metadata: String
+  read: Boolean!
+  type: InAppNotificationType!
+  user: User!
+  userId: String!
+}
+
+input InAppNotificationAggregateFilter {
+  and: [InAppNotificationAggregateFilter!]
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  message: StringFieldComparison
+  or: [InAppNotificationAggregateFilter!]
+  read: BooleanFieldComparison
+  type: InAppNotificationTypeFilterComparison
+  userId: StringFieldComparison
+}
+
+type InAppNotificationAggregateGroupBy {
+  createdAt(by: GroupBy! = DAY): DateTime
+  id: ID
+  message: String
+  read: Boolean
+  type: InAppNotificationType
+  userId: String
+}
+
+type InAppNotificationAggregateResponse {
+  count: InAppNotificationCountAggregate
+  groupBy: InAppNotificationAggregateGroupBy
+  max: InAppNotificationMaxAggregate
+  min: InAppNotificationMinAggregate
+}
+
+type InAppNotificationConnection {
+  """Array of edges."""
+  edges: [InAppNotificationEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type InAppNotificationCountAggregate {
+  createdAt: Int
+  id: Int
+  message: Int
+  read: Int
+  type: Int
+  userId: Int
+}
+
+type InAppNotificationCreatedPayload {
+  """Optional action label for the action link"""
+  actionLabel: String
+
+  """Optional action link for navigation"""
+  actionLink: String
+
+  """Creation timestamp"""
+  createdAt: DateTime!
+
+  """Notification message"""
+  message: String!
+
+  """Additional metadata"""
+  metadata: String
+
+  """Notification ID"""
+  notificationId: ID!
+
+  """Type of notification"""
+  type: InAppNotificationType!
+
+  """User ID who received the notification"""
+  userId: ID!
+}
+
+type InAppNotificationDeleteResponse {
+  actionLabel: String
+  actionLink: String
+  createdAt: DateTime
+  id: ID
+  message: String
+  metadata: String
+  read: Boolean
+  type: InAppNotificationType
+  userId: String
+}
+
+type InAppNotificationEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the InAppNotification"""
+  node: InAppNotification!
+}
+
+input InAppNotificationFilter {
+  and: [InAppNotificationFilter!]
+  createdAt: DateFieldComparison
+  id: IDFilterComparison
+  message: StringFieldComparison
+  or: [InAppNotificationFilter!]
+  read: BooleanFieldComparison
+  type: InAppNotificationTypeFilterComparison
+  userId: StringFieldComparison
+}
+
+type InAppNotificationMaxAggregate {
+  createdAt: DateTime
+  id: ID
+  message: String
+  type: InAppNotificationType
+  userId: String
+}
+
+type InAppNotificationMinAggregate {
+  createdAt: DateTime
+  id: ID
+  message: String
+  type: InAppNotificationType
+  userId: String
+}
+
+input InAppNotificationSort {
+  direction: SortDirection!
+  field: InAppNotificationSortFields!
+  nulls: SortNulls
+}
+
+enum InAppNotificationSortFields {
+  createdAt
+  id
+  message
+  read
+  type
+  userId
+}
+
+"""Types of in-app notifications"""
+enum InAppNotificationType {
+  ERROR
+  INFO
+  SUCCESS
+  SYSTEM
+  WARNING
+}
+
+input InAppNotificationTypeFilterComparison {
+  eq: InAppNotificationType
+  gt: InAppNotificationType
+  gte: InAppNotificationType
+  iLike: InAppNotificationType
+  in: [InAppNotificationType!]
+  is: Boolean
+  isNot: Boolean
+  like: InAppNotificationType
+  lt: InAppNotificationType
+  lte: InAppNotificationType
+  neq: InAppNotificationType
+  notILike: InAppNotificationType
+  notIn: [InAppNotificationType!]
+  notLike: InAppNotificationType
 }
 
 """
@@ -1117,8 +2189,24 @@ enum LegalAnalysisSortFields {
 type LegalDocument {
   contentRaw: String
   createdAt: DateTime!
+
+  """When the document was flagged for moderation"""
+  flaggedAt: DateTime
   id: ID!
   metadata: DocumentMetadata
+
+  """When the document was moderated"""
+  moderatedAt: DateTime
+
+  """ID of the admin who moderated this document"""
+  moderatedById: ID
+
+  """Reason for moderation decision"""
+  moderationReason: String
+
+  """Moderation status of the document"""
+  moderationStatus: ModerationStatus
+  pdfUrl: String
   session: UserSession!
   sessionId: String!
   status: DocumentStatus!
@@ -1131,6 +2219,7 @@ input LegalDocumentAggregateFilter {
   and: [LegalDocumentAggregateFilter!]
   createdAt: DateFieldComparison
   id: IDFilterComparison
+  moderationStatus: ModerationStatusFilterComparison
   or: [LegalDocumentAggregateFilter!]
   sessionId: StringFieldComparison
   status: DocumentStatusFilterComparison
@@ -1142,6 +2231,7 @@ input LegalDocumentAggregateFilter {
 type LegalDocumentAggregateGroupBy {
   createdAt(by: GroupBy! = DAY): DateTime
   id: ID
+  moderationStatus: ModerationStatus
   sessionId: String
   status: DocumentStatus
   title: String
@@ -1170,6 +2260,7 @@ type LegalDocumentConnection {
 type LegalDocumentCountAggregate {
   createdAt: Int
   id: Int
+  moderationStatus: Int
   sessionId: Int
   status: Int
   title: Int
@@ -1180,8 +2271,26 @@ type LegalDocumentCountAggregate {
 type LegalDocumentDeleteResponse {
   contentRaw: String
   createdAt: DateTime
+
+  """When the document was flagged for moderation"""
+  flaggedAt: DateTime
   id: ID
   metadata: DocumentMetadata
+
+  """When the document was moderated"""
+  moderatedAt: DateTime
+
+  """ID of the admin who moderated this document"""
+  moderatedById: ID
+
+  """Reason for moderation decision"""
+  moderationReason: String
+
+  """Moderation status of the document"""
+  moderationStatus: ModerationStatus
+
+  """Signed URL to download the PDF version of this document"""
+  pdfUrl: String
   sessionId: String
   status: DocumentStatus
   title: String
@@ -1201,6 +2310,7 @@ input LegalDocumentFilter {
   and: [LegalDocumentFilter!]
   createdAt: DateFieldComparison
   id: IDFilterComparison
+  moderationStatus: ModerationStatusFilterComparison
   or: [LegalDocumentFilter!]
   sessionId: StringFieldComparison
   status: DocumentStatusFilterComparison
@@ -1212,6 +2322,7 @@ input LegalDocumentFilter {
 type LegalDocumentMaxAggregate {
   createdAt: DateTime
   id: ID
+  moderationStatus: ModerationStatus
   sessionId: String
   status: DocumentStatus
   title: String
@@ -1222,11 +2333,38 @@ type LegalDocumentMaxAggregate {
 type LegalDocumentMinAggregate {
   createdAt: DateTime
   id: ID
+  moderationStatus: ModerationStatus
   sessionId: String
   status: DocumentStatus
   title: String
   type: DocumentType
   updatedAt: DateTime
+}
+
+type LegalDocumentSearchResponse {
+  count: Int!
+  hasMore: Boolean!
+  offset: Int!
+  results: [LegalDocumentSearchResult!]!
+  totalCount: Int!
+}
+
+type LegalDocumentSearchResult {
+  contentRaw: String
+  createdAt: DateTime!
+
+  """Highlighted snippet of matching content"""
+  headline: String
+  id: String!
+  pdfUrl: String
+
+  """Relevance ranking score (higher is more relevant)"""
+  rank: Float!
+  sessionId: String!
+  status: DocumentStatus!
+  title: String!
+  type: DocumentType!
+  updatedAt: DateTime!
 }
 
 input LegalDocumentSort {
@@ -1238,6 +2376,7 @@ input LegalDocumentSort {
 enum LegalDocumentSortFields {
   createdAt
   id
+  moderationStatus
   sessionId
   status
   title
@@ -1373,6 +2512,29 @@ type LegalQueryMinAggregate {
   question: String
   sessionId: String
   updatedAt: DateTime
+}
+
+type LegalQuerySearchResponse {
+  count: Int!
+  hasMore: Boolean!
+  offset: Int!
+  results: [LegalQuerySearchResult!]!
+  totalCount: Int!
+}
+
+type LegalQuerySearchResult {
+  answerMarkdown: String
+  createdAt: DateTime!
+
+  """Highlighted snippet of matching content"""
+  headline: String
+  id: String!
+  question: String!
+
+  """Relevance ranking score (higher is more relevant)"""
+  rank: Float!
+  sessionId: String!
+  updatedAt: DateTime!
 }
 
 input LegalQuerySort {
@@ -1557,9 +2719,53 @@ input LoginInput {
   username: String!
 }
 
+type ModerationActionResult {
+  """Action performed"""
+  action: String!
+
+  """Document ID"""
+  documentId: ID!
+
+  """Reason for the action"""
+  reason: String
+
+  """Whether user was notified"""
+  userNotified: Boolean!
+}
+
+"""Moderation status of document"""
+enum ModerationStatus {
+  APPROVED
+  PENDING
+  REJECTED
+}
+
+input ModerationStatusFilterComparison {
+  eq: ModerationStatus
+  gt: ModerationStatus
+  gte: ModerationStatus
+  iLike: ModerationStatus
+  in: [ModerationStatus!]
+  is: Boolean
+  isNot: Boolean
+  like: ModerationStatus
+  lt: ModerationStatus
+  lte: ModerationStatus
+  neq: ModerationStatus
+  notILike: ModerationStatus
+  notIn: [ModerationStatus!]
+  notLike: ModerationStatus
+}
+
 type Mutation {
   """Accept the legal disclaimer for the current user"""
   acceptDisclaimer: AuthUser!
+
+  """Activate a user account (admin only)"""
+  activateUser(input: ActivateUserInput!): User!
+
+  """Activate a webhook"""
+  activateWebhook(id: String!): Webhook!
 
   """Add a citation to an existing legal query"""
   addCitationToQuery(citation: CreateCitationInput!, queryId: ID!): LegalQuery!
@@ -1567,51 +2773,138 @@ type Mutation {
   """Add AI-generated answer to a legal query"""
   answerLegalQuery(id: ID!, input: AnswerLegalQueryInput!): LegalQuery!
 
+  """Approve a document after moderation review"""
+  approveDocument(input: ApproveDocumentInput!): ModerationActionResult!
+
   """Ask a legal question and get AI answer synchronously"""
   askLegalQuestion(input: AskLegalQuestionInput!): LegalQuery!
+  bulkUpsertSystemSettings(input: BulkUpdateSettingsInput!): [SystemSetting!]!
+
+  """Cancel the current user subscription"""
+  cancelMySubscription(input: CancelSubscriptionInput!): UserSubscription!
+
+  """Change password for the current user"""
+  changePassword(input: ChangePasswordInput!): Boolean!
+
+  """Upgrade or downgrade the current user subscription"""
+  changeSubscriptionPlan(newPlanId: String!): UserSubscription!
+
+  """Change a user role (admin only)"""
+  changeUserRole(input: ChangeUserRoleInput!): User!
 
   """
   Analyze a case description using AI and identify applicable legal grounds
   """
   classifyCase(input: ClassifyCaseInput!): LegalAnalysis!
+
+  """Create a new API key. The raw key is only shown once."""
+  createApiKey(input: CreateApiKeyInput!): CreateApiKeyResponse!
+  createBackup(input: CreateBackupInput): Backup!
   createDocumentTemplate(input: CreateTemplateInput!): DocumentTemplate!
   createDocumentV2(input: CreateLegalDocumentInputV2!): LegalDocumentV2!
+
+  """Create a new subscription for the current user"""
+  createMySubscription(input: CreateUserSubscriptionInput!): UserSubscription!
+  createOneDocumentComment(input: CreateOneDocumentCommentInput!): DocumentComment!
+  createOneDocumentTemplate(input: CreateOneDocumentTemplateInput!): DocumentTemplate!
   createOneDocumentVersion(input: CreateOneDocumentVersionInput!): DocumentVersion!
+  createOneInAppNotification(input: CreateOneInAppNotificationInput!): InAppNotification!
   createOneLegalAnalysis(input: CreateOneLegalAnalysisInput!): LegalAnalysis!
   createOneLegalDocument(input: CreateOneLegalDocumentInput!): LegalDocument!
   createOneLegalQuery(input: CreateOneLegalQueryInput!): LegalQuery!
   createOneLegalRuling(input: CreateOneLegalRulingInput!): LegalRuling!
+  createOneNotification(input: CreateOneNotificationInput!): Notification!
   createOneUser(input: CreateOneUserInput!): User!
+  createOneUserPreference(input: CreateOneUserPreferencesInput!): UserPreferences!
+
+  """Create a new subscription plan"""
+  createSubscriptionPlan(input: CreateSubscriptionPlanInput!): SubscriptionPlan!
+  createUsageRecord(input: CreateAiUsageRecordInput!): AiUsageRecord!
+
+  """Create a new webhook. The secret is only shown once."""
+  createWebhook(input: CreateWebhookInput!): CreateWebhookResponse!
+
+  """Deactivate a webhook (temporary pause)"""
+  deactivateWebhook(id: String!): Webhook!
+
+  """Delete an API key permanently. This action cannot be undone."""
+  deleteApiKey(id: String!): Boolean!
+  deleteBackup(id: ID!): Boolean!
   deleteDocument(id: ID!): Boolean! @deprecated(reason: "Use deleteOneLegalDocument instead")
   deleteDocumentTemplate(id: ID!): Boolean!
   deleteDocumentV2(input: DeleteDocumentInputV2!): Boolean!
 
   """Delete a legal query (deprecated)"""
   deleteLegalQuery(id: ID!): Boolean! @deprecated(reason: "Use deleteOneLegalQuery instead")
+  deleteOneDocumentComment(input: DeleteOneDocumentCommentInput!): DocumentCommentDeleteResponse!
+  deleteOneDocumentTemplate(input: DeleteOneDocumentTemplateInput!): DocumentTemplateDeleteResponse!
+  deleteOneInAppNotification(input: DeleteOneInAppNotificationInput!): InAppNotificationDeleteResponse!
   deleteOneLegalAnalysis(input: DeleteOneLegalAnalysisInput!): LegalAnalysisDeleteResponse!
   deleteOneLegalDocument(input: DeleteOneLegalDocumentInput!): LegalDocumentDeleteResponse!
   deleteOneLegalQuery(input: DeleteOneLegalQueryInput!): LegalQueryDeleteResponse!
   deleteOneLegalRuling(input: DeleteOneLegalRulingInput!): LegalRulingDeleteResponse!
   deleteOneUser(input: DeleteOneUserInput!): UserDeleteResponse!
+  deleteOneUserPreference(input: DeleteOneUserPreferencesInput!): UserPreferencesDeleteResponse!
   deleteOneUserSession(input: DeleteOneUserSessionInput!): UserSessionDeleteResponse!
+
+  """Delete a subscription plan"""
+  deleteSubscriptionPlan(id: String!): Boolean!
+  deleteSystemSetting(key: String!): Boolean!
+
+  """Delete a webhook permanently. This action cannot be undone."""
+  deleteWebhook(id: String!): Boolean!
+
+  """Disable a webhook"""
+  disableWebhook(id: String!): Webhook!
 
   """Queue a document for PDF export"""
   exportDocumentToPdf(input: ExportDocumentToPdfInput!): PdfExportJob!
 
   """Export a document to PDF and wait for the result"""
   exportDocumentToPdfSync(input: ExportDocumentToPdfInput!): PdfExportResult!
+
+  """Flag a document for moderation review"""
+  flagDocumentForModeration(input: FlagDocumentForModerationInput!): ModerationActionResult!
   generateDocument(input: GenerateDocumentInput!): LegalDocument!
   generateDocumentFromTemplate(input: GenerateFromTemplateInput!): LegalDocument!
 
   """Authenticate user with username/email and password"""
   login(input: LoginInput!): AuthPayload!
+
+  """Mark all notifications as read for a user"""
+  markAllNotificationsAsRead(userId: String!): Float!
+
+  """Mark a notification as read"""
+  markNotificationAsRead(notificationId: String!, userId: String!): String!
   publishDocumentV2(input: PublishDocumentInputV2!): LegalDocumentV2!
+
+  """Record usage for quota tracking"""
+  recordUsage(amount: Float, quotaKey: String!): Boolean!
 
   """Refresh access token using a valid refresh token"""
   refreshToken(input: RefreshTokenInput!): RefreshTokenPayload!
 
   """Register a new user account"""
   register(input: RegisterInput!): AuthPayload!
+
+  """Reject a document after moderation review"""
+  rejectDocument(input: RejectDocumentInput!): ModerationActionResult!
+
+  """
+  Render a template with variable substitution without creating a document
+  """
+  renderTemplate(input: RenderTemplateInput!): String!
+  resetMyPreferences: UserPreferences!
+
+  """Reset a user password (admin only)"""
+  resetUserPassword(input: ResetUserPasswordInput!): User!
+  restoreBackup(input: RestoreBackupInput!): Boolean!
+
+  """Resume a subscription that was scheduled for cancellation"""
+  resumeMySubscription: UserSubscription!
+
+  """Revoke an API key. This action cannot be undone."""
+  revokeApiKey(id: String!): ApiKey!
 
   """Revoke a document share"""
   revokeDocumentShare(shareId: ID!): Boolean!
@@ -1621,23 +2914,332 @@ type Mutation {
   """
   rollbackDocumentToVersion(authorUserId: ID, documentId: ID!, sessionId: ID!, versionNumber: Float!): LegalDocument!
 
+  """Rotate webhook secret. The old secret will no longer work."""
+  rotateWebhookSecret(id: String!): String!
+  seedSystemSettings: Boolean!
+
+  """Send bulk notifications to multiple users"""
+  sendBulkNotifications(input: BulkSendNotificationInput!): BulkSendNotificationResponse!
+
+  """Send a notification to a user across specified channels"""
+  sendNotification(input: SendNotificationInput!): SendNotificationResponse!
+
   """Share a document with a user"""
   shareDocument(input: ShareDocumentInput!): DocumentShare!
 
   """Submit a new legal query for AI processing"""
   submitLegalQuery(input: SubmitLegalQueryInput!): LegalQuery!
+
+  """Suspend a user account (admin only)"""
+  suspendUser(input: SuspendUserInput!): User!
+
+  """Test a webhook by sending a test event"""
+  testWebhook(input: TestWebhookInput!): TestWebhookResponse!
+
+  """Update an existing API key (name, scopes, rate limit, expiration)"""
+  updateApiKey(id: String!, input: UpdateApiKeyInput!): ApiKey!
   updateDocument(id: ID!, input: UpdateDocumentInput!): LegalDocument!
 
   """Update the permission level of a document share"""
   updateDocumentSharePermission(input: UpdateSharePermissionInput!): DocumentShare!
   updateDocumentTemplate(id: ID!, input: UpdateTemplateInput!): DocumentTemplate!
   updateDocumentTitleV2(input: UpdateDocumentTitleInputV2!): LegalDocumentV2!
+  updateMyPreferences(input: UpdateUserPreferencesInput!): UserPreferences!
+
+  """Update notification preferences for a user"""
+  updateNotificationPreferences(input: NotificationDeliveryPreferencesInput!): String!
+  updateOneDocumentComment(input: UpdateOneDocumentCommentInput!): DocumentComment!
+  updateOneDocumentTemplate(input: UpdateOneDocumentTemplateInput!): DocumentTemplate!
   updateOneDocumentVersion(input: UpdateOneDocumentVersionInput!): DocumentVersion!
+  updateOneInAppNotification(input: UpdateOneInAppNotificationInput!): InAppNotification!
   updateOneLegalAnalysis(input: UpdateOneLegalAnalysisInput!): LegalAnalysis!
   updateOneLegalDocument(input: UpdateOneLegalDocumentInput!): LegalDocument!
   updateOneLegalQuery(input: UpdateOneLegalQueryInput!): LegalQuery!
   updateOneLegalRuling(input: UpdateOneLegalRulingInput!): LegalRuling!
+  updateOneNotification(input: UpdateOneNotificationInput!): Notification!
   updateOneUser(input: UpdateOneUserInput!): User!
+  updateOneUserPreference(input: UpdateOneUserPreferencesInput!): UserPreferences!
+
+  """Update profile information for the current user"""
+  updateProfile(input: UpdateProfileInput!): AuthUser!
+
+  """Update an existing subscription plan"""
+  updateSubscriptionPlan(id: String!, input: UpdateSubscriptionPlanInput!): SubscriptionPlan!
+
+  """Update an existing webhook (name, URL, events, headers, status)"""
+  updateWebhook(id: String!, input: UpdateWebhookInput!): Webhook!
+  upsertSystemSetting(input: SystemSettingInput!): SystemSetting!
+}
+
+type Notification {
+  createdAt: DateTime!
+  errorMessage: String
+  id: ID!
+  messageId: String
+  metadata: String
+  recipientEmail: String!
+  sentAt: DateTime
+  status: NotificationStatus!
+  subject: String!
+  template: EmailTemplateType!
+  templateData: String
+  updatedAt: DateTime!
+  userId: String
+}
+
+input NotificationAggregateFilter {
+  and: [NotificationAggregateFilter!]
+  createdAt: DateFieldComparison
+  errorMessage: StringFieldComparison
+  id: IDFilterComparison
+  messageId: StringFieldComparison
+  or: [NotificationAggregateFilter!]
+  recipientEmail: StringFieldComparison
+  sentAt: DateFieldComparison
+  status: NotificationStatusFilterComparison
+  subject: StringFieldComparison
+  template: EmailTemplateTypeFilterComparison
+  updatedAt: DateFieldComparison
+  userId: StringFieldComparison
+}
+
+type NotificationAggregateGroupBy {
+  createdAt(by: GroupBy! = DAY): DateTime
+  errorMessage: String
+  id: ID
+  messageId: String
+  recipientEmail: String
+  sentAt(by: GroupBy! = DAY): DateTime
+  status: NotificationStatus
+  subject: String
+  template: EmailTemplateType
+  updatedAt(by: GroupBy! = DAY): DateTime
+  userId: String
+}
+
+type NotificationAggregateResponse {
+  count: NotificationCountAggregate
+  groupBy: NotificationAggregateGroupBy
+  max: NotificationMaxAggregate
+  min: NotificationMinAggregate
+}
+
+"""Notification channel types"""
+enum NotificationChannel {
+  BOTH
+  EMAIL
+  IN_APP
+}
+
+type NotificationChannels {
+  email: Boolean!
+  inApp: Boolean!
+  push: Boolean!
+}
+
+input NotificationChannelsInput {
+  email: Boolean
+  inApp: Boolean
+  push: Boolean
+}
+
+type NotificationConnection {
+  """Array of edges."""
+  edges: [NotificationEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type NotificationCountAggregate {
+  createdAt: Int
+  errorMessage: Int
+  id: Int
+  messageId: Int
+  recipientEmail: Int
+  sentAt: Int
+  status: Int
+  subject: Int
+  template: Int
+  updatedAt: Int
+  userId: Int
+}
+
+type NotificationDeliveryPreferences {
+  """Enable email notifications"""
+  emailEnabled: Boolean!
+
+  """Notification types to exclude from email"""
+  excludeEmailTypes: [NotificationTemplateType!]
+
+  """Notification types to exclude from in-app"""
+  excludeInAppTypes: [NotificationTemplateType!]
+
+  """Enable in-app notifications"""
+  inAppEnabled: Boolean!
+
+  """User ID"""
+  userId: String!
+}
+
+input NotificationDeliveryPreferencesInput {
+  """Enable email notifications"""
+  emailEnabled: Boolean = true
+
+  """Notification types to exclude from email"""
+  excludeEmailTypes: [NotificationTemplateType!]
+
+  """Notification types to exclude from in-app"""
+  excludeInAppTypes: [NotificationTemplateType!]
+
+  """Enable in-app notifications"""
+  inAppEnabled: Boolean = true
+
+  """User ID"""
+  userId: String!
+}
+
+type NotificationEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the Notification"""
+  node: Notification!
+}
+
+input NotificationFilter {
+  and: [NotificationFilter!]
+  createdAt: DateFieldComparison
+  errorMessage: StringFieldComparison
+  id: IDFilterComparison
+  messageId: StringFieldComparison
+  or: [NotificationFilter!]
+  recipientEmail: StringFieldComparison
+  sentAt: DateFieldComparison
+  status: NotificationStatusFilterComparison
+  subject: StringFieldComparison
+  template: EmailTemplateTypeFilterComparison
+  updatedAt: DateFieldComparison
+  userId: StringFieldComparison
+}
+
+type NotificationMaxAggregate {
+  createdAt: DateTime
+  errorMessage: String
+  id: ID
+  messageId: String
+  recipientEmail: String
+  sentAt: DateTime
+  status: NotificationStatus
+  subject: String
+  template: EmailTemplateType
+  updatedAt: DateTime
+  userId: String
+}
+
+type NotificationMinAggregate {
+  createdAt: DateTime
+  errorMessage: String
+  id: ID
+  messageId: String
+  recipientEmail: String
+  sentAt: DateTime
+  status: NotificationStatus
+  subject: String
+  template: EmailTemplateType
+  updatedAt: DateTime
+  userId: String
+}
+
+type NotificationPreferences {
+  channels: NotificationChannels!
+  documentUpdates: Boolean!
+  marketingEmails: Boolean!
+  queryResponses: Boolean!
+  systemAlerts: Boolean!
+}
+
+input NotificationPreferencesInput {
+  channels: NotificationChannelsInput
+  documentUpdates: Boolean
+  marketingEmails: Boolean
+  queryResponses: Boolean
+  systemAlerts: Boolean
+}
+
+"""Priority levels for notifications"""
+enum NotificationPriority {
+  HIGH
+  LOW
+  NORMAL
+  URGENT
+}
+
+input NotificationSort {
+  direction: SortDirection!
+  field: NotificationSortFields!
+  nulls: SortNulls
+}
+
+enum NotificationSortFields {
+  createdAt
+  errorMessage
+  id
+  messageId
+  recipientEmail
+  sentAt
+  status
+  subject
+  template
+  updatedAt
+  userId
+}
+
+"""Status of email notifications"""
+enum NotificationStatus {
+  BOUNCED
+  FAILED
+  PENDING
+  QUEUED
+  SENT
+}
+
+input NotificationStatusFilterComparison {
+  eq: NotificationStatus
+  gt: NotificationStatus
+  gte: NotificationStatus
+  iLike: NotificationStatus
+  in: [NotificationStatus!]
+  is: Boolean
+  isNot: Boolean
+  like: NotificationStatus
+  lt: NotificationStatus
+  lte: NotificationStatus
+  neq: NotificationStatus
+  notILike: NotificationStatus
+  notIn: [NotificationStatus!]
+  notLike: NotificationStatus
+}
+
+"""Notification template types"""
+enum NotificationTemplateType {
+  DOCUMENT_COMPLETED
+  DOCUMENT_FAILED
+  DOCUMENT_SHARED
+  EMAIL_VERIFICATION
+  PASSWORD_CHANGED
+  PASSWORD_RESET
+  QUERY_COMPLETED
+  QUERY_FAILED
+  RULING_INDEXED
+  RULING_SEARCH_READY
+  SECURITY_ALERT
+  SYSTEM_MAINTENANCE
+  SYSTEM_UPDATE
+  WELCOME
 }
 
 input NumberFieldComparison {
@@ -1660,6 +3262,13 @@ input NumberFieldComparisonBetween {
   upper: Float!
 }
 
+type OperationBreakdown {
+  cost: Float!
+  operationType: AiOperationType!
+  requestCount: Int!
+  tokenCount: Int!
+}
+
 type PageInfo {
   """The cursor of the last returned record."""
   endCursor: ConnectionCursor
@@ -1672,6 +3281,46 @@ type PageInfo {
 
   """The cursor of the first returned record."""
   startCursor: ConnectionCursor
+}
+
+type PaymentHistoryItem {
+  amount: String!
+  createdAt: String!
+  currency: String!
+  description: String
+  id: ID!
+  invoiceId: String
+  method: PaymentMethod!
+  refundAmount: String
+  refundedAt: String
+  status: PaymentStatus!
+}
+
+"""Payment method"""
+enum PaymentMethod {
+  BANK_TRANSFER
+  CREDIT_CARD
+  DEBIT_CARD
+  OTHER
+  PAYPAL
+}
+
+type PaymentMethodInfo {
+  brand: String!
+  expiryMonth: String!
+  expiryYear: String!
+  id: String!
+  isDefault: Boolean!
+  last4: String!
+}
+
+"""Payment status"""
+enum PaymentStatus {
+  COMPLETED
+  FAILED
+  PARTIALLY_REFUNDED
+  PENDING
+  REFUNDED
 }
 
 type PdfExportJob {
@@ -1752,6 +3401,22 @@ enum PdfPageFormat {
   LETTER
 }
 
+"""Subscription plan tiers"""
+enum PlanTier {
+  BASIC
+  ENTERPRISE
+  FREE
+  PROFESSIONAL
+}
+
+input PolishFormattingRulesInput {
+  addressFormat: String
+  currencyFormat: String
+  dateFormat: String
+  legalCitations: Boolean
+  numberFormat: String
+}
+
 input PublishDocumentInputV2 {
   documentId: ID!
   publishedBy: ID!
@@ -1759,9 +3424,16 @@ input PublishDocumentInputV2 {
 
 type Query {
   """
+  Advanced search with boolean operators (AND, OR, NOT) and field-specific search
+  """
+  advancedSearchLegalRulings(input: AdvancedSearchLegalRulingsInput!): AdvancedLegalRulingSearchResponse!
+
+  """
   Search legal rulings across multiple sources (LOCAL, SAOS, ISAP) with relevance ranking
   """
   aggregatedSearchLegalRulings(input: AggregatedSearchLegalRulingsInput!): AggregatedLegalRulingSearchResponse!
+  aiUsageMetrics(input: DashboardAnalyticsInput): AiUsageMetrics!
+  analyticsDashboard(input: DashboardAnalyticsInput): AnalyticsDashboard!
   auditLog(
     """The id of the record to find."""
     id: ID!
@@ -1780,21 +3452,61 @@ type Query {
     """Specify to sort results."""
     sorting: [AuditLogSort!]! = []
   ): AuditLogConnection!
+  backup(id: ID!): Backup
+  backupStats: BackupStats!
+  backups(limit: Float = 50, offset: Float = 0): [Backup!]!
+
+  """Check if the current user can access a specific feature"""
+  canAccessFeature(featureKey: String!): Boolean!
+
+  """Check the current user quota for a specific resource"""
+  checkQuota(input: CheckQuotaInput!): CheckQuotaResponse!
 
   """Count legal rulings matching filter criteria"""
   countLegalRulings(input: FilterLegalRulingsInput): Int!
+  documentComment(
+    """The id of the record to find."""
+    id: ID!
+  ): DocumentComment!
+  documentCommentAggregate(
+    """Filter to find records to aggregate on"""
+    filter: DocumentCommentAggregateFilter
+  ): [DocumentCommentAggregateResponse!]!
+  documentComments(
+    """Specify to filter the records returned."""
+    filter: DocumentCommentFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [DocumentCommentSort!]! = []
+  ): DocumentCommentConnection!
 
   """Get the latest version of a document"""
   documentLatestVersion(documentId: ID!): DocumentVersion
+  documentMetrics(input: DashboardAnalyticsInput): DocumentMetrics!
 
   """Get all shares for a document"""
   documentShares(documentId: ID!): [DocumentShare!]!
-  documentTemplate(id: ID!): DocumentTemplate!
+  documentTemplate(
+    """The id of the record to find."""
+    id: ID!
+  ): DocumentTemplate!
   documentTemplateAggregate(
     """Filter to find records to aggregate on"""
     filter: DocumentTemplateAggregateFilter
   ): [DocumentTemplateAggregateResponse!]!
-  documentTemplates: [DocumentTemplate!]!
+  documentTemplates(
+    """Specify to filter the records returned."""
+    filter: DocumentTemplateFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [DocumentTemplateSort!]! = []
+  ): DocumentTemplateConnection!
   documentV2(id: ID!): LegalDocumentV2
   documentVersion(
     """The id of the record to find."""
@@ -1831,6 +3543,24 @@ type Query {
 
   """Filter legal rulings by multiple criteria"""
   filterLegalRulings(input: FilterLegalRulingsInput!): [LegalRuling!]!
+  inAppNotification(
+    """The id of the record to find."""
+    id: ID!
+  ): InAppNotification!
+  inAppNotificationAggregate(
+    """Filter to find records to aggregate on"""
+    filter: InAppNotificationAggregateFilter
+  ): [InAppNotificationAggregateResponse!]!
+  inAppNotifications(
+    """Specify to filter the records returned."""
+    filter: InAppNotificationFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [InAppNotificationSort!]! = []
+  ): InAppNotificationConnection!
   legalAnalyses(
     """Specify to filter the records returned."""
     filter: LegalAnalysisFilter! = {}
@@ -1918,17 +3648,91 @@ type Query {
   """Get current authenticated user information"""
   me: AuthUser
 
+  """Get all API keys for the current user"""
+  myApiKeys: [ApiKey!]!
+
+  """
+  Get billing information including subscription status and payment history
+  """
+  myBillingInfo: BillingInfo
+  myDailyUsage(endDate: DateTime, startDate: DateTime): DailyUsageResponse!
+
+  """Get payment history for the current user"""
+  myPaymentHistory: [PaymentHistoryItem!]!
+  myPreferences: UserPreferences!
+
+  """Get the current user subscription"""
+  mySubscription: UserSubscription
+  myTotalCost(endDate: DateTime, startDate: DateTime): Float!
+  myUsageRecords(endDate: DateTime, limit: Float = 100, offset: Float = 0, operationType: AiOperationType, startDate: DateTime): [AiUsageRecord!]!
+
+  """Get usage statistics for the current user subscription"""
+  myUsageStats: SubscriptionUsageStats
+
+  """Get all webhooks for the current user"""
+  myWebhooks(status: String): [Webhook!]!
+  notification(
+    """The id of the record to find."""
+    id: ID!
+  ): Notification!
+  notificationAggregate(
+    """Filter to find records to aggregate on"""
+    filter: NotificationAggregateFilter
+  ): [NotificationAggregateResponse!]!
+
+  """Get notification preferences for a user"""
+  notificationPreferences(userId: String!): NotificationDeliveryPreferences!
+  notifications(
+    """Specify to filter the records returned."""
+    filter: NotificationFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [NotificationSort!]! = []
+  ): NotificationConnection!
+
   """Get the status of a PDF export job"""
   pdfExportStatus(jobId: ID!): PdfExportStatus!
 
+  """Get all documents pending moderation review"""
+  pendingModerationDocuments: [LegalDocument!]!
+
   """Get legal queries that are waiting for AI answers"""
   pendingQueries(limit: Float): [LegalQuery!]!
+  publicSystemSettings: [SystemSetting!]!
 
   """Get all legal queries for a specific session"""
   queriesBySession(sessionId: String!): [LegalQuery!]!
+  queryMetrics(input: DashboardAnalyticsInput): QueryMetrics!
+
+  """Get recent notifications for a user"""
+  recentNotifications(limit: Float, unreadOnly: Boolean, userId: String!): [InAppNotification!]!
+
+  """Full-text search across documents with relevance ranking"""
+  searchLegalDocuments(input: SearchLegalDocumentsInput!): LegalDocumentSearchResponse!
+
+  """Full-text search across queries with relevance ranking"""
+  searchLegalQueries(input: SearchLegalQueriesInput!): LegalQuerySearchResponse!
 
   """Full-text search for legal rulings with relevance ranking"""
   searchLegalRulings(input: SearchLegalRulingsInput!): LegalRulingSearchResponse!
+
+  """Get a subscription plan by ID"""
+  subscriptionPlan(id: String!): SubscriptionPlan
+
+  """Get all active subscription plans ordered by price"""
+  subscriptionPlans: [SubscriptionPlan!]!
+  systemHealthMetrics(input: DashboardAnalyticsInput): SystemHealthMetrics!
+  systemSetting(key: String!): SystemSetting
+  systemSettings: [SystemSetting!]!
+  systemSettingsByCategory(category: SettingCategory!): [SystemSetting!]!
+  topUsersByUsage(by: String = "tokens", endDate: DateTime, limit: Float = 10, startDate: DateTime): String!
+
+  """Get count of unread notifications for a user"""
+  unreadNotificationCount(userId: String!): Float!
+  usageStats(query: UsageStatsQueryInput!): UsageStatsResponse!
   user(
     """The id of the record to find."""
     id: ID!
@@ -1937,6 +3741,25 @@ type Query {
     """Filter to find records to aggregate on"""
     filter: UserAggregateFilter
   ): [UserAggregateResponse!]!
+  userGrowthMetrics(input: DashboardAnalyticsInput): UserGrowthMetrics!
+  userPreference(
+    """The id of the record to find."""
+    id: ID!
+  ): UserPreferences!
+  userPreferences(
+    """Specify to filter the records returned."""
+    filter: UserPreferencesFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [UserPreferencesSort!]! = []
+  ): UserPreferencesConnection!
+  userPreferencesAggregate(
+    """Filter to find records to aggregate on"""
+    filter: UserPreferencesAggregateFilter
+  ): [UserPreferencesAggregateResponse!]!
   userSession(
     """The id of the record to find."""
     id: ID!
@@ -1955,6 +3778,7 @@ type Query {
     """Specify to sort results."""
     sorting: [UserSessionSort!]! = []
   ): UserSessionConnection!
+  userUsageRecords(endDate: DateTime, limit: Float = 100, offset: Float = 0, operationType: AiOperationType, startDate: DateTime, userId: String!): [AiUsageRecord!]!
   users(
     """Specify to filter the records returned."""
     filter: UserFilter! = {}
@@ -1965,6 +3789,33 @@ type Query {
     """Specify to sort results."""
     sorting: [UserSort!]! = []
   ): UserConnection!
+
+  """Validate an API key and check if it has the required scopes"""
+  validateApiKey(input: ValidateApiKeyInput!): ValidateApiKeyResponse!
+
+  """Get a webhook by ID"""
+  webhook(id: String!): Webhook!
+
+  """Get recent deliveries for a webhook"""
+  webhookDeliveries(limit: Float = 50, webhookId: String!): [WebhookDelivery!]!
+
+  """Get webhook statistics for the current user"""
+  webhookStats: WebhookStats!
+}
+
+type QueryMetrics {
+  """Average citations per query"""
+  avgCitationsPerQuery: Float!
+
+  """Average queries per user"""
+  avgQueriesPerUser: Float!
+  periodEnd: DateTime!
+  periodStart: DateTime!
+
+  """Total citations across all queries"""
+  totalCitations: Int!
+  totalQueries: Int!
+  uniqueUsers: Int!
 }
 
 input RefreshTokenInput {
@@ -1997,6 +3848,14 @@ input RegisterInput {
   username: String
 }
 
+input RejectDocumentInput {
+  """Document ID to reject"""
+  documentId: ID!
+
+  """Reason for rejection (required)"""
+  reason: String!
+}
+
 type RelatedDocumentLink {
   description: String
   documentId: String!
@@ -2011,11 +3870,90 @@ input RelatedDocumentLinkInput {
   relevanceScore: Float
 }
 
+input RenderTemplateInput {
+  templateId: String!
+  variables: JSON!
+}
+
+input ResetUserPasswordInput {
+  newPassword: String!
+  userId: ID!
+}
+
+input RestoreBackupInput {
+  """Create a new database instead of overwriting"""
+  createNewDatabase: Boolean
+  id: ID!
+
+  """New database name if createNewDatabase is true"""
+  newDatabaseName: String
+
+  """Target database name (defaults to current)"""
+  targetDatabase: String
+}
+
 type RulingMetadata {
   keywords: [String!]
   legalArea: String
   relatedCases: [String!]
   sourceReference: String
+}
+
+"""Specific fields to search in"""
+enum SearchField {
+  ALL
+  COURT_NAME
+  FULL_TEXT
+  KEYWORDS
+  LEGAL_AREA
+  SIGNATURE
+  SUMMARY
+}
+
+input SearchLegalDocumentsInput {
+  """End date for date range filter (ISO 8601 format)"""
+  endDate: String
+
+  """Maximum number of results to return"""
+  limit: Int
+
+  """Number of results to skip for pagination"""
+  offset: Int
+
+  """Search query for full-text search across title and content"""
+  query: String!
+
+  """Filter by session ID"""
+  sessionId: String
+
+  """Start date for date range filter (ISO 8601 format)"""
+  startDate: String
+
+  """Filter by document status"""
+  status: DocumentStatus
+
+  """Filter by document type"""
+  type: DocumentType
+}
+
+input SearchLegalQueriesInput {
+  """End date for date range filter (ISO 8601 format)"""
+  endDate: String
+
+  """Maximum number of results to return"""
+  limit: Int
+
+  """Number of results to skip for pagination"""
+  offset: Int
+
+  """Search query for full-text search across questions and answers"""
+  query: String!
+
+  """Filter by session ID"""
+  sessionId: String
+
+  """Start date for date range filter (ISO 8601 format)"""
+  startDate: String
 }
 
 input SearchLegalRulingsInput {
@@ -2045,6 +3983,52 @@ enum SearchSource {
   SAOS
 }
 
+input SendNotificationInput {
+  """Optional action label for the action link button"""
+  actionLabel: String
+
+  """Optional action link for navigation"""
+  actionLink: String
+
+  """Channel to send notification through"""
+  channel: NotificationChannel = BOTH
+
+  """Optional custom message for in-app notification"""
+  customMessage: String
+
+  """Type of in-app notification for UI styling"""
+  inAppType: InAppNotificationType
+
+  """Additional metadata for tracking"""
+  metadata: String
+
+  """Priority level of the notification"""
+  priority: NotificationPriority = NORMAL
+
+  """Data for template rendering (JSON string)"""
+  templateData: String
+
+  """Type of notification template to use"""
+  templateType: NotificationTemplateType!
+
+  """User email address"""
+  userEmail: String!
+
+  """User ID to receive the notification"""
+  userId: String!
+}
+
+type SendNotificationResponse {
+  """Whether the email notification was sent"""
+  emailSent: Boolean!
+
+  """Whether the in-app notification was created"""
+  inAppCreated: Boolean!
+
+  """ID of the created in-app notification"""
+  notificationId: String
+}
+
 """Mode of operation for a user session"""
 enum SessionMode {
   LAWYER
@@ -2066,6 +4050,22 @@ input SessionModeFilterComparison {
   notILike: SessionMode
   notIn: [SessionMode!]
   notLike: SessionMode
+}
+
+"""System setting categories"""
+enum SettingCategory {
+  AI
+  FEATURE_FLAGS
+  GENERAL
+  MAINTENANCE
+}
+
+"""System setting value types"""
+enum SettingValueType {
+  BOOLEAN
+  JSON
+  NUMBER
+  STRING
 }
 
 input ShareDocumentInput {
@@ -2128,6 +4128,18 @@ input SubmitLegalQueryInput {
 }
 
 type Subscription {
+  """Subscribe to cursor position updates for a document"""
+  cursorUpdated(
+    """Document ID to receive cursor updates for"""
+    documentId: String!
+  ): CursorEventPayload!
+
+  """Subscribe to document edits for real-time collaboration"""
+  documentEdited(
+    """Document ID to receive edit updates for"""
+    documentId: String!
+  ): DocumentEditEventPayload!
+
   """Subscribe to document status changes"""
   documentStatusChanged(
     """Filter by document ID"""
@@ -2136,6 +4148,99 @@ type Subscription {
     """Filter by session ID"""
     sessionId: String
   ): DocumentStatusChange!
+
+  """Subscribe to new in-app notifications"""
+  inAppNotificationCreated(
+    """Filter by user ID"""
+    userId: String
+  ): InAppNotificationCreatedPayload!
+
+  """Subscribe to user joined events for a document"""
+  userJoinedDocument(
+    """Document ID to receive user joined events for"""
+    documentId: String!
+  ): UserJoinedEventPayload!
+
+  """Subscribe to user left events for a document"""
+  userLeftDocument(
+    """Document ID to receive user left events for"""
+    documentId: String!
+  ): UserLeftEventPayload!
+}
+
+type SubscriptionPlan {
+  billingInterval: BillingInterval!
+  createdAt: DateTime!
+  description: String
+  displayOrder: Float!
+  features: String!
+  id: ID!
+  isActive: Boolean!
+  maxUsers: Int
+  name: String!
+  price: Float!
+  stripePriceId: String
+  stripeYearlyPriceId: String
+  tier: PlanTier!
+  trialDays: Float!
+  updatedAt: DateTime!
+  yearlyDiscount: Float!
+}
+
+"""Subscription status"""
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  EXPIRED
+  PAST_DUE
+  TRIALING
+}
+
+type SubscriptionUsageStats {
+  daysRemaining: Int!
+  periodEnd: String!
+  periodStart: String!
+  planTier: PlanTier!
+  subscriptionId: ID!
+  usage: String!
+}
+
+input SuspendUserInput {
+  reason: String!
+  userId: ID!
+}
+
+type SystemHealthMetrics {
+  """Active user sessions (placeholder)"""
+  activeSessions: Int!
+
+  """Average AI response time in ms (placeholder)"""
+  avgResponseTime: Float!
+
+  """Document generation success rate"""
+  documentSuccessRate: Float!
+  timestamp: DateTime!
+}
+
+type SystemSetting {
+  category: SettingCategory!
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  key: String!
+  metadata: String
+  updatedAt: DateTime!
+  value: String
+  valueType: SettingValueType!
+}
+
+input SystemSettingInput {
+  category: SettingCategory
+  description: String
+  key: String!
+  metadata: String
+  value: String
+  valueType: SettingValueType
 }
 
 """Category of legal document template"""
@@ -2165,9 +4270,92 @@ input TemplateCategoryFilterComparison {
   notLike: TemplateCategory
 }
 
+input TemplateVariableInput {
+  defaultValue: String
+  description: String
+  label: String!
+  name: String!
+  required: Boolean!
+  type: String!
+  validation: JSON
+}
+
+input TestWebhookInput {
+  event: String = "test.event"
+  payload: String
+  webhookId: String!
+}
+
+type TestWebhookResponse {
+  durationMs: Int!
+  error: String
+  response: String
+  statusCode: Int
+  success: Boolean!
+}
+
+"""Available theme options for the UI"""
+enum ThemePreference {
+  DARK
+  LIGHT
+  SYSTEM
+}
+
+input ThemePreferenceFilterComparison {
+  eq: ThemePreference
+  gt: ThemePreference
+  gte: ThemePreference
+  iLike: ThemePreference
+  in: [ThemePreference!]
+  is: Boolean
+  isNot: Boolean
+  like: ThemePreference
+  lt: ThemePreference
+  lte: ThemePreference
+  neq: ThemePreference
+  notILike: ThemePreference
+  notIn: [ThemePreference!]
+  notLike: ThemePreference
+}
+
+"""
+`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
+"""
+scalar Timestamp
+
+input UpdateApiKeyInput {
+  description: String
+  expiresAt: String
+  name: String
+  rateLimitPerMinute: Int
+  scopes: [ApiKeyScope!]
+}
+
+input UpdateDocumentCommentInput {
+  position: CreateCommentPositionInput
+  resolutionStatus: CommentResolutionStatus
+
+  """
+  ID of the user who resolved the comment (required when marking as resolved)
+  """
+  resolvedBy: String
+  text: String
+}
+
 input UpdateDocumentInput {
   metadata: DocumentMetadataInput
   title: String
+}
+
+input UpdateDocumentTemplateInput {
+  category: TemplateCategory
+  conditionalSections: [ConditionalSectionInput!]
+  content: String
+  description: String
+  isActive: String
+  name: String
+  polishFormattingRules: PolishFormattingRulesInput
+  variables: [TemplateVariableInput!]
 }
 
 input UpdateDocumentTitleInputV2 {
@@ -2178,6 +4366,26 @@ input UpdateDocumentTitleInputV2 {
 
 input UpdateDocumentVersionInput {
   changeDescription: String
+}
+
+input UpdateInAppNotificationInput {
+  """Optional action label for the action link button"""
+  actionLabel: String
+
+  """Optional action link for navigation"""
+  actionLink: String
+
+  """The notification message content"""
+  message: String
+
+  """Additional metadata for extensibility (JSON string)"""
+  metadata: String
+
+  """Read status"""
+  read: Boolean
+
+  """Type of notification for UI styling"""
+  type: String
 }
 
 input UpdateLegalAnalysisInput {
@@ -2194,6 +4402,9 @@ input UpdateLegalAnalysisInput {
 input UpdateLegalDocumentInput {
   contentRaw: String
   metadata: CreateDocumentMetadataInput
+
+  """Signed URL to download the PDF version of this document"""
+  pdfUrl: String
   title: String
   type: DocumentType
 }
@@ -2214,12 +4425,68 @@ input UpdateLegalRulingInput {
   summary: String
 }
 
+input UpdateNotificationInput {
+  """Error message if sending failed"""
+  errorMessage: String
+
+  """SendGrid message ID"""
+  messageId: String
+
+  """Additional metadata (JSON string)"""
+  metadata: String
+
+  """Recipient email address"""
+  recipientEmail: String
+
+  """Timestamp when email was sent"""
+  sentAt: String
+
+  """Notification status"""
+  status: NotificationStatus
+
+  """Email subject line"""
+  subject: String
+
+  """Email template type"""
+  template: EmailTemplateType
+
+  """Template data for rendering (JSON string)"""
+  templateData: String
+
+  """User ID"""
+  userId: String
+}
+
+input UpdateOneDocumentCommentInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateDocumentCommentInput!
+}
+
+input UpdateOneDocumentTemplateInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateDocumentTemplateInput!
+}
+
 input UpdateOneDocumentVersionInput {
   """The id of the record to update"""
   id: ID!
 
   """The update to apply."""
   update: UpdateDocumentVersionInput!
+}
+
+input UpdateOneInAppNotificationInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateInAppNotificationInput!
 }
 
 input UpdateOneLegalAnalysisInput {
@@ -2254,6 +4521,14 @@ input UpdateOneLegalRulingInput {
   update: UpdateLegalRulingInput!
 }
 
+input UpdateOneNotificationInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateNotificationInput!
+}
+
 input UpdateOneUserInput {
   """The id of the record to update"""
   id: ID!
@@ -2262,12 +4537,49 @@ input UpdateOneUserInput {
   update: UpdateUserInput!
 }
 
+input UpdateOneUserPreferencesInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateUserPreferencesInput!
+}
+
+input UpdateProfileInput {
+  """Email address"""
+  email: String
+
+  """First name"""
+  firstName: String
+
+  """Last name"""
+  lastName: String
+
+  """Username"""
+  username: String
+}
+
 input UpdateSharePermissionInput {
   """New permission level"""
   permission: SharePermission!
 
   """ID of the share to update"""
   shareId: ID!
+}
+
+input UpdateSubscriptionPlanInput {
+  billingInterval: BillingInterval
+  description: String
+  displayOrder: Int
+  features: String
+  isActive: Boolean
+  maxUsers: Int
+  name: String
+  price: Int
+  stripePriceId: String
+  stripeYearlyPriceId: String
+  trialDays: Int
+  yearlyDiscount: Int
 }
 
 input UpdateTemplateInput {
@@ -2290,6 +4602,45 @@ input UpdateUserInput {
   username: String
 }
 
+input UpdateUserPreferencesInput {
+  aiModel: AiModelType
+  dateFormat: String
+  emailNotifications: Boolean
+  inAppNotifications: Boolean
+  locale: String
+  notificationPreferences: NotificationPreferencesInput
+  theme: ThemePreference
+  timezone: String
+}
+
+input UpdateWebhookInput {
+  description: String
+  events: [WebhookEvent!]
+  headers: String
+  maxRetries: Int
+  name: String
+  status: WebhookStatus
+  timeoutMs: Int
+  url: String
+}
+
+input UsageStatsQueryInput {
+  endDate: DateTime
+  operationType: AiOperationType
+  startDate: DateTime
+  userId: ID
+}
+
+type UsageStatsResponse {
+  breakdownByOperation: [OperationBreakdown!]
+  operationCount: Int!
+  periodEnd: DateTime!
+  periodStart: DateTime!
+  totalCost: Float!
+  totalRequests: Int!
+  totalTokens: Int!
+}
+
 type User {
   createdAt: DateTime!
   disclaimerAccepted: Boolean!
@@ -2299,7 +4650,9 @@ type User {
   id: ID!
   isActive: Boolean!
   lastName: String
+  role: String!
   sessions: UserSession
+  stripeCustomerId: String
   updatedAt: DateTime!
   username: String
 }
@@ -2311,6 +4664,7 @@ input UserAggregateFilter {
   id: IDFilterComparison
   isActive: BooleanFieldComparison
   or: [UserAggregateFilter!]
+  role: StringFieldComparison
   updatedAt: DateFieldComparison
 }
 
@@ -2319,6 +4673,7 @@ type UserAggregateGroupBy {
   email: String
   id: ID
   isActive: Boolean
+  role: String
   updatedAt(by: GroupBy! = DAY): DateTime
 }
 
@@ -2345,6 +4700,7 @@ type UserCountAggregate {
   email: Int
   id: Int
   isActive: Int
+  role: Int
   updatedAt: Int
 }
 
@@ -2357,6 +4713,8 @@ type UserDeleteResponse {
   id: ID
   isActive: Boolean
   lastName: String
+  role: String
+  stripeCustomerId: String
   updatedAt: DateTime
   username: String
 }
@@ -2376,13 +4734,42 @@ input UserFilter {
   id: IDFilterComparison
   isActive: BooleanFieldComparison
   or: [UserFilter!]
+  role: StringFieldComparison
   updatedAt: DateFieldComparison
+}
+
+type UserGrowthMetrics {
+  activeUsers: Int!
+  adminUsers: Int!
+
+  """Growth rate as percentage"""
+  growthRate: Float!
+  newUsers: Int!
+  periodEnd: DateTime!
+  periodStart: DateTime!
+  totalUsers: Int!
+}
+
+type UserJoinedEventPayload {
+  color: String
+  documentId: ID!
+  timestamp: DateTime!
+  userId: ID!
+  userName: String!
+}
+
+type UserLeftEventPayload {
+  documentId: ID!
+  timestamp: DateTime!
+  userId: ID!
+  userName: String!
 }
 
 type UserMaxAggregate {
   createdAt: DateTime
   email: String
   id: ID
+  role: String
   updatedAt: DateTime
 }
 
@@ -2390,7 +4777,155 @@ type UserMinAggregate {
   createdAt: DateTime
   email: String
   id: ID
+  role: String
   updatedAt: DateTime
+}
+
+type UserPreferences {
+  aiModel: AiModelType!
+  createdAt: DateTime!
+  dateFormat: String
+  emailNotifications: Boolean!
+  getNotificationPreferences: NotificationPreferences!
+  id: ID!
+  inAppNotifications: Boolean!
+  locale: String!
+  theme: ThemePreference!
+  timezone: String
+  updatedAt: DateTime!
+  user: User!
+  userId: String!
+}
+
+input UserPreferencesAggregateFilter {
+  aiModel: AiModelTypeFilterComparison
+  and: [UserPreferencesAggregateFilter!]
+  createdAt: DateFieldComparison
+  emailNotifications: BooleanFieldComparison
+  id: IDFilterComparison
+  inAppNotifications: BooleanFieldComparison
+  locale: StringFieldComparison
+  or: [UserPreferencesAggregateFilter!]
+  theme: ThemePreferenceFilterComparison
+  updatedAt: DateFieldComparison
+  userId: StringFieldComparison
+}
+
+type UserPreferencesAggregateGroupBy {
+  aiModel: AiModelType
+  createdAt(by: GroupBy! = DAY): DateTime
+  emailNotifications: Boolean
+  id: ID
+  inAppNotifications: Boolean
+  locale: String
+  theme: ThemePreference
+  updatedAt(by: GroupBy! = DAY): DateTime
+  userId: String
+}
+
+type UserPreferencesAggregateResponse {
+  count: UserPreferencesCountAggregate
+  groupBy: UserPreferencesAggregateGroupBy
+  max: UserPreferencesMaxAggregate
+  min: UserPreferencesMinAggregate
+}
+
+type UserPreferencesConnection {
+  """Array of edges."""
+  edges: [UserPreferencesEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type UserPreferencesCountAggregate {
+  aiModel: Int
+  createdAt: Int
+  emailNotifications: Int
+  id: Int
+  inAppNotifications: Int
+  locale: Int
+  theme: Int
+  updatedAt: Int
+  userId: Int
+}
+
+type UserPreferencesDeleteResponse {
+  aiModel: AiModelType
+  createdAt: DateTime
+  dateFormat: String
+  emailNotifications: Boolean
+  getNotificationPreferences: NotificationPreferences
+  id: ID
+  inAppNotifications: Boolean
+  locale: String
+  theme: ThemePreference
+  timezone: String
+  updatedAt: DateTime
+  userId: String
+}
+
+type UserPreferencesEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the UserPreferences"""
+  node: UserPreferences!
+}
+
+input UserPreferencesFilter {
+  aiModel: AiModelTypeFilterComparison
+  and: [UserPreferencesFilter!]
+  createdAt: DateFieldComparison
+  emailNotifications: BooleanFieldComparison
+  id: IDFilterComparison
+  inAppNotifications: BooleanFieldComparison
+  locale: StringFieldComparison
+  or: [UserPreferencesFilter!]
+  theme: ThemePreferenceFilterComparison
+  updatedAt: DateFieldComparison
+  userId: StringFieldComparison
+}
+
+type UserPreferencesMaxAggregate {
+  aiModel: AiModelType
+  createdAt: DateTime
+  id: ID
+  locale: String
+  theme: ThemePreference
+  updatedAt: DateTime
+  userId: String
+}
+
+type UserPreferencesMinAggregate {
+  aiModel: AiModelType
+  createdAt: DateTime
+  id: ID
+  locale: String
+  theme: ThemePreference
+  updatedAt: DateTime
+  userId: String
+}
+
+input UserPreferencesSort {
+  direction: SortDirection!
+  field: UserPreferencesSortFields!
+  nulls: SortNulls
+}
+
+enum UserPreferencesSortFields {
+  aiModel
+  createdAt
+  emailNotifications
+  id
+  inAppNotifications
+  locale
+  theme
+  updatedAt
+  userId
 }
 
 type UserSession {
@@ -2517,5 +5052,107 @@ enum UserSortFields {
   email
   id
   isActive
+  role
   updatedAt
+}
+
+type UserSubscription {
+  cancelAtPeriodEnd: Boolean!
+  canceledAt: DateTime
+  createdAt: DateTime!
+  currentPeriodEnd: DateTime!
+  currentPeriodStart: DateTime!
+  id: ID!
+  lastPaymentAmount: Int
+  lastPaymentAt: DateTime
+  planId: String!
+  startDate: DateTime!
+  status: SubscriptionStatus!
+  stripeCustomerId: String
+  stripeSubscriptionId: String
+  trialEndDate: DateTime
+  updatedAt: DateTime!
+  usage: String!
+  userId: String!
+}
+
+input ValidateApiKeyInput {
+  rawKey: String!
+  requiredScopes: [ApiKeyScope!]
+}
+
+type ValidateApiKeyResponse {
+  apiKeyId: ID
+  isValid: Boolean!
+  message: String
+  scopes: [ApiKeyScope!]
+  status: ApiKeyStatus
+  userId: ID
+}
+
+type Webhook {
+  createdAt: DateTime!
+  description: String
+  events: [WebhookEvent!]!
+  failureCount: Float!
+  headers: String
+  id: ID!
+  lastDeliveryAt: DateTime
+  lastSuccessAt: DateTime
+  maxRetries: Float!
+  name: String!
+  status: WebhookStatus!
+  successCount: Float!
+  timeoutMs: Float!
+  updatedAt: DateTime!
+  url: String!
+  userId: String!
+}
+
+type WebhookDelivery {
+  attemptCount: Int!
+  createdAt: DateTime!
+  durationMs: Int
+  errorMessage: String
+  event: String!
+  httpResponseCode: Int
+  id: ID!
+  jobId: String
+  nextRetryAt: DateTime
+  payload: String!
+  responseBody: String
+  status: DeliveryStatus!
+  webhookId: String!
+}
+
+"""Events that can be subscribed to"""
+enum WebhookEvent {
+  DOCUMENT_CREATED
+  DOCUMENT_DELETED
+  DOCUMENT_EXPORTED
+  DOCUMENT_GENERATION_COMPLETED
+  DOCUMENT_UPDATED
+  QUERY_ANSWERED
+  QUERY_ASKED
+  SUBSCRIPTION_CANCELLED
+  SUBSCRIPTION_CREATED
+  SUBSCRIPTION_UPGRADED
+  USER_CREATED
+  USER_UPDATED
+}
+
+type WebhookStats {
+  activeWebhooks: Int!
+  failedDeliveries: Int!
+  pendingDeliveries: Int!
+  successfulDeliveries: Int!
+  totalDeliveries: Int!
+  totalWebhooks: Int!
+}
+
+"""Webhook status"""
+enum WebhookStatus {
+  ACTIVE
+  DISABLED
+  INACTIVE
 }
