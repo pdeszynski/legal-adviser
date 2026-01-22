@@ -31,10 +31,79 @@
 
 ## Testing
 
+### Test Commands
+
 - **Monorepo-wide**: `pnpm test`
 - **E2E**: `pnpm test:e2e`
 - **Integration**: `pnpm test:integration`
 - **AI Engine**: `uv run pytest` (inside `apps/ai-engine`)
+- **Backend Unit**: `cd apps/backend && jest`
+- **Frontend Unit**: `cd apps/web && npm test`
+- **Frontend E2E**: `cd apps/web && playwright test`
+
+### Test Structure & Locations
+
+- **Backend Unit Tests**: `apps/backend/src/modules/**/*.spec.ts` - Co-located with source files
+- **Backend E2E Tests**: `apps/backend/tests/e2e/*.e2e-spec.ts` - Jest-based API tests
+- **Backend Playwright Tests**: `apps/backend/tests/*.spec.ts` - GraphQL API tests
+- **Frontend Unit Tests**: `apps/web/src/**/*.spec.tsx` or `apps/web/src/**/__tests__/**/*.spec.tsx` - Jest + React Testing Library
+- **Frontend E2E Tests**: `apps/web/tests/*.spec.ts` - Playwright UI tests
+- **AI Engine Tests**: `apps/ai-engine/tests/unit/*.py` - Python unit tests
+
+### Frontend Jest Setup (Next.js)
+
+- **Config**: `apps/web/jest.config.ts` (follows [Next.js Jest guide](https://nextjs.org/docs/app/guides/testing/jest))
+- **Setup**: `apps/web/jest.setup.ts` - Custom matchers from `@testing-library/jest-dom`
+- **Commands**:
+  - `cd apps/web && npm test` - Run all tests
+  - `cd apps/web && npm run test:watch` - Watch mode
+  - `cd apps/web && npm run test:cov` - With coverage
+- **Framework**: Jest + React Testing Library
+- **Test Patterns**:
+  - `src/**/*.spec.tsx` - Test files alongside components
+  - `src/**/__tests__/**/*.spec.tsx` - Test files in `__tests__` directories
+
+### Post-Feature Validation Checklist
+
+After completing any feature, ALWAYS run the following validation:
+
+1. **Linting** (via lint-staged on commit, or manually):
+   - Backend: `cd apps/backend && npx eslint .`
+   - Frontend: `cd apps/web && npx eslint .`
+   - AI Engine: `cd apps/ai-engine && uv run ruff check .`
+
+2. **Type Checking**:
+   - Backend: `cd apps/backend && npx tsc --noEmit`
+   - Frontend: `cd apps/web && npx tsc --noEmit`
+
+3. **Run Unit Tests**:
+   - Backend: `cd apps/backend && jest`
+   - Frontend: `cd apps/web && npm test`
+   - AI Engine: `cd apps/ai-engine && uv run pytest`
+
+4. **Run E2E Tests**:
+   - Backend: `cd apps/backend && npm run test:e2e`
+   - Frontend: `cd apps/web && playwright test`
+
+5. **Run Integration Tests**:
+   - Backend: `cd apps/backend && npm run test:integration`
+
+### E2E Test Persistence for Regression Testing
+
+- All Playwright tests (both frontend and backend) should be preserved in `tests/` directories
+- Tests serve as regression protection - run full E2E suite before any major release
+- Use descriptive test names: `*.spec.ts` files should clearly indicate what feature they validate
+- Store test artifacts (screenshots, traces) for CI/CD debugging
+
+### Test Creation Guidelines
+
+- **Backend**: Write `.spec.ts` files alongside entities, services, resolvers
+- **Frontend**:
+  - **Unit/Component tests**: Create `*.spec.tsx` files in `src/**/__tests__/` or alongside components
+  - **E2E tests**: Create Playwright tests in `apps/web/tests/` for UI workflows
+  - Use React Testing Library for component testing (Jest)
+- **E2E**: Add integration tests in `apps/backend/tests/e2e/` for API endpoints
+- **AI Engine**: Write pytest tests in `apps/ai-engine/tests/unit/`
 
 ## Coding & Architecture Guidelines
 

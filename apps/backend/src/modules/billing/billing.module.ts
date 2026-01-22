@@ -18,7 +18,19 @@ import { QuotaGuard } from './guards/quota.guard';
  */
 @Global()
 @Module({
-  providers: [SubscriptionRepository, QuotaGuard],
-  exports: [SubscriptionRepository, QuotaGuard],
+  providers: [
+    {
+      provide: 'ISubscriptionRepository',
+      useClass: SubscriptionRepository,
+    },
+    QuotaGuard,
+  ],
+  exports: [
+    {
+      provide: 'ISubscriptionRepository',
+      useClass: SubscriptionRepository,
+    },
+    QuotaGuard,
+  ],
 })
 export class BillingModule {}
