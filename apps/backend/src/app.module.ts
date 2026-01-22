@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import type { DataSourceOptions } from 'typeorm';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -30,6 +28,7 @@ import { UserPreferencesModule } from './modules/user-preferences/user-preferenc
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { ApiKeysModule } from './modules/api-keys/api-keys.module';
 import { BackupModule } from './modules/backup/backup.module';
+import { DatabaseModule } from './database/database.module';
 import { CollaborationModule } from './modules/collaboration/collaboration.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { SystemSettingsModule } from './modules/system-settings/system-settings.module';
@@ -80,24 +79,8 @@ import { LoggingInterceptor } from './shared/logger';
         },
       },
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService): DataSourceOptions => ({
-        type: 'postgres' as const,
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_DATABASE'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get<string>('NODE_ENV') !== 'production',
-        extra: {
-          max: 20,
-          idleTimeoutMillis: 30000,
-        },
-      }),
-      inject: [ConfigService],
-    }),
+    // Database Module - Centralized TypeORM configuration
+    DatabaseModule,
     // Event-driven communication between modules
     EventEmitterModule.forRoot({
       // Use wildcards to support event patterns like 'user.*'
