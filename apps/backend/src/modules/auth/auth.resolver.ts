@@ -4,7 +4,9 @@ import {
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { GqlAuthGuard } from './guards/gql-auth.guard';
+import { GqlThrottlerGuard } from '../../shared/throttler/gql-throttler.guard';
 import { AuthService } from './auth.service';
 import { SkipCsrf } from '../../shared/csrf';
 import {
@@ -32,12 +34,15 @@ export class AuthResolver {
    * Mutation: User login
    * Validates credentials and returns JWT tokens
    * Note: CSRF skipped - user doesn't have token before authentication
+   * Rate limited to prevent brute force attacks
    */
   @Mutation(() => AuthPayload, {
     name: 'login',
     description: 'Authenticate user with username/email and password',
   })
   @SkipCsrf()
+  @UseGuards(GqlThrottlerGuard)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   async login(@Args('input') input: LoginInput): Promise<AuthPayload> {
     const result = await this.authService.loginWithCredentials(
       input.username,
@@ -55,12 +60,15 @@ export class AuthResolver {
    * Mutation: User registration
    * Creates a new user account and returns JWT tokens
    * Note: CSRF skipped - new users don't have token before registration
+   * Rate limited to prevent spam registration
    */
   @Mutation(() => AuthPayload, {
     name: 'register',
     description: 'Register a new user account',
   })
   @SkipCsrf()
+  @UseGuards(GqlThrottlerGuard)
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   async register(@Args('input') input: RegisterInput): Promise<AuthPayload> {
     try {
       const result = await this.authService.registerUser({

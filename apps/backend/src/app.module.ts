@@ -6,8 +6,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { GqlThrottlerGuard } from './shared/throttler/gql-throttler.guard';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { join } from 'node:path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -161,11 +160,8 @@ import { LoggingInterceptor } from './shared/logger';
   controllers: [AppController],
   providers: [
     AppService,
-    // Apply throttler guard globally to all GraphQL and HTTP endpoints
-    {
-      provide: APP_GUARD,
-      useClass: GqlThrottlerGuard,
-    },
+    // Throttler is no longer applied globally to avoid issues with dashboard requests
+    // Use @UseGuards(GqlThrottlerGuard) on specific routes that need rate limiting (e.g., login)
     // Apply audit logging interceptor globally to capture all GraphQL mutations
     {
       provide: APP_INTERCEPTOR,
