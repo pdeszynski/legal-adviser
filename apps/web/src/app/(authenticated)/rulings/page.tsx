@@ -1,28 +1,29 @@
-"use client";
+'use client';
 
-import { useTranslate } from "@refinedev/core";
-import { useState } from "react";
+import { useTranslate } from '@refinedev/core';
+import { useState } from 'react';
+import { RulingSearchSkeleton, RulingPaginationSkeleton } from '@/components/skeleton';
 
 /**
  * Court type enum matching GraphQL CourtType
  */
 enum CourtType {
-  ADMINISTRATIVE_COURT = "ADMINISTRATIVE_COURT",
-  APPELLATE_COURT = "APPELLATE_COURT",
-  CONSTITUTIONAL_TRIBUNAL = "CONSTITUTIONAL_TRIBUNAL",
-  DISTRICT_COURT = "DISTRICT_COURT",
-  OTHER = "OTHER",
-  REGIONAL_COURT = "REGIONAL_COURT",
-  SUPREME_COURT = "SUPREME_COURT",
+  ADMINISTRATIVE_COURT = 'ADMINISTRATIVE_COURT',
+  APPELLATE_COURT = 'APPELLATE_COURT',
+  CONSTITUTIONAL_TRIBUNAL = 'CONSTITUTIONAL_TRIBUNAL',
+  DISTRICT_COURT = 'DISTRICT_COURT',
+  OTHER = 'OTHER',
+  REGIONAL_COURT = 'REGIONAL_COURT',
+  SUPREME_COURT = 'SUPREME_COURT',
 }
 
 /**
  * Search source enum matching GraphQL SearchSource
  */
 enum SearchSource {
-  ISAP = "ISAP",
-  LOCAL = "LOCAL",
-  SAOS = "SAOS",
+  ISAP = 'ISAP',
+  LOCAL = 'LOCAL',
+  SAOS = 'SAOS',
 }
 
 /**
@@ -81,62 +82,62 @@ const COURT_TYPES = Object.values(CourtType);
  * Court type display labels
  */
 const COURT_TYPE_LABELS: Record<CourtType, string> = {
-  ADMINISTRATIVE_COURT: "Administrative Court",
-  APPELLATE_COURT: "Appellate Court",
-  CONSTITUTIONAL_TRIBUNAL: "Constitutional Tribunal",
-  DISTRICT_COURT: "District Court",
-  OTHER: "Other",
-  REGIONAL_COURT: "Regional Court",
-  SUPREME_COURT: "Supreme Court",
+  ADMINISTRATIVE_COURT: 'Administrative Court',
+  APPELLATE_COURT: 'Appellate Court',
+  CONSTITUTIONAL_TRIBUNAL: 'Constitutional Tribunal',
+  DISTRICT_COURT: 'District Court',
+  OTHER: 'Other',
+  REGIONAL_COURT: 'Regional Court',
+  SUPREME_COURT: 'Supreme Court',
 };
 
 /**
  * Court type color mapping for badges
  */
 const COURT_TYPE_COLORS: Record<CourtType, string> = {
-  ADMINISTRATIVE_COURT: "bg-purple-100 text-purple-800",
-  APPELLATE_COURT: "bg-blue-100 text-blue-800",
-  CONSTITUTIONAL_TRIBUNAL: "bg-amber-100 text-amber-800",
-  DISTRICT_COURT: "bg-green-100 text-green-800",
-  OTHER: "bg-gray-100 text-gray-800",
-  REGIONAL_COURT: "bg-teal-100 text-teal-800",
-  SUPREME_COURT: "bg-red-100 text-red-800",
+  ADMINISTRATIVE_COURT: 'bg-purple-100 text-purple-800',
+  APPELLATE_COURT: 'bg-blue-100 text-blue-800',
+  CONSTITUTIONAL_TRIBUNAL: 'bg-amber-100 text-amber-800',
+  DISTRICT_COURT: 'bg-green-100 text-green-800',
+  OTHER: 'bg-gray-100 text-gray-800',
+  REGIONAL_COURT: 'bg-teal-100 text-teal-800',
+  SUPREME_COURT: 'bg-red-100 text-red-800',
 };
 
 /**
  * Source color mapping for badges
  */
 const SOURCE_COLORS: Record<SearchSource, string> = {
-  LOCAL: "bg-green-100 text-green-800",
-  SAOS: "bg-blue-100 text-blue-800",
-  ISAP: "bg-orange-100 text-orange-800",
+  LOCAL: 'bg-green-100 text-green-800',
+  SAOS: 'bg-blue-100 text-blue-800',
+  ISAP: 'bg-orange-100 text-orange-800',
 };
 
 /**
  * GraphQL endpoint
  */
-const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:3001/graphql";
+const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
 /**
  * Execute GraphQL query with authentication
  */
 async function executeGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   };
 
   // Get access token from localStorage if available
-  if (typeof window !== "undefined") {
-    const accessToken = localStorage.getItem("access_token");
+  if (typeof window !== 'undefined') {
+    const accessToken = localStorage.getItem('access_token');
     if (accessToken) {
-      headers["Authorization"] = `Bearer ${accessToken}`;
+      headers['Authorization'] = `Bearer ${accessToken}`;
     }
   }
 
   const response = await fetch(GRAPHQL_URL, {
-    method: "POST",
+    method: 'POST',
     headers,
-    credentials: "include",
+    credentials: 'include',
     body: JSON.stringify({ query, variables }),
   });
 
@@ -147,7 +148,7 @@ async function executeGraphQL<T>(query: string, variables?: Record<string, unkno
   const result = await response.json();
 
   if (result.errors && result.errors.length > 0) {
-    throw new Error(result.errors[0].message || "GraphQL error");
+    throw new Error(result.errors[0].message || 'GraphQL error');
   }
 
   return result.data;
@@ -217,10 +218,10 @@ export default function RulingSearchPage() {
   const translate = useTranslate();
 
   // Search state
-  const [searchQuery, setSearchQuery] = useState("");
-  const [courtTypeFilter, setCourtTypeFilter] = useState<string>("");
-  const [dateFromFilter, setDateFromFilter] = useState("");
-  const [dateToFilter, setDateToFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [courtTypeFilter, setCourtTypeFilter] = useState<string>('');
+  const [dateFromFilter, setDateFromFilter] = useState('');
+  const [dateToFilter, setDateToFilter] = useState('');
   const [sourcesFilter, setSourcesFilter] = useState<SearchSource[]>([
     SearchSource.LOCAL,
     SearchSource.SAOS,
@@ -230,6 +231,7 @@ export default function RulingSearchPage() {
   // Results state
   const [searchResults, setSearchResults] = useState<SearchResponse | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [isPaginating, setIsPaginating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
@@ -240,11 +242,15 @@ export default function RulingSearchPage() {
   // Handle search
   const handleSearch = async (page: number = 0) => {
     if (!searchQuery.trim()) {
-      setError(translate("rulingSearch.errors.queryRequired") || "Please enter a search query");
+      setError(translate('rulingSearch.errors.queryRequired') || 'Please enter a search query');
       return;
     }
 
+    const isPagination = page > 0;
     setIsSearching(true);
+    if (isPagination) {
+      setIsPaginating(true);
+    }
     setError(null);
     setCurrentPage(page);
 
@@ -262,11 +268,12 @@ export default function RulingSearchPage() {
       setSearchResults(results);
       setHasSearched(true);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An error occurred";
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
       setError(errorMessage);
       setSearchResults(null);
     } finally {
       setIsSearching(false);
+      setIsPaginating(false);
     }
   };
 
@@ -279,7 +286,7 @@ export default function RulingSearchPage() {
   // Handle source toggle
   const toggleSource = (source: SearchSource) => {
     setSourcesFilter((prev) =>
-      prev.includes(source) ? prev.filter((s) => s !== source) : [...prev, source]
+      prev.includes(source) ? prev.filter((s) => s !== source) : [...prev, source],
     );
   };
 
@@ -301,7 +308,7 @@ export default function RulingSearchPage() {
   // Truncate text to max length
   const truncate = (text: string | null | undefined, maxLength: number = 200) => {
     if (!text) return null;
-    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   };
 
   // Highlight headline if available
@@ -319,10 +326,12 @@ export default function RulingSearchPage() {
     <div className="container mx-auto py-8 px-4">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">{translate("rulingSearch.title") || "Legal Ruling Search"}</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          {translate('rulingSearch.title') || 'Legal Ruling Search'}
+        </h1>
         <p className="text-gray-600">
-          {translate("rulingSearch.subtitle") ||
-            "Search across thousands of legal rulings from multiple sources with advanced filters."}
+          {translate('rulingSearch.subtitle') ||
+            'Search across thousands of legal rulings from multiple sources with advanced filters.'}
         </p>
       </div>
 
@@ -332,13 +341,16 @@ export default function RulingSearchPage() {
           {/* Search Query Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translate("rulingSearch.fields.query") || "Search Query"}
+              {translate('rulingSearch.fields.query') || 'Search Query'}
             </label>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={translate("rulingSearch.placeholders.query") || "Enter keywords, case numbers, or legal terms..."}
+              placeholder={
+                translate('rulingSearch.placeholders.query') ||
+                'Enter keywords, case numbers, or legal terms...'
+              }
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -348,14 +360,14 @@ export default function RulingSearchPage() {
             {/* Court Type Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {translate("rulingSearch.fields.courtType") || "Court Type"}
+                {translate('rulingSearch.fields.courtType') || 'Court Type'}
               </label>
               <select
                 value={courtTypeFilter}
                 onChange={(e) => setCourtTypeFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">{translate("common.all") || "All"}</option>
+                <option value="">{translate('common.all') || 'All'}</option>
                 {COURT_TYPES.map((type) => (
                   <option key={type} value={type}>
                     {COURT_TYPE_LABELS[type]}
@@ -367,7 +379,7 @@ export default function RulingSearchPage() {
             {/* Date From Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {translate("rulingSearch.fields.dateFrom") || "Date From"}
+                {translate('rulingSearch.fields.dateFrom') || 'Date From'}
               </label>
               <input
                 type="date"
@@ -380,7 +392,7 @@ export default function RulingSearchPage() {
             {/* Date To Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {translate("rulingSearch.fields.dateTo") || "Date To"}
+                {translate('rulingSearch.fields.dateTo') || 'Date To'}
               </label>
               <input
                 type="date"
@@ -394,7 +406,7 @@ export default function RulingSearchPage() {
           {/* Source Filters */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {translate("rulingSearch.fields.sources") || "Data Sources"}
+              {translate('rulingSearch.fields.sources') || 'Data Sources'}
             </label>
             <div className="flex flex-wrap gap-2">
               {Object.values(SearchSource).map((source) => (
@@ -404,8 +416,8 @@ export default function RulingSearchPage() {
                   onClick={() => toggleSource(source)}
                   className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                     sourcesFilter.includes(source)
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
                 >
                   {source}
@@ -422,17 +434,17 @@ export default function RulingSearchPage() {
               className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSearching
-                ? (translate("rulingSearch.buttons.searching") || "Searching...")
-                : (translate("rulingSearch.buttons.search") || "Search")}
+                ? translate('rulingSearch.buttons.searching') || 'Searching...'
+                : translate('rulingSearch.buttons.search') || 'Search'}
             </button>
             {(hasSearched || courtTypeFilter || dateFromFilter || dateToFilter) && (
               <button
                 type="button"
                 onClick={() => {
-                  setSearchQuery("");
-                  setCourtTypeFilter("");
-                  setDateFromFilter("");
-                  setDateToFilter("");
+                  setSearchQuery('');
+                  setCourtTypeFilter('');
+                  setDateFromFilter('');
+                  setDateToFilter('');
                   setSourcesFilter([SearchSource.LOCAL, SearchSource.SAOS, SearchSource.ISAP]);
                   setSearchResults(null);
                   setHasSearched(false);
@@ -440,7 +452,7 @@ export default function RulingSearchPage() {
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
               >
-                {translate("buttons.clear") || "Clear"}
+                {translate('buttons.clear') || 'Clear'}
               </button>
             )}
           </div>
@@ -450,8 +462,18 @@ export default function RulingSearchPage() {
       {/* Error Display */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
-          <p className="font-medium">{translate("rulingSearch.errors.title") || "Error"}</p>
+          <p className="font-medium">{translate('rulingSearch.errors.title') || 'Error'}</p>
           <p className="text-sm">{error}</p>
+        </div>
+      )}
+
+      {/* Loading Skeleton - Initial Search */}
+      {isSearching && !isPaginating && <RulingSearchSkeleton count={5} />}
+
+      {/* Loading Skeleton - Pagination */}
+      {isPaginating && (
+        <div className="mt-4">
+          <RulingPaginationSkeleton count={3} />
         </div>
       )}
 
@@ -461,11 +483,10 @@ export default function RulingSearchPage() {
           {/* Results Summary */}
           {searchResults && (
             <div className="mb-4 text-sm text-gray-600">
-              {translate("rulingSearch.results.summary", {
+              {translate('rulingSearch.results.summary', {
                 count: searchResults.count,
                 total: searchResults.totalCount,
-              }) ||
-                `Showing ${searchResults.count} of ${searchResults.totalCount} results`}
+              }) || `Showing ${searchResults.count} of ${searchResults.totalCount} results`}
             </div>
           )}
 
@@ -474,11 +495,11 @@ export default function RulingSearchPage() {
             {!searchResults || searchResults.results.length === 0 ? (
               <div className="bg-white rounded-lg shadow p-12 text-center text-gray-500">
                 <p className="text-lg">
-                  {translate("rulingSearch.results.noResults") || "No results found"}
+                  {translate('rulingSearch.results.noResults') || 'No results found'}
                 </p>
                 <p className="text-sm mt-2">
-                  {translate("rulingSearch.results.tryDifferent") ||
-                    "Try adjusting your search terms or filters"}
+                  {translate('rulingSearch.results.tryDifferent') ||
+                    'Try adjusting your search terms or filters'}
                 </p>
               </div>
             ) : (
@@ -536,7 +557,7 @@ export default function RulingSearchPage() {
                       {result.ruling.metadata.keywords &&
                         result.ruling.metadata.keywords.length > 0 && (
                           <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">
-                            Keywords: {result.ruling.metadata.keywords.join(", ")}
+                            Keywords: {result.ruling.metadata.keywords.join(', ')}
                           </span>
                         )}
                     </div>
@@ -545,7 +566,7 @@ export default function RulingSearchPage() {
                   {/* Relevance Score */}
                   <div className="flex justify-between items-center pt-3 border-t border-gray-200">
                     <div className="text-sm text-gray-500">
-                      {translate("rulingSearch.results.relevance") || "Relevance"}:{" "}
+                      {translate('rulingSearch.results.relevance') || 'Relevance'}:{' '}
                       <span className="font-medium text-gray-700">
                         {Math.round(result.rank * 100)}%
                       </span>
@@ -561,23 +582,23 @@ export default function RulingSearchPage() {
             <div className="mt-6 flex justify-between items-center">
               <button
                 onClick={() => handleSearch(currentPage - 1)}
-                disabled={!hasPrevPage}
+                disabled={!hasPrevPage || isPaginating}
                 className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
               >
-                {translate("buttons.previous") || "Previous"}
+                {translate('buttons.previous') || 'Previous'}
               </button>
 
               <div className="text-sm text-gray-600">
-                {translate("table.page", { current: currentPage + 1, total: totalPages + 1 }) ||
+                {translate('table.page', { current: currentPage + 1, total: totalPages + 1 }) ||
                   `Page ${currentPage + 1} of ${totalPages + 1}`}
               </div>
 
               <button
                 onClick={() => handleSearch(currentPage + 1)}
-                disabled={!hasNextPage}
+                disabled={!hasNextPage || isPaginating}
                 className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
               >
-                {translate("buttons.next") || "Next"}
+                {translate('buttons.next') || 'Next'}
               </button>
             </div>
           )}

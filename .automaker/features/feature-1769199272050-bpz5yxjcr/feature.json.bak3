@@ -1,0 +1,29 @@
+{
+  "category": "Uncategorized",
+  "description": "Fix: legal-ai-backend  | src/modules/queries/queries.resolver.ts:166:7 - error TS2322: Type 'string | undefined' is not assignable to type 'string'.\nlegal-ai-backend  |   Type 'undefined' is not assignable to type 'string'.\nlegal-ai-backend  | \nlegal-ai-backend  | 166       sessionId: input.sessionId,\nlegal-ai-backend  |           ~~~~~~~~~\nlegal-ai-backend  | \nlegal-ai-backend  |   src/modules/queries/services/queries.service.ts:12:3\nlegal-ai-backend  |     12   sessionId: string;\nlegal-ai-backend  |          ~~~~~~~~~\nlegal-ai-backend  |     The expected type comes from property 'sessionId' which is declared here on type 'SubmitQueryDto'\nlegal-ai-backend  | \nlegal-ai-backend  | [8:14:06 PM] Found 1 error. Watching for file changes.\nlegal-ai-backend  | ",
+  "title": "Fix sessionId type validation in queries resolver",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769199272050-bpz5yxjcr",
+  "descriptionHistory": [
+    {
+      "description": "Fix: legal-ai-backend  | src/modules/queries/queries.resolver.ts:166:7 - error TS2322: Type 'string | undefined' is not assignable to type 'string'.\nlegal-ai-backend  |   Type 'undefined' is not assignable to type 'string'.\nlegal-ai-backend  | \nlegal-ai-backend  | 166       sessionId: input.sessionId,\nlegal-ai-backend  |           ~~~~~~~~~\nlegal-ai-backend  | \nlegal-ai-backend  |   src/modules/queries/services/queries.service.ts:12:3\nlegal-ai-backend  |     12   sessionId: string;\nlegal-ai-backend  |          ~~~~~~~~~\nlegal-ai-backend  |     The expected type comes from property 'sessionId' which is declared here on type 'SubmitQueryDto'\nlegal-ai-backend  | \nlegal-ai-backend  | [8:14:06 PM] Found 1 error. Watching for file changes.\nlegal-ai-backend  | ",
+      "timestamp": "2026-01-23T20:14:32.151Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T20:14:32.184Z"
+}

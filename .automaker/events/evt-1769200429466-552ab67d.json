@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769200429466-552ab67d",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T20:33:49.466Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "billing-skeleton-loading",
+  "featureName": "Add Skeleton Loading to Billing Page",
+  "error": "Feature completed in 462s - auto-verified",
+  "passes": true
+}

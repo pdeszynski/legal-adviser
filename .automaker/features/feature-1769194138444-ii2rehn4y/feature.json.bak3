@@ -25,7 +25,7 @@
   ],
   "workMode": "custom",
   "titleGenerating": false,
-  "status": "backlog",
+  "status": "in_progress",
   "id": "feature-1769194138444-ii2rehn4y",
   "descriptionHistory": [
     {
@@ -33,5 +33,6 @@
       "timestamp": "2026-01-23T18:48:58.496Z",
       "source": "initial"
     }
-  ]
+  ],
+  "startedAt": "2026-01-23T19:29:48.157Z"
 }

@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@legal/ui";
-import { ActivityItem } from "./ActivityItem";
-import { useTranslate } from "@refinedev/core";
-import Link from "next/link";
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@legal/ui';
+import { ActivityItem } from './ActivityItem';
+import { ActivityTimelineSkeleton } from './DashboardSkeleton';
+import { useTranslate } from '@refinedev/core';
+import Link from 'next/link';
 
 interface AuditLog {
   id: string;
@@ -33,21 +34,19 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   const translate = useTranslate();
   const displayedActivities = activities.slice(0, maxItems);
 
+  if (loading) {
+    return <ActivityTimelineSkeleton count={maxItems} />;
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">
-          {translate("dashboard.activity.title")}
-        </CardTitle>
+        <CardTitle className="text-xl">{translate('dashboard.activity.title')}</CardTitle>
       </CardHeader>
       <CardContent>
-        {loading ? (
+        {displayedActivities.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            {translate("loading")}
-          </div>
-        ) : displayedActivities.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            {translate("dashboard.activity.noActivity")}
+            {translate('dashboard.activity.noActivity')}
           </div>
         ) : (
           <div className="space-y-1">
@@ -71,7 +70,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
               href="/audit-logs"
               className="text-blue-600 hover:text-blue-700 font-medium text-sm"
             >
-              {translate("dashboard.activity.viewAll")} →
+              {translate('dashboard.activity.viewAll')} →
             </Link>
           </div>
         )}

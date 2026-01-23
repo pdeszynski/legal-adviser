@@ -1,19 +1,20 @@
-"use client";
+'use client';
 
-import { useForm } from "@refinedev/react-hook-form";
-import { useTranslate, useOne, useNavigation } from "@refinedev/core";
-import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useForm } from '@refinedev/react-hook-form';
+import { useTranslate, useOne, useNavigation } from '@refinedev/core';
+import { useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { PageSkeleton } from '@/components/skeleton';
 
 /**
  * Document Type enum matching backend GraphQL schema
  */
 enum DocumentType {
-  LAWSUIT = "LAWSUIT",
-  COMPLAINT = "COMPLAINT",
-  CONTRACT = "CONTRACT",
-  OTHER = "OTHER",
+  LAWSUIT = 'LAWSUIT',
+  COMPLAINT = 'COMPLAINT',
+  CONTRACT = 'CONTRACT',
+  OTHER = 'OTHER',
 }
 
 /**
@@ -68,7 +69,7 @@ export default function DocumentEdit() {
 
   // Fetch the existing document
   const { result: documentResult, query: documentQuery } = useOne<LegalDocument>({
-    resource: "documents",
+    resource: 'documents',
     id,
   });
 
@@ -83,10 +84,10 @@ export default function DocumentEdit() {
     reset,
   } = useForm<UpdateDocumentInput>({
     refineCoreProps: {
-      resource: "documents",
-      action: "edit",
+      resource: 'documents',
+      action: 'edit',
       id,
-      redirect: "show",
+      redirect: 'show',
     },
   });
 
@@ -96,12 +97,12 @@ export default function DocumentEdit() {
       reset({
         title: document.title,
         type: document.type,
-        contentRaw: document.contentRaw || "",
+        contentRaw: document.contentRaw || '',
         metadata: {
-          plaintiffName: document.metadata?.plaintiffName || "",
-          defendantName: document.metadata?.defendantName || "",
+          plaintiffName: document.metadata?.plaintiffName || '',
+          defendantName: document.metadata?.defendantName || '',
           claimAmount: document.metadata?.claimAmount,
-          claimCurrency: document.metadata?.claimCurrency || "",
+          claimCurrency: document.metadata?.claimCurrency || '',
         },
       });
     }
@@ -148,11 +149,7 @@ export default function DocumentEdit() {
 
   // Loading state
   if (documentQuery.isLoading) {
-    return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="text-center">{translate("loading")}</div>
-      </div>
-    );
+    return <PageSkeleton showHeader={true} showContent={false} />;
   }
 
   // Document not found
@@ -160,31 +157,33 @@ export default function DocumentEdit() {
     return (
       <div className="container mx-auto py-8 px-4">
         <div className="text-center text-red-600">
-          {translate("documents.errors.notFound", "Document not found")}
+          {translate('documents.errors.notFound', 'Document not found')}
         </div>
       </div>
     );
   }
 
   // Check if document can be edited (only DRAFT status)
-  if (document.status !== "DRAFT") {
+  if (document.status !== 'DRAFT') {
     return (
       <div className="container mx-auto max-w-2xl py-8 px-4">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
           <h2 className="text-lg font-semibold text-yellow-800 mb-2">
-            {translate("documents.errors.cannotEdit", "Cannot Edit Document")}
+            {translate('documents.errors.cannotEdit', 'Cannot Edit Document')}
           </h2>
           <p className="text-yellow-700 mb-4">
             {translate(
-              "documents.errors.onlyDraftEditable",
-              "Only documents in DRAFT status can be edited. This document is currently in " + document.status + " status."
+              'documents.errors.onlyDraftEditable',
+              'Only documents in DRAFT status can be edited. This document is currently in ' +
+                document.status +
+                ' status.',
             )}
           </p>
           <Link
             href={`/documents/show/${id}`}
             className="inline-block px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors"
           >
-            {translate("buttons.back", "Back to Document")}
+            {translate('buttons.back', 'Back to Document')}
           </Link>
         </div>
       </div>
@@ -198,15 +197,15 @@ export default function DocumentEdit() {
           href={`/documents/show/${id}`}
           className="text-blue-600 hover:underline mb-4 inline-block"
         >
-          ← {translate("buttons.back", "Back to document")}
+          ← {translate('buttons.back', 'Back to document')}
         </Link>
         <h1 className="text-3xl font-bold mb-2">
-          {translate("documents.titles.edit", "Edit Document")}
+          {translate('documents.titles.edit', 'Edit Document')}
         </h1>
         <p className="text-gray-600">
           {translate(
-            "documents.form.editDescription",
-            "Update document details, metadata, and content"
+            'documents.form.editDescription',
+            'Update document details, metadata, and content',
           )}
         </p>
       </div>
@@ -215,45 +214,41 @@ export default function DocumentEdit() {
         {/* Document Title */}
         <div className="space-y-2">
           <label className="block text-sm font-medium">
-            {translate("documents.fields.title")} *
+            {translate('documents.fields.title')} *
           </label>
           <input
             type="text"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="e.g., Debt Recovery Lawsuit"
-            {...register("title", {
-              required: translate("documents.form.errors.requiredTitle"),
+            {...register('title', {
+              required: translate('documents.form.errors.requiredTitle'),
               minLength: {
                 value: 3,
                 message: translate(
-                  "documents.form.errors.titleMinLength",
-                  "Title must be at least 3 characters"
+                  'documents.form.errors.titleMinLength',
+                  'Title must be at least 3 characters',
                 ),
               },
               maxLength: {
                 value: 500,
                 message: translate(
-                  "documents.form.errors.titleMaxLength",
-                  "Title cannot exceed 500 characters"
+                  'documents.form.errors.titleMaxLength',
+                  'Title cannot exceed 500 characters',
                 ),
               },
             })}
           />
           {errors.title && (
-            <span className="text-sm text-red-600">
-              {errors.title.message?.toString()}
-            </span>
+            <span className="text-sm text-red-600">{errors.title.message?.toString()}</span>
           )}
         </div>
 
         {/* Document Type */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium">
-            {translate("documents.fields.type")}
-          </label>
+          <label className="block text-sm font-medium">{translate('documents.fields.type')}</label>
           <select
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            {...register("type")}
+            {...register('type')}
           >
             {Object.values(DocumentType).map((type) => (
               <option key={type} value={type}>
@@ -262,24 +257,20 @@ export default function DocumentEdit() {
             ))}
           </select>
           {errors.type && (
-            <span className="text-sm text-red-600">
-              {errors.type.message?.toString()}
-            </span>
+            <span className="text-sm text-red-600">{errors.type.message?.toString()}</span>
           )}
         </div>
 
         {/* Metadata Section */}
         <div className="border-t pt-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">
-              {translate("documents.form.metadataSection")}
-            </h2>
+            <h2 className="text-lg font-semibold">{translate('documents.form.metadataSection')}</h2>
             <button
               type="button"
               onClick={() => setShowMetadata(!showMetadata)}
               className="text-sm text-blue-600 hover:text-blue-800"
             >
-              {showMetadata ? "Hide" : "Show"}
+              {showMetadata ? 'Hide' : 'Show'}
             </button>
           </div>
 
@@ -288,28 +279,28 @@ export default function DocumentEdit() {
               {/* Plaintiff Name */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium">
-                  {translate("documents.fields.plaintiffName")}
+                  {translate('documents.fields.plaintiffName')}
                 </label>
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="John Doe"
                   maxLength={200}
-                  {...register("metadata.plaintiffName")}
+                  {...register('metadata.plaintiffName')}
                 />
               </div>
 
               {/* Defendant Name */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium">
-                  {translate("documents.fields.defendantName")}
+                  {translate('documents.fields.defendantName')}
                 </label>
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Jane Smith"
                   maxLength={200}
-                  {...register("metadata.defendantName")}
+                  {...register('metadata.defendantName')}
                 />
               </div>
 
@@ -317,7 +308,7 @@ export default function DocumentEdit() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium">
-                    {translate("documents.fields.claimAmount")}
+                    {translate('documents.fields.claimAmount')}
                   </label>
                   <input
                     type="number"
@@ -326,7 +317,7 @@ export default function DocumentEdit() {
                     max="999999999999"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="10000.00"
-                    {...register("metadata.claimAmount", {
+                    {...register('metadata.claimAmount', {
                       valueAsNumber: true,
                     })}
                   />
@@ -334,26 +325,28 @@ export default function DocumentEdit() {
 
                 <div className="space-y-2">
                   <label className="block text-sm font-medium">
-                    {translate("documents.fields.claimCurrency")}
+                    {translate('documents.fields.claimCurrency')}
                   </label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="PLN"
                     maxLength={3}
-                    {...register("metadata.claimCurrency", {
+                    {...register('metadata.claimCurrency', {
                       pattern: {
                         value: /^[A-Z]{3}$/,
                         message: translate(
-                          "documents.form.errors.invalidCurrency",
-                          "Currency must be 3 uppercase letters (e.g., PLN, EUR, USD)"
+                          'documents.form.errors.invalidCurrency',
+                          'Currency must be 3 uppercase letters (e.g., PLN, EUR, USD)',
                         ),
                       },
                     })}
                   />
-                  {errors["metadata.claimCurrency"] && (
+                  {errors['metadata.claimCurrency'] && (
                     <span className="text-sm text-red-600">
-                      {(errors["metadata.claimCurrency"] as { message?: string }).message?.toString()}
+                      {(
+                        errors['metadata.claimCurrency'] as { message?: string }
+                      ).message?.toString()}
                     </span>
                   )}
                 </div>
@@ -366,21 +359,21 @@ export default function DocumentEdit() {
         <div className="border-t pt-6">
           <div className="space-y-2">
             <label className="block text-sm font-medium">
-              {translate("documents.fields.contentRaw", "Document Content")}
+              {translate('documents.fields.contentRaw', 'Document Content')}
             </label>
             <p className="text-sm text-gray-500 mb-2">
               {translate(
-                "documents.form.contentHelp",
-                "Edit the document content directly. Supports plain text and Markdown."
+                'documents.form.contentHelp',
+                'Edit the document content directly. Supports plain text and Markdown.',
               )}
             </p>
             <textarea
               className="w-full h-96 px-3 py-2 border border-gray-300 rounded-md font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder={translate(
-                "documents.form.contentPlaceholder",
-                "Enter document content..."
+                'documents.form.contentPlaceholder',
+                'Enter document content...',
               )}
-              {...register("contentRaw")}
+              {...register('contentRaw')}
             />
           </div>
         </div>
@@ -414,16 +407,11 @@ export default function DocumentEdit() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                {translate("loading")}
+                {translate('loading')}
               </>
             ) : (
               <>
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -431,16 +419,16 @@ export default function DocumentEdit() {
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                {translate("buttons.save", "Save Changes")}
+                {translate('buttons.save', 'Save Changes')}
               </>
             )}
           </button>
           <button
             type="button"
-            onClick={() => show("documents", id)}
+            onClick={() => show('documents', id)}
             className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
           >
-            {translate("buttons.cancel")}
+            {translate('buttons.cancel')}
           </button>
         </div>
       </form>

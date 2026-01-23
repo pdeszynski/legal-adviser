@@ -126,3 +126,95 @@ export function AdminAuditLogTableSkeleton({ rows = 10 }: { rows?: number }) {
     </div>
   );
 }
+
+/**
+ * Document list table skeleton with specific column layout matching the document table.
+ * Columns: Title, Type, Status, Created At, Actions
+ */
+export function DocumentTableSkeleton({ rows = 10 }: { rows?: number }) {
+  return (
+    <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-border">
+          <thead className="bg-muted/50">
+            <tr>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <th
+                  key={i}
+                  className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
+                >
+                  <Skeleton className="h-4 w-20" />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="bg-card divide-y divide-border">
+            {Array.from({ length: rows }).map((_, rowIndex) => (
+              <tr key={rowIndex} className="hover:bg-muted/50 transition-colors">
+                {/* Title column - wider */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <Skeleton className="h-5 w-48" />
+                </td>
+                {/* Type column - badge */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <Skeleton className="h-6 w-16 rounded-md" />
+                </td>
+                {/* Status column - rounded badge */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                </td>
+                {/* Created At column */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <Skeleton className="h-4 w-32" />
+                </td>
+                {/* Actions column - button */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <Skeleton className="h-8 w-12 rounded" />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Document grid skeleton with card layout.
+ * Matches the document card structure in grid view.
+ */
+export function DocumentGridSkeleton({ cards = 6 }: { cards?: number }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: cards }).map((_, index) => (
+        <div
+          key={index}
+          className="h-full bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col"
+        >
+          {/* Header with icon and status */}
+          <div className="flex justify-between items-start mb-4">
+            {/* Icon placeholder */}
+            <Skeleton className="h-10 w-10 rounded-lg" />
+            {/* Status badge placeholder */}
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </div>
+
+          {/* Title placeholder */}
+          <div className="space-y-2 mb-4">
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-6 w-3/4" />
+          </div>
+
+          {/* Footer with date and type */}
+          <div className="mt-auto pt-4 border-t border-border">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-5 w-16 rounded" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

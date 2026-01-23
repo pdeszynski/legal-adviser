@@ -65,13 +65,21 @@ export class CreateCitationInput {
 /**
  * DTO for creating a new LegalQuery
  * Used by nestjs-query auto-generated createOne mutation
+ *
+ * Note: sessionId is optional - if not provided, a new session will be
+ * automatically created for the authenticated user.
  */
 @InputType('CreateLegalQueryInput')
 export class CreateLegalQueryInput {
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
+  @IsOptional()
   @IsUUID('4', { message: 'Session ID must be a valid UUID v4' })
-  @IsNotEmpty({ message: 'Session ID is required' })
-  sessionId: string;
+  @Transform(({ value }) =>
+    value && typeof value === 'string' && value.trim()
+      ? value.trim()
+      : undefined,
+  )
+  sessionId?: string;
 
   @Field(() => String)
   @IsString()
@@ -137,15 +145,25 @@ export class UpdateLegalQueryInput {
  *
  * Note: For simple CRUD operations, use CreateLegalQueryInput with
  * the auto-generated createOneLegalQuery mutation instead.
+ *
+ * Note: sessionId is optional - if not provided, a new session will be
+ * automatically created for the authenticated user.
  */
 @InputType('SubmitLegalQueryInput')
 export class SubmitLegalQueryInput {
   @Field(() => String, {
-    description: 'Session ID for the user submitting the query',
+    description:
+      'Session ID for the user submitting the query (optional - will be auto-created if not provided)',
+    nullable: true,
   })
+  @IsOptional()
   @IsUUID('4', { message: 'Session ID must be a valid UUID v4' })
-  @IsNotEmpty({ message: 'Session ID is required' })
-  sessionId: string;
+  @Transform(({ value }) =>
+    value && typeof value === 'string' && value.trim()
+      ? value.trim()
+      : undefined,
+  )
+  sessionId?: string;
 
   @Field(() => String, {
     description: 'The legal question to be answered by the AI',
@@ -198,15 +216,25 @@ export class AnswerLegalQueryInput {
  * - Simple question-answer flow without background processing
  *
  * For async processing with event-driven architecture, use submitLegalQuery instead.
+ *
+ * Note: sessionId is optional - if not provided, a new session will be
+ * automatically created for the authenticated user.
  */
 @InputType('AskLegalQuestionInput')
 export class AskLegalQuestionInput {
   @Field(() => String, {
-    description: 'Session ID for the user asking the question',
+    description:
+      'Session ID for the user asking the question (optional - will be auto-created if not provided)',
+    nullable: true,
   })
+  @IsOptional()
   @IsUUID('4', { message: 'Session ID must be a valid UUID v4' })
-  @IsNotEmpty({ message: 'Session ID is required' })
-  sessionId: string;
+  @Transform(({ value }) =>
+    value && typeof value === 'string' && value.trim()
+      ? value.trim()
+      : undefined,
+  )
+  sessionId?: string;
 
   @Field(() => String, {
     description: 'The legal question to ask the AI',

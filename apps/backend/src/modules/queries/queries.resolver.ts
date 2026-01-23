@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID, Context } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { QueriesService, QuerySearchOptions } from './services/queries.service';
 import {
@@ -98,7 +98,12 @@ export class QueriesResolver {
 
     return {
       results: results.map((r) => ({
-        ...r.query,
+        id: r.query.id,
+        sessionId: r.query.sessionId ?? '',
+        question: r.query.question,
+        answerMarkdown: r.query.answerMarkdown,
+        createdAt: r.query.createdAt,
+        updatedAt: r.query.updatedAt,
         rank: r.rank,
         headline: r.headline ?? null,
       })),
@@ -161,11 +166,16 @@ export class QueriesResolver {
   })
   async submitQuery(
     @Args('input') input: SubmitLegalQueryInput,
+    @Context() context: { req: { user?: { userId?: string } } },
   ): Promise<LegalQuery> {
-    return this.queriesService.submitQuery({
-      sessionId: input.sessionId,
-      question: input.question,
-    });
+    const userId = context.req?.user?.userId;
+    return this.queriesService.submitQuery(
+      {
+        sessionId: input.sessionId,
+        question: input.question,
+      },
+      userId,
+    );
   }
 
   /**
@@ -209,7 +219,9 @@ export class QueriesResolver {
   })
   async askQuestion(
     @Args('input') input: AskLegalQuestionInput,
+    @Context() context: { req: { user?: { userId?: string } } },
   ): Promise<LegalQuery> {
+    const userId = context.req?.user?.userId;
     return this.queriesService.askQuestion(
       {
         sessionId: input.sessionId,
@@ -219,10 +231,11 @@ export class QueriesResolver {
       async (question, sessionId, mode) => {
         return this.aiClientService.askQuestion({
           question,
-          session_id: sessionId,
+          session_id: sessionId ?? '',
           mode,
         });
       },
+      userId,
     );
   }
 

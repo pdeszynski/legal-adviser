@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslate, useCustomMutation, useGetIdentity } from '@refinedev/core';
+import { useTranslate, useGetIdentity, useDataProvider } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
 import { User, Mail, UserCircle } from 'lucide-react';
@@ -25,10 +25,9 @@ export function SettingsProfile({ user }: { user: UserIdentity }) {
   const translate = useTranslate();
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { refetch: refetchIdentity } = useGetIdentity();
-
-  const { mutate, mutation } = useCustomMutation();
-  const isLoading = (mutation as any).isLoading ?? (mutation as any).isPending ?? false;
+  const dataProvider = useDataProvider();
 
   const {
     register,
@@ -61,12 +60,14 @@ export function SettingsProfile({ user }: { user: UserIdentity }) {
     }
   }, [user, setValue, reset]);
 
-  const onSubmit = (data: UpdateProfileInput) => {
+  const onSubmit = async (data: UpdateProfileInput) => {
     setIsSuccess(false);
     setError(null);
+    setIsLoading(true);
 
-    mutate(
-      {
+    try {
+      // Directly call data provider's custom method with proper config structure
+      await dataProvider.custom({
         url: '',
         method: 'post',
         values: {
@@ -76,22 +77,16 @@ export function SettingsProfile({ user }: { user: UserIdentity }) {
           },
           fields: ['id', 'email', 'username', 'firstName', 'lastName'],
         },
-        successNotification: {
-          message: translate('settings.profile.successMessage'),
-          type: 'success',
-        },
-      },
-      {
-        onSuccess: () => {
-          setIsSuccess(true);
-          setTimeout(() => setIsSuccess(false), 3000);
-          refetchIdentity();
-        },
-        onError: (err: unknown) => {
-          setError(err instanceof Error ? err.message : translate('settings.profile.errorMessage'));
-        },
-      },
-    );
+      });
+
+      setIsSuccess(true);
+      setTimeout(() => setIsSuccess(false), 3000);
+      refetchIdentity();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : translate('settings.profile.errorMessage'));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

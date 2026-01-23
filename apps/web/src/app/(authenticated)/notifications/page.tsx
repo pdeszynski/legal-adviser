@@ -3,6 +3,7 @@
 import { useTranslate, useList } from '@refinedev/core';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { NotificationCenterSkeleton } from '@components/skeleton/NotificationSkeleton';
 import type { InAppNotification, InAppNotificationType } from '@/hooks/useNotifications';
 
 /**
@@ -342,10 +343,7 @@ export default function NotificationCenter() {
 
       {/* Notifications List */}
       {isLoading ? (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">{translate('loading') || 'Loading...'}</p>
-        </div>
+        <NotificationCenterSkeleton items={8} />
       ) : error ? (
         <div className="text-center py-12">
           <p className="text-red-600">

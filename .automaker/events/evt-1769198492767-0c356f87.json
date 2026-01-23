@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769198492767-0c356f87",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T20:01:32.767Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "document-list-skeleton-loading",
+  "featureName": "Add Skeleton Loading to Document List View",
+  "error": "Feature completed in 349s - auto-verified",
+  "passes": true
+}

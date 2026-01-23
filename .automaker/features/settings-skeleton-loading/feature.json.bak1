@@ -3,11 +3,8 @@
   "description": "Implement skeleton placeholders for settings page form inputs and tabs. Show skeleton fields for profile settings, preferences, security options, and notification settings. Match form field layout with proper spacing and label placeholders.",
   "id": "settings-skeleton-loading",
   "title": "Add Skeleton Loading to Settings Page",
-  "dependencies": [
-    "loading-skeleton-components"
-  ],
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -15,5 +12,6 @@
       "timestamp": "2026-01-23T18:46:41.076Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-23T20:38:58.901Z"
 }

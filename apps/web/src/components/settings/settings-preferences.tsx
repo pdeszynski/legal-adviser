@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslate, useCustomMutation } from '@refinedev/core';
+import { useTranslate, useDataProvider } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
 import { Globe, Moon, Cpu, Clock, Calendar } from 'lucide-react';
@@ -41,12 +41,8 @@ export function SettingsPreferences({ preferences }: { preferences: UserPreferen
   const translate = useTranslate();
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const { mutate, mutation } = useCustomMutation();
-  const isLoading =
-    (mutation as { isLoading?: boolean } | undefined)?.isLoading ??
-    (mutation as { isPending?: boolean } | undefined)?.isPending ??
-    false;
+  const [isLoading, setIsLoading] = useState(false);
+  const dataProvider = useDataProvider();
 
   const {
     register,
@@ -62,12 +58,14 @@ export function SettingsPreferences({ preferences }: { preferences: UserPreferen
     },
   });
 
-  const onSubmit = (data: UpdatePreferencesInput) => {
+  const onSubmit = async (data: UpdatePreferencesInput) => {
     setIsSuccess(false);
     setError(null);
+    setIsLoading(true);
 
-    mutate(
-      {
+    try {
+      // Directly call data provider's custom method with proper config structure
+      const result = await dataProvider.custom({
         url: '',
         method: 'post',
         values: {
@@ -77,19 +75,15 @@ export function SettingsPreferences({ preferences }: { preferences: UserPreferen
           },
           fields: ['id', 'locale', 'theme', 'aiModel', 'timezone', 'dateFormat'],
         },
-      },
-      {
-        onSuccess: () => {
-          setIsSuccess(true);
-          setTimeout(() => setIsSuccess(false), 3000);
-        },
-        onError: (err: unknown) => {
-          setError(
-            err instanceof Error ? err.message : translate('settings.preferences.errorMessage'),
-          );
-        },
-      },
-    );
+      });
+
+      setIsSuccess(true);
+      setTimeout(() => setIsSuccess(false), 3000);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : translate('settings.preferences.errorMessage'));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

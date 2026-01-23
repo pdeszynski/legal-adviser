@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769200365885-e9e7efca",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T20:32:45.885Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "table-loading-skeleton-wrapper",
+  "featureName": "Create Generic Table Loading Skeleton Wrapper",
+  "error": "Feature completed in 513s - auto-verified",
+  "passes": true
+}

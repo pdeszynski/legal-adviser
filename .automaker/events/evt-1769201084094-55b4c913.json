@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769201084094-55b4c913",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T20:44:44.095Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "form-loading-skeleton-wrapper",
+  "featureName": "Create Generic Form Loading Skeleton Wrapper",
+  "error": "Feature completed in 802s - auto-verified",
+  "passes": true
+}

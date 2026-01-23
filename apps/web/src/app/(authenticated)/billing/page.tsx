@@ -6,6 +6,7 @@ import { BillingSubscription } from '@/components/billing/billing-subscription';
 import { BillingPaymentHistory } from '@/components/billing/billing-payment-history';
 import { BillingPlanChange } from '@/components/billing/billing-plan-change';
 import { BillingPaymentMethods } from '@/components/billing/billing-payment-methods';
+import { BillingSkeleton } from '@/components/skeleton/BillingSkeleton';
 
 type BillingTab = 'subscription' | 'paymentHistory' | 'planChange' | 'paymentMethods';
 
@@ -137,7 +138,7 @@ export default function BillingPage() {
       {/* Tab Content */}
       <div className="bg-white rounded-lg shadow">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-500">{translate('loading')}</div>
+          <BillingSkeleton activeTab={activeTab} />
         ) : billingInfo ? (
           <>
             {activeTab === 'subscription' && (

@@ -3,6 +3,7 @@
 import { useForm } from '@refinedev/react-hook-form';
 import { useTranslate, useGo } from '@refinedev/core';
 import { useState } from 'react';
+import type { FieldValues } from 'react-hook-form';
 import {
   FileText,
   Scale,
@@ -80,8 +81,8 @@ export default function DocumentCreateWizard() {
     if (currentStep > 1) setCurrentStep((prev) => prev - 1);
   };
 
-  const onSubmit = (data: GenerateDocumentInput) => {
-    onFinish(data);
+  const onSubmit = (data: FieldValues) => {
+    onFinish(data as GenerateDocumentInput);
   };
 
   const setType = (type: DocumentType) => {

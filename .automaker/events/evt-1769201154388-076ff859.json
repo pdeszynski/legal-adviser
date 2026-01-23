@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769201154388-076ff859",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T20:45:54.388Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "settings-skeleton-loading",
+  "featureName": "Add Skeleton Loading to Settings Page",
+  "error": "Feature completed in 416s - auto-verified",
+  "passes": true
+}

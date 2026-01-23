@@ -1,5 +1,6 @@
-import React from "react";
-import { Card, CardContent } from "@legal/ui";
+import React from 'react';
+import { Card, CardContent } from '@legal/ui';
+import { Skeleton } from '@/*/components/ui/skeleton';
 
 interface StatCardProps {
   title: string;
@@ -14,7 +15,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   value,
   icon,
   loading = false,
-  iconColor = "text-blue-600",
+  iconColor = 'text-blue-600',
 }) => {
   return (
     <Card>
@@ -24,7 +25,7 @@ export const StatCard: React.FC<StatCardProps> = ({
           <div className={`w-8 h-8 ${iconColor}`}>{icon}</div>
         </div>
         {loading ? (
-          <div className="text-2xl font-bold text-gray-400">...</div>
+          <Skeleton className="h-9 w-20" />
         ) : (
           <div className="text-3xl font-bold text-gray-900">{value}</div>
         )}

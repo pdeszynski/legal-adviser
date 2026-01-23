@@ -4,7 +4,7 @@
   "id": "dashboard-skeleton-loading",
   "title": "Add Skeleton Loading to Dashboard Widgets",
   "priority": 1,
-  "status": "in_progress",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -14,5 +14,5 @@
     }
   ],
   "startedAt": "2026-01-23T19:47:06.081Z",
-  "updatedAt": "2026-01-23T19:47:06.234Z"
+  "updatedAt": "2026-01-23T19:59:19.376Z"
 }

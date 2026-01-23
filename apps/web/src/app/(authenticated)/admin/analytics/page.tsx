@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useCustom, useTranslate } from '@refinedev/core';
+import { AnalyticsSkeleton } from '@/components/analytics';
 
 interface UserGrowthMetrics {
   totalUsers: number;
@@ -88,14 +89,7 @@ export default function AnalyticsPage() {
   const dashboard = result?.data;
 
   if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-          <p className="text-muted-foreground">Loading analytics...</p>
-        </div>
-      </div>
-    );
+    return <AnalyticsSkeleton />;
   }
 
   if (isError || !dashboard) {

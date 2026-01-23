@@ -90,8 +90,8 @@ export class LegalQuerySearchResult {
   @Field(() => String)
   id: string;
 
-  @Field(() => String)
-  sessionId: string;
+  @Field(() => String, { nullable: true })
+  sessionId: string | null;
 
   @Field(() => String)
   question: string;

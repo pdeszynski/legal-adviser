@@ -10,6 +10,7 @@ import {
 import { QueriesService } from './services/queries.service';
 import { QueriesResolver } from './queries.resolver';
 import { AiClientModule } from '../../shared/ai-client/ai-client.module';
+import { UsersModule } from '../users/users.module';
 
 /**
  * Queries Module
@@ -35,6 +36,8 @@ import { AiClientModule } from '../../shared/ai-client/ai-client.module';
   imports: [
     // TypeORM repository for custom service
     TypeOrmModule.forFeature([LegalQuery]),
+    // Users Module for session auto-creation
+    UsersModule,
     // AI Client Service for synchronous Q&A
     AiClientModule,
     // nestjs-query auto-generated CRUD resolvers

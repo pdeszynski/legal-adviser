@@ -4,7 +4,7 @@
   "id": "document-list-skeleton-loading",
   "title": "Add Skeleton Loading to Document List View",
   "priority": 1,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -12,5 +12,7 @@
       "timestamp": "2026-01-23T18:46:41.075Z",
       "source": "initial"
     }
-  ]
+  ],
+  "startedAt": "2026-01-23T19:47:07.280Z",
+  "updatedAt": "2026-01-23T20:01:32.760Z"
 }

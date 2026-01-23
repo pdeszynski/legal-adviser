@@ -7,6 +7,7 @@ import { SettingsPreferences } from '@/components/settings/settings-preferences'
 import { SettingsSecurity } from '@/components/settings/settings-security';
 import { SettingsNotifications } from '@/components/settings/settings-notifications';
 import { SettingsApiKeys } from '@/components/settings/settings-api-keys';
+import { SettingsTabSkeleton } from '@/components/skeleton';
 import { User, Settings, Shield, Bell, Key, Menu } from 'lucide-react';
 import { cn } from '@legal/ui';
 
@@ -125,10 +126,7 @@ export default function SettingsPage() {
         <main className="flex-1 min-h-[500px]">
           <div className="bg-card border border-border rounded-2xl shadow-sm p-6 md:p-8 animate-in fade-in slide-in-from-right-4 duration-300">
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-                <p>{translate('loading')}</p>
-              </div>
+              <SettingsTabSkeleton variant={activeTab} />
             ) : (
               <>
                 <div className="mb-6 pb-6 border-b border-border">

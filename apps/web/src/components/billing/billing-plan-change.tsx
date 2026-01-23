@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslate, useCustom, useCustomMutation } from '@refinedev/core';
+import { BillingPlanChangeSkeleton } from '@/components/skeleton/BillingSkeleton';
 
 interface BillingPlanChangeProps {
   currentPlan: string;
@@ -95,7 +96,7 @@ export function BillingPlanChange({
   const sortedPlans = [...plans].sort((a, b) => getPlanOrder(a.tier) - getPlanOrder(b.tier));
 
   if (isLoading) {
-    return <div className="p-6 text-center text-gray-500">{translate('loading')}</div>;
+    return <BillingPlanChangeSkeleton />;
   }
 
   return (

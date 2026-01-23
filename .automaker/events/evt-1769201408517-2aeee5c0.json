@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769201408517-2aeee5c0",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T20:50:08.517Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "ruling-search-skeleton-loading",
+  "featureName": "Add Skeleton Loading to Case Law Search",
+  "error": "Feature completed in 724s - auto-verified",
+  "passes": true
+}

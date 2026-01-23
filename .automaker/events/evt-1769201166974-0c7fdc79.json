@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769201166974-0c7fdc79",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T20:46:06.974Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "search-results-skeleton-loading",
+  "featureName": "Add Skeleton Loading to Search Results",
+  "error": "Feature completed in 435s - auto-verified",
+  "passes": true
+}

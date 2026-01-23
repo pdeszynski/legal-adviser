@@ -2391,6 +2391,314 @@ Success Criteria:
 - Test coverage includes all major user interactions on the page
 - No regressions introduced to the /settings page functionality</description>
     </feature>
+    <feature>
+      <name>Add Skeleton Loading to Dashboard Widgets</name>
+      <description>Implement skeleton placeholders for all dashboard widgets: document count cards, activity timeline, notification bell, and statistics charts. Show card-shaped skeletons with shimmer effect for widget containers. Ensure widgets load progressively as data becomes available.</description>
+    </feature>
+    <feature>
+      <name>Add Skeleton Loading to Document List View</name>
+      <description>Implement skeleton placeholder rows in the document list table while data is loading. Show 5-10 skeleton rows matching table column structure (title, status, date, actions). Apply shimmer animation effect. Ensure skeleton appears immediately on page load and smoothly transitions to actual data.</description>
+    </feature>
+    <feature>
+      <name>Fix Session ID UUID validation error</name>
+      <description>Fix {errors: [,…], data: null}
+data
+: 
+null
+errors
+: 
+[,…]
+0
+: 
+{message: &quot;Bad Request Exception&quot;, locations: [{line: 3, column: 13}], path: [&quot;askLegalQuestion&quot;],…}
+extensions
+: 
+{code: &quot;BAD_REQUEST&quot;, stacktrace: [&quot;BadRequestException: Bad Request Exception&quot;,…],…}
+code
+: 
+&quot;BAD_REQUEST&quot;
+originalError
+: 
+{message: [&quot;Session ID must be a valid UUID v4&quot;], error: &quot;Bad Request&quot;, statusCode: 400}
+error
+: 
+&quot;Bad Request&quot;
+message
+: 
+[&quot;Session ID must be a valid UUID v4&quot;]
+statusCode
+: 
+400
+stacktrace
+: 
+[&quot;BadRequestException: Bad Request Exception&quot;,…]
+0
+: 
+&quot;BadRequestException: Bad Request Exception&quot;
+1
+: 
+&quot;    at ValidationPipe.exceptionFactory (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:107:20)&quot;
+2
+: 
+&quot;    at ValidationPipe.transform (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:74:30)&quot;
+3
+: 
+&quot;    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)&quot;
+4
+: 
+&quot;    at async resolveParamValue (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:136:31)&quot;
+5
+: 
+&quot;    at async Promise.all (index 0)&quot;
+6
+: 
+&quot;    at async pipesFn (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:138:13)&quot;
+7
+: 
+&quot;    at async /app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:66:17&quot;
+locations
+: 
+[{line: 3, column: 13}]
+0
+: 
+{line: 3, column: 13}
+message
+: 
+&quot;Bad Request Exception&quot;
+path
+: 
+[&quot;askLegalQuestion&quot;]
+0
+: 
+&quot;askLegalQuestion&quot;</description>
+    </feature>
+    <feature>
+      <name>Fix sessionId type validation in queries resolver</name>
+      <description>Fix: legal-ai-backend  | src/modules/queries/queries.resolver.ts:166:7 - error TS2322: Type &apos;string | undefined&apos; is not assignable to type &apos;string&apos;.
+legal-ai-backend  |   Type &apos;undefined&apos; is not assignable to type &apos;string&apos;.
+legal-ai-backend  | 
+legal-ai-backend  | 166       sessionId: input.sessionId,
+legal-ai-backend  |           ~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  |   src/modules/queries/services/queries.service.ts:12:3
+legal-ai-backend  |     12   sessionId: string;
+legal-ai-backend  |          ~~~~~~~~~
+legal-ai-backend  |     The expected type comes from property &apos;sessionId&apos; which is declared here on type &apos;SubmitQueryDto&apos;
+legal-ai-backend  | 
+legal-ai-backend  | [8:14:06 PM] Found 1 error. Watching for file changes.
+legal-ai-backend  |</description>
+    </feature>
+    <feature>
+      <name>Fix foreign key constraint violation in legal queries</name>
+      <description>Fix {
+    &quot;errors&quot;: [
+        {
+            &quot;message&quot;: &quot;insert or update on table \&quot;legal_queries\&quot; violates foreign key constraint \&quot;FK_c173b23bdeb8b4cefceb9ea8325\&quot;&quot;,
+            &quot;locations&quot;: [
+                {
+                    &quot;line&quot;: 3,
+                    &quot;column&quot;: 13
+                }
+            ],
+            &quot;path&quot;: [
+                &quot;askLegalQuestion&quot;
+            ],
+            &quot;extensions&quot;: {
+                &quot;code&quot;: &quot;INTERNAL_SERVER_ERROR&quot;,
+                &quot;stacktrace&quot;: [
+                    &quot;QueryFailedError: insert or update on table \&quot;legal_queries\&quot; violates foreign key constraint \&quot;FK_c173b23bdeb8b4cefceb9ea8325\&quot;&quot;,
+                    &quot;    at PostgresQueryRunner.query (/app/node_modules/.pnpm/typeorm@0.3.28_ioredis@5.8.2_pg@8.16.3_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/node_modules/typeorm/driver/src/driver/postgres/PostgresQueryRunner.ts:325:19)&quot;,
+                    &quot;    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)&quot;,
+                    &quot;    at async InsertQueryBuilder.execute (/app/node_modules/.pnpm/typeorm@0.3.28_ioredis@5.8.2_pg@8.16.3_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/node_modules/typeorm/query-builder/src/query-builder/InsertQueryBuilder.ts:164:33)&quot;,
+                    &quot;    at async SubjectExecutor.executeInsertOperations (/app/node_modules/.pnpm/typeorm@0.3.28_ioredis@5.8.2_pg@8.16.3_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/node_modules/typeorm/persistence/src/persistence/SubjectExecutor.ts:435:42)&quot;,
+                    &quot;    at async SubjectExecutor.execute (/app/node_modules/.pnpm/typeorm@0.3.28_ioredis@5.8.2_pg@8.16.3_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/node_modules/typeorm/persistence/src/persistence/SubjectExecutor.ts:137:9)&quot;,
+                    &quot;    at async EntityPersistExecutor.execute (/app/node_modules/.pnpm/typeorm@0.3.28_ioredis@5.8.2_pg@8.16.3_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/node_modules/typeorm/persistence/src/persistence/EntityPersistExecutor.ts:182:21)&quot;,
+                    &quot;    at async QueriesService.askQuestion (/app/apps/backend/src/modules/queries/services/queries.service.ts:333:24)&quot;
+                ]
+            }
+        }
+    ],
+    &quot;data&quot;: null
+}</description>
+    </feature>
+    <feature>
+      <name>Fix legal AI page errors with Playwright tests</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix Session ID UUID validation error
+
+**Description:** Fix {errors: [,…], data: null}
+data
+: 
+null
+errors
+: 
+[,…]
+0
+: 
+{message: &quot;Bad Request Exception&quot;, locations: [{line: 3, column: 13}], path: [&quot;askLegalQuestion&quot;],…}
+extensions
+: 
+{code: &quot;BAD_REQUEST&quot;, stacktrace: [&quot;BadRequestException: Bad Request Exception&quot;,…],…}
+code
+: 
+&quot;BAD_REQUEST&quot;
+originalError
+: 
+{message: [&quot;Session ID must be a valid UUID v4&quot;], error: &quot;Bad Request&quot;, statusCode: 400}
+error
+: 
+&quot;Bad Request&quot;
+message
+: 
+[&quot;Session ID must be a valid UUID v4&quot;]
+statusCode
+: 
+400
+stacktrace
+: 
+[&quot;BadRequestException: Bad Request Exception&quot;,…]
+0
+: 
+&quot;BadRequestException: Bad Request Exception&quot;
+1
+: 
+&quot;    at ValidationPipe.exceptionFactory (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:107:20)&quot;
+2
+: 
+&quot;    at ValidationPipe.transform (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:74:30)&quot;
+3
+: 
+&quot;    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)&quot;
+4
+: 
+&quot;    at async resolveParamValue (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:136:31)&quot;
+5
+: 
+&quot;    at async Promise.all (index 0)&quot;
+6
+: 
+&quot;    at async pipesFn (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:138:13)&quot;
+7
+: 
+&quot;    at async /app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:66:17&quot;
+locations
+: 
+[{line: 3, column: 13}]
+0
+: 
+{line: 3, column: 13}
+message
+: 
+&quot;Bad Request Exception&quot;
+path
+: 
+[&quot;askLegalQuestion&quot;]
+0
+: 
+&quot;askLegalQuestion&quot;
+
+---
+
+## Task Description
+
+Fix additional errors on legal ai page. Make sure to fix other ones that could happen, Use playwright for testing, make sure to create also e2e tests. Add documdntation about runnign e2e tests. Assume that the docker compose was run and all services are up and running under http://localhost:3000
+
+{errors: [{,…}], data: null}
+data
+: 
+null
+errors
+: 
+[{,…}]
+0
+: 
+{,…}
+extensions
+: 
+{code: &quot;INTERNAL_SERVER_ERROR&quot;, stacktrace: [,…]}
+code
+: 
+&quot;INTERNAL_SERVER_ERROR&quot;
+stacktrace
+: 
+[,…]
+0
+: 
+&quot;QueryFailedError: insert or update on table \&quot;legal_queries\&quot; violates foreign key constraint \&quot;FK_c173b23bdeb8b4cefceb9ea8325\&quot;&quot;
+1
+: 
+&quot;    at PostgresQueryRunner.query (/app/node_modules/.pnpm/typeorm@0.3.28_ioredis@5.8.2_pg@8.16.3_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/node_modules/typeorm/driver/src/driver/postgres/PostgresQueryRunner.ts:325:19)&quot;
+2
+: 
+&quot;    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)&quot;
+3
+: 
+&quot;    at async InsertQueryBuilder.execute (/app/node_modules/.pnpm/typeorm@0.3.28_ioredis@5.8.2_pg@8.16.3_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/node_modules/typeorm/query-builder/src/query-builder/InsertQueryBuilder.ts:164:33)&quot;
+4
+: 
+&quot;    at async SubjectExecutor.executeInsertOperations (/app/node_modules/.pnpm/typeorm@0.3.28_ioredis@5.8.2_pg@8.16.3_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/node_modules/typeorm/persistence/src/persistence/SubjectExecutor.ts:435:42)&quot;
+5
+: 
+&quot;    at async SubjectExecutor.execute (/app/node_modules/.pnpm/typeorm@0.3.28_ioredis@5.8.2_pg@8.16.3_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/node_modules/typeorm/persistence/src/persistence/SubjectExecutor.ts:137:9)&quot;
+6
+: 
+&quot;    at async EntityPersistExecutor.execute (/app/node_modules/.pnpm/typeorm@0.3.28_ioredis@5.8.2_pg@8.16.3_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/node_modules/typeorm/persistence/src/persistence/EntityPersistExecutor.ts:182:21)&quot;
+7
+: 
+&quot;    at async QueriesService.askQuestion (/app/apps/backend/src/modules/queries/services/queries.service.ts:333:24)&quot;
+locations
+: 
+[{line: 3, column: 13}]
+message
+: 
+&quot;insert or update on table \&quot;legal_queries\&quot; violates foreign key constraint \&quot;FK_c173b23bdeb8b4cefceb9ea8325\&quot;&quot;
+path
+: 
+[&quot;askLegalQuestion&quot;]</description>
+    </feature>
+    <feature>
+      <name>Add Skeleton Loading to Analytics Dashboard</name>
+      <description>Implement skeleton placeholders for analytics dashboard charts and metrics. Show chart-shaped skeletons for graphs and counter skeletons for statistics. Ensure smooth transition when analytics data loads.</description>
+    </feature>
+    <feature>
+      <name>Create Generic Table Loading Skeleton Wrapper</name>
+      <description>Create a reusable wrapper for Refine useTable hooks that automatically shows skeleton rows while data is loading. Integrate with data provider to detect loading state and generate appropriate number of skeleton rows based on page size.</description>
+    </feature>
+    <feature>
+      <name>Add Skeleton Loading to Billing Page</name>
+      <description>Implement skeleton placeholders for billing information display. Show card-shaped skeletons for subscription status, payment history, and plan details. Apply shimmer effect while billing data is being fetched.</description>
+    </feature>
+    <feature>
+      <name>Add Skeleton Loading to Notification Center</name>
+      <description>Implement skeleton notification items in notification center and dropdown. Show skeleton bell icon, notification list items with shimmer effect. Match notification item layout including icon, message, timestamp, and action buttons.</description>
+    </feature>
+    <feature>
+      <name>Remove Inconsistent GIF Loading Animations</name>
+      <description>Audit all pages to identify GIF-based loading animations and replace them with skeleton components. Search for spinning loaders, GIF images, and old loading indicators. Replace with appropriate skeleton components from the new library. Ensure consistent loading experience across entire application.</description>
+    </feature>
+    <feature>
+      <name>Create Generic Form Loading Skeleton Wrapper</name>
+      <description>Create a reusable HOC or wrapper component that automatically shows skeleton placeholders for any form while data is loading. Detect form field structure and generate matching skeleton elements. Support React Hook Form and Refine form integrations.</description>
+    </feature>
+    <feature>
+      <name>Add Skeleton Loading to Settings Page</name>
+      <description>Implement skeleton placeholders for settings page form inputs and tabs. Show skeleton fields for profile settings, preferences, security options, and notification settings. Match form field layout with proper spacing and label placeholders.</description>
+    </feature>
+    <feature>
+      <name>Add Skeleton Loading to Search Results</name>
+      <description>Implement skeleton placeholders for global search results. Show result cards matching the layout of document, ruling, and template search results. Apply to both header search bar and advanced search page.</description>
+    </feature>
+    <feature>
+      <name>Add Skeleton Loading to Case Law Search</name>
+      <description>Implement skeleton placeholders for ruling search results page. Match ruling card layout with skeleton placeholders for court name, date, summary, and action buttons. Handle both initial search and pagination loading states.</description>
+    </feature>
+    <feature>
+      <name>Add E2E Tests for Loading Skeleton States</name>
+      <description>Create Playwright E2E tests verifying skeleton components appear correctly during data loading. Test that: 1) Skeletons show immediately on page load, 2) Skeletons smoothly transition to real data, 3) No layout shift occurs, 4) Skeletons disappear when data loads, 5) Error states handle properly. Test all major pages: dashboard, documents, audit logs, settings, chat.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

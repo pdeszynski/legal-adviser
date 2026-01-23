@@ -16,6 +16,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { cn } from '@legal/ui';
+import { DocumentTableSkeleton, DocumentGridSkeleton } from '@/components/skeleton/TableSkeleton';
 
 interface DocumentMetadata {
   plaintiffName?: string;
@@ -152,9 +153,18 @@ export default function DocumentList() {
     },
   });
 
-  const { setCurrentPage, pageCount, currentPage, setFilters, setSorters, setPageSize } =
-    refineCore;
+  const {
+    setCurrentPage,
+    pageCount,
+    currentPage,
+    setFilters,
+    setSorters,
+    setPageSize,
+    tableQuery,
+  } = refineCore;
   const sorting = reactTable.getState().sorting;
+
+  const isLoading = tableQuery.isLoading;
 
   const handleSort = (columnId: string) => {
     const currentSort = sorting.find((s) => s.id === columnId);
@@ -291,7 +301,13 @@ export default function DocumentList() {
       </div>
 
       {/* Content Area */}
-      {viewMode === 'grid' ? (
+      {isLoading ? (
+        viewMode === 'grid' ? (
+          <DocumentGridSkeleton cards={currentPageSize} />
+        ) : (
+          <DocumentTableSkeleton rows={currentPageSize} />
+        )
+      ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {reactTable.getRowModel().rows.length === 0 ? (
             <div className="col-span-full py-12 text-center text-muted-foreground bg-muted/20 rounded-xl border border-dashed border-border">

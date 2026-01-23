@@ -1,0 +1,109 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+    - button "Open Next.js Dev Tools" [ref=e7] [cursor=pointer]:
+        - img [ref=e8]
+    - alert [ref=e11]
+    - generic [ref=e12]:
+        - banner [ref=e13]:
+            - generic [ref=e14]:
+                - link "Legal AI" [ref=e15] [cursor=pointer]:
+                    - /url: /
+                - generic [ref=e16]:
+                    - button "🇬🇧 English" [ref=e18] [cursor=pointer]:
+                        - img [ref=e19]
+                        - generic [ref=e22]: 🇬🇧 English
+                    - link "Sign In" [ref=e23] [cursor=pointer]:
+                        - /url: /login
+        - main [ref=e24]:
+            - generic [ref=e27]:
+                - generic [ref=e28]:
+                    - img [ref=e30]
+                    - generic [ref=e34]:
+                        - heading "Welcome Back" [level=3] [ref=e35]
+                        - paragraph [ref=e36]: Sign in to your legal workspace
+                - generic [ref=e37]:
+                    - generic [ref=e38]:
+                        - generic [ref=e39]:
+                            - text: Email
+                            - textbox "Email" [ref=e40]:
+                                - /placeholder: name@example.com
+                                - text: admin@refine.dev
+                        - generic [ref=e41]:
+                            - generic [ref=e42]:
+                                - generic [ref=e43]: Password
+                                - generic [ref=e44] [cursor=pointer]: Forgot password?
+                            - textbox "Password" [ref=e45]:
+                                - /placeholder: Enter your password
+                                - text: password
+                    - generic [ref=e46]:
+                        - button "Sign In" [ref=e47] [cursor=pointer]
+                        - generic [ref=e48]: Don't have an account? Request access
+        - contentinfo [ref=e49]:
+            - generic [ref=e50]:
+                - generic [ref=e51]:
+                    - generic [ref=e52]:
+                        - heading "Legal AI" [level=4] [ref=e53]
+                        - paragraph [ref=e54]: Empowering legal professionals with next-generation AI tools. Secure, accurate, and efficient.
+                    - generic [ref=e55]:
+                        - heading "Product" [level=4] [ref=e56]
+                        - list [ref=e57]:
+                            - listitem [ref=e58]:
+                                - link "Features" [ref=e59] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e60]:
+                                - link "Pricing" [ref=e61] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e62]:
+                                - link "Security" [ref=e63] [cursor=pointer]:
+                                    - /url: '#'
+                    - generic [ref=e64]:
+                        - heading "Company" [level=4] [ref=e65]
+                        - list [ref=e66]:
+                            - listitem [ref=e67]:
+                                - link "About Us" [ref=e68] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e69]:
+                                - link "Careers" [ref=e70] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e71]:
+                                - link "Contact" [ref=e72] [cursor=pointer]:
+                                    - /url: '#'
+                    - generic [ref=e73]:
+                        - heading "Legal" [level=4] [ref=e74]
+                        - list [ref=e75]:
+                            - listitem [ref=e76]:
+                                - link "Privacy Policy" [ref=e77] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e78]:
+                                - link "Terms of Service" [ref=e79] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e80]:
+                                - link "Cookie Policy" [ref=e81] [cursor=pointer]:
+                                    - /url: '#'
+                - generic [ref=e82]:
+                    - paragraph [ref=e83]: © 2026 Legal AI. All rights reserved.
+                    - generic [ref=e84]:
+                        - link "Twitter" [ref=e85] [cursor=pointer]:
+                            - /url: '#'
+                        - link "LinkedIn" [ref=e86] [cursor=pointer]:
+                            - /url: '#'
+                        - link "GitHub" [ref=e87] [cursor=pointer]:
+                            - /url: '#'
+    - generic [ref=e88]:
+        - button [ref=e89] [cursor=pointer]:
+            - img [ref=e90]
+            - button "Element Selector" [ref=e98]:
+                - img
+        - generic:
+            - iframe
+            - generic:
+                - img
+            - generic:
+                - img
+            - generic:
+                - img
+            - generic:
+                - img
+```

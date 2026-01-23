@@ -3,11 +3,8 @@
   "description": "Implement skeleton placeholders for billing information display. Show card-shaped skeletons for subscription status, payment history, and plan details. Apply shimmer effect while billing data is being fetched.",
   "id": "billing-skeleton-loading",
   "title": "Add Skeleton Loading to Billing Page",
-  "dependencies": [
-    "loading-skeleton-components"
-  ],
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -15,5 +12,6 @@
       "timestamp": "2026-01-23T18:46:41.077Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-23T20:26:07.605Z"
 }

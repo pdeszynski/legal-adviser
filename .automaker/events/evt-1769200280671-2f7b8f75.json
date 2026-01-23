@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769200280671-2f7b8f75",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T20:31:20.671Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "analytics-skeleton-loading",
+  "featureName": "Add Skeleton Loading to Analytics Dashboard",
+  "error": "Feature completed in 426s - auto-verified",
+  "passes": true
+}

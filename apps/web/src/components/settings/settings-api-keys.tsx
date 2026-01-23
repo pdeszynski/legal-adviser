@@ -15,6 +15,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { LoadingButton } from '@legal/ui';
+import { ApiKeysListSkeleton } from '@/components/skeleton';
 
 interface ApiKey {
   id: string;
@@ -273,11 +274,7 @@ export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-48">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <ApiKeysListSkeleton count={3} />;
   }
 
   return (

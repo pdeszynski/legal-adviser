@@ -1,0 +1,19 @@
+{
+  "category": "enhancement",
+  "description": "Create a reusable HOC or wrapper component that automatically shows skeleton placeholders for any form while data is loading. Detect form field structure and generate matching skeleton elements. Support React Hook Form and Refine form integrations.",
+  "id": "form-loading-skeleton-wrapper",
+  "title": "Create Generic Form Loading Skeleton Wrapper",
+  "dependencies": [
+    "loading-skeleton-components"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create a reusable HOC or wrapper component that automatically shows skeleton placeholders for any form while data is loading. Detect form field structure and generate matching skeleton elements. Support React Hook Form and Refine form integrations.",
+      "timestamp": "2026-01-23T18:46:41.078Z",
+      "source": "initial"
+    }
+  ]
+}

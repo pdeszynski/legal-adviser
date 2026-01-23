@@ -16,7 +16,7 @@
   "dependencies": [],
   "workMode": "current",
   "titleGenerating": false,
-  "status": "in_progress",
+  "status": "verified",
   "id": "feature-1769196982759-1j761vway",
   "descriptionHistory": [
     {
@@ -26,5 +26,5 @@
     }
   ],
   "startedAt": "2026-01-23T19:36:22.896Z",
-  "updatedAt": "2026-01-23T19:36:27.201Z"
+  "updatedAt": "2026-01-23T19:38:06.702Z"
 }

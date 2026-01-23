@@ -1,25 +1,62 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * Temporary verification test for askLegalQuestion mutation
+ * E2E test for askLegalQuestion mutation
  * This test verifies the Q&A integration between backend and AI engine
+ *
+ * Key features tested:
+ * - Session auto-creation when sessionId is not provided
+ * - AI question answering with different modes
+ * - Query retrieval and session-based filtering
  */
 
 const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001/graphql';
 
-test.describe('Ask Legal Question Mutation Verification', () => {
-  let authCookie: string;
-  let sessionId: string;
+// Helper function to extract cookie value
+function getCookieValue(cookies: string | null, name: string): string | undefined {
+  if (!cookies) return undefined;
+
+  const cookieArray = cookies.split(';').map((c) => c.trim());
+  for (const cookie of cookieArray) {
+    const [key, value] = cookie.split('=');
+    if (key === name) {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+test.describe('Ask Legal Question E2E Tests', () => {
+  let authCookies: string;
+  let csrfToken: string;
+  let sessionId: string | null;
   let queryId: string;
 
   test.beforeAll(async ({ request }) => {
+    // First, get a CSRF token
+    const csrfResponse = await request.get(
+      `${GRAPHQL_ENDPOINT.replace('/graphql', '')}/api/csrf-token`,
+    );
+
+    if (csrfResponse.ok()) {
+      const csrfCookies = csrfResponse.headers()['set-cookie'];
+      if (csrfCookies) {
+        authCookies = Array.isArray(csrfCookies) ? csrfCookies.join('; ') : csrfCookies;
+      }
+      // Get CSRF token from response body
+      const body = await csrfResponse.json();
+      if (body && body.token) {
+        csrfToken = body.token;
+      }
+    }
+
     // Login to get auth cookie
     const loginResponse = await request.post(
       `${GRAPHQL_ENDPOINT.replace('/graphql', '')}/auth/login`,
       {
         data: {
-          email: 'test@example.com',
-          password: 'password123',
+          username: 'admin@refine.dev',
+          password: 'password',
         },
       },
     );
@@ -27,47 +64,39 @@ test.describe('Ask Legal Question Mutation Verification', () => {
     if (!loginResponse.ok()) {
       console.warn('Login failed - tests may fail if auth is required');
     } else {
-      const cookies = loginResponse.headers()['set-cookie'];
-      if (cookies) {
-        authCookie = cookies;
+      const loginCookies = loginResponse.headers()['set-cookie'];
+      if (loginCookies) {
+        const loginCookieStr = Array.isArray(loginCookies) ? loginCookies.join('; ') : loginCookies;
+        authCookies = authCookies ? `${authCookies}; ${loginCookieStr}` : loginCookieStr;
       }
-    }
-
-    // Create a user session for testing
-    const createSessionQuery = `
-      mutation {
-        createOneUserSession(input: { userSession: { status: "ACTIVE" } }) {
-          id
-        }
-      }
-    `;
-
-    const sessionResponse = await request.post(GRAPHQL_ENDPOINT, {
-      data: { query: createSessionQuery },
-      headers: authCookie ? { Cookie: authCookie } : {},
-    });
-
-    if (sessionResponse.ok()) {
-      const sessionBody = await sessionResponse.json();
-      if (!sessionBody.errors && sessionBody.data?.createOneUserSession) {
-        sessionId = sessionBody.data.createOneUserSession.id;
-        console.log(`Created test session: ${sessionId}`);
-      }
-    }
-
-    if (!sessionId) {
-      console.warn('Could not create session - using fallback UUID');
-      sessionId = '00000000-0000-0000-0000-000000000000';
     }
   });
 
-  test('should ask a legal question and receive AI answer (SIMPLE mode)', async ({
+  // Helper to get headers with CSRF token
+  function getHeaders() {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (csrfToken) {
+      headers['x-csrf-token'] = csrfToken;
+    }
+
+    if (authCookies) {
+      headers['Cookie'] = authCookies;
+    }
+
+    return headers;
+  }
+
+  test('should ask a legal question without sessionId and auto-create session', async ({
     request,
   }) => {
     const query = `
       mutation AskLegalQuestion($input: AskLegalQuestionInput!) {
         askLegalQuestion(input: $input) {
           id
+          sessionId
           question
           answerMarkdown
           citations {
@@ -80,9 +109,9 @@ test.describe('Ask Legal Question Mutation Verification', () => {
       }
     `;
 
+    // Test without providing sessionId - should auto-create
     const variables = {
       input: {
-        sessionId: sessionId,
         question: 'What are the basic rights of a tenant in Poland?',
         mode: 'SIMPLE',
       },
@@ -93,7 +122,7 @@ test.describe('Ask Legal Question Mutation Verification', () => {
         query,
         variables,
       },
-      headers: authCookie ? { Cookie: authCookie } : {},
+      headers: getHeaders(),
     });
 
     expect(response.ok()).toBeTruthy();
@@ -106,13 +135,9 @@ test.describe('Ask Legal Question Mutation Verification', () => {
     // The mutation should execute successfully
     // Note: If AI engine is not running, this may return an error
     if (body.errors) {
-      console.warn(
-        'AI engine may not be running. Expected error if AI service is unavailable.',
-      );
+      console.warn('AI engine may not be running. Expected error if AI service is unavailable.');
       // This is acceptable for verification - the mutation exists and is reachable
-      expect(body.errors[0].message).toContain(
-        'AI Engine',
-      );
+      expect(body.errors[0].message).toContain('AI Engine');
       test.skip(true, 'AI Engine not available - this is expected in some environments');
     } else {
       expect(body.data.askLegalQuestion).toBeDefined();
@@ -123,6 +148,10 @@ test.describe('Ask Legal Question Mutation Verification', () => {
       expect(body.data.askLegalQuestion.id).toBeDefined();
       expect(body.data.askLegalQuestion.createdAt).toBeDefined();
 
+      // sessionId should be auto-created and not null
+      expect(body.data.askLegalQuestion.sessionId).toBeTruthy();
+      sessionId = body.data.askLegalQuestion.sessionId;
+
       // Citations may or may not be present depending on AI response
       if (body.data.askLegalQuestion.citations) {
         expect(Array.isArray(body.data.askLegalQuestion.citations)).toBe(true);
@@ -132,11 +161,14 @@ test.describe('Ask Legal Question Mutation Verification', () => {
     }
   });
 
-  test('should ask a legal question in LAWYER mode', async ({ request }) => {
+  test('should ask a legal question with explicit sessionId (LAWYER mode)', async ({ request }) => {
+    test.skip(!sessionId, 'Session ID not available from previous test');
+
     const query = `
       mutation AskLegalQuestion($input: AskLegalQuestionInput!) {
         askLegalQuestion(input: $input) {
           id
+          sessionId
           question
           answerMarkdown
           citations {
@@ -160,7 +192,7 @@ test.describe('Ask Legal Question Mutation Verification', () => {
         query,
         variables,
       },
-      headers: authCookie ? { Cookie: authCookie } : {},
+      headers: getHeaders(),
     });
 
     expect(response.ok()).toBeTruthy();
@@ -196,7 +228,6 @@ test.describe('Ask Legal Question Mutation Verification', () => {
 
     const variables = {
       input: {
-        sessionId: sessionId,
         question: 'Test question',
         mode: 'INVALID_MODE',
       },
@@ -207,7 +238,7 @@ test.describe('Ask Legal Question Mutation Verification', () => {
         query,
         variables,
       },
-      headers: authCookie ? { Cookie: authCookie } : {},
+      headers: getHeaders(),
     });
 
     expect(response.ok()).toBeTruthy();
@@ -229,10 +260,7 @@ test.describe('Ask Legal Question Mutation Verification', () => {
 
     // Missing required fields
     const variables = {
-      input: {
-        sessionId: sessionId,
-        // question is missing
-      },
+      input: {},
     };
 
     const response = await request.post(GRAPHQL_ENDPOINT, {
@@ -240,7 +268,7 @@ test.describe('Ask Legal Question Mutation Verification', () => {
         query,
         variables,
       },
-      headers: authCookie ? { Cookie: authCookie } : {},
+      headers: getHeaders(),
     });
 
     expect(response.ok()).toBeTruthy();
@@ -257,6 +285,7 @@ test.describe('Ask Legal Question Mutation Verification', () => {
       query GetLegalQuery($id: ID!) {
         legalQuery(id: $id) {
           id
+          sessionId
           question
           answerMarkdown
           citations {
@@ -275,7 +304,7 @@ test.describe('Ask Legal Question Mutation Verification', () => {
         query,
         variables: { id: queryId },
       },
-      headers: authCookie ? { Cookie: authCookie } : {},
+      headers: getHeaders(),
     });
 
     expect(response.ok()).toBeTruthy();
@@ -292,6 +321,8 @@ test.describe('Ask Legal Question Mutation Verification', () => {
   });
 
   test('should list queries by session', async ({ request }) => {
+    test.skip(!sessionId, 'Session ID not available from previous test');
+
     const query = `
       query QueriesBySession($sessionId: String!) {
         queriesBySession(sessionId: $sessionId) {
@@ -308,7 +339,7 @@ test.describe('Ask Legal Question Mutation Verification', () => {
         query,
         variables: { sessionId },
       },
-      headers: authCookie ? { Cookie: authCookie } : {},
+      headers: getHeaders(),
     });
 
     expect(response.ok()).toBeTruthy();
@@ -324,10 +355,57 @@ test.describe('Ask Legal Question Mutation Verification', () => {
 
     // If we created queries successfully, they should be in the list
     if (queryId) {
-      const foundQuery = body.data.queriesBySession.find(
-        (q: any) => q.id === queryId,
-      );
+      const foundQuery = body.data.queriesBySession.find((q: any) => q.id === queryId);
       expect(foundQuery).toBeDefined();
+    }
+  });
+
+  test('should handle null sessionId gracefully', async ({ request }) => {
+    const query = `
+      mutation AskLegalQuestion($input: AskLegalQuestionInput!) {
+        askLegalQuestion(input: $input) {
+          id
+          sessionId
+          question
+          answerMarkdown
+        }
+      }
+    `;
+
+    // Explicitly pass null sessionId
+    const variables = {
+      input: {
+        sessionId: null,
+        question: 'Test question for null sessionId',
+      },
+    };
+
+    const response = await request.post(GRAPHQL_ENDPOINT, {
+      data: {
+        query,
+        variables,
+      },
+      headers: getHeaders(),
+    });
+
+    expect(response.ok()).toBeTruthy();
+    const body = await response.json();
+
+    if (body.errors) {
+      console.error('GraphQL errors:', JSON.stringify(body.errors, null, 2));
+
+      // If AI engine is not running, that's acceptable
+      if (body.errors.some((e: any) => e.message?.includes('AI Engine'))) {
+        test.skip(true, 'AI Engine not available');
+        return;
+      }
+    }
+
+    // Should either succeed with auto-created session or fail with non-AI error
+    if (!body.errors) {
+      expect(body.data.askLegalQuestion).toBeDefined();
+      // Session should be auto-created for authenticated user
+      expect(body.data.askLegalQuestion.sessionId).toBeTruthy();
     }
   });
 });

@@ -84,14 +84,15 @@ export class LegalQuery {
 
   /**
    * Reference to the user session that created this query
+   * Can be null - will be auto-created from authenticated user if not provided
    */
-  @Column({ type: 'uuid' })
-  @FilterableField()
-  sessionId: string;
+  @Column({ type: 'uuid', nullable: true })
+  @FilterableField(() => ID, { nullable: true })
+  sessionId: string | null;
 
-  @ManyToOne(() => UserSession, { onDelete: 'CASCADE' })
+  @ManyToOne(() => UserSession, { onDelete: 'CASCADE', nullable: true })
   @JoinColumn({ name: 'sessionId' })
-  session: UserSession;
+  session: UserSession | null;
 
   /**
    * The user's question/query text

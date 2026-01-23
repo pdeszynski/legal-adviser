@@ -5,9 +5,9 @@ relevantTo: [testing]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 9
-  referenced: 6
-  successfulFeatures: 6
+  loaded: 13
+  referenced: 10
+  successfulFeatures: 10
 ---
 # testing
 

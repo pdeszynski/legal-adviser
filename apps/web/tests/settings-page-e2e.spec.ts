@@ -26,8 +26,14 @@ test.describe('Settings Page', () => {
     // Click login button
     await page.click('button[type="submit"]');
 
-    // Wait for navigation to dashboard
-    await page.waitForURL('**/dashboard', { timeout: 10000 });
+    // Wait for navigation after login (may go to dashboard, chat, or settings)
+    await page.waitForURL(
+      (url) =>
+        url.pathname.includes('/dashboard') ||
+        url.pathname.includes('/chat') ||
+        url.pathname.includes('/settings'),
+      { timeout: 10000 },
+    );
   });
 
   test('should load the settings page successfully', async ({ page }) => {

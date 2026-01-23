@@ -316,8 +316,10 @@ input AskLegalQuestionInput {
   """The legal question to ask the AI"""
   question: String!
 
-  """Session ID for the user asking the question"""
-  sessionId: String!
+  """
+  Session ID for the user asking the question (optional - will be auto-created if not provided)
+  """
+  sessionId: String
 }
 
 """Type of action performed"""
@@ -886,7 +888,7 @@ input CreateLegalQueryInput {
   answerMarkdown: String
   citations: [CreateCitationInput!]
   question: String!
-  sessionId: String!
+  sessionId: String
 }
 
 input CreateLegalRulingInput {
@@ -2410,7 +2412,7 @@ type LegalQuery {
   id: ID!
   question: String!
   session: UserSession!
-  sessionId: String!
+  sessionId: ID
   updatedAt: DateTime!
 }
 
@@ -2420,7 +2422,7 @@ input LegalQueryAggregateFilter {
   id: IDFilterComparison
   or: [LegalQueryAggregateFilter!]
   question: StringFieldComparison
-  sessionId: StringFieldComparison
+  sessionId: IDFilterComparison
   updatedAt: DateFieldComparison
 }
 
@@ -2428,7 +2430,7 @@ type LegalQueryAggregateGroupBy {
   createdAt(by: GroupBy! = DAY): DateTime
   id: ID
   question: String
-  sessionId: String
+  sessionId: ID
   updatedAt(by: GroupBy! = DAY): DateTime
 }
 
@@ -2464,7 +2466,7 @@ type LegalQueryDeleteResponse {
   createdAt: DateTime
   id: ID
   question: String
-  sessionId: String
+  sessionId: ID
   updatedAt: DateTime
 }
 
@@ -2482,7 +2484,7 @@ input LegalQueryFilter {
   id: IDFilterComparison
   or: [LegalQueryFilter!]
   question: StringFieldComparison
-  sessionId: StringFieldComparison
+  sessionId: IDFilterComparison
   updatedAt: DateFieldComparison
 }
 
@@ -2490,7 +2492,7 @@ type LegalQueryMaxAggregate {
   createdAt: DateTime
   id: ID
   question: String
-  sessionId: String
+  sessionId: ID
   updatedAt: DateTime
 }
 
@@ -2498,7 +2500,7 @@ type LegalQueryMinAggregate {
   createdAt: DateTime
   id: ID
   question: String
-  sessionId: String
+  sessionId: ID
   updatedAt: DateTime
 }
 
@@ -2521,7 +2523,7 @@ type LegalQuerySearchResult {
 
   """Relevance ranking score (higher is more relevant)"""
   rank: Float!
-  sessionId: String!
+  sessionId: String
   updatedAt: DateTime!
 }
 
@@ -4111,8 +4113,10 @@ input SubmitLegalQueryInput {
   """The legal question to be answered by the AI"""
   question: String!
 
-  """Session ID for the user submitting the query"""
-  sessionId: String!
+  """
+  Session ID for the user submitting the query (optional - will be auto-created if not provided)
+  """
+  sessionId: String
 }
 
 type Subscription {

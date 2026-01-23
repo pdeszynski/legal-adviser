@@ -1,7 +1,7 @@
 {
   "category": "Uncategorized",
   "description": "Fix:\n\nBuild Error\n\nModule not found: Package path ./utils is not exported from package /app/apps/web/node_modules/@legal/ui (see exports field in /app/apps/web/node_modules/@legal/ui/package.json)\n\n./src/components/settings/settings-api-keys.tsx (17:1)\n\nModule not found: Package path ./utils is not exported from package /app/apps/web/node_modules/@legal/ui (see exports field in /app/apps/web/node_modules/@legal/ui/package.json)\n  15 | } from 'lucide-react';\n  16 | import { LoadingButton } from '@legal/ui';\n> 17 | import { cn } from '@legal/ui/utils';\n     | ^\n  18 |\n  19 | interface ApiKey {\n  20 |   id: string;\n\nhttps://nextjs.org/docs/messages/module-not-found\n\nImport trace for requested module:\n./src/app/(authenticated)/settings/page.tsx",
-  "title": "",
+  "title": "Fix UI package exports for utils import",
   "images": [],
   "imagePaths": [],
   "textFilePaths": [],
@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "dependencies": [],
   "workMode": "current",
-  "titleGenerating": "Fix:\n\nBuild Error\n\nModule not found: Package path ./utils is not exported from package /app/apps/web/node_modules/@legal/ui (see exports field in /app/apps/web/node_modules/@legal/ui/package.json)\n\n./src/components/settings/settings-api-keys.tsx (17:1)\n\nModule not found: Package path ./utils is not exported from package /app/apps/web/node_modules/@legal/ui (see exports field in /app/apps/web/node_modules/@legal/ui/package.json)\n  15 | } from 'lucide-react';\n  16 | import { LoadingButton } from '@legal/ui';\n> 17 | import { cn } from '@legal/ui/utils';\n     | ^\n  18 |\n  19 | interface ApiKey {\n  20 |   id: string;\n\nhttps://nextjs.org/docs/messages/module-not-found\n\nImport trace for requested module:\n./src/app/(authenticated)/settings/page.tsx",
+  "titleGenerating": false,
   "status": "in_progress",
   "id": "feature-1769196982759-1j761vway",
   "descriptionHistory": [

@@ -101,6 +101,13 @@ export default function DashboardPage() {
     [totalResult, completedResult, draftResult, generatingResult],
   );
 
+  // Check if any stats are still loading
+  const statsLoading =
+    totalResult === undefined ||
+    completedResult === undefined ||
+    draftResult === undefined ||
+    generatingResult === undefined;
+
   return (
     <div className="container mx-auto py-8 px-4 space-y-8">
       {/* Hero Section */}
@@ -177,74 +184,80 @@ export default function DashboardPage() {
         {/* Recent Documents & Stats */}
         <div className="lg:col-span-2 space-y-8">
           {/* Mini Stats Row */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-4 rounded-xl border border-border bg-card">
-              <p className="text-sm text-muted-foreground">Total Docs</p>
-              <p className="text-2xl font-bold">{stats.totalDocuments}</p>
+          {statsLoading ? (
+            <StatsRowSkeleton />
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="p-4 rounded-xl border border-border bg-card">
+                <p className="text-sm text-muted-foreground">Total Docs</p>
+                <p className="text-2xl font-bold">{stats.totalDocuments}</p>
+              </div>
+              <div className="p-4 rounded-xl border border-border bg-card">
+                <p className="text-sm text-muted-foreground">Completed</p>
+                <p className="text-2xl font-bold text-green-600">{stats.completedDocuments}</p>
+              </div>
+              <div className="p-4 rounded-xl border border-border bg-card">
+                <p className="text-sm text-muted-foreground">Drafts</p>
+                <p className="text-2xl font-bold text-orange-600">{stats.draftDocuments}</p>
+              </div>
+              <div className="p-4 rounded-xl border border-border bg-card">
+                <p className="text-sm text-muted-foreground">Generating</p>
+                <p className="text-2xl font-bold text-blue-600">{stats.generatingDocuments}</p>
+              </div>
             </div>
-            <div className="p-4 rounded-xl border border-border bg-card">
-              <p className="text-sm text-muted-foreground">Completed</p>
-              <p className="text-2xl font-bold text-green-600">{stats.completedDocuments}</p>
-            </div>
-            <div className="p-4 rounded-xl border border-border bg-card">
-              <p className="text-sm text-muted-foreground">Drafts</p>
-              <p className="text-2xl font-bold text-orange-600">{stats.draftDocuments}</p>
-            </div>
-            <div className="p-4 rounded-xl border border-border bg-card">
-              <p className="text-sm text-muted-foreground">Generating</p>
-              <p className="text-2xl font-bold text-blue-600">{stats.generatingDocuments}</p>
-            </div>
-          </div>
+          )}
 
           {/* Recent Docs List */}
-          <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <div className="p-6 border-b border-border flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Recent Documents</h2>
-              <Link href="/documents" className="text-sm text-primary hover:underline">
-                View All
-              </Link>
-            </div>
-            <div className="divide-y divide-border">
-              {documentsQuery.isLoading ? (
-                <div className="p-8 text-center text-muted-foreground">Loading documents...</div>
-              ) : recentDocuments.length === 0 ? (
-                <div className="p-8 text-center text-muted-foreground">
-                  No documents found. Create one to get started!
-                </div>
-              ) : (
-                recentDocuments.map((doc) => (
-                  <Link
-                    key={doc.id}
-                    href={`/documents/show/${doc.id}`}
-                    className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors group"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                        <FileText className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-foreground group-hover:text-primary transition-colors">
-                          {doc.title}
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(doc.createdAt).toLocaleDateString()} •{' '}
-                          {translate(`documents.types.${doc.type}`)}
-                        </p>
-                      </div>
-                    </div>
-                    <span
-                      className={cn(
-                        'px-2.5 py-0.5 rounded-full text-xs font-medium border',
-                        statusColors[doc.status],
-                      )}
+          {documentsQuery.isLoading ? (
+            <RecentDocumentsSkeleton count={5} />
+          ) : (
+            <div className="rounded-xl border border-border bg-card overflow-hidden">
+              <div className="p-6 border-b border-border flex justify-between items-center">
+                <h2 className="text-xl font-semibold">Recent Documents</h2>
+                <Link href="/documents" className="text-sm text-primary hover:underline">
+                  View All
+                </Link>
+              </div>
+              <div className="divide-y divide-border">
+                {recentDocuments.length === 0 ? (
+                  <div className="p-8 text-center text-muted-foreground">
+                    No documents found. Create one to get started!
+                  </div>
+                ) : (
+                  recentDocuments.map((doc) => (
+                    <Link
+                      key={doc.id}
+                      href={`/documents/show/${doc.id}`}
+                      className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors group"
                     >
-                      {translate(`documents.statuses.${doc.status}`)}
-                    </span>
-                  </Link>
-                ))
-              )}
+                      <div className="flex items-center gap-4">
+                        <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                          <FileText className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-foreground group-hover:text-primary transition-colors">
+                            {doc.title}
+                          </h4>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(doc.createdAt).toLocaleDateString()} •{' '}
+                            {translate(`documents.types.${doc.type}`)}
+                          </p>
+                        </div>
+                      </div>
+                      <span
+                        className={cn(
+                          'px-2.5 py-0.5 rounded-full text-xs font-medium border',
+                          statusColors[doc.status],
+                        )}
+                      >
+                        {translate(`documents.statuses.${doc.status}`)}
+                      </span>
+                    </Link>
+                  ))
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Activity Feed */}

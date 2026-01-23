@@ -57,12 +57,10 @@ export function useChat(): UseChatReturn {
           headers['Authorization'] = `Bearer ${accessToken}`;
         }
 
-        // Get session ID from localStorage or generate a new one (UUID v4 format)
+        // Get session ID from localStorage for chat history tracking
+        // Note: The backend will auto-create a session if we don't provide one
+        // or if the provided session ID doesn't exist
         let sessionId = localStorage.getItem('chat_session_id');
-        if (!sessionId) {
-          sessionId = crypto.randomUUID();
-          localStorage.setItem('chat_session_id', sessionId);
-        }
 
         const mutation = `
           mutation AskLegalQuestion($input: AskLegalQuestionInput!) {
@@ -83,6 +81,21 @@ export function useChat(): UseChatReturn {
           }
         `;
 
+        const inputVariables: {
+          question: string;
+          sessionId?: string;
+          mode: string;
+        } = {
+          question,
+          mode: selectedMode || mode, // Use provided mode or current mode
+        };
+
+        // Only include sessionId if we have one from a previous response
+        // This allows the backend to auto-create a session on first message
+        if (sessionId) {
+          inputVariables.sessionId = sessionId;
+        }
+
         const response = await fetch(GRAPHQL_URL, {
           method: 'POST',
           headers,
@@ -90,11 +103,7 @@ export function useChat(): UseChatReturn {
           body: JSON.stringify({
             query: mutation,
             variables: {
-              input: {
-                question,
-                sessionId,
-                mode: selectedMode || mode, // Use provided mode or current mode
-              },
+              input: inputVariables,
             },
           }),
         });
@@ -113,6 +122,12 @@ export function useChat(): UseChatReturn {
 
         if (!data) {
           throw new Error('No data returned from server');
+        }
+
+        // Store the sessionId returned by the backend for future requests
+        // The backend auto-creates a session if one wasn't provided
+        if (data.sessionId) {
+          localStorage.setItem('chat_session_id', data.sessionId);
         }
 
         return {

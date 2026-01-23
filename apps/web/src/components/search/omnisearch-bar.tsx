@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@refinedev/core';
 import { Search, FileText, Scale, LayoutTemplate, Loader2 } from 'lucide-react';
+import { OmnisearchSkeleton } from '@/components/skeleton';
 
 interface SearchResultItem {
   id: string;
@@ -69,7 +70,9 @@ async function searchAll(query: string): Promise<SearchResultItem[]> {
     `;
 
     const rulingData = await executeGraphQL<{
-      searchLegalRulings: { results: Array<{ ruling: { id: string; signature: string; courtName: string } }> }
+      searchLegalRulings: {
+        results: Array<{ ruling: { id: string; signature: string; courtName: string } }>;
+      };
     }>(rulingQuery, {
       input: {
         query,
@@ -304,7 +307,9 @@ export const OmnisearchBar = () => {
               setIsOpen(true);
             }
           }}
-          placeholder={translate('omnisearch.placeholder') || 'Search documents, rulings, templates...'}
+          placeholder={
+            translate('omnisearch.placeholder') || 'Search documents, rulings, templates...'
+          }
           className="w-full h-9 pl-10 pr-10 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         />
         {query && (
@@ -313,12 +318,7 @@ export const OmnisearchBar = () => {
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Clear search"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -335,7 +335,9 @@ export const OmnisearchBar = () => {
         )}
       </div>
 
-      {isOpen && results.length > 0 && (
+      {isOpen && isLoading && <OmnisearchSkeleton />}
+
+      {isOpen && !isLoading && results.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-md shadow-lg z-50 max-h-96 overflow-y-auto">
           <div className="p-1">
             {results.map((result, index) => (
@@ -343,9 +345,7 @@ export const OmnisearchBar = () => {
                 key={`${result.type}-${result.id}`}
                 onClick={() => handleResultClick(result)}
                 className={`w-full flex items-start gap-3 px-3 py-2 rounded-sm text-left transition-colors ${
-                  index === selectedIndex
-                    ? 'bg-accent'
-                    : 'hover:bg-accent/50'
+                  index === selectedIndex ? 'bg-accent' : 'hover:bg-accent/50'
                 }`}
                 onMouseEnter={() => setSelectedIndex(index)}
               >
@@ -357,7 +357,7 @@ export const OmnisearchBar = () => {
                     <span className="font-medium text-sm truncate">{result.title}</span>
                     <span
                       className={`text-xs px-1.5 py-0.5 rounded-full ${getTypeColor(
-                        result.type
+                        result.type,
                       )} flex-shrink-0`}
                     >
                       {getTypeLabel(result.type)}

@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "Fix {errors: [,…], data: null}\ndata\n: \nnull\nerrors\n: \n[,…]\n0\n: \n{message: \"Bad Request Exception\", locations: [{line: 3, column: 13}], path: [\"askLegalQuestion\"],…}\nextensions\n: \n{code: \"BAD_REQUEST\", stacktrace: [\"BadRequestException: Bad Request Exception\",…],…}\ncode\n: \n\"BAD_REQUEST\"\noriginalError\n: \n{message: [\"Session ID must be a valid UUID v4\"], error: \"Bad Request\", statusCode: 400}\nerror\n: \n\"Bad Request\"\nmessage\n: \n[\"Session ID must be a valid UUID v4\"]\nstatusCode\n: \n400\nstacktrace\n: \n[\"BadRequestException: Bad Request Exception\",…]\n0\n: \n\"BadRequestException: Bad Request Exception\"\n1\n: \n\"    at ValidationPipe.exceptionFactory (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:107:20)\"\n2\n: \n\"    at ValidationPipe.transform (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:74:30)\"\n3\n: \n\"    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\"\n4\n: \n\"    at async resolveParamValue (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:136:31)\"\n5\n: \n\"    at async Promise.all (index 0)\"\n6\n: \n\"    at async pipesFn (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:138:13)\"\n7\n: \n\"    at async /app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:66:17\"\nlocations\n: \n[{line: 3, column: 13}]\n0\n: \n{line: 3, column: 13}\nmessage\n: \n\"Bad Request Exception\"\npath\n: \n[\"askLegalQuestion\"]\n0\n: \n\"askLegalQuestion\"",
+  "title": "Fix Session ID UUID validation error",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "completed",
+  "id": "feature-1769198026364-o0x5dz8tw",
+  "descriptionHistory": [
+    {
+      "description": "Fix {errors: [,…], data: null}\ndata\n: \nnull\nerrors\n: \n[,…]\n0\n: \n{message: \"Bad Request Exception\", locations: [{line: 3, column: 13}], path: [\"askLegalQuestion\"],…}\nextensions\n: \n{code: \"BAD_REQUEST\", stacktrace: [\"BadRequestException: Bad Request Exception\",…],…}\ncode\n: \n\"BAD_REQUEST\"\noriginalError\n: \n{message: [\"Session ID must be a valid UUID v4\"], error: \"Bad Request\", statusCode: 400}\nerror\n: \n\"Bad Request\"\nmessage\n: \n[\"Session ID must be a valid UUID v4\"]\nstatusCode\n: \n400\nstacktrace\n: \n[\"BadRequestException: Bad Request Exception\",…]\n0\n: \n\"BadRequestException: Bad Request Exception\"\n1\n: \n\"    at ValidationPipe.exceptionFactory (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:107:20)\"\n2\n: \n\"    at ValidationPipe.transform (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:74:30)\"\n3\n: \n\"    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\"\n4\n: \n\"    at async resolveParamValue (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:136:31)\"\n5\n: \n\"    at async Promise.all (index 0)\"\n6\n: \n\"    at async pipesFn (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:138:13)\"\n7\n: \n\"    at async /app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:66:17\"\nlocations\n: \n[{line: 3, column: 13}]\n0\n: \n{line: 3, column: 13}\nmessage\n: \n\"Bad Request Exception\"\npath\n: \n[\"askLegalQuestion\"]\n0\n: \n\"askLegalQuestion\"",
+      "timestamp": "2026-01-23T19:53:46.459Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T19:53:46.498Z",
+  "updatedAt": "2026-01-23T20:03:42.963Z"
+}

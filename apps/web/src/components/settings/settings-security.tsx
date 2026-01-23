@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslate, useCustomMutation } from '@refinedev/core';
+import { useTranslate, useDataProvider } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
 import { Lock, KeyRound, ShieldCheck } from 'lucide-react';
@@ -16,9 +16,8 @@ export function SettingsSecurity() {
   const translate = useTranslate();
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const { mutate, mutation } = useCustomMutation();
-  const isLoading = (mutation as any).isLoading ?? (mutation as any).isPending ?? false;
+  const [isLoading, setIsLoading] = useState(false);
+  const dataProvider = useDataProvider();
 
   const {
     register,
@@ -33,7 +32,7 @@ export function SettingsSecurity() {
     },
   });
 
-  const onSubmit = (data: ChangePasswordInput) => {
+  const onSubmit = async (data: ChangePasswordInput) => {
     setIsSuccess(false);
     setError(null);
 
@@ -42,8 +41,11 @@ export function SettingsSecurity() {
       return;
     }
 
-    mutate(
-      {
+    setIsLoading(true);
+
+    try {
+      // Directly call data provider's custom method with proper config structure
+      await dataProvider.custom({
         url: '',
         method: 'post',
         values: {
@@ -56,24 +58,16 @@ export function SettingsSecurity() {
           },
           fields: [],
         },
-        successNotification: {
-          message: translate('settings.security.successMessage'),
-          type: 'success',
-        },
-      },
-      {
-        onSuccess: () => {
-          setIsSuccess(true);
-          reset();
-          setTimeout(() => setIsSuccess(false), 3000);
-        },
-        onError: (err: unknown) => {
-          setError(
-            err instanceof Error ? err.message : translate('settings.security.errorMessage'),
-          );
-        },
-      },
-    );
+      });
+
+      setIsSuccess(true);
+      reset();
+      setTimeout(() => setIsSuccess(false), 3000);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : translate('settings.security.errorMessage'));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

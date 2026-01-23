@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769199662127-5d9413f1",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T20:21:02.127Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769199338753-kplk56nro",
+  "featureName": "Fix foreign key constraint violation in legal queries",
+  "error": "Feature completed in 314s - auto-verified",
+  "passes": true
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769202255261-6e6dacdf",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T21:04:15.261Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "loading-skeleton-e2e-tests",
+  "featureName": "Add E2E Tests for Loading Skeleton States",
+  "error": "Feature completed in 1168s - auto-verified",
+  "passes": true
+}

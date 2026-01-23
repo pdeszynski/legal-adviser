@@ -9,6 +9,7 @@ import {
   TemplateCategory,
 } from '@/components/template-editor';
 import { Button } from '@legal/ui';
+import { CenteredPageSkeleton } from '@/components/skeleton';
 
 interface TemplateVariable {
   name: string;
@@ -108,14 +109,7 @@ export default function EditTemplatePage({ params }: { params: Promise<{ id: str
   };
 
   if (isLoadingTemplate) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Loading template...</p>
-        </div>
-      </div>
-    );
+    return <CenteredPageSkeleton message="Loading template..." />;
   }
 
   if (templateError || !result) {

@@ -4,12 +4,14 @@ import { Repository, DataSource, FindOptionsWhere } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LegalQuery, Citation } from '../entities/legal-query.entity';
 import { EVENT_PATTERNS } from '../../../shared/events/base/event-patterns';
+import { UsersService } from '../../users/users.service';
+import { SessionMode } from '../../users/entities/user-session.entity';
 
 /**
  * Submit Query DTO
  */
 export interface SubmitQueryDto {
-  sessionId: string;
+  sessionId?: string | null;
   question: string;
   citations?: Citation[];
 }
@@ -60,7 +62,7 @@ export interface QuerySearchOptions {
 export class QuerySubmittedEvent {
   constructor(
     public readonly queryId: string,
-    public readonly sessionId: string,
+    public readonly sessionId: string | null,
     public readonly question: string,
     public readonly timestamp: Date,
   ) {}
@@ -72,7 +74,7 @@ export class QuerySubmittedEvent {
 export class QueryAnsweredEvent {
   constructor(
     public readonly queryId: string,
-    public readonly sessionId: string,
+    public readonly sessionId: string | null,
     public readonly citationCount: number,
     public readonly timestamp: Date,
   ) {}
@@ -99,6 +101,7 @@ export class QueriesService {
     private readonly queryRepository: Repository<LegalQuery>,
     private readonly eventEmitter: EventEmitter2,
     private readonly dataSource: DataSource,
+    private readonly usersService: UsersService,
   ) {}
 
   /**
@@ -106,10 +109,14 @@ export class QueriesService {
    *
    * Creates a new query in pending state, waiting for AI processing.
    * Emits 'query.asked' event for async processing.
+   *
+   * If sessionId is not provided or invalid, creates a new session for the user.
    */
-  async submitQuery(dto: SubmitQueryDto): Promise<LegalQuery> {
+  async submitQuery(dto: SubmitQueryDto, userId?: string): Promise<LegalQuery> {
+    const sessionId = await this.ensureSession(dto.sessionId, userId);
+
     const query = this.queryRepository.create({
-      sessionId: dto.sessionId,
+      sessionId,
       question: dto.question,
       answerMarkdown: null,
       citations: dto.citations ?? null,
@@ -122,13 +129,50 @@ export class QueriesService {
       EVENT_PATTERNS.QUERY.ASKED,
       new QuerySubmittedEvent(
         savedQuery.id,
-        savedQuery.sessionId,
+        savedQuery.sessionId ?? '',
         savedQuery.question,
         savedQuery.createdAt,
       ),
     );
 
     return savedQuery;
+  }
+
+  /**
+   * Ensures a valid session exists for the query.
+   * If sessionId is provided and exists, returns it.
+   * If sessionId is null/undefined and userId is provided, creates a new session.
+   * If userId is also null, returns null (query without session).
+   *
+   * @param sessionId - Optional session ID from the request
+   * @param userId - Optional user ID from authenticated context
+   * @returns A valid session ID or null
+   */
+  private async ensureSession(
+    sessionId: string | null | undefined,
+    userId?: string,
+  ): Promise<string | null> {
+    // If sessionId is provided, verify it exists
+    if (sessionId) {
+      const session = await this.usersService.findSessionById(sessionId);
+      if (session) {
+        return sessionId;
+      }
+      // Session ID provided but doesn't exist - fall through to create new
+    }
+
+    // If userId is provided, create a new session for the user
+    if (userId) {
+      const mode: SessionMode =
+        (sessionId as unknown as SessionMode) === SessionMode.LAWYER
+          ? SessionMode.LAWYER
+          : SessionMode.SIMPLE;
+      const newSession = await this.usersService.createSession(userId, mode);
+      return newSession.id;
+    }
+
+    // No session and no user - return null (query without session)
+    return null;
   }
 
   /**
@@ -306,25 +350,31 @@ export class QueriesService {
    * Synchronously calls the AI engine to answer the question and stores the result.
    * Unlike submitQuery, this method waits for the AI response before returning.
    *
+   * If sessionId is not provided or invalid, creates a new session for the user.
+   *
    * @param dto - Question data with optional mode
    * @param askQuestionFn - Function to call the AI engine (injected for testability)
+   * @param userId - Optional user ID for session auto-creation
    * @returns The query with the AI-generated answer and citations
    */
   async askQuestion(
     dto: SubmitQueryDto & { mode?: string },
     askQuestionFn: (
       question: string,
-      sessionId: string,
+      sessionId?: string,
       mode?: string,
     ) => Promise<{
       answer: string;
       citations: Array<{ source: string; article: string; url?: string }>;
       confidence: number;
     }>,
+    userId?: string,
   ): Promise<LegalQuery> {
+    const sessionId = await this.ensureSession(dto.sessionId, userId);
+
     // Create query in pending state
     const query = this.queryRepository.create({
-      sessionId: dto.sessionId,
+      sessionId,
       question: dto.question,
       answerMarkdown: null,
       citations: null,
@@ -336,7 +386,7 @@ export class QueriesService {
       // Call AI engine synchronously
       const aiResponse = await askQuestionFn(
         dto.question,
-        dto.sessionId,
+        sessionId ?? undefined,
         dto.mode || 'SIMPLE',
       );
 
@@ -357,7 +407,7 @@ export class QueriesService {
         EVENT_PATTERNS.QUERY.ANSWERED,
         new QueryAnsweredEvent(
           updatedQuery.id,
-          updatedQuery.sessionId,
+          updatedQuery.sessionId ?? '',
           updatedQuery.getCitationCount(),
           new Date(),
         ),
@@ -371,7 +421,7 @@ export class QueriesService {
         EVENT_PATTERNS.QUERY.ASKED,
         new QuerySubmittedEvent(
           savedQuery.id,
-          savedQuery.sessionId,
+          savedQuery.sessionId ?? '',
           savedQuery.question,
           savedQuery.createdAt,
         ),

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769198139193-dc6e7e6b",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-23T19:55:39.193Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769196300782-pvkhbfbdh",
+  "featureName": "Fix settings page save data persistence",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "autoLoopWasRunning": false,
+  "maxConcurrency": 1,
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "branchName": null,
+  "runningFeatureIds": [
+    "ruling-search-skeleton-loading",
+    "search-results-skeleton-loading",
+    "settings-skeleton-loading",
+    "loading-skeleton-e2e-tests"
+  ],
+  "savedAt": "2026-01-23T20:44:47.267Z"
+}

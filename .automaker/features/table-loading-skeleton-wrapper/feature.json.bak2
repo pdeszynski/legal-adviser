@@ -1,0 +1,16 @@
+{
+  "category": "enhancement",
+  "description": "Create a reusable wrapper for Refine useTable hooks that automatically shows skeleton rows while data is loading. Integrate with data provider to detect loading state and generate appropriate number of skeleton rows based on page size.",
+  "id": "table-loading-skeleton-wrapper",
+  "title": "Create Generic Table Loading Skeleton Wrapper",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create a reusable wrapper for Refine useTable hooks that automatically shows skeleton rows while data is loading. Integrate with data provider to detect loading state and generate appropriate number of skeleton rows based on page size.",
+      "timestamp": "2026-01-23T18:46:41.079Z",
+      "source": "initial"
+    }
+  ]
+}

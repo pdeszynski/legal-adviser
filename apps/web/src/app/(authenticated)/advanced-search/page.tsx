@@ -1,50 +1,51 @@
-"use client";
+'use client';
 
-import { useTranslate } from "@refinedev/core";
-import { useState } from "react";
+import { useTranslate } from '@refinedev/core';
+import { useState } from 'react';
+import { AdvancedSearchSkeleton, AdvancedSearchPaginationSkeleton } from '@/components/skeleton';
 
 /**
  * Court type enum matching GraphQL CourtType
  */
 enum CourtType {
-  ADMINISTRATIVE_COURT = "ADMINISTRATIVE_COURT",
-  APPELLATE_COURT = "APPELLATE_COURT",
-  CONSTITUTIONAL_TRIBUNAL = "CONSTITUTIONAL_TRIBUNAL",
-  DISTRICT_COURT = "DISTRICT_COURT",
-  OTHER = "OTHER",
-  REGIONAL_COURT = "REGIONAL_COURT",
-  SUPREME_COURT = "SUPREME_COURT",
+  ADMINISTRATIVE_COURT = 'ADMINISTRATIVE_COURT',
+  APPELLATE_COURT = 'APPELLATE_COURT',
+  CONSTITUTIONAL_TRIBUNAL = 'CONSTITUTIONAL_TRIBUNAL',
+  DISTRICT_COURT = 'DISTRICT_COURT',
+  OTHER = 'OTHER',
+  REGIONAL_COURT = 'REGIONAL_COURT',
+  SUPREME_COURT = 'SUPREME_COURT',
 }
 
 /**
  * Search source enum matching GraphQL SearchSource
  */
 enum SearchSource {
-  ISAP = "ISAP",
-  LOCAL = "LOCAL",
-  SAOS = "SAOS",
+  ISAP = 'ISAP',
+  LOCAL = 'LOCAL',
+  SAOS = 'SAOS',
 }
 
 /**
  * Boolean operator enum matching GraphQL BooleanOperator
  */
 enum BooleanOperator {
-  AND = "AND",
-  OR = "OR",
-  NOT = "NOT",
+  AND = 'AND',
+  OR = 'OR',
+  NOT = 'NOT',
 }
 
 /**
  * Search field enum matching GraphQL SearchField
  */
 enum SearchField {
-  ALL = "ALL",
-  COURT_NAME = "COURT_NAME",
-  FULL_TEXT = "FULL_TEXT",
-  KEYWORDS = "KEYWORDS",
-  LEGAL_AREA = "LEGAL_AREA",
-  SIGNATURE = "SIGNATURE",
-  SUMMARY = "SUMMARY",
+  ALL = 'ALL',
+  COURT_NAME = 'COURT_NAME',
+  FULL_TEXT = 'FULL_TEXT',
+  KEYWORDS = 'KEYWORDS',
+  LEGAL_AREA = 'LEGAL_AREA',
+  SIGNATURE = 'SIGNATURE',
+  SUMMARY = 'SUMMARY',
 }
 
 /**
@@ -109,84 +110,84 @@ interface SearchResponse {
  * Court type display labels
  */
 const COURT_TYPE_LABELS: Record<CourtType, string> = {
-  ADMINISTRATIVE_COURT: "Administrative Court",
-  APPELLATE_COURT: "Appellate Court",
-  CONSTITUTIONAL_TRIBUNAL: "Constitutional Tribunal",
-  DISTRICT_COURT: "District Court",
-  OTHER: "Other",
-  REGIONAL_COURT: "Regional Court",
-  SUPREME_COURT: "Supreme Court",
+  ADMINISTRATIVE_COURT: 'Administrative Court',
+  APPELLATE_COURT: 'Appellate Court',
+  CONSTITUTIONAL_TRIBUNAL: 'Constitutional Tribunal',
+  DISTRICT_COURT: 'District Court',
+  OTHER: 'Other',
+  REGIONAL_COURT: 'Regional Court',
+  SUPREME_COURT: 'Supreme Court',
 };
 
 /**
  * Court type color mapping for badges
  */
 const COURT_TYPE_COLORS: Record<CourtType, string> = {
-  ADMINISTRATIVE_COURT: "bg-purple-100 text-purple-800",
-  APPELLATE_COURT: "bg-blue-100 text-blue-800",
-  CONSTITUTIONAL_TRIBUNAL: "bg-amber-100 text-amber-800",
-  DISTRICT_COURT: "bg-green-100 text-green-800",
-  OTHER: "bg-gray-100 text-gray-800",
-  REGIONAL_COURT: "bg-teal-100 text-teal-800",
-  SUPREME_COURT: "bg-red-100 text-red-800",
+  ADMINISTRATIVE_COURT: 'bg-purple-100 text-purple-800',
+  APPELLATE_COURT: 'bg-blue-100 text-blue-800',
+  CONSTITUTIONAL_TRIBUNAL: 'bg-amber-100 text-amber-800',
+  DISTRICT_COURT: 'bg-green-100 text-green-800',
+  OTHER: 'bg-gray-100 text-gray-800',
+  REGIONAL_COURT: 'bg-teal-100 text-teal-800',
+  SUPREME_COURT: 'bg-red-100 text-red-800',
 };
 
 /**
  * Source color mapping for badges
  */
 const SOURCE_COLORS: Record<SearchSource, string> = {
-  LOCAL: "bg-green-100 text-green-800",
-  SAOS: "bg-blue-100 text-blue-800",
-  ISAP: "bg-orange-100 text-orange-800",
+  LOCAL: 'bg-green-100 text-green-800',
+  SAOS: 'bg-blue-100 text-blue-800',
+  ISAP: 'bg-orange-100 text-orange-800',
 };
 
 /**
  * Search field display labels
  */
 const SEARCH_FIELD_LABELS: Record<SearchField, string> = {
-  [SearchField.ALL]: "All Fields",
-  [SearchField.SIGNATURE]: "Signature",
-  [SearchField.COURT_NAME]: "Court Name",
-  [SearchField.SUMMARY]: "Summary",
-  [SearchField.FULL_TEXT]: "Full Text",
-  [SearchField.KEYWORDS]: "Keywords",
-  [SearchField.LEGAL_AREA]: "Legal Area",
+  [SearchField.ALL]: 'All Fields',
+  [SearchField.SIGNATURE]: 'Signature',
+  [SearchField.COURT_NAME]: 'Court Name',
+  [SearchField.SUMMARY]: 'Summary',
+  [SearchField.FULL_TEXT]: 'Full Text',
+  [SearchField.KEYWORDS]: 'Keywords',
+  [SearchField.LEGAL_AREA]: 'Legal Area',
 };
 
 /**
  * Boolean operator display labels
  */
 const OPERATOR_LABELS: Record<BooleanOperator, string> = {
-  [BooleanOperator.AND]: "AND",
-  [BooleanOperator.OR]: "OR",
-  [BooleanOperator.NOT]: "NOT",
+  [BooleanOperator.AND]: 'AND',
+  [BooleanOperator.OR]: 'OR',
+  [BooleanOperator.NOT]: 'NOT',
 };
 
 /**
  * GraphQL endpoint
  */
-const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:3001/graphql";
+const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
 /**
  * Execute GraphQL query with authentication
  */
 async function executeGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   };
 
   // Get access token from localStorage if available
-  if (typeof window !== "undefined") {
-    const accessToken = localStorage.getItem("access_token");
+  if (typeof window !== 'undefined') {
+    const accessToken = localStorage.getItem('access_token');
     if (accessToken) {
-      headers["Authorization"] = `Bearer ${accessToken}`;
+      headers['Authorization'] = `Bearer ${accessToken}`;
     }
   }
 
   const response = await fetch(GRAPHQL_URL, {
-    method: "POST",
+    method: 'POST',
     headers,
-    credentials: "include",
+    credentials: 'include',
     body: JSON.stringify({ query, variables }),
   });
 
@@ -197,7 +198,7 @@ async function executeGraphQL<T>(query: string, variables?: Record<string, unkno
   const result = await response.json();
 
   if (result.errors && result.errors.length > 0) {
-    throw new Error(result.errors[0].message || "GraphQL error");
+    throw new Error(result.errors[0].message || 'GraphQL error');
   }
 
   return result.data;
@@ -273,15 +274,15 @@ export default function AdvancedSearchPage() {
 
   // Search terms state
   const [searchTerms, setSearchTerms] = useState<SearchTermInput[]>([
-    { id: "1", term: "", field: SearchField.ALL, operator: BooleanOperator.AND },
+    { id: '1', term: '', field: SearchField.ALL, operator: BooleanOperator.AND },
   ]);
 
   // Filter state
-  const [courtTypeFilter, setCourtTypeFilter] = useState<string>("");
-  const [legalAreaFilter, setLegalAreaFilter] = useState<string>("");
-  const [keywordsFilter, setKeywordsFilter] = useState<string>("");
-  const [dateFromFilter, setDateFromFilter] = useState<string>("");
-  const [dateToFilter, setDateToFilter] = useState<string>("");
+  const [courtTypeFilter, setCourtTypeFilter] = useState<string>('');
+  const [legalAreaFilter, setLegalAreaFilter] = useState<string>('');
+  const [keywordsFilter, setKeywordsFilter] = useState<string>('');
+  const [dateFromFilter, setDateFromFilter] = useState<string>('');
+  const [dateToFilter, setDateToFilter] = useState<string>('');
   const [sourcesFilter, setSourcesFilter] = useState<SearchSource[]>([
     SearchSource.LOCAL,
     SearchSource.SAOS,
@@ -303,7 +304,9 @@ export default function AdvancedSearchPage() {
     const validTerms = searchTerms.filter((st) => st.term.trim().length > 0);
 
     if (validTerms.length === 0) {
-      setError(translate("advancedSearch.errors.termsRequired") || "Please enter at least one search term");
+      setError(
+        translate('advancedSearch.errors.termsRequired') || 'Please enter at least one search term',
+      );
       return;
     }
 
@@ -316,7 +319,7 @@ export default function AdvancedSearchPage() {
         searchTerms: validTerms,
         courtType: courtTypeFilter as CourtType | undefined,
         legalArea: legalAreaFilter || undefined,
-        keywords: keywordsFilter ? keywordsFilter.split(",").map((k) => k.trim()) : undefined,
+        keywords: keywordsFilter ? keywordsFilter.split(',').map((k) => k.trim()) : undefined,
         dateFrom: dateFromFilter || undefined,
         dateTo: dateToFilter || undefined,
         sources: sourcesFilter.length > 0 ? sourcesFilter : undefined,
@@ -327,7 +330,7 @@ export default function AdvancedSearchPage() {
       setSearchResults(results);
       setHasSearched(true);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An error occurred";
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
       setError(errorMessage);
       setSearchResults(null);
     } finally {
@@ -346,7 +349,7 @@ export default function AdvancedSearchPage() {
     const newId = (Math.max(...searchTerms.map((st) => Number.parseInt(st.id))) + 1).toString();
     setSearchTerms([
       ...searchTerms,
-      { id: newId, term: "", field: SearchField.ALL, operator: BooleanOperator.AND },
+      { id: newId, term: '', field: SearchField.ALL, operator: BooleanOperator.AND },
     ]);
   };
 
@@ -387,7 +390,7 @@ export default function AdvancedSearchPage() {
   // Truncate text to max length
   const truncate = (text: string | null | undefined, maxLength: number = 200) => {
     if (!text) return null;
-    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   };
 
   // Highlight headline if available
@@ -406,11 +409,11 @@ export default function AdvancedSearchPage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">
-          {translate("advancedSearch.title") || "Advanced Search"}
+          {translate('advancedSearch.title') || 'Advanced Search'}
         </h1>
         <p className="text-gray-600">
-          {translate("advancedSearch.subtitle") ||
-            "Search with boolean operators (AND, OR, NOT) and field-specific filters."}
+          {translate('advancedSearch.subtitle') ||
+            'Search with boolean operators (AND, OR, NOT) and field-specific filters.'}
         </p>
       </div>
 
@@ -420,7 +423,7 @@ export default function AdvancedSearchPage() {
           {/* Search Terms */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {translate("advancedSearch.fields.searchTerms") || "Search Terms"}
+              {translate('advancedSearch.fields.searchTerms') || 'Search Terms'}
             </label>
             <div className="space-y-3">
               {searchTerms.map((st, index) => (
@@ -449,8 +452,10 @@ export default function AdvancedSearchPage() {
                     onChange={(e) => updateSearchTerm(st.id, { term: e.target.value })}
                     placeholder={
                       index === 0
-                        ? (translate("advancedSearch.placeholders.firstTerm") || "Enter search term...")
-                        : (translate("advancedSearch.placeholders.nextTerm") || "Enter another term...")
+                        ? translate('advancedSearch.placeholders.firstTerm') ||
+                          'Enter search term...'
+                        : translate('advancedSearch.placeholders.nextTerm') ||
+                          'Enter another term...'
                     }
                     className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -489,7 +494,7 @@ export default function AdvancedSearchPage() {
                 onClick={addSearchTerm}
                 className="mt-2 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
               >
-                {translate("advancedSearch.buttons.addTerm") || "+ Add another term"}
+                {translate('advancedSearch.buttons.addTerm') || '+ Add another term'}
               </button>
             </div>
           </div>
@@ -499,14 +504,14 @@ export default function AdvancedSearchPage() {
             {/* Court Type Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {translate("advancedSearch.fields.courtType") || "Court Type"}
+                {translate('advancedSearch.fields.courtType') || 'Court Type'}
               </label>
               <select
                 value={courtTypeFilter}
                 onChange={(e) => setCourtTypeFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">{translate("common.all") || "All"}</option>
+                <option value="">{translate('common.all') || 'All'}</option>
                 {Object.values(CourtType).map((type) => (
                   <option key={type} value={type}>
                     {COURT_TYPE_LABELS[type]}
@@ -518,13 +523,15 @@ export default function AdvancedSearchPage() {
             {/* Legal Area Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {translate("advancedSearch.fields.legalArea") || "Legal Area"}
+                {translate('advancedSearch.fields.legalArea') || 'Legal Area'}
               </label>
               <input
                 type="text"
                 value={legalAreaFilter}
                 onChange={(e) => setLegalAreaFilter(e.target.value)}
-                placeholder={translate("advancedSearch.placeholders.legalArea") || "e.g., constitutional"}
+                placeholder={
+                  translate('advancedSearch.placeholders.legalArea') || 'e.g., constitutional'
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -532,13 +539,13 @@ export default function AdvancedSearchPage() {
             {/* Keywords Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {translate("advancedSearch.fields.keywords") || "Keywords"}
+                {translate('advancedSearch.fields.keywords') || 'Keywords'}
               </label>
               <input
                 type="text"
                 value={keywordsFilter}
                 onChange={(e) => setKeywordsFilter(e.target.value)}
-                placeholder={translate("advancedSearch.placeholders.keywords") || "Comma separated"}
+                placeholder={translate('advancedSearch.placeholders.keywords') || 'Comma separated'}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -549,7 +556,7 @@ export default function AdvancedSearchPage() {
             {/* Date From Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {translate("advancedSearch.fields.dateFrom") || "Date From"}
+                {translate('advancedSearch.fields.dateFrom') || 'Date From'}
               </label>
               <input
                 type="date"
@@ -562,7 +569,7 @@ export default function AdvancedSearchPage() {
             {/* Date To Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {translate("advancedSearch.fields.dateTo") || "Date To"}
+                {translate('advancedSearch.fields.dateTo') || 'Date To'}
               </label>
               <input
                 type="date"
@@ -576,7 +583,7 @@ export default function AdvancedSearchPage() {
           {/* Source Filters */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {translate("advancedSearch.fields.sources") || "Data Sources"}
+              {translate('advancedSearch.fields.sources') || 'Data Sources'}
             </label>
             <div className="flex flex-wrap gap-2">
               {Object.values(SearchSource).map((source) => (
@@ -586,8 +593,8 @@ export default function AdvancedSearchPage() {
                   onClick={() => toggleSource(source)}
                   className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                     sourcesFilter.includes(source)
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
                 >
                   {source}
@@ -604,19 +611,26 @@ export default function AdvancedSearchPage() {
               className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSearching
-                ? (translate("advancedSearch.buttons.searching") || "Searching...")
-                : (translate("advancedSearch.buttons.search") || "Search")}
+                ? translate('advancedSearch.buttons.searching') || 'Searching...'
+                : translate('advancedSearch.buttons.search') || 'Search'}
             </button>
-            {(hasSearched || courtTypeFilter || legalAreaFilter || keywordsFilter || dateFromFilter || dateToFilter) && (
+            {(hasSearched ||
+              courtTypeFilter ||
+              legalAreaFilter ||
+              keywordsFilter ||
+              dateFromFilter ||
+              dateToFilter) && (
               <button
                 type="button"
                 onClick={() => {
-                  setSearchTerms([{ id: "1", term: "", field: SearchField.ALL, operator: BooleanOperator.AND }]);
-                  setCourtTypeFilter("");
-                  setLegalAreaFilter("");
-                  setKeywordsFilter("");
-                  setDateFromFilter("");
-                  setDateToFilter("");
+                  setSearchTerms([
+                    { id: '1', term: '', field: SearchField.ALL, operator: BooleanOperator.AND },
+                  ]);
+                  setCourtTypeFilter('');
+                  setLegalAreaFilter('');
+                  setKeywordsFilter('');
+                  setDateFromFilter('');
+                  setDateToFilter('');
                   setSourcesFilter([SearchSource.LOCAL, SearchSource.SAOS, SearchSource.ISAP]);
                   setSearchResults(null);
                   setHasSearched(false);
@@ -624,7 +638,7 @@ export default function AdvancedSearchPage() {
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
               >
-                {translate("buttons.clear") || "Clear"}
+                {translate('buttons.clear') || 'Clear'}
               </button>
             )}
           </div>
@@ -634,10 +648,16 @@ export default function AdvancedSearchPage() {
       {/* Error Display */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
-          <p className="font-medium">{translate("advancedSearch.errors.title") || "Error"}</p>
+          <p className="font-medium">{translate('advancedSearch.errors.title') || 'Error'}</p>
           <p className="text-sm">{error}</p>
         </div>
       )}
+
+      {/* Loading Skeleton */}
+      {isSearching && hasSearched && <AdvancedSearchPaginationSkeleton />}
+
+      {/* Initial Loading Skeleton */}
+      {isSearching && !hasSearched && <AdvancedSearchSkeleton />}
 
       {/* Results Display */}
       {hasSearched && !isSearching && (
@@ -645,7 +665,9 @@ export default function AdvancedSearchPage() {
           {/* Query Explanation */}
           {searchResults?.queryExplanation && (
             <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-md mb-4">
-              <p className="font-medium">{translate("advancedSearch.queryExplanation") || "Query"}</p>
+              <p className="font-medium">
+                {translate('advancedSearch.queryExplanation') || 'Query'}
+              </p>
               <p className="text-sm">{searchResults.queryExplanation}</p>
             </div>
           )}
@@ -653,11 +675,10 @@ export default function AdvancedSearchPage() {
           {/* Results Summary */}
           {searchResults && (
             <div className="mb-4 text-sm text-gray-600">
-              {translate("advancedSearch.results.summary", {
+              {translate('advancedSearch.results.summary', {
                 count: searchResults.count,
                 total: searchResults.totalCount,
-              }) ||
-                `Showing ${searchResults.count} of ${searchResults.totalCount} results`}
+              }) || `Showing ${searchResults.count} of ${searchResults.totalCount} results`}
             </div>
           )}
 
@@ -666,11 +687,11 @@ export default function AdvancedSearchPage() {
             {!searchResults || searchResults.results.length === 0 ? (
               <div className="bg-white rounded-lg shadow p-12 text-center text-gray-500">
                 <p className="text-lg">
-                  {translate("advancedSearch.results.noResults") || "No results found"}
+                  {translate('advancedSearch.results.noResults') || 'No results found'}
                 </p>
                 <p className="text-sm mt-2">
-                  {translate("advancedSearch.results.tryDifferent") ||
-                    "Try adjusting your search terms or filters"}
+                  {translate('advancedSearch.results.tryDifferent') ||
+                    'Try adjusting your search terms or filters'}
                 </p>
               </div>
             ) : (
@@ -728,7 +749,7 @@ export default function AdvancedSearchPage() {
                       {result.ruling.metadata.keywords &&
                         result.ruling.metadata.keywords.length > 0 && (
                           <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">
-                            Keywords: {result.ruling.metadata.keywords.join(", ")}
+                            Keywords: {result.ruling.metadata.keywords.join(', ')}
                           </span>
                         )}
                     </div>
@@ -737,7 +758,7 @@ export default function AdvancedSearchPage() {
                   {/* Relevance Score */}
                   <div className="flex justify-between items-center pt-3 border-t border-gray-200">
                     <div className="text-sm text-gray-500">
-                      {translate("advancedSearch.results.relevance") || "Relevance"}:{" "}
+                      {translate('advancedSearch.results.relevance') || 'Relevance'}:{' '}
                       <span className="font-medium text-gray-700">
                         {Math.round(result.rank * 100)}%
                       </span>
@@ -756,11 +777,11 @@ export default function AdvancedSearchPage() {
                 disabled={!hasPrevPage}
                 className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
               >
-                {translate("buttons.previous") || "Previous"}
+                {translate('buttons.previous') || 'Previous'}
               </button>
 
               <div className="text-sm text-gray-600">
-                {translate("table.page", { current: currentPage + 1, total: totalPages + 1 }) ||
+                {translate('table.page', { current: currentPage + 1, total: totalPages + 1 }) ||
                   `Page ${currentPage + 1} of ${totalPages + 1}`}
               </div>
 
@@ -769,7 +790,7 @@ export default function AdvancedSearchPage() {
                 disabled={!hasNextPage}
                 className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
               >
-                {translate("buttons.next") || "Next"}
+                {translate('buttons.next') || 'Next'}
               </button>
             </div>
           )}

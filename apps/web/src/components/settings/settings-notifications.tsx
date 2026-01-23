@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslate, useCustomMutation } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
-import { Bell, Mail, Smartphone } from 'lucide-react';
+import { Bell, Mail } from 'lucide-react';
 
 interface UserPreferences {
   id: string;
