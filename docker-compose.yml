@@ -5,12 +5,20 @@
 # This configuration is for local development with hot-reload enabled.
 # Production deployments use Kubernetes manifests.
 #
+# This file contains ALL services (infrastructure + applications).
+# For infrastructure-only setup (when running apps locally), see docker-compose.infra.yml
+#
 # Usage:
-#   docker-compose up --build    # Build and start all services
-#   docker-compose up -d         # Start in detached mode
-#   docker-compose logs backend  # View logs for a service
-#   docker-compose down          # Stop all services
-#   docker-compose down -v       # Stop and remove volumes
+#   docker compose up --build    # Build and start all services
+#   docker compose up -d         # Start in detached mode
+#   docker compose logs backend  # View logs for a service
+#   docker compose down          # Stop all services
+#   docker compose down -v       # Stop and remove volumes
+#
+# Infrastructure Only (for local app development):
+#   docker compose -f docker-compose.infra.yml up -d
+#
+# See docs/DOCKER_SETUP.md for detailed documentation on different setups.
 #
 # Hot-reload:
 #   Source code changes are reflected immediately in containers without
@@ -22,7 +30,9 @@
 #     - packages/         -> Shared packages
 #
 # ============================================================================
+
 services:
+
   postgres:
     image: postgres:15-alpine
     container_name: legal-ai-db
@@ -40,6 +50,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - legal-ai-network
 
   redis:
     image: redis:7-alpine
@@ -55,6 +67,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - legal-ai-network
 
   backend:
     build:
@@ -88,7 +102,7 @@ services:
     # Volume mounts for hot-reload during development
     # Note: Named volumes for node_modules prevent host node_modules from overriding
     volumes:
-      - ./apps/backend/src:/app/apps/backend/src:ro
+      - ./apps/backend/src:/app/apps/backend/src
       - ./packages:/app/packages:ro
       - backend_node_modules:/app/node_modules
       - backend_apps_node_modules:/app/apps/backend/node_modules
@@ -99,6 +113,8 @@ services:
         condition: service_healthy
       ai-engine:
         condition: service_started
+    networks:
+      - legal-ai-network
     restart: always
 
   ai-engine:
@@ -116,6 +132,8 @@ services:
     volumes:
       - ./apps/ai-engine/src:/app/src:ro
       - ai_engine_venv:/app/.venv
+    networks:
+      - legal-ai-network
     restart: always
 
   web:
@@ -141,6 +159,8 @@ services:
     depends_on:
       backend:
         condition: service_started
+    networks:
+      - legal-ai-network
     restart: always
 
 volumes:
@@ -151,3 +171,7 @@ volumes:
   ai_engine_venv:
   web_node_modules:
   web_apps_node_modules:
+
+networks:
+  legal-ai-network:
+    driver: bridge

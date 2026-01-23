@@ -456,3 +456,163 @@ Input: {
   "description": "Test web Docker build with cache optimization",
   "timeout": 300000
 }
+Both builds work. Now let me test the production build as well:
+
+🔧 Tool: Bash
+Input: {
+  "command": "docker build -f apps/backend/Dockerfile --target production -t legal-backend:prod . 2>&1 | tail -50",
+  "description": "Test backend production Docker build",
+  "timeout": 300000
+}
+The production build is failing because `pnpm install --prod` triggers the `prepare` script which needs `husky` (a devDependency). This is actually an existing issue in the original Dockerfile too, not caused by our changes.
+
+The fix is to use `--ignore-scripts` or to skip the prepare script. Let me check what the original Dockerfile did:
+
+Looking back at the original file, it had the same `pnpm install --prod` command. This means the issue might have existed before or we need to copy more files for production. Let me check if we need to ignore scripts:
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/Dockerfile",
+  "old_string": "# Install production dependencies only\n# This layer is cached if manifests and packages/ are unchanged\nRUN pnpm install --prod",
+  "new_string": "# Install production dependencies only\n# This layer is cached if manifests and packages/ are unchanged\n# --ignore-scripts prevents running prepare script which needs devDependencies\nRUN pnpm install --prod --ignore-scripts"
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/Dockerfile",
+  "old_string": "# Install production dependencies only\n# This layer is cached if manifests and packages/ are unchanged\nRUN pnpm install --prod",
+  "new_string": "# Install production dependencies only\n# This layer is cached if manifests and packages/ are unchanged\n# --ignore-scripts prevents running prepare script which needs devDependencies\nRUN pnpm install --prod --ignore-scripts"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/Dockerfile"
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/Dockerfile",
+  "old_string": "# Install production dependencies only\n# This layer is cached if manifests and packages/ are unchanged\nRUN pnpm install --prod",
+  "new_string": "# Install production dependencies only\n# This layer is cached if manifests and packages/ are unchanged\n# --ignore-scripts prevents running prepare script which needs devDependencies\nRUN pnpm install --prod --ignore-scripts"
+}
+Now let me test the production build again:
+
+🔧 Tool: Bash
+Input: {
+  "command": "docker build -f apps/backend/Dockerfile --target production -t legal-backend:prod . 2>&1 | tail -30",
+  "description": "Test backend production Docker build",
+  "timeout": 300000
+}
+Backend production build works. Let me test web production build:
+
+🔧 Tool: Bash
+Input: {
+  "command": "docker build -f apps/web/Dockerfile --target production -t legal-web:prod . 2>&1 | tail -30",
+  "description": "Test web production Docker build",
+  "timeout": 300000
+}
+All builds pass. Let me verify the cache optimization by doing a second build to confirm caching works:
+
+🔧 Tool: Bash
+Input: {
+  "command": "docker build -f apps/backend/Dockerfile --target development -t legal-backend:test2 . 2>&1 | grep -E \"(CACHED|DONE|#\\d+ \\[)\" | head -30",
+  "description": "Verify Docker build cache is working",
+  "timeout": 300000
+}
+The cache is working correctly. The `pnpm install` step is cached (CACHED) and only the source code copy and build steps are re-executed. This is exactly what we want - changing source code doesn't require reinstalling dependencies.
+
+Now let me also test docker-compose to make sure the local development still works:
+
+🔧 Tool: Bash
+Input: {
+  "command": "docker-compose config 2>&1 | head -20",
+  "description": "Verify docker-compose configuration is valid"
+}
+Docker-compose configuration is valid. Now let me update the todo list and create the summary:
+
+🔧 Tool: TodoWrite
+Input: {
+  "todos": [
+    {
+      "activeForm": "Exploring current Docker build configuration",
+      "content": "Explore current Docker build configuration",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Analyzing Dockerfile layer caching issues",
+      "content": "Analyze Dockerfile layer caching issues",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Optimizing backend Dockerfile COPY order",
+      "content": "Optimize backend Dockerfile COPY order",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Optimizing web Dockerfile COPY order",
+      "content": "Optimize web Dockerfile COPY order",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Verifying Docker build still works",
+      "content": "Verify Docker build still works",
+      "status": "completed"
+    }
+  ]
+}
+Let me also provide a final read of the optimized Dockerfiles for reference:
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/Dockerfile"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/Dockerfile"
+}
+<summary>
+## Summary: Optimize Docker Build Caching
+
+### Changes Implemented
+
+**Backend Dockerfile (`apps/backend/Dockerfile`):**
+- Reorganized COPY order in all stages (development, builder, production)
+- Now copies `packages/` directory first (before app source code)
+- Copies only `apps/backend/package.json` before `pnpm install`
+- Copies full `apps/backend` source code AFTER `pnpm install`
+- Added `--ignore-scripts` flag to production `pnpm install --prod` to skip prepare script that requires devDependencies
+
+**Web Dockerfile (`apps/web/Dockerfile`):**
+- Same reorganization as backend Dockerfile
+- Copies `packages/` directory first
+- Copies only `apps/web/package.json` before `pnpm install`
+- Copies full `apps/web` source code AFTER `pnpm install`
+- Added `--ignore-scripts` flag to production `pnpm install --prod`
+
+### Files Modified
+- `apps/backend/Dockerfile`
+- `apps/web/Dockerfile`
+
+### Cache Optimization Benefits
+
+**Before:** Any source code change invalidated the entire `pnpm install` layer, forcing full dependency reinstallation.
+
+**After:** Source code changes only invalidate the source COPY and build layers. The `pnpm install` layer remains cached as long as:
+- Root `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml` are unchanged
+- `packages/` directory is unchanged
+- App's `package.json` is unchanged
+
+This significantly speeds up rebuilds during development, especially when making frequent code changes without modifying dependencies.
+
+### Verification Status
+- **Development builds:** Both backend and web build successfully
+- **Production builds:** Both backend and web build successfully
+- **Docker Compose:** Configuration validates correctly
+- **Cache behavior:** Second build shows `pnpm install` step is cached (marked CACHED) while source-dependent steps are re-executed
+
+### Notes for Developer
+- The `ai-engine` Dockerfile was already well-optimized and did not require changes
+- The `--ignore-scripts` flag in production builds prevents running the `prepare` script which requires `husky` (a devDependency) - this is safe for production containers
+- No changes to `docker-compose.yml` were needed
+</summary>

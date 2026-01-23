@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769159002011-bb0238c1",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T09:03:22.011Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769158870166-phavzhksf",
+  "featureName": "Build project and fix compilation errors",
+  "error": "Feature completed in 126s - auto-verified",
+  "passes": true
+}

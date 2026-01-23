@@ -3,11 +3,16 @@
 import React from 'react';
 import { LocaleSwitcher } from '@components/locale-switcher';
 import Link from 'next/link';
+import { useTranslations, useLocale } from 'next-intl';
+import type { SupportedLocale } from '@i18n/config';
 
-import { useTranslations } from 'next-intl';
+interface PublicLayoutProps {
+  children?: React.ReactNode;
+}
 
-export const PublicLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
+export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   const t = useTranslations('landing.footer');
+  const locale = useLocale() as SupportedLocale;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -17,7 +22,7 @@ export const PublicLayout: React.FC<React.PropsWithChildren> = ({ children }) =>
             Legal AI
           </Link>
           <div className="flex items-center gap-4">
-            <LocaleSwitcher />
+            <LocaleSwitcher initialLocale={locale} />
             <Link
               href="/login"
               className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"

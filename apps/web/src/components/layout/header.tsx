@@ -6,6 +6,7 @@ import { Button } from '@legal/ui';
 import { NotificationBell } from '@components/dashboard';
 import { useNotifications, type InAppNotification } from '@/hooks/useNotifications';
 import { OmnisearchBar } from '@components/search';
+import type { SupportedLocale } from '@i18n/config';
 
 interface UserIdentity {
   id?: string;
@@ -15,7 +16,11 @@ interface UserIdentity {
   email?: string;
 }
 
-export const Header = () => {
+interface HeaderProps {
+  initialLocale?: SupportedLocale;
+}
+
+export const Header = ({ initialLocale }: HeaderProps) => {
   const { translate } = useTranslation();
   const { mutate: logout } = useLogout();
   const { data: user, isLoading: isUserLoading } = useGetIdentity<UserIdentity>();
@@ -37,7 +42,7 @@ export const Header = () => {
       </div>
 
       <div className="flex items-center gap-4">
-        <LocaleSwitcher />
+        <LocaleSwitcher initialLocale={initialLocale} />
 
         <NotificationBell
           notifications={notifications}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769156239114-48c3bb62",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T08:17:19.114Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769154048850-tf615ry1b",
+  "featureName": "Fix Docker caching to restore dependency installation",
+  "error": "Feature completed in 100s - auto-verified",
+  "passes": true
+}

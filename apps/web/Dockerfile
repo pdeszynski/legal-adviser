@@ -11,26 +11,21 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY turbo.json ./
 
 # Copy packages (required for pnpm workspace resolution)
-# Copy packages before app source code for better layer caching
-# The packages directory changes less frequently than app code
 COPY packages ./packages
 
-# Copy only app package.json files first (not source code)
-# This allows dependency installation to be cached even when source code changes
-COPY apps/web/package.json ./apps/web/
+# Copy web app source code
+# Copy everything first, then install - node_modules will be seeded by this layer
+COPY apps/web ./apps/web
 
-# Install all dependencies (use no-frozen-lockfile for local dev)
-# This layer is cached if manifests and packages/ are unchanged
+# Install all dependencies
+# The node_modules created here will be preserved by named volume in docker-compose
 RUN pnpm install
 
 # Build workspace packages (dependencies for apps)
 RUN pnpm run build --filter='./packages/*'
 
-# Copy web source code AFTER pnpm install (for better caching)
-COPY apps/web ./apps/web
-
 # Build web (skip ESLint for Docker builds)
-RUN export NEXT_ESLINT_IGNORE_DURING_BUILDS=true && pnpm run build --filter=@legal/web
+RUN pnpm run build --filter=@legal/web
 
 EXPOSE 3000
 
@@ -70,7 +65,7 @@ RUN pnpm run build --filter='./packages/*'
 COPY apps/web ./apps/web
 
 # Build web (skip ESLint for Docker builds)
-RUN export NEXT_ESLINT_IGNORE_DURING_BUILDS=true && pnpm run build --filter=@legal/web
+RUN pnpm run build --filter=@legal/web
 
 # Production stage - optimized for production deployments
 FROM node:20-alpine AS production
@@ -90,7 +85,8 @@ COPY apps/web/package.json ./apps/web/
 
 # Install production dependencies only
 # This layer is cached if manifests and packages/ are unchanged
-RUN pnpm install --prod
+# --ignore-scripts prevents running prepare script which needs devDependencies
+RUN pnpm install --prod --ignore-scripts
 
 # Copy built artifacts from builder stage
 COPY --from=builder /app/apps/web/.next ./apps/web/.next

@@ -11,23 +11,18 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY turbo.json ./
 
 # Copy packages (required for pnpm workspace resolution)
-# Copy packages before app source code for better layer caching
-# The packages directory changes less frequently than app code
 COPY packages ./packages
 
-# Copy only app package.json files first (not source code)
-# This allows dependency installation to be cached even when source code changes
-COPY apps/backend/package.json ./apps/backend/
+# Copy backend app source code
+# Copy everything first, then install - node_modules will be seeded by this layer
+COPY apps/backend ./apps/backend
 
-# Install all dependencies (use no-frozen-lockfile for local dev)
-# This layer is cached if manifests and packages/ are unchanged
+# Install all dependencies
+# The node_modules created here will be preserved by named volume in docker-compose
 RUN pnpm install
 
 # Build workspace packages (dependencies for apps)
 RUN pnpm run build --filter='./packages/*'
-
-# Copy backend source code AFTER pnpm install (for better caching)
-COPY apps/backend ./apps/backend
 
 # Build backend
 RUN pnpm run build --filter=@legal/backend
@@ -90,7 +85,8 @@ COPY apps/backend/package.json ./apps/backend/
 
 # Install production dependencies only
 # This layer is cached if manifests and packages/ are unchanged
-RUN pnpm install --prod
+# --ignore-scripts prevents running prepare script which needs devDependencies
+RUN pnpm install --prod --ignore-scripts
 
 # Copy built artifacts from builder stage
 COPY --from=builder /app/apps/backend/dist ./apps/backend/dist

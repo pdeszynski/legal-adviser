@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769153289471-bb32e999",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T07:28:09.471Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "login-error-handling",
+  "featureName": "Login Form Error Display",
+  "error": "Feature completed in 673s - auto-verified",
+  "passes": true
+}

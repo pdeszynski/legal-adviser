@@ -3,9 +3,10 @@
 This service handles text embedding generation using OpenAI's API.
 """
 
-import os
 from typing import List
+
 from openai import AsyncOpenAI
+
 from ..config import get_settings
 
 

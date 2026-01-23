@@ -1,6 +1,8 @@
-from typing import TypedDict, Optional, Dict, Any
-from langgraph.graph import StateGraph, END
-from ..agents.drafting_agent import drafting_agent, DraftResult
+from typing import Any, Dict, Optional, TypedDict
+
+from langgraph.graph import END, StateGraph
+
+from ..agents.drafting_agent import DraftResult, drafting_agent
 
 
 class DraftingState(TypedDict):
@@ -23,8 +25,9 @@ async def generate_draft_node(state: DraftingState):
             f"Context variables: {state.get('context', {})}"
         )
 
-        # PydanticAI agent run
-        result = await drafting_agent.run(user_prompt, output_type=DraftResult)
+        # PydanticAI agent run (lazy-loaded)
+        agent = drafting_agent()
+        result = await agent.run(user_prompt, output_type=DraftResult)
         return {"draft_content": result.data.content, "error": None}
     except Exception as e:
         return {"error": str(e), "draft_content": None}

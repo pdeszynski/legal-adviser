@@ -1007,6 +1007,858 @@ legal-ai-engine  |     def start_ai_span(operation: str, **kwargs) -&gt; Optiona
 legal-ai-engine  |                                                             ^^^^^^^^^^^^^^^
 legal-ai-engine  | AttributeError: module &apos;sentry_sdk&apos; has no attribute &apos;Span&apos;</description>
     </feature>
+    <feature>
+      <name>Login Form Error Display</name>
+      <description>Implement error message display on login form for invalid credentials and other authentication failures. Parse error responses from backend GraphQL mutations and display user-friendly error messages. Handle network errors, timeout errors, and invalid credential errors with appropriate messaging.</description>
+    </feature>
+    <feature>
+      <name>Optimize Docker build caching for pnpm install</name>
+      <description>Optimize docker build caching. Make sure that not ALL cod is copied BEFORE pnpm install, or it invalidates that step  completely. Make sure that we COPY only the necessary files, for example packages before pnpm install. For backend we do not need backend to be available beffore pnpm install. we also don&apos;t neeed at all ai-engine or web for that neither. Maybe even not for build (needs verification)</description>
+    </feature>
+    <feature>
+      <name>Fix Docker caching to restore dependency installation</name>
+      <description>After recent changes in docker caching, it stopped working, please fix it:
+
+legal-ai-backend  | 
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+legal-ai-web exited with code 1 (restarting)
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+legal-ai-web exited with code 1 (restarting)
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+legal-ai-web exited with code 1 (restarting)
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+legal-ai-web exited with code 1 (restarting)
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+legal-ai-web exited with code 1 (restarting)
+legal-ai-backend  | src/app.module.ts:10:44 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 10 import { APP_GUARD, APP_INTERCEPTOR } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                                               ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/performance.interceptor.ts:10:25 - error TS2307: Cannot find module &apos;@sentry/node&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 10 import * as Sentry from &apos;@sentry/node&apos;;
+legal-ai-backend  |                            ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.interceptor.ts:10:25 - error TS2307: Cannot find module &apos;@sentry/node&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 10 import * as Sentry from &apos;@sentry/node&apos;;
+legal-ai-backend  |                            ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:2:25 - error TS2307: Cannot find module &apos;@sentry/node&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 2 import * as Sentry from &apos;@sentry/node&apos;;
+legal-ai-backend  |                           ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:3:42 - error TS2307: Cannot find module &apos;@sentry/profiling-node&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 3 import { nodeProfilingIntegration } from &apos;@sentry/profiling-node&apos;;
+legal-ai-backend  |                                            ~~~~~~~~~~~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:6:33 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 6 import { APP_INTERCEPTOR } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                                   ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:47:20 - error TS7006: Parameter &apos;event&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 47         beforeSend(event, hint) {
+legal-ai-backend  |                       ~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:47:27 - error TS7006: Parameter &apos;hint&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 47         beforeSend(event, hint) {
+legal-ai-backend  |                              ~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:54:31 - error TS7006: Parameter &apos;event&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 54         beforeSendTransaction(event, hint) {
+legal-ai-backend  |                                  ~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:54:38 - error TS7006: Parameter &apos;hint&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 54         beforeSendTransaction(event, hint) {
+legal-ai-backend  |                                         ~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/main.ts:1:29 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 1 import { NestFactory } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                               ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/main.ts:5:26 - error TS7016: Could not find a declaration file for module &apos;cookie-parser&apos;. &apos;/app/node_modules/.pnpm/cookie-parser@1.4.7/node_modules/cookie-parser/index.js&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  |   Try `npm i --save-dev @types/cookie-parser` if it exists or add a new declaration (.d.ts) file containing `declare module &apos;cookie-parser&apos;;`
+legal-ai-backend  | 
+legal-ai-backend  | 5 import cookieParser from &apos;cookie-parser&apos;;
+legal-ai-backend  |                            ~~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/main.ts:6:25 - error TS2307: Cannot find module &apos;@sentry/node&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 6 import * as Sentry from &apos;@sentry/node&apos;;
+legal-ai-backend  |                           ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/auth/guards/admin.guard.ts:8:27 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 8 import { Reflector } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                             ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/auth/guards/document-permission.guard.ts:9:27 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 9 import { Reflector } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                             ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/auth/strategies/api-key.strategy.ts:3:26 - error TS2307: Cannot find module &apos;passport-http-bearer&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 3 import { Strategy } from &apos;passport-http-bearer&apos;;
+legal-ai-backend  |                            ~~~~~~~~~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/backup/services/s3-storage.service.ts:10:8 - error TS2307: Cannot find module &apos;@aws-sdk/client-s3&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 10 } from &apos;@aws-sdk/client-s3&apos;;
+legal-ai-backend  |           ~~~~~~~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/billing/guards/quota.guard.ts:10:27 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 10 import { Reflector } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                              ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/collaboration/gateways/collaboration.gateway.ts:9:8 - error TS2307: Cannot find module &apos;@nestjs/websockets&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 9 } from &apos;@nestjs/websockets&apos;;
+legal-ai-backend  |          ~~~~~~~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/collaboration/gateways/collaboration.gateway.ts:10:32 - error TS2307: Cannot find module &apos;socket.io&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 10 import { Server, Socket } from &apos;socket.io&apos;;
+legal-ai-backend  |                                   ~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/subscriptions/guards/feature-access.guard.ts:9:27 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 9 import { Reflector } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                             ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/seeds/seed.command.ts:1:29 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 1 import { NestFactory } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                               ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/ai-client/ai-client.service.ts:5:25 - error TS2307: Cannot find module &apos;@sentry/node&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 5 import * as Sentry from &apos;@sentry/node&apos;;
+legal-ai-backend  |                           ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/csrf/csrf.guard.ts:8:27 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 8 import { Reflector } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                             ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/csrf/csrf.module.ts:3:27 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 3 import { APP_GUARD } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                             ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/logger/logger.service.ts:3:26 - error TS2307: Cannot find module &apos;winston&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 3 import * as winston from &apos;winston&apos;;
+legal-ai-backend  |                            ~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/logger/logger.service.ts:66:22 - error TS7031: Binding element &apos;timestamp&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 66                   ({ timestamp, level, message, context, ...metadata }) =&gt; {
+legal-ai-backend  |                         ~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/logger/logger.service.ts:66:33 - error TS7031: Binding element &apos;level&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 66                   ({ timestamp, level, message, context, ...metadata }) =&gt; {
+legal-ai-backend  |                                    ~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/logger/logger.service.ts:66:40 - error TS7031: Binding element &apos;message&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 66                   ({ timestamp, level, message, context, ...metadata }) =&gt; {
+legal-ai-backend  |                                           ~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/logger/logger.service.ts:66:49 - error TS7031: Binding element &apos;context&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 66                   ({ timestamp, level, message, context, ...metadata }) =&gt; {
+legal-ai-backend  |                                                    ~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | [7:40:02 AM] Found 30 errors. Watching for file changes.
+legal-ai-backend  | 
+legal-ai-backend  | node:internal/modules/cjs/loader:1210
+legal-ai-backend  |   throw err;
+legal-ai-backend  |   ^
+legal-ai-backend  | 
+legal-ai-backend  | Error: Cannot find module &apos;@nestjs/core&apos;
+legal-ai-backend  | Require stack:
+legal-ai-backend  | - /app/apps/backend/dist/src/main.js
+legal-ai-backend  |     at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+legal-ai-backend  |     at Module._load (node:internal/modules/cjs/loader:1038:27)
+legal-ai-backend  |     at Module.require (node:internal/modules/cjs/loader:1289:19)
+legal-ai-backend  |     at require (node:internal/modules/helpers:182:18)
+legal-ai-backend  |     at Object.&lt;anonymous&gt; (/app/apps/backend/src/main.ts:1:1)
+legal-ai-backend  |     at Module._compile (node:internal/modules/cjs/loader:1521:14)
+legal-ai-backend  |     at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+legal-ai-backend  |     at Module.load (node:internal/modules/cjs/loader:1266:32)
+legal-ai-backend  |     at Module._load (node:internal/modules/cjs/loader:1091:12)
+legal-ai-backend  |     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12) {
+legal-ai-backend  |   code: &apos;MODULE_NOT_FOUND&apos;,
+legal-ai-backend  |   requireStack: [ &apos;/app/apps/backend/dist/src/main.js&apos; ]
+legal-ai-backend  | }
+legal-ai-backend  | 
+legal-ai-backend  | Node.js v20.20.0
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+legal-ai-web exited with code 1 (restarting)
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0</description>
+    </feature>
+    <feature>
+      <name>Fix missing OpenAI API key configuration</name>
+      <description>Fix legal ai errors:
+
+legal-ai-engine  | Process SpawnProcess-1:
+legal-ai-engine  | Traceback (most recent call last):
+legal-ai-engine  |   File &quot;/usr/local/lib/python3.13/multiprocessing/process.py&quot;, line 313, in _bootstrap
+legal-ai-engine  |     self.run()
+legal-ai-engine  |     ~~~~~~~~^^
+legal-ai-engine  |   File &quot;/usr/local/lib/python3.13/multiprocessing/process.py&quot;, line 108, in run
+legal-ai-engine  |     self._target(*self._args, **self._kwargs)
+legal-ai-engine  |     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+legal-ai-engine  |   File &quot;/app/.venv/lib/python3.13/site-packages/uvicorn/_subprocess.py&quot;, line 80, in subprocess_started
+legal-ai-engine  |     target(sockets=sockets)
+legal-ai-engine  |     ~~~~~~^^^^^^^^^^^^^^^^^
+legal-ai-engine  |   File &quot;/app/.venv/lib/python3.13/site-packages/uvicorn/server.py&quot;, line 67, in run
+legal-ai-engine  |     return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+legal-ai-engine  |   File &quot;/usr/local/lib/python3.13/asyncio/runners.py&quot;, line 195, in run
+legal-ai-engine  |     return runner.run(main)
+legal-ai-engine  |            ~~~~~~~~~~^^^^^^
+legal-ai-engine  |   File &quot;/usr/local/lib/python3.13/asyncio/runners.py&quot;, line 118, in run
+legal-ai-engine  |     return self._loop.run_until_complete(task)
+legal-ai-engine  |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+legal-ai-engine  |   File &quot;/usr/local/lib/python3.13/asyncio/base_events.py&quot;, line 725, in run_until_complete
+legal-ai-engine  |     return future.result()
+legal-ai-engine  |            ~~~~~~~~~~~~~^^
+legal-ai-engine  |   File &quot;/app/.venv/lib/python3.13/site-packages/uvicorn/server.py&quot;, line 71, in serve
+legal-ai-engine  |     await self._serve(sockets)
+legal-ai-engine  |   File &quot;/app/.venv/lib/python3.13/site-packages/uvicorn/server.py&quot;, line 78, in _serve
+legal-ai-engine  |     config.load()
+legal-ai-engine  |     ~~~~~~~~~~~^^
+legal-ai-engine  |   File &quot;/app/.venv/lib/python3.13/site-packages/uvicorn/config.py&quot;, line 439, in load
+legal-ai-engine  |     self.loaded_app = import_from_string(self.app)
+legal-ai-engine  |                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+legal-ai-engine  |   File &quot;/app/.venv/lib/python3.13/site-packages/uvicorn/importer.py&quot;, line 19, in import_from_string
+legal-ai-engine  |     module = importlib.import_module(module_str)
+legal-ai-engine  |   File &quot;/usr/local/lib/python3.13/importlib/__init__.py&quot;, line 88, in import_module
+legal-ai-engine  |     return _bootstrap._gcd_import(name[level:], package, level)
+legal-ai-engine  |            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+legal-ai-engine  |   File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1387, in _gcd_import
+legal-ai-engine  |   File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1360, in _find_and_load
+legal-ai-engine  |   File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1331, in _find_and_load_unlocked
+legal-ai-engine  |   File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 935, in _load_unlocked
+legal-ai-engine  |   File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 1023, in exec_module
+legal-ai-engine  |   File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 488, in _call_with_frames_removed
+legal-ai-engine  |   File &quot;/app/src/main.py&quot;, line 21, in &lt;module&gt;
+legal-ai-engine  |     from .agents.classifier_agent import classifier_agent
+legal-ai-engine  |   File &quot;/app/src/agents/classifier_agent.py&quot;, line 12, in &lt;module&gt;
+legal-ai-engine  |     settings = get_settings()
+legal-ai-engine  |   File &quot;/app/src/config.py&quot;, line 25, in get_settings
+legal-ai-engine  |     return Settings()
+legal-ai-engine  |   File &quot;/app/.venv/lib/python3.13/site-packages/pydantic_settings/main.py&quot;, line 194, in __init__
+legal-ai-engine  |     super().__init__(
+legal-ai-engine  |     ~~~~~~~~~~~~~~~~^
+legal-ai-engine  |         **__pydantic_self__._settings_build_values(
+legal-ai-engine  |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+legal-ai-engine  |     ...&lt;27 lines&gt;...
+legal-ai-engine  |         )
+legal-ai-engine  |         ^
+legal-ai-engine  |     )
+legal-ai-engine  |     ^
+legal-ai-engine  |   File &quot;/app/.venv/lib/python3.13/site-packages/pydantic/main.py&quot;, line 250, in __init__
+legal-ai-engine  |     validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+legal-ai-engine  | pydantic_core._pydantic_core.ValidationError: 1 validation error for Settings
+legal-ai-engine  | OPENAI_API_KEY
+legal-ai-engine  |   Field required [type=missing, input_value={}, input_type=dict]
+legal-ai-engine  |     For further information visit https://errors.pydantic.dev/2.12/v/missing</description>
+    </feature>
+    <feature>
+      <name>Fix Docker build and missing libraries</name>
+      <description>After recent changes in docker caching, it stopped working, please fix it:
+
+legal-ai-backend  | 
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+legal-ai-web exited with code 1 (restarting)
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+legal-ai-web exited with code 1 (restarting)
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+legal-ai-web exited with code 1 (restarting)
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+legal-ai-web exited with code 1 (restarting)
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+legal-ai-web exited with code 1 (restarting)
+legal-ai-backend  | src/app.module.ts:10:44 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 10 import { APP_GUARD, APP_INTERCEPTOR } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                                               ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/performance.interceptor.ts:10:25 - error TS2307: Cannot find module &apos;@sentry/node&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 10 import * as Sentry from &apos;@sentry/node&apos;;
+legal-ai-backend  |                            ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.interceptor.ts:10:25 - error TS2307: Cannot find module &apos;@sentry/node&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 10 import * as Sentry from &apos;@sentry/node&apos;;
+legal-ai-backend  |                            ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:2:25 - error TS2307: Cannot find module &apos;@sentry/node&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 2 import * as Sentry from &apos;@sentry/node&apos;;
+legal-ai-backend  |                           ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:3:42 - error TS2307: Cannot find module &apos;@sentry/profiling-node&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 3 import { nodeProfilingIntegration } from &apos;@sentry/profiling-node&apos;;
+legal-ai-backend  |                                            ~~~~~~~~~~~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:6:33 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 6 import { APP_INTERCEPTOR } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                                   ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:47:20 - error TS7006: Parameter &apos;event&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 47         beforeSend(event, hint) {
+legal-ai-backend  |                       ~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:47:27 - error TS7006: Parameter &apos;hint&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 47         beforeSend(event, hint) {
+legal-ai-backend  |                              ~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:54:31 - error TS7006: Parameter &apos;event&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 54         beforeSendTransaction(event, hint) {
+legal-ai-backend  |                                  ~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/common/sentry/sentry.module.ts:54:38 - error TS7006: Parameter &apos;hint&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 54         beforeSendTransaction(event, hint) {
+legal-ai-backend  |                                         ~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/main.ts:1:29 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 1 import { NestFactory } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                               ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/main.ts:5:26 - error TS7016: Could not find a declaration file for module &apos;cookie-parser&apos;. &apos;/app/node_modules/.pnpm/cookie-parser@1.4.7/node_modules/cookie-parser/index.js&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  |   Try `npm i --save-dev @types/cookie-parser` if it exists or add a new declaration (.d.ts) file containing `declare module &apos;cookie-parser&apos;;`
+legal-ai-backend  | 
+legal-ai-backend  | 5 import cookieParser from &apos;cookie-parser&apos;;
+legal-ai-backend  |                            ~~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/main.ts:6:25 - error TS2307: Cannot find module &apos;@sentry/node&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 6 import * as Sentry from &apos;@sentry/node&apos;;
+legal-ai-backend  |                           ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/auth/guards/admin.guard.ts:8:27 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 8 import { Reflector } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                             ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/auth/guards/document-permission.guard.ts:9:27 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 9 import { Reflector } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                             ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/auth/strategies/api-key.strategy.ts:3:26 - error TS2307: Cannot find module &apos;passport-http-bearer&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 3 import { Strategy } from &apos;passport-http-bearer&apos;;
+legal-ai-backend  |                            ~~~~~~~~~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/backup/services/s3-storage.service.ts:10:8 - error TS2307: Cannot find module &apos;@aws-sdk/client-s3&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 10 } from &apos;@aws-sdk/client-s3&apos;;
+legal-ai-backend  |           ~~~~~~~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/billing/guards/quota.guard.ts:10:27 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 10 import { Reflector } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                              ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/collaboration/gateways/collaboration.gateway.ts:9:8 - error TS2307: Cannot find module &apos;@nestjs/websockets&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 9 } from &apos;@nestjs/websockets&apos;;
+legal-ai-backend  |          ~~~~~~~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/collaboration/gateways/collaboration.gateway.ts:10:32 - error TS2307: Cannot find module &apos;socket.io&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 10 import { Server, Socket } from &apos;socket.io&apos;;
+legal-ai-backend  |                                   ~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/modules/subscriptions/guards/feature-access.guard.ts:9:27 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 9 import { Reflector } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                             ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/seeds/seed.command.ts:1:29 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 1 import { NestFactory } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                               ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/ai-client/ai-client.service.ts:5:25 - error TS2307: Cannot find module &apos;@sentry/node&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 5 import * as Sentry from &apos;@sentry/node&apos;;
+legal-ai-backend  |                           ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/csrf/csrf.guard.ts:8:27 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 8 import { Reflector } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                             ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/csrf/csrf.module.ts:3:27 - error TS2307: Cannot find module &apos;@nestjs/core&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 3 import { APP_GUARD } from &apos;@nestjs/core&apos;;
+legal-ai-backend  |                             ~~~~~~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/logger/logger.service.ts:3:26 - error TS2307: Cannot find module &apos;winston&apos; or its corresponding type declarations.
+legal-ai-backend  | 
+legal-ai-backend  | 3 import * as winston from &apos;winston&apos;;
+legal-ai-backend  |                            ~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/logger/logger.service.ts:66:22 - error TS7031: Binding element &apos;timestamp&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 66                   ({ timestamp, level, message, context, ...metadata }) =&gt; {
+legal-ai-backend  |                         ~~~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/logger/logger.service.ts:66:33 - error TS7031: Binding element &apos;level&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 66                   ({ timestamp, level, message, context, ...metadata }) =&gt; {
+legal-ai-backend  |                                    ~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/logger/logger.service.ts:66:40 - error TS7031: Binding element &apos;message&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 66                   ({ timestamp, level, message, context, ...metadata }) =&gt; {
+legal-ai-backend  |                                           ~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | src/shared/logger/logger.service.ts:66:49 - error TS7031: Binding element &apos;context&apos; implicitly has an &apos;any&apos; type.
+legal-ai-backend  | 
+legal-ai-backend  | 66                   ({ timestamp, level, message, context, ...metadata }) =&gt; {
+legal-ai-backend  |                                                    ~~~~~~~
+legal-ai-backend  | 
+legal-ai-backend  | [7:40:02 AM] Found 30 errors. Watching for file changes.
+legal-ai-backend  | 
+legal-ai-backend  | node:internal/modules/cjs/loader:1210
+legal-ai-backend  |   throw err;
+legal-ai-backend  |   ^
+legal-ai-backend  | 
+legal-ai-backend  | Error: Cannot find module &apos;@nestjs/core&apos;
+legal-ai-backend  | Require stack:
+legal-ai-backend  | - /app/apps/backend/dist/src/main.js
+legal-ai-backend  |     at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+legal-ai-backend  |     at Module._load (node:internal/modules/cjs/loader:1038:27)
+legal-ai-backend  |     at Module.require (node:internal/modules/cjs/loader:1289:19)
+legal-ai-backend  |     at require (node:internal/modules/helpers:182:18)
+legal-ai-backend  |     at Object.&lt;anonymous&gt; (/app/apps/backend/src/main.ts:1:1)
+legal-ai-backend  |     at Module._compile (node:internal/modules/cjs/loader:1521:14)
+legal-ai-backend  |     at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+legal-ai-backend  |     at Module.load (node:internal/modules/cjs/loader:1266:32)
+legal-ai-backend  |     at Module._load (node:internal/modules/cjs/loader:1091:12)
+legal-ai-backend  |     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12) {
+legal-ai-backend  |   code: &apos;MODULE_NOT_FOUND&apos;,
+legal-ai-backend  |   requireStack: [ &apos;/app/apps/backend/dist/src/main.js&apos; ]
+legal-ai-backend  | }
+legal-ai-backend  | 
+legal-ai-backend  | Node.js v20.20.0
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+legal-ai-web exited with code 1 (restarting)
+legal-ai-web      |  ⨯ Failed to load next.config.mjs, see more info here https://nextjs.org/docs/messages/next-config-error
+legal-ai-web      | node:internal/modules/esm/resolve:873
+legal-ai-web      |   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+legal-ai-web      |         ^
+legal-ai-web      | 
+legal-ai-web      | Error [ERR_MODULE_NOT_FOUND]: Cannot find package &apos;@sentry/nextjs&apos; imported from /app/apps/web/next.config.mjs
+legal-ai-web      |     at packageResolve (node:internal/modules/esm/resolve:873:9)
+legal-ai-web      |     at moduleResolve (node:internal/modules/esm/resolve:946:18)
+legal-ai-web      |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+legal-ai-web      |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+legal-ai-web      |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+legal-ai-web      |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+legal-ai-web      |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+legal-ai-web      |     at ModuleJob._link (node:internal/modules/esm/module_job:168:49) {
+legal-ai-web      |   code: &apos;ERR_MODULE_NOT_FOUND&apos;
+legal-ai-web      | }
+legal-ai-web      | 
+legal-ai-web      | Node.js v20.20.0
+
+
+This issue might be linked to each dockerfiles or docker compose</description>
+    </feature>
+    <feature>
+      <name>Fix broken pagination data loading</name>
+      <description>Investigate and Fix Non-Functional Pagination System
+
+The pagination component is not working correctly - clicking pagination controls updates the URL in the browser but does not load new data or change the displayed page. The issue is suspected to be on the backend side.
+
+Requirements:
+- Verify that pagination controls correctly update URL query parameters (e.g., ?page=2)
+- Check if frontend is making API requests with correct pagination parameters when page changes
+- Investigate backend API endpoint to ensure it properly processes pagination parameters (page, limit, offset)
+- Verify backend is returning correct data subset for requested page
+- Confirm backend response includes necessary pagination metadata (total count, current page, total pages)
+- Test edge cases: first page, last page, invalid page numbers, out-of-range pages
+- Ensure proper error handling when pagination parameters are missing or invalid
+- Validate that data updates in the UI after successful API response
+- Test with different page sizes if configurable
+
+Debugging checklist:
+- Add logging to track pagination parameter flow from frontend to backend
+- Verify database queries include correct LIMIT and OFFSET clauses
+- Check for any caching that might return stale data
+- Confirm state management properly triggers re-render on page change</description>
+    </feature>
+    <feature>
+      <name>Build project and fix compilation errors</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix broken pagination data loading
+
+**Description:** Investigate and Fix Non-Functional Pagination System
+
+The pagination component is not working correctly - clicking pagination controls updates the URL in the browser but does not load new data or change the displayed page. The issue is suspected to be on the backend side.
+
+Requirements:
+- Verify that pagination controls correctly update URL query parameters (e.g., ?page=2)
+- Check if frontend is making API requests with correct pagination parameters when page changes
+- Investigate backend API endpoint to ensure it properly processes pagination parameters (page, limit, offset)
+- Verify backend is returning correct data subset for requested page
+- Confirm backend response includes necessary pagination metadata (total count, current page, total pages)
+- Test edge cases: first page, last page, invalid page numbers, out-of-range pages
+- Ensure proper error handling when pagination parameters are missing or invalid
+- Validate that data updates in the UI after successful API response
+- Test with different page sizes if configurable
+
+Debugging checklist:
+- Add logging to track pagination parameter flow from frontend to backend
+- Verify database queries include correct LIMIT and OFFSET clauses
+- Check for any caching that might return stale data
+- Confirm state management properly triggers re-render on page change
+
+---
+
+## Task Description
+
+After changes project doe snot build</description>
+    </feature>
+    <feature>
+      <name>Fix invalid locale redirect routing issue</name>
+      <description>Invalid hadnling of intl - changing locale, redirects browsers to /pl (or other locale) but no such address exists.</description>
+    </feature>
+    <feature>
+      <name>Fix locale redirect routing to prevent 404 errors</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix invalid locale redirect routing issue
+
+**Description:** Invalid hadnling of intl - changing locale, redirects browsers to /pl (or other locale) but no such address exists. 
+
+---
+
+## Task Description
+
+After last changes all pages stopped working. These redirect to inexistent pages with locale prefix. Please make sure that pages still work.
+
+Do not forget that this is refine.dev project and might differ from standard next.js</description>
+    </feature>
+    <feature>
+      <name>Feature: feature-1769172615242-80g7bqtv3</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix locale redirect routing to prevent 404 errors
+
+**Description:** ## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix invalid locale redirect routing issue
+
+**Description:** Invalid hadnling of intl - changing locale, redirects browsers to /pl (or other locale) but no such address exists. 
+
+---
+
+## Task Description
+
+After last changes all pages stopped working. These redirect to inexistent pages with locale prefix. Please make sure that pages still work.
+
+Do not forget that this is refine.dev project and might differ from standard next.js
+
+---
+
+## Task Description
+
+Frontend still returns 404 errors on all pages, for example on `/`</description>
+    </feature>
+    <feature>
+      <name>Fix PublicLayout async Client Component error</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix locale redirect routing to prevent 404 errors
+
+**Description:** ## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix invalid locale redirect routing issue
+
+**Description:** Invalid hadnling of intl - changing locale, redirects browsers to /pl (or other locale) but no such address exists. 
+
+---
+
+## Task Description
+
+After last changes all pages stopped working. These redirect to inexistent pages with locale prefix. Please make sure that pages still work.
+
+Do not forget that this is refine.dev project and might differ from standard next.js
+
+---
+
+## Task Description
+
+Right now main page fails with an error:
+
+&lt;PublicLayout&gt; is an async Client Component. Only Server Components can be async at the moment. This error is often caused by accidentally adding `&apos;use client&apos;` to a module that was originally written for the server.
+
+src/app/page.tsx (16:5) @ LandingContent
+
+
+</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

@@ -5,9 +5,9 @@ relevantTo: [api]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 92
-  referenced: 12
-  successfulFeatures: 12
+  loaded: 98
+  referenced: 18
+  successfulFeatures: 18
 ---
 # api
 

@@ -38,12 +38,21 @@ function getCacheKey(resource: string, filters?: CrudFilters, sorters?: CrudSort
 }
 
 /**
- * Get cached cursor for a specific page
+ * Get cached cursor for a specific page.
+ *
+ * For page N, we need the endCursor of page N-1 to use as the "after" cursor.
+ * The cursor is stored at index (N-1) - 1 = N-2 in the cursors array.
+ *
+ * Example:
+ * - Page 1 cursors stored at index 0
+ * - To fetch page 2, we need cursor at index 0 (end of page 1)
+ * - To fetch page 3, we need cursor at index 1 (end of page 2)
  */
 function getCachedCursor(key: string, pageNumber: number): string | undefined {
   const entry = cursorCache.get(key);
   // Return the endCursor of the previous page to use as "after" cursor
-  return entry?.cursors[pageNumber - 1];
+  // For page N, we need the cursor from page N-1, which is stored at index N-2
+  return entry?.cursors[pageNumber - 2];
 }
 
 /**
@@ -101,6 +110,103 @@ async function executeGraphQL<T>(query: string, variables?: Record<string, unkno
   }
 
   return result.data;
+}
+
+/**
+ * Sequentially fetch and cache cursors for pages up to the target page.
+ * This is necessary when jumping to a page directly (e.g., clicking page 5)
+ * because cursor-based pagination requires the cursor from the previous page.
+ *
+ * @param resource - The resource name (e.g., 'documents')
+ * @param targetPage - The page number we want to reach
+ * @param pageSize - Number of items per page
+ * @param query - The GraphQL query string
+ * @param filters - Current filters
+ * @param sorters - Current sorters
+ * @returns The cursor to use for the target page, or undefined if unable to fetch
+ */
+async function ensureCursorsCached(
+  resource: string,
+  targetPage: number,
+  pageSize: number,
+  query: string,
+  filters?: CrudFilters,
+  sorters?: CrudSorting,
+): Promise<string | undefined> {
+  const key = getCacheKey(resource, filters, sorters);
+  const entry = cursorCache.get(key);
+
+  // Check if we already have the cursor for the page before target
+  // For page N, we need cursor N-2 (stored after fetching page N-1)
+  if (entry && entry.cursors[targetPage - 2] !== undefined) {
+    return entry.cursors[targetPage - 2];
+  }
+
+  // Find the last page we have a complete cursor for
+  const lastCachedPageNumber = entry ? entry.cursors.filter((c) => c !== undefined).length : 0;
+
+  if (lastCachedPageNumber === 0) {
+    // No cursors at all, need to start from page 1
+    return undefined;
+  }
+
+  // Sequentially fetch pages from lastCachedPageNumber to targetPage - 1
+  let currentCursor =
+    lastCachedPageNumber > 1 ? entry!.cursors[lastCachedPageNumber - 2] : undefined;
+
+  for (let pageNum = lastCachedPageNumber + 1; pageNum < targetPage; pageNum++) {
+    const graphqlPaging: { first: number; after?: string } = currentCursor
+      ? { first: pageSize, after: currentCursor }
+      : { first: pageSize };
+
+    const graphqlFilter = buildGraphQLFilter(filters);
+    const graphqlSorting = buildGraphQLSorting(sorters);
+
+    try {
+      // Determine the query type based on resource
+      const queryToUse = query;
+      let dataKey = '';
+
+      if (resource === 'documents') {
+        dataKey = 'legalDocuments';
+      } else if (resource === 'audit_logs') {
+        dataKey = 'auditLogs';
+      } else if (resource === 'legalRulings') {
+        dataKey = 'legalRulings';
+      } else {
+        break; // Unknown resource
+      }
+
+      const data = await executeGraphQL<
+        Record<
+          string,
+          {
+            totalCount: number;
+            pageInfo: { endCursor: string };
+          }
+        >
+      >(queryToUse, {
+        filter: graphqlFilter || {},
+        paging: graphqlPaging,
+        sorting: graphqlSorting || [],
+      });
+
+      const result = data[dataKey];
+      if (result?.pageInfo?.endCursor) {
+        storeCursor(key, pageNum, result.pageInfo.endCursor, result.totalCount);
+        currentCursor = result.pageInfo.endCursor;
+      } else {
+        break; // No more data
+      }
+    } catch {
+      // Silently fail on prefetch errors - the main query will still work
+      break;
+    }
+  }
+
+  // Return the cursor for the target page
+  const updatedEntry = cursorCache.get(key);
+  return updatedEntry?.cursors[targetPage - 2];
 }
 
 /**
@@ -267,11 +373,36 @@ export const dataProvider: DataProvider = {
         }
       `;
 
+      const currentPage = pagination?.currentPage || 1;
+      const pageSize = pagination?.pageSize || 10;
+
+      // For pages beyond the first, ensure we have the required cursor
+      let prefetchCursor: string | undefined = undefined;
+      if (currentPage > 1) {
+        prefetchCursor = await ensureCursorsCached(
+          resource,
+          currentPage,
+          pageSize,
+          query,
+          filters,
+          sorters,
+        );
+      }
+
       const graphqlFilter = buildGraphQLFilter(filters);
       const graphqlSorting = buildGraphQLSorting(sorters) || [
         { field: 'createdAt', direction: 'DESC' },
       ];
-      const graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+
+      // Build paging with the potentially prefetched cursor
+      let graphqlPaging: { first: number; after?: string };
+      if (currentPage <= 1) {
+        graphqlPaging = { first: pageSize };
+      } else if (prefetchCursor) {
+        graphqlPaging = { first: pageSize, after: prefetchCursor };
+      } else {
+        graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+      }
 
       const data = await executeGraphQL<{
         auditLogs: {
@@ -293,7 +424,6 @@ export const dataProvider: DataProvider = {
       const items = data.auditLogs.edges.map((edge) => edge.node);
 
       // Store cursor for this page to enable navigation
-      const currentPage = pagination?.currentPage || 1;
       const cacheKey = getCacheKey(resource, filters, sorters);
       storeCursor(
         cacheKey,
@@ -341,9 +471,36 @@ export const dataProvider: DataProvider = {
         }
       `;
 
+      const currentPage = pagination?.currentPage || 1;
+      const pageSize = pagination?.pageSize || 10;
+
+      // For pages beyond the first, ensure we have the required cursor
+      // This handles direct page jumps (e.g., clicking page 5 from page 1)
+      let prefetchCursor: string | undefined = undefined;
+      if (currentPage > 1) {
+        prefetchCursor = await ensureCursorsCached(
+          resource,
+          currentPage,
+          pageSize,
+          query,
+          filters,
+          sorters,
+        );
+      }
+
       const graphqlFilter = buildGraphQLFilter(filters);
       const graphqlSorting = buildGraphQLSorting(sorters);
-      const graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+
+      // Build paging with the potentially prefetched cursor
+      let graphqlPaging: { first: number; after?: string };
+      if (currentPage <= 1) {
+        graphqlPaging = { first: pageSize };
+      } else if (prefetchCursor) {
+        graphqlPaging = { first: pageSize, after: prefetchCursor };
+      } else {
+        // Fallback to buildGraphQLPaging
+        graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+      }
 
       const data = await executeGraphQL<{
         legalDocuments: {
@@ -365,7 +522,6 @@ export const dataProvider: DataProvider = {
       const items = data.legalDocuments.edges.map((edge) => edge.node);
 
       // Store cursor for this page to enable navigation
-      const currentPage = pagination?.currentPage || 1;
       const cacheKey = getCacheKey(resource, filters, sorters);
       storeCursor(
         cacheKey,
@@ -409,9 +565,34 @@ export const dataProvider: DataProvider = {
         }
       `;
 
+      const currentPage = pagination?.currentPage || 1;
+      const pageSize = pagination?.pageSize || 10;
+
+      // For pages beyond the first, ensure we have the required cursor
+      let prefetchCursor: string | undefined = undefined;
+      if (currentPage > 1) {
+        prefetchCursor = await ensureCursorsCached(
+          resource,
+          currentPage,
+          pageSize,
+          query,
+          filters,
+          sorters,
+        );
+      }
+
       const graphqlFilter = buildGraphQLFilter(filters);
       const graphqlSorting = buildGraphQLSorting(sorters);
-      const graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+
+      // Build paging with the potentially prefetched cursor
+      let graphqlPaging: { first: number; after?: string };
+      if (currentPage <= 1) {
+        graphqlPaging = { first: pageSize };
+      } else if (prefetchCursor) {
+        graphqlPaging = { first: pageSize, after: prefetchCursor };
+      } else {
+        graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+      }
 
       const data = await executeGraphQL<{
         legalRulings: {
@@ -433,7 +614,6 @@ export const dataProvider: DataProvider = {
       const items = data.legalRulings.edges.map((edge) => edge.node);
 
       // Store cursor for this page to enable navigation
-      const currentPage = pagination?.currentPage || 1;
       const cacheKey = getCacheKey(resource, filters, sorters);
       storeCursor(
         cacheKey,

@@ -1,0 +1,58 @@
+# ============================================================================
+# Docker Compose - Infrastructure Only
+# ============================================================================
+#
+# This file contains ONLY infrastructure dependencies (PostgreSQL, Redis).
+# Use this when running application services locally but need infrastructure
+# services in containers.
+#
+# Usage:
+#   docker compose -f docker-compose.infra.yml up -d
+#
+# ============================================================================
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: legal-ai-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: legal_ai_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - legal-ai-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: legal-ai-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    restart: always
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - legal-ai-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  legal-ai-network:
+    driver: bridge

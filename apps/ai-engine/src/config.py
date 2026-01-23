@@ -1,12 +1,15 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     """Application settings using Pydantic Settings."""
 
     # OpenAI Settings
-    OPENAI_API_KEY: str
+    # Default placeholder allows service startup;
+    # actual AI features will fail without a real key.
+    OPENAI_API_KEY: str = "sk-placeholder-set-real-key-in-env"
     OPENAI_MODEL: str = "gpt-4o"
 
     # Service Settings

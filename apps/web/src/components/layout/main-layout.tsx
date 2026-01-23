@@ -5,6 +5,7 @@ import { useGetIdentity } from '@refinedev/core';
 import { Header } from '@components/layout/header';
 import { Menu } from '@components/menu';
 import { LegalDisclaimerModal } from '@components/legal-disclaimer-modal';
+import type { SupportedLocale } from '@i18n/config';
 
 interface UserIdentity {
   id: string;
@@ -13,7 +14,12 @@ interface UserIdentity {
   [key: string]: unknown;
 }
 
-export const MainLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
+interface MainLayoutProps {
+  children: React.ReactNode;
+  initialLocale?: SupportedLocale;
+}
+
+export const MainLayout: React.FC<MainLayoutProps> = ({ children, initialLocale }) => {
   const { data: identity, refetch, isLoading: isIdentityLoading } = useGetIdentity<UserIdentity>();
   const [showDisclaimer, setShowDisclaimer] = useState(false);
 
@@ -49,7 +55,7 @@ export const MainLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   return (
     <div className="flex h-screen w-full flex-col">
-      <Header />
+      <Header initialLocale={initialLocale} />
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-64 border-r bg-muted/40 hidden md:block">
           <Menu />

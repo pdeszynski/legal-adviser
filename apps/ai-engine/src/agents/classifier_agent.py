@@ -4,12 +4,12 @@ This agent analyzes case descriptions and identifies applicable legal grounds
 with confidence scores. It returns structured classification results.
 """
 
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
-from typing import List, Optional
-from ..config import get_settings
 
-settings = get_settings()
+from ..config import get_settings
 
 
 class LegalGround(BaseModel):
@@ -82,8 +82,28 @@ Important guidelines:
 Your output should be structured, precise, and immediately useful for legal professionals.
 """
 
-classifier_agent = Agent(
-    f"openai:{settings.OPENAI_MODEL}",
-    system_prompt=CLASSIFIER_SYSTEM_PROMPT,
-    output_type=ClassificationResult,
-)
+
+def get_classifier_agent() -> Agent[ClassificationResult]:
+    """Get or create the classifier agent.
+
+    Lazy-loads the agent to avoid OpenAI client initialization errors
+    when OPENAI_API_KEY is not configured.
+    """
+    settings = get_settings()
+    return Agent(
+        f"openai:{settings.OPENAI_MODEL}",
+        system_prompt=CLASSIFIER_SYSTEM_PROMPT,
+        output_type=ClassificationResult,
+    )
+
+
+# Global variable for memoization
+_classifier_agent: Agent[ClassificationResult] | None = None
+
+
+def classifier_agent() -> Agent[ClassificationResult]:
+    """Get the singleton classifier agent instance."""
+    global _classifier_agent
+    if _classifier_agent is None:
+        _classifier_agent = get_classifier_agent()
+    return _classifier_agent

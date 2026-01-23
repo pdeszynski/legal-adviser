@@ -7,9 +7,11 @@ This graph implements a RAG-based Q&A flow inspired by Flowise.ai patterns:
 - Citation Formatting: Extract and format legal citations
 """
 
-from typing import TypedDict, Optional, List, Dict, Any
-from langgraph.graph import StateGraph, END
+from typing import Any, Dict, List, Optional, TypedDict
+
+from langgraph.graph import END, StateGraph
 from openai import AsyncOpenAI
+
 from ..config import get_settings
 from ..services.embedding_service import EmbeddingService
 

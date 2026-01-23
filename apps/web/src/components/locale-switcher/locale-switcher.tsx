@@ -1,13 +1,8 @@
 'use client';
 
 import { useTransition } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import {
-  SUPPORTED_LOCALES,
-  LOCALE_METADATA,
-  DEFAULT_LOCALE,
-  type SupportedLocale,
-} from '@i18n/config';
+import { useRouter } from 'next/navigation';
+import { SUPPORTED_LOCALES, LOCALE_METADATA, type SupportedLocale } from '@i18n/config';
 import { setUserLocale } from '@i18n';
 import {
   DropdownMenu,
@@ -17,66 +12,42 @@ import {
 } from '@/*/components/ui/dropdown-menu';
 import { Globe } from 'lucide-react';
 import { cn } from '@/*/lib/utils';
+import { useEffect, useState } from 'react';
 
 interface LocaleSwitcherProps {
   className?: string;
+  initialLocale?: SupportedLocale;
 }
 
-export const LocaleSwitcher = ({ className }: LocaleSwitcherProps) => {
+export const LocaleSwitcher = ({ className, initialLocale }: LocaleSwitcherProps) => {
   const router = useRouter();
-  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
+  const [currentLocale, setCurrentLocale] = useState<SupportedLocale>(
+    initialLocale || ('en' as SupportedLocale),
+  );
 
-  const getCurrentLocale = (): SupportedLocale => {
-    // Extract locale from pathname or default to 'en'
-    const segments = pathname.split('/').filter(Boolean);
-    const firstSegment = segments[0];
-
-    if (firstSegment && SUPPORTED_LOCALES.includes(firstSegment as SupportedLocale)) {
-      return firstSegment as SupportedLocale;
+  // Update current locale when initialLocale changes (e.g., after page refresh)
+  useEffect(() => {
+    if (initialLocale) {
+      setCurrentLocale(initialLocale);
     }
+  }, [initialLocale]);
 
-    return 'en';
-  };
-
-  const currentLocale = getCurrentLocale();
   const currentMetadata = LOCALE_METADATA[currentLocale];
 
   const handleLocaleChange = (newLocale: SupportedLocale) => {
+    if (newLocale === currentLocale) return;
+
     startTransition(async () => {
       // Set the locale cookie
       await setUserLocale(newLocale);
 
-      // Update URL to include the new locale prefix
-      const segments = pathname.split('/').filter(Boolean);
-      const hasLocalePrefix = SUPPORTED_LOCALES.includes(segments[0] as SupportedLocale);
+      // Update local state immediately for better UX
+      setCurrentLocale(newLocale);
 
-      let newPathname: string;
-      if (hasLocalePrefix) {
-        // Replace existing locale prefix
-        if (newLocale === DEFAULT_LOCALE) {
-          // Remove locale prefix when switching to default locale
-          newPathname = '/' + segments.slice(1).join('/');
-        } else {
-          segments[0] = newLocale;
-          newPathname = '/' + segments.join('/');
-        }
-      } else {
-        // No locale prefix exists - add one for non-default locales
-        if (newLocale === DEFAULT_LOCALE) {
-          // Stay on the same path for default locale
-          newPathname = pathname;
-        } else {
-          newPathname = '/' + newLocale + pathname;
-        }
-      }
-
-      // Ensure root path is never empty
-      if (newPathname === '' || newPathname === '/') {
-        newPathname = '/';
-      }
-
-      router.push(newPathname);
+      // Refresh the page to apply the new locale
+      // We don't navigate to a locale-prefixed path since we use localePrefix: 'never'
+      router.refresh();
     });
   };
 

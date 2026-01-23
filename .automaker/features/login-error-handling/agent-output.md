@@ -522,3 +522,140 @@ Input: {
   "description": "Run Playwright verification test",
   "timeout": 180000
 }
+The tests are passing partially. Let me check one of the screenshots to see what's happening:
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/test-results/login-error-verification-L-3fb6d-ation-error-for-empty-email/test-failed-1.png"
+}
+I can see from the screenshot that the form already has default values (`admin@refine.dev` and `password`) pre-filled. The test fails because the email field isn't empty when the form submits. Let me update the test to clear the form first:
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/tests/login-error-verification.spec.ts",
+  "old_string": "  test('displays validation error for empty email', async ({ page }) => {\n    // Fill only password\n    await page.fill('#password', 'password123');\n\n    // Submit form\n    await page.click('button[type=\"submit\"]');\n\n    // Check for error message\n    const errorMessage = page.locator('text=Email is required');\n    await expect(errorMessage).toBeVisible();\n  });",
+  "new_string": "  test('displays validation error for empty email', async ({ page }) => {\n    // Clear the default values first\n    await page.fill('#email', '');\n    await page.fill('#password', '');\n\n    // Fill only password\n    await page.fill('#password', 'password123');\n\n    // Submit form\n    await page.click('button[type=\"submit\"]');\n\n    // Check for error message\n    const errorMessage = page.locator('text=Email is required');\n    await expect(errorMessage).toBeVisible();\n  });"
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/tests/login-error-verification.spec.ts",
+  "old_string": "  test('clears validation error when user types in email field', async ({ page }) => {\n    // Trigger validation error\n    await page.fill('#password', 'password123');\n    await page.click('button[type=\"submit\"]');\n\n    // Verify error is shown\n    await expect(page.locator('text=Email is required')).toBeVisible();\n\n    // Type in email field\n    await page.fill('#email', 'test@example.com');\n\n    // Error should be cleared\n    await expect(page.locator('text=Email is required')).not.toBeVisible({ timeout: 1000 });\n  });",
+  "new_string": "  test('clears validation error when user types in email field', async ({ page }) => {\n    // Clear the default values first\n    await page.fill('#email', '');\n    await page.fill('#password', '');\n\n    // Trigger validation error\n    await page.fill('#password', 'password123');\n    await page.click('button[type=\"submit\"]');\n\n    // Verify error is shown\n    await expect(page.locator('text=Email is required')).toBeVisible();\n\n    // Type in email field\n    await page.fill('#email', 'test@example.com');\n\n    // Error should be cleared\n    await expect(page.locator('text=Email is required')).not.toBeVisible({ timeout: 1000 });\n  });"
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/tests/login-error-verification.spec.ts",
+  "old_string": "  test('clears validation error when user types in password field', async ({ page }) => {\n    // Fill email only\n    await page.fill('#email', 'test@example.com');\n    await page.click('button[type=\"submit\"]');\n\n    // Verify error is shown\n    await expect(page.locator('text=Password is required')).toBeVisible();\n\n    // Type in password field\n    await page.fill('#password', 'password123');\n\n    // Error should be cleared\n    await expect(page.locator('text=Password is required')).not.toBeVisible({ timeout: 1000 });\n  });",
+  "new_string": "  test('clears validation error when user types in password field', async ({ page }) => {\n    // Clear the default values first\n    await page.fill('#email', '');\n    await page.fill('#password', '');\n\n    // Fill email only\n    await page.fill('#email', 'test@example.com');\n    await page.click('button[type=\"submit\"]');\n\n    // Verify error is shown\n    await expect(page.locator('text=Password is required')).toBeVisible();\n\n    // Type in password field\n    await page.fill('#password', 'password123');\n\n    // Error should be cleared\n    await expect(page.locator('text=Password is required')).not.toBeVisible({ timeout: 1000 });\n  });"
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/tests/login-error-verification.spec.ts",
+  "old_string": "  test('error container has icon for different error types', async ({ page }) => {\n    // Trigger validation error\n    await page.click('button[type=\"submit\"]');\n\n    // Check that error container contains an icon\n    const errorContainer = page.locator('.bg-destructive\\\\/15:visible');\n    await expect(errorContainer).toBeVisible();\n\n    // Check for lucide icon (AlertCircle, WifiOff, or Server)\n    const hasIcon = await page.locator('.bg-destructive\\\\/15 svg').isVisible().catch(() => false);\n    expect(hasIcon).toBe(true);\n  });",
+  "new_string": "  test('error container has icon for different error types', async ({ page }) => {\n    // Clear the default values first\n    await page.fill('#email', '');\n    await page.fill('#password', '');\n\n    // Trigger validation error\n    await page.click('button[type=\"submit\"]');\n\n    // Check that error container contains an icon\n    const errorContainer = page.locator('.bg-destructive\\\\/15:visible');\n    await expect(errorContainer).toBeVisible();\n\n    // Check for lucide icon (AlertCircle, WifiOff, or Server)\n    const hasIcon = await page.locator('.bg-destructive\\\\/15 svg').isVisible().catch(() => false);\n    expect(hasIcon).toBe(true);\n  });"
+}
+Now let me run the tests again:
+
+🔧 Tool: Bash
+Input: {
+  "command": "npx playwright test login-error-verification.spec.ts --reporter=list 2>&1",
+  "description": "Run Playwright verification test again",
+  "timeout": 180000
+}
+All tests are passing. Now let me delete the verification test file as instructed, and clean up:
+
+🔧 Tool: Bash
+Input: {
+  "command": "rm /Users/piteer/workspace/radca-prawny/legal/apps/web/tests/login-error-verification.spec.ts",
+  "description": "Delete verification test file"
+}
+
+🔧 Tool: TodoWrite
+Input: {
+  "todos": [
+    {
+      "activeForm": "Creating shared error types for authentication errors",
+      "content": "Create shared error types for frontend authentication errors",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Updating auth-provider with structured error information",
+      "content": "Update auth-provider to provide structured error information",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Updating login form with specific error messages",
+      "content": "Update login form to display specific error messages",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Running Playwright verification test",
+      "content": "Create and run Playwright verification test",
+      "status": "completed"
+    }
+  ]
+}
+<summary>
+## Summary: Login Error Handling
+
+### Changes Implemented
+
+1. **Created shared authentication error utilities** (`apps/web/src/lib/auth-errors.ts`):
+   - `AuthErrorCode` enum for error categorization (INVALID_CREDENTIALS, VALIDATION_ERROR, NETWORK_ERROR, TIMEOUT_ERROR, SERVER_ERROR, UNAUTHORIZED, UNKNOWN_ERROR)
+   - `parseAuthError()` - parses errors from Refine's error object
+   - `parseGraphQLError()` - parses GraphQL response errors
+   - `parseExceptionError()` - parses caught exceptions
+   - User-friendly error messages for each error type
+
+2. **Updated auth provider** (`apps/web/src/providers/auth-provider/auth-provider.client.ts`):
+   - Integrated the new error parsing utilities
+   - Login mutation now returns structured error with error codes
+   - Better error message extraction from GraphQL responses
+
+3. **Updated login form** (`apps/web/src/app/login/login-content.tsx`):
+   - Added context-aware error icons (AlertCircle, WifiOff, Server)
+   - Displays specific user-friendly messages based on error type
+   - Improved error display with icon + message layout
+   - Maintains existing validation error clearing behavior
+
+4. **Fixed Playwright config** (`apps/web/playwright.config.ts`):
+   - Updated to use `**/*.spec.ts` test matching
+   - Removed webServer configuration to allow external server
+
+### Files Modified
+- `apps/web/src/lib/auth-errors.ts` (new file)
+- `apps/web/src/providers/auth-provider/auth-provider.client.ts`
+- `apps/web/src/app/login/login-content.tsx`
+- `apps/web/playwright.config.ts`
+
+### Verification Status
+All 8 Playwright verification tests passed:
+- Validation errors for empty email, invalid email format, short password
+- Authentication error for invalid credentials
+- Error clearing when user types in fields
+- Loading state during login
+- Error container displays appropriate icons
+
+The feature was verified with a temporary Playwright test that has been deleted after successful verification.
+</summary>
+
+🔧 Tool: KillShell
+Input: {
+  "shell_id": "ba67495"
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "rm -rf /Users/piteer/workspace/radca-prawny/legal/apps/web/test-results/login-error-verification-* 2>/dev/null; echo \"Cleaned up test artifacts\"",
+  "description": "Clean up test artifacts"
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "ls /Users/piteer/workspace/radca-prawny/legal/apps/web/tests/ 2>/dev/null | head -10",
+  "description": "Verify test file deletion"
+}
+The verification test file has been successfully deleted. The feature implementation is complete.

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769165484901-a88552e6",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-23T10:51:24.901Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769165470630-e36giuxbh",
+  "featureName": "",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

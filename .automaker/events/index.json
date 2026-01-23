@@ -2,6 +2,145 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769175863054-b6b4df0e",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T13:44:23.054Z",
+      "featureName": "",
+      "featureId": "feature-1769175580818-0zju9gega"
+    },
+    {
+      "id": "evt-1769175580931-f50bbd8b",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-23T13:39:40.932Z",
+      "featureId": "feature-1769175580818-0zju9gega"
+    },
+    {
+      "id": "evt-1769173334023-92828116",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T13:02:14.023Z",
+      "featureName": "",
+      "featureId": "feature-1769172615242-80g7bqtv3"
+    },
+    {
+      "id": "evt-1769172615352-37181d6a",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-23T12:50:15.352Z",
+      "featureId": "feature-1769172615242-80g7bqtv3"
+    },
+    {
+      "id": "evt-1769167034054-e6b2e89f",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T11:17:14.054Z",
+      "featureName": "Fix locale redirect routing to prevent 404 errors",
+      "featureId": "feature-1769165470630-e36giuxbh"
+    },
+    {
+      "id": "evt-1769165484901-a88552e6",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-23T10:51:24.901Z",
+      "featureName": "",
+      "featureId": "feature-1769165470630-e36giuxbh"
+    },
+    {
+      "id": "evt-1769165470724-0ed3170c",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-23T10:51:10.724Z",
+      "featureId": "feature-1769165470630-e36giuxbh"
+    },
+    {
+      "id": "evt-1769164985377-8275636b",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T10:43:05.377Z",
+      "featureName": "",
+      "featureId": "feature-1769164242766-8si37f1go"
+    },
+    {
+      "id": "evt-1769164242862-a1e156e8",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-23T10:30:42.862Z",
+      "featureId": "feature-1769164242766-8si37f1go"
+    },
+    {
+      "id": "evt-1769159002011-bb0238c1",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T09:03:22.011Z",
+      "featureName": "Build project and fix compilation errors",
+      "featureId": "feature-1769158870166-phavzhksf"
+    },
+    {
+      "id": "evt-1769158870267-15d26649",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-23T09:01:10.267Z",
+      "featureId": "feature-1769158870166-phavzhksf"
+    },
+    {
+      "id": "evt-1769157785083-4e10fda2",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T08:43:05.083Z",
+      "featureName": "Fix broken pagination data loading",
+      "featureId": "feature-1769156892899-xxmjw55q7"
+    },
+    {
+      "id": "evt-1769157019442-a597da28",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T08:30:19.442Z",
+      "featureName": "Fix Docker caching to restore dependency installation",
+      "featureId": "feature-1769154048850-tf615ry1b"
+    },
+    {
+      "id": "evt-1769156893008-55c82e43",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-23T08:28:13.008Z",
+      "featureId": "feature-1769156892899-xxmjw55q7"
+    },
+    {
+      "id": "evt-1769156239114-48c3bb62",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T08:17:19.114Z",
+      "featureName": "Fix Docker caching to restore dependency installation",
+      "featureId": "feature-1769154048850-tf615ry1b"
+    },
+    {
+      "id": "evt-1769154642858-a1edb51c",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T07:50:42.858Z",
+      "featureName": "",
+      "featureId": "feature-1769153951208-0e6enj7yg"
+    },
+    {
+      "id": "evt-1769154199921-1c05cd3e",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T07:43:19.921Z",
+      "featureName": "Fix Docker caching to restore dependency installation",
+      "featureId": "feature-1769154048850-tf615ry1b"
+    },
+    {
+      "id": "evt-1769154048940-87d03679",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-23T07:40:48.940Z",
+      "featureId": "feature-1769154048850-tf615ry1b"
+    },
+    {
+      "id": "evt-1769153951305-3c1dbec9",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-23T07:39:11.305Z",
+      "featureId": "feature-1769153951208-0e6enj7yg"
+    },
+    {
+      "id": "evt-1769153703690-f4c8fa50",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T07:35:03.690Z",
+      "featureName": "Optimize Docker build caching for pnpm install",
+      "featureId": "feature-1769152589062-a6c5pl3f4"
+    },
+    {
+      "id": "evt-1769153289471-bb32e999",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T07:28:09.471Z",
+      "featureName": "Login Form Error Display",
+      "featureId": "login-error-handling"
+    },
+    {
       "id": "evt-1769152934916-b690b0a5",
       "trigger": "feature_success",
       "timestamp": "2026-01-23T07:22:14.916Z",

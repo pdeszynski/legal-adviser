@@ -1,0 +1,30 @@
+{
+  "category": "bug",
+  "description": "Investigate and Fix Non-Functional Pagination System\n\nThe pagination component is not working correctly - clicking pagination controls updates the URL in the browser but does not load new data or change the displayed page. The issue is suspected to be on the backend side.\n\nRequirements:\n- Verify that pagination controls correctly update URL query parameters (e.g., ?page=2)\n- Check if frontend is making API requests with correct pagination parameters when page changes\n- Investigate backend API endpoint to ensure it properly processes pagination parameters (page, limit, offset)\n- Verify backend is returning correct data subset for requested page\n- Confirm backend response includes necessary pagination metadata (total count, current page, total pages)\n- Test edge cases: first page, last page, invalid page numbers, out-of-range pages\n- Ensure proper error handling when pagination parameters are missing or invalid\n- Validate that data updates in the UI after successful API response\n- Test with different page sizes if configurable\n\nDebugging checklist:\n- Add logging to track pagination parameter flow from frontend to backend\n- Verify database queries include correct LIMIT and OFFSET clauses\n- Check for any caching that might return stale data\n- Confirm state management properly triggers re-render on page change",
+  "title": "Fix broken pagination data loading",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769156892899-xxmjw55q7",
+  "descriptionHistory": [
+    {
+      "description": "Investigate and Fix Non-Functional Pagination System\n\nThe pagination component is not working correctly - clicking pagination controls updates the URL in the browser but does not load new data or change the displayed page. The issue is suspected to be on the backend side.\n\nRequirements:\n- Verify that pagination controls correctly update URL query parameters (e.g., ?page=2)\n- Check if frontend is making API requests with correct pagination parameters when page changes\n- Investigate backend API endpoint to ensure it properly processes pagination parameters (page, limit, offset)\n- Verify backend is returning correct data subset for requested page\n- Confirm backend response includes necessary pagination metadata (total count, current page, total pages)\n- Test edge cases: first page, last page, invalid page numbers, out-of-range pages\n- Ensure proper error handling when pagination parameters are missing or invalid\n- Validate that data updates in the UI after successful API response\n- Test with different page sizes if configurable\n\nDebugging checklist:\n- Add logging to track pagination parameter flow from frontend to backend\n- Verify database queries include correct LIMIT and OFFSET clauses\n- Check for any caching that might return stale data\n- Confirm state management properly triggers re-render on page change",
+      "timestamp": "2026-01-23T08:28:13.007Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T08:28:17.681Z",
+  "updatedAt": "2026-01-23T08:28:20.515Z"
+}

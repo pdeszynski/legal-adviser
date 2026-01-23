@@ -12,35 +12,35 @@ Features distributed tracing with Sentry for APM.
 import time
 import uuid
 from contextlib import asynccontextmanager
-from typing import Dict, Any
+from typing import Any, Dict
 
 import sentry_sdk
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from .agents.classifier_agent import classifier_agent
+from .agents.classifier_agent import classifier_agent as get_classifier_agent
 from .graphs.drafting_graph import drafting_graph
 from .graphs.qa_graph import qa_graph
 from .models.requests import (
-    GenerateDocumentRequest,
     AskQuestionRequest,
-    SearchRulingsRequest,
     ClassifyCaseRequest,
+    GenerateDocumentRequest,
     GenerateEmbeddingsRequest,
-    SemanticSearchRequest,
     QARequest,
+    SearchRulingsRequest,
+    SemanticSearchRequest,
 )
 from .models.responses import (
-    GenerateDocumentResponse,
-    DocumentGenerationStatus,
     AnswerResponse,
-    SearchRulingsResponse,
-    ClassificationResponse,
-    GenerateEmbeddingsResponse,
-    SemanticSearchResponse,
-    QAResponse,
     Citation,
+    ClassificationResponse,
+    DocumentGenerationStatus,
+    GenerateDocumentResponse,
+    GenerateEmbeddingsResponse,
+    QAResponse,
     Ruling,
+    SearchRulingsResponse,
+    SemanticSearchResponse,
     SemanticSearchResult,
 )
 from .sentry_init import init_sentry
@@ -390,8 +390,9 @@ async def classify_case(request: ClassifyCaseRequest):
     start_time = time.time()
 
     try:
-        # Run the classifier agent
-        result = await classifier_agent.run(
+        # Run the classifier agent (lazy-loaded)
+        agent = get_classifier_agent()
+        result = await agent.run(
             f"Analyze this case and identify applicable legal grounds:\n\n{request.case_description}"
         )
 

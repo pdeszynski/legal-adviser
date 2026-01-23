@@ -1,7 +1,8 @@
 """Request models for AI Engine API."""
 
 from enum import Enum
-from typing import Optional, List
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 
