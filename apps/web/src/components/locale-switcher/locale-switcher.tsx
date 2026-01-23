@@ -2,7 +2,12 @@
 
 import { useTransition } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { SUPPORTED_LOCALES, LOCALE_METADATA, type SupportedLocale } from '@i18n/config';
+import {
+  SUPPORTED_LOCALES,
+  LOCALE_METADATA,
+  DEFAULT_LOCALE,
+  type SupportedLocale,
+} from '@i18n/config';
 import { setUserLocale } from '@i18n';
 import {
   DropdownMenu,
@@ -49,11 +54,26 @@ export const LocaleSwitcher = ({ className }: LocaleSwitcherProps) => {
       let newPathname: string;
       if (hasLocalePrefix) {
         // Replace existing locale prefix
-        segments[0] = newLocale;
-        newPathname = '/' + segments.join('/');
+        if (newLocale === DEFAULT_LOCALE) {
+          // Remove locale prefix when switching to default locale
+          newPathname = '/' + segments.slice(1).join('/');
+        } else {
+          segments[0] = newLocale;
+          newPathname = '/' + segments.join('/');
+        }
       } else {
-        // Add locale prefix
-        newPathname = '/' + newLocale + pathname;
+        // No locale prefix exists - add one for non-default locales
+        if (newLocale === DEFAULT_LOCALE) {
+          // Stay on the same path for default locale
+          newPathname = pathname;
+        } else {
+          newPathname = '/' + newLocale + pathname;
+        }
+      }
+
+      // Ensure root path is never empty
+      if (newPathname === '' || newPathname === '/') {
+        newPathname = '/';
       }
 
       router.push(newPathname);
@@ -88,9 +108,7 @@ export const LocaleSwitcher = ({ className }: LocaleSwitcherProps) => {
                 <span className="text-base">{metadata.icon}</span>
                 <span className="flex-1">{metadata.nativeName}</span>
                 {isActive && (
-                  <span className="text-xs text-muted-foreground">
-                    ({metadata.label})
-                  </span>
+                  <span className="text-xs text-muted-foreground">({metadata.label})</span>
                 )}
               </DropdownMenuItem>
             );

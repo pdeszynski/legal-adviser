@@ -5,7 +5,7 @@ relevantTo: [gotcha]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 5
+  loaded: 6
   referenced: 5
   successfulFeatures: 5
 ---

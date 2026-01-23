@@ -123,7 +123,40 @@
     "clone": "Kopia"
   },
   "dashboard": {
-    "title": "Panel główny"
+    "title": "Panel główny",
+    "subtitle": "Przegląd dokumentów prawnych i aktywności",
+    "stats": {
+      "totalDocuments": "Wszystkie dokumenty",
+      "completed": "Ukończone",
+      "drafts": "Szkice",
+      "generating": "Generowane"
+    },
+    "recentDocuments": {
+      "title": "Ostatnie dokumenty",
+      "noDocuments": "Brak dokumentów. Utwórz swój pierwszy dokument, aby rozpocząć!",
+      "viewAll": "Zobacz wszystkie dokumenty"
+    },
+    "quickActions": {
+      "title": "Szybkie akcje",
+      "createDocument": "Utwórz dokument",
+      "viewDocuments": "Zobacz wszystkie dokumenty",
+      "auditLogs": "Pokaż logi audytu"
+    },
+    "help": {
+      "title": "Potrzebujesz pomocy?",
+      "description": "Rozpocznij pracę z naszą platformą lub poznaj zaawansowane funkcje.",
+      "learnMore": "Dowiedz się więcej"
+    },
+    "activity": {
+      "title": "Ostatnia aktywność",
+      "noActivity": "Brak ostatniej aktywności",
+      "viewAll": "Zobacz całą aktywność"
+    },
+    "notifications": {
+      "title": "Powiadomienia",
+      "noNotifications": "Brak powiadomień",
+      "markAllRead": "Oznacz wszystkie jako przeczytane"
+    }
   },
   "rulingSearch": {
     "title": "Wyszukiwanie orzeczeń",
@@ -254,49 +287,49 @@
       "list": "Lista dokumentów",
       "show": "Podgląd dokumentu"
     },
-  "templates": {
-    "templates": "Wzory dokumentów",
-    "description": "Wybierz z naszej kolekcji profesjonalnych wzorów dokumentów prawnych, aby szybko rozpocząć pracę.",
-    "fields": {
-      "search": "Szukaj",
-      "category": "Kategoria"
+    "templates": {
+      "templates": "Wzory dokumentów",
+      "description": "Wybierz z naszej kolekcji profesjonalnych wzorów dokumentów prawnych, aby szybko rozpocząć pracę.",
+      "fields": {
+        "search": "Szukaj",
+        "category": "Kategoria"
+      },
+      "placeholders": {
+        "search": "Szukaj wzorów..."
+      },
+      "categories": {
+        "LAWSUIT": "Pozew",
+        "COMPLAINT": "Skarga",
+        "CONTRACT": "Umowa",
+        "MOTION": "Wniosek",
+        "LETTER": "Pismo",
+        "OTHER": "Inny"
+      },
+      "titles": {
+        "library": "Wzory dokumentów",
+        "variables": "Wymagane informacje",
+        "contentPreview": "Podgląd treści"
+      },
+      "buttons": {
+        "preview": "Podgląd",
+        "useTemplate": "Użyj wzoru"
+      },
+      "info": {
+        "used": "Użyto {count} razy"
+      },
+      "errors": {
+        "loadingFailed": "Nie udało się załadować wzorów"
+      },
+      "noTemplates": "Brak dostępnych wzorów",
+      "noFilteredResults": "Brak wzorów spełniających kryteria filtrowania",
+      "variableTypes": {
+        "text": "Tekst",
+        "number": "Liczba",
+        "date": "Data",
+        "currency": "Kwota",
+        "boolean": "Tak/Nie"
+      }
     },
-    "placeholders": {
-      "search": "Szukaj wzorów..."
-    },
-    "categories": {
-      "LAWSUIT": "Pozew",
-      "COMPLAINT": "Skarga",
-      "CONTRACT": "Umowa",
-      "MOTION": "Wniosek",
-      "LETTER": "Pismo",
-      "OTHER": "Inny"
-    },
-    "titles": {
-      "library": "Wzory dokumentów",
-      "variables": "Wymagane informacje",
-      "contentPreview": "Podgląd treści"
-    },
-    "buttons": {
-      "preview": "Podgląd",
-      "useTemplate": "Użyj wzoru"
-    },
-    "info": {
-      "used": "Użyto {count} razy"
-    },
-    "errors": {
-      "loadingFailed": "Nie udało się załadować wzorów"
-    },
-    "noTemplates": "Brak dostępnych wzorów",
-    "noFilteredResults": "Brak wzorów spełniających kryteria filtrowania",
-    "variableTypes": {
-      "text": "Tekst",
-      "number": "Liczba",
-      "date": "Data",
-      "currency": "Kwota",
-      "boolean": "Tak/Nie"
-    }
-  },
     "form": {
       "select": {
         "type": {
@@ -304,10 +337,16 @@
         }
       },
       "description": "Wypełnij poniższy formularz, aby wygenerować dokument prawny przy użyciu sztucznej inteligencji.",
+      "editDescription": "Zaktualizuj szczegóły dokumentu, metadane i treść",
       "metadataSection": "Dane stron postępowania",
+      "contentHelp": "Edytuj treść dokumentu bezpośrednio. Obsługuje tekst zwykły i Markdown.",
+      "contentPlaceholder": "Wprowadź treść dokumentu...",
       "errors": {
         "requiredTitle": "Tytuł dokumentu jest wymagany",
-        "requiredSessionId": "Identyfikator sesji jest wymagany"
+        "requiredSessionId": "Identyfikator sesji jest wymagany",
+        "titleMinLength": "Tytuł musi mieć co najmniej 3 znaki",
+        "titleMaxLength": "Tytuł nie może przekraczać 500 znaków",
+        "invalidCurrency": "Waluta musi składać się z 3 wielkich liter (np. PLN, EUR, USD)"
       },
       "placeholders": {
         "title": "np. Pozew o zapłatę",
@@ -320,6 +359,11 @@
       "notFound": "Nie znaleziono dokumentu",
       "generating": "Dokument jest w trakcie generowania. Proszę czekać...",
       "noContent": "Treść dokumentu nie jest jeszcze dostępna."
+    },
+    "errors": {
+      "notFound": "Nie znaleziono dokumentu",
+      "cannotEdit": "Nie można edytować dokumentu",
+      "onlyDraftEditable": "Tylko dokumenty ze statusem SZKIC mogą być edytowane. Ten dokument ma obecnie status {status}."
     }
   },
   "common": {
@@ -341,6 +385,54 @@
     "maxLength": "Maksymalna długość to {max} znaków",
     "min": "Wartość minimalna to {min}",
     "max": "Wartość maksymalna to {max}"
+  },
+  "disclaimer": {
+    "title": "Zrzeczenie odpowiedzialności",
+    "subtitle": "Proszę przeczytać i zaakceptować przed korzystaniem z funkcji obsługiwanych przez AI",
+    "scrollToRead": "Proszę przewinąć, aby przeczytać całe zrzeczenie odpowiedzialności",
+    "checkboxLabel": "Przeczytałem, zrozumiałem i akceptuję warunki i postanowienia opisane powyżej. Potwierdzam, że treści generowane przez AI powinny być przejrzane przez wykwalifikowanego profesjonalistę prawnego.",
+    "acceptButton": "Zaakceptuj i kontynuuj",
+    "accepting": "Akceptowanie...",
+    "sections": {
+      "important": {
+        "title": "Ważna uwaga",
+        "content": "Ten asystent prawny wspierany przez AI został zaprojektowany, aby pomóc Ci w sporządzaniu dokumentów i dostarczać ogólnych informacji prawnych. Nie jest jednak substytutem profesjonalnej porady prawnej od wykwalifikowanego prawnika."
+      },
+      "noLegalAdvice": {
+        "title": "Brak porady prawnej",
+        "content": "Informacje i dokumenty generowane przez tę usługę nie stanowią porady prawnej. System AI zapewnia ogólne wskazówki na podstawie dostarczonych informacji, ale nie może uwzględnić wszystkich niuansów Twojej konkretnej sytuacji lub jurysdykcji."
+      },
+      "aiLimitations": {
+        "title": "Ograniczenia AI",
+        "content": "Mimo że nasza AI wykorzystuje zaawansowaną technologię, może generować niedokładne, niepełne lub nieaktualne informacje. Treści generowane przez AI powinny być zawsze przejrzane przez wykwalifikowanego profesjonalistę prawnego przed użyciem w jakichkolwiek postępowaniach sądowych lub oficjalnych funkcjach."
+      },
+      "userResponsibility": {
+        "title": "Odpowiedzialność użytkownika",
+        "content": "Jesteś wyłącznie odpowiedzialny za przeglądanie i weryfikację wszelkich dokumentów lub informacji generowanych przez tę usługę. Korzystając z tej platformy, zgadzasz się skonsultować z licencjonowanym prawnikiem w sprawach wymagających porady prawnej."
+      },
+      "dataUsage": {
+        "title": "Użytkowanie danych",
+        "content": "Informacje, które dostarczasz, mogą być przetwarzane przez systemy AI w celu generowania odpowiedzi. Proszę nie udostępniać wrażliwych danych osobowych, chyba że jest to konieczne. Wdrażamy środki bezpieczeństwa w celu ochrony Twoich danych, ale żaden system nie jest całkowicie bezpieczny."
+      }
+    },
+    "errors": {
+      "mustAccept": "Musisz zaakceptować zrzeczenie odpowiedzialności, aby kontynuować",
+      "failed": "Nie udało się zaakceptować zrzeczenia odpowiedzialności. Proszę spróbować ponownie."
+    }
+  },
+  "analyzeCase": {
+    "title": "Analiza sprawy",
+    "subtitle": "Opisz swoją sytuację prawną i pozwól AI zidentyfikować odpowiednie podstawy prawne i artykuły",
+    "descriptionLabel": "Opis sprawy",
+    "descriptionPlaceholder": "Opisz swój problem prawny szczegółowo. Na przykład: 'Mój pracodawca nie wypłacił mi wynagrodzenia od dwóch miesięcy i chcę wiedzieć, jakie kroki prawne mogę podjąć...'",
+    "descriptionHint": "Podaj jak najwięcej szczegółów dla lepszych wyników analizy",
+    "analyzeButton": "Analizuj sprawę",
+    "analyzing": "Analizowanie...",
+    "resultsTitle": "Zidentyfikowane podstawy prawne",
+    "resultsCount": "Znaleziono {count} podstawę(y) prawną(e)",
+    "noResults": "Nie zidentyfikowano konkretnych podstaw prawnych. Proszę podać więcej szczegółów lub skonsultować się z profesjonalistą prawnym.",
+    "disclaimerTitle": "Zrzeczenie odpowiedzialności",
+    "disclaimerText": "Ta analiza jest generowana przez AI i służy wyłącznie do celów informacyjnych. Nie stanowi porady prawnej. Proszę skonsultować się z wykwalifikowanym profesjonalistą prawnym w sprawie porady dotyczącej Twojej konkretnej sytuacji."
   },
   "landing": {
     "hero": {
@@ -415,6 +507,28 @@
       "disclaimer": "Nie wymaga karty kredytowej dla standardowego okresu próbnego."
     },
     "footer": {
+      "brand": {
+        "title": "Legal AI",
+        "description": "Wspieranie profesjonalistów prawnicznych narzędziami AI nowej generacji. Bezpieczne, dokładne i wydajne."
+      },
+      "product": {
+        "title": "Produkt",
+        "features": "Funkcje",
+        "pricing": "Cennik",
+        "security": "Bezpieczeństwo"
+      },
+      "company": {
+        "title": "Firma",
+        "about": "O nas",
+        "careers": "Kariera",
+        "contact": "Kontakt"
+      },
+      "legal": {
+        "title": "Informacje prawne",
+        "privacy": "Polityka prywatności",
+        "terms": "Warunki korzystania",
+        "cookie": "Polityka plików cookie"
+      },
       "copyright": "© {year} Legal AI. Wszelkie prawa zastrzeżone."
     }
   },
@@ -485,6 +599,113 @@
         "tip2": "Regularnie rotuj swoje klucze API dla lepszego bezpieczeństwa",
         "tip3": "Używaj minimalnych wymaganych zakresów dla każdego klucza"
       }
+    },
+    "profile": {
+      "title": "Ustawienia profilu",
+      "description": "Zaktualizuj swoje informacje osobowe",
+      "fields": {
+        "email": "E-mail",
+        "username": "Nazwa użytkownika",
+        "firstName": "Imię",
+        "lastName": "Nazwisko"
+      },
+      "errors": {
+        "invalidUsername": "Nazwa użytkownika może zawierać tylko litery, cyfry, podkreślenia, kropki i myślniki"
+      },
+      "saveButton": "Zapisz zmiany",
+      "saving": "Zapisywanie...",
+      "successMessage": "Profil zaktualizowany pomyślnie",
+      "errorMessage": "Nie udało się zaktualizować profilu"
+    },
+    "preferences": {
+      "title": "Preferencje",
+      "description": "Dostosuj swoje doświadczenie z aplikacją",
+      "fields": {
+        "locale": "Język",
+        "theme": "Motyw",
+        "aiModel": "Model AI",
+        "timezone": "Strefa czasowa",
+        "dateFormat": "Format daty"
+      },
+      "saveButton": "Zapisz zmiany",
+      "saving": "Zapisywanie...",
+      "successMessage": "Preferencje zaktualizowane pomyślnie",
+      "errorMessage": "Nie udało się zaktualizować preferencji"
+    },
+    "security": {
+      "title": "Bezpieczeństwo",
+      "description": "Zmień swoje hasło i ustawienia bezpieczeństwa",
+      "fields": {
+        "currentPassword": "Aktualne hasło",
+        "newPassword": "Nowe hasło",
+        "confirmPassword": "Potwierdź nowe hasło"
+      },
+      "errors": {
+        "passwordsDoNotMatch": "Hasła nie pasują do siebie"
+      },
+      "passwordHint": "Hasło musi mieć co najmniej 8 znaków",
+      "tips": {
+        "title": "Wskazówki dotyczące bezpieczeństwa",
+        "tip1": "Używaj silnego hasła z co najmniej 8 znakami",
+        "tip2": "Uwzględnij mieszankę liter, cyfr i symboli",
+        "tip3": "Nie używaj haseł z innych stron"
+      },
+      "changeButton": "Zmień hasło",
+      "changing": "Zmienianie...",
+      "successMessage": "Hasło zmienione pomyślnie",
+      "errorMessage": "Nie udało się zmienić hasła"
+    },
+    "notifications": {
+      "title": "Powiadomienia",
+      "description": "Zarządzaj preferencjami powiadomień",
+      "sections": {
+        "types": "Typy powiadomień",
+        "channels": "Kanały powiadomień",
+        "legacy": "Dodatkowe ustawienia"
+      },
+      "fields": {
+        "documentUpdates": "Aktualizacje dokumentów",
+        "queryResponses": "Odpowiedzi na zapytania",
+        "systemAlerts": "Alerty systemowe",
+        "marketingEmails": "E-maile marketingowe",
+        "email": "Powiadomienia e-mail",
+        "inApp": "Powiadomienia w aplikacji",
+        "push": "Powiadomienia push",
+        "emailNotifications": "Powiadomienia e-mail (przestarzałe)",
+        "inAppNotifications": "Powiadomienia w aplikacji (przestarzałe)"
+      },
+      "saveButton": "Zapisz zmiany",
+      "saving": "Zapisywanie...",
+      "successMessage": "Preferencje powiadomień zaktualizowane pomyślnie",
+      "errorMessage": "Nie udało się zaktualizować preferencji powiadomień"
+    },
+    "comments": {
+      "title": "Komentarze",
+      "all": "Wszystkie",
+      "open": "Otwarte",
+      "resolved": "Rozwiązane",
+      "loading": "Ładowanie komentarzy...",
+      "error": "Błąd ładowania komentarzy",
+      "noComments": "Brak komentarzy",
+      "noOpen": "Brak otwartych komentarzy",
+      "noResolved": "Brak rozwiązanych komentarzy",
+      "anonymous": "Anonimowy",
+      "resolved": "Rozwiązane",
+      "reopen": "Otwórz ponownie",
+      "edit": "Edytuj",
+      "delete": "Usuń",
+      "resolve": "Rozwiąż",
+      "resolvedAt": "Rozwiązano o",
+      "newComment": "Nowy komentarz",
+      "selectedText": "Zaznaczony tekst:",
+      "placeholder": "Napisz tutaj swój komentarz...",
+      "characters": "Znaki",
+      "remaining": "pozostało",
+      "submit": "Prześlij",
+      "toSubmit": "do przesłania",
+      "toCancel": "do anulowania",
+      "deleteConfirm": "Czy na pewno chcesz usunąć ten komentarz?",
+      "selectTextHint": "Zaznacz tekst w dokumencie, aby dodać komentarz"
     }
   },
   "notificationCenter": {

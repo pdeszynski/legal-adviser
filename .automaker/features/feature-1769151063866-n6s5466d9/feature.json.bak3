@@ -1,0 +1,29 @@
+{
+  "category": "Uncategorized",
+  "description": "Docker-compose is invalid for local development, It does not include local files. Please make sure that the volume with `.` is mounted into app folder in each container. Make sure that it still starts and works, it's not a problem that each contanier will have code of other shared libs (even should). If needed add additional targets in docker files, so in dev, these will be set using docker-compose - this could be useful to set correct CMD for reloads for local dev.",
+  "title": "Update Docker Compose volumes for local development",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "master",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769151063866-n6s5466d9",
+  "descriptionHistory": [
+    {
+      "description": "Docker-compose is invalid for local development, It does not include local files. Please make sure that the volume with `.` is mounted into app folder in each container. Make sure that it still starts and works, it's not a problem that each contanier will have code of other shared libs (even should). If needed add additional targets in docker files, so in dev, these will be set using docker-compose - this could be useful to set correct CMD for reloads for local dev.",
+      "timestamp": "2026-01-23T06:51:03.967Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T06:51:09.486Z"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769151122733-a72bb69a",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-23T06:52:02.733Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769151063866-n6s5466d9",
+  "featureName": "Update Docker Compose volumes for local development",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

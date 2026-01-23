@@ -5,11 +5,10 @@ relevantTo: [internationalization]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 2
-  referenced: 1
-  successfulFeatures: 1
+  loaded: 4
+  referenced: 3
+  successfulFeatures: 3
 ---
-
 # internationalization
 
 #### [Pattern] Translation keys pre-populated in common.json for dashboard components despite incomplete feature implementation (2026-01-20)

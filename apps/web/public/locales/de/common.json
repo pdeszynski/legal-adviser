@@ -287,49 +287,49 @@
       "list": "Dokumentenliste",
       "show": "Dokumentansicht"
     },
-  "templates": {
-    "templates": "Dokumentvorlagen",
-    "description": "Wählen Sie aus unserer Sammlung professioneller Rechtsdokumentvorlagen, um schnell loszulegen.",
-    "fields": {
-      "search": "Suche",
-      "category": "Kategorie"
+    "templates": {
+      "templates": "Dokumentvorlagen",
+      "description": "Wählen Sie aus unserer Sammlung professioneller Rechtsdokumentvorlagen, um schnell loszulegen.",
+      "fields": {
+        "search": "Suche",
+        "category": "Kategorie"
+      },
+      "placeholders": {
+        "search": "Vorlagen durchsuchen..."
+      },
+      "categories": {
+        "LAWSUIT": "Klage",
+        "COMPLAINT": "Beschwerde",
+        "CONTRACT": "Vertrag",
+        "MOTION": "Antrag",
+        "LETTER": "Brief",
+        "OTHER": "Sonstiges"
+      },
+      "titles": {
+        "library": "Dokumentvorlagen",
+        "variables": "Erforderliche Informationen",
+        "contentPreview": "Inhaltsvorschau"
+      },
+      "buttons": {
+        "preview": "Vorschau",
+        "useTemplate": "Vorlage verwenden"
+      },
+      "info": {
+        "used": "{count} Mal verwendet"
+      },
+      "errors": {
+        "loadingFailed": "Fehler beim Laden der Vorlagen"
+      },
+      "noTemplates": "Keine Vorlagen verfügbar",
+      "noFilteredResults": "Keine Vorlagen entsprechen Ihren Filterkriterien",
+      "variableTypes": {
+        "text": "Text",
+        "number": "Nummer",
+        "date": "Datum",
+        "currency": "Währung",
+        "boolean": "Ja/Nein"
+      }
     },
-    "placeholders": {
-      "search": "Vorlagen durchsuchen..."
-    },
-    "categories": {
-      "LAWSUIT": "Klage",
-      "COMPLAINT": "Beschwerde",
-      "CONTRACT": "Vertrag",
-      "MOTION": "Antrag",
-      "LETTER": "Brief",
-      "OTHER": "Sonstiges"
-    },
-    "titles": {
-      "library": "Dokumentvorlagen",
-      "variables": "Erforderliche Informationen",
-      "contentPreview": "Inhaltsvorschau"
-    },
-    "buttons": {
-      "preview": "Vorschau",
-      "useTemplate": "Vorlage verwenden"
-    },
-    "info": {
-      "used": "{count} Mal verwendet"
-    },
-    "errors": {
-      "loadingFailed": "Fehler beim Laden der Vorlagen"
-    },
-    "noTemplates": "Keine Vorlagen verfügbar",
-    "noFilteredResults": "Keine Vorlagen entsprechen Ihren Filterkriterien",
-    "variableTypes": {
-      "text": "Text",
-      "number": "Nummer",
-      "date": "Datum",
-      "currency": "Währung",
-      "boolean": "Ja/Nein"
-    }
-  },
     "form": {
       "select": {
         "type": {
@@ -652,5 +652,201 @@
     "tokens": "Token",
     "cost": "Kosten",
     "noData": "Keine Nutzungsdaten für diesen Zeitraum verfügbar"
+  },
+  "settings": {
+    "profile": {
+      "title": "Profil-Einstellungen",
+      "description": "Aktualisieren Sie Ihre persönlichen Informationen",
+      "fields": {
+        "email": "E-Mail",
+        "username": "Benutzername",
+        "firstName": "Vorname",
+        "lastName": "Nachname"
+      },
+      "errors": {
+        "invalidUsername": "Der Benutzername darf nur Buchstaben, Zahlen, Unterstriche, Punkte und Bindestriche enthalten"
+      },
+      "saveButton": "Änderungen speichern",
+      "saving": "Speichern...",
+      "successMessage": "Profil erfolgreich aktualisiert",
+      "errorMessage": "Profilaktualisierung fehlgeschlagen"
+    },
+    "preferences": {
+      "title": "Einstellungen",
+      "description": "Passen Sie Ihre Anwendungserfahrung an",
+      "fields": {
+        "locale": "Sprache",
+        "theme": "Design",
+        "aiModel": "KI-Modell",
+        "timezone": "Zeitzone",
+        "dateFormat": "Datumsformat"
+      },
+      "saveButton": "Änderungen speichern",
+      "saving": "Speichern...",
+      "successMessage": "Einstellungen erfolgreich aktualisiert",
+      "errorMessage": "Aktualisierung der Einstellungen fehlgeschlagen"
+    },
+    "security": {
+      "title": "Sicherheit",
+      "description": "Ändern Sie Ihr Passwort und Ihre Sicherheitseinstellungen",
+      "fields": {
+        "currentPassword": "Aktuelles Passwort",
+        "newPassword": "Neues Passwort",
+        "confirmPassword": "Neues Passwort bestätigen"
+      },
+      "errors": {
+        "passwordsDoNotMatch": "Passwörter stimmen nicht überein"
+      },
+      "passwordHint": "Das Passwort muss mindestens 8 Zeichen lang sein",
+      "tips": {
+        "title": "Sicherheitstipps",
+        "tip1": "Verwenden Sie ein starkes Passwort mit mindestens 8 Zeichen",
+        "tip2": "Verwenden Sie eine Mischung aus Buchstaben, Zahlen und Symbolen",
+        "tip3": "Verwenden Sie keine Passwörter von anderen Websites"
+      },
+      "changeButton": "Passwort ändern",
+      "changing": "Ändern...",
+      "successMessage": "Passwort erfolgreich geändert",
+      "errorMessage": "Passwortänderung fehlgeschlagen"
+    },
+    "notifications": {
+      "title": "Benachrichtigungen",
+      "description": "Verwalten Sie Ihre Benachrichtigungseinstellungen",
+      "sections": {
+        "types": "Benachrichtigungstypen",
+        "channels": "Benachrichtigungskanäle",
+        "legacy": "Zusätzliche Einstellungen"
+      },
+      "fields": {
+        "documentUpdates": "Dokumentaktualisierungen",
+        "queryResponses": "Abfrageantworten",
+        "systemAlerts": "Systemwarnungen",
+        "marketingEmails": "Marketing-E-Mails",
+        "email": "E-Mail-Benachrichtigungen",
+        "inApp": "App-Benachrichtigungen",
+        "push": "Push-Benachrichtigungen",
+        "emailNotifications": "E-Mail-Benachrichtigungen (veraltet)",
+        "inAppNotifications": "App-Benachrichtigungen (veraltet)"
+      },
+      "saveButton": "Änderungen speichern",
+      "saving": "Speichern...",
+      "successMessage": "Benachrichtigungseinstellungen erfolgreich aktualisiert",
+      "errorMessage": "Aktualisierung der Benachrichtigungseinstellungen fehlgeschlagen"
+    },
+    "comments": {
+      "title": "Kommentare",
+      "all": "Alle",
+      "open": "Offen",
+      "resolved": "Gelöst",
+      "loading": "Kommentare werden geladen...",
+      "error": "Fehler beim Laden der Kommentare",
+      "noComments": "Noch keine Kommentare",
+      "noOpen": "Keine offenen Kommentare",
+      "noResolved": "Keine gelösten Kommentare",
+      "anonymous": "Anonym",
+      "resolved": "Gelöst",
+      "reopen": "Wieder öffnen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "resolve": "Lösen",
+      "resolvedAt": "Gelöst am",
+      "newComment": "Neuer Kommentar",
+      "selectedText": "Ausgewählter Text:",
+      "placeholder": "Schreiben Sie hier Ihren Kommentar...",
+      "characters": "Zeichen",
+      "remaining": "verbleibend",
+      "submit": "Absenden",
+      "toSubmit": "zum Absenden",
+      "toCancel": "zum Abbrechen",
+      "deleteConfirm": "Möchten Sie diesen Kommentar wirklich löschen?",
+      "selectTextHint": "Wählen Sie Text im Dokument aus, um einen Kommentar hinzuzufügen"
+    }
+  },
+  "billing": {
+    "title": "Abrechnung",
+    "subtitle": "Verwalten Sie Ihr Abonnement und Ihre Zahlungshistorie",
+    "tabs": {
+      "subscription": "Abonnement",
+      "paymentHistory": "Zahlungshistorie",
+      "planChange": "Plan ändern",
+      "paymentMethods": "Zahlungsmethoden"
+    },
+    "noSubscription": "Sie haben kein aktives Abonnement",
+    "status": {
+      "active": "Aktiv",
+      "trialing": "Testphase",
+      "past_due": "Überfällig",
+      "canceled": "Gekündigt",
+      "expired": "Abgelaufen"
+    },
+    "paymentMethod": {
+      "credit_card": "Kreditkarte",
+      "debit_card": "Debitkarte",
+      "paypal": "PayPal",
+      "bank_transfer": "Banküberweisung",
+      "other": "Sonstiges"
+    },
+    "paymentStatus": {
+      "pending": "Ausstehend",
+      "completed": "Abgeschlossen",
+      "failed": "Fehlgeschlagen",
+      "refunded": "Erstattet",
+      "partially_refunded": "Teilweise erstattet"
+    },
+    "subscription": {
+      "title": "Abonnement-Details",
+      "currentPlan": "Aktueller Plan",
+      "billingPeriod": "Abrechnungszeitraum",
+      "daysRemaining": "{days} Tage verbleibend",
+      "nextBilling": "Nächste Abrechnung: {amount}",
+      "willCancel": "Ihr Abonnement wird am Ende des Abrechnungszeitraums gekündigt",
+      "usage": "Nutzung in diesem Zeitraum",
+      "cancelPlan": "Abonnement kündigen",
+      "cancelling": "Wird gekündigt...",
+      "resumePlan": "Abonnement fortsetzen",
+      "resuming": "Wird fortgesetzt..."
+    },
+    "cancelConfirmation": "Möchten Sie Ihr Abonnement wirklich kündigen? Sie verlieren am Ende des Abrechnungszeitraums den Zugriff auf Premium-Funktionen.",
+    "cancelSuccess": "Abonnement erfolgreich gekündigt",
+    "cancelError": "Kündigung des Abonnements fehlgeschlagen",
+    "resumeSuccess": "Abonnement erfolgreich fortgesetzt",
+    "resumeError": "Fortsetzen des Abonnements fehlgeschlagen",
+    "paymentHistory": {
+      "title": "Zahlungshistorie",
+      "noPayments": "Keine Zahlungen gefunden",
+      "date": "Datum",
+      "description": "Beschreibung",
+      "amount": "Betrag",
+      "method": "Methode",
+      "status": "Status",
+      "invoice": "Rechnung",
+      "subscriptionPayment": "Abonnementzahlung",
+      "refundedOn": "Erstattet am {date}",
+      "refundAmount": "Erstattung: {amount}",
+      "viewInvoice": "Anzeigen"
+    },
+    "planChange": {
+      "title": "Ändern Sie Ihren Plan",
+      "currentPlan": "Aktueller Plan: {plan}",
+      "selectPlan": "Bitte wählen Sie einen Plan",
+      "current": "Aktuell",
+      "changing": "Wird geändert...",
+      "changePlan": "Plan ändern",
+      "cancel": "Abbrechen",
+      "success": "Plan erfolgreich geändert",
+      "error": "Änderung des Plans fehlgeschlagen"
+    },
+    "paymentMethods": {
+      "title": "Zahlungsmethoden",
+      "add": "Zahlungsmethode hinzufügen",
+      "adding": "Wird hinzugefügt...",
+      "noMethods": "Keine Zahlungsmethoden verfügbar",
+      "addMethodPrompt": "Fügen Sie eine Zahlungsmethode hinzu, um Ihr Abonnement zu verwalten",
+      "default": "Standard",
+      "expires": "Läuft ab",
+      "note": "Hinweis",
+      "secureNote": "Ihre Zahlungsinformationen werden sicher von Stripe verarbeitet. Wir speichern niemals Ihre vollständigen Kartendetails auf unseren Servern.",
+      "notImplemented": "Die Verwaltung von Zahlungsmethoden ist noch nicht implementiert. Bitte kontaktieren Sie den Support für Unterstützung."
+    }
   }
 }

@@ -1,0 +1,28 @@
+{
+  "category": "Uncategorized",
+  "description": "Fix Language Change Path Handling\n\nThe language switcher incorrectly causes the browser to navigate to `/pl` path, which the application does not support as a valid route.\n\nTechnical Implementation:\n- Issue Analysis: Language change likely modifying window.location or using standard anchor navigation instead of programmatic locale switching\n- Solution Approach: Implement client-side locale change without route navigation\n- i18n Configuration: Update internationalization library (react-i18n, next-i18n, or similar) to change locale in-place\n- State Management: Store selected language in localStorage/sessionStorage or URL query parameter (?lang=pl) instead of path segment\n- Route Guard: Add middleware/route protection to handle legacy `/pl` paths (redirect to base path with locale parameter)\n\nImplementation Details:\n- Modify language selector component to use locale change API (e.g., i18n.changeLanguage('pl'))\n- Update i18n config to use query parameter or subdomain strategy instead of path-based routing\n- If path-based routing is required: Configure supported locale paths in router configuration\n- Prevent default behavior on language switch button/link (e.preventDefault())\n\nError Handling:\n- Fallback to default language if unsupported locale requested\n- Handle cases where locale file fails to load\n- Preserve current route when switching languages\n\nFiles to Update:\n- LanguageSwitcher component (remove href navigation)\n- i18n configuration file (change localization strategy)\n- Router configuration (add locale path support or redirect rules)\n- Middleware/route guards (handle invalid paths)\n\nCompatibility: Ensure language preference persists across page reloads and maintains current user context",
+  "title": "Fix language switcher navigation to preserve routes",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "backlog",
+  "id": "feature-1769085963461-wp6p9ye4q",
+  "descriptionHistory": [
+    {
+      "description": "Fix Language Change Path Handling\n\nThe language switcher incorrectly causes the browser to navigate to `/pl` path, which the application does not support as a valid route.\n\nTechnical Implementation:\n- Issue Analysis: Language change likely modifying window.location or using standard anchor navigation instead of programmatic locale switching\n- Solution Approach: Implement client-side locale change without route navigation\n- i18n Configuration: Update internationalization library (react-i18n, next-i18n, or similar) to change locale in-place\n- State Management: Store selected language in localStorage/sessionStorage or URL query parameter (?lang=pl) instead of path segment\n- Route Guard: Add middleware/route protection to handle legacy `/pl` paths (redirect to base path with locale parameter)\n\nImplementation Details:\n- Modify language selector component to use locale change API (e.g., i18n.changeLanguage('pl'))\n- Update i18n config to use query parameter or subdomain strategy instead of path-based routing\n- If path-based routing is required: Configure supported locale paths in router configuration\n- Prevent default behavior on language switch button/link (e.preventDefault())\n\nError Handling:\n- Fallback to default language if unsupported locale requested\n- Handle cases where locale file fails to load\n- Preserve current route when switching languages\n\nFiles to Update:\n- LanguageSwitcher component (remove href navigation)\n- i18n configuration file (change localization strategy)\n- Router configuration (add locale path support or redirect rules)\n- Middleware/route guards (handle invalid paths)\n\nCompatibility: Ensure language preference persists across page reloads and maintains current user context",
+      "timestamp": "2026-01-22T12:46:03.579Z",
+      "source": "initial"
+    }
+  ]
+}

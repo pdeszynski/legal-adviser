@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { useIsAuthenticated, useGo } from '@refinedev/core';
 import { useTranslations } from 'next-intl';
 import { PublicLayout } from '@components/layout/public-layout';
@@ -323,10 +323,17 @@ const LandingContent = () => {
 const IndexPageContent = () => {
   const { data, isLoading } = useIsAuthenticated();
   const go = useGo();
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    if (!isLoading && data?.authenticated) {
-      go({ to: '/dashboard', type: 'replace' });
+    // Prevent multiple redirects
+    if (!isLoading && data?.authenticated && !hasRedirected.current) {
+      hasRedirected.current = true;
+      // Use a small delay to ensure smooth transition
+      const redirectTimer = setTimeout(() => {
+        go({ to: '/dashboard', type: 'replace' });
+      }, 100);
+      return () => clearTimeout(redirectTimer);
     }
   }, [data, isLoading, go]);
 

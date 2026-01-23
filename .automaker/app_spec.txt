@@ -824,6 +824,65 @@ src/app/(authenticated)/billing/page.tsx (56:65)</description>
       <name>Debug Docker Compose Build Failure</name>
       <description>Investigate why docker compose up --build fails. Check Dockerfile syntax, base image availability, dependency installation during build, and multi-stage build configuration. Verify docker-compose.yml service configuration and volume mounts. Test building individual services to isolate the failing container.</description>
     </feature>
+    <feature>
+      <name>Fix language switcher navigation to preserve routes</name>
+      <description>Fix Language Change Path Handling
+
+The language switcher incorrectly causes the browser to navigate to `/pl` path, which the application does not support as a valid route.
+
+Technical Implementation:
+- Issue Analysis: Language change likely modifying window.location or using standard anchor navigation instead of programmatic locale switching
+- Solution Approach: Implement client-side locale change without route navigation
+- i18n Configuration: Update internationalization library (react-i18n, next-i18n, or similar) to change locale in-place
+- State Management: Store selected language in localStorage/sessionStorage or URL query parameter (?lang=pl) instead of path segment
+- Route Guard: Add middleware/route protection to handle legacy `/pl` paths (redirect to base path with locale parameter)
+
+Implementation Details:
+- Modify language selector component to use locale change API (e.g., i18n.changeLanguage(&apos;pl&apos;))
+- Update i18n config to use query parameter or subdomain strategy instead of path-based routing
+- If path-based routing is required: Configure supported locale paths in router configuration
+- Prevent default behavior on language switch button/link (e.preventDefault())
+
+Error Handling:
+- Fallback to default language if unsupported locale requested
+- Handle cases where locale file fails to load
+- Preserve current route when switching languages
+
+Files to Update:
+- LanguageSwitcher component (remove href navigation)
+- i18n configuration file (change localization strategy)
+- Router configuration (add locale path support or redirect rules)
+- Middleware/route guards (handle invalid paths)
+
+Compatibility: Ensure language preference persists across page reloads and maintains current user context</description>
+    </feature>
+    <feature>
+      <name>Fix Missing Translation Keys in i18n System</name>
+      <description>Fix Missing Translation Keys in Internationalization System
+
+Identify and resolve instances where translation keys are not being properly translated, resulting in untranslated text appearing in the user interface.
+
+Requirements:
+- Audit the codebase to locate all missing or untranslated keys
+- Verify that translation keys exist in all required language files
+- Ensure translation keys are correctly referenced in the code
+- Check for typos or mismatches between key references and translation file entries
+- Identify any keys that are missing translations in specific languages
+- Add missing translation entries with appropriate translated text
+- Verify that the i18n/translation system is properly initialized and loading language files
+- Test all affected UI areas to confirm translations display correctly
+- Document which languages were incomplete and what keys were added
+
+Edge cases to consider:
+- Dynamic keys that may be constructed at runtime
+- Nested translation keys with incorrect paths
+- Pluralization or context-specific translations
+- Fallback language behavior when translations are missing</description>
+    </feature>
+    <feature>
+      <name>Login Form Loading State</name>
+      <description>Implement visual loading indicator on login form while authentication request is in progress. Add spinner or loading button state to show user that login is being processed. Disable form inputs and submit button during loading to prevent duplicate submissions.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

@@ -1,0 +1,20 @@
+{
+  "category": "bug",
+  "description": "Implement error message display on login form for invalid credentials and other authentication failures. Parse error responses from backend GraphQL mutations and display user-friendly error messages. Handle network errors, timeout errors, and invalid credential errors with appropriate messaging.",
+  "id": "login-error-handling",
+  "title": "Login Form Error Display",
+  "dependencies": [
+    "auth-provider-graphql",
+    "login-loading-state"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Implement error message display on login form for invalid credentials and other authentication failures. Parse error responses from backend GraphQL mutations and display user-friendly error messages. Handle network errors, timeout errors, and invalid credential errors with appropriate messaging.",
+      "timestamp": "2026-01-23T07:01:13.234Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769151995776-7e8bdcdb",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T07:06:35.776Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "login-loading-state",
+  "featureName": "Login Form Loading State",
+  "error": "Feature completed in 310s - auto-verified",
+  "passes": true
+}

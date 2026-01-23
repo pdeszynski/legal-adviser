@@ -18,14 +18,8 @@ interface UserIdentity {
 export const Header = () => {
   const { translate } = useTranslation();
   const { mutate: logout } = useLogout();
-  const { data: user } = useGetIdentity<UserIdentity>();
-  const {
-    notifications,
-    unreadCount,
-    isLoading,
-    markAsRead,
-    markAllAsRead,
-  } = useNotifications();
+  const { data: user, isLoading: isUserLoading } = useGetIdentity<UserIdentity>();
+  const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead } = useNotifications();
 
   const displayName =
     user?.name ||
@@ -53,7 +47,7 @@ export const Header = () => {
           onMarkAllRead={markAllAsRead}
         />
 
-        {displayName && (
+        {!isUserLoading && displayName && (
           <span className="text-sm font-medium text-muted-foreground hidden md:inline-block">
             {displayName}
           </span>

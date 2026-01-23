@@ -1,0 +1,29 @@
+{
+  "category": "Uncategorized",
+  "description": "Fix Missing Translation Keys in Internationalization System\n\nIdentify and resolve instances where translation keys are not being properly translated, resulting in untranslated text appearing in the user interface.\n\nRequirements:\n- Audit the codebase to locate all missing or untranslated keys\n- Verify that translation keys exist in all required language files\n- Ensure translation keys are correctly referenced in the code\n- Check for typos or mismatches between key references and translation file entries\n- Identify any keys that are missing translations in specific languages\n- Add missing translation entries with appropriate translated text\n- Verify that the i18n/translation system is properly initialized and loading language files\n- Test all affected UI areas to confirm translations display correctly\n- Document which languages were incomplete and what keys were added\n\nEdge cases to consider:\n- Dynamic keys that may be constructed at runtime\n- Nested translation keys with incorrect paths\n- Pluralization or context-specific translations\n- Fallback language behavior when translations are missing",
+  "title": "Fix Missing Translation Keys in i18n System",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769086047883-t3t8vky3w",
+  "descriptionHistory": [
+    {
+      "description": "Fix Missing Translation Keys in Internationalization System\n\nIdentify and resolve instances where translation keys are not being properly translated, resulting in untranslated text appearing in the user interface.\n\nRequirements:\n- Audit the codebase to locate all missing or untranslated keys\n- Verify that translation keys exist in all required language files\n- Ensure translation keys are correctly referenced in the code\n- Check for typos or mismatches between key references and translation file entries\n- Identify any keys that are missing translations in specific languages\n- Add missing translation entries with appropriate translated text\n- Verify that the i18n/translation system is properly initialized and loading language files\n- Test all affected UI areas to confirm translations display correctly\n- Document which languages were incomplete and what keys were added\n\nEdge cases to consider:\n- Dynamic keys that may be constructed at runtime\n- Nested translation keys with incorrect paths\n- Pluralization or context-specific translations\n- Fallback language behavior when translations are missing",
+      "timestamp": "2026-01-22T12:47:28.003Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T06:53:47.610Z"
+}

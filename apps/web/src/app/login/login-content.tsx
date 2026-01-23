@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useLogin, useIsAuthenticated, useGo } from '@refinedev/core';
+import { useState, useEffect, useRef } from 'react';
+import { useLogin, useIsAuthenticated, useGo, useGetIdentity } from '@refinedev/core';
 import {
   Card,
   CardContent,
@@ -18,13 +18,27 @@ import { Scale } from 'lucide-react';
 export const LoginContent = () => {
   const { mutate: login, isPending: isLoading, error } = useLogin();
   const { data: authData, isLoading: isAuthLoading } = useIsAuthenticated();
+  const { data: identity, isLoading: isIdentityLoading } = useGetIdentity();
   const go = useGo();
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    if (!isAuthLoading && authData?.authenticated) {
-      go({ to: '/dashboard', type: 'replace' });
+    // Only redirect if authenticated, identity is loaded, and we haven't redirected yet
+    if (
+      !isAuthLoading &&
+      !isIdentityLoading &&
+      authData?.authenticated &&
+      identity &&
+      !hasRedirected.current
+    ) {
+      hasRedirected.current = true;
+      // Use a small delay to ensure all state is propagated
+      const redirectTimer = setTimeout(() => {
+        go({ to: '/dashboard', type: 'replace' });
+      }, 100);
+      return () => clearTimeout(redirectTimer);
     }
-  }, [authData, isAuthLoading, go]);
+  }, [authData, isAuthLoading, isIdentityLoading, identity, go]);
 
   const [initialError, setInitialError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -106,7 +120,8 @@ export const LoginContent = () => {
                     handleSubmit(e);
                   }
                 }}
-                className="bg-background/50 transition-colors focus:bg-background"
+                disabled={isLoading}
+                className="bg-background/50 transition-colors focus:bg-background disabled:opacity-50"
               />
             </div>
             <div className="space-y-2">
@@ -130,7 +145,8 @@ export const LoginContent = () => {
                     handleSubmit(e);
                   }
                 }}
-                className="bg-background/50 transition-colors focus:bg-background"
+                disabled={isLoading}
+                className="bg-background/50 transition-colors focus:bg-background disabled:opacity-50"
               />
             </div>
             {errorMessage && (

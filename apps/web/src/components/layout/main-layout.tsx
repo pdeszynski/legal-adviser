@@ -14,17 +14,32 @@ interface UserIdentity {
 }
 
 export const MainLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const { data: identity, refetch } = useGetIdentity<UserIdentity>();
+  const { data: identity, refetch, isLoading: isIdentityLoading } = useGetIdentity<UserIdentity>();
   const [showDisclaimer, setShowDisclaimer] = useState(false);
 
   useEffect(() => {
-    // Show disclaimer modal if user has not accepted it
-    if (identity && identity.disclaimerAccepted === false) {
-      setShowDisclaimer(true);
-    } else {
-      setShowDisclaimer(false);
+    // Only check disclaimer after identity is fully loaded
+    if (!isIdentityLoading && identity) {
+      // Show disclaimer modal if user has not accepted it
+      if (identity.disclaimerAccepted === false) {
+        setShowDisclaimer(true);
+      } else {
+        setShowDisclaimer(false);
+      }
     }
-  }, [identity]);
+  }, [identity, isIdentityLoading]);
+
+  // Show loading state while identity is being fetched
+  if (isIdentityLoading || !identity) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleDisclaimerAccept = () => {
     setShowDisclaimer(false);
@@ -45,9 +60,7 @@ export const MainLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
       </div>
 
       {/* Legal Disclaimer Modal - shown for users who haven't accepted */}
-      {showDisclaimer && (
-        <LegalDisclaimerModal onAccept={handleDisclaimerAccept} />
-      )}
+      {showDisclaimer && <LegalDisclaimerModal onAccept={handleDisclaimerAccept} />}
     </div>
   );
 };

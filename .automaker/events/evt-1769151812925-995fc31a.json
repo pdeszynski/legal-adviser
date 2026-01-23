@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769151812925-995fc31a",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T07:03:32.925Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769085963461-wp6p9ye4q",
+  "featureName": "Fix language switcher navigation to preserve routes",
+  "error": "Feature completed in 574s - auto-verified",
+  "passes": true
+}
