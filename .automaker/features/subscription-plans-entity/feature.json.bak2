@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Subscription Plans Entity",
   "description": "Create SubscriptionPlan and UserSubscription entities. Define plan tiers with feature flags, quotas, and pricing.",
-  "status": "backlog",
+  "status": "in_progress",
   "priority": 3,
   "complexity": "moderate",
   "dependencies": [],
@@ -25,7 +25,7 @@
     "notes": "Billing bounded context aggregate. SubscriptionPlan is a reference entity, UserSubscription tracks user state."
   },
   "createdAt": "2026-01-12T10:31:20.851Z",
-  "updatedAt": "2026-01-12T10:31:20.851Z",
+  "updatedAt": "2026-01-22T01:19:36.951Z",
   "model": "sonnet",
   "thinkingLevel": "none",
   "reasoningEffort": "none"

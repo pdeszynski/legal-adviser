@@ -2,6 +2,7 @@
 
 import type { AuthProvider } from '@refinedev/core';
 import Cookies from 'js-cookie';
+import { parseGraphQLError, parseExceptionError } from '@/lib/auth-errors';
 
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
@@ -268,27 +269,13 @@ async function tryRefreshToken(): Promise<boolean> {
 
 /**
  * Extract error message from GraphQL response
+ * @deprecated Use parseGraphQLError from @/lib/auth-errors instead
  */
 function extractErrorMessage(
   errors: Array<{ message: string; extensions?: Record<string, unknown> }>,
 ): string {
-  if (errors.length > 0) {
-    const error = errors[0];
-    // Check for validation errors in extensions
-    if (error.extensions?.originalError) {
-      const originalError = error.extensions.originalError as {
-        message?: string | string[];
-      };
-      if (Array.isArray(originalError.message)) {
-        return originalError.message[0];
-      }
-      if (typeof originalError.message === 'string') {
-        return originalError.message;
-      }
-    }
-    return error.message;
-  }
-  return 'An error occurred';
+  const authError = parseGraphQLError(errors as Array<{ message: string; extensions?: Record<string, unknown> }>);
+  return authError?.userMessage || 'An error occurred';
 }
 
 /**
@@ -311,11 +298,12 @@ export const authProviderClient: AuthProvider = {
       });
 
       if (result.errors) {
+        const authError = parseGraphQLError(result.errors);
         return {
           success: false,
           error: {
-            message: extractErrorMessage(result.errors),
-            name: 'LoginError',
+            message: authError?.userMessage || 'Login failed',
+            name: authError?.code || 'LoginError',
           },
         };
       }
@@ -337,11 +325,12 @@ export const authProviderClient: AuthProvider = {
         },
       };
     } catch (error) {
+      const authError = parseExceptionError(error);
       return {
         success: false,
         error: {
-          name: 'NetworkError',
-          message: error instanceof Error ? error.message : 'Failed to connect to server',
+          name: authError.code,
+          message: authError.userMessage,
         },
       };
     }

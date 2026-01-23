@@ -3,7 +3,7 @@
   "category": "API",
   "title": "Ruling Search GraphQL Query",
   "description": "Implement custom GraphQL query for searching rulings with filters for date range, court type, and keywords. Return paginated results with highlights.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "architecture": {

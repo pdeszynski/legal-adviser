@@ -6,10 +6,12 @@
   "status": "backlog",
   "priority": 1,
   "complexity": "simple",
+  "dependencies": [
+    "qa-langgraph-workflow"
+  ],
   "createdAt": "2026-01-12T10:31:20.831Z",
   "updatedAt": "2026-01-12T10:31:20.831Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none",
-  "descriptionHistory": []
+  "reasoningEffort": "none"
 }

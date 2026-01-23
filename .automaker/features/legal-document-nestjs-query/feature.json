@@ -3,7 +3,7 @@
   "category": "API",
   "title": "Refactor LegalDocument to nestjs-query",
   "description": "Add @QueryOptions, @FilterableField, and @Relation decorators to LegalDocument infrastructure entity. Implement repository interface in domain layer and concrete implementation in infrastructure layer using nestjs-query. Ensures type-safe GraphQL schema generation while maintaining DDD layering.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [

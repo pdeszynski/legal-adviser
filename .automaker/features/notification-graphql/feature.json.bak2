@@ -3,7 +3,7 @@
   "category": "API",
   "title": "Notification GraphQL Resolvers",
   "description": "Add nestjs-query decorators to Notification entity. Implement subscription for real-time notifications and mutation to mark as read.",
-  "status": "backlog",
+  "status": "in_progress",
   "priority": 2,
   "complexity": "moderate",
   "architecture": {
@@ -21,7 +21,7 @@
     "notes": "Presentation layer for Notifications. GraphQL subscriptions for real-time updates. GraphQL-only per constitution."
   },
   "createdAt": "2026-01-12T10:31:20.846Z",
-  "updatedAt": "2026-01-12T10:31:20.846Z",
+  "updatedAt": "2026-01-21T23:54:00.543Z",
   "model": "sonnet",
   "thinkingLevel": "none",
   "reasoningEffort": "none",

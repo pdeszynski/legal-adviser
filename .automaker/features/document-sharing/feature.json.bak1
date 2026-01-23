@@ -1,0 +1,20 @@
+{
+  "id": "document-sharing",
+  "category": "Core",
+  "title": "Document Sharing System",
+  "description": "Implement secure document sharing with granular permissions. Generate shareable links with view-only or edit access and expiration dates.",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "legal-document-nestjs-query"
+  ],
+  "createdAt": "2026-01-12T10:31:20.843Z",
+  "updatedAt": "2026-01-20T19:00:03.300Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-20T18:50:24.893Z"
+}

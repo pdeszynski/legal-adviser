@@ -3,7 +3,7 @@
   "category": "Integration",
   "title": "Payment Gateway Integration",
   "description": "Integrate Stripe or similar payment provider. Handle subscription payments, webhooks, and invoice generation.",
-  "status": "verified",
+  "status": "completed",
   "priority": 3,
   "complexity": "complex",
   "createdAt": "2026-01-12T10:31:20.852Z",

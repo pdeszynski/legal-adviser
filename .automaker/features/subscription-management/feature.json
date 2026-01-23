@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "Subscription Management Service",
   "description": "Implement service for managing user subscriptions. Handle plan upgrades, downgrades, and feature access control.",
-  "status": "verified",
+  "status": "completed",
   "priority": 3,
   "complexity": "complex",
   "architecture": {

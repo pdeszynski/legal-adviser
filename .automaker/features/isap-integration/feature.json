@@ -3,7 +3,7 @@
   "category": "Integration",
   "title": "ISAP API Integration",
   "description": "Implement integration with ISAP (Internetowy System Aktów Prawnych) for legal act search. Create service layer for fetching Polish legislation.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "complex",
   "createdAt": "2026-01-12T10:31:20.833Z",

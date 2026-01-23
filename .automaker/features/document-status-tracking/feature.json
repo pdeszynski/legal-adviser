@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "Real-time Document Status Updates",
   "description": "Implement GraphQL subscriptions for document status changes. Emit events when document transitions between DRAFT, GENERATING, COMPLETED, and FAILED states.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [

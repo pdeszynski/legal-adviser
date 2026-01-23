@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "Notification Service",
   "description": "Implement service for creating and managing notifications. Support different notification types with templates and delivery rules.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "moderate",
   "architecture": {

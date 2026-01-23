@@ -3,7 +3,7 @@
   "category": "UI",
   "title": "Share Document Dialog",
   "description": "Create modal for sharing documents with user selection, role assignment, and link generation. Display list of current collaborators.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "moderate",
   "createdAt": "2026-01-12T10:31:20.844Z",

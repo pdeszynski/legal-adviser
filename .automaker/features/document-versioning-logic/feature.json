@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "Document Versioning Logic",
   "description": "Implement version creation on document updates. Maintain version history with diff calculation and rollback capability.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "complex",
   "dependencies": [

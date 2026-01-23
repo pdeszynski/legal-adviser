@@ -1,0 +1,39 @@
+{
+  "id": "rate-limiting-middleware",
+  "category": "Security",
+  "title": "Rate Limiting Middleware",
+  "description": "Implement rate limiting on GraphQL endpoints using @nestjs/throttler. Protect against abuse with per-user and per-IP limits.",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "graphql-auth-mutations"
+  ],
+  "architecture": {
+    "boundedContext": "Infrastructure",
+    "aggregateRoot": null,
+    "module": "apps/backend/src/shared/middleware",
+    "layer": "Infrastructure",
+    "patterns": [
+      "Cross-cutting Middleware",
+      "Rate Limiting"
+    ],
+    "emits": [],
+    "listensTo": [],
+    "notes": "Infrastructure layer security middleware. Protects all GraphQL endpoints. Uses Redis for distributed rate limiting."
+  },
+  "createdAt": "2026-01-12T10:31:20.839Z",
+  "updatedAt": "2026-01-20T11:51:26.361Z",
+  "skipTests": false,
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "current",
+  "descriptionHistory": [],
+  "branchName": "002-legal-ai-core",
+  "startedAt": "2026-01-20T11:39:42.420Z"
+}

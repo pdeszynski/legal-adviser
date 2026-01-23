@@ -3,7 +3,7 @@
   "category": "Integration",
   "title": "Webhook System",
   "description": "Implement webhook delivery system for external integrations. Support subscribing to events like document.completed and query.answered.",
-  "status": "verified",
+  "status": "completed",
   "priority": 3,
   "complexity": "complex",
   "dependencies": [],
@@ -32,5 +32,6 @@
   "updatedAt": "2026-01-22T01:57:26.077Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

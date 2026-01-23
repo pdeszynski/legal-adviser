@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Document Template Entity",
   "description": "Create DocumentTemplate entity for storing reusable templates. Include template name, type, content with variables, and metadata schema.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "simple",
   "architecture": {

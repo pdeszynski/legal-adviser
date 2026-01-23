@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "Usage Tracking Service",
   "description": "Implement service tracking AI API usage per user. Store token counts, request counts, and costs for billing purposes.",
-  "status": "backlog",
+  "status": "in_progress",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [],
@@ -29,7 +29,7 @@
     "notes": "Application service tracking AI usage. Listens to domain events to record usage. Part of Billing bounded context."
   },
   "createdAt": "2026-01-12T10:31:20.848Z",
-  "updatedAt": "2026-01-12T10:31:20.848Z",
+  "updatedAt": "2026-01-22T00:21:03.786Z",
   "model": "sonnet",
   "thinkingLevel": "none",
   "reasoningEffort": "none"

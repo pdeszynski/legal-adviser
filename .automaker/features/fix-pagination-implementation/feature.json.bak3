@@ -4,7 +4,7 @@
   "id": "fix-pagination-implementation",
   "title": "Fix Pagination Implementation Across All List Views",
   "priority": 1,
-  "status": "in_progress",
+  "status": "backlog",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -18,7 +18,7 @@
       "source": "edit"
     }
   ],
-  "updatedAt": "2026-01-21T22:59:57.751Z",
+  "updatedAt": "2026-01-21T22:59:57.769Z",
   "skipTests": false,
   "model": "claude-opus",
   "thinkingLevel": "none",

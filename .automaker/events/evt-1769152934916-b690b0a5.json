@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769152934916-b690b0a5",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T07:22:14.916Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769152630350-2dzke22ow",
+  "featureName": "Fix missing sentry_sdk Span type import",
+  "error": "Feature completed in 298s - auto-verified",
+  "passes": true
+}

@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Notification Entity",
   "description": "Create Notification entity for in-app notifications. Store notification type, message, read status, action link, and timestamp.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "simple",
   "dependencies": [],
@@ -30,5 +30,6 @@
   "updatedAt": "2026-01-21T23:50:51.209Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

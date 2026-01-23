@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Webhook Configuration Entity",
   "description": "Create WebhookConfig entity storing endpoint URLs, event subscriptions, authentication headers, and status.",
-  "status": "verified",
+  "status": "completed",
   "priority": 3,
   "complexity": "simple",
   "architecture": {

@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "Email Notification Service",
   "description": "Implement email service using SendGrid or similar provider. Support templated emails for document completion, account actions, and system notifications.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [],

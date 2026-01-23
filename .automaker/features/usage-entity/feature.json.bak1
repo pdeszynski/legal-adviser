@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Usage Records Entity",
   "description": "Create UsageRecord entity storing per-request AI usage. Include user ID, operation type, tokens used, cost, and timestamp.",
-  "status": "in_progress",
+  "status": "verified",
   "priority": 2,
   "complexity": "simple",
   "architecture": {
@@ -28,7 +28,7 @@
     "notes": "Part of Billing bounded context. Listens to AI completion events to record usage. Append-only for audit trail."
   },
   "createdAt": "2026-01-12T10:31:20.850Z",
-  "updatedAt": "2026-01-22T00:25:49.094Z",
+  "updatedAt": "2026-01-22T00:35:36.250Z",
   "model": "sonnet",
   "thinkingLevel": "none",
   "reasoningEffort": "none",

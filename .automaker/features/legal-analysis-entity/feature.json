@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Legal Analysis Entity",
   "description": "Create LegalAnalysis entity to store case classification results. Include input description, identified grounds, confidence scores, and related document links.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [

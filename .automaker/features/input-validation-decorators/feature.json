@@ -3,7 +3,7 @@
   "category": "Security",
   "title": "Input Validation Decorators",
   "description": "Add class-validator decorators to all DTOs and input types. Enforce maximum lengths, format validation, and sanitization rules.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [],

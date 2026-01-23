@@ -1,0 +1,15 @@
+{
+  "id": "admin-panel-layout",
+  "category": "UI",
+  "title": "Admin Panel Layout",
+  "description": "Create separate admin area with navigation and role-based access. Use Refine admin templates for CRUD operations.",
+  "status": "backlog",
+  "priority": 3,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.852Z",
+  "updatedAt": "2026-01-12T10:31:20.852Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

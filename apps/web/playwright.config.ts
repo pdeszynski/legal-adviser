@@ -6,7 +6,7 @@ import { defineConfig } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
-  testMatch: '**/*-verification.spec.ts',
+  testMatch: '**/*.spec.ts',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: 0,
@@ -17,11 +17,6 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
-  // Reuse existing server (running via Docker or pnpm dev)
-  webServer: {
-    command: 'echo "Using existing server"',
-    url: 'http://localhost:3000',
-    reuseExistingServer: true,
-    timeout: 30 * 1000,
-  },
+  // Don't use webServer - assume server is already running
+  // webServer: undefined,
 });

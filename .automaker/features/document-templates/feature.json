@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "Document Template System",
   "description": "Create template engine for common legal document types. Support variable interpolation, conditional sections, and Polish legal formatting standards.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "complex",
   "dependencies": [

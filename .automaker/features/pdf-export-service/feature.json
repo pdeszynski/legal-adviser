@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "PDF Export Service",
   "description": "Implement PDF generation service using library like Puppeteer or PDFKit. Create professional legal document templates with proper formatting and Polish legal standards.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "complex",
   "dependencies": [

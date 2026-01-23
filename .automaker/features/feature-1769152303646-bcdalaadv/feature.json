@@ -16,7 +16,7 @@
   "dependencies": [],
   "workMode": "current",
   "titleGenerating": false,
-  "status": "in_progress",
+  "status": "completed",
   "id": "feature-1769152303646-bcdalaadv",
   "descriptionHistory": [
     {
@@ -26,5 +26,5 @@
     }
   ],
   "startedAt": "2026-01-23T07:11:47.914Z",
-  "updatedAt": "2026-01-23T07:11:51.635Z"
+  "updatedAt": "2026-01-23T07:14:56.690Z"
 }

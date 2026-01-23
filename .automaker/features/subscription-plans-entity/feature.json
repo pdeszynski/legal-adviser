@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Subscription Plans Entity",
   "description": "Create SubscriptionPlan and UserSubscription entities. Define plan tiers with feature flags, quotas, and pricing.",
-  "status": "verified",
+  "status": "completed",
   "priority": 3,
   "complexity": "moderate",
   "dependencies": [],
@@ -28,5 +28,6 @@
   "updatedAt": "2026-01-22T01:30:35.062Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

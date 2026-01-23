@@ -3,7 +3,7 @@
   "category": "AI",
   "title": "RAG Retrieval Logic",
   "description": "Implement semantic search over vector store to retrieve relevant legal context. Integrate retrieval results into Q&A agent prompts for grounded responses.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "complex",
   "createdAt": "2026-01-12T10:31:20.831Z",

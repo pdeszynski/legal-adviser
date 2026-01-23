@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Document Permissions Entity",
   "description": "Create DocumentPermission entity linking users to documents with access levels. Support owner, editor, viewer, and commenter roles.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "simple",
   "dependencies": [

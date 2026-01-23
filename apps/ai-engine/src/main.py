@@ -9,17 +9,44 @@ This service provides AI-powered legal assistance including:
 Features distributed tracing with Sentry for APM.
 """
 
-import uuid
 import time
+import uuid
+from contextlib import asynccontextmanager
+from typing import Dict, Any
+
+import sentry_sdk
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-from .sentry_init import init_sentry, start_ai_span, set_transaction_name
+
+from .agents.classifier_agent import classifier_agent
+from .graphs.drafting_graph import drafting_graph
+from .graphs.qa_graph import qa_graph
+from .models.requests import (
+    GenerateDocumentRequest,
+    AskQuestionRequest,
+    SearchRulingsRequest,
+    ClassifyCaseRequest,
+    GenerateEmbeddingsRequest,
+    SemanticSearchRequest,
+    QARequest,
+)
+from .models.responses import (
+    GenerateDocumentResponse,
+    DocumentGenerationStatus,
+    AnswerResponse,
+    SearchRulingsResponse,
+    ClassificationResponse,
+    GenerateEmbeddingsResponse,
+    SemanticSearchResponse,
+    QAResponse,
+    Citation,
+    Ruling,
+    SemanticSearchResult,
+)
+from .sentry_init import init_sentry
 
 # Initialize Sentry for error tracking and APM
 init_sentry()
-
-import sentry_sdk
 
 
 @asynccontextmanager
@@ -68,8 +95,6 @@ app.add_middleware(
 )
 
 # In-memory storage for demo (will be replaced with proper state management)
-from typing import Dict, Any
-
 generation_tasks: Dict[str, Dict[str, Any]] = {}
 
 # Embedding service singleton

@@ -7,7 +7,7 @@
     "auth-provider-graphql"
   ],
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -15,5 +15,6 @@
       "timestamp": "2026-01-23T07:01:13.233Z",
       "source": "initial"
     }
-  ]
+  ],
+  "startedAt": "2026-01-23T07:01:20.922Z"
 }

@@ -1,7 +1,7 @@
 {
   "category": "Uncategorized",
   "description": "Fix billing page, when opening:\n\nRuntime Error\n\n\nNot implemented custom on data provider.\n\nsrc/app/(authenticated)/billing/page.tsx (56:65) @ BillingPage\n\n\n  54 |\n  55 |   // Fetch billing info\n> 56 |   const { query: billingQuery, result: billingData } = useCustom<BillingInfo>({\n     |                                                                 ^\n  57 |     url: '',\n  58 |     method: 'get',\n  59 |     config: {\nCall Stack\n14\n\nShow 13 ignore-listed frame(s)\nBillingPage\nsrc/app/(authenticated)/billing/page.tsx (56:65)",
-  "title": "",
+  "title": "Fix custom data provider implementation in billing page",
   "images": [],
   "imagePaths": [],
   "textFilePaths": [],
@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "dependencies": [],
   "workMode": "current",
-  "titleGenerating": "Fix billing page, when opening:\n\nRuntime Error\n\n\nNot implemented custom on data provider.\n\nsrc/app/(authenticated)/billing/page.tsx (56:65) @ BillingPage\n\n\n  54 |\n  55 |   // Fetch billing info\n> 56 |   const { query: billingQuery, result: billingData } = useCustom<BillingInfo>({\n     |                                                                 ^\n  57 |     url: '',\n  58 |     method: 'get',\n  59 |     config: {\nCall Stack\n14\n\nShow 13 ignore-listed frame(s)\nBillingPage\nsrc/app/(authenticated)/billing/page.tsx (56:65)",
+  "titleGenerating": false,
   "status": "in_progress",
   "id": "feature-1769086440292-zjy90jv2d",
   "descriptionHistory": [

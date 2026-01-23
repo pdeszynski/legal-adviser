@@ -3,9 +3,6 @@
   "description": "Address TypeScript compilation errors, missing imports, incorrect type definitions, or decorator usage issues in NestJS backend. Verify all @nestjs-query decorators are properly configured and GraphQL schema generation works. Fix any circular dependency issues between modules.",
   "id": "fix-backend-build-errors",
   "title": "Fix Backend-Specific Build Errors",
-  "dependencies": [
-    "debug-build-failure"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

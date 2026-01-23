@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "Document Generation Queue Processor",
   "description": "Implement Bull queue consumer in infrastructure layer for asynchronous document generation jobs. Create application service use case to orchestrate document generation workflow. Handle job status updates, error recovery, and AI service communication through domain events and queue system following layered architecture.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "complex",
   "dependencies": [

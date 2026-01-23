@@ -3,7 +3,7 @@
   "category": "UI",
   "title": "API Key Management Interface",
   "description": "Create settings page section for managing API keys. Support creating, revoking, and viewing key usage statistics.",
-  "status": "verified",
+  "status": "completed",
   "priority": 3,
   "complexity": "simple",
   "createdAt": "2026-01-12T10:31:20.848Z",

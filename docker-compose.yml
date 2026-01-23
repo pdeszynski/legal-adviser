@@ -1,3 +1,27 @@
+# ============================================================================
+# Docker Compose - LOCAL DEVELOPMENT ONLY
+# ============================================================================
+#
+# This configuration is for local development with hot-reload enabled.
+# Production deployments use Kubernetes manifests.
+#
+# Usage:
+#   docker-compose up --build    # Build and start all services
+#   docker-compose up -d         # Start in detached mode
+#   docker-compose logs backend  # View logs for a service
+#   docker-compose down          # Stop all services
+#   docker-compose down -v       # Stop and remove volumes
+#
+# Hot-reload:
+#   Source code changes are reflected immediately in containers without
+#   rebuilding. The following directories are mounted as volumes:
+#     - apps/backend/src  -> Backend source code
+#     - apps/web/src      -> Web frontend source code
+#     - apps/web/public   -> Web static assets
+#     - apps/ai-engine/src -> AI engine source code
+#     - packages/         -> Shared packages
+#
+# ============================================================================
 services:
   postgres:
     image: postgres:15-alpine
@@ -61,7 +85,13 @@ services:
       SENDGRID_WEBHOOK_VERIFICATION_KEY: your-webhook-verification-key-here
     ports:
       - '3001:3001'
-    # No volume mounts - use the built-in dependencies from the image
+    # Volume mounts for hot-reload during development
+    # Note: Named volumes for node_modules prevent host node_modules from overriding
+    volumes:
+      - ./apps/backend/src:/app/apps/backend/src:ro
+      - ./packages:/app/packages:ro
+      - backend_node_modules:/app/node_modules
+      - backend_apps_node_modules:/app/apps/backend/node_modules
     depends_on:
       postgres:
         condition: service_healthy
@@ -81,7 +111,11 @@ services:
       PYTHONUNBUFFERED: '1'
     ports:
       - '8000:8000'
-    # No volume mounts - use the built-in dependencies from the image
+    # Volume mounts for hot-reload during development
+    # Note: Named volume for .venv prevents host .venv from overriding
+    volumes:
+      - ./apps/ai-engine/src:/app/src:ro
+      - ai_engine_venv:/app/.venv
     restart: always
 
   web:
@@ -96,7 +130,14 @@ services:
       NODE_ENV: development
     ports:
       - '3000:3000'
-    # No volume mounts - use the built-in dependencies from the image
+    # Volume mounts for hot-reload during development
+    # Note: Named volumes for node_modules prevent host node_modules from overriding
+    volumes:
+      - ./apps/web/src:/app/apps/web/src:ro
+      - ./apps/web/public:/app/apps/web/public:ro
+      - ./packages:/app/packages:ro
+      - web_node_modules:/app/node_modules
+      - web_apps_node_modules:/app/apps/web/node_modules
     depends_on:
       backend:
         condition: service_started
@@ -105,3 +146,8 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  backend_node_modules:
+  backend_apps_node_modules:
+  ai_engine_venv:
+  web_node_modules:
+  web_apps_node_modules:

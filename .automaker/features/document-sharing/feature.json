@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "Document Sharing System",
   "description": "Implement secure document sharing with granular permissions. Generate shareable links with view-only or edit access and expiration dates.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [

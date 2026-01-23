@@ -2,6 +2,39 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769152934916-b690b0a5",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T07:22:14.916Z",
+      "featureName": "Fix missing sentry_sdk Span type import",
+      "featureId": "feature-1769152630350-2dzke22ow"
+    },
+    {
+      "id": "evt-1769152630442-ec4e8500",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-23T07:17:10.442Z",
+      "featureId": "feature-1769152630350-2dzke22ow"
+    },
+    {
+      "id": "evt-1769152604853-52e0ea71",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T07:16:44.853Z",
+      "featureName": "Fix navigation race condition null reference errors",
+      "featureId": "feature-1769151870152-0eql7obsw"
+    },
+    {
+      "id": "evt-1769152589158-2ba2f0db",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-23T07:16:29.158Z",
+      "featureId": "feature-1769152589062-a6c5pl3f4"
+    },
+    {
+      "id": "evt-1769152496719-0ad60da1",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T07:14:56.719Z",
+      "featureName": "Configure Docker Compose for local development with hot reload",
+      "featureId": "feature-1769152303646-bcdalaadv"
+    },
+    {
       "id": "evt-1769152303755-f950a007",
       "trigger": "feature_created",
       "timestamp": "2026-01-23T07:11:43.755Z",

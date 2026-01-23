@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "User Preferences Entity",
   "description": "Create UserPreferences entity for storing user settings. Include notification preferences, default locale, theme preference, and AI model selection.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "simple",
   "architecture": {

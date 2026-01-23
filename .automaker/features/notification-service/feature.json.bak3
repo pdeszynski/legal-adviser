@@ -6,9 +6,6 @@
   "status": "backlog",
   "priority": 2,
   "complexity": "moderate",
-  "dependencies": [
-    "notification-entity"
-  ],
   "architecture": {
     "boundedContext": "Notifications",
     "aggregateRoot": "Notification",
@@ -34,5 +31,6 @@
   "updatedAt": "2026-01-12T10:31:20.846Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

@@ -1,0 +1,34 @@
+{
+  "id": "legal-query-graphql",
+  "category": "API",
+  "title": "Legal Query GraphQL Resolvers",
+  "description": "Add nestjs-query decorators to LegalQuery entity for auto-generated CRUD resolvers. Implement custom mutations for submitting new queries.",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "legal-query-entity"
+  ],
+  "architecture": {
+    "boundedContext": "LegalQA",
+    "aggregateRoot": "LegalQuery",
+    "module": "apps/backend/src/modules/queries",
+    "layer": "Presentation",
+    "patterns": [
+      "GraphQL Resolver",
+      "nestjs-query CRUD",
+      "Code-First Schema"
+    ],
+    "emits": [],
+    "listensTo": [],
+    "notes": "Presentation layer for LegalQA. Uses nestjs-query auto-generated CRUD per constitution. GraphQL-only API (no REST)."
+  },
+  "createdAt": "2026-01-12T10:31:20.830Z",
+  "updatedAt": "2026-01-15T13:41:43.071Z",
+  "branchName": "automaker",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-15T13:33:31.284Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

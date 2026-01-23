@@ -3,7 +3,7 @@
   "category": "API",
   "title": "Legal Ruling GraphQL Resolvers",
   "description": "Add nestjs-query decorators to LegalRuling entity. Implement auto-generated CRUD resolvers with filtering and full-text search capabilities.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [

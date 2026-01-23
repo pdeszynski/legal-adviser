@@ -3,7 +3,7 @@
   "category": "Security",
   "title": "CSRF Protection",
   "description": "Implement CSRF token validation for state-changing GraphQL mutations. Use double-submit cookie pattern with SameSite flag.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [

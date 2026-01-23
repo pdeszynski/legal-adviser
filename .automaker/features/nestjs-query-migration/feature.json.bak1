@@ -1,0 +1,24 @@
+{
+  "id": "nestjs-query-migration",
+  "category": "Core",
+  "title": "Migrate to @ptc-org/nestjs-query",
+  "description": "Upgrade all nestjs-query packages to @ptc-org scoped versions. Replace manual GraphQL resolvers with auto-generated CRUD resolvers using QueryService pattern. Refactor to align with DDD principles by separating infrastructure concerns from domain logic in layered architecture.",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2026-01-12T10:31:20.823Z",
+  "updatedAt": "2026-01-12T16:44:00.075Z",
+  "branchName": "automaker",
+  "descriptionHistory": [
+    {
+      "description": "Upgrade all nestjs-query packages to @ptc-org scoped versions. Replace manual GraphQL resolvers with auto-generated CRUD resolvers using QueryService pattern. Refactor to align with DDD principles by separating infrastructure concerns from domain logic in layered architecture.",
+      "timestamp": "2026-01-13T11:07:03.823Z",
+      "source": "edit"
+    }
+  ],
+  "startedAt": "2026-01-12T16:26:14.701Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

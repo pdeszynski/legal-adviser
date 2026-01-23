@@ -3,7 +3,7 @@
   "category": "UI",
   "title": "Admin User Management",
   "description": "Create admin interface for managing users. Support viewing, editing, suspending accounts, and resetting passwords.",
-  "status": "verified",
+  "status": "completed",
   "priority": 3,
   "complexity": "simple",
   "createdAt": "2026-01-12T10:31:20.853Z",

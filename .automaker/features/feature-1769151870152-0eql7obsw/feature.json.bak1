@@ -16,7 +16,7 @@
   "dependencies": [],
   "workMode": "current",
   "titleGenerating": false,
-  "status": "in_progress",
+  "status": "verified",
   "id": "feature-1769151870152-0eql7obsw",
   "descriptionHistory": [
     {
@@ -25,5 +25,6 @@
       "source": "initial"
     }
   ],
-  "startedAt": "2026-01-23T07:04:36.685Z"
+  "startedAt": "2026-01-23T07:04:36.685Z",
+  "updatedAt": "2026-01-23T07:16:44.837Z"
 }

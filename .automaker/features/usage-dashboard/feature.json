@@ -3,7 +3,7 @@
   "category": "UI",
   "title": "Usage Dashboard",
   "description": "Create page showing user's AI usage statistics. Display charts for daily usage, remaining quota, and cost breakdown.",
-  "status": "verified",
+  "status": "completed",
   "priority": 3,
   "complexity": "moderate",
   "createdAt": "2026-01-12T10:31:20.850Z",

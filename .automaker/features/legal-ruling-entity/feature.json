@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Legal Ruling Entity",
   "description": "Create LegalRuling entity for storing case law and court decisions. Include fields for signature, date, court name, summary, and full text.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [

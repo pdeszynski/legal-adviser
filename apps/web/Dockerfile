@@ -10,18 +10,24 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY turbo.json ./
 
-# Copy workspace directories (required for pnpm workspace resolution)
-# The .dockerignore excludes node_modules and build artifacts
+# Copy packages (required for pnpm workspace resolution)
+# Copy packages before app source code for better layer caching
+# The packages directory changes less frequently than app code
 COPY packages ./packages
-COPY apps/web ./apps/web
-COPY apps/ai-engine ./apps/ai-engine
-COPY apps/backend ./apps/backend
+
+# Copy only app package.json files first (not source code)
+# This allows dependency installation to be cached even when source code changes
+COPY apps/web/package.json ./apps/web/
 
 # Install all dependencies (use no-frozen-lockfile for local dev)
+# This layer is cached if manifests and packages/ are unchanged
 RUN pnpm install
 
 # Build workspace packages (dependencies for apps)
 RUN pnpm run build --filter='./packages/*'
+
+# Copy web source code AFTER pnpm install (for better caching)
+COPY apps/web ./apps/web
 
 # Build web (skip ESLint for Docker builds)
 RUN export NEXT_ESLINT_IGNORE_DURING_BUILDS=true && pnpm run build --filter=@legal/web
@@ -29,9 +35,9 @@ RUN export NEXT_ESLINT_IGNORE_DURING_BUILDS=true && pnpm run build --filter=@leg
 EXPOSE 3000
 
 # For development, run directly with next from web directory
-# This avoids turbo which is in root node_modules
+# Use pnpm next to ensure it uses the container's node_modules
 WORKDIR /app/apps/web
-CMD ["npx", "next", "dev"]
+CMD ["pnpm", "next", "dev"]
 
 # Build stage - optimized for production builds
 FROM node:20-alpine AS builder
@@ -45,18 +51,23 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY turbo.json ./
 
-# Copy workspace directories (required for pnpm workspace resolution)
-# The .dockerignore excludes node_modules and build artifacts
+# Copy packages (required for pnpm workspace resolution)
+# Copy packages before app source code for better layer caching
+# The packages directory changes less frequently than app code
 COPY packages ./packages
-COPY apps/web ./apps/web
-COPY apps/ai-engine ./apps/ai-engine
-COPY apps/backend ./apps/backend
+
+# Copy only app package.json files first (not source code)
+# This allows dependency installation to be cached even when source code changes
+COPY apps/web/package.json ./apps/web/
 
 # Install all dependencies (cached if manifests unchanged)
 RUN pnpm install
 
 # Build workspace packages (dependencies for apps)
 RUN pnpm run build --filter='./packages/*'
+
+# Copy web source code AFTER pnpm install (for better caching)
+COPY apps/web ./apps/web
 
 # Build web (skip ESLint for Docker builds)
 RUN export NEXT_ESLINT_IGNORE_DURING_BUILDS=true && pnpm run build --filter=@legal/web
@@ -72,14 +83,13 @@ RUN npm install -g pnpm
 # Copy root manifests first for better layer caching
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy workspace directories (needed for production dependencies and node_modules resolution)
+# Copy workspace files needed for production dependency resolution
+# Copy packages before app code for better cache invalidation
 COPY packages ./packages
-COPY apps/web ./apps/web
-COPY apps/ai-engine ./apps/ai-engine
-COPY apps/backend ./apps/backend
+COPY apps/web/package.json ./apps/web/
 
 # Install production dependencies only
-# This layer is cached if manifests unchanged
+# This layer is cached if manifests and packages/ are unchanged
 RUN pnpm install --prod
 
 # Copy built artifacts from builder stage

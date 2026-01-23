@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769152604853-52e0ea71",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T07:16:44.853Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769151870152-0eql7obsw",
+  "featureName": "Fix navigation race condition null reference errors",
+  "error": "Feature completed in 722s - auto-verified",
+  "passes": true
+}

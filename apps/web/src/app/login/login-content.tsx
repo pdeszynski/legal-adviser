@@ -13,7 +13,7 @@ import {
   Label,
   Button,
 } from '@legal/ui';
-import { Scale } from 'lucide-react';
+import { Scale, AlertCircle, WifiOff, Server } from 'lucide-react';
 
 export const LoginContent = () => {
   const { mutate: login, isPending: isLoading, error } = useLogin();
@@ -81,10 +81,27 @@ export const LoginContent = () => {
     login({ email, password });
   };
 
-  // Priority: Validation Error > Login Hook Error > URL/Initial Error
-  const authError = error ? 'Invalid email or password' : null;
-  const errorMessage =
-    validationError || authError || (initialError ? 'Invalid email or password.' : null);
+  // Determine error type and message
+  const getErrorIcon = () => {
+    if (validationError) return <AlertCircle className="h-4 w-4" />;
+    if (error?.name === 'NETWORK_ERROR' || error?.name === 'TIMEOUT_ERROR') {
+      return <WifiOff className="h-4 w-4" />;
+    }
+    if (error?.name === 'SERVER_ERROR') {
+      return <Server className="h-4 w-4" />;
+    }
+    return <AlertCircle className="h-4 w-4" />;
+  };
+
+  // Get display message with priority: Validation Error > Login Hook Error > URL/Initial Error
+  const getDisplayMessage = (): string | null => {
+    if (validationError) return validationError;
+    if (error?.message) return error.message;
+    if (initialError) return 'Invalid email or password.';
+    return null;
+  };
+
+  const displayMessage = getDisplayMessage();
 
   return (
     <div className="flex min-h-[calc(100vh-200px)] w-full items-center justify-center p-4">
@@ -149,9 +166,12 @@ export const LoginContent = () => {
                 className="bg-background/50 transition-colors focus:bg-background disabled:opacity-50"
               />
             </div>
-            {errorMessage && (
-              <div className="rounded-md bg-destructive/15 p-3 text-sm font-medium text-destructive animate-in fade-in slide-in-from-top-1 text-center">
-                {errorMessage}
+            {displayMessage && (
+              <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive animate-in fade-in slide-in-from-top-1">
+                <div className="flex items-start gap-2">
+                  {getErrorIcon()}
+                  <span className="flex-1">{displayMessage}</span>
+                </div>
               </div>
             )}
           </CardContent>

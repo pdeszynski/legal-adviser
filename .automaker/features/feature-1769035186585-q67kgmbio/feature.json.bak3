@@ -10,13 +10,13 @@
   "thinkingLevel": "none",
   "reasoningEffort": "none",
   "branchName": "002-legal-ai-core",
-  "priority": 2,
+  "priority": 1,
   "planningMode": "skip",
   "requirePlanApproval": false,
   "dependencies": [],
   "workMode": "current",
   "titleGenerating": false,
-  "status": "verified",
+  "status": "in_progress",
   "id": "feature-1769035186585-q67kgmbio",
   "descriptionHistory": [
     {

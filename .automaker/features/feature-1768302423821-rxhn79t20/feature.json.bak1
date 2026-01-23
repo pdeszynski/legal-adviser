@@ -1,0 +1,24 @@
+{
+  "category": "refactor",
+  "description": "Create repository interfaces in domain layer for each aggregate root (LegalDocument, User, LegalAnalysis, etc.). Implement repository pattern to abstract data persistence from domain logic.",
+  "title": "Domain Repository Interfaces",
+  "dependencies": [
+    "ddd-domain-model-design"
+  ],
+  "priority": 1,
+  "status": "verified",
+  "id": "feature-1768302423821-rxhn79t20",
+  "descriptionHistory": [
+    {
+      "description": "Create repository interfaces in domain layer for each aggregate root (LegalDocument, User, LegalAnalysis, etc.). Implement repository pattern to abstract data persistence from domain logic.",
+      "timestamp": "2026-01-13T11:07:03.821Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "automaker",
+  "startedAt": "2026-01-15T07:20:53.028Z",
+  "updatedAt": "2026-01-15T07:25:27.806Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

@@ -3,7 +3,7 @@
   "category": "Security",
   "title": "Rate Limiting Middleware",
   "description": "Implement rate limiting on GraphQL endpoints using @nestjs/throttler. Protect against abuse with per-user and per-IP limits.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [

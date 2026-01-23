@@ -4,7 +4,7 @@
   "id": "commit-msg-conventional-commits",
   "title": "Commit Message Conventional Commits Validation",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-21T22:55:46.462Z"
+  "updatedAt": "2026-01-21T22:56:09.476Z"
 }

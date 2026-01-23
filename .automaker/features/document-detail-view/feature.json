@@ -3,7 +3,7 @@
   "category": "UI",
   "title": "Document Detail View",
   "description": "Create document detail page showing full document content, metadata, generation history, and action buttons. Support editing for DRAFT status documents.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [

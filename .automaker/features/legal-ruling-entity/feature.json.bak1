@@ -1,0 +1,35 @@
+{
+  "id": "legal-ruling-entity",
+  "category": "Database",
+  "title": "Legal Ruling Entity",
+  "description": "Create LegalRuling entity for storing case law and court decisions. Include fields for signature, date, court name, summary, and full text.",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "nestjs-query-migration"
+  ],
+  "architecture": {
+    "boundedContext": "CaseLaw",
+    "aggregateRoot": "LegalRuling",
+    "module": "apps/backend/src/modules/rulings",
+    "layer": "Domain",
+    "patterns": [
+      "DDD Entity",
+      "Read Model"
+    ],
+    "emits": [
+      "RULING.INDEXED"
+    ],
+    "listensTo": [],
+    "notes": "Aggregate root for case law search. Primarily a read model populated by external integrations (SAOS, ISAP)."
+  },
+  "createdAt": "2026-01-12T10:31:20.833Z",
+  "updatedAt": "2026-01-16T06:47:07.034Z",
+  "branchName": "automaker",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-16T06:22:08.571Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

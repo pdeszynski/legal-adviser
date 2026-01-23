@@ -3,18 +3,19 @@
   "category": "AI",
   "title": "Q&A LangGraph Workflow",
   "description": "Create LangGraph StateGraph for Q&A flow with nodes for query analysis, context retrieval, answer generation, and citation formatting. Please take some ideas from a langchain graph in Flowise.ai",
-  "status": "in_progress",
+  "status": "completed",
   "priority": 1,
   "complexity": "complex",
   "dependencies": [
     "rag-retrieval-logic"
   ],
   "createdAt": "2026-01-12T10:31:20.831Z",
-  "updatedAt": "2026-01-21T08:16:52.107Z",
+  "updatedAt": "2026-01-21T08:30:00.000Z",
   "model": "claude-opus",
   "thinkingLevel": "high",
   "reasoningEffort": "none",
   "startedAt": "2026-01-21T08:18:54.174Z",
+  "completedAt": "2026-01-21T08:30:00.000Z",
   "descriptionHistory": [
     {
       "description": "Create LangGraph StateGraph for Q&A flow with nodes for query analysis, context retrieval, answer generation, and citation formatting. Please take some ideas from a langchain graph in Flowise.ai",

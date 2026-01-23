@@ -1,0 +1,28 @@
+{
+  "category": "Uncategorized",
+  "description": "Optimize docker build caching. Make sure that not ALL cod is copied BEFORE pnpm install, or it invalidates that step  completely. Make sure that we COPY only the necessary files, for example packages before pnpm install. For backend we do not need backend to be available beffore pnpm install. we also don't neeed at all ai-engine or web for that neither. Maybe even not for build (needs verification)",
+  "title": "",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": "Optimize docker build caching. Make sure that not ALL cod is copied BEFORE pnpm install, or it invalidates that step  completely. Make sure that we COPY only the necessary files, for example packages before pnpm install. For backend we do not need backend to be available beffore pnpm install. we also don't neeed at all ai-engine or web for that neither. Maybe even not for build (needs verification)",
+  "status": "backlog",
+  "id": "feature-1769152589062-a6c5pl3f4",
+  "descriptionHistory": [
+    {
+      "description": "Optimize docker build caching. Make sure that not ALL cod is copied BEFORE pnpm install, or it invalidates that step  completely. Make sure that we COPY only the necessary files, for example packages before pnpm install. For backend we do not need backend to be available beffore pnpm install. we also don't neeed at all ai-engine or web for that neither. Maybe even not for build (needs verification)",
+      "timestamp": "2026-01-23T07:16:29.157Z",
+      "source": "initial"
+    }
+  ]
+}

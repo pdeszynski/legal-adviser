@@ -6,9 +6,6 @@
   "status": "backlog",
   "priority": 2,
   "complexity": "simple",
-  "dependencies": [
-    "document-templates"
-  ],
   "architecture": {
     "boundedContext": "Documents",
     "aggregateRoot": "DocumentTemplate",
@@ -26,5 +23,6 @@
   "updatedAt": "2026-01-12T10:31:20.841Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

@@ -6,9 +6,6 @@
   "status": "backlog",
   "priority": 1,
   "complexity": "complex",
-  "dependencies": [
-    "qa-agent-implementation"
-  ],
   "architecture": {
     "boundedContext": "Analysis",
     "aggregateRoot": "LegalAnalysis",
@@ -27,5 +24,6 @@
   "updatedAt": "2026-01-12T10:31:20.835Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

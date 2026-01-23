@@ -3,25 +3,31 @@ FROM node:20-alpine AS development
 
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install pnpm and NestJS CLI globally
+RUN npm install -g pnpm @nestjs/cli
 
 # Copy root package manifests first for better layer caching
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY turbo.json ./
 
-# Copy workspace directories (required for pnpm workspace resolution)
-# The .dockerignore excludes node_modules and build artifacts
+# Copy packages (required for pnpm workspace resolution)
+# Copy packages before app source code for better layer caching
+# The packages directory changes less frequently than app code
 COPY packages ./packages
-COPY apps/web ./apps/web
-COPY apps/ai-engine ./apps/ai-engine
-COPY apps/backend ./apps/backend
+
+# Copy only app package.json files first (not source code)
+# This allows dependency installation to be cached even when source code changes
+COPY apps/backend/package.json ./apps/backend/
 
 # Install all dependencies (use no-frozen-lockfile for local dev)
+# This layer is cached if manifests and packages/ are unchanged
 RUN pnpm install
 
 # Build workspace packages (dependencies for apps)
 RUN pnpm run build --filter='./packages/*'
+
+# Copy backend source code AFTER pnpm install (for better caching)
+COPY apps/backend ./apps/backend
 
 # Build backend
 RUN pnpm run build --filter=@legal/backend
@@ -29,9 +35,9 @@ RUN pnpm run build --filter=@legal/backend
 EXPOSE 3001
 
 # For development, run directly with nest CLI from backend directory
-# This avoids turbo which is in root node_modules (overridden by volume mount)
+# NestJS CLI is installed globally, so it works even with volume mounts
 WORKDIR /app/apps/backend
-CMD ["npx", "@nestjs/cli", "start", "--watch"]
+CMD ["nest", "start", "--watch"]
 
 # Build stage - optimized for production builds
 FROM node:20-alpine AS builder
@@ -45,18 +51,23 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY turbo.json ./
 
-# Copy workspace directories (required for pnpm workspace resolution)
-# The .dockerignore excludes node_modules and build artifacts
+# Copy packages (required for pnpm workspace resolution)
+# Copy packages before app source code for better layer caching
+# The packages directory changes less frequently than app code
 COPY packages ./packages
-COPY apps/web ./apps/web
-COPY apps/ai-engine ./apps/ai-engine
-COPY apps/backend ./apps/backend
+
+# Copy only app package.json files first (not source code)
+# This allows dependency installation to be cached even when source code changes
+COPY apps/backend/package.json ./apps/backend/
 
 # Install all dependencies (cached if manifests unchanged)
 RUN pnpm install
 
 # Build workspace packages (dependencies for apps)
 RUN pnpm run build --filter='./packages/*'
+
+# Copy backend source code AFTER pnpm install (for better caching)
+COPY apps/backend ./apps/backend
 
 # Build backend
 RUN pnpm run build --filter=@legal/backend
@@ -72,14 +83,13 @@ RUN npm install -g pnpm
 # Copy root manifests first for better layer caching
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy workspace directories (needed for production dependencies and node_modules resolution)
+# Copy workspace files needed for production dependency resolution
+# Copy packages before app code for better cache invalidation
 COPY packages ./packages
-COPY apps/web ./apps/web
-COPY apps/ai-engine ./apps/ai-engine
-COPY apps/backend ./apps/backend
+COPY apps/backend/package.json ./apps/backend/
 
 # Install production dependencies only
-# This layer is cached if manifests unchanged
+# This layer is cached if manifests and packages/ are unchanged
 RUN pnpm install --prod
 
 # Copy built artifacts from builder stage

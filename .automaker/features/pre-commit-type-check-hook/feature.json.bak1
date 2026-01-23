@@ -4,7 +4,7 @@
   "id": "pre-commit-type-check-hook",
   "title": "Pre-commit Type Check Hook",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-21T22:58:13.251Z"
+  "updatedAt": "2026-01-21T22:59:20.305Z"
 }

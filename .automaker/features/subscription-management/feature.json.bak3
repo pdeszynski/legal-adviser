@@ -6,9 +6,6 @@
   "status": "backlog",
   "priority": 3,
   "complexity": "complex",
-  "dependencies": [
-    "subscription-plans-entity"
-  ],
   "architecture": {
     "boundedContext": "Billing",
     "aggregateRoot": "Subscription",
@@ -30,5 +27,6 @@
   "updatedAt": "2026-01-12T10:31:20.851Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

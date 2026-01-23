@@ -3,7 +3,7 @@
   "category": "Authentication",
   "title": "Frontend GraphQL Auth Provider",
   "description": "Replace mock auth provider with real GraphQL-based authentication. Implement login, logout, register, and session management using GraphQL mutations and queries.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "dependencies": [

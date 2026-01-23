@@ -4,7 +4,7 @@
   "id": "pre-commit-lint-hook",
   "title": "Pre-commit Lint Hook",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-21T22:58:06.096Z"
+  "updatedAt": "2026-01-21T23:03:02.102Z"
 }

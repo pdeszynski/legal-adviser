@@ -6,9 +6,6 @@
   "status": "backlog",
   "priority": 1,
   "complexity": "moderate",
-  "dependencies": [
-    "qa-backend-integration"
-  ],
   "architecture": {
     "boundedContext": "LegalQA",
     "aggregateRoot": "LegalQuery",
@@ -27,5 +24,6 @@
   "updatedAt": "2026-01-12T10:31:20.832Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

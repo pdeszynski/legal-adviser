@@ -3,7 +3,7 @@
   "description": "Synchronize mock credentials between frontend and backend. Either update auth.service.ts to accept admin@refine.dev/123456 or update frontend login-content.tsx to use admin/password. Ensure consistency for demo/development authentication.",
   "title": "Update Mock Credentials Configuration",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "id": "feature-1768815719993-paffjc6zr",
   "descriptionHistory": [
     {

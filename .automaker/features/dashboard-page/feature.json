@@ -3,7 +3,7 @@
   "category": "UI",
   "title": "User Dashboard",
   "description": "Create dashboard page with overview widgets. Show recent documents, pending analyses, statistics, and quick action buttons.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "moderate",
   "dependencies": [

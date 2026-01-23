@@ -1,0 +1,40 @@
+{
+  "id": "audit-logging-interceptor",
+  "category": "Core",
+  "title": "Audit Logging Interceptor",
+  "description": "Create NestJS interceptor in presentation layer to capture GraphQL mutations. Implement application service for audit log creation following use case pattern. Publish domain events for audit tracking and store in AuditLog entity through repository, maintaining layered architecture separation.",
+  "status": "verified",
+  "priority": 2,
+  "complexity": "moderate",
+  "dependencies": [
+    "audit-log-entity"
+  ],
+  "architecture": {
+    "boundedContext": "Audit",
+    "aggregateRoot": "AuditLog",
+    "module": "apps/backend/src/modules/audit-log",
+    "layer": "Infrastructure",
+    "patterns": [
+      "NestJS Interceptor",
+      "Cross-cutting Concern",
+      "AOP"
+    ],
+    "emits": [],
+    "listensTo": [],
+    "notes": "Infrastructure layer interceptor for Audit module. Applied globally to capture all GraphQL mutations. Cross-cutting concern."
+  },
+  "createdAt": "2026-01-12T10:31:20.840Z",
+  "updatedAt": "2026-01-20T12:07:05.341Z",
+  "descriptionHistory": [
+    {
+      "description": "Create NestJS interceptor in presentation layer to capture GraphQL mutations. Implement application service for audit log creation following use case pattern. Publish domain events for audit tracking and store in AuditLog entity through repository, maintaining layered architecture separation.",
+      "timestamp": "2026-01-13T11:07:03.825Z",
+      "source": "edit"
+    }
+  ],
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "startedAt": "2026-01-20T11:59:37.171Z"
+}

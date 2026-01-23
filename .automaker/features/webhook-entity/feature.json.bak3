@@ -6,9 +6,6 @@
   "status": "backlog",
   "priority": 3,
   "complexity": "simple",
-  "dependencies": [
-    "webhook-system"
-  ],
   "architecture": {
     "boundedContext": "Webhooks",
     "aggregateRoot": "Webhook",
@@ -34,5 +31,6 @@
   "updatedAt": "2026-01-12T10:31:20.847Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

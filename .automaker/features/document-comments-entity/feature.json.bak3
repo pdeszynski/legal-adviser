@@ -6,9 +6,6 @@
   "status": "backlog",
   "priority": 3,
   "complexity": "simple",
-  "dependencies": [
-    "document-collaboration"
-  ],
   "architecture": {
     "boundedContext": "Documents",
     "aggregateRoot": "LegalDocument",
@@ -28,5 +25,6 @@
   "updatedAt": "2026-01-12T10:31:20.843Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

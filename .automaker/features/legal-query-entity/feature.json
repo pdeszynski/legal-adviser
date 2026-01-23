@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Legal Query Entity",
   "description": "Create LegalQuery entity for storing Q&A conversations. Include query text, AI response, citations, user session linkage, and timestamp fields.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [

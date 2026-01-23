@@ -4,7 +4,7 @@
   "id": "pre-commit-format-check",
   "title": "Pre-commit Format Check",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

@@ -6,12 +6,10 @@
   "status": "backlog",
   "priority": 3,
   "complexity": "moderate",
-  "dependencies": [
-    "api-keys-entity"
-  ],
   "createdAt": "2026-01-12T10:31:20.848Z",
   "updatedAt": "2026-01-12T10:31:20.848Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

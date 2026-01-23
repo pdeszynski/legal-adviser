@@ -3,7 +3,7 @@
   "category": "Integration",
   "title": "Error Tracking Integration",
   "description": "Integrate Sentry or similar error tracking service. Capture exceptions from frontend, backend, and AI engine with context.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "simple",
   "dependencies": [],

@@ -1,0 +1,20 @@
+{
+  "id": "document-list-view",
+  "category": "UI",
+  "title": "Document List View with Refine",
+  "description": "Implement document listing page using Refine's useTable hook with GraphQL data provider. Include filtering, sorting, pagination, and status badges.",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "simple",
+  "dependencies": [
+    "legal-document-nestjs-query"
+  ],
+  "createdAt": "2026-01-12T10:31:20.827Z",
+  "updatedAt": "2026-01-14T07:06:15.093Z",
+  "branchName": "automaker",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-14T06:57:15.946Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

@@ -3,7 +3,7 @@
   "category": "UI",
   "title": "Document Edit Form",
   "description": "Implement form for editing existing documents with validation. Support updating title, type, metadata fields, and content for documents in DRAFT status.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "simple",
   "dependencies": [

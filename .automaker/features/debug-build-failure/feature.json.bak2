@@ -5,7 +5,7 @@
   "title": "Debug Build Process Failure",
   "dependencies": [],
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,6 @@
       "timestamp": "2026-01-22T05:27:29.659Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-22T05:27:31.740Z"
 }

@@ -11,9 +11,11 @@ try:
     import sentry_sdk
     from sentry_sdk.integrations.fastapi import FastApiIntegration
     from sentry_sdk.integrations.starlette import StarletteIntegration
+    from sentry_sdk.tracing import Span
     SENTRY_AVAILABLE = True
 except ImportError:
     SENTRY_AVAILABLE = False
+    Span = None  # type: ignore[misc,assignment]
 
 
 def init_sentry() -> None:
@@ -192,7 +194,7 @@ def set_context(name: str, data: dict) -> None:
     sentry_sdk.set_context(name, data)
 
 
-def start_ai_span(operation: str, **kwargs) -> Optional[sentry_sdk.Span]:
+def start_ai_span(operation: str, **kwargs) -> Optional[Span]:
     """Start a custom span for AI operations tracking.
 
     Use this to track specific AI operations like OpenAI API calls,
@@ -225,7 +227,7 @@ def start_ai_span(operation: str, **kwargs) -> Optional[sentry_sdk.Span]:
     return span
 
 
-def start_db_span(operation: str, table: Optional[str] = None, **kwargs) -> Optional[sentry_sdk.Span]:
+def start_db_span(operation: str, table: Optional[str] = None, **kwargs) -> Optional[Span]:
     """Start a custom span for database operations tracking.
 
     Args:
@@ -259,7 +261,7 @@ def start_db_span(operation: str, table: Optional[str] = None, **kwargs) -> Opti
     return span
 
 
-def start_http_span(method: str, url: str, **kwargs) -> Optional[sentry_sdk.Span]:
+def start_http_span(method: str, url: str, **kwargs) -> Optional[Span]:
     """Start a custom span for HTTP client requests.
 
     Args:

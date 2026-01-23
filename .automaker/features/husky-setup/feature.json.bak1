@@ -5,7 +5,7 @@
   "title": "Configure Husky for Git Hooks",
   "dependencies": [],
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -15,5 +15,5 @@
     }
   ],
   "startedAt": "2026-01-21T22:28:19.360Z",
-  "updatedAt": "2026-01-21T22:28:19.621Z"
+  "updatedAt": "2026-01-21T22:31:48.675Z"
 }

@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Document Comments Entity",
   "description": "Create DocumentComment entity for inline document feedback. Store comment text, position/anchor, author, timestamp, and resolution status.",
-  "status": "verified",
+  "status": "completed",
   "priority": 3,
   "complexity": "simple",
   "architecture": {

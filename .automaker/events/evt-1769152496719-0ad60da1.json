@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769152496719-0ad60da1",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T07:14:56.719Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769152303646-bcdalaadv",
+  "featureName": "Configure Docker Compose for local development with hot reload",
+  "error": "Feature completed in 185s - auto-verified",
+  "passes": true
+}

@@ -3,7 +3,7 @@
   "category": "AI",
   "title": "Legal Grounds Classifier Agent",
   "description": "Create PydanticAI agent to analyze case descriptions and identify applicable legal grounds. Return structured classification with confidence scores.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "complex",
   "architecture": {

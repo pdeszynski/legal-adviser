@@ -3,7 +3,7 @@
   "category": "AI",
   "title": "Q&A LangGraph Workflow",
   "description": "Create LangGraph StateGraph for Q&A flow with nodes for query analysis, context retrieval, answer generation, and citation formatting. Please take some ideas from a langchain graph in Flowise.ai",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "complex",
   "dependencies": [

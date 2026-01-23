@@ -1,0 +1,38 @@
+{
+  "id": "pdf-export-service",
+  "category": "Core",
+  "title": "PDF Export Service",
+  "description": "Implement PDF generation service using library like Puppeteer or PDFKit. Create professional legal document templates with proper formatting and Polish legal standards.",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "complex",
+  "dependencies": [
+    "legal-document-nestjs-query"
+  ],
+  "architecture": {
+    "boundedContext": "Documents",
+    "aggregateRoot": "LegalDocument",
+    "module": "apps/backend/src/modules/documents",
+    "layer": "Application",
+    "patterns": [
+      "Application Service",
+      "Infrastructure Integration",
+      "Queue Processor"
+    ],
+    "emits": [
+      "DOCUMENT.EXPORTED"
+    ],
+    "listensTo": [
+      "DOCUMENT.GENERATION_COMPLETED"
+    ],
+    "notes": "Application service for PDF generation. Can be triggered by event or direct call. Uses Bull queue for async processing per constitution."
+  },
+  "createdAt": "2026-01-12T10:31:20.828Z",
+  "updatedAt": "2026-01-16T07:08:02.620Z",
+  "branchName": "automaker",
+  "descriptionHistory": [],
+  "startedAt": "2026-01-16T06:56:46.646Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

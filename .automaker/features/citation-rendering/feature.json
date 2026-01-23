@@ -3,7 +3,7 @@
   "category": "UI",
   "title": "Citation Rendering Component",
   "description": "Create component to display legal citations with proper formatting. Support links to source documents and hover previews of cited text.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "moderate",
   "createdAt": "2026-01-12T10:31:20.832Z",

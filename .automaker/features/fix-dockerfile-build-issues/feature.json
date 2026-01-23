@@ -4,7 +4,7 @@
   "id": "fix-dockerfile-build-issues",
   "title": "Fix Dockerfile Build Issues",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

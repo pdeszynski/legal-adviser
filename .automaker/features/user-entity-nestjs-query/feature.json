@@ -3,7 +3,7 @@
   "category": "API",
   "title": "Refactor User entity to nestjs-query",
   "description": "Add nestjs-query decorators to User infrastructure entity for auto-generated resolvers. Implement User repository interface in domain layer and concrete implementation in infrastructure layer. Implement FilterableField for searchable properties and proper relation handling with UserSession following DDD patterns.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "simple",
   "dependencies": [

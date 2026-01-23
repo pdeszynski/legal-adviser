@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "Ruling Indexing Background Job",
   "description": "Create Bull queue processor for periodically fetching and indexing new rulings from external sources. Schedule daily sync jobs.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "moderate",
   "createdAt": "2026-01-12T10:31:20.835Z",

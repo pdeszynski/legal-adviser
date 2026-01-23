@@ -1,7 +1,7 @@
 {
   "category": "Uncategorized",
   "description": "Automatically redirect users to dashbord from login page if they are logged in",
-  "title": "",
+  "title": "Redirect Logged-In Users to Dashboard Automatically",
   "images": [],
   "imagePaths": [],
   "textFilePaths": [],
@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "dependencies": [],
   "workMode": "current",
-  "titleGenerating": "Automatically redirect users to dashbord from login page if they are logged in",
+  "titleGenerating": false,
   "status": "in_progress",
   "id": "feature-1769086371790-bu1y4r960",
   "descriptionHistory": [

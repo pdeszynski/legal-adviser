@@ -6,12 +6,10 @@
   "status": "backlog",
   "priority": 2,
   "complexity": "moderate",
-  "dependencies": [
-    "template-entity"
-  ],
   "createdAt": "2026-01-12T10:31:20.842Z",
   "updatedAt": "2026-01-12T10:31:20.842Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

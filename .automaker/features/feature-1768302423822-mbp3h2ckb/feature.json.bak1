@@ -1,0 +1,25 @@
+{
+  "category": "refactor",
+  "description": "Create application service layer implementing use cases as orchestrators. Services coordinate between domain models, repositories, and external services without containing business logic.",
+  "title": "Application Service Layer",
+  "dependencies": [
+    "layered-architecture-implementation",
+    "domain-repository-interfaces"
+  ],
+  "priority": 1,
+  "status": "verified",
+  "id": "feature-1768302423822-mbp3h2ckb",
+  "descriptionHistory": [
+    {
+      "description": "Create application service layer implementing use cases as orchestrators. Services coordinate between domain models, repositories, and external services without containing business logic.",
+      "timestamp": "2026-01-13T11:07:03.822Z",
+      "source": "initial"
+    }
+  ],
+  "branchName": "automaker",
+  "startedAt": "2026-01-15T13:17:22.101Z",
+  "updatedAt": "2026-01-15T13:26:30.087Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

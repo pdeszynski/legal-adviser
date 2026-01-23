@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "Document Completion Email Notification",
   "description": "Send email notification when document generation completes successfully. Include document title, download link, and next steps.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "simple",
   "dependencies": [

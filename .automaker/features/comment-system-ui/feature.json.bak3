@@ -6,12 +6,10 @@
   "status": "backlog",
   "priority": 3,
   "complexity": "moderate",
-  "dependencies": [
-    "document-comments-entity"
-  ],
   "createdAt": "2026-01-12T10:31:20.843Z",
   "updatedAt": "2026-01-12T10:31:20.843Z",
   "model": "sonnet",
   "thinkingLevel": "none",
-  "reasoningEffort": "none"
+  "reasoningEffort": "none",
+  "descriptionHistory": []
 }

@@ -3,7 +3,7 @@
   "category": "Database",
   "title": "Webhook Configuration Entity",
   "description": "Create WebhookConfig entity storing endpoint URLs, event subscriptions, authentication headers, and status.",
-  "status": "backlog",
+  "status": "in_progress",
   "priority": 3,
   "complexity": "simple",
   "architecture": {
@@ -28,7 +28,7 @@
     "notes": "External integration aggregate. Subscribes to domain events and delivers to external URLs. Isolated module."
   },
   "createdAt": "2026-01-12T10:31:20.847Z",
-  "updatedAt": "2026-01-12T10:31:20.847Z",
+  "updatedAt": "2026-01-22T01:45:51.803Z",
   "model": "sonnet",
   "thinkingLevel": "none",
   "reasoningEffort": "none",
