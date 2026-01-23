@@ -1,0 +1,37 @@
+{
+  "category": "Uncategorized",
+  "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix custom page mutations configuration error on save\n\n**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens\n\n---\n\n## Task Description\n\nE2E Testing for Settings Page - Fix Failing Tests\n\nCreate and fix end-to-end tests specifically for the /settings page that are currently failing or non-existent. Screenshot shows the error\n\nRequirements:\n- Focus exclusively on the /settings page - do not modify or test other pages\n- Identify why existing tests are failing or what test coverage is missing\n- Write comprehensive e2e tests covering all functionality on the settings page including:\n  - All form inputs and controls\n  - Save/update operations\n  - Validation rules and error states\n  - Any toggles, dropdowns, or interactive elements\n  - Page load and rendering\n- Run the tests to verify they pass consistently\n- Fix any underlying issues in the /settings page that cause test failures\n- Ensure tests are stable and not flaky\n- Document what was broken and how it was fixed\n\nSuccess Criteria:\n- All e2e tests for /settings page pass reliably\n- Test coverage includes all major user interactions on the page\n- No regressions introduced to the /settings page functionality",
+  "title": "Fix Settings Page E2E Test Failures",
+  "images": [],
+  "imagePaths": [
+    {
+      "id": "img-1769194122545-wx19227nr",
+      "path": "/Users/piteer/workspace/radca-prawny/legal/.automaker/features/feature-1769194138444-ii2rehn4y/images/Zrzut_ekranu_2026-01-23_o_19_48_32-1769194122541.png",
+      "filename": "Zrzut_ekranu_2026-01-23_o_19_48_32.png",
+      "mimeType": "image/png"
+    }
+  ],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [
+    "feature-1769191072561-dens23yck"
+  ],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "backlog",
+  "id": "feature-1769194138444-ii2rehn4y",
+  "descriptionHistory": [
+    {
+      "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix custom page mutations configuration error on save\n\n**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens\n\n---\n\n## Task Description\n\nE2E Testing for Settings Page - Fix Failing Tests\n\nCreate and fix end-to-end tests specifically for the /settings page that are currently failing or non-existent. Screenshot shows the error\n\nRequirements:\n- Focus exclusively on the /settings page - do not modify or test other pages\n- Identify why existing tests are failing or what test coverage is missing\n- Write comprehensive e2e tests covering all functionality on the settings page including:\n  - All form inputs and controls\n  - Save/update operations\n  - Validation rules and error states\n  - Any toggles, dropdowns, or interactive elements\n  - Page load and rendering\n- Run the tests to verify they pass consistently\n- Fix any underlying issues in the /settings page that cause test failures\n- Ensure tests are stable and not flaky\n- Document what was broken and how it was fixed\n\nSuccess Criteria:\n- All e2e tests for /settings page pass reliably\n- Test coverage includes all major user interactions on the page\n- No regressions introduced to the /settings page functionality",
+      "timestamp": "2026-01-23T18:48:58.496Z",
+      "source": "initial"
+    }
+  ]
+}

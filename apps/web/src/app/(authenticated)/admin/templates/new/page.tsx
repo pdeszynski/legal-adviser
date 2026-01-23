@@ -22,7 +22,7 @@ export default function NewTemplatePage() {
           resource: 'documentTemplates',
           values: data,
           meta: {
-            operation: 'createOneDocumentTemplate',
+            operation: 'createDocumentTemplate',
           },
         },
         {

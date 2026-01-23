@@ -1,0 +1,21 @@
+{
+  "category": "enhancement",
+  "description": "Implement skeleton notification items in notification center and dropdown. Show skeleton bell icon, notification list items with shimmer effect. Match notification item layout including icon, message, timestamp, and action buttons.",
+  "id": "notification-skeleton-loading",
+  "title": "Add Skeleton Loading to Notification Center",
+  "dependencies": [
+    "loading-skeleton-components",
+    "notification-center",
+    "notification-bell"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Implement skeleton notification items in notification center and dropdown. Show skeleton bell icon, notification list items with shimmer effect. Match notification item layout including icon, message, timestamp, and action buttons.",
+      "timestamp": "2026-01-23T18:46:41.078Z",
+      "source": "initial"
+    }
+  ]
+}

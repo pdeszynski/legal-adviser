@@ -1,0 +1,19 @@
+{
+  "category": "enhancement",
+  "description": "Implement skeleton placeholders for ruling search results page. Match ruling card layout with skeleton placeholders for court name, date, summary, and action buttons. Handle both initial search and pagination loading states.",
+  "id": "ruling-search-skeleton-loading",
+  "title": "Add Skeleton Loading to Case Law Search",
+  "dependencies": [
+    "loading-skeleton-components"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Implement skeleton placeholders for ruling search results page. Match ruling card layout with skeleton placeholders for court name, date, summary, and action buttons. Handle both initial search and pagination loading states.",
+      "timestamp": "2026-01-23T18:46:41.078Z",
+      "source": "initial"
+    }
+  ]
+}

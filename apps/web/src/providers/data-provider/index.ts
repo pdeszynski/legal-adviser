@@ -808,9 +808,11 @@ export const dataProvider: DataProvider = {
   create: async <TData extends BaseRecord = BaseRecord, TVariables = Record<string, unknown>>({
     resource,
     variables,
+    meta,
   }: {
     resource: string;
     variables: TVariables;
+    meta?: { operation?: string; [key: string]: unknown };
   }) => {
     // Document generation via GraphQL mutation
     if (resource === 'documents') {
@@ -844,6 +846,38 @@ export const dataProvider: DataProvider = {
       };
     }
 
+    // Document templates via GraphQL mutation
+    if (resource === 'documentTemplates') {
+      const operation = meta?.operation || 'createDocumentTemplate';
+
+      const mutation = `
+        mutation ${operation}($input: CreateTemplateInput!) {
+          ${operation}(input: $input) {
+            id
+            name
+            category
+            description
+            content
+            variables
+            conditionalSections
+            polishFormattingRules
+            isActive
+            usageCount
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ [key: string]: TData }>(mutation, {
+        input: variables,
+      });
+
+      return {
+        data: data[operation],
+      };
+    }
+
     throw new Error(`Create not implemented for resource: ${resource}`);
   },
 
@@ -854,10 +888,12 @@ export const dataProvider: DataProvider = {
     resource,
     id,
     variables,
+    meta,
   }: {
     resource: string;
     id: string | number;
     variables: TVariables;
+    meta?: { operation?: string; [key: string]: unknown };
   }) => {
     if (resource === 'documents') {
       const mutation = `
@@ -888,6 +924,39 @@ export const dataProvider: DataProvider = {
 
       return {
         data: data.updateDocument,
+      };
+    }
+
+    // Document templates via GraphQL mutation
+    if (resource === 'documentTemplates') {
+      const operation = meta?.operation || 'updateDocumentTemplate';
+
+      const mutation = `
+        mutation ${operation}($id: ID!, $input: UpdateTemplateInput!) {
+          ${operation}(id: $id, input: $input) {
+            id
+            name
+            category
+            description
+            content
+            variables
+            conditionalSections
+            polishFormattingRules
+            isActive
+            usageCount
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ [key: string]: TData }>(mutation, {
+        id,
+        input: variables,
+      });
+
+      return {
+        data: data[operation],
       };
     }
 

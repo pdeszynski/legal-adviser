@@ -1,30 +1,42 @@
 {
   "category": "Uncategorized",
-  "description": "Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens",
+  "description": "Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens. Please firstly FOCUS on the /settings page, not other ones. Screenshot shows the error. Please use playwright to validate if fix was successful",
   "title": "Fix custom page mutations configuration error on save",
   "images": [],
-  "imagePaths": [],
+  "imagePaths": [
+    {
+      "id": "img-1769194265757-w7lh1kyzl",
+      "path": "/Users/piteer/workspace/radca-prawny/legal/.automaker/features/feature-1769191072561-dens23yck/images/Zrzut_ekranu_2026-01-23_o_19_50_59-1769194265756.png",
+      "filename": "Zrzut_ekranu_2026-01-23_o_19_50_59.png",
+      "mimeType": "image/png"
+    }
+  ],
   "textFilePaths": [],
   "skipTests": false,
   "model": "claude-opus",
   "thinkingLevel": "none",
   "reasoningEffort": "none",
   "branchName": "002-legal-ai-core",
-  "priority": 2,
+  "priority": 1,
   "planningMode": "skip",
   "requirePlanApproval": false,
   "dependencies": [],
-  "workMode": "current",
+  "workMode": "custom",
   "titleGenerating": false,
-  "status": "verified",
+  "status": "in_progress",
   "id": "feature-1769191072561-dens23yck",
   "descriptionHistory": [
     {
       "description": "Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens",
       "timestamp": "2026-01-23T17:57:52.652Z",
       "source": "initial"
+    },
+    {
+      "description": "Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens. Please firstly FOCUS on the /settings page, not other ones. Screenshot shows the error. Please use playwright to validate if fix was successful",
+      "timestamp": "2026-01-23T18:51:36.384Z",
+      "source": "edit"
     }
   ],
-  "startedAt": "2026-01-23T18:06:17.041Z",
-  "updatedAt": "2026-01-23T18:13:09.984Z"
+  "startedAt": "2026-01-23T18:53:26.366Z",
+  "updatedAt": "2026-01-23T18:53:28.675Z"
 }

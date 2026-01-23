@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769193863853-4fcb5e7b",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T18:44:23.853Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "analyze-csrf-token-endpoint-issue",
+  "featureName": "Analyze CSRF Token Endpoint Configuration",
+  "error": "Feature completed in 255s - auto-verified",
+  "passes": true
+}

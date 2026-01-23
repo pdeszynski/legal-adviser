@@ -5,6 +5,7 @@ import { useTable } from '@refinedev/react-table';
 import { ColumnDef, flexRender, HeaderGroup, Row, Cell, Header } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { GraphQLErrorAlert } from '@/components/data/GraphQLErrorAlert';
+import { AuditLogTableSkeleton } from '@/components/skeleton/TableSkeleton';
 
 /**
  * User type for audit log author
@@ -262,8 +263,17 @@ export default function AuditLogList() {
     },
   });
 
-  const { setCurrentPage, pageCount, currentPage, setFilters, setSorters, setPageSize } =
-    refineCore;
+  const {
+    setCurrentPage,
+    pageCount,
+    currentPage,
+    setFilters,
+    setSorters,
+    setPageSize,
+    tableQuery,
+  } = refineCore;
+
+  const isLoading = tableQuery.isLoading;
 
   // Check for GraphQL errors in the result
   // The result may have _errors attached when data is returned alongside errors
@@ -394,58 +404,62 @@ export default function AuditLogList() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              {reactTable.getHeaderGroups().map((headerGroup: HeaderGroup<AuditLog>) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header: Header<AuditLog, unknown>) => {
-                    const canSort = header.column.getCanSort();
-                    return (
-                      <th
-                        key={header.id}
-                        className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
-                          canSort ? 'cursor-pointer hover:bg-gray-100 select-none' : ''
-                        }`}
-                        onClick={() => canSort && handleSort(header.id)}
-                      >
-                        <div className="flex items-center gap-1">
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {canSort && (
-                            <span className="text-blue-600">
-                              {getSortIndicator(header.id) || ' ↕'}
-                            </span>
-                          )}
-                        </div>
-                      </th>
-                    );
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {reactTable.getRowModel().rows.length === 0 ? (
-                <tr>
-                  <td colSpan={columns.length} className="px-6 py-12 text-center text-gray-500">
-                    No audit logs found
-                  </td>
-                </tr>
-              ) : (
-                reactTable.getRowModel().rows.map((row: Row<AuditLog>) => (
-                  <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                    {row.getVisibleCells().map((cell: Cell<AuditLog, unknown>) => (
-                      <td key={cell.id} className="px-6 py-4 text-sm">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    ))}
+      {isLoading ? (
+        <AuditLogTableSkeleton rows={currentPageSize} />
+      ) : (
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                {reactTable.getHeaderGroups().map((headerGroup: HeaderGroup<AuditLog>) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header: Header<AuditLog, unknown>) => {
+                      const canSort = header.column.getCanSort();
+                      return (
+                        <th
+                          key={header.id}
+                          className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                            canSort ? 'cursor-pointer hover:bg-gray-100 select-none' : ''
+                          }`}
+                          onClick={() => canSort && handleSort(header.id)}
+                        >
+                          <div className="flex items-center gap-1">
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {canSort && (
+                              <span className="text-blue-600">
+                                {getSortIndicator(header.id) || ' ↕'}
+                              </span>
+                            )}
+                          </div>
+                        </th>
+                      );
+                    })}
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ))}
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {reactTable.getRowModel().rows.length === 0 ? (
+                  <tr>
+                    <td colSpan={columns.length} className="px-6 py-12 text-center text-gray-500">
+                      No audit logs found
+                    </td>
+                  </tr>
+                ) : (
+                  reactTable.getRowModel().rows.map((row: Row<AuditLog>) => (
+                    <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+                      {row.getVisibleCells().map((cell: Cell<AuditLog, unknown>) => (
+                        <td key={cell.id} className="px-6 py-4 text-sm">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Pagination */}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-4">

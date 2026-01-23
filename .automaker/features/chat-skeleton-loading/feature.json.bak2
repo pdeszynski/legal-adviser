@@ -1,0 +1,16 @@
+{
+  "category": "enhancement",
+  "description": "Implement skeleton message bubbles in chat interface while AI response is being generated. Show pulsing skeleton for incoming message. Apply to both Legal Q&A Chat and Pro chat modes. Ensure skeleton matches message bubble styling and positioning.",
+  "id": "chat-skeleton-loading",
+  "title": "Add Skeleton Loading to Chat Interface",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Implement skeleton message bubbles in chat interface while AI response is being generated. Show pulsing skeleton for incoming message. Apply to both Legal Q&A Chat and Pro chat modes. Ensure skeleton matches message bubble styling and positioning.",
+      "timestamp": "2026-01-23T18:46:41.076Z",
+      "source": "initial"
+    }
+  ]
+}

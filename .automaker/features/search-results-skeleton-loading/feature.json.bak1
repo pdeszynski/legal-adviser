@@ -1,0 +1,19 @@
+{
+  "category": "enhancement",
+  "description": "Implement skeleton placeholders for global search results. Show result cards matching the layout of document, ruling, and template search results. Apply to both header search bar and advanced search page.",
+  "id": "search-results-skeleton-loading",
+  "title": "Add Skeleton Loading to Search Results",
+  "dependencies": [
+    "loading-skeleton-components"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Implement skeleton placeholders for global search results. Show result cards matching the layout of document, ruling, and template search results. Apply to both header search bar and advanced search page.",
+      "timestamp": "2026-01-23T18:46:41.077Z",
+      "source": "initial"
+    }
+  ]
+}

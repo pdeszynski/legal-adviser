@@ -1,0 +1,32 @@
+{
+  "category": "Uncategorized",
+  "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix custom page mutations configuration error on save\n\n**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens\n\n---\n\n## Task Description\n\nThis wasn't still fixd, please fix that error, then validate it through e2e tests. Make sure you also create tests for that problem",
+  "title": "I need more information about the specific feature or fix you want me to create a title for. \n\nBased on the context provided, it seems like you want a title for the current sub-task. Is it one of these?\n\n1. **Fix custom page mutations configuration error on save** - (the parent task that's already completed)\n2. **A new sub-task related to fixing the mutations error** - (which you mention \"wasn't still fixed\")\n3. **Create e2e tests for custom page mutations** - (the validation/testing aspect)\n\nCould you clarify which specific feature/fix you need a title for, or provide a brief description of what needs to be done?",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [
+    "feature-1769191072561-dens23yck"
+  ],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769193322841-1fvlrbii2",
+  "descriptionHistory": [
+    {
+      "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix custom page mutations configuration error on save\n\n**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens\n\n---\n\n## Task Description\n\nThis wasn't still fixd, please fix that error, then validate it through e2e tests. Make sure you also create tests for that problem",
+      "timestamp": "2026-01-23T18:35:22.949Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T18:35:22.981Z",
+  "updatedAt": "2026-01-23T18:43:20.681Z"
+}

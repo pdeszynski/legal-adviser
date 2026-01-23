@@ -1,0 +1,18 @@
+{
+  "category": "bug",
+  "description": "Investigate why CSRF token requests are hitting /api/api/csrf-token (double api prefix) instead of the correct endpoint. Examine the GraphQL client configuration, CSRF token fetching logic, and backend route registration. Identify where the duplicate /api/ prefix is being introduced in the request path.",
+  "id": "analyze-csrf-token-endpoint-issue",
+  "title": "Analyze CSRF Token Endpoint Configuration",
+  "dependencies": [],
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Investigate why CSRF token requests are hitting /api/api/csrf-token (double api prefix) instead of the correct endpoint. Examine the GraphQL client configuration, CSRF token fetching logic, and backend route registration. Identify where the duplicate /api/ prefix is being introduced in the request path.",
+      "timestamp": "2026-01-23T18:40:00.548Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T18:40:04.089Z"
+}

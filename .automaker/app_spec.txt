@@ -2119,6 +2119,40 @@ When using form save button, this leads to an error that the custom mutation is 
 
 This was not fixed, please come back to that task and use form to try to save in form at /settings page. Please fix that problem</description>
     </feature>
+    <feature>
+      <name>I need more information about the specific feature or fix you want me to create a title for. 
+
+Based on the context provided, it seems like you want a title for the current sub-task. Is it one of these?
+
+1. **Fix custom page mutations configuration error on save** - (the parent task that&apos;s already completed)
+2. **A new sub-task related to fixing the mutations error** - (which you mention &quot;wasn&apos;t still fixed&quot;)
+3. **Create e2e tests for custom page mutations** - (the validation/testing aspect)
+
+Could you clarify which specific feature/fix you need a title for, or provide a brief description of what needs to be done?</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix custom page mutations configuration error on save
+
+**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings
+
+When using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that&apos;s the only place where it happens
+
+---
+
+## Task Description
+
+This wasn&apos;t still fixd, please fix that error, then validate it through e2e tests. Make sure you also create tests for that problem</description>
+    </feature>
+    <feature>
+      <name>Analyze CSRF Token Endpoint Configuration</name>
+      <description>Investigate why CSRF token requests are hitting /api/api/csrf-token (double api prefix) instead of the correct endpoint. Examine the GraphQL client configuration, CSRF token fetching logic, and backend route registration. Identify where the duplicate /api/ prefix is being introduced in the request path.</description>
+    </feature>
+    <feature>
+      <name>Add Skeleton Loading to Chat Interface</name>
+      <description>Implement skeleton message bubbles in chat interface while AI response is being generated. Show pulsing skeleton for incoming message. Apply to both Legal Q&amp;A Chat and Pro chat modes. Ensure skeleton matches message bubble styling and positioning.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

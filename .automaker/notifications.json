@@ -1462,6 +1462,39 @@
       "dismissed": false,
       "featureId": "feature-1769192590738-082bxvnaf",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "9526a9a6-c426-41ae-b43a-72085ba796a7",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769193322841-1fvlrbii2\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:43:20.683Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769193322841-1fvlrbii2",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "09220e99-b85b-4386-9b93-8c537e6d06c8",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"analyze-csrf-token-endpoint-issue\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:44:23.845Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "analyze-csrf-token-endpoint-issue",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "b21ac1bb-141c-4b33-8edd-4cb25ed52f68",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-skeleton-loading\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:53:41.554Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-skeleton-loading",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

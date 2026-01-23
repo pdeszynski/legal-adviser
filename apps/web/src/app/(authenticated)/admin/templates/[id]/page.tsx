@@ -90,7 +90,7 @@ export default function EditTemplatePage({ params }: { params: Promise<{ id: str
           id: templateId,
           values: data,
           meta: {
-            operation: 'updateOneDocumentTemplate',
+            operation: 'updateDocumentTemplate',
           },
         },
         {

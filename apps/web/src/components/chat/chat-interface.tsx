@@ -40,12 +40,7 @@ export function ChatInterface() {
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const {
-    sendMessage,
-    isLoading,
-    mode,
-    setMode,
-  } = useChat();
+  const { sendMessage, isLoading, mode, setMode } = useChat();
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -112,7 +107,8 @@ export function ChatInterface() {
       const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,
         role: 'assistant',
-        content: err instanceof Error ? err.message : 'An error occurred while processing your request.',
+        content:
+          err instanceof Error ? err.message : 'An error occurred while processing your request.',
         timestamp: new Date(),
         isStreaming: false,
       };
@@ -143,12 +139,7 @@ export function ChatInterface() {
               onClick={handleNewChat}
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -164,9 +155,7 @@ export function ChatInterface() {
               <button
                 onClick={() => setMode('SIMPLE')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  mode === 'SIMPLE'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                  mode === 'SIMPLE' ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 Simple
@@ -174,9 +163,7 @@ export function ChatInterface() {
               <button
                 onClick={() => setMode('LAWYER')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  mode === 'LAWYER'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                  mode === 'LAWYER' ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 Pro
@@ -213,16 +200,14 @@ export function ChatInterface() {
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Start a conversation
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Start a conversation</h3>
               <p className="text-gray-600">
                 Ask any legal question and get answers with references to legal sources.
               </p>
             </div>
           </div>
         ) : (
-          <MessageList messages={messages} />
+          <MessageList messages={messages} isLoading={isStreaming || isLoading} />
         )}
         <div ref={messagesEndRef} />
       </div>

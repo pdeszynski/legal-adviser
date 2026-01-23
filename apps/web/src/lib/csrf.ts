@@ -8,7 +8,11 @@ const CSRF_TOKEN_CACHE_KEY = 'csrf_token_cache';
 const CSRF_TOKEN_TIMESTAMP_KEY = 'csrf_token_timestamp';
 const CSRF_CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// Note: NEXT_PUBLIC_API_URL already includes /api prefix
+// e.g., http://localhost:3001/api
+// We use it without the /api suffix for direct API calls
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const BASE_URL = API_URL.replace(/\/api$/, ''); // Remove /api suffix for constructing paths
 
 /**
  * Get the raw CSRF token from the signed cookie
@@ -88,7 +92,7 @@ export function getCsrfToken(): string | undefined {
  */
 export async function fetchCsrfToken(): Promise<string | undefined> {
   try {
-    const response = await fetch(`${API_URL}/api/csrf-token`, {
+    const response = await fetch(`${BASE_URL}/api/csrf-token`, {
       method: 'GET',
       credentials: 'include',
     });
