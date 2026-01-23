@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslate, useCustomMutation } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
+import { Lock, KeyRound, ShieldCheck } from 'lucide-react';
 
 interface ChangePasswordInput {
   currentPassword: string;
@@ -43,13 +44,17 @@ export function SettingsSecurity() {
 
     mutate(
       {
-        url: '/changePassword',
+        url: '',
         method: 'post',
         values: {
-          input: {
-            currentPassword: data.currentPassword,
-            newPassword: data.newPassword,
+          operation: 'changePassword',
+          variables: {
+            input: {
+              currentPassword: data.currentPassword,
+              newPassword: data.newPassword,
+            },
           },
+          fields: [],
         },
         successNotification: {
           message: translate('settings.security.successMessage'),
@@ -72,100 +77,118 @@ export function SettingsSecurity() {
   };
 
   return (
-    <div className="p-8">
+    <div className="max-w-2xl">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold mb-2">{translate('settings.security.title')}</h2>
-        <p className="text-gray-600">{translate('settings.security.description')}</p>
+        <h2 className="text-lg font-semibold mb-1">{translate('settings.security.title')}</h2>
+        <p className="text-sm text-muted-foreground">
+          {translate('settings.security.description')}
+        </p>
       </div>
 
       {isSuccess && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+        <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-700 dark:text-green-300 flex items-center gap-2">
           {translate('settings.security.successMessage')}
         </div>
       )}
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-700 dark:text-red-300">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Current Password */}
-        <div>
-          <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="currentPassword" className="block text-sm font-medium">
             {translate('settings.security.fields.currentPassword')}
           </label>
-          <input
-            id="currentPassword"
-            type="password"
-            {...register('currentPassword', {
-              required: translate('validation.required'),
-            })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <Lock className="h-4 w-4" />
+            </div>
+            <input
+              id="currentPassword"
+              type="password"
+              {...register('currentPassword', {
+                required: translate('validation.required'),
+              })}
+              className="w-full pl-10 pr-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            />
+          </div>
           {errors.currentPassword && (
-            <p className="mt-1 text-sm text-red-600">{errors.currentPassword.message}</p>
+            <p className="text-sm text-red-500">{errors.currentPassword.message}</p>
           )}
         </div>
 
         {/* New Password */}
-        <div>
-          <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="newPassword" className="block text-sm font-medium">
             {translate('settings.security.fields.newPassword')}
           </label>
-          <input
-            id="newPassword"
-            type="password"
-            {...register('newPassword', {
-              required: translate('validation.required'),
-              minLength: {
-                value: 8,
-                message: translate('validation.minLength', { min: 8 }),
-              },
-              maxLength: {
-                value: 128,
-                message: translate('validation.maxLength', { max: 128 }),
-              },
-            })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <KeyRound className="h-4 w-4" />
+            </div>
+            <input
+              id="newPassword"
+              type="password"
+              {...register('newPassword', {
+                required: translate('validation.required'),
+                minLength: {
+                  value: 8,
+                  message: translate('validation.minLength', { min: 8 }),
+                },
+                maxLength: {
+                  value: 128,
+                  message: translate('validation.maxLength', { max: 128 }),
+                },
+              })}
+              className="w-full pl-10 pr-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            />
+          </div>
           {errors.newPassword && (
-            <p className="mt-1 text-sm text-red-600">{errors.newPassword.message}</p>
+            <p className="text-sm text-red-500">{errors.newPassword.message}</p>
           )}
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             {translate('settings.security.passwordHint')}
           </p>
         </div>
 
         {/* Confirm Password */}
-        <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium">
             {translate('settings.security.fields.confirmPassword')}
           </label>
-          <input
-            id="confirmPassword"
-            type="password"
-            {...register('confirmPassword', {
-              required: translate('validation.required'),
-              minLength: {
-                value: 8,
-                message: translate('validation.minLength', { min: 8 }),
-              },
-            })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <KeyRound className="h-4 w-4" />
+            </div>
+            <input
+              id="confirmPassword"
+              type="password"
+              {...register('confirmPassword', {
+                required: translate('validation.required'),
+                minLength: {
+                  value: 8,
+                  message: translate('validation.minLength', { min: 8 }),
+                },
+              })}
+              className="w-full pl-10 pr-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            />
+          </div>
           {errors.confirmPassword && (
-            <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+            <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
           )}
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end pt-4 border-t">
+        <div className="flex justify-end pt-4 border-t border-border mt-8">
           <LoadingButton
             type="submit"
             isLoading={isLoading}
             loadingText={translate('settings.security.changing')}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-6"
           >
             {translate('settings.security.changeButton')}
           </LoadingButton>
@@ -173,14 +196,24 @@ export function SettingsSecurity() {
       </form>
 
       {/* Security Tips */}
-      <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-        <h3 className="font-medium text-gray-900 mb-2">
+      <div className="mt-8 p-6 bg-primary/5 border border-primary/10 rounded-2xl">
+        <h3 className="font-semibold text-primary mb-3 flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4" />
           {translate('settings.security.tips.title')}
         </h3>
-        <ul className="text-sm text-gray-700 space-y-1">
-          <li>• {translate('settings.security.tips.tip1')}</li>
-          <li>• {translate('settings.security.tips.tip2')}</li>
-          <li>• {translate('settings.security.tips.tip3')}</li>
+        <ul className="text-sm text-muted-foreground space-y-2">
+          <li className="flex items-start gap-2">
+            <span className="text-primary">•</span>
+            {translate('settings.security.tips.tip1')}
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-primary">•</span>
+            {translate('settings.security.tips.tip2')}
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-primary">•</span>
+            {translate('settings.security.tips.tip3')}
+          </li>
         </ul>
       </div>
     </div>

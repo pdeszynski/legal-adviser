@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769197564725-9295f476",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T19:46:04.725Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769194138444-ii2rehn4y",
+  "featureName": "Fix Settings Page E2E Test Failures",
+  "error": "Feature completed in 876s - auto-verified",
+  "passes": true
+}

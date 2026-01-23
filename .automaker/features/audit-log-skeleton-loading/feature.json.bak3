@@ -3,10 +3,6 @@
   "description": "Implement skeleton placeholder rows in audit log table view. Match audit log table structure with columns for timestamp, action, user, resource, and details. Use consistent skeleton animation. Handle both initial load and pagination loading states.",
   "id": "audit-log-skeleton-loading",
   "title": "Add Skeleton Loading to Audit Log List",
-  "dependencies": [
-    "loading-skeleton-components",
-    "audit-log-provider"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

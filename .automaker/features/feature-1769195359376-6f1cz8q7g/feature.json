@@ -1,0 +1,37 @@
+{
+  "category": "Uncategorized",
+  "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix custom page mutations configuration error on save\n\n**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens. Please firstly FOCUS on the /settings page, not other ones. Screenshot shows the error. Please use playwright to validate if fix was successful\n\n---\n\n## Task Description\n\nThis is not fixed, fix that problem once and for all. You are not allowed to move htis task to complete until it's verified\n\n\nFocus on frontend problems, this is not graphql problem it's probably a separate page problem located at authenticated/settings/page.tsx",
+  "title": "Fix custom page mutations save configuration error",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [
+    "feature-1769191072561-dens23yck"
+  ],
+  "workMode": "custom",
+  "titleGenerating": false,
+  "status": "completed",
+  "id": "feature-1769195359376-6f1cz8q7g",
+  "descriptionHistory": [
+    {
+      "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix custom page mutations configuration error on save\n\n**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens. Please firstly FOCUS on the /settings page, not other ones. Screenshot shows the error. Please use playwright to validate if fix was successful\n\n---\n\n## Task Description\n\nThis is not fixed, fix that problem once and for all. You are not allowed to move htis task to complete until it's verified",
+      "timestamp": "2026-01-23T19:09:19.497Z",
+      "source": "initial"
+    },
+    {
+      "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix custom page mutations configuration error on save\n\n**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens. Please firstly FOCUS on the /settings page, not other ones. Screenshot shows the error. Please use playwright to validate if fix was successful\n\n---\n\n## Task Description\n\nThis is not fixed, fix that problem once and for all. You are not allowed to move htis task to complete until it's verified\n\n\nFocus on frontend problems, this is not graphql problem it's probably a separate page problem located at authenticated/settings/page.tsx",
+      "timestamp": "2026-01-23T19:16:35.014Z",
+      "source": "edit"
+    }
+  ],
+  "startedAt": "2026-01-23T19:09:19.554Z",
+  "updatedAt": "2026-01-23T19:21:24.811Z"
+}

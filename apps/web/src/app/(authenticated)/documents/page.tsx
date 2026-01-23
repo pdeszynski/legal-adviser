@@ -1,14 +1,22 @@
-"use client";
+'use client';
 
-import { useTranslate, CrudFilter } from "@refinedev/core";
-import { useTable } from "@refinedev/react-table";
-import { ColumnDef, flexRender, HeaderGroup, Row, Cell, Header } from "@tanstack/react-table";
-import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useTranslate, CrudFilter } from '@refinedev/core';
+import { useTable } from '@refinedev/react-table';
+import { ColumnDef, flexRender, HeaderGroup, Row, Cell, Header } from '@tanstack/react-table';
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
+import {
+  FileText,
+  Calendar,
+  LayoutGrid,
+  List as ListIcon,
+  Search,
+  Filter,
+  MoreVertical,
+  Plus,
+} from 'lucide-react';
+import { cn } from '@legal/ui';
 
-/**
- * Document Metadata type matching GraphQL DocumentMetadata
- */
 interface DocumentMetadata {
   plaintiffName?: string;
   defendantName?: string;
@@ -16,9 +24,6 @@ interface DocumentMetadata {
   claimCurrency?: string;
 }
 
-/**
- * Legal Document type matching GraphQL LegalDocument
- */
 interface LegalDocument {
   id: string;
   title: string;
@@ -31,45 +36,36 @@ interface LegalDocument {
   updatedAt: string;
 }
 
-/**
- * Document types for filtering
- */
-const DOCUMENT_TYPES = ["LAWSUIT", "COMPLAINT", "CONTRACT", "OTHER"] as const;
+const DOCUMENT_TYPES = ['LAWSUIT', 'COMPLAINT', 'CONTRACT', 'OTHER'] as const;
+const DOCUMENT_STATUSES = ['DRAFT', 'GENERATING', 'COMPLETED', 'FAILED'] as const;
 
-/**
- * Document statuses for filtering
- */
-const DOCUMENT_STATUSES = ["DRAFT", "GENERATING", "COMPLETED", "FAILED"] as const;
-
-/**
- * Status color mapping for badges
- */
 const statusColors: Record<string, string> = {
-  DRAFT: "bg-gray-100 text-gray-800",
-  GENERATING: "bg-blue-100 text-blue-800",
-  COMPLETED: "bg-green-100 text-green-800",
-  FAILED: "bg-red-100 text-red-800",
+  DRAFT: 'bg-muted text-muted-foreground',
+  GENERATING: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+  COMPLETED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+  FAILED: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
 };
 
 export default function DocumentList() {
   const translate = useTranslate();
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Filter state
-  const [titleFilter, setTitleFilter] = useState("");
-  const [typeFilter, setTypeFilter] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [titleFilter, setTitleFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
   const [currentPageSize, setCurrentPageSize] = useState(10);
 
   const columns = useMemo<ColumnDef<LegalDocument>[]>(
     () => [
       {
-        id: "title",
-        accessorKey: "title",
-        header: () => translate("documents.fields.title"),
+        id: 'title',
+        accessorKey: 'title',
+        header: () => translate('documents.fields.title'),
         cell: ({ getValue, row }) => (
           <Link
             href={`/documents/show/${row.original.id}`}
-            className="text-blue-600 hover:underline font-medium"
+            className="text-primary hover:underline font-medium"
           >
             {getValue() as string}
           </Link>
@@ -77,25 +73,25 @@ export default function DocumentList() {
         enableSorting: true,
       },
       {
-        id: "type",
-        accessorKey: "type",
-        header: () => translate("documents.fields.type"),
+        id: 'type',
+        accessorKey: 'type',
+        header: () => translate('documents.fields.type'),
         cell: ({ getValue }) => (
-          <span className="px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">
+          <span className="px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
             {translate(`documents.types.${getValue()}`)}
           </span>
         ),
         enableSorting: true,
       },
       {
-        id: "status",
-        accessorKey: "status",
-        header: () => translate("documents.fields.status"),
+        id: 'status',
+        accessorKey: 'status',
+        header: () => translate('documents.fields.status'),
         cell: ({ getValue }) => {
           const status = getValue() as string;
           return (
             <span
-              className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[status] || "bg-gray-100"}`}
+              className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[status] || 'bg-muted'}`}
             >
               {translate(`documents.statuses.${status}`)}
             </span>
@@ -104,156 +100,159 @@ export default function DocumentList() {
         enableSorting: true,
       },
       {
-        id: "createdAt",
-        accessorKey: "createdAt",
-        header: () => translate("documents.fields.createdAt"),
+        id: 'createdAt',
+        accessorKey: 'createdAt',
+        header: () => translate('documents.fields.createdAt'),
         cell: ({ getValue }) => {
           const date = new Date(getValue() as string);
           return (
-            <span className="text-gray-600">
-              {date.toLocaleDateString()} {date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            <span className="text-muted-foreground">
+              {date.toLocaleDateString()}{' '}
+              {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
           );
         },
         enableSorting: true,
       },
       {
-        id: "actions",
-        header: () => translate("table.actions"),
+        id: 'actions',
+        header: () => translate('table.actions'),
         cell: ({ row }) => (
           <div className="flex gap-2">
             <Link
               href={`/documents/show/${row.original.id}`}
-              className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition-colors"
+              className="px-3 py-1 text-xs bg-secondary text-secondary-foreground rounded hover:bg-secondary/80 transition-colors border border-border"
             >
-              {translate("buttons.show")}
+              {translate('buttons.show')}
             </Link>
           </div>
         ),
         enableSorting: false,
       },
     ],
-    [translate]
+    [translate],
   );
 
   // Build filters array for Refine
   const refineCoreFilters = useMemo<CrudFilter[]>(() => {
     const filters: CrudFilter[] = [];
-
-    if (titleFilter) {
-      filters.push({ field: "title", operator: "contains", value: titleFilter });
-    }
-    if (typeFilter) {
-      filters.push({ field: "type", operator: "eq", value: typeFilter });
-    }
-    if (statusFilter) {
-      filters.push({ field: "status", operator: "eq", value: statusFilter });
-    }
-
+    if (titleFilter) filters.push({ field: 'title', operator: 'contains', value: titleFilter });
+    if (typeFilter) filters.push({ field: 'type', operator: 'eq', value: typeFilter });
+    if (statusFilter) filters.push({ field: 'status', operator: 'eq', value: statusFilter });
     return filters;
   }, [titleFilter, typeFilter, statusFilter]);
 
   const { reactTable, refineCore } = useTable<LegalDocument>({
     columns,
     refineCoreProps: {
-      resource: "documents",
-      pagination: {
-        pageSize: currentPageSize,
-      },
-      filters: {
-        permanent: refineCoreFilters,
-      },
-      sorters: {
-        initial: [{ field: "createdAt", order: "desc" }],
-      },
+      resource: 'documents',
+      pagination: { pageSize: currentPageSize },
+      filters: { permanent: refineCoreFilters },
+      sorters: { initial: [{ field: 'createdAt', order: 'desc' }] },
     },
   });
 
-  const { setCurrentPage, pageCount, currentPage, setFilters, setSorters, setPageSize } = refineCore;
-
+  const { setCurrentPage, pageCount, currentPage, setFilters, setSorters, setPageSize } =
+    refineCore;
   const sorting = reactTable.getState().sorting;
 
-  // Handle sorting click on column headers
   const handleSort = (columnId: string) => {
     const currentSort = sorting.find((s) => s.id === columnId);
-
-    if (!currentSort) {
-      setSorters([{ field: columnId, order: "desc" }]);
-    } else if (currentSort.desc) {
-      setSorters([{ field: columnId, order: "asc" }]);
-    } else {
-      setSorters([]);
-    }
+    if (!currentSort) setSorters([{ field: columnId, order: 'desc' }]);
+    else if (currentSort.desc) setSorters([{ field: columnId, order: 'asc' }]);
+    else setSorters([]);
   };
 
-  // Get sort indicator for column
   const getSortIndicator = (columnId: string) => {
     const sort = sorting.find((s) => s.id === columnId);
     if (!sort) return null;
-    return sort.desc ? " ↓" : " ↑";
+    return sort.desc ? ' ↓' : ' ↑';
   };
 
-  // Handle filter clear
   const handleClearFilters = () => {
-    setTitleFilter("");
-    setTypeFilter("");
-    setStatusFilter("");
+    setTitleFilter('');
+    setTypeFilter('');
+    setStatusFilter('');
     setFilters([]);
-  };
-
-  // Handle page size change
-  const handlePageSizeChange = (newSize: number) => {
-    setCurrentPageSize(newSize);
-    setPageSize(newSize);
-    setCurrentPage(1);
   };
 
   const hasActiveFilters = titleFilter || typeFilter || statusFilter;
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 space-y-6">
       {/* Header */}
-      <div className="mb-6 flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold mb-2">
-            {translate("documents.titles.list")}
+          <h1 className="text-3xl font-bold tracking-tight">
+            {translate('documents.titles.list')}
           </h1>
+          <p className="text-muted-foreground mt-1">Manage and organize your legal documents</p>
         </div>
-        <Link href="/documents/create">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-            {translate("buttons.create")}
-          </button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center bg-muted rounded-lg p-1 border border-border">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={cn(
+                'p-2 rounded-md transition-all',
+                viewMode === 'grid'
+                  ? 'bg-background shadow-sm text-foreground'
+                  : 'text-muted-foreground hover:text-foreground',
+              )}
+              title="Grid View"
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={cn(
+                'p-2 rounded-md transition-all',
+                viewMode === 'list'
+                  ? 'bg-background shadow-sm text-foreground'
+                  : 'text-muted-foreground hover:text-foreground',
+              )}
+              title="List View"
+            >
+              <ListIcon className="h-4 w-4" />
+            </button>
+          </div>
+          <Link href="/documents/create">
+            <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-sm">
+              <Plus className="h-4 w-4" />
+              {translate('buttons.create')}
+            </button>
+          </Link>
+        </div>
       </div>
 
       {/* Filters Section */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
+      <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
         <div className="flex flex-wrap gap-4 items-end">
-          {/* Title Search */}
           <div className="flex-1 min-w-[200px]">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translate("documents.fields.title")}
+            <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+              {translate('documents.fields.title')}
             </label>
-            <input
-              type="text"
-              placeholder={translate("common.search")}
-              value={titleFilter}
-              onChange={(e) => setTitleFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder={translate('common.search')}
+                value={titleFilter}
+                onChange={(e) => setTitleFilter(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
+              />
+            </div>
           </div>
 
-          {/* Type Filter */}
           <div className="min-w-[150px]">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translate("documents.fields.type")}
+            <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+              {translate('documents.fields.type')}
             </label>
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
             >
-              <option value="">{translate("common.all")}</option>
+              <option value="">{translate('common.all')}</option>
               {DOCUMENT_TYPES.map((type) => (
                 <option key={type} value={type}>
                   {translate(`documents.types.${type}`)}
@@ -262,17 +261,16 @@ export default function DocumentList() {
             </select>
           </div>
 
-          {/* Status Filter */}
           <div className="min-w-[150px]">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {translate("documents.fields.status")}
+            <label className="block text-sm font-medium text-muted-foreground mb-1.5">
+              {translate('documents.fields.status')}
             </label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring text-foreground"
             >
-              <option value="">{translate("common.all")}</option>
+              <option value="">{translate('common.all')}</option>
               {DOCUMENT_STATUSES.map((status) => (
                 <option key={status} value={status}>
                   {translate(`documents.statuses.${status}`)}
@@ -281,91 +279,139 @@ export default function DocumentList() {
             </select>
           </div>
 
-          {/* Clear Filters Button */}
           {hasActiveFilters && (
             <button
               onClick={handleClearFilters}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
+              className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
             >
-              {translate("buttons.clear")}
+              {translate('buttons.clear')}
             </button>
           )}
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              {reactTable.getHeaderGroups().map((headerGroup: HeaderGroup<LegalDocument>) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header: Header<LegalDocument, unknown>) => {
-                    const canSort = header.column.getCanSort();
-                    return (
-                      <th
-                        key={header.id}
-                        className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
-                          canSort ? "cursor-pointer hover:bg-gray-100 select-none" : ""
-                        }`}
-                        onClick={() => canSort && handleSort(header.id)}
+      {/* Content Area */}
+      {viewMode === 'grid' ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {reactTable.getRowModel().rows.length === 0 ? (
+            <div className="col-span-full py-12 text-center text-muted-foreground bg-muted/20 rounded-xl border border-dashed border-border">
+              {translate('table.noData')}
+            </div>
+          ) : (
+            reactTable.getRowModel().rows.map((row) => {
+              const doc = row.original;
+              return (
+                <Link key={doc.id} href={`/documents/show/${doc.id}`}>
+                  <div className="group h-full bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/50 transition-all flex flex-col">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <span
+                        className={cn(
+                          'px-2.5 py-0.5 rounded-full text-xs font-medium border',
+                          statusColors[doc.status] || 'bg-muted text-muted-foreground',
+                        )}
                       >
-                        <div className="flex items-center gap-1">
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                          {canSort && (
-                            <span className="text-blue-600">
-                              {getSortIndicator(header.id) || " ↕"}
-                            </span>
-                          )}
-                        </div>
-                      </th>
-                    );
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {reactTable.getRowModel().rows.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="px-6 py-12 text-center text-gray-500"
-                  >
-                    {translate("table.noData")}
-                  </td>
-                </tr>
-              ) : (
-                reactTable.getRowModel().rows.map((row: Row<LegalDocument>) => (
-                  <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                    {row.getVisibleCells().map((cell: Cell<LegalDocument, unknown>) => (
-                      <td
-                        key={cell.id}
-                        className="px-6 py-4 whitespace-nowrap text-sm"
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                        {translate(`documents.statuses.${doc.status}`)}
+                      </span>
+                    </div>
+
+                    <h3 className="font-semibold text-lg text-card-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                      {doc.title}
+                    </h3>
+
+                    <div className="mt-auto pt-4 border-t border-border flex items-center justify-between text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="h-3.5 w-3.5" />
+                        <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <span className="bg-muted px-2 py-0.5 rounded text-xs truncate max-w-[100px]">
+                        {translate(`documents.types.${doc.type}`)}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })
+          )}
         </div>
-      </div>
+      ) : (
+        /* List View (Table) */
+        <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted/50">
+                {reactTable.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      const canSort = header.column.getCanSort();
+                      return (
+                        <th
+                          key={header.id}
+                          className={`px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider ${
+                            canSort ? 'cursor-pointer hover:bg-muted select-none' : ''
+                          }`}
+                          onClick={() => canSort && handleSort(header.id)}
+                        >
+                          <div className="flex items-center gap-1">
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {canSort && (
+                              <span className="text-primary">
+                                {getSortIndicator(header.id) || ''}
+                              </span>
+                            )}
+                          </div>
+                        </th>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </thead>
+              <tbody className="bg-card divide-y divide-border">
+                {reactTable.getRowModel().rows.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={columns.length}
+                      className="px-6 py-12 text-center text-muted-foreground"
+                    >
+                      {translate('table.noData')}
+                    </td>
+                  </tr>
+                ) : (
+                  reactTable.getRowModel().rows.map((row) => (
+                    <tr key={row.id} className="hover:bg-muted/50 transition-colors">
+                      {row.getVisibleCells().map((cell) => (
+                        <td
+                          key={cell.id}
+                          className="px-6 py-4 whitespace-nowrap text-sm text-card-foreground"
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Pagination */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-700">
-            {translate("table.page", { current: currentPage || 1, total: pageCount || 1 })}
+          <span className="text-sm text-muted-foreground">
+            {translate('table.page', { current: currentPage || 1, total: pageCount || 1 })}
           </span>
           <select
             value={currentPageSize}
-            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-            className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={(e) => {
+              setCurrentPageSize(Number(e.target.value));
+              setPageSize(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+            className="px-2 py-1 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           >
             {[5, 10, 20, 50].map((size) => (
               <option key={size} value={size}>
@@ -375,41 +421,38 @@ export default function DocumentList() {
           </select>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setCurrentPage((currentPage || 1) - 1)}
             disabled={currentPage === 1}
-            className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+            className="px-3 py-1.5 border border-input rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
           >
-            {translate("buttons.previous")}
+            {translate('buttons.previous')}
           </button>
 
-          {/* Page numbers */}
           <div className="hidden sm:flex gap-1">
-            {Array.from({ length: Math.min(pageCount || 1, 5) }, (_, i) => {
-              const pageNum = i + 1;
-              return (
-                <button
-                  key={pageNum}
-                  onClick={() => setCurrentPage(pageNum)}
-                  className={`px-3 py-2 border rounded-md transition-colors ${
-                    currentPage === pageNum
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "hover:bg-gray-50"
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              );
-            })}
+            {Array.from({ length: Math.min(pageCount || 1, 5) }, (_, i) => i + 1).map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={cn(
+                  'w-8 h-8 flex items-center justify-center rounded-md text-sm transition-colors',
+                  currentPage === pageNum
+                    ? 'bg-primary text-primary-foreground font-medium shadow-sm'
+                    : 'hover:bg-muted text-muted-foreground',
+                )}
+              >
+                {pageNum}
+              </button>
+            ))}
           </div>
 
           <button
             onClick={() => setCurrentPage((currentPage || 1) + 1)}
             disabled={currentPage === pageCount || pageCount === 0}
-            className="px-4 py-2 border rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+            className="px-3 py-1.5 border border-input rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
           >
-            {translate("buttons.next")}
+            {translate('buttons.next')}
           </button>
         </div>
       </div>

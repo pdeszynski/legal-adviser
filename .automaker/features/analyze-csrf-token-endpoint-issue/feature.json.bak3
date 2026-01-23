@@ -5,7 +5,7 @@
   "title": "Analyze CSRF Token Endpoint Configuration",
   "dependencies": [],
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,6 @@
       "timestamp": "2026-01-23T18:40:00.548Z",
       "source": "initial"
     }
-  ]
+  ],
+  "startedAt": "2026-01-23T18:40:04.089Z"
 }

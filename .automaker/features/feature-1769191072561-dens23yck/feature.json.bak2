@@ -23,7 +23,7 @@
   "dependencies": [],
   "workMode": "custom",
   "titleGenerating": false,
-  "status": "backlog",
+  "status": "in_progress",
   "id": "feature-1769191072561-dens23yck",
   "descriptionHistory": [
     {
@@ -37,6 +37,6 @@
       "source": "edit"
     }
   ],
-  "startedAt": "2026-01-23T18:06:17.041Z",
-  "updatedAt": "2026-01-23T18:13:09.984Z"
+  "startedAt": "2026-01-23T18:53:26.366Z",
+  "updatedAt": "2026-01-23T18:53:28.675Z"
 }

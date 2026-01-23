@@ -4,8 +4,7 @@
   "id": "document-list-skeleton-loading",
   "title": "Add Skeleton Loading to Document List View",
   "dependencies": [
-    "loading-skeleton-components",
-    "document-list-view"
+    "loading-skeleton-components"
   ],
   "priority": 1,
   "status": "backlog",

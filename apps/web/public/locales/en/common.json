@@ -124,6 +124,7 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "welcome": "Welcome back, {name}",
     "subtitle": "Overview of your legal documents and activity",
     "stats": {
       "totalDocuments": "Total Documents",

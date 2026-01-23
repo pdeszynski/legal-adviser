@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useList } from '@refinedev/core';
+import { AdminAuditLogTableSkeleton } from '@/components/skeleton/TableSkeleton';
 
 export default function AdminAuditLogsPage() {
   const { query, result } = useList({
@@ -21,9 +22,7 @@ export default function AdminAuditLogsPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">Loading audit logs...</div>
-        </div>
+        <AdminAuditLogTableSkeleton rows={20} />
       ) : (
         <div className="rounded-xl border bg-card">
           <div className="relative w-full overflow-auto">

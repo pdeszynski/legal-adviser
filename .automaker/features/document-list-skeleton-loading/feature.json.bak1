@@ -3,9 +3,6 @@
   "description": "Implement skeleton placeholder rows in the document list table while data is loading. Show 5-10 skeleton rows matching table column structure (title, status, date, actions). Apply shimmer animation effect. Ensure skeleton appears immediately on page load and smoothly transitions to actual data.",
   "id": "document-list-skeleton-loading",
   "title": "Add Skeleton Loading to Document List View",
-  "dependencies": [
-    "loading-skeleton-components"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

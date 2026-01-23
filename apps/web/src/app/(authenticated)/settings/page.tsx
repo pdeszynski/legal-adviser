@@ -7,10 +7,12 @@ import { SettingsPreferences } from '@/components/settings/settings-preferences'
 import { SettingsSecurity } from '@/components/settings/settings-security';
 import { SettingsNotifications } from '@/components/settings/settings-notifications';
 import { SettingsApiKeys } from '@/components/settings/settings-api-keys';
+import { User, Settings, Shield, Bell, Key, Menu } from 'lucide-react';
+import { cn } from '@legal/ui';
 
 type SettingsTab = 'profile' | 'preferences' | 'security' | 'notifications' | 'apiKeys';
 
-interface User {
+interface UserIdentity {
   id: string;
   email: string;
   username?: string;
@@ -45,9 +47,8 @@ export default function SettingsPage() {
   const translate = useTranslate();
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
 
-  // Fetch current user data using the built-in useGetIdentity hook
-  // This uses the auth provider's getIdentity method which properly fetches user data
-  const { data: userData, isLoading: userLoading } = useGetIdentity<User>();
+  // Fetch current user data
+  const { data: userData, isLoading: userLoading } = useGetIdentity<UserIdentity>();
 
   // Fetch user preferences
   const { query: preferencesQuery, result: preferencesData } = useCustom<UserPreferences>({
@@ -74,60 +75,81 @@ export default function SettingsPage() {
   const { isLoading: preferencesLoading } = preferencesQuery;
 
   const tabs = [
-    { id: 'profile' as const, label: translate('settings.tabs.profile') },
-    { id: 'preferences' as const, label: translate('settings.tabs.preferences') },
-    { id: 'security' as const, label: translate('settings.tabs.security') },
-    { id: 'notifications' as const, label: translate('settings.tabs.notifications') },
-    { id: 'apiKeys' as const, label: translate('settings.tabs.apiKeys') },
+    { id: 'profile' as const, label: translate('settings.tabs.profile'), icon: User },
+    { id: 'preferences' as const, label: translate('settings.tabs.preferences'), icon: Settings },
+    { id: 'security' as const, label: translate('settings.tabs.security'), icon: Shield },
+    { id: 'notifications' as const, label: translate('settings.tabs.notifications'), icon: Bell },
+    { id: 'apiKeys' as const, label: translate('settings.tabs.apiKeys'), icon: Key },
   ];
 
   const user = userData;
   const preferences = preferencesData?.data;
+  const isLoading = userLoading || preferencesLoading;
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-5xl">
+    <div className="container mx-auto py-8 px-4 max-w-6xl">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{translate('settings.title')}</h1>
-        <p className="text-gray-600">{translate('settings.subtitle')}</p>
+        <h1 className="text-3xl font-bold tracking-tight">{translate('settings.title')}</h1>
+        <p className="text-muted-foreground mt-1">{translate('settings.subtitle')}</p>
       </div>
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200 mb-8">
-        <nav className="flex space-x-8">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === tab.id
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </nav>
-      </div>
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Sidebar Navigation */}
+        <aside className="w-full md:w-64 flex-shrink-0">
+          <nav className="flex md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
 
-      {/* Tab Content */}
-      <div className="bg-white rounded-lg shadow">
-        {userLoading || preferencesLoading ? (
-          <div className="p-8 text-center text-gray-500">{translate('loading')}</div>
-        ) : (
-          <>
-            {activeTab === 'profile' && user && <SettingsProfile user={user} />}
-            {activeTab === 'preferences' && preferences && (
-              <SettingsPreferences preferences={preferences} />
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={cn(
+                    'flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all whitespace-nowrap md:whitespace-normal',
+                    isActive
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </nav>
+        </aside>
+
+        {/* Content Area */}
+        <main className="flex-1 min-h-[500px]">
+          <div className="bg-card border border-border rounded-2xl shadow-sm p-6 md:p-8 animate-in fade-in slide-in-from-right-4 duration-300">
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
+                <p>{translate('loading')}</p>
+              </div>
+            ) : (
+              <>
+                <div className="mb-6 pb-6 border-b border-border">
+                  <h2 className="text-xl font-semibold flex items-center gap-2">
+                    {tabs.find((t) => t.id === activeTab)?.label}
+                  </h2>
+                </div>
+
+                {activeTab === 'profile' && user && <SettingsProfile user={user} />}
+                {activeTab === 'preferences' && preferences && (
+                  <SettingsPreferences preferences={preferences} />
+                )}
+                {activeTab === 'security' && <SettingsSecurity />}
+                {activeTab === 'notifications' && preferences && (
+                  <SettingsNotifications preferences={preferences} />
+                )}
+                {activeTab === 'apiKeys' && <SettingsApiKeys isActive={activeTab === 'apiKeys'} />}
+              </>
             )}
-            {activeTab === 'security' && <SettingsSecurity />}
-            {activeTab === 'notifications' && preferences && (
-              <SettingsNotifications preferences={preferences} />
-            )}
-            {activeTab === 'apiKeys' && <SettingsApiKeys isActive={activeTab === 'apiKeys'} />}
-          </>
-        )}
+          </div>
+        </main>
       </div>
     </div>
   );

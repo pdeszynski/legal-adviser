@@ -57,10 +57,10 @@ export function useChat(): UseChatReturn {
           headers['Authorization'] = `Bearer ${accessToken}`;
         }
 
-        // Get session ID from localStorage or generate a new one
+        // Get session ID from localStorage or generate a new one (UUID v4 format)
         let sessionId = localStorage.getItem('chat_session_id');
         if (!sessionId) {
-          sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          sessionId = crypto.randomUUID();
           localStorage.setItem('chat_session_id', sessionId);
         }
 

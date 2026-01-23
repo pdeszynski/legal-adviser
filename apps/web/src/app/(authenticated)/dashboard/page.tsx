@@ -1,9 +1,16 @@
 'use client';
 
-import { useTranslate, useList } from '@refinedev/core';
+import { useTranslate, useList, useGetIdentity } from '@refinedev/core';
 import Link from 'next/link';
 import { useMemo } from 'react';
 import { StatCard, ActivityTimeline } from '@/components/dashboard';
+import {
+  StatsRowSkeleton,
+  RecentDocumentsSkeleton,
+  ActivityTimelineSkeleton,
+} from '@/components/dashboard/DashboardSkeleton';
+import { Plus, MessageSquare, FileText, Search, ArrowRight } from 'lucide-react';
+import { cn } from '@legal/ui';
 
 interface LegalDocument {
   id: string;
@@ -33,301 +40,215 @@ interface AuditLog {
   meta?: Record<string, unknown>;
 }
 
+interface UserIdentity {
+  firstName: string;
+  lastName: string;
+}
+
 const statusColors: Record<string, string> = {
-  DRAFT: 'bg-gray-100 text-gray-800',
-  GENERATING: 'bg-blue-100 text-blue-800',
-  COMPLETED: 'bg-green-100 text-green-800',
-  FAILED: 'bg-red-100 text-red-800',
+  DRAFT: 'bg-muted text-muted-foreground',
+  GENERATING: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+  COMPLETED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+  FAILED: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
 };
 
 export default function DashboardPage() {
   const translate = useTranslate();
+  const { data: user } = useGetIdentity<UserIdentity>();
 
   // Fetch recent documents
   const { result: documentsResult, query: documentsQuery } = useList<LegalDocument>({
     resource: 'documents',
-    pagination: {
-      pageSize: 5,
-    },
-    sorters: [
-      {
-        field: 'createdAt',
-        order: 'desc',
-      },
-    ],
+    pagination: { pageSize: 5 },
+    sorters: [{ field: 'createdAt', order: 'desc' }],
   });
 
-  // Fetch total count of all documents (pageSize 1 to minimize data transfer)
-  const { result: totalDocumentsResult, query: totalDocumentsQuery } = useList<LegalDocument>({
+  // Fetch stats (optimized queries)
+  const { result: totalResult } = useList({ resource: 'documents', pagination: { pageSize: 1 } });
+  const { result: completedResult } = useList({
     resource: 'documents',
-    pagination: {
-      pageSize: 1,
-    },
+    pagination: { pageSize: 1 },
+    filters: [{ field: 'status', operator: 'eq', value: 'COMPLETED' }],
   });
-
-  // Fetch completed documents count
-  const { result: completedDocumentsResult, query: completedDocumentsQuery } =
-    useList<LegalDocument>({
-      resource: 'documents',
-      pagination: {
-        pageSize: 1,
-      },
-      filters: [
-        {
-          field: 'status',
-          operator: 'eq',
-          value: 'COMPLETED',
-        },
-      ],
-    });
-
-  // Fetch draft documents count
-  const { result: draftDocumentsResult, query: draftDocumentsQuery } = useList<LegalDocument>({
+  const { result: draftResult } = useList({
     resource: 'documents',
-    pagination: {
-      pageSize: 1,
-    },
-    filters: [
-      {
-        field: 'status',
-        operator: 'eq',
-        value: 'DRAFT',
-      },
-    ],
+    pagination: { pageSize: 1 },
+    filters: [{ field: 'status', operator: 'eq', value: 'DRAFT' }],
+  });
+  const { result: generatingResult } = useList({
+    resource: 'documents',
+    pagination: { pageSize: 1 },
+    filters: [{ field: 'status', operator: 'eq', value: 'GENERATING' }],
   });
 
-  // Fetch generating documents count
-  const { result: generatingDocumentsResult, query: generatingDocumentsQuery } =
-    useList<LegalDocument>({
-      resource: 'documents',
-      pagination: {
-        pageSize: 1,
-      },
-      filters: [
-        {
-          field: 'status',
-          operator: 'eq',
-          value: 'GENERATING',
-        },
-      ],
-    });
-
-  // Fetch recent audit logs for activity timeline
+  // Fetch recent audit logs
   const { result: auditLogsResult, query: auditLogsQuery } = useList<AuditLog>({
     resource: 'audit_logs',
-    pagination: {
-      pageSize: 10,
-    },
-    sorters: [
-      {
-        field: 'createdAt',
-        order: 'desc',
-      },
-    ],
+    pagination: { pageSize: 10 },
+    sorters: [{ field: 'createdAt', order: 'desc' }],
   });
 
   const recentDocuments = documentsResult?.data || [];
   const auditLogs = auditLogsResult?.data || [];
 
-  // Calculate statistics using totalCount from queries
-  const stats: DashboardStats = useMemo(() => {
-    const total = totalDocumentsResult?.total ?? 0;
-    const completed = completedDocumentsResult?.total ?? 0;
-    const draft = draftDocumentsResult?.total ?? 0;
-    const generating = generatingDocumentsResult?.total ?? 0;
-
-    return {
-      totalDocuments: total,
-      completedDocuments: completed,
-      draftDocuments: draft,
-      generatingDocuments: generating,
-    };
-  }, [
-    totalDocumentsResult?.total,
-    completedDocumentsResult?.total,
-    draftDocumentsResult?.total,
-    generatingDocumentsResult?.total,
-  ]);
+  const stats = useMemo(
+    () => ({
+      totalDocuments: totalResult?.total ?? 0,
+      completedDocuments: completedResult?.total ?? 0,
+      draftDocuments: draftResult?.total ?? 0,
+      generatingDocuments: generatingResult?.total ?? 0,
+    }),
+    [totalResult, completedResult, draftResult, generatingResult],
+  );
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{translate('dashboard.title')}</h1>
-        <p className="text-gray-600">{translate('dashboard.subtitle')}</p>
+    <div className="container mx-auto py-8 px-4 space-y-8">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-8 rounded-2xl border border-primary/10">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          {translate('dashboard.welcome', { name: user?.firstName || 'Lawyer' })}
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-2xl">
+          {translate(
+            'dashboard.subtitle',
+            'Your AI-powered legal assistant is ready. What would you like to achieve today?',
+          )}
+        </p>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard
-          title={translate('dashboard.stats.totalDocuments')}
-          value={stats.totalDocuments}
-          loading={totalDocumentsQuery.isLoading}
-          iconColor="text-blue-600"
-          icon={
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-          }
-        />
-        <StatCard
-          title={translate('dashboard.stats.completed')}
-          value={stats.completedDocuments}
-          loading={completedDocumentsQuery.isLoading}
-          iconColor="text-green-600"
-          icon={
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          }
-        />
-        <StatCard
-          title={translate('dashboard.stats.drafts')}
-          value={stats.draftDocuments}
-          loading={draftDocumentsQuery.isLoading}
-          iconColor="text-gray-600"
-          icon={
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-              />
-            </svg>
-          }
-        />
-        <StatCard
-          title={translate('dashboard.stats.generating')}
-          value={stats.generatingDocuments}
-          loading={generatingDocumentsQuery.isLoading}
-          iconColor="text-blue-600"
-          icon={
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-          }
-        />
+      {/* Main Actions Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Link
+          href="/documents/create"
+          className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-primary/50"
+        >
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary mb-4 group-hover:scale-110 transition-transform">
+            <Plus className="h-6 w-6" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+            Create Document
+          </h3>
+          <p className="text-muted-foreground mb-4">
+            Start a new legal document, contract, or pleading using AI assistance.
+          </p>
+          <div className="flex items-center text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+            Start Drafting <ArrowRight className="ml-2 h-4 w-4" />
+          </div>
+        </Link>
+
+        <Link
+          href="/chat"
+          className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-primary/50"
+        >
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 mb-4 group-hover:scale-110 transition-transform">
+            <MessageSquare className="h-6 w-6" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-600 transition-colors">
+            Legal Q&A
+          </h3>
+          <p className="text-muted-foreground mb-4">
+            Ask complex legal questions and get instant, cited answers from the AI.
+          </p>
+          <div className="flex items-center text-sm font-medium text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+            Ask a Question <ArrowRight className="ml-2 h-4 w-4" />
+          </div>
+        </Link>
+
+        <Link
+          href="/documents"
+          className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-primary/50"
+        >
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-500/10 text-orange-600 mb-4 group-hover:scale-110 transition-transform">
+            <Search className="h-6 w-6" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2 group-hover:text-orange-600 transition-colors">
+            Browse Cases
+          </h3>
+          <p className="text-muted-foreground mb-4">
+            Search through your existing cases, documents, and generated drafts.
+          </p>
+          <div className="flex items-center text-sm font-medium text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+            Search Now <ArrowRight className="ml-2 h-4 w-4" />
+          </div>
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Documents */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold">
-                {translate('dashboard.recentDocuments.title')}
-              </h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Recent Documents & Stats */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Mini Stats Row */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="p-4 rounded-xl border border-border bg-card">
+              <p className="text-sm text-muted-foreground">Total Docs</p>
+              <p className="text-2xl font-bold">{stats.totalDocuments}</p>
             </div>
-            <div className="p-6">
+            <div className="p-4 rounded-xl border border-border bg-card">
+              <p className="text-sm text-muted-foreground">Completed</p>
+              <p className="text-2xl font-bold text-green-600">{stats.completedDocuments}</p>
+            </div>
+            <div className="p-4 rounded-xl border border-border bg-card">
+              <p className="text-sm text-muted-foreground">Drafts</p>
+              <p className="text-2xl font-bold text-orange-600">{stats.draftDocuments}</p>
+            </div>
+            <div className="p-4 rounded-xl border border-border bg-card">
+              <p className="text-sm text-muted-foreground">Generating</p>
+              <p className="text-2xl font-bold text-blue-600">{stats.generatingDocuments}</p>
+            </div>
+          </div>
+
+          {/* Recent Docs List */}
+          <div className="rounded-xl border border-border bg-card overflow-hidden">
+            <div className="p-6 border-b border-border flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Recent Documents</h2>
+              <Link href="/documents" className="text-sm text-primary hover:underline">
+                View All
+              </Link>
+            </div>
+            <div className="divide-y divide-border">
               {documentsQuery.isLoading ? (
-                <div className="text-center py-8 text-gray-500">{translate('loading')}</div>
+                <div className="p-8 text-center text-muted-foreground">Loading documents...</div>
               ) : recentDocuments.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  {translate('dashboard.recentDocuments.noDocuments')}
+                <div className="p-8 text-center text-muted-foreground">
+                  No documents found. Create one to get started!
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {recentDocuments.map((doc) => (
-                    <Link
-                      key={doc.id}
-                      href={`/documents/show/${doc.id}`}
-                      className="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-medium text-gray-900 mb-1">{doc.title}</h3>
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <span className="px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                              {translate(`documents.types.${doc.type}`)}
-                            </span>
-                            <span>•</span>
-                            <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[doc.status] || 'bg-gray-100'}`}
-                        >
-                          {translate(`documents.statuses.${doc.status}`)}
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-              {recentDocuments.length > 0 && (
-                <div className="mt-6 text-center">
+                recentDocuments.map((doc) => (
                   <Link
-                    href="/documents"
-                    className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                    key={doc.id}
+                    href={`/documents/show/${doc.id}`}
+                    className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors group"
                   >
-                    {translate('dashboard.recentDocuments.viewAll')} →
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-foreground group-hover:text-primary transition-colors">
+                          {doc.title}
+                        </h4>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(doc.createdAt).toLocaleDateString()} •{' '}
+                          {translate(`documents.types.${doc.type}`)}
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      className={cn(
+                        'px-2.5 py-0.5 rounded-full text-xs font-medium border',
+                        statusColors[doc.status],
+                      )}
+                    >
+                      {translate(`documents.statuses.${doc.status}`)}
+                    </span>
                   </Link>
-                </div>
+                ))
               )}
             </div>
           </div>
         </div>
 
-        {/* Quick Actions & Activity */}
-        <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold">{translate('dashboard.quickActions.title')}</h2>
-            </div>
-            <div className="p-6">
-              <div className="space-y-3">
-                <Link
-                  href="/documents/create"
-                  className="block w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center font-medium"
-                >
-                  {translate('dashboard.quickActions.createDocument')}
-                </Link>
-                <Link
-                  href="/documents"
-                  className="block w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center font-medium"
-                >
-                  {translate('dashboard.quickActions.viewDocuments')}
-                </Link>
-                <Link
-                  href="/audit-logs"
-                  className="block w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center font-medium"
-                >
-                  {translate('dashboard.quickActions.auditLogs')}
-                </Link>
-              </div>
-
-              {/* Help Section */}
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                <h3 className="font-medium text-gray-900 mb-2">
-                  {translate('dashboard.help.title')}
-                </h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  {translate('dashboard.help.description')}
-                </p>
-                <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                  {translate('dashboard.help.learnMore')} →
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Activity Timeline */}
+        {/* Activity Feed */}
+        <div className="space-y-6">
           <ActivityTimeline
             activities={auditLogs}
             loading={auditLogsQuery.isLoading}

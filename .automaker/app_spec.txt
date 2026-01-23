@@ -2153,6 +2153,244 @@ This wasn&apos;t still fixd, please fix that error, then validate it through e2e
       <name>Add Skeleton Loading to Chat Interface</name>
       <description>Implement skeleton message bubbles in chat interface while AI response is being generated. Show pulsing skeleton for incoming message. Apply to both Legal Q&amp;A Chat and Pro chat modes. Ensure skeleton matches message bubble styling and positioning.</description>
     </feature>
+    <feature>
+      <name>Create Reusable Loading Skeleton Components</name>
+      <description>Create a comprehensive library of loading skeleton components to replace inconsistent GIF-based loading states. Implement skeleton screens for: 1) Table rows with shimmer effect, 2) Card grids, 3) Form inputs, 4) Detail views, 5) Dashboard widgets. Use shadcn/ui Skeleton component or custom CSS animations with consistent styling. Ensure skeletons match the exact layout of content to prevent layout shift.</description>
+    </feature>
+    <feature>
+      <name>Add Skeleton Loading to Audit Log List</name>
+      <description>Implement skeleton placeholder rows in audit log table view. Match audit log table structure with columns for timestamp, action, user, resource, and details. Use consistent skeleton animation. Handle both initial load and pagination loading states.</description>
+    </feature>
+    <feature>
+      <name>Fix chat endpoint validation for session ID</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Analyze CSRF Token Endpoint Configuration
+
+**Description:** Investigate why CSRF token requests are hitting /api/api/csrf-token (double api prefix) instead of the correct endpoint. Examine the GraphQL client configuration, CSRF token fetching logic, and backend route registration. Identify where the duplicate /api/ prefix is being introduced in the request path.
+
+---
+
+## Task Description
+
+After changes with csrf token, now the same chat endpoint returns bad request exception:
+
+{
+    &quot;errors&quot;: [
+        {
+            &quot;message&quot;: &quot;Bad Request Exception&quot;,
+            &quot;locations&quot;: [
+                {
+                    &quot;line&quot;: 3,
+                    &quot;column&quot;: 13
+                }
+            ],
+            &quot;path&quot;: [
+                &quot;askLegalQuestion&quot;
+            ],
+            &quot;extensions&quot;: {
+                &quot;code&quot;: &quot;BAD_REQUEST&quot;,
+                &quot;stacktrace&quot;: [
+                    &quot;BadRequestException: Bad Request Exception&quot;,
+                    &quot;    at ValidationPipe.exceptionFactory (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:107:20)&quot;,
+                    &quot;    at ValidationPipe.transform (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:74:30)&quot;,
+                    &quot;    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)&quot;,
+                    &quot;    at async resolveParamValue (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:136:31)&quot;,
+                    &quot;    at async Promise.all (index 0)&quot;,
+                    &quot;    at async pipesFn (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:138:13)&quot;,
+                    &quot;    at async /app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:66:17&quot;
+                ],
+                &quot;originalError&quot;: {
+                    &quot;message&quot;: [
+                        &quot;Session ID must be a valid UUID v4&quot;
+                    ],
+                    &quot;error&quot;: &quot;Bad Request&quot;,
+                    &quot;statusCode&quot;: 400
+                }
+            }
+        }
+    ],
+    &quot;data&quot;: null
+}</description>
+    </feature>
+    <feature>
+      <name>Fix custom page mutations save configuration error</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix custom page mutations configuration error on save
+
+**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings
+
+When using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that&apos;s the only place where it happens. Please firstly FOCUS on the /settings page, not other ones. Screenshot shows the error. Please use playwright to validate if fix was successful
+
+---
+
+## Task Description
+
+This is not fixed, fix that problem once and for all. You are not allowed to move htis task to complete until it&apos;s verified
+
+
+Focus on frontend problems, this is not graphql problem it&apos;s probably a separate page problem located at authenticated/settings/page.tsx</description>
+    </feature>
+    <feature>
+      <name>Fix settings page save data persistence</name>
+      <description>Fix Settings Page Save Functionality - setup of data source in refine.dev invalid
+
+Resolve the &quot;Custom query/mutation not configured properly&quot; error preventing data persistence on /settings page.
+
+Technical Implementation:
+- E2E Testing: Use Playwright to navigate to /settings and then to preferences and trigger save action
+- Error Root Cause: Likely missing or misconfigured refined.dev data source or custom page
+- Frontend: Check mutation query definition, variables mapping, refine.dev data sources/form settings
+
+Investigation Steps:
+1. Playwright Script:
+   - Navigate to login page, authenticate with admin@refine.dev/password
+   - Navigate to /settings or /settings then to preferences
+   - Interact with form fields (change any preference value)
+   - Click save button
+   - Capture error from network tab, console, or UI toast/alert
+
+2. Frontend Analysis:
+   - Locate save button handler and GraphQL mutation call
+   - Verify refine.dev custom mutation
+   - Check if mutation is properly exported from graphql files
+   - Review code based on https://refine.dev/core/docs/data/hooks/use-update/ and https://refine.dev/core/docs/data/hooks/use-custom-mutation/#basic-usage
+
+3. Backend Analysis:
+   - Find corresponding mutation resolver in schema/resolvers
+   - Verify resolver function signature and return type
+   - Check type definitions match between schema and resolvers
+   - Ensure mutation is registered in GraphQL module/registry
+
+Common Issues to Check:
+- Mutation not exported in GraphQL schema file
+- Resolver function name mismatch
+- Missing @Mutation decorator (NestJS) or resolver mapping
+- Incorrect input type or missing input validation
+- Auth/permission middleware blocking request
+- Apollo cache update policy causing silent failures
+
+Error Handling:
+- Check backend logs for resolver errors
+- Verify frontend error boundary catches GraphQL errors
+- Ensure proper error messages surface to user
+
+Files to Investigate:
+- Frontend: pages/settings/*.tsx, mutations/*.graphql, hooks/useSave*.ts
+- Backend: schema.graphql, resolvers/settings.resolver.ts, services/settings.service.ts
+
+Security: Verify mutation requires authentication and validates user permissions</description>
+    </feature>
+    <feature>
+      <name>Fix session ID validation in legal-ai chat</name>
+      <description>Fix error on legal-ai (chat) page:
+
+{
+    &quot;errors&quot;: [
+        {
+            &quot;message&quot;: &quot;Bad Request Exception&quot;,
+            &quot;locations&quot;: [
+                {
+                    &quot;line&quot;: 3,
+                    &quot;column&quot;: 13
+                }
+            ],
+            &quot;path&quot;: [
+                &quot;askLegalQuestion&quot;
+            ],
+            &quot;extensions&quot;: {
+                &quot;code&quot;: &quot;BAD_REQUEST&quot;,
+                &quot;stacktrace&quot;: [
+                    &quot;BadRequestException: Bad Request Exception&quot;,
+                    &quot;    at ValidationPipe.exceptionFactory (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:107:20)&quot;,
+                    &quot;    at ValidationPipe.transform (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:74:30)&quot;,
+                    &quot;    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)&quot;,
+                    &quot;    at async resolveParamValue (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:136:31)&quot;,
+                    &quot;    at async Promise.all (index 0)&quot;,
+                    &quot;    at async pipesFn (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:138:13)&quot;,
+                    &quot;    at async /app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:66:17&quot;
+                ],
+                &quot;originalError&quot;: {
+                    &quot;message&quot;: [
+                        &quot;Session ID must be a valid UUID v4&quot;
+                    ],
+                    &quot;error&quot;: &quot;Bad Request&quot;,
+                    &quot;statusCode&quot;: 400
+                }
+            }
+        }
+    ],
+    &quot;data&quot;: null
+}</description>
+    </feature>
+    <feature>
+      <name>Fix UI package exports for utils import</name>
+      <description>Fix:
+
+Build Error
+
+Module not found: Package path ./utils is not exported from package /app/apps/web/node_modules/@legal/ui (see exports field in /app/apps/web/node_modules/@legal/ui/package.json)
+
+./src/components/settings/settings-api-keys.tsx (17:1)
+
+Module not found: Package path ./utils is not exported from package /app/apps/web/node_modules/@legal/ui (see exports field in /app/apps/web/node_modules/@legal/ui/package.json)
+  15 | } from &apos;lucide-react&apos;;
+  16 | import { LoadingButton } from &apos;@legal/ui&apos;;
+&gt; 17 | import { cn } from &apos;@legal/ui/utils&apos;;
+     | ^
+  18 |
+  19 | interface ApiKey {
+  20 |   id: string;
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./src/app/(authenticated)/settings/page.tsx</description>
+    </feature>
+    <feature>
+      <name>Fix Settings Page E2E Test Failures</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix custom page mutations configuration error on save
+
+**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings
+
+When using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that&apos;s the only place where it happens
+
+---
+
+## Task Description
+
+E2E Testing for Settings Page - Fix Failing Tests
+
+Create and fix end-to-end tests specifically for the /settings page that are currently failing or non-existent. Screenshot shows the error
+
+Requirements:
+- Focus exclusively on the /settings page - do not modify or test other pages
+- Identify why existing tests are failing or what test coverage is missing
+- Write comprehensive e2e tests covering all functionality on the settings page including:
+  - All form inputs and controls
+  - Save/update operations
+  - Validation rules and error states
+  - Any toggles, dropdowns, or interactive elements
+  - Page load and rendering
+- Run the tests to verify they pass consistently
+- Fix any underlying issues in the /settings page that cause test failures
+- Ensure tests are stable and not flaky
+- Document what was broken and how it was fixed
+
+Success Criteria:
+- All e2e tests for /settings page pass reliably
+- Test coverage includes all major user interactions on the page
+- No regressions introduced to the /settings page functionality</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

@@ -1063,8 +1063,15 @@ export const dataProvider: DataProvider = {
         };
       }
       // If no explicit operation but url is provided, derive operation from url
-      else if (url && url.startsWith('/')) {
-        const operation = url.substring(1).replace(/^\//, '');
+      // Check both top-level url and url in values (refine may pass it differently)
+      else if (
+        (url && url.startsWith('/')) ||
+        ('url' in valuesObj &&
+          typeof valuesObj.url === 'string' &&
+          (valuesObj.url as string).startsWith('/'))
+      ) {
+        const urlValue = url || (valuesObj.url as string);
+        const operation = urlValue.substring(1).replace(/^\//, '');
         mutationConfig = {
           operation,
           fields: ['id'], // Default fields - will be overridden if returned
@@ -1084,13 +1091,23 @@ export const dataProvider: DataProvider = {
     }
 
     // Handle URL-based queries (useCustom with method: 'get')
-    if (!queryConfig && normalizedMethod === 'get' && url && url.startsWith('/')) {
-      const operation = url.substring(1).replace(/^\//, '');
-      queryConfig = {
-        operation,
-        fields: [], // Will be populated by caller if needed
-        args: undefined,
-      };
+    if (!queryConfig && normalizedMethod === 'get' && values && typeof values === 'object') {
+      const valuesObj = values as Record<string, unknown>;
+      // Check both top-level url and url in values (refine may pass it differently)
+      if (
+        (url && url.startsWith('/')) ||
+        ('url' in valuesObj &&
+          typeof valuesObj.url === 'string' &&
+          (valuesObj.url as string).startsWith('/'))
+      ) {
+        const urlValue = url || (valuesObj.url as string);
+        const operation = urlValue.substring(1).replace(/^\//, '');
+        queryConfig = {
+          operation,
+          fields: [], // Will be populated by caller if needed
+          args: undefined,
+        };
+      }
     }
 
     if (mutationConfig && normalizedMethod === 'post') {
@@ -1116,6 +1133,7 @@ export const dataProvider: DataProvider = {
         // For input objects, inline the values directly to avoid type inference issues
         const inputObj = mutationVars.input as Record<string, unknown>;
         const inputFields = Object.entries(inputObj)
+          .filter(([_, value]) => value !== '')
           .map(([key, value]) => {
             if (typeof value === 'string') {
               return `${key}: "${value}"`;
@@ -1143,6 +1161,7 @@ export const dataProvider: DataProvider = {
               // Handle nested objects (e.g., notificationPreferences.channels)
               // Build nested object literal for GraphQL
               const nestedFields = Object.entries(value as Record<string, unknown>)
+                .filter(([_, nestedValue]) => nestedValue !== '')
                 .map(([nestedKey, nestedValue]) => {
                   if (typeof nestedValue === 'string') {
                     return `${nestedKey}: "${nestedValue}"`;

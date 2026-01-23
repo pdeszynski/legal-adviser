@@ -68,13 +68,13 @@
 After completing any feature, ALWAYS run the following validation:
 
 1. **Linting** (via lint-staged on commit, or manually):
-   - Backend: `cd apps/backend && npx eslint .`
-   - Frontend: `cd apps/web && npx eslint .`
+   - Backend: `cd apps/backend && pnpm dlx eslint .`
+   - Frontend: `cd apps/web && pnpm dlx eslint .`
    - AI Engine: `cd apps/ai-engine && uv run ruff check .`
 
 2. **Type Checking**:
-   - Backend: `cd apps/backend && npx tsc --noEmit`
-   - Frontend: `cd apps/web && npx tsc --noEmit`
+   - Backend: `cd apps/backend && pnpm dlx tsc --noEmit`
+   - Frontend: `cd apps/web && pnpm dlx tsc --noEmit`
 
 3. **Run Unit Tests**:
    - Backend: `cd apps/backend && jest`
@@ -114,3 +114,38 @@ After completing any feature, ALWAYS run the following validation:
 - **NestJS Query**: Use auto-generated resolvers for standard CRUD. Use custom resolvers ONLY for business logic (AI triggers, etc.).
 - **Async Communication**: Use events for cross-module interaction in the backend.
 - **SSOT**: Environment variables are the only source for secrets/config.
+
+## Database Seeding
+
+### Seed File Location
+
+Seed data files are located in `apps/backend/src/seeds/data/`:
+
+- `users.seed.ts` - Default users for authentication and testing
+- `documents.seed.ts` - Sample legal documents
+- `audit-logs.seed.ts` - Sample audit log entries
+- `queries.seed.ts` - Sample legal queries
+- `rulings.seed.ts` - Sample court rulings
+- `sessions.seed.ts` - Sample user sessions
+- `analyses.seed.ts` - Sample legal analyses
+
+### Running Seeds
+
+To populate the database with seed data:
+
+```bash
+cd apps/backend
+pnpm seed
+```
+
+### Default Login Credentials
+
+| Email                  | Password      | Role         | Notes                      |
+| ---------------------- | ------------- | ------------ | -------------------------- |
+| `admin@refine.dev`     | `password`    | Admin        | Primary admin user         |
+| `lawyer@example.com`   | `password123` | Lawyer       | Sample lawyer user         |
+| `user@example.com`     | `password123` | Regular user | Sample regular user        |
+| `inactive@example.com` | `password123` | Inactive     | For testing inactive state |
+| `minimal@example.com`  | `password123` | Minimal      | User without username/name |
+
+**Note:** These are development credentials only. Ensure they are not used in production.

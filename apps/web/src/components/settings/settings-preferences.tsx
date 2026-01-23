@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslate, useCustomMutation } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
+import { Globe, Moon, Cpu, Clock, Calendar } from 'lucide-react';
 
 interface UserPreferences {
   id: string;
@@ -92,122 +93,152 @@ export function SettingsPreferences({ preferences }: { preferences: UserPreferen
   };
 
   return (
-    <div className="p-8">
+    <div className="max-w-2xl">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold mb-2">{translate('settings.preferences.title')}</h2>
-        <p className="text-gray-600">{translate('settings.preferences.description')}</p>
+        <h2 className="text-lg font-semibold mb-1">{translate('settings.preferences.title')}</h2>
+        <p className="text-sm text-muted-foreground">
+          {translate('settings.preferences.description')}
+        </p>
       </div>
 
       {isSuccess && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+        <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-700 dark:text-green-300 flex items-center gap-2">
           {translate('settings.preferences.successMessage')}
         </div>
       )}
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-700 dark:text-red-300">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Locale */}
-        <div>
-          <label htmlFor="locale" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="locale" className="block text-sm font-medium">
             {translate('settings.preferences.fields.locale')}
           </label>
-          <select
-            id="locale"
-            {...register('locale', { required: translate('validation.required') })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="en">English</option>
-            <option value="pl">Polski</option>
-            <option value="de">Deutsch</option>
-          </select>
-          {errors.locale && <p className="mt-1 text-sm text-red-600">{errors.locale.message}</p>}
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <Globe className="h-4 w-4" />
+            </div>
+            <select
+              id="locale"
+              {...register('locale', { required: translate('validation.required') })}
+              className="w-full pl-10 pr-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none"
+            >
+              <option value="en">English</option>
+              <option value="pl">Polski</option>
+              <option value="de">Deutsch</option>
+            </select>
+          </div>
+          {errors.locale && <p className="text-sm text-red-500">{errors.locale.message}</p>}
         </div>
 
         {/* Theme */}
-        <div>
-          <label htmlFor="theme" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="theme" className="block text-sm font-medium">
             {translate('settings.preferences.fields.theme')}
           </label>
-          <select
-            id="theme"
-            {...register('theme', { required: translate('validation.required') })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="SYSTEM">System</option>
-            <option value="LIGHT">Light</option>
-            <option value="DARK">Dark</option>
-          </select>
-          {errors.theme && <p className="mt-1 text-sm text-red-600">{errors.theme.message}</p>}
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <Moon className="h-4 w-4" />
+            </div>
+            <select
+              id="theme"
+              {...register('theme', { required: translate('validation.required') })}
+              className="w-full pl-10 pr-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none"
+            >
+              <option value="SYSTEM">System</option>
+              <option value="LIGHT">Light</option>
+              <option value="DARK">Dark</option>
+            </select>
+          </div>
+          {errors.theme && <p className="text-sm text-red-500">{errors.theme.message}</p>}
         </div>
 
         {/* AI Model */}
-        <div>
-          <label htmlFor="aiModel" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="aiModel" className="block text-sm font-medium">
             {translate('settings.preferences.fields.aiModel')}
           </label>
-          <select
-            id="aiModel"
-            {...register('aiModel', { required: translate('validation.required') })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="GPT_4_TURBO">GPT-4 Turbo (Recommended)</option>
-            <option value="GPT_4">GPT-4</option>
-            <option value="GPT_3_5_TURBO">GPT-3.5 Turbo</option>
-            <option value="CLAUDE_3_OPUS">Claude 3 Opus</option>
-            <option value="CLAUDE_3_SONNET">Claude 3 Sonnet</option>
-          </select>
-          {errors.aiModel && <p className="mt-1 text-sm text-red-600">{errors.aiModel.message}</p>}
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <Cpu className="h-4 w-4" />
+            </div>
+            <select
+              id="aiModel"
+              {...register('aiModel', { required: translate('validation.required') })}
+              className="w-full pl-10 pr-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none"
+            >
+              <option value="GPT_4_TURBO">GPT-4 Turbo (Recommended)</option>
+              <option value="GPT_4">GPT-4</option>
+              <option value="GPT_3_5_TURBO">GPT-3.5 Turbo</option>
+              <option value="CLAUDE_3_OPUS">Claude 3 Opus</option>
+              <option value="CLAUDE_3_SONNET">Claude 3 Sonnet</option>
+            </select>
+          </div>
+          {errors.aiModel && <p className="text-sm text-red-500">{errors.aiModel.message}</p>}
         </div>
 
-        {/* Timezone */}
-        <div>
-          <label htmlFor="timezone" className="block text-sm font-medium text-gray-700 mb-1">
-            {translate('settings.preferences.fields.timezone')}
-          </label>
-          <select
-            id="timezone"
-            {...register('timezone')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Select timezone</option>
-            <option value="Europe/Warsaw">Europe/Warsaw</option>
-            <option value="Europe/London">Europe/London</option>
-            <option value="Europe/Berlin">Europe/Berlin</option>
-            <option value="America/New_York">America/New_York</option>
-            <option value="America/Los_Angeles">America/Los_Angeles</option>
-            <option value="Asia/Tokyo">Asia/Tokyo</option>
-          </select>
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Timezone */}
+          <div className="space-y-2">
+            <label htmlFor="timezone" className="block text-sm font-medium">
+              {translate('settings.preferences.fields.timezone')}
+            </label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <Clock className="h-4 w-4" />
+              </div>
+              <select
+                id="timezone"
+                {...register('timezone')}
+                className="w-full pl-10 pr-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none"
+              >
+                <option value="">Select timezone</option>
+                <option value="Europe/Warsaw">Europe/Warsaw</option>
+                <option value="Europe/London">Europe/London</option>
+                <option value="Europe/Berlin">Europe/Berlin</option>
+                <option value="America/New_York">America/New_York</option>
+                <option value="America/Los_Angeles">America/Los_Angeles</option>
+                <option value="Asia/Tokyo">Asia/Tokyo</option>
+              </select>
+            </div>
+          </div>
 
-        {/* Date Format */}
-        <div>
-          <label htmlFor="dateFormat" className="block text-sm font-medium text-gray-700 mb-1">
-            {translate('settings.preferences.fields.dateFormat')}
-          </label>
-          <select
-            id="dateFormat"
-            {...register('dateFormat')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Select format</option>
-            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-          </select>
+          {/* Date Format */}
+          <div className="space-y-2">
+            <label htmlFor="dateFormat" className="block text-sm font-medium">
+              {translate('settings.preferences.fields.dateFormat')}
+            </label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+              </div>
+              <select
+                id="dateFormat"
+                {...register('dateFormat')}
+                className="w-full pl-10 pr-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none"
+              >
+                <option value="">Select format</option>
+                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end pt-4 border-t">
+        <div className="flex justify-end pt-4 border-t border-border mt-8">
           <LoadingButton
             type="submit"
             isLoading={isLoading}
             loadingText={translate('settings.preferences.saving')}
             disabled={!isDirty}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-6"
           >
             {translate('settings.preferences.saveButton')}
           </LoadingButton>

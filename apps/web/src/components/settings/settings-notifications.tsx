@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslate, useCustomMutation } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
+import { Bell, Mail, Smartphone } from 'lucide-react';
 
 interface UserPreferences {
   id: string;
@@ -62,18 +63,18 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
   } = useForm<UpdateNotificationsInput>({
     defaultValues: {
       notificationPreferences: {
-        documentUpdates: preferences.notificationPreferences.documentUpdates,
-        queryResponses: preferences.notificationPreferences.queryResponses,
-        systemAlerts: preferences.notificationPreferences.systemAlerts,
-        marketingEmails: preferences.notificationPreferences.marketingEmails,
+        documentUpdates: preferences?.notificationPreferences?.documentUpdates ?? false,
+        queryResponses: preferences?.notificationPreferences?.queryResponses ?? false,
+        systemAlerts: preferences?.notificationPreferences?.systemAlerts ?? false,
+        marketingEmails: preferences?.notificationPreferences?.marketingEmails ?? false,
         channels: {
-          email: preferences.notificationPreferences.channels.email,
-          inApp: preferences.notificationPreferences.channels.inApp,
-          push: preferences.notificationPreferences.channels.push,
+          email: preferences?.notificationPreferences?.channels?.email ?? false,
+          inApp: preferences?.notificationPreferences?.channels?.inApp ?? false,
+          push: preferences?.notificationPreferences?.channels?.push ?? false,
         },
       },
-      emailNotifications: preferences.emailNotifications,
-      inAppNotifications: preferences.inAppNotifications,
+      emailNotifications: preferences?.emailNotifications ?? false,
+      inAppNotifications: preferences?.inAppNotifications ?? false,
     },
   });
 
@@ -108,71 +109,74 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
   };
 
   return (
-    <div className="p-8">
+    <div className="max-w-2xl">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold mb-2">{translate('settings.notifications.title')}</h2>
-        <p className="text-gray-600">{translate('settings.notifications.description')}</p>
+        <h2 className="text-lg font-semibold mb-1">{translate('settings.notifications.title')}</h2>
+        <p className="text-sm text-muted-foreground">
+          {translate('settings.notifications.description')}
+        </p>
       </div>
 
       {isSuccess && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+        <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-700 dark:text-green-300 flex items-center gap-2">
           {translate('settings.notifications.successMessage')}
         </div>
       )}
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-700 dark:text-red-300">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Notification Types */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-3">
+          <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <Bell className="h-4 w-4" />
             {translate('settings.notifications.sections.types')}
           </h3>
-          <div className="space-y-3">
-            <label className="flex items-center">
+          <div className="space-y-1 bg-card border border-border rounded-xl p-4">
+            <label className="flex items-center p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <input
                 type="checkbox"
                 {...register('notificationPreferences.documentUpdates')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
               />
-              <span className="ml-3 text-sm text-gray-700">
+              <span className="ml-3 text-sm">
                 {translate('settings.notifications.fields.documentUpdates')}
               </span>
             </label>
 
-            <label className="flex items-center">
+            <label className="flex items-center p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <input
                 type="checkbox"
                 {...register('notificationPreferences.queryResponses')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
               />
-              <span className="ml-3 text-sm text-gray-700">
+              <span className="ml-3 text-sm">
                 {translate('settings.notifications.fields.queryResponses')}
               </span>
             </label>
 
-            <label className="flex items-center">
+            <label className="flex items-center p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <input
                 type="checkbox"
                 {...register('notificationPreferences.systemAlerts')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
               />
-              <span className="ml-3 text-sm text-gray-700">
+              <span className="ml-3 text-sm">
                 {translate('settings.notifications.fields.systemAlerts')}
               </span>
             </label>
 
-            <label className="flex items-center">
+            <label className="flex items-center p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <input
                 type="checkbox"
                 {...register('notificationPreferences.marketingEmails')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
               />
-              <span className="ml-3 text-sm text-gray-700">
+              <span className="ml-3 text-sm">
                 {translate('settings.notifications.fields.marketingEmails')}
               </span>
             </label>
@@ -181,39 +185,40 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
 
         {/* Notification Channels */}
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-3">
+          <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+            <Mail className="h-4 w-4" />
             {translate('settings.notifications.sections.channels')}
           </h3>
-          <div className="space-y-3">
-            <label className="flex items-center">
+          <div className="space-y-1 bg-card border border-border rounded-xl p-4">
+            <label className="flex items-center p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <input
                 type="checkbox"
                 {...register('notificationPreferences.channels.email')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
               />
-              <span className="ml-3 text-sm text-gray-700">
+              <span className="ml-3 text-sm">
                 {translate('settings.notifications.fields.email')}
               </span>
             </label>
 
-            <label className="flex items-center">
+            <label className="flex items-center p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <input
                 type="checkbox"
                 {...register('notificationPreferences.channels.inApp')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
               />
-              <span className="ml-3 text-sm text-gray-700">
+              <span className="ml-3 text-sm">
                 {translate('settings.notifications.fields.inApp')}
               </span>
             </label>
 
-            <label className="flex items-center">
+            <label className="flex items-center p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <input
                 type="checkbox"
                 {...register('notificationPreferences.channels.push')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
               />
-              <span className="ml-3 text-sm text-gray-700">
+              <span className="ml-3 text-sm">
                 {translate('settings.notifications.fields.push')}
               </span>
             </label>
@@ -221,29 +226,29 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
         </div>
 
         {/* Legacy Settings (for backward compatibility) */}
-        <div className="pt-4 border-t">
-          <h3 className="text-lg font-medium text-gray-900 mb-3">
+        <div className="pt-4 border-t border-border">
+          <h3 className="text-sm font-semibold mb-3 text-muted-foreground flex items-center gap-2">
             {translate('settings.notifications.sections.legacy')}
           </h3>
-          <div className="space-y-3">
-            <label className="flex items-center">
+          <div className="space-y-1 bg-muted/30 border border-border rounded-xl p-4">
+            <label className="flex items-center p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <input
                 type="checkbox"
                 {...register('emailNotifications')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
               />
-              <span className="ml-3 text-sm text-gray-700">
+              <span className="ml-3 text-sm">
                 {translate('settings.notifications.fields.emailNotifications')}
               </span>
             </label>
 
-            <label className="flex items-center">
+            <label className="flex items-center p-2 rounded-lg hover:bg-muted/50 transition-colors">
               <input
                 type="checkbox"
                 {...register('inAppNotifications')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
               />
-              <span className="ml-3 text-sm text-gray-700">
+              <span className="ml-3 text-sm">
                 {translate('settings.notifications.fields.inAppNotifications')}
               </span>
             </label>
@@ -251,12 +256,13 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end pt-4 border-t">
+        <div className="flex justify-end pt-4 border-t border-border mt-8">
           <LoadingButton
             type="submit"
             isLoading={isLoading}
             loadingText={translate('settings.notifications.saving')}
             disabled={!isDirty}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-6"
           >
             {translate('settings.notifications.saveButton')}
           </LoadingButton>

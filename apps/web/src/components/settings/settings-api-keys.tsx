@@ -2,7 +2,18 @@
 
 import { useState, type Dispatch } from 'react';
 import { useTranslate, useCustom, useCustomMutation, useNotification } from '@refinedev/core';
-import { Copy, Eye, EyeOff, Trash2, Plus } from 'lucide-react';
+import {
+  Copy,
+  Eye,
+  EyeOff,
+  Trash2,
+  Plus,
+  Key,
+  Calendar,
+  Activity,
+  AlertTriangle,
+  ShieldCheck,
+} from 'lucide-react';
 import { LoadingButton } from '@legal/ui';
 
 interface ApiKey {
@@ -251,34 +262,36 @@ export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-300 dark:border-green-500/20';
       case 'revoked':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-300 dark:border-red-500/20';
       case 'expired':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-500/10 dark:text-gray-300 dark:border-gray-500/20';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-500/10 dark:text-gray-300 dark:border-gray-500/20';
     }
   };
 
   if (isLoading) {
     return (
-      <div className="p-8">
-        <div className="text-center text-gray-500">{translate('loading')}</div>
+      <div className="flex justify-center items-center h-48">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="p-8">
+    <div className="max-w-4xl">
       <div className="mb-6 flex justify-between items-start">
         <div>
-          <h2 className="text-2xl font-semibold mb-2">{translate('settings.apiKeys.title')}</h2>
-          <p className="text-gray-600">{translate('settings.apiKeys.description')}</p>
+          <h2 className="text-lg font-semibold mb-1">{translate('settings.apiKeys.title')}</h2>
+          <p className="text-sm text-muted-foreground">
+            {translate('settings.apiKeys.description')}
+          </p>
         </div>
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors text-sm font-medium shadow-sm"
         >
           <Plus className="w-4 h-4" />
           {translate('settings.apiKeys.createButton')}
@@ -287,13 +300,14 @@ export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
 
       {/* New API Key Display */}
       {newlyCreatedKey && showRawKey && (
-        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
           <div className="flex justify-between items-start mb-2">
             <div>
-              <h3 className="font-medium text-yellow-900">
+              <h3 className="font-medium text-yellow-700 dark:text-yellow-400 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4" />
                 {translate('settings.apiKeys.newKeyTitle')}
               </h3>
-              <p className="text-sm text-yellow-700">
+              <p className="text-sm text-yellow-600 dark:text-yellow-500/90 mt-1">
                 {translate('settings.apiKeys.newKeyWarning')}
               </p>
             </div>
@@ -302,24 +316,24 @@ export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
                 setNewlyCreatedKey(null);
                 setShowRawKey(false);
               }}
-              className="text-yellow-700 hover:text-yellow-900"
+              className="text-yellow-700 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300"
             >
               ×
             </button>
           </div>
           <div className="mt-3 flex gap-2">
-            <code className="flex-1 px-3 py-2 bg-white border border-yellow-300 rounded text-sm font-mono">
+            <code className="flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm font-mono flex items-center">
               {showRawKey ? newlyCreatedKey.rawKey : '••••••••••••'}
             </code>
             <button
               onClick={() => setShowRawKey(!showRawKey)}
-              className="px-3 py-2 bg-yellow-100 border border-yellow-300 rounded hover:bg-yellow-200"
+              className="px-3 py-2 bg-background border border-border rounded-lg hover:bg-muted transition-colors"
             >
               {showRawKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
             <button
               onClick={() => copyToClipboard(newlyCreatedKey.rawKey)}
-              className="px-3 py-2 bg-yellow-100 border border-yellow-300 rounded hover:bg-yellow-200"
+              className="px-3 py-2 bg-background border border-border rounded-lg hover:bg-muted transition-colors"
             >
               <Copy className="w-4 h-4" />
             </button>
@@ -329,11 +343,17 @@ export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
 
       {/* API Keys List */}
       {apiKeys.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-500 mb-4">{translate('settings.apiKeys.noKeys')}</p>
+        <div className="text-center py-12 bg-muted/30 rounded-2xl border border-dashed border-border px-4">
+          <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+            <Key className="w-6 h-6 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-medium mb-1">{translate('settings.apiKeys.noKeys')}</h3>
+          <p className="text-muted-foreground mb-4 text-sm max-w-sm mx-auto">
+            {translate('settings.apiKeys.noKeysDescription')}
+          </p>
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
           >
             {translate('settings.apiKeys.createFirstButton')}
           </button>
@@ -343,52 +363,70 @@ export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
           {apiKeys.map((apiKey) => (
             <div
               key={apiKey.id}
-              className="p-4 border rounded-lg hover:border-gray-300 transition-colors"
+              className="p-5 border border-border rounded-xl bg-card hover:shadow-sm transition-all"
             >
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-medium text-lg">{apiKey.name}</h3>
+              <div className="flex justify-between items-start gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
+                    <h3 className="font-semibold text-base truncate">{apiKey.name}</h3>
                     <span
-                      className={`px-2 py-1 text-xs font-medium rounded ${getStatusBadgeClass(apiKey.status)}`}
+                      className={`px-2 py-0.5 text-xs font-medium rounded-md border ${getStatusBadgeClass(apiKey.status)}`}
                     >
                       {translate(`settings.apiKeys.status.${apiKey.status}`)}
                     </span>
                   </div>
                   {apiKey.description && (
-                    <p className="text-sm text-gray-600 mb-2">{apiKey.description}</p>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                      {apiKey.description}
+                    </p>
                   )}
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <span className="font-mono">{apiKey.keyPrefix}...</span>
-                    <span>
-                      {translate('settings.apiKeys.usageCount')}: {apiKey.usageCount}
-                    </span>
-                    <span>
-                      {translate('settings.apiKeys.lastUsed')}: {formatDate(apiKey.lastUsedAt)}
-                    </span>
-                    {apiKey.expiresAt && (
-                      <span>
-                        {translate('settings.apiKeys.expires')}: {formatDate(apiKey.expiresAt)}
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs text-muted-foreground mt-4">
+                    <div className="flex items-center gap-1.5">
+                      <Key className="w-3.5 h-3.5" />
+                      <span className="font-mono bg-muted/50 px-1.5 py-0.5 rounded">
+                        {apiKey.keyPrefix}...
                       </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Activity className="w-3.5 h-3.5" />
+                      <span>
+                        {translate('settings.apiKeys.usageCount')}: {apiKey.usageCount}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>
+                        {translate('settings.apiKeys.lastUsed')}: {formatDate(apiKey.lastUsedAt)}
+                      </span>
+                    </div>
+                    {apiKey.expiresAt && (
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5" />
+                        <span>
+                          {translate('settings.apiKeys.expires')}: {formatDate(apiKey.expiresAt)}
+                        </span>
+                      </div>
                     )}
                   </div>
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {apiKey.scopes.map((scope) => (
+
+                  <div className="mt-4 flex flex-wrap gap-1.5">
+                    {apiKey.scopes?.map((scope) => (
                       <span
                         key={scope}
-                        className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded"
+                        className="px-2 py-0.5 text-[10px] uppercase tracking-wider font-semibold bg-blue-50 text-blue-700 border border-blue-100 dark:bg-blue-500/10 dark:text-blue-300 dark:border-blue-500/20 rounded-md"
                       >
-                        {scope}
+                        {scope.split(':')[1]}
                       </span>
-                    ))}
+                    )) ?? null}
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 shrink-0">
                   {apiKey.status === 'active' && (
                     <button
                       onClick={() => handleRevokeApiKey(apiKey.id)}
                       disabled={isRevoking}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+                      className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                       title={translate('settings.apiKeys.revokeButton')}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -398,7 +436,7 @@ export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
                     <button
                       onClick={() => handleDeleteApiKey(apiKey.id)}
                       disabled={isDeleting}
-                      className="p-2 text-gray-600 hover:bg-gray-50 rounded transition-colors"
+                      className="p-2 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
                       title={translate('settings.apiKeys.deleteButton')}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -413,16 +451,16 @@ export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
 
       {/* Create API Key Modal */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-background rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-border">
             <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-semibold">
                   {translate('settings.apiKeys.createModalTitle')}
                 </h3>
                 <button
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   ×
                 </button>
@@ -440,14 +478,24 @@ export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
       )}
 
       {/* Security Notice */}
-      <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-        <h3 className="font-medium text-gray-900 mb-2">
+      <div className="mt-8 p-6 bg-blue-500/5 border border-blue-500/10 rounded-2xl">
+        <h3 className="font-semibold text-blue-700 dark:text-blue-400 mb-3 flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4" />
           {translate('settings.apiKeys.securityNotice.title')}
         </h3>
-        <ul className="text-sm text-gray-700 space-y-1">
-          <li>• {translate('settings.apiKeys.securityNotice.tip1')}</li>
-          <li>• {translate('settings.apiKeys.securityNotice.tip2')}</li>
-          <li>• {translate('settings.apiKeys.securityNotice.tip3')}</li>
+        <ul className="text-sm text-muted-foreground space-y-2">
+          <li className="flex items-start gap-2">
+            <span className="text-blue-500">•</span>
+            {translate('settings.apiKeys.securityNotice.tip1')}
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-blue-500">•</span>
+            {translate('settings.apiKeys.securityNotice.tip2')}
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-blue-500">•</span>
+            {translate('settings.apiKeys.securityNotice.tip3')}
+          </li>
         </ul>
       </div>
     </div>
@@ -501,51 +549,73 @@ function CreateApiKeyForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Name */}
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-          {translate('settings.apiKeys.fields.name')} *
-        </label>
-        <input
-          id="name"
-          type="text"
-          required
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder={translate('settings.apiKeys.fields.namePlaceholder')}
-        />
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Name */}
+        <div className="space-y-2">
+          <label htmlFor="name" className="block text-sm font-medium">
+            {translate('settings.apiKeys.fields.name')} *
+          </label>
+          <input
+            id="name"
+            type="text"
+            required
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="w-full px-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            placeholder={translate('settings.apiKeys.fields.namePlaceholder')}
+          />
+        </div>
+
+        {/* Rate Limit */}
+        <div className="space-y-2">
+          <label htmlFor="rateLimit" className="block text-sm font-medium">
+            {translate('settings.apiKeys.fields.rateLimit')}
+          </label>
+          <input
+            id="rateLimit"
+            type="number"
+            min="1"
+            value={formData.rateLimitPerMinute}
+            onChange={(e) =>
+              setFormData({ ...formData, rateLimitPerMinute: Number.parseInt(e.target.value) || 0 })
+            }
+            className="w-full px-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+          />
+        </div>
       </div>
 
       {/* Description */}
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+      <div className="space-y-2">
+        <label htmlFor="description" className="block text-sm font-medium">
           {translate('settings.apiKeys.fields.description')}
         </label>
         <textarea
           id="description"
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"
           rows={2}
           placeholder={translate('settings.apiKeys.fields.descriptionPlaceholder')}
         />
       </div>
 
       {/* Scopes */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+      <div className="space-y-2">
+        <label className="block text-sm font-medium mb-1">
           {translate('settings.apiKeys.fields.scopes')} *
         </label>
-        <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-lg p-3">
+        <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto border border-border rounded-xl p-4 bg-muted/20">
           {API_KEY_SCOPES.map((scope) => (
-            <label key={scope.value} className="flex items-center gap-2 text-sm cursor-pointer">
+            <label
+              key={scope.value}
+              className="flex items-center gap-3 text-sm cursor-pointer p-2 rounded-lg hover:bg-muted/50 transition-colors"
+            >
               <input
                 type="checkbox"
                 checked={selectedScopes.includes(scope.value)}
                 onChange={() => toggleScope(scope.value)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-input text-primary focus:ring-primary h-4 w-4"
               />
               {scope.label}
             </label>
@@ -553,29 +623,9 @@ function CreateApiKeyForm({
         </div>
       </div>
 
-      {/* Rate Limit */}
-      <div>
-        <label htmlFor="rateLimit" className="block text-sm font-medium text-gray-700 mb-1">
-          {translate('settings.apiKeys.fields.rateLimit')}
-        </label>
-        <input
-          id="rateLimit"
-          type="number"
-          min="1"
-          value={formData.rateLimitPerMinute}
-          onChange={(e) =>
-            setFormData({ ...formData, rateLimitPerMinute: parseInt(e.target.value) || 0 })
-          }
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-        <p className="mt-1 text-xs text-gray-500">
-          {translate('settings.apiKeys.fields.rateLimitHint')}
-        </p>
-      </div>
-
       {/* Expiration */}
-      <div>
-        <label htmlFor="expiresAt" className="block text-sm font-medium text-gray-700 mb-1">
+      <div className="space-y-2">
+        <label htmlFor="expiresAt" className="block text-sm font-medium">
           {translate('settings.apiKeys.fields.expiresAt')}
         </label>
         <input
@@ -583,20 +633,20 @@ function CreateApiKeyForm({
           type="datetime-local"
           value={formData.expiresAt}
           onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="text-xs text-muted-foreground">
           {translate('settings.apiKeys.fields.expiresAtHint')}
         </p>
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t">
+      <div className="flex justify-end gap-3 pt-6 border-t border-border mt-8">
         <button
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+          className="px-4 py-2 border border-border rounded-lg hover:bg-muted disabled:opacity-50 transition-colors"
         >
           {translate('settings.apiKeys.cancelButton')}
         </button>
@@ -605,6 +655,7 @@ function CreateApiKeyForm({
           isLoading={isLoading}
           loadingText={translate('settings.apiKeys.creating')}
           disabled={selectedScopes.length === 0}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-6"
         >
           {translate('settings.apiKeys.createButton')}
         </LoadingButton>

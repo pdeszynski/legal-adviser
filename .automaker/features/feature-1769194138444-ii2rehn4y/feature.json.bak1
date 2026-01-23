@@ -17,15 +17,15 @@
   "thinkingLevel": "none",
   "reasoningEffort": "none",
   "branchName": "002-legal-ai-core",
-  "priority": 2,
+  "priority": 1,
   "planningMode": "skip",
   "requirePlanApproval": false,
   "dependencies": [
     "feature-1769191072561-dens23yck"
   ],
-  "workMode": "current",
+  "workMode": "custom",
   "titleGenerating": false,
-  "status": "backlog",
+  "status": "in_progress",
   "id": "feature-1769194138444-ii2rehn4y",
   "descriptionHistory": [
     {
@@ -33,5 +33,7 @@
       "timestamp": "2026-01-23T18:48:58.496Z",
       "source": "initial"
     }
-  ]
+  ],
+  "startedAt": "2026-01-23T19:29:48.157Z",
+  "updatedAt": "2026-01-23T19:31:28.922Z"
 }

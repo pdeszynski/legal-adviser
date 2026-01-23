@@ -5,6 +5,8 @@ import { StreamingViewer } from './StreamingViewer';
 import { ChatMessage } from './chat-interface';
 import { CitationRenderer } from './citation-renderer';
 import { MessageSkeleton } from './message-skeleton';
+import { Bot, User } from 'lucide-react';
+import { cn } from '@legal/ui';
 
 interface MessageListProps {
   readonly messages: ChatMessage[];
@@ -20,61 +22,44 @@ interface MessageListProps {
  */
 export function MessageList({ messages, isLoading }: MessageListProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl mx-auto w-full pb-4">
       {messages.map((message) => (
         <div
           key={message.id}
-          className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          className={cn(
+            'flex gap-4 w-full',
+            message.role === 'user' ? 'justify-end' : 'justify-start',
+          )}
         >
-          <div
-            className={`max-w-[80%] rounded-lg px-4 py-3 ${
-              message.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
-            }`}
-          >
-            {/* Message Header */}
-            <div className="flex items-center gap-2 mb-2">
-              <div className="flex items-center gap-2">
-                {message.role === 'user' ? (
-                  <>
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span className="text-xs font-medium">You</span>
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span className="text-xs font-medium">AI Assistant</span>
-                  </>
-                )}
-              </div>
-              <span className="text-xs opacity-70">
-                {new Date(message.timestamp).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </span>
+          {/* Avatar for AI */}
+          {message.role === 'assistant' && (
+            <div className="h-8 w-8 rounded-full border border-border bg-muted flex items-center justify-center flex-shrink-0 mt-1">
+              <Bot className="h-4 w-4 text-muted-foreground" />
             </div>
+          )}
+
+          <div
+            className={cn(
+              'max-w-[85%] rounded-2xl px-5 py-3.5 shadow-sm',
+              message.role === 'user'
+                ? 'bg-primary text-primary-foreground rounded-tr-sm'
+                : 'bg-card border border-border text-card-foreground rounded-tl-sm',
+            )}
+          >
+            {/* Header only for AI to show logic/citation status or just cleaner look? 
+                Actually user doesn't need header. AI maybe. 
+                Let's keep it clean and minimal.
+            */}
 
             {/* Message Content */}
             {message.role === 'user' ? (
-              <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
             ) : (
-              <div className="text-sm">
+              <div className="text-sm leading-relaxed">
                 <StreamingViewer
                   content={message.content}
                   isStreaming={message.isStreaming || false}
-                  className="prose prose-blue max-w-none"
+                  className="prose prose-sm dark:prose-invert max-w-none"
                   autoScroll={false}
                 />
               </div>
@@ -82,11 +67,30 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
 
             {/* Citations */}
             {message.citations && message.citations.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-gray-300/30">
+              <div className="mt-3 pt-3 border-t border-border/50">
                 <CitationRenderer citations={message.citations} />
               </div>
             )}
+
+            <div
+              className={cn(
+                'text-[10px] mt-1 opacity-70 flex justify-end',
+                message.role === 'user' ? 'text-primary-foreground/70' : 'text-muted-foreground',
+              )}
+            >
+              {new Date(message.timestamp).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </div>
           </div>
+
+          {/* Avatar for User */}
+          {message.role === 'user' && (
+            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
+              <User className="h-4 w-4 text-primary" />
+            </div>
+          )}
         </div>
       ))}
 

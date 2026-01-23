@@ -36,7 +36,7 @@ This project is structured as a **monorepo** containing three main applications:
 
 ```bash
 # Install PNPM (if not already installed)
-npm install -g pnpm
+pnpm add -g pnpm
 
 # Install UV (if not already installed)
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -63,6 +63,7 @@ docker-compose up -d
 ```
 
 This will start:
+
 - **PostgreSQL** on `localhost:5432`
   - Database: `legal_ai_db`
   - User: `postgres`
@@ -74,6 +75,7 @@ This will start:
 Create `.env` files for each application:
 
 #### Backend (`apps/backend/.env`)
+
 ```env
 DATABASE_URL=postgresql://postgres:password@localhost:5432/legal_ai_db
 REDIS_URL=redis://localhost:6379
@@ -82,6 +84,7 @@ AI_ENGINE_URL=http://localhost:8000
 ```
 
 #### AI Engine (`apps/ai-engine/.env`)
+
 ```env
 # Add your AI provider API keys
 OPENAI_API_KEY=your-openai-key
@@ -89,6 +92,7 @@ OPENAI_API_KEY=your-openai-key
 ```
 
 #### Frontend (`apps/web/.env.local`)
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3001/graphql
 ```
@@ -98,6 +102,48 @@ NEXT_PUBLIC_API_URL=http://localhost:3001/graphql
 The database will be automatically set up when you run the backend for the first time. TypeORM will handle entity synchronization in development mode.
 
 For production, you'll need to set up migrations. Add the following scripts to `apps/backend/package.json`:
+
+```json
+"typeorm": "typeorm-ts-node-commonjs",
+"migration:generate": "npm run typeorm -- migration:generate",
+"migration:run": "npm run typeorm -- migration:run",
+"migration:revert": "npm run typeorm -- migration:revert"
+```
+
+### 4.1. Database Seeding
+
+The application includes seed data for development and testing. Seed files are located in `apps/backend/src/seeds/data/`:
+
+- `users.seed.ts` - Default users for authentication
+- `documents.seed.ts` - Sample legal documents
+- `audit-logs.seed.ts` - Sample audit log entries
+- `queries.seed.ts` - Sample legal queries
+- `rulings.seed.ts` - Sample court rulings
+- `sessions.seed.ts` - Sample user sessions
+- `analyses.seed.ts` - Sample legal analyses
+
+#### Running Seed Data
+
+To populate the database with seed data, run the seed command from the backend directory:
+
+```bash
+cd apps/backend
+pnpm seed
+```
+
+#### Default Login Credentials
+
+After seeding, you can log in with these default credentials:
+
+| Email                  | Password      | Role         | Notes                      |
+| ---------------------- | ------------- | ------------ | -------------------------- |
+| `admin@refine.dev`     | `password`    | Admin        | Primary admin user         |
+| `lawyer@example.com`   | `password123` | Lawyer       | Sample lawyer user         |
+| `user@example.com`     | `password123` | Regular user | Sample regular user        |
+| `inactive@example.com` | `password123` | Inactive     | For testing inactive state |
+| `minimal@example.com`  | `password123` | Minimal      | User without username/name |
+
+**Note:** These credentials are for development only. Change them in production.
 
 ```json
 "typeorm": "typeorm-ts-node-commonjs",
@@ -122,6 +168,7 @@ pnpm dev
 #### Run Individual Services
 
 **Frontend:**
+
 ```bash
 cd apps/web
 pnpm dev
@@ -129,6 +176,7 @@ pnpm dev
 ```
 
 **Backend:**
+
 ```bash
 cd apps/backend
 pnpm start:dev
@@ -137,6 +185,7 @@ pnpm start:dev
 ```
 
 **AI Engine:**
+
 ```bash
 cd apps/ai-engine
 uv run uvicorn src.main:app --reload
@@ -241,6 +290,7 @@ pnpm build
 ### Build Individual Applications
 
 **Frontend:**
+
 ```bash
 cd apps/web
 pnpm build
@@ -248,6 +298,7 @@ pnpm build
 ```
 
 **Backend:**
+
 ```bash
 cd apps/backend
 pnpm build
@@ -255,6 +306,7 @@ pnpm build
 ```
 
 **AI Engine:**
+
 ```bash
 cd apps/ai-engine
 uv build
@@ -274,12 +326,14 @@ docker build -t legal-ai-engine -f apps/ai-engine/Dockerfile .
 ### Run Linters
 
 **All Projects:**
+
 ```bash
 # From root directory (runs lint on all apps via Turbo)
 pnpm lint
 ```
 
 **Frontend:**
+
 ```bash
 cd apps/web
 pnpm lint
@@ -287,6 +341,7 @@ pnpm lint
 ```
 
 **Backend:**
+
 ```bash
 cd apps/backend
 pnpm lint
@@ -294,6 +349,7 @@ pnpm lint
 ```
 
 **AI Engine:**
+
 ```bash
 cd apps/ai-engine
 # Install ruff if not already available
@@ -312,18 +368,21 @@ uv run ruff format .
 ### Format Code
 
 **All Projects:**
+
 ```bash
 # From root directory (formats TypeScript files)
 pnpm format
 ```
 
 **Backend Only:**
+
 ```bash
 cd apps/backend
 pnpm format
 ```
 
 **AI Engine:**
+
 ```bash
 cd apps/ai-engine
 uv run ruff format .
@@ -332,6 +391,7 @@ uv run ruff format .
 ### Type Checking
 
 **TypeScript Projects:**
+
 ```bash
 # TypeScript compilation check
 cd apps/backend
@@ -342,6 +402,7 @@ pnpm build  # This will check types during build
 ```
 
 **Python Project:**
+
 ```bash
 cd apps/ai-engine
 # Install mypy if not already available
@@ -356,6 +417,7 @@ uv run mypy src/
 ### Code Generation
 
 **Generate GraphQL Types (Frontend):**
+
 ```bash
 cd apps/web
 # Note: GraphQL codegen needs to be configured first
@@ -365,6 +427,7 @@ pnpm codegen
 ```
 
 **Export OpenAPI Schema (AI Engine):**
+
 ```bash
 cd apps/ai-engine
 uv run python src/export_openapi.py
@@ -391,6 +454,7 @@ pnpm migration:revert
 ### View Queue Dashboard (Bull Board)
 
 When the backend is running, visit:
+
 ```
 http://localhost:3001/admin/queues
 ```
@@ -398,6 +462,7 @@ http://localhost:3001/admin/queues
 ## 🌍 Internationalization
 
 The platform supports multiple languages:
+
 - English (default)
 - Polish
 - German
@@ -452,6 +517,7 @@ docker-compose restart postgres
 ### Port Already in Use
 
 If you get port conflicts, check and kill processes:
+
 ```bash
 # Check what's using port 3000 (frontend)
 lsof -i :3000
@@ -480,4 +546,3 @@ docker-compose up -d
 ## 📞 Support
 
 For questions or issues, please refer to the project documentation in the `specs/` directory or open an issue in the repository.
-

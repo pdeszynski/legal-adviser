@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769197086716-3897b983",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T19:38:06.716Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769196982759-1j761vway",
+  "featureName": "Fix UI package exports for utils import",
+  "error": "Feature completed in 100s - auto-verified",
+  "passes": true
+}

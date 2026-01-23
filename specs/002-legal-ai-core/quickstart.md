@@ -49,3 +49,22 @@ Located in `apps/backend`.
 Located in `apps/ai-engine`.
 
 - Docs: `http://localhost:8000/docs`
+
+## Default Login Credentials
+
+After running database seeds, use these credentials to log in:
+
+| Email                | Password      | Role         |
+| -------------------- | ------------- | ------------ |
+| `admin@refine.dev`   | `password`    | Admin        |
+| `lawyer@example.com` | `password123` | Lawyer       |
+| `user@example.com`   | `password123` | Regular User |
+
+To seed the database:
+
+```bash
+cd apps/backend
+pnpm seed
+```
+
+**Note:** These are development credentials only.

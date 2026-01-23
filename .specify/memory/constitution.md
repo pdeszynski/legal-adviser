@@ -79,6 +79,13 @@ The platform is designed to assist lawyers and regular users by:
 - **YAGNI**: Do not implement features or abstractions "just in case". Implement only what is necessary for the current requirements.
 - **Simplicity**: Prefer simple solutions over complex ones. Use standard library features where possible.
 
+### IX. User Experience & Visual Standards
+
+- **User-Centricity**: The UI must be usable by "normal people," not just lawyers. Complex flows must be broken down (Wizards) and explained (Tooltips/AI Help).
+- **Visual Verification**: All UI changes MUST be verified visually on `localhost:3000`. Code review is not enough for UX/UI.
+- **Aesthetic Quality**: The design should be "Premium & Modern." Avoid the "Excel/Database" look. Use cards, rich typography, and iconography over raw tables where possible.
+- **Responsiveness**: The application must look great on all screen sizes.
+
 ## System Constraints
 
 - **Monorepo Structure**: All components (Client, Server, AI Engine) live in a single repository to facilitate unified versioning and simplified CI/CD.

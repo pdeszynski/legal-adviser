@@ -7,7 +7,7 @@
     "login-loading-state"
   ],
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -15,5 +15,6 @@
       "timestamp": "2026-01-23T07:01:13.234Z",
       "source": "initial"
     }
-  ]
+  ],
+  "startedAt": "2026-01-23T14:36:03.149Z"
 }

@@ -5,7 +5,7 @@
   "title": "Create Reusable Loading Skeleton Components",
   "dependencies": [],
   "priority": 1,
-  "status": "in_progress",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -14,5 +14,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-23T18:46:49.082Z"
+  "updatedAt": "2026-01-23T18:59:01.550Z"
 }

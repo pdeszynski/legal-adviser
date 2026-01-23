@@ -3,10 +3,6 @@
   "description": "Implement skeleton placeholders for all dashboard widgets: document count cards, activity timeline, notification bell, and statistics charts. Show card-shaped skeletons with shimmer effect for widget containers. Ensure widgets load progressively as data becomes available.",
   "id": "dashboard-skeleton-loading",
   "title": "Add Skeleton Loading to Dashboard Widgets",
-  "dependencies": [
-    "loading-skeleton-components",
-    "dashboard-widgets"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

@@ -48,3 +48,17 @@ usageStats:
 - **Rejected:** Simple dropdown with just permission names (VIEW, COMMENT, EDIT, ADMIN) - unclear which level grants sharing rights
 - **Trade-offs:** UI is more complex and verbose (+clarity, +prevents mistakes) but takes more screen space (-), slower initial render (-)
 - **Breaking if changed:** Removing descriptions makes permission semantics ambiguous; users will likely misconfigure permissions without visual cues about hierarchy
+
+### Approachable Professionalism (2026-01-23)
+- **Context:** Legal applications often feel cold, intimidating, and overly complex "admin panels."
+- **Decision:** Adopt a "Premium but Approachable" aesthetic. 
+  - **Light/Dark Mode:** Support both, but default to a clean, soft Light mode (Slate 50 background) to reduce visual heaviness.
+  - **Whitespace:** Use generous padding and whitespace to prevent information overload.
+  - **Language:** ongoing effort to replace "Legalese" with plain language where possible in UI labels (e.g. "Start a Claim" vs "Draft Pleading").
+
+### User-Centric Complexity Management (2026-01-23)
+- **Context:** "Normal people" struggle with legal workflows that lawyers understand intuitively.
+- **Decision:** 
+  - **Wizards:** ALWAYS use multi-step wizards for complex creations (docs, lawsuits) instead of long forms.
+  - **Elasticity:** Allow users to pause/resume or ask for help mid-flow. 
+  - **Help Integration:** "Explain this" tooltips or side-panels must be available for complex fields.

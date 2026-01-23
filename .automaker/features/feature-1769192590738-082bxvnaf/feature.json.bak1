@@ -18,7 +18,7 @@
   ],
   "workMode": "current",
   "titleGenerating": false,
-  "status": "in_progress",
+  "status": "verified",
   "id": "feature-1769192590738-082bxvnaf",
   "descriptionHistory": [
     {
@@ -28,5 +28,5 @@
     }
   ],
   "startedAt": "2026-01-23T18:23:10.938Z",
-  "updatedAt": "2026-01-23T18:23:14.710Z"
+  "updatedAt": "2026-01-23T18:28:52.556Z"
 }

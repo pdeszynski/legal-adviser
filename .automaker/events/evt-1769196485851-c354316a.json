@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769196485851-c354316a",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T19:28:05.851Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769196300782-pvkhbfbdh",
+  "featureName": "",
+  "error": "Feature completed in 185s - auto-verified",
+  "passes": true
+}
