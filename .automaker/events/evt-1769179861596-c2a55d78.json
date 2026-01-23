@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769179861596-c2a55d78",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T14:51:01.596Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "global-loading-states",
+  "featureName": "Global Loading States for Forms",
+  "error": "Feature completed in 898s - auto-verified",
+  "passes": true
+}

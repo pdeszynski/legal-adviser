@@ -16,7 +16,7 @@
   "dependencies": [],
   "workMode": "custom",
   "titleGenerating": false,
-  "status": "in_progress",
+  "status": "verified",
   "id": "feature-1769154048850-tf615ry1b",
   "descriptionHistory": [
     {
@@ -31,5 +31,5 @@
     }
   ],
   "startedAt": "2026-01-23T08:22:28.559Z",
-  "updatedAt": "2026-01-23T08:22:28.714Z"
+  "updatedAt": "2026-01-23T08:30:19.428Z"
 }

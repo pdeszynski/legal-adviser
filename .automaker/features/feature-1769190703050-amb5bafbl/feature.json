@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "Organize menu - currently its mixed, some are user settings, some documents, etc. Please make sure that the first ones are mostly used by users, these will be probably q&a and chat. Make secondary stuff like usage, biling, settings etc",
+  "title": "Reorganize menu by usage frequency and category",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "completed",
+  "id": "feature-1769190703050-amb5bafbl",
+  "descriptionHistory": [
+    {
+      "description": "Organize menu - currently its mixed, some are user settings, some documents, etc. Please make sure that the first ones are mostly used by users, these will be probably q&a and chat. Make secondary stuff like usage, biling, settings etc",
+      "timestamp": "2026-01-23T17:51:43.144Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T17:51:43.188Z",
+  "updatedAt": "2026-01-23T17:54:33.053Z"
+}

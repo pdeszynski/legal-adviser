@@ -76,8 +76,23 @@ export class CsrfGuard implements CanActivate {
     const cookieToken = this.getCookieValue(request, cookieName);
 
     // Get CSRF token from header
+    // Headers in Express are case-insensitive but stored as lowercase
+    // Try both lowercase and the original header name for compatibility
     const headerName = this.csrfService.getHeaderName();
-    const headerToken = request.headers[headerName] as string | undefined;
+    let headerToken = request.headers[headerName] as string | undefined;
+
+    // If not found with original case, try lowercase
+    if (!headerToken) {
+      headerToken = request.headers[headerName.toLowerCase()] as
+        | string
+        | undefined;
+    }
+
+    // Also try with X- prefix capitalized (some clients send it this way)
+    if (!headerToken && headerName.startsWith('x-')) {
+      const capitalizedHeader = 'X-' + headerName.substring(2);
+      headerToken = request.headers[capitalizedHeader] as string | undefined;
+    }
 
     // Validate the tokens
     if (!this.csrfService.validateToken(cookieToken || '', headerToken || '')) {

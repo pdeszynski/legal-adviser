@@ -1,7 +1,7 @@
 'use client';
 
 import { useList, useInvalidate, useCreate, useUpdate, useDelete } from '@refinedev/core';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 /**
  * Comment resolution status enum
@@ -70,6 +70,9 @@ export interface UpdateCommentInput {
 export interface UseDocumentCommentsReturn {
   comments: DocumentComment[];
   isLoading: boolean;
+  isCreating: boolean;
+  isUpdating: boolean;
+  isDeleting: boolean;
   error: unknown;
   createComment: (input: CreateCommentInput) => Promise<void>;
   updateComment: (id: string, input: UpdateCommentInput) => Promise<void>;
@@ -117,10 +120,15 @@ export function useDocumentComments(documentId: string | undefined): UseDocument
   const { data, isLoading, error } = query;
   const comments = result?.data || [];
 
-  // Mutations
+  // Mutations with loading states
   const { mutate: createMutation } = useCreate();
   const { mutate: updateMutation } = useUpdate();
   const { mutate: deleteMutation } = useDelete();
+
+  // Local loading states for mutations
+  const [isCreating, setIsCreating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   /**
    * Create a new comment
@@ -129,24 +137,35 @@ export function useDocumentComments(documentId: string | undefined): UseDocument
     async (input: CreateCommentInput) => {
       if (!documentId) return;
 
-      createMutation(
-        {
-          resource: 'documentComments',
-          values: {
-            ...input,
-            documentId,
-            authorId: 'current-user-id', // TODO: Get from auth context
-          },
-        },
-        {
-          onSuccess: () => {
-            invalidate({
+      setIsCreating(true);
+      try {
+        await new Promise<void>((resolve, reject) => {
+          createMutation(
+            {
               resource: 'documentComments',
-              invalidates: ['list'],
-            });
-          },
-        },
-      );
+              values: {
+                ...input,
+                documentId,
+                authorId: 'current-user-id', // TODO: Get from auth context
+              },
+            },
+            {
+              onSuccess: () => {
+                invalidate({
+                  resource: 'documentComments',
+                  invalidates: ['list'],
+                });
+                resolve();
+              },
+              onError: (error) => {
+                reject(error);
+              },
+            },
+          );
+        });
+      } finally {
+        setIsCreating(false);
+      }
     },
     [documentId, createMutation, invalidate],
   );
@@ -156,21 +175,32 @@ export function useDocumentComments(documentId: string | undefined): UseDocument
    */
   const updateComment = useCallback(
     async (id: string, input: UpdateCommentInput) => {
-      updateMutation(
-        {
-          resource: 'documentComments',
-          id,
-          values: input,
-        },
-        {
-          onSuccess: () => {
-            invalidate({
+      setIsUpdating(true);
+      try {
+        await new Promise<void>((resolve, reject) => {
+          updateMutation(
+            {
               resource: 'documentComments',
-              invalidates: ['list'],
-            });
-          },
-        },
-      );
+              id,
+              values: input,
+            },
+            {
+              onSuccess: () => {
+                invalidate({
+                  resource: 'documentComments',
+                  invalidates: ['list'],
+                });
+                resolve();
+              },
+              onError: (error) => {
+                reject(error);
+              },
+            },
+          );
+        });
+      } finally {
+        setIsUpdating(false);
+      }
     },
     [updateMutation, invalidate],
   );
@@ -180,20 +210,31 @@ export function useDocumentComments(documentId: string | undefined): UseDocument
    */
   const deleteComment = useCallback(
     async (id: string) => {
-      deleteMutation(
-        {
-          resource: 'documentComments',
-          id,
-        },
-        {
-          onSuccess: () => {
-            invalidate({
+      setIsDeleting(true);
+      try {
+        await new Promise<void>((resolve, reject) => {
+          deleteMutation(
+            {
               resource: 'documentComments',
-              invalidates: ['list'],
-            });
-          },
-        },
-      );
+              id,
+            },
+            {
+              onSuccess: () => {
+                invalidate({
+                  resource: 'documentComments',
+                  invalidates: ['list'],
+                });
+                resolve();
+              },
+              onError: (error) => {
+                reject(error);
+              },
+            },
+          );
+        });
+      } finally {
+        setIsDeleting(false);
+      }
     },
     [deleteMutation, invalidate],
   );
@@ -237,6 +278,9 @@ export function useDocumentComments(documentId: string | undefined): UseDocument
   return {
     comments,
     isLoading,
+    isCreating,
+    isUpdating,
+    isDeleting,
     error,
     createComment,
     updateComment,

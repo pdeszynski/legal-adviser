@@ -205,49 +205,6 @@
       "template": "Wzór"
     }
   },
-  "blog_posts": {
-    "blog_posts": "Wpisy na blogu",
-    "form": {
-      "select": {
-        "category": {
-          "placeholder": "Wybierz kategorię"
-        }
-      }
-    },
-    "fields": {
-      "id": "ID",
-      "title": "Tytuł",
-      "category": "Kategoria",
-      "status": {
-        "title": "Status",
-        "published": "Opublikowany",
-        "draft": "Szkic",
-        "rejected": "Odrzucony"
-      },
-      "content": "Treść",
-      "createdAt": "Data utworzenia"
-    },
-    "titles": {
-      "create": "Utwórz wpis",
-      "edit": "Edytuj wpis",
-      "list": "Wpisy",
-      "show": "Szczegóły wpisu"
-    }
-  },
-  "categories": {
-    "categories": "Kategorie",
-    "fields": {
-      "id": "ID",
-      "title": "Nazwa",
-      "createdAt": "Data utworzenia"
-    },
-    "titles": {
-      "create": "Utwórz kategorię",
-      "edit": "Edytuj kategorię",
-      "list": "Kategorie",
-      "show": "Szczegóły kategorii"
-    }
-  },
   "table": {
     "actions": "Akcje",
     "noData": "Brak danych do wyświetlenia",
@@ -702,6 +659,7 @@
       "characters": "Znaki",
       "remaining": "pozostało",
       "submit": "Prześlij",
+      "submitting": "Przesyłanie...",
       "toSubmit": "do przesłania",
       "toCancel": "do anulowania",
       "deleteConfirm": "Czy na pewno chcesz usunąć ten komentarz?",
@@ -846,5 +804,15 @@
     "tokens": "Tokeny",
     "cost": "Koszt",
     "noData": "Brak danych o użyciu dla tego okresu"
+  },
+  "notFound": {
+    "title": "Strona nie została znaleziona",
+    "description": "Strona, której szukasz, nie istnieje lub została przeniesiona.",
+    "goHome": "Przejdź do strony głównej",
+    "signIn": "Zaloguj się",
+    "help": {
+      "title": "Potrzebujesz pomocy?",
+      "text": "Możesz wrócić do strony głównej lub zalogować się, aby uzyskać dostęp do swojego konta."
+    }
   }
 }

@@ -1854,10 +1854,270 @@ Right now main page fails with an error:
 
 &lt;PublicLayout&gt; is an async Client Component. Only Server Components can be async at the moment. This error is often caused by accidentally adding `&apos;use client&apos;` to a module that was originally written for the server.
 
-src/app/page.tsx (16:5) @ LandingContent
+src/app/page.tsx (16:5) @ LandingContent</description>
+    </feature>
+    <feature>
+      <name>Disable throttler middleware except login routes</name>
+      <description>Disable throttler middleware in backend, besides log in or specific routes, because it leads to too many requests from dashboard</description>
+    </feature>
+    <feature>
+      <name>Fix legalDocuments validation error in dashboard</name>
+      <description>Fix errors on dashboard:
 
+{
+    &quot;errors&quot;: [
+        {
+            &quot;message&quot;: &quot;Bad Request Exception&quot;,
+            &quot;locations&quot;: [
+                {
+                    &quot;line&quot;: 3,
+                    &quot;column&quot;: 11
+                }
+            ],
+            &quot;path&quot;: [
+                &quot;legalDocuments&quot;
+            ],
+            &quot;extensions&quot;: {
+                &quot;code&quot;: &quot;BAD_REQUEST&quot;,
+                &quot;stacktrace&quot;: [
+                    &quot;BadRequestException: Bad Request Exception&quot;,
+                    &quot;    at ValidationPipe.exceptionFactory (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:107:20)&quot;,
+                    &quot;    at ValidationPipe.transform (/app/node_modules/.pnpm/@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_reflect-metadata@0.2.2_rxjs@7.8.2/node_modules/@nestjs/common/pipes/validation.pipe.js:74:30)&quot;,
+                    &quot;    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)&quot;,
+                    &quot;    at async resolveParamValue (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:136:31)&quot;,
+                    &quot;    at async Promise.all (index 2)&quot;,
+                    &quot;    at async pipesFn (/app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:138:13)&quot;,
+                    &quot;    at async /app/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-context-creator.js:66:17&quot;
+                ],
+                &quot;originalError&quot;: {
+                    &quot;message&quot;: [
+                        &quot;Field paging.first max allowed value is `50`.&quot;
+                    ],
+                    &quot;error&quot;: &quot;Bad Request&quot;,
+                    &quot;statusCode&quot;: 400
+                }
+            }
+        }
+    ],
+    &quot;data&quot;: null
+}</description>
+    </feature>
+    <feature>
+      <name>Fix settings page loading and user data hydration</name>
+      <description>Settings page does not load + hydrate currently logged in user data into forms</description>
+    </feature>
+    <feature>
+      <name>Fix GraphQL notification query syntax error</name>
+      <description>Please fix the error in notifications request:
 
-</description>
+{,…}
+query
+: 
+&quot;\n        query GetRecentNotifications($userId: String!, $limit: Int) {\n          recentNotifications(userId: $userId, limit: $limit) {\n            id\n            userId\n            type\n            message\n            read\n            actionLink\n            actionLabel\n            metadata\n            createdAt\n          }\n          unreadNotificationCount(userId: $userId)\n        }\n      &quot;
+variables
+: 
+{userId: &quot;e64f1e51-ea6d-4670-aa87-3c153db4f950&quot;, limit: 20}</description>
+    </feature>
+    <feature>
+      <name>Remove non-existent blog posts page from menu</name>
+      <description>Remove blog posts page from menu and references, this does not exist.</description>
+    </feature>
+    <feature>
+      <name>Fix user settings save error with custom query configuration</name>
+      <description>Saving user settings / preferences does end in `Custom query/mutation not configured properly` message on frontentd, needs fixing</description>
+    </feature>
+    <feature>
+      <name>Remove test data from login form defaults</name>
+      <description>Loginj form is filled with test data, please remove it from default form values</description>
+    </feature>
+    <feature>
+      <name>Global Loading States for Forms</name>
+      <description>Implement consistent loading state patterns across all forms in the application. Create reusable loading components and hooks for form submissions. Apply to document creation, settings updates, and all mutation-based forms.</description>
+    </feature>
+    <feature>
+      <name>Fix custom query mutation configuration error</name>
+      <description>Any mutation ends up with an error that they&apos;re not setup: Custom query/mutation not configured properly. Example URL http://localhost:3000/settings on preferences page</description>
+    </feature>
+    <feature>
+      <name>Reorganize menu by usage frequency and category</name>
+      <description>Organize menu - currently its mixed, some are user settings, some documents, etc. Please make sure that the first ones are mostly used by users, these will be probably q&amp;a and chat. Make secondary stuff like usage, biling, settings etc</description>
+    </feature>
+    <feature>
+      <name>Fix audit logs pagination serialization errors</name>
+      <description>When accessing audit logs  on subsequent pages, it&apos;s returing errors:, please fix these
+
+{errors: [,…], data: {auditLogs: {totalCount: 36,…}}}
+data
+: 
+{auditLogs: {totalCount: 36,…}}
+errors
+: 
+[,…]
+0
+: 
+{message: &quot;String cannot represent value: { isActive: true }&quot;, locations: [{line: 23, column: 19}],…}
+1
+: 
+{message: &quot;String cannot represent value: { isActive: false }&quot;, locations: [{line: 24, column: 19}],…}
+2
+: 
+{message: &quot;String cannot represent value: { status: &quot;DRAFT&quot; }&quot;, locations: [{line: 23, column: 19}],…}
+3
+: 
+{message: &quot;String cannot represent value: { status: &quot;COMPLETED&quot; }&quot;,…}
+4
+: 
+{,…}</description>
+    </feature>
+    <feature>
+      <name>Create Custom 404 Error Page</name>
+      <description>Create nicely looking 404 page</description>
+    </feature>
+    <feature>
+      <name>Update default landing page after login</name>
+      <description>Make first page after logging in to be the legal chat or dashboad, which one you deem better</description>
+    </feature>
+    <feature>
+      <name>Add GraphQL error handling and display indicators</name>
+      <description>Handle errors on frontend, there should be some indicatior that error occured and page cannot be displayed when Graphql returns errors, and example of errored response:
+
+{errors: [,…], data: {auditLogs: {totalCount: 36,…}}}
+data
+: 
+{auditLogs: {totalCount: 36,…}}
+errors
+: 
+[,…]
+0
+: 
+{message: &quot;String cannot represent value: { isActive: true }&quot;, locations: [{line: 23, column: 19}],…}
+1
+: 
+{message: &quot;String cannot represent value: { isActive: false }&quot;, locations: [{line: 24, column: 19}],…}
+2
+: 
+{message: &quot;String cannot represent value: { status: &quot;DRAFT&quot; }&quot;, locations: [{line: 23, column: 19}],…}
+3
+: 
+{message: &quot;String cannot represent value: { status: &quot;COMPLETED&quot; }&quot;,…}
+4
+: 
+{,…}</description>
+    </feature>
+    <feature>
+      <name>Fix CSRF validation error on chat page</name>
+      <description>Fix csrf validation failed on /chat page</description>
+    </feature>
+    <feature>
+      <name>Optimize settings page loading performance</name>
+      <description>Very slow loading on settings page, please analyze why it does take som uch time an dfix that</description>
+    </feature>
+    <feature>
+      <name>Fix custom page mutations configuration error on save</name>
+      <description>Fix saving mutations on custom pages, for example: http://localhost:3000/settings
+
+When using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that&apos;s the only place where it happens</description>
+    </feature>
+    <feature>
+      <name>Feature: feature-1769191925365-sjkar2lj8</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix CSRF validation error on chat page
+
+**Description:** Fix csrf validation failed on /chat page
+
+---
+
+## Task Description
+
+That is not fixed, still doesnt work, plese fix that validation.</description>
+    </feature>
+    <feature>
+      <name>Fix audit logs GraphQL query validation error</name>
+      <description>Get audit logs page does not work:
+
+{
+    &quot;errors&quot;: [
+        {
+            &quot;message&quot;: &quot;Field \&quot;changeDetails\&quot; must not have a selection since type \&quot;JSON\&quot; has no subfields.&quot;,
+            &quot;locations&quot;: [
+                {
+                    &quot;line&quot;: 22,
+                    &quot;column&quot;: 31
+                }
+            ],
+            &quot;extensions&quot;: {
+                &quot;code&quot;: &quot;GRAPHQL_VALIDATION_FAILED&quot;,
+                &quot;stacktrace&quot;: [
+                    &quot;GraphQLError: Field \&quot;changeDetails\&quot; must not have a selection since type \&quot;JSON\&quot; has no subfields.&quot;,
+                    &quot;    at Object.Field (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/validation/rules/ScalarLeafsRule.js:32:15)&quot;,
+                    &quot;    at Object.enter (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/language/visitor.js:298:32)&quot;,
+                    &quot;    at Object.enter (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/utilities/TypeInfo.js:391:27)&quot;,
+                    &quot;    at visit (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/language/visitor.js:194:21)&quot;,
+                    &quot;    at validate (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/validation/validate.js:91:24)&quot;,
+                    &quot;    at processGraphQLRequest (/app/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/requestPipeline.ts:263:38)&quot;,
+                    &quot;    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)&quot;,
+                    &quot;    at async internalExecuteOperation (/app/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/ApolloServer.ts:1362:12)&quot;,
+                    &quot;    at async runHttpQuery (/app/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/runHttpQuery.ts:233:27)&quot;,
+                    &quot;    at async runPotentiallyBatchedHttpQuery (/app/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/httpBatching.ts:85:12)&quot;
+                ]
+            }
+        }
+    ]
+}
+
+Please make necessary fixes</description>
+    </feature>
+    <feature>
+      <name>Fix queryConfig const reassignment error</name>
+      <description>Build does not pass with:
+
+onventions/instrumentation-client
+ ✓ Compiled successfully in 6.0s
+   Skipping linting
+   Checking validity of types ...
+Failed to compile.
+
+./src/providers/data-provider/index.ts:1020:7
+Type error: Cannot assign to &apos;queryConfig&apos; because it is a constant.
+
+  1018 |     if (!queryConfig &amp;&amp; normalizedMethod === &apos;get&apos; &amp;&amp; url &amp;&amp; url.startsWith(&apos;/&apos;)) {
+  1019 |       const operation = url.substring(1).replace(/^\//, &apos;&apos;);
+&gt; 1020 |       queryConfig = {
+       |       ^
+  1021 |         operation,
+  1022 |         fields: [], // Will be populated by caller if needed
+  1023 |         args: undefined,
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.
+command finished with error: command (/Users/piteer/workspace/radca-prawny/legal/apps/web) /opt/homebrew/bin/pnpm run build exited (1)
+└─ @legal/web#build ──
+@legal/web#build: command (/Users/piteer/workspace/radca-prawny/legal/apps/web) /opt/homebrew/bin/pnpm run build exited (1)
+
+ Tasks:    4 successful, 5 total
+Cached:    3 cached, 5 total
+  Time:    16.917s 
+Failed:    @legal/web#build</description>
+    </feature>
+    <feature>
+      <name>Fix custom page mutation save error</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix custom page mutations configuration error on save
+
+**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings
+
+When using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that&apos;s the only place where it happens
+
+---
+
+## Task Description
+
+This was not fixed, please come back to that task and use form to try to save in form at /settings page. Please fix that problem</description>
     </feature>
   </implemented_features>
 

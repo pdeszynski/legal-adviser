@@ -343,11 +343,11 @@ export class NotificationManagerService {
       read: false,
       actionLink: input.actionLink,
       actionLabel: input.actionLabel,
-      metadata: JSON.stringify({
+      metadata: {
         templateType: input.templateType,
         priority: input.priority,
         ...input.metadata,
-      }),
+      },
     });
 
     const saved = (await this.inAppNotificationRepository.save(
@@ -362,9 +362,7 @@ export class NotificationManagerService {
       message: saved.message,
       actionLink: saved.actionLink ?? undefined,
       actionLabel: saved.actionLabel ?? undefined,
-      metadata: saved.metadata
-        ? (JSON.parse(saved.metadata) as Record<string, any>)
-        : undefined,
+      metadata: saved.metadata ?? undefined,
       createdAt: saved.createdAt,
     });
 

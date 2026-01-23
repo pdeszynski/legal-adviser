@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { getAccessToken } from '@/providers/auth-provider/auth-provider.client';
+import { getCsrfHeaders } from '@/lib/csrf';
 
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
@@ -47,6 +48,7 @@ export function useChat(): UseChatReturn {
       try {
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
+          ...getCsrfHeaders(), // Include CSRF token for mutations
         };
 
         // Include access token if available
@@ -125,7 +127,7 @@ export function useChat(): UseChatReturn {
         setIsLoading(false);
       }
     },
-    [mode]
+    [mode],
   );
 
   return {

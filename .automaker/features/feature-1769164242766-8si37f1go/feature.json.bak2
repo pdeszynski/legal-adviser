@@ -1,7 +1,7 @@
 {
   "category": "Uncategorized",
   "description": "Invalid hadnling of intl - changing locale, redirects browsers to /pl (or other locale) but no such address exists. ",
-  "title": "",
+  "title": "Fix invalid locale redirect routing issue",
   "images": [],
   "imagePaths": [],
   "textFilePaths": [],
@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "dependencies": [],
   "workMode": "current",
-  "titleGenerating": "Invalid hadnling of intl - changing locale, redirects browsers to /pl (or other locale) but no such address exists.",
+  "titleGenerating": false,
   "status": "in_progress",
   "id": "feature-1769164242766-8si37f1go",
   "descriptionHistory": [

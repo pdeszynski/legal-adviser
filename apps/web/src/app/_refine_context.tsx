@@ -7,6 +7,7 @@ import routerProvider from '@refinedev/nextjs-router';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { DevtoolsProvider } from '@providers/devtools';
+import { CsrfProvider } from '@providers/csrf-provider';
 import { authProviderClient } from '@providers/auth-provider/auth-provider.client';
 import { dataProvider } from '@providers/data-provider';
 import { auditLogProvider } from '@providers/audit-log-provider';
@@ -32,113 +33,104 @@ export const RefineContext = ({ children }: PropsWithChildren) => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <RefineKbarProvider>
-        <DevtoolsProvider>
-          <Refine
-            routerProvider={routerProvider}
-            dataProvider={dataProvider}
-            authProvider={authProviderClient}
-            auditLogProvider={auditLogProvider}
-            i18nProvider={i18nProvider}
-            resources={[
-              {
-                name: 'dashboard',
-                list: '/dashboard',
-                meta: {
-                  label: 'Dashboard',
-                  icon: <span aria-label="dashboard">📊</span>,
+        <CsrfProvider>
+          <DevtoolsProvider>
+            <Refine
+              routerProvider={routerProvider}
+              dataProvider={dataProvider}
+              authProvider={authProviderClient}
+              auditLogProvider={auditLogProvider}
+              i18nProvider={i18nProvider}
+              resources={[
+                {
+                  name: 'chat',
+                  list: '/chat',
+                  meta: {
+                    label: 'Legal Q&A Chat',
+                    canDelete: false,
+                  },
                 },
-              },
-              {
-                name: 'settings',
-                list: '/settings',
-                meta: {
-                  label: 'Settings',
-                  icon: <span aria-label="settings">⚙️</span>,
-                  canDelete: false,
+                {
+                  name: 'documents',
+                  list: '/documents',
+                  create: '/documents/create',
+                  edit: '/documents/edit/:id',
+                  show: '/documents/show/:id',
+                  meta: {
+                    canDelete: true,
+                    label: 'Documents',
+                  },
                 },
-              },
-              {
-                name: 'blog_posts',
-                list: '/blog-posts',
-                create: '/blog-posts/create',
-                edit: '/blog-posts/edit/:id',
-                show: '/blog-posts/show/:id',
-                meta: {
-                  canDelete: true,
-                  label: 'Blog Posts',
+                {
+                  name: 'templates',
+                  list: '/templates',
+                  meta: {
+                    label: 'Templates',
+                    canDelete: false,
+                  },
                 },
-              },
-              {
-                name: 'documents',
-                list: '/documents',
-                create: '/documents/create',
-                edit: '/documents/edit/:id',
-                show: '/documents/show/:id',
-                meta: {
-                  canDelete: true,
-                  label: 'Documents',
+                {
+                  name: 'dashboard',
+                  list: '/dashboard',
+                  meta: {
+                    label: 'Dashboard',
+                    icon: <span aria-label="dashboard">📊</span>,
+                  },
                 },
-              },
-              {
-                name: 'templates',
-                list: '/templates',
-                meta: {
-                  label: 'Templates',
-                  canDelete: false,
+                {
+                  name: 'notifications',
+                  list: '/notifications',
+                  meta: {
+                    label: 'Notifications',
+                    canDelete: false,
+                  },
                 },
-              },
-              {
-                name: 'audit_logs',
-                list: '/audit-logs',
-                meta: {
-                  label: 'Audit Logs',
-                  canDelete: false,
+                {
+                  name: 'settings',
+                  list: '/settings',
+                  meta: {
+                    label: 'Settings',
+                    icon: <span aria-label="settings">⚙️</span>,
+                    canDelete: false,
+                  },
                 },
-              },
-              {
-                name: 'chat',
-                list: '/chat',
-                meta: {
-                  label: 'Legal Q&A Chat',
-                  canDelete: false,
+                {
+                  name: 'billing',
+                  list: '/billing',
+                  meta: {
+                    label: 'Billing',
+                    icon: <span aria-label="billing">💳</span>,
+                    canDelete: false,
+                  },
                 },
-              },
-              {
-                name: 'notifications',
-                list: '/notifications',
-                meta: {
-                  label: 'Notifications',
-                  canDelete: false,
+                {
+                  name: 'usage',
+                  list: '/usage',
+                  meta: {
+                    label: 'Usage',
+                    icon: <span aria-label="usage">📈</span>,
+                    canDelete: false,
+                  },
                 },
-              },
-              {
-                name: 'billing',
-                list: '/billing',
-                meta: {
-                  label: 'Billing',
-                  icon: <span aria-label="billing">💳</span>,
-                  canDelete: false,
+                {
+                  name: 'audit_logs',
+                  list: '/audit-logs',
+                  meta: {
+                    label: 'Audit Logs',
+                    canDelete: false,
+                  },
                 },
-              },
-              {
-                name: 'usage',
-                list: '/usage',
-                meta: {
-                  label: 'Usage',
-                  icon: <span aria-label="usage">📈</span>,
-                  canDelete: false,
-                },
-              },
-            ]}
-            options={{
-              syncWithLocation: true,
-              warnWhenUnsavedChanges: true,
-            }}
-          >
-            {children}
-            <RefineKbar />
-          </Refine>
-        </DevtoolsProvider>
+              ]}
+              options={{
+                syncWithLocation: true,
+                warnWhenUnsavedChanges: true,
+              }}
+            >
+              {children}
+              <RefineKbar />
+            </Refine>
+          </DevtoolsProvider>
+        </CsrfProvider>
       </RefineKbarProvider>
     </Suspense>
   );

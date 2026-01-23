@@ -1,0 +1,30 @@
+{
+  "category": "bug",
+  "description": "Disable throttler middleware in backend, besides log in or specific routes, because it leads to too many requests from dashboard",
+  "title": "Disable throttler middleware except login routes",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769176170500-1aof7nozy",
+  "descriptionHistory": [
+    {
+      "description": "Disable throttler middleware in backend, besides log in or specific routes, because it leads to too many requests from dashboard",
+      "timestamp": "2026-01-23T13:49:30.598Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T13:49:30.634Z",
+  "updatedAt": "2026-01-23T13:49:30.763Z"
+}

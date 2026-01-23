@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "Get audit logs page does not work:\n\n{\n    \"errors\": [\n        {\n            \"message\": \"Field \\\"changeDetails\\\" must not have a selection since type \\\"JSON\\\" has no subfields.\",\n            \"locations\": [\n                {\n                    \"line\": 22,\n                    \"column\": 31\n                }\n            ],\n            \"extensions\": {\n                \"code\": \"GRAPHQL_VALIDATION_FAILED\",\n                \"stacktrace\": [\n                    \"GraphQLError: Field \\\"changeDetails\\\" must not have a selection since type \\\"JSON\\\" has no subfields.\",\n                    \"    at Object.Field (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/validation/rules/ScalarLeafsRule.js:32:15)\",\n                    \"    at Object.enter (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/language/visitor.js:298:32)\",\n                    \"    at Object.enter (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/utilities/TypeInfo.js:391:27)\",\n                    \"    at visit (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/language/visitor.js:194:21)\",\n                    \"    at validate (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/validation/validate.js:91:24)\",\n                    \"    at processGraphQLRequest (/app/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/requestPipeline.ts:263:38)\",\n                    \"    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\",\n                    \"    at async internalExecuteOperation (/app/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/ApolloServer.ts:1362:12)\",\n                    \"    at async runHttpQuery (/app/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/runHttpQuery.ts:233:27)\",\n                    \"    at async runPotentiallyBatchedHttpQuery (/app/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/httpBatching.ts:85:12)\"\n                ]\n            }\n        }\n    ]\n}\n\nPlease make necessary fixes",
+  "title": "Fix audit logs GraphQL query validation error",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769192471515-vh0p8gwoi",
+  "descriptionHistory": [
+    {
+      "description": "Get audit logs page does not work:\n\n{\n    \"errors\": [\n        {\n            \"message\": \"Field \\\"changeDetails\\\" must not have a selection since type \\\"JSON\\\" has no subfields.\",\n            \"locations\": [\n                {\n                    \"line\": 22,\n                    \"column\": 31\n                }\n            ],\n            \"extensions\": {\n                \"code\": \"GRAPHQL_VALIDATION_FAILED\",\n                \"stacktrace\": [\n                    \"GraphQLError: Field \\\"changeDetails\\\" must not have a selection since type \\\"JSON\\\" has no subfields.\",\n                    \"    at Object.Field (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/validation/rules/ScalarLeafsRule.js:32:15)\",\n                    \"    at Object.enter (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/language/visitor.js:298:32)\",\n                    \"    at Object.enter (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/utilities/TypeInfo.js:391:27)\",\n                    \"    at visit (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/language/visitor.js:194:21)\",\n                    \"    at validate (/app/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/validation/validate.js:91:24)\",\n                    \"    at processGraphQLRequest (/app/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/requestPipeline.ts:263:38)\",\n                    \"    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\",\n                    \"    at async internalExecuteOperation (/app/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/ApolloServer.ts:1362:12)\",\n                    \"    at async runHttpQuery (/app/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/runHttpQuery.ts:233:27)\",\n                    \"    at async runPotentiallyBatchedHttpQuery (/app/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/httpBatching.ts:85:12)\"\n                ]\n            }\n        }\n    ]\n}\n\nPlease make necessary fixes",
+      "timestamp": "2026-01-23T18:21:11.608Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T18:21:11.645Z",
+  "updatedAt": "2026-01-23T18:24:06.972Z"
+}

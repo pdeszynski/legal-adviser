@@ -205,49 +205,6 @@
       "template": "Vorlage"
     }
   },
-  "blog_posts": {
-    "blog_posts": "Blogbeiträge",
-    "form": {
-      "select": {
-        "category": {
-          "placeholder": "Bitte wählen Sie eine Kategorie"
-        }
-      }
-    },
-    "fields": {
-      "id": "ID",
-      "title": "Titel",
-      "category": "Kategorie",
-      "status": {
-        "title": "Status",
-        "published": "Veröffentlicht",
-        "draft": "Entwurf",
-        "rejected": "Abgelehnt"
-      },
-      "content": "Inhalt",
-      "createdAt": "Erstellt am"
-    },
-    "titles": {
-      "create": "Beitrag erstellen",
-      "edit": "Beitrag bearbeiten",
-      "list": "Beiträge",
-      "show": "Beitrag anzeigen"
-    }
-  },
-  "categories": {
-    "categories": "Kategorien",
-    "fields": {
-      "id": "ID",
-      "title": "Titel",
-      "createdAt": "Erstellt am"
-    },
-    "titles": {
-      "create": "Kategorie erstellen",
-      "edit": "Kategorie bearbeiten",
-      "list": "Kategorien",
-      "show": "Kategorie anzeigen"
-    }
-  },
   "table": {
     "actions": "Aktionen",
     "noData": "Keine Daten vorhanden",
@@ -756,6 +713,7 @@
       "characters": "Zeichen",
       "remaining": "verbleibend",
       "submit": "Absenden",
+      "submitting": "Wird gesendet...",
       "toSubmit": "zum Absenden",
       "toCancel": "zum Abbrechen",
       "deleteConfirm": "Möchten Sie diesen Kommentar wirklich löschen?",
@@ -847,6 +805,16 @@
       "note": "Hinweis",
       "secureNote": "Ihre Zahlungsinformationen werden sicher von Stripe verarbeitet. Wir speichern niemals Ihre vollständigen Kartendetails auf unseren Servern.",
       "notImplemented": "Die Verwaltung von Zahlungsmethoden ist noch nicht implementiert. Bitte kontaktieren Sie den Support für Unterstützung."
+    }
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Die Seite, die Sie suchen, existiert nicht oder wurde verschoben.",
+    "goHome": "Zur Startseite",
+    "signIn": "Anmelden",
+    "help": {
+      "title": "Benötigen Sie Hilfe?",
+      "text": "Sie können zur Startseite zurückkehren oder sich anmelden, um auf Ihr Konto zuzugreifen."
     }
   }
 }

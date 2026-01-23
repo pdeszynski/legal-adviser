@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "Remove blog posts page from menu and references, this does not exist.",
+  "title": "Remove non-existent blog posts page from menu",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769178410873-i9kfcksw5",
+  "descriptionHistory": [
+    {
+      "description": "Remove blog posts page from menu and references, this does not exist.",
+      "timestamp": "2026-01-23T14:26:50.971Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T14:26:51.015Z",
+  "updatedAt": "2026-01-23T14:30:56.108Z"
+}

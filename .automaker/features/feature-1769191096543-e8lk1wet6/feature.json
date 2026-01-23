@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "Very slow loading on settings page, please analyze why it does take som uch time an dfix that",
+  "title": "Optimize settings page loading performance",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769191096543-e8lk1wet6",
+  "descriptionHistory": [
+    {
+      "description": "Very slow loading on settings page, please analyze why it does take som uch time an dfix that",
+      "timestamp": "2026-01-23T17:58:16.571Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T18:06:19.930Z",
+  "updatedAt": "2026-01-23T18:10:23.022Z"
+}

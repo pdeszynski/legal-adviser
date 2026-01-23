@@ -18,7 +18,7 @@
   ],
   "workMode": "current",
   "titleGenerating": false,
-  "status": "backlog",
+  "status": "in_progress",
   "id": "feature-1769158870166-phavzhksf",
   "descriptionHistory": [
     {
@@ -26,5 +26,6 @@
       "timestamp": "2026-01-23T09:01:10.266Z",
       "source": "initial"
     }
-  ]
+  ],
+  "startedAt": "2026-01-23T09:01:15.854Z"
 }

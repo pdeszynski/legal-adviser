@@ -22,6 +22,7 @@ import {
   registerEnumType,
   Int,
 } from '@nestjs/graphql';
+import GraphQLJSON from 'graphql-type-json';
 import { User } from '../../users/entities/user.entity';
 
 /**
@@ -87,34 +88,6 @@ export interface ChangeDetails {
   after?: Record<string, unknown>;
   /** Additional context or metadata */
   context?: Record<string, unknown>;
-}
-
-/**
- * GraphQL Object Type for Change Details
- * Used by nestjs-query for field resolution
- */
-@ObjectType('ChangeDetails')
-export class ChangeDetailsType {
-  @Field(() => [String], { nullable: true })
-  changedFields?: string[];
-
-  @Field(() => String, {
-    nullable: true,
-    description: 'JSON string of previous values',
-  })
-  before?: string;
-
-  @Field(() => String, {
-    nullable: true,
-    description: 'JSON string of new values',
-  })
-  after?: string;
-
-  @Field(() => String, {
-    nullable: true,
-    description: 'JSON string of additional context',
-  })
-  context?: string;
 }
 
 /**
@@ -214,7 +187,7 @@ export class AuditLog {
    * Stored as JSONB for flexible querying
    */
   @Column({ type: 'jsonb', nullable: true })
-  @Field(() => ChangeDetailsType, { nullable: true })
+  @Field(() => GraphQLJSON, { nullable: true })
   changeDetails: ChangeDetails | null;
 
   /**

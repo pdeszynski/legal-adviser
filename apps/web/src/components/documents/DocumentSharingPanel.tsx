@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
-import { useCustomMutation, useCustom, useTranslate } from "@refinedev/core";
+import { useState, useCallback } from 'react';
+import { useCustomMutation, useCustom, useTranslate } from '@refinedev/core';
+import { LoadingButton } from '@legal/ui';
 
 interface User {
   id: string;
@@ -17,7 +18,7 @@ interface DocumentShare {
   sharedWithUser: User;
   sharedByUserId: string;
   sharedByUser: User;
-  permission: "VIEW" | "COMMENT" | "EDIT" | "ADMIN";
+  permission: 'VIEW' | 'COMMENT' | 'EDIT' | 'ADMIN';
   expiresAt?: string | null;
   createdAt: string;
 }
@@ -27,43 +28,45 @@ interface DocumentSharingPanelProps {
 }
 
 const PERMISSION_LABELS = {
-  VIEW: "View Only",
-  COMMENT: "Can Comment",
-  EDIT: "Can Edit",
-  ADMIN: "Admin",
+  VIEW: 'View Only',
+  COMMENT: 'Can Comment',
+  EDIT: 'Can Edit',
+  ADMIN: 'Admin',
 };
 
 const PERMISSION_DESCRIPTIONS = {
-  VIEW: "Can view the document",
-  COMMENT: "Can view and comment on the document",
-  EDIT: "Can view and edit the document",
-  ADMIN: "Full access including sharing with others",
+  VIEW: 'Can view the document',
+  COMMENT: 'Can view and comment on the document',
+  EDIT: 'Can view and edit the document',
+  ADMIN: 'Full access including sharing with others',
 };
 
 export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) {
   const translate = useTranslate();
   const [showShareModal, setShowShareModal] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState("");
-  const [selectedPermission, setSelectedPermission] = useState<"VIEW" | "COMMENT" | "EDIT" | "ADMIN">("VIEW");
-  const [expiresInDays, setExpiresInDays] = useState<number | "">("");
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [selectedPermission, setSelectedPermission] = useState<
+    'VIEW' | 'COMMENT' | 'EDIT' | 'ADMIN'
+  >('VIEW');
+  const [expiresInDays, setExpiresInDays] = useState<number | ''>('');
 
   // Fetch document shares
   const { query: sharesQuery } = useCustom<DocumentShare[]>({
-    url: "",
-    method: "get",
+    url: '',
+    method: 'get',
     config: {
       query: {
-        operation: "documentShares",
+        operation: 'documentShares',
         variables: { documentId },
         fields: [
-          "id",
-          "sharedWithUserId",
-          "sharedByUserId",
-          "permission",
-          "expiresAt",
-          "createdAt",
-          { sharedWithUser: ["id", "email", "username", "firstName", "lastName"] },
-          { sharedByUser: ["id", "email", "username", "firstName", "lastName"] },
+          'id',
+          'sharedWithUserId',
+          'sharedByUserId',
+          'permission',
+          'expiresAt',
+          'createdAt',
+          { sharedWithUser: ['id', 'email', 'username', 'firstName', 'lastName'] },
+          { sharedByUser: ['id', 'email', 'username', 'firstName', 'lastName'] },
         ],
       },
     },
@@ -71,12 +74,12 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
 
   // Fetch all users for sharing dropdown
   const { query: usersQuery } = useCustom<{ data: User[] }>({
-    url: "",
-    method: "get",
+    url: '',
+    method: 'get',
     config: {
       query: {
-        operation: "users",
-        fields: ["data { id email username firstName lastName }"],
+        operation: 'users',
+        fields: ['data { id email username firstName lastName }'],
       },
     },
   });
@@ -101,10 +104,10 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
 
     shareDocument(
       {
-        url: "",
-        method: "post",
+        url: '',
+        method: 'post',
         values: {
-          operation: "shareDocument",
+          operation: 'shareDocument',
           variables: {
             input: {
               documentId,
@@ -113,73 +116,82 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
               ...(expiresAt && { expiresAt }),
             },
           },
-          fields: ["id", "permission", "createdAt"],
+          fields: ['id', 'permission', 'createdAt'],
         },
       },
       {
         onSuccess: () => {
           sharesQuery.refetch();
           setShowShareModal(false);
-          setSelectedUserId("");
-          setSelectedPermission("VIEW");
-          setExpiresInDays("");
+          setSelectedUserId('');
+          setSelectedPermission('VIEW');
+          setExpiresInDays('');
         },
-      }
+      },
     );
-  }, [shareDocument, documentId, selectedUserId, selectedPermission, expiresInDays, sharesQuery.refetch]);
+  }, [
+    shareDocument,
+    documentId,
+    selectedUserId,
+    selectedPermission,
+    expiresInDays,
+    sharesQuery.refetch,
+  ]);
 
   const handleRevoke = useCallback(
     (shareId: string) => {
       revokeShare(
         {
-          url: "",
-          method: "post",
+          url: '',
+          method: 'post',
           values: {
-            operation: "revokeDocumentShare",
+            operation: 'revokeDocumentShare',
             variables: { shareId },
-            fields: ["success"],
+            fields: ['success'],
           },
         },
         {
           onSuccess: () => {
             sharesQuery.refetch();
           },
-        }
+        },
       );
     },
-    [revokeShare, sharesQuery.refetch]
+    [revokeShare, sharesQuery.refetch],
   );
 
   const handleUpdatePermission = useCallback(
-    (shareId: string, newPermission: "VIEW" | "COMMENT" | "EDIT" | "ADMIN") => {
+    (shareId: string, newPermission: 'VIEW' | 'COMMENT' | 'EDIT' | 'ADMIN') => {
       updatePermission(
         {
-          url: "",
-          method: "post",
+          url: '',
+          method: 'post',
           values: {
-            operation: "updateDocumentSharePermission",
+            operation: 'updateDocumentSharePermission',
             variables: {
               input: {
                 shareId,
                 permission: newPermission,
               },
             },
-            fields: ["id", "permission"],
+            fields: ['id', 'permission'],
           },
         },
         {
           onSuccess: () => {
             sharesQuery.refetch();
           },
-        }
+        },
       );
     },
-    [updatePermission, sharesQuery.refetch]
+    [updatePermission, sharesQuery.refetch],
   );
 
   const shares = sharesQuery.data?.data || [];
   const users = usersQuery.data?.data?.data || [];
-  const availableUsers = users.filter((user) => !shares.some((share) => share.sharedWithUserId === user.id));
+  const availableUsers = users.filter(
+    (user) => !shares.some((share) => share.sharedWithUserId === user.id),
+  );
 
   const getUserDisplayName = (user: User) => {
     if (user.firstName && user.lastName) {
@@ -206,7 +218,12 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+            />
           </svg>
           Share Document
         </button>
@@ -220,9 +237,7 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
 
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Select User
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Select User</label>
                 <select
                   value={selectedUserId}
                   onChange={(e) => setSelectedUserId(e.target.value)}
@@ -243,12 +258,15 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
                 </label>
                 <select
                   value={selectedPermission}
-                  onChange={(e) => setSelectedPermission(e.target.value as "VIEW" | "COMMENT" | "EDIT" | "ADMIN")}
+                  onChange={(e) =>
+                    setSelectedPermission(e.target.value as 'VIEW' | 'COMMENT' | 'EDIT' | 'ADMIN')
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {Object.entries(PERMISSION_LABELS).map(([value, label]) => (
                     <option key={value} value={value}>
-                      {label} - {PERMISSION_DESCRIPTIONS[value as keyof typeof PERMISSION_DESCRIPTIONS]}
+                      {label} -{' '}
+                      {PERMISSION_DESCRIPTIONS[value as keyof typeof PERMISSION_DESCRIPTIONS]}
                     </option>
                   ))}
                 </select>
@@ -262,7 +280,7 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
                   type="number"
                   min="1"
                   value={expiresInDays}
-                  onChange={(e) => setExpiresInDays(e.target.value ? parseInt(e.target.value) : "")}
+                  onChange={(e) => setExpiresInDays(e.target.value ? parseInt(e.target.value) : '')}
                   placeholder="Never expires"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -274,22 +292,23 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
               <button
                 onClick={() => {
                   setShowShareModal(false);
-                  setSelectedUserId("");
-                  setSelectedPermission("VIEW");
-                  setExpiresInDays("");
+                  setSelectedUserId('');
+                  setSelectedPermission('VIEW');
+                  setExpiresInDays('');
                 }}
                 className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
                 disabled={shareMutation.isPending}
               >
-                {translate("buttons.cancel", "Cancel")}
+                {translate('buttons.cancel', 'Cancel')}
               </button>
-              <button
+              <LoadingButton
                 onClick={handleShare}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-                disabled={!selectedUserId || shareMutation.isPending}
+                isLoading={shareMutation.isPending}
+                loadingText="Sharing..."
+                disabled={!selectedUserId}
               >
-                {shareMutation.isPending ? "Sharing..." : "Share"}
-              </button>
+                Share
+              </LoadingButton>
             </div>
           </div>
         </div>
@@ -299,7 +318,8 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
       <div className="space-y-3">
         {shares.length === 0 ? (
           <p className="text-gray-500 text-sm py-4">
-            This document has not been shared yet. Click &ldquo;Share Document&rdquo; to grant access to other users.
+            This document has not been shared yet. Click &ldquo;Share Document&rdquo; to grant
+            access to other users.
           </p>
         ) : (
           shares.map((share) => (
@@ -322,7 +342,12 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
               <div className="flex items-center gap-3">
                 <select
                   value={share.permission}
-                  onChange={(e) => handleUpdatePermission(share.id, e.target.value as "VIEW" | "COMMENT" | "EDIT" | "ADMIN")}
+                  onChange={(e) =>
+                    handleUpdatePermission(
+                      share.id,
+                      e.target.value as 'VIEW' | 'COMMENT' | 'EDIT' | 'ADMIN',
+                    )
+                  }
                   className="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {Object.entries(PERMISSION_LABELS).map(([value, label]) => (
@@ -338,7 +363,12 @@ export function DocumentSharingPanel({ documentId }: DocumentSharingPanelProps) 
                   title="Revoke access"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>

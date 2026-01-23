@@ -1,0 +1,32 @@
+{
+  "category": "Uncategorized",
+  "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix custom page mutations configuration error on save\n\n**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens\n\n---\n\n## Task Description\n\nThis was not fixed, please come back to that task and use form to try to save in form at /settings page. Please fix that problem",
+  "title": "Fix custom page mutation save error",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [
+    "feature-1769191072561-dens23yck"
+  ],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769192590738-082bxvnaf",
+  "descriptionHistory": [
+    {
+      "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix custom page mutations configuration error on save\n\n**Description:** Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens\n\n---\n\n## Task Description\n\nThis was not fixed, please come back to that task and use form to try to save in form at /settings page. Please fix that problem",
+      "timestamp": "2026-01-23T18:23:10.861Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T18:23:10.938Z",
+  "updatedAt": "2026-01-23T18:28:52.556Z"
+}

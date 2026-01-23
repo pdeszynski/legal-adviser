@@ -3,6 +3,7 @@
 import { useState, type Dispatch } from 'react';
 import { useTranslate, useCustom, useCustomMutation, useNotification } from '@refinedev/core';
 import { Copy, Eye, EyeOff, Trash2, Plus } from 'lucide-react';
+import { LoadingButton } from '@legal/ui';
 
 interface ApiKey {
   id: string;
@@ -58,7 +59,11 @@ const API_KEY_SCOPES = [
   { value: 'profile:write', label: 'Profile: Write' },
 ];
 
-export function SettingsApiKeys() {
+interface SettingsApiKeysProps {
+  isActive: boolean;
+}
+
+export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
   const translate = useTranslate();
   const { open } = useNotification();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -66,7 +71,7 @@ export function SettingsApiKeys() {
   const [newlyCreatedKey, setNewlyCreatedKey] = useState<CreateApiKeyResponse | null>(null);
   const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
 
-  // Fetch API keys for current user
+  // Fetch API keys for current user - only when tab is active
   const { query: apiKeysQuery, result: apiKeysData } = useCustom<ApiKey[]>({
     url: '',
     method: 'get',
@@ -88,6 +93,9 @@ export function SettingsApiKeys() {
           'updatedAt',
         ],
       },
+    },
+    queryOptions: {
+      enabled: isActive, // Only fetch when the tab is active
     },
   });
   const { isLoading, refetch } = apiKeysQuery;
@@ -116,11 +124,29 @@ export function SettingsApiKeys() {
         url: '',
         method: 'post',
         values: {
-          name: data.name,
-          scopes: selectedScopes,
-          rateLimitPerMinute: data.rateLimitPerMinute,
-          expiresAt: data.expiresAt,
-          description: data.description,
+          operation: 'createApiKey',
+          variables: {
+            input: {
+              name: data.name,
+              scopes: selectedScopes,
+              rateLimitPerMinute: data.rateLimitPerMinute,
+              expiresAt: data.expiresAt,
+              description: data.description,
+            },
+          },
+          fields: [
+            'id',
+            'rawKey',
+            'keyPrefix',
+            'name',
+            'scopes',
+            'rateLimitPerMinute',
+            'status',
+            'expiresAt',
+            'description',
+            'createdAt',
+            'updatedAt',
+          ],
         },
       },
       {
@@ -153,7 +179,11 @@ export function SettingsApiKeys() {
       {
         url: '',
         method: 'post',
-        values: { id },
+        values: {
+          operation: 'revokeApiKey',
+          variables: { id },
+          fields: ['id', 'status', 'updatedAt'],
+        },
       },
       {
         onSuccess: () => {
@@ -182,7 +212,10 @@ export function SettingsApiKeys() {
       {
         url: '',
         method: 'post',
-        values: { id },
+        values: {
+          operation: 'deleteApiKey',
+          variables: { id },
+        },
       },
       {
         onSuccess: () => {
@@ -567,15 +600,14 @@ function CreateApiKeyForm({
         >
           {translate('settings.apiKeys.cancelButton')}
         </button>
-        <button
+        <LoadingButton
           type="submit"
-          disabled={isLoading || selectedScopes.length === 0}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          isLoading={isLoading}
+          loadingText={translate('settings.apiKeys.creating')}
+          disabled={selectedScopes.length === 0}
         >
-          {isLoading
-            ? translate('settings.apiKeys.creating')
-            : translate('settings.apiKeys.createButton')}
-        </button>
+          {translate('settings.apiKeys.createButton')}
+        </LoadingButton>
       </div>
     </form>
   );

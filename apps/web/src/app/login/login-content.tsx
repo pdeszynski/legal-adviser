@@ -34,7 +34,7 @@ export const LoginContent = () => {
       hasRedirected.current = true;
       // Use a small delay to ensure all state is propagated
       const redirectTimer = setTimeout(() => {
-        go({ to: '/dashboard', type: 'replace' });
+        go({ to: '/chat', type: 'replace' });
       }, 100);
       return () => clearTimeout(redirectTimer);
     }
@@ -49,8 +49,8 @@ export const LoginContent = () => {
     if (error) setInitialError(error);
   }, []);
 
-  const [email, setEmail] = useState('admin@refine.dev');
-  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();

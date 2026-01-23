@@ -1,0 +1,29 @@
+{
+  "category": "Uncategorized",
+  "description": "Create nicely looking 404 page",
+  "title": "Create Custom 404 Error Page",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769190826925-m3e51ns8s",
+  "descriptionHistory": [
+    {
+      "description": "Create nicely looking 404 page",
+      "timestamp": "2026-01-23T17:53:47.019Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T17:56:34.311Z"
+}

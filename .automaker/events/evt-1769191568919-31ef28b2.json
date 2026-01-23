@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769191568919-31ef28b2",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T18:06:08.919Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769190735778-wjrr4oyoe",
+  "featureName": "Fix CSRF validation error on chat page",
+  "error": "Feature completed in 562s - auto-verified",
+  "passes": true
+}

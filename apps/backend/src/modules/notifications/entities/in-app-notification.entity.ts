@@ -18,8 +18,10 @@ import {
   ID,
   Field,
   GraphQLISODateTime,
+  Int,
   registerEnumType,
 } from '@nestjs/graphql';
+import GraphQLJSON from 'graphql-type-json';
 import { User } from '../../users/entities/user.entity';
 
 /**
@@ -133,8 +135,8 @@ export class InAppNotification {
    * Can store related entity IDs, custom data, etc.
    */
   @Column({ type: 'jsonb', nullable: true, default: {} })
-  @Field(() => String, { nullable: true })
-  metadata?: string | null;
+  @Field(() => GraphQLJSON, { nullable: true })
+  metadata?: Record<string, unknown> | null;
 
   /**
    * Timestamp when the notification was created

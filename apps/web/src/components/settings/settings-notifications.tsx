@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslate, useCustomMutation } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
+import { LoadingButton } from '@legal/ui';
 
 interface UserPreferences {
   id: string;
@@ -49,13 +50,15 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
   const [error, setError] = useState<string | null>(null);
 
   const { mutate, mutation } = useCustomMutation();
-  const isLoading = (mutation as any).isLoading ?? (mutation as any).isPending ?? false;
+  const isLoading =
+    (mutation as { isLoading?: boolean } | undefined)?.isLoading ??
+    (mutation as { isPending?: boolean } | undefined)?.isPending ??
+    false;
 
   const {
     register,
     handleSubmit,
     formState: { isDirty },
-    watch,
   } = useForm<UpdateNotificationsInput>({
     defaultValues: {
       notificationPreferences: {
@@ -74,22 +77,20 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
     },
   });
 
-  const watchedChannels = watch('notificationPreferences.channels');
-
   const onSubmit = (data: UpdateNotificationsInput) => {
     setIsSuccess(false);
     setError(null);
 
     mutate(
       {
-        url: '/updateMyPreferences',
+        url: '',
         method: 'post',
         values: {
-          input: data,
-        },
-        successNotification: {
-          message: translate('settings.notifications.successMessage'),
-          type: 'success',
+          operation: 'updateMyPreferences',
+          variables: {
+            input: data,
+          },
+          fields: ['id', 'notificationPreferences', 'emailNotifications', 'inAppNotifications'],
         },
       },
       {
@@ -251,15 +252,14 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
 
         {/* Actions */}
         <div className="flex justify-end pt-4 border-t">
-          <button
+          <LoadingButton
             type="submit"
-            disabled={isLoading || !isDirty}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            isLoading={isLoading}
+            loadingText={translate('settings.notifications.saving')}
+            disabled={!isDirty}
           >
-            {isLoading
-              ? translate('settings.notifications.saving')
-              : translate('settings.notifications.saveButton')}
-          </button>
+            {translate('settings.notifications.saveButton')}
+          </LoadingButton>
         </div>
       </form>
     </div>

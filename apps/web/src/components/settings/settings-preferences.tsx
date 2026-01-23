@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslate, useCustomMutation } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
+import { LoadingButton } from '@legal/ui';
 
 interface UserPreferences {
   id: string;
@@ -41,7 +42,10 @@ export function SettingsPreferences({ preferences }: { preferences: UserPreferen
   const [error, setError] = useState<string | null>(null);
 
   const { mutate, mutation } = useCustomMutation();
-  const isLoading = (mutation as any).isLoading ?? (mutation as any).isPending ?? false;
+  const isLoading =
+    (mutation as { isLoading?: boolean } | undefined)?.isLoading ??
+    (mutation as { isPending?: boolean } | undefined)?.isPending ??
+    false;
 
   const {
     register,
@@ -63,14 +67,14 @@ export function SettingsPreferences({ preferences }: { preferences: UserPreferen
 
     mutate(
       {
-        url: '/updateMyPreferences',
+        url: '',
         method: 'post',
         values: {
-          input: data,
-        },
-        successNotification: {
-          message: translate('settings.preferences.successMessage'),
-          type: 'success',
+          operation: 'updateMyPreferences',
+          variables: {
+            input: data,
+          },
+          fields: ['id', 'locale', 'theme', 'aiModel', 'timezone', 'dateFormat'],
         },
       },
       {
@@ -199,15 +203,14 @@ export function SettingsPreferences({ preferences }: { preferences: UserPreferen
 
         {/* Actions */}
         <div className="flex justify-end pt-4 border-t">
-          <button
+          <LoadingButton
             type="submit"
-            disabled={isLoading || !isDirty}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            isLoading={isLoading}
+            loadingText={translate('settings.preferences.saving')}
+            disabled={!isDirty}
           >
-            {isLoading
-              ? translate('settings.preferences.saving')
-              : translate('settings.preferences.saveButton')}
-          </button>
+            {translate('settings.preferences.saveButton')}
+          </LoadingButton>
         </div>
       </form>
     </div>

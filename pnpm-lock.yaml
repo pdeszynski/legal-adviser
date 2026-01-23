@@ -552,6 +552,9 @@ importers:
       eslint:
         specifier: ^9.39.2
         version: 9.39.2(jiti@2.6.1)
+      lucide-react:
+        specifier: ^0.547.0
+        version: 0.547.0(react@19.2.3)
       react:
         specifier: ^19.2.3
         version: 19.2.3
@@ -7392,6 +7395,11 @@ packages:
   lru-cache@7.18.3:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
+
+  lucide-react@0.547.0:
+    resolution: {integrity: sha512-YLChGBWKq8ynr1UWP8WWRPhHhyuBAXfSBnHSgfoj51L//9TU3d0zvxpigf5C1IJ4vnEoTzthl5awPK55PiZhdA==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   lucide-react@0.560.0:
     resolution: {integrity: sha512-NwKoUA/aBShsdL8WE5lukV2F/tjHzQRlonQs7fkNGI1sCT0Ay4a9Ap3ST2clUUkcY+9eQ0pBe2hybTQd2fmyDA==}
@@ -18656,6 +18664,10 @@ snapshots:
   lru-cache@7.13.1: {}
 
   lru-cache@7.18.3: {}
+
+  lucide-react@0.547.0(react@19.2.3):
+    dependencies:
+      react: 19.2.3
 
   lucide-react@0.560.0(react@19.2.3):
     dependencies:

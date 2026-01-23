@@ -1,0 +1,29 @@
+{
+  "category": "UI",
+  "description": "Handle errors on frontend, there should be some indicatior that error occured and page cannot be displayed when Graphql returns errors, and example of errored response:\n\n{errors: [,…], data: {auditLogs: {totalCount: 36,…}}}\ndata\n: \n{auditLogs: {totalCount: 36,…}}\nerrors\n: \n[,…]\n0\n: \n{message: \"String cannot represent value: { isActive: true }\", locations: [{line: 23, column: 19}],…}\n1\n: \n{message: \"String cannot represent value: { isActive: false }\", locations: [{line: 24, column: 19}],…}\n2\n: \n{message: \"String cannot represent value: { status: \"DRAFT\" }\", locations: [{line: 23, column: 19}],…}\n3\n: \n{message: \"String cannot represent value: { status: \"COMPLETED\" }\",…}\n4\n: \n{,…}",
+  "title": "",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": "Handle errors on frontend, there should be some indicatior that error occured and page cannot be displayed when Graphql returns errors, and example of errored response:\n\n{errors: [,…], data: {auditLogs: {totalCount: 36,…}}}\ndata\n: \n{auditLogs: {totalCount: 36,…}}\nerrors\n: \n[,…]\n0\n: \n{message: \"String cannot represent value: { isActive: true }\", locations: [{line: 23, column: 19}],…}\n1\n: \n{message: \"String cannot represent value: { isActive: false }\", locations: [{line: 24, column: 19}],…}\n2\n: \n{message: \"String cannot represent value: { status: \"DRAFT\" }\", locations: [{line: 23, column: 19}],…}\n3\n: \n{message: \"String cannot represent value: { status: \"COMPLETED\" }\",…}\n4\n: \n{,…}",
+  "status": "in_progress",
+  "id": "feature-1769190584213-puqznjvbg",
+  "descriptionHistory": [
+    {
+      "description": "Handle errors on frontend, there should be some indicatior that error occured and page cannot be displayed when Graphql returns errors, and example of errored response:\n\n{errors: [,…], data: {auditLogs: {totalCount: 36,…}}}\ndata\n: \n{auditLogs: {totalCount: 36,…}}\nerrors\n: \n[,…]\n0\n: \n{message: \"String cannot represent value: { isActive: true }\", locations: [{line: 23, column: 19}],…}\n1\n: \n{message: \"String cannot represent value: { isActive: false }\", locations: [{line: 24, column: 19}],…}\n2\n: \n{message: \"String cannot represent value: { status: \"DRAFT\" }\", locations: [{line: 23, column: 19}],…}\n3\n: \n{message: \"String cannot represent value: { status: \"COMPLETED\" }\",…}\n4\n: \n{,…}",
+      "timestamp": "2026-01-23T17:49:44.313Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T17:49:44.354Z"
+}

@@ -1,0 +1,30 @@
+{
+  "category": "bug",
+  "description": "Saving user settings / preferences does end in `Custom query/mutation not configured properly` message on frontentd, needs fixing",
+  "title": "Fix user settings save error with custom query configuration",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "completed",
+  "id": "feature-1769177926500-28n8f9jvp",
+  "descriptionHistory": [
+    {
+      "description": "Saving user settings / preferences does end in `Custom query/mutation not configured properly` message on frontentd, needs fixing",
+      "timestamp": "2026-01-23T14:18:46.606Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T14:18:46.649Z",
+  "updatedAt": "2026-01-23T14:32:47.304Z"
+}

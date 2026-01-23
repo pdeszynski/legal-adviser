@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useCallback, useRef, useEffect } from "react";
-import { useTranslate } from "@refinedev/core";
-import { CommentPosition, CreateCommentInput } from "@/hooks";
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useTranslate } from '@refinedev/core';
+import { CommentPosition, CreateCommentInput } from '@/hooks';
+import { LoadingButton } from '@legal/ui';
 
 interface CommentComposerProps {
   documentId: string | undefined;
@@ -11,6 +12,7 @@ interface CommentComposerProps {
   initialText?: string;
   initialPosition?: CommentPosition;
   autoFocus?: boolean;
+  isLoading?: boolean;
 }
 
 /**
@@ -25,9 +27,10 @@ export function CommentComposer({
   documentId,
   onCreate,
   onCancel,
-  initialText = "",
+  initialText = '',
   initialPosition,
   autoFocus = false,
+  isLoading = false,
 }: CommentComposerProps) {
   const translate = useTranslate();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -66,22 +69,22 @@ export function CommentComposer({
       });
     }
 
-    setText("");
+    setText('');
   }, [documentId, text, position, onCreate]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       // Submit on Ctrl+Enter or Cmd+Enter
-      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         handleSubmit();
       }
       // Cancel on Escape
-      if (e.key === "Escape" && onCancel) {
+      if (e.key === 'Escape' && onCancel) {
         onCancel();
       }
     },
-    [handleSubmit, onCancel]
+    [handleSubmit, onCancel],
   );
 
   const characterCount = text.length;
@@ -91,18 +94,16 @@ export function CommentComposer({
   return (
     <div className="border border-blue-300 rounded-lg bg-blue-50 p-4 mb-4">
       <h4 className="text-sm font-semibold text-gray-900 mb-2">
-        {translate("comments.newComment", "New Comment")}
+        {translate('comments.newComment', 'New Comment')}
       </h4>
 
       {/* Selected text preview */}
       {position?.text && (
         <div className="mb-3 p-2 bg-white rounded border-l-4 border-blue-400">
           <div className="text-xs text-gray-500 mb-1">
-            {translate("comments.selectedText", "Selected text:")}
+            {translate('comments.selectedText', 'Selected text:')}
           </div>
-          <div className="text-sm text-gray-700 italic">
-            "{position.text}"
-          </div>
+          <div className="text-sm text-gray-700 italic">"{position.text}"</div>
         </div>
       )}
 
@@ -112,10 +113,7 @@ export function CommentComposer({
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder={translate(
-          "comments.placeholder",
-          "Write your comment here..."
-        )}
+        placeholder={translate('comments.placeholder', 'Write your comment here...')}
         className="w-full p-3 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] resize-y"
         maxLength={maxCharacters}
       />
@@ -123,14 +121,12 @@ export function CommentComposer({
       {/* Footer with character count and actions */}
       <div className="flex items-center justify-between mt-3">
         <div className="text-xs text-gray-500">
-          {translate("comments.characters", "characters")}: {characterCount}
+          {translate('comments.characters', 'characters')}: {characterCount}
           {remainingCharacters < 100 && (
             <span
-              className={`ml-2 ${
-                remainingCharacters < 20 ? "text-red-500" : "text-yellow-600"
-              }`}
+              className={`ml-2 ${remainingCharacters < 20 ? 'text-red-500' : 'text-yellow-600'}`}
             >
-              ({remainingCharacters} {translate("comments.remaining", "remaining")})
+              ({remainingCharacters} {translate('comments.remaining', 'remaining')})
             </span>
           )}
         </div>
@@ -139,30 +135,32 @@ export function CommentComposer({
           {onCancel && (
             <button
               onClick={onCancel}
-              className="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              disabled={isLoading}
+              className="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors"
             >
-              {translate("buttons.cancel", "Cancel")}
+              {translate('buttons.cancel', 'Cancel')}
             </button>
           )}
-          <button
+          <LoadingButton
             onClick={handleSubmit}
+            isLoading={isLoading}
+            loadingText={translate('comments.submitting', 'Submitting...')}
             disabled={!text.trim() || !documentId}
-            className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            size="sm"
           >
-            {translate("comments.submit", "Submit")}
-          </button>
+            {translate('comments.submit', 'Submit')}
+          </LoadingButton>
         </div>
       </div>
 
       {/* Keyboard shortcuts hint */}
       <div className="text-xs text-gray-400 mt-2">
-        <span className="font-medium">Ctrl+Enter</span> {" "}
-        {translate("comments.toSubmit", "to submit")}
+        <span className="font-medium">Ctrl+Enter</span>{' '}
+        {translate('comments.toSubmit', 'to submit')}
         {onCancel && (
           <>
-            {" • "}
-            <span className="font-medium">Esc</span> {" "}
-            {translate("comments.toCancel", "to cancel")}
+            {' • '}
+            <span className="font-medium">Esc</span> {translate('comments.toCancel', 'to cancel')}
           </>
         )}
       </div>

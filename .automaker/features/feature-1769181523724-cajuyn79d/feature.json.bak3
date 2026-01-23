@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "Any mutation ends up with an error that they're not setup: Custom query/mutation not configured properly. Example URL http://localhost:3000/settings on preferences page",
+  "title": "",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": "Any mutation ends up with an error that they're not setup: Custom query/mutation not configured properly. Example URL http://localhost:3000/settings on preferences page",
+  "status": "in_progress",
+  "id": "feature-1769181523724-cajuyn79d",
+  "descriptionHistory": [
+    {
+      "description": "Any mutation ends up with an error that they're not setup: Custom query/mutation not configured properly. Example URL http://localhost:3000/settings on preferences page",
+      "timestamp": "2026-01-23T15:18:43.827Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T15:18:43.875Z",
+  "updatedAt": "2026-01-23T15:18:44.049Z"
+}

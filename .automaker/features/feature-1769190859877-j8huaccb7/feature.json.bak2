@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "Make first page after logging in to be the legal chat or dashboad, which one you deem better",
+  "title": "Update default landing page after login",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769190859877-j8huaccb7",
+  "descriptionHistory": [
+    {
+      "description": "Make first page after logging in to be the legal chat or dashboad, which one you deem better",
+      "timestamp": "2026-01-23T17:54:19.980Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T17:56:43.312Z",
+  "updatedAt": "2026-01-23T17:56:50.124Z"
+}

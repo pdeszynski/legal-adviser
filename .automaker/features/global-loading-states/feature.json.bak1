@@ -1,0 +1,21 @@
+{
+  "category": "enhancement",
+  "description": "Implement consistent loading state patterns across all forms in the application. Create reusable loading components and hooks for form submissions. Apply to document creation, settings updates, and all mutation-based forms.",
+  "id": "global-loading-states",
+  "title": "Global Loading States for Forms",
+  "dependencies": [
+    "login-loading-state"
+  ],
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Implement consistent loading state patterns across all forms in the application. Create reusable loading components and hooks for form submissions. Apply to document creation, settings updates, and all mutation-based forms.",
+      "timestamp": "2026-01-23T07:01:13.234Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T14:36:03.149Z",
+  "updatedAt": "2026-01-23T14:36:03.360Z"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769191823031-313966d5",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T18:10:23.031Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769191096543-e8lk1wet6",
+  "featureName": "Optimize settings page loading performance",
+  "error": "Feature completed in 240s - auto-verified",
+  "passes": true
+}

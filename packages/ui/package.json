@@ -21,8 +21,8 @@
     "**/*.css"
   ],
   "scripts": {
-    "build": "tsup src/index.tsx --format cjs,esm --dts --external react",
-    "dev": "tsup src/index.tsx --format cjs,esm --dts --external react --watch",
+    "build": "tsup src/index.tsx --format cjs,esm --dts --external react --external lucide-react",
+    "dev": "tsup src/index.tsx --format cjs,esm --dts --external react --external lucide-react --watch",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/"
@@ -43,6 +43,7 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.2",
+    "lucide-react": "^0.547.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "tsup": "^8.5.0",

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769178274360-2819d009",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T14:24:34.360Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769177874370-0v75j257r",
+  "featureName": "Fix settings page loading and user data hydration",
+  "error": "Feature completed in 395s - auto-verified",
+  "passes": true
+}

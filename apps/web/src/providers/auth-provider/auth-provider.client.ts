@@ -3,6 +3,7 @@
 import type { AuthProvider } from '@refinedev/core';
 import Cookies from 'js-cookie';
 import { parseGraphQLError, parseExceptionError } from '@/lib/auth-errors';
+import { getCsrfHeaders } from '@/lib/csrf';
 
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
@@ -56,6 +57,7 @@ async function executeGraphQL<T>(
 ): Promise<GraphQLResponse<T>> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    ...getCsrfHeaders(), // Include CSRF token for mutations
   };
 
   if (accessToken) {
@@ -274,7 +276,9 @@ async function tryRefreshToken(): Promise<boolean> {
 function extractErrorMessage(
   errors: Array<{ message: string; extensions?: Record<string, unknown> }>,
 ): string {
-  const authError = parseGraphQLError(errors as Array<{ message: string; extensions?: Record<string, unknown> }>);
+  const authError = parseGraphQLError(
+    errors as Array<{ message: string; extensions?: Record<string, unknown> }>,
+  );
   return authError?.userMessage || 'An error occurred';
 }
 
@@ -313,7 +317,7 @@ export const authProviderClient: AuthProvider = {
 
         return {
           success: true,
-          redirectTo: '/documents',
+          redirectTo: '/chat',
         };
       }
 
@@ -366,7 +370,7 @@ export const authProviderClient: AuthProvider = {
 
         return {
           success: true,
-          redirectTo: '/documents',
+          redirectTo: '/chat',
         };
       }
 

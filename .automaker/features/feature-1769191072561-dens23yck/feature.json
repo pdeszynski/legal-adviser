@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens",
+  "title": "Fix custom page mutations configuration error on save",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769191072561-dens23yck",
+  "descriptionHistory": [
+    {
+      "description": "Fix saving mutations on custom pages, for example: http://localhost:3000/settings\n\nWhen using form save button, this leads to an error that the custom mutation is not configred properly. Please verify if that's the only place where it happens",
+      "timestamp": "2026-01-23T17:57:52.652Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T18:06:17.041Z",
+  "updatedAt": "2026-01-23T18:13:09.984Z"
+}

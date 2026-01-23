@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslate, useCustom } from '@refinedev/core';
+import { useTranslate, useCustom, useGetIdentity } from '@refinedev/core';
 import { SettingsProfile } from '@/components/settings/settings-profile';
 import { SettingsPreferences } from '@/components/settings/settings-preferences';
 import { SettingsSecurity } from '@/components/settings/settings-security';
@@ -45,18 +45,9 @@ export default function SettingsPage() {
   const translate = useTranslate();
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
 
-  // Fetch current user data
-  const { query: userQuery, result: userData } = useCustom<User>({
-    url: '',
-    method: 'get',
-    config: {
-      query: {
-        operation: 'me',
-        fields: ['id', 'email', 'username', 'firstName', 'lastName'],
-      },
-    },
-  });
-  const { isLoading: userLoading } = userQuery;
+  // Fetch current user data using the built-in useGetIdentity hook
+  // This uses the auth provider's getIdentity method which properly fetches user data
+  const { data: userData, isLoading: userLoading } = useGetIdentity<User>();
 
   // Fetch user preferences
   const { query: preferencesQuery, result: preferencesData } = useCustom<UserPreferences>({
@@ -90,7 +81,7 @@ export default function SettingsPage() {
     { id: 'apiKeys' as const, label: translate('settings.tabs.apiKeys') },
   ];
 
-  const user = userData?.data;
+  const user = userData;
   const preferences = preferencesData?.data;
 
   return (
@@ -134,7 +125,7 @@ export default function SettingsPage() {
             {activeTab === 'notifications' && preferences && (
               <SettingsNotifications preferences={preferences} />
             )}
-            {activeTab === 'apiKeys' && <SettingsApiKeys />}
+            {activeTab === 'apiKeys' && <SettingsApiKeys isActive={activeTab === 'apiKeys'} />}
           </>
         )}
       </div>

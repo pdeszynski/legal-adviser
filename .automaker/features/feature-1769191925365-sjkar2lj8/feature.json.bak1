@@ -1,0 +1,32 @@
+{
+  "category": "Uncategorized",
+  "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix CSRF validation error on chat page\n\n**Description:** Fix csrf validation failed on /chat page\n\n---\n\n## Task Description\n\nThat is not fixed, still doesnt work, plese fix that validation.",
+  "title": "",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [
+    "feature-1769190735778-wjrr4oyoe"
+  ],
+  "workMode": "current",
+  "titleGenerating": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix CSRF validation error on chat page\n\n**Description:** Fix csrf validation failed on /chat page\n\n---\n\n## Task Description\n\nThat is not fixed, still doesnt work, plese fix that validation.",
+  "status": "in_progress",
+  "id": "feature-1769191925365-sjkar2lj8",
+  "descriptionHistory": [
+    {
+      "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix CSRF validation error on chat page\n\n**Description:** Fix csrf validation failed on /chat page\n\n---\n\n## Task Description\n\nThat is not fixed, still doesnt work, plese fix that validation.",
+      "timestamp": "2026-01-23T18:12:05.462Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T18:12:05.495Z",
+  "updatedAt": "2026-01-23T18:12:08.283Z"
+}

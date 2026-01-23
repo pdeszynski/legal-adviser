@@ -32,7 +32,6 @@
 # ============================================================================
 
 services:
-
   postgres:
     image: postgres:15-alpine
     container_name: legal-ai-db
@@ -148,6 +147,7 @@ services:
       NODE_ENV: development
     ports:
       - '3000:3000'
+      - '5001:5001'
     # Volume mounts for hot-reload during development
     # Note: Named volumes for node_modules prevent host node_modules from overriding
     volumes:

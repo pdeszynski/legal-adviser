@@ -1,0 +1,29 @@
+{
+  "category": "bug",
+  "description": "Settings page does not load + hydrate currently logged in user data into forms",
+  "title": "Fix settings page loading and user data hydration",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769177874370-0v75j257r",
+  "descriptionHistory": [
+    {
+      "description": "Settings page does not load + hydrate currently logged in user data into forms",
+      "timestamp": "2026-01-23T14:17:54.465Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T14:17:54.503Z"
+}

@@ -350,7 +350,7 @@ input AuditActionTypeFilterComparison {
 
 type AuditLog {
   action: AuditActionType!
-  changeDetails: ChangeDetails
+  changeDetails: JSON
   createdAt: DateTime!
   errorMessage: String
   id: ID!
@@ -629,18 +629,6 @@ input BulkUpdateSettingsInput {
 
 input CancelSubscriptionInput {
   immediately: Boolean! = false
-}
-
-type ChangeDetails {
-  """JSON string of new values"""
-  after: String
-
-  """JSON string of previous values"""
-  before: String
-  changedFields: [String!]
-
-  """JSON string of additional context"""
-  context: String
 }
 
 input ChangePasswordInput {
@@ -1879,7 +1867,7 @@ type InAppNotification {
   createdAt: DateTime!
   id: ID!
   message: String!
-  metadata: String
+  metadata: JSON
   read: Boolean!
   type: InAppNotificationType!
   user: User!
@@ -1965,7 +1953,7 @@ type InAppNotificationDeleteResponse {
   createdAt: DateTime
   id: ID
   message: String
-  metadata: String
+  metadata: JSON
   read: Boolean
   type: InAppNotificationType
   userId: String
@@ -2872,7 +2860,7 @@ type Mutation {
   login(input: LoginInput!): AuthPayload!
 
   """Mark all notifications as read for a user"""
-  markAllNotificationsAsRead(userId: String!): Float!
+  markAllNotificationsAsRead(userId: String!): Int!
 
   """Mark a notification as read"""
   markNotificationAsRead(notificationId: String!, userId: String!): String!
@@ -3708,7 +3696,7 @@ type Query {
   queryMetrics(input: DashboardAnalyticsInput): QueryMetrics!
 
   """Get recent notifications for a user"""
-  recentNotifications(limit: Float, unreadOnly: Boolean, userId: String!): [InAppNotification!]!
+  recentNotifications(limit: Int, unreadOnly: Boolean, userId: String!): [InAppNotification!]!
 
   """Full-text search across documents with relevance ranking"""
   searchLegalDocuments(input: SearchLegalDocumentsInput!): LegalDocumentSearchResponse!
@@ -3731,7 +3719,7 @@ type Query {
   topUsersByUsage(by: String = "tokens", endDate: DateTime, limit: Float = 10, startDate: DateTime): String!
 
   """Get count of unread notifications for a user"""
-  unreadNotificationCount(userId: String!): Float!
+  unreadNotificationCount(userId: String!): Int!
   usageStats(query: UsageStatsQueryInput!): UsageStatsResponse!
   user(
     """The id of the record to find."""

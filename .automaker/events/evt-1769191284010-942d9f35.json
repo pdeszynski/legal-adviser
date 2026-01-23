@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769191284010-942d9f35",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T18:01:24.010Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769190859877-j8huaccb7",
+  "featureName": "Update default landing page after login",
+  "error": "Feature completed in 274s - auto-verified",
+  "passes": true
+}

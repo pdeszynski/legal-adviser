@@ -5,6 +5,7 @@ import {
   Args,
   Context,
   ObjectType,
+  Int,
 } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { NotificationManagerService } from './services/notification-manager.service';
@@ -92,7 +93,7 @@ export class NotificationManagerResolver {
   /**
    * Mark all notifications as read for a user
    */
-  @Mutation(() => Number, {
+  @Mutation(() => Int, {
     description: 'Mark all notifications as read for a user',
   })
   async markAllNotificationsAsRead(
@@ -104,7 +105,7 @@ export class NotificationManagerResolver {
   /**
    * Get unread notification count
    */
-  @Query(() => Number, {
+  @Query(() => Int, {
     description: 'Get count of unread notifications for a user',
   })
   async unreadNotificationCount(
@@ -121,7 +122,7 @@ export class NotificationManagerResolver {
   })
   async recentNotifications(
     @Args('userId') userId: string,
-    @Args('limit', { nullable: true }) limit?: number,
+    @Args('limit', { type: () => Int, nullable: true }) limit?: number,
     @Args('unreadOnly', { nullable: true }) unreadOnly?: boolean,
   ): Promise<InAppNotification[]> {
     return this.notificationManager.getRecentNotifications(

@@ -1,0 +1,29 @@
+{
+  "category": "Uncategorized",
+  "description": "Build does not pass with:\n\nonventions/instrumentation-client\n ✓ Compiled successfully in 6.0s\n   Skipping linting\n   Checking validity of types ...\nFailed to compile.\n\n./src/providers/data-provider/index.ts:1020:7\nType error: Cannot assign to 'queryConfig' because it is a constant.\n\n  1018 |     if (!queryConfig && normalizedMethod === 'get' && url && url.startsWith('/')) {\n  1019 |       const operation = url.substring(1).replace(/^\\//, '');\n> 1020 |       queryConfig = {\n       |       ^\n  1021 |         operation,\n  1022 |         fields: [], // Will be populated by caller if needed\n  1023 |         args: undefined,\nNext.js build worker exited with code: 1 and signal: null\n ELIFECYCLE  Command failed with exit code 1.\ncommand finished with error: command (/Users/piteer/workspace/radca-prawny/legal/apps/web) /opt/homebrew/bin/pnpm run build exited (1)\n└─ @legal/web#build ──\n@legal/web#build: command (/Users/piteer/workspace/radca-prawny/legal/apps/web) /opt/homebrew/bin/pnpm run build exited (1)\n\n Tasks:    4 successful, 5 total\nCached:    3 cached, 5 total\n  Time:    16.917s \nFailed:    @legal/web#build\n",
+  "title": "",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": "Build does not pass with:\n\nonventions/instrumentation-client\n ✓ Compiled successfully in 6.0s\n   Skipping linting\n   Checking validity of types ...\nFailed to compile.\n\n./src/providers/data-provider/index.ts:1020:7\nType error: Cannot assign to 'queryConfig' because it is a constant.\n\n  1018 |     if (!queryConfig && normalizedMethod === 'get' && url && url.startsWith('/')) {\n  1019 |       const operation = url.substring(1).replace(/^\\//, '');\n> 1020 |       queryConfig = {\n       |       ^\n  1021 |         operation,\n  1022 |         fields: [], // Will be populated by caller if needed\n  1023 |         args: undefined,\nNext.js build worker exited with code: 1 and signal: null\n ELIFECYCLE  Command failed with exit code 1.\ncommand finished with error: command (/Users/piteer/workspace/radca-prawny/legal/apps/web) /opt/homebrew/bin/pnpm run build exited (1)\n└─ @legal/web#build ──\n@legal/web#build: command (/Users/piteer/workspace/radca-prawny/legal/apps/web) /opt/homebrew/bin/pnpm run build exited (1)\n\n Tasks:    4 successful, 5 total\nCached:    3 cached, 5 total\n  Time:    16.917s \nFailed:    @legal/web#build",
+  "status": "in_progress",
+  "id": "feature-1769192835791-lf43peajf",
+  "descriptionHistory": [
+    {
+      "description": "Build does not pass with:\n\nonventions/instrumentation-client\n ✓ Compiled successfully in 6.0s\n   Skipping linting\n   Checking validity of types ...\nFailed to compile.\n\n./src/providers/data-provider/index.ts:1020:7\nType error: Cannot assign to 'queryConfig' because it is a constant.\n\n  1018 |     if (!queryConfig && normalizedMethod === 'get' && url && url.startsWith('/')) {\n  1019 |       const operation = url.substring(1).replace(/^\\//, '');\n> 1020 |       queryConfig = {\n       |       ^\n  1021 |         operation,\n  1022 |         fields: [], // Will be populated by caller if needed\n  1023 |         args: undefined,\nNext.js build worker exited with code: 1 and signal: null\n ELIFECYCLE  Command failed with exit code 1.\ncommand finished with error: command (/Users/piteer/workspace/radca-prawny/legal/apps/web) /opt/homebrew/bin/pnpm run build exited (1)\n└─ @legal/web#build ──\n@legal/web#build: command (/Users/piteer/workspace/radca-prawny/legal/apps/web) /opt/homebrew/bin/pnpm run build exited (1)\n\n Tasks:    4 successful, 5 total\nCached:    3 cached, 5 total\n  Time:    16.917s \nFailed:    @legal/web#build\n",
+      "timestamp": "2026-01-23T18:27:15.889Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T18:27:15.926Z"
+}

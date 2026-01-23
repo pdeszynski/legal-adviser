@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslate, useCustomMutation } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
+import { LoadingButton } from '@legal/ui';
 
 interface ChangePasswordInput {
   currentPassword: string;
@@ -161,15 +162,13 @@ export function SettingsSecurity() {
 
         {/* Actions */}
         <div className="flex justify-end pt-4 border-t">
-          <button
+          <LoadingButton
             type="submit"
-            disabled={isLoading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            isLoading={isLoading}
+            loadingText={translate('settings.security.changing')}
           >
-            {isLoading
-              ? translate('settings.security.changing')
-              : translate('settings.security.changeButton')}
-          </button>
+            {translate('settings.security.changeButton')}
+          </LoadingButton>
         </div>
       </form>
 

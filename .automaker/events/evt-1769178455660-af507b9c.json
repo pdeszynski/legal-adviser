@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769178455660-af507b9c",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T14:27:35.660Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769176664460-qikt9clq6",
+  "featureName": "Fix GraphQL notification query syntax error",
+  "error": "Feature completed in 615s - auto-verified",
+  "passes": true
+}

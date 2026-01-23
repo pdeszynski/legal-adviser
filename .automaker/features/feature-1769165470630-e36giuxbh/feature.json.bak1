@@ -18,7 +18,7 @@
   ],
   "workMode": "custom",
   "titleGenerating": false,
-  "status": "in_progress",
+  "status": "verified",
   "id": "feature-1769165470630-e36giuxbh",
   "descriptionHistory": [
     {
@@ -33,5 +33,5 @@
     }
   ],
   "startedAt": "2026-01-23T10:51:56.350Z",
-  "updatedAt": "2026-01-23T10:51:56.503Z"
+  "updatedAt": "2026-01-23T11:17:14.047Z"
 }

@@ -8,6 +8,7 @@ import type {
   Pagination,
 } from '@refinedev/core';
 import { getAccessToken } from '../auth-provider/auth-provider.client';
+import { getCsrfHeaders } from '@/lib/csrf';
 
 /**
  * GraphQL Data Provider
@@ -75,12 +76,42 @@ function storeCursor(key: string, pageNumber: number, endCursor: string, totalCo
 }
 
 /**
+ * GraphQL error item from response
+ */
+export interface GraphQLErrorItem {
+  message: string;
+  locations?: Array<{ line: number; column: number }>;
+  path?: string[];
+  extensions?: Record<string, unknown>;
+}
+
+/**
+ * GraphQL response with optional errors
+ */
+export interface GraphQLResult<T> {
+  data?: T;
+  errors?: GraphQLErrorItem[];
+}
+
+/**
+ * Enhanced result type that includes errors with data
+ */
+export type ProviderResult<T> = T & { _errors?: GraphQLErrorItem[] };
+
+/**
  * Execute a GraphQL query or mutation
  * Automatically includes authentication token if available
+ *
+ * Returns the full response including errors for partial data handling.
+ * When errors are present, they are attached to the result object as _errors.
  */
-async function executeGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
+async function executeGraphQL<T>(
+  query: string,
+  variables?: Record<string, unknown>,
+): Promise<ProviderResult<T>> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    ...getCsrfHeaders(), // Include CSRF token for mutations
   };
 
   // Include access token if available
@@ -103,13 +134,39 @@ async function executeGraphQL<T>(query: string, variables?: Record<string, unkno
     throw new Error(`GraphQL request failed: ${response.status}`);
   }
 
-  const result = await response.json();
+  const result = (await response.json()) as GraphQLResult<T>;
 
-  if (result.errors && result.errors.length > 0) {
-    throw new Error(result.errors[0].message || 'GraphQL error');
+  // If we have both data and errors, return data with errors attached
+  if (result.data && result.errors && result.errors.length > 0) {
+    return {
+      ...result.data,
+      _errors: result.errors,
+    } as ProviderResult<T> & T;
   }
 
-  return result.data;
+  // If we only have errors (no data), throw with all error messages
+  if (result.errors && result.errors.length > 0) {
+    const errorMessages = result.errors.map((e) => e.message).join('; ');
+    throw new Error(errorMessages || 'GraphQL error');
+  }
+
+  // No errors, return data normally
+  return result.data as ProviderResult<T> & T;
+}
+
+/**
+ * Extract GraphQL errors from a provider result
+ */
+export function getProviderErrors<T>(result: ProviderResult<T>): GraphQLErrorItem[] {
+  return (result as unknown as { _errors?: GraphQLErrorItem[] })._errors ?? [];
+}
+
+/**
+ * Check if a provider result has GraphQL errors
+ */
+export function hasProviderErrors<T>(result: ProviderResult<T>): boolean {
+  const errors = getProviderErrors(result);
+  return errors.length > 0;
 }
 
 /**
@@ -355,10 +412,7 @@ export const dataProvider: DataProvider = {
                 userAgent
                 statusCode
                 errorMessage
-                changeDetails {
-                  before
-                  after
-                }
+                changeDetails
                 createdAt
                 updatedAt
               }
@@ -421,6 +475,9 @@ export const dataProvider: DataProvider = {
         sorting: graphqlSorting,
       });
 
+      // Extract any GraphQL errors from the response
+      const errors = getProviderErrors(data);
+
       const items = data.auditLogs.edges.map((edge) => edge.node);
 
       // Store cursor for this page to enable navigation
@@ -435,6 +492,8 @@ export const dataProvider: DataProvider = {
       return {
         data: items,
         total: data.auditLogs.totalCount,
+        // Attach errors to the result for components to handle
+        ...(errors.length > 0 && { _errors: errors }),
       };
     }
 
@@ -519,6 +578,9 @@ export const dataProvider: DataProvider = {
         sorting: graphqlSorting || [],
       });
 
+      // Extract any GraphQL errors from the response
+      const errors = getProviderErrors(data);
+
       const items = data.legalDocuments.edges.map((edge) => edge.node);
 
       // Store cursor for this page to enable navigation
@@ -533,6 +595,8 @@ export const dataProvider: DataProvider = {
       return {
         data: items,
         total: data.legalDocuments.totalCount,
+        // Attach errors to the result for components to handle
+        ...(errors.length > 0 && { _errors: errors }),
       };
     }
 
@@ -611,6 +675,9 @@ export const dataProvider: DataProvider = {
         sorting: graphqlSorting || [],
       });
 
+      // Extract any GraphQL errors from the response
+      const errors = getProviderErrors(data);
+
       const items = data.legalRulings.edges.map((edge) => edge.node);
 
       // Store cursor for this page to enable navigation
@@ -625,6 +692,8 @@ export const dataProvider: DataProvider = {
       return {
         data: items,
         total: data.legalRulings.totalCount,
+        // Attach errors to the result for components to handle
+        ...(errors.length > 0 && { _errors: errors }),
       };
     }
 
@@ -660,10 +729,7 @@ export const dataProvider: DataProvider = {
             userAgent
             statusCode
             errorMessage
-            changeDetails {
-              before
-              after
-            }
+            changeDetails
             createdAt
             updatedAt
           }
@@ -870,10 +936,22 @@ export const dataProvider: DataProvider = {
    *   config.mutation.operation - GraphQL operation name
    *   config.mutation.fields - Array of field names to fetch
    *   config.mutation.values - Values to pass as mutation input
+   *
+   * For useCustomMutation, the mutation config can be passed in the 'values' param:
+   *   values.operation - GraphQL operation name
+   *   values.variables - Mutation variables (e.g., { input: {...} })
+   *   values.fields - Array of field names to fetch
+   *
+   * URL-based format:
+   *   When url is provided (e.g., '/updateProfile'), the operation name is derived from the URL path.
+   *   The operation name is the URL path without the leading slash, in camelCase.
+   *   The values should contain the mutation input (e.g., { input: {...} }).
    */
-  custom: async <TData extends BaseRecord = BaseRecord>({
+  custom: async <TData extends BaseRecord = BaseRecord, TVariables = Record<string, unknown>>({
     method,
     config,
+    values,
+    url,
   }: {
     method?: string;
     config?: {
@@ -890,40 +968,180 @@ export const dataProvider: DataProvider = {
         variables?: Record<string, unknown>;
       };
     };
+    values?: TVariables;
+    url?: string;
   }) => {
-    const queryConfig = config?.query;
-    const mutationConfig = config?.mutation;
+    let queryConfig = config?.query;
+    let mutationConfig = config?.mutation;
 
-    if (mutationConfig && method === 'post') {
+    // Normalize method to lowercase for consistent comparison
+    const normalizedMethod = method?.toLowerCase();
+
+    // Handle useCustomMutation format where mutation config is in 'values'
+    if (normalizedMethod === 'post' && !mutationConfig && values && typeof values === 'object') {
+      const valuesObj = values as Record<string, unknown>;
+
+      // Check if operation is explicitly provided in values
+      if ('operation' in valuesObj && typeof valuesObj.operation === 'string') {
+        // Extract the operation config from values
+        // When using this format, values contains: { operation, variables, fields }
+        mutationConfig = {
+          operation: valuesObj.operation as string,
+          fields: Array.isArray(valuesObj.fields) ? (valuesObj.fields as string[]) : undefined,
+          variables:
+            'variables' in valuesObj ? (valuesObj.variables as Record<string, unknown>) : undefined,
+          // Don't set 'values' property - the actual mutation data is in 'variables'
+        };
+      }
+      // If no explicit operation but url is provided, derive operation from url
+      else if (url && url.startsWith('/')) {
+        const operation = url.substring(1).replace(/^\//, '');
+        mutationConfig = {
+          operation,
+          fields: ['id'], // Default fields - will be overridden if returned
+          variables: valuesObj as Record<string, unknown>,
+        };
+      }
+      // Fallback: treat values with 'input' as a mutation
+      else if ('input' in valuesObj && typeof valuesObj.input === 'object') {
+        // Try to infer operation from the structure or use a default pattern
+        // This case is handled by the explicit operation or url patterns above
+        mutationConfig = {
+          operation: 'unknown',
+          fields: ['id'],
+          variables: valuesObj as Record<string, unknown>,
+        };
+      }
+    }
+
+    // Handle URL-based queries (useCustom with method: 'get')
+    if (!queryConfig && normalizedMethod === 'get' && url && url.startsWith('/')) {
+      const operation = url.substring(1).replace(/^\//, '');
+      queryConfig = {
+        operation,
+        fields: [], // Will be populated by caller if needed
+        args: undefined,
+      };
+    }
+
+    if (mutationConfig && normalizedMethod === 'post') {
       // Execute mutation
-      const { operation, fields = [], values, variables } = mutationConfig;
-      const mutationVars = { ...(values || {}), ...(variables || {}) };
+      const { operation, fields = [], values: mutationValues, variables } = mutationConfig;
+      const mutationVars = { ...(mutationValues || {}), ...(variables || {}) };
 
       // Build mutation string
       const fieldsStr = fields.join(' ');
 
-      // Build variable definitions and input arguments
-      const varDefs = Object.entries(mutationVars)
-        .map(([key, value]) => {
-          // Infer type from value
-          const type = typeof value === 'number' ? 'Float' : 'String';
-          return `$${key}: ${type}!`;
-        })
-        .join(', ');
+      // Build mutation - handle input objects specially
+      let mutation = '';
+      let varsToPass: Record<string, unknown> = {};
 
-      const inputArgs = Object.keys(mutationVars)
-        .map((key) => `${key}: $${key}`)
-        .join(', ');
+      // Check if there's an 'input' variable with a complex object value
+      const hasInputObject =
+        'input' in mutationVars &&
+        typeof mutationVars.input === 'object' &&
+        mutationVars.input !== null &&
+        !Array.isArray(mutationVars.input);
 
-      const mutation = `
-        mutation ${operation}(${varDefs ? varDefs : ''}) {
-          ${operation}(${inputArgs ? inputArgs : ''}) {
-            ${fieldsStr}
+      if (hasInputObject) {
+        // For input objects, inline the values directly to avoid type inference issues
+        const inputObj = mutationVars.input as Record<string, unknown>;
+        const inputFields = Object.entries(inputObj)
+          .map(([key, value]) => {
+            if (typeof value === 'string') {
+              return `${key}: "${value}"`;
+            } else if (typeof value === 'boolean') {
+              return `${key}: ${value}`;
+            } else if (typeof value === 'number') {
+              return `${key}: ${value}`;
+            } else if (value === null || value === undefined) {
+              return `${key}: null`;
+            } else if (Array.isArray(value)) {
+              // Handle arrays (e.g., scopes in createApiKey, channels in notificationPreferences)
+              if (value.length === 0) {
+                return `${key}: []`;
+              }
+              const arrayStr = value
+                .map((v) => {
+                  if (typeof v === 'string') return `"${v}"`;
+                  if (typeof v === 'boolean') return v;
+                  if (typeof v === 'number') return v;
+                  return JSON.stringify(v);
+                })
+                .join(', ');
+              return `${key}: [${arrayStr}]`;
+            } else if (typeof value === 'object') {
+              // Handle nested objects (e.g., notificationPreferences.channels)
+              // Build nested object literal for GraphQL
+              const nestedFields = Object.entries(value as Record<string, unknown>)
+                .map(([nestedKey, nestedValue]) => {
+                  if (typeof nestedValue === 'string') {
+                    return `${nestedKey}: "${nestedValue}"`;
+                  } else if (typeof nestedValue === 'boolean') {
+                    return `${nestedKey}: ${nestedValue}`;
+                  } else if (nestedValue === null || nestedValue === undefined) {
+                    return `${nestedKey}: null`;
+                  } else if (Array.isArray(nestedValue)) {
+                    if (nestedValue.length === 0) {
+                      return `${nestedKey}: []`;
+                    }
+                    const nestedArrayStr = nestedValue
+                      .map((v) => {
+                        if (typeof v === 'string') return `"${v}"`;
+                        if (typeof v === 'boolean') return v;
+                        if (typeof v === 'number') return v;
+                        return JSON.stringify(v);
+                      })
+                      .join(', ');
+                    return `${nestedKey}: [${nestedArrayStr}]`;
+                  }
+                  return `${nestedKey}: "${nestedValue}"`;
+                })
+                .join(', ');
+              return `${key}: { ${nestedFields} }`;
+            }
+            return `${key}: "${value}"`;
+          })
+          .join(', ');
+
+        mutation = `
+          mutation ${operation} {
+            ${operation}(input: { ${inputFields} }) {
+              ${fieldsStr}
+            }
           }
-        }
-      `;
+        `;
+        varsToPass = {};
+      } else {
+        // Build variable definitions and input arguments for simple types
+        const varDefs = Object.entries(mutationVars)
+          .map(([key, value]) => {
+            // Infer type from value
+            const type =
+              typeof value === 'number'
+                ? 'Float'
+                : typeof value === 'boolean'
+                  ? 'Boolean'
+                  : 'String';
+            return `$${key}: ${type}!`;
+          })
+          .join(', ');
 
-      const data = await executeGraphQL<Record<string, TData>>(mutation, mutationVars);
+        const inputArgs = Object.keys(mutationVars)
+          .map((key) => `${key}: $${key}`)
+          .join(', ');
+
+        mutation = `
+          mutation ${operation}(${varDefs ? varDefs : ''}) {
+            ${operation}(${inputArgs ? inputArgs : ''}) {
+              ${fieldsStr}
+            }
+          }
+        `;
+        varsToPass = mutationVars;
+      }
+
+      const data = await executeGraphQL<Record<string, TData>>(mutation, varsToPass);
 
       // Return first key's value as result
       const resultKey = Object.keys(data)[0];

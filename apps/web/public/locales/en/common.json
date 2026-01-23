@@ -158,49 +158,6 @@
       "markAllRead": "Mark all read"
     }
   },
-  "blog_posts": {
-    "blog_posts": "Menu",
-    "form": {
-      "select": {
-        "category": {
-          "placeholder": "Please select category"
-        }
-      }
-    },
-    "fields": {
-      "id": "Id",
-      "title": "Title",
-      "category": "Category",
-      "status": {
-        "title": "Status",
-        "published": "Published",
-        "draft": "Draft",
-        "rejected": "Rejected"
-      },
-      "content": "Content",
-      "createdAt": "Created At"
-    },
-    "titles": {
-      "create": "Create Post",
-      "edit": "Edit Post",
-      "list": "Posts",
-      "show": "Show Post"
-    }
-  },
-  "categories": {
-    "categories": "Categories",
-    "fields": {
-      "id": "Id",
-      "title": "Title",
-      "createdAt": "Created At"
-    },
-    "titles": {
-      "create": "Create Category",
-      "edit": "Edit Category",
-      "list": "Categories",
-      "show": "Show Category"
-    }
-  },
   "table": {
     "actions": "Actions",
     "noData": "No data to display",
@@ -240,49 +197,49 @@
       "list": "Documents",
       "show": "View Document"
     },
-  "templates": {
-    "templates": "Document Templates",
-    "description": "Choose from our collection of professional legal document templates to get started quickly.",
-    "fields": {
-      "search": "Search",
-      "category": "Category"
+    "templates": {
+      "templates": "Document Templates",
+      "description": "Choose from our collection of professional legal document templates to get started quickly.",
+      "fields": {
+        "search": "Search",
+        "category": "Category"
+      },
+      "placeholders": {
+        "search": "Search templates..."
+      },
+      "categories": {
+        "LAWSUIT": "Lawsuit",
+        "COMPLAINT": "Complaint",
+        "CONTRACT": "Contract",
+        "MOTION": "Motion",
+        "LETTER": "Letter",
+        "OTHER": "Other"
+      },
+      "titles": {
+        "library": "Document Templates",
+        "variables": "Required Information",
+        "contentPreview": "Content Preview"
+      },
+      "buttons": {
+        "preview": "Preview",
+        "useTemplate": "Use Template"
+      },
+      "info": {
+        "used": "Used {count} times"
+      },
+      "errors": {
+        "loadingFailed": "Failed to load templates"
+      },
+      "noTemplates": "No templates available",
+      "noFilteredResults": "No templates match your filters",
+      "variableTypes": {
+        "text": "Text",
+        "number": "Number",
+        "date": "Date",
+        "currency": "Currency",
+        "boolean": "Yes/No"
+      }
     },
-    "placeholders": {
-      "search": "Search templates..."
-    },
-    "categories": {
-      "LAWSUIT": "Lawsuit",
-      "COMPLAINT": "Complaint",
-      "CONTRACT": "Contract",
-      "MOTION": "Motion",
-      "LETTER": "Letter",
-      "OTHER": "Other"
-    },
-    "titles": {
-      "library": "Document Templates",
-      "variables": "Required Information",
-      "contentPreview": "Content Preview"
-    },
-    "buttons": {
-      "preview": "Preview",
-      "useTemplate": "Use Template"
-    },
-    "info": {
-      "used": "Used {count} times"
-    },
-    "errors": {
-      "loadingFailed": "Failed to load templates"
-    },
-    "noTemplates": "No templates available",
-    "noFilteredResults": "No templates match your filters",
-    "variableTypes": {
-      "text": "Text",
-      "number": "Number",
-      "date": "Date",
-      "currency": "Currency",
-      "boolean": "Yes/No"
-    }
-  },
     "form": {
       "select": {
         "type": {
@@ -738,6 +695,7 @@
       "characters": "Characters",
       "remaining": "remaining",
       "submit": "Submit",
+      "submitting": "Submitting...",
       "toSubmit": "to submit",
       "toCancel": "to cancel",
       "deleteConfirm": "Are you sure you want to delete this comment?",
@@ -846,5 +804,15 @@
     "tokens": "Tokens",
     "cost": "Cost",
     "noData": "No usage data available for this period"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "goHome": "Go to Homepage",
+    "signIn": "Sign In",
+    "help": {
+      "title": "Need help?",
+      "text": "You can return to the homepage or sign in to access your account."
+    }
   }
 }

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769178656115-d003c26e",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T14:30:56.115Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769178410873-i9kfcksw5",
+  "featureName": "Remove non-existent blog posts page from menu",
+  "error": "Feature completed in 241s - auto-verified",
+  "passes": true
+}

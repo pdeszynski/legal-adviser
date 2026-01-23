@@ -1,7 +1,6 @@
-import type { AuditLogProvider } from "@refinedev/core";
+import type { AuditLogProvider } from '@refinedev/core';
 
-const GRAPHQL_ENDPOINT =
-  process.env.NEXT_PUBLIC_GRAPHQL_URL || "http://localhost:3001/graphql";
+const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
 const AUDIT_LOGS_QUERY = `
   query AuditLogs($filter: AuditLogFilter, $paging: CursorPaging, $sorting: [AuditLogSort!]) {
@@ -23,10 +22,7 @@ const AUDIT_LOGS_QUERY = `
           userAgent
           statusCode
           errorMessage
-          changeDetails {
-            before
-            after
-          }
+          changeDetails
           createdAt
           updatedAt
         }
@@ -83,12 +79,12 @@ interface GraphQLResponse {
 }
 
 const getAccessToken = (): string | undefined => {
-  if (typeof document === "undefined") {
+  if (typeof document === 'undefined') {
     return undefined;
   }
-  const cookies = document.cookie.split(";");
-  const authCookie = cookies.find((c) => c.trim().startsWith("access_token="));
-  return authCookie?.split("=")[1];
+  const cookies = document.cookie.split(';');
+  const authCookie = cookies.find((c) => c.trim().startsWith('access_token='));
+  return authCookie?.split('=')[1];
 };
 
 export const auditLogProvider: AuditLogProvider = {
@@ -117,7 +113,7 @@ export const auditLogProvider: AuditLogProvider = {
     // Build GraphQL variables
     const variables: Record<string, unknown> = {
       paging: { first: 50 },
-      sorting: [{ field: "createdAt", direction: "DESC" }],
+      sorting: [{ field: 'createdAt', direction: 'DESC' }],
     };
 
     if (Object.keys(filter).length > 0) {
@@ -126,12 +122,12 @@ export const auditLogProvider: AuditLogProvider = {
 
     try {
       const response = await fetch(GRAPHQL_ENDPOINT, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           ...(token && { Authorization: `Bearer ${token}` }),
         },
-        credentials: "include",
+        credentials: 'include',
         body: JSON.stringify({
           query: AUDIT_LOGS_QUERY,
           variables,
@@ -141,7 +137,7 @@ export const auditLogProvider: AuditLogProvider = {
       const result: GraphQLResponse = await response.json();
 
       if (result.errors) {
-        throw new Error(result.errors[0]?.message || "GraphQL error");
+        throw new Error(result.errors[0]?.message || 'GraphQL error');
       }
 
       const auditLogs = result.data?.auditLogs?.edges.map((edge) => edge.node) || [];
@@ -149,9 +145,8 @@ export const auditLogProvider: AuditLogProvider = {
       // Transform to Refine's LogParams format
       return auditLogs.map((log) => {
         const userName = log.user
-          ? `${log.user.firstName || ""} ${log.user.lastName || ""}`.trim() ||
-            log.user.email
-          : "System";
+          ? `${log.user.firstName || ''} ${log.user.lastName || ''}`.trim() || log.user.email
+          : 'System';
 
         return {
           id: log.id,
@@ -178,7 +173,7 @@ export const auditLogProvider: AuditLogProvider = {
         };
       });
     } catch (error) {
-      console.error("Failed to fetch audit logs:", error);
+      console.error('Failed to fetch audit logs:', error);
       return [];
     }
   },

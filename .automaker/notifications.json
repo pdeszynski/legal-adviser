@@ -1231,6 +1231,237 @@
       "dismissed": false,
       "featureId": "feature-1769175580818-0zju9gega",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "c2e3a55b-531d-49f3-9d6f-3c6f5f40571d",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769176170500-1aof7nozy\" has been verified and is complete.",
+      "createdAt": "2026-01-23T13:53:18.925Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769176170500-1aof7nozy",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "d628cea4-08ef-4f46-9b1c-1cefc3884cfb",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769176511598-bf3qupcuk\" has been verified and is complete.",
+      "createdAt": "2026-01-23T13:59:08.848Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769176511598-bf3qupcuk",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "2812395d-cbd2-4744-a99b-10ec2bf160aa",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769177874370-0v75j257r\" has been verified and is complete.",
+      "createdAt": "2026-01-23T14:24:34.353Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769177874370-0v75j257r",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "2cd97782-3dfd-4696-817d-ae692ca2cd6d",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769176664460-qikt9clq6\" has been verified and is complete.",
+      "createdAt": "2026-01-23T14:27:35.650Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769176664460-qikt9clq6",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "276a5ed9-c6bd-4c1c-918d-c53f844d71c1",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769178410873-i9kfcksw5\" has been verified and is complete.",
+      "createdAt": "2026-01-23T14:30:56.109Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769178410873-i9kfcksw5",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "b8861b40-26c0-46c1-8adc-32db580311f3",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769177926500-28n8f9jvp\" has been verified and is complete.",
+      "createdAt": "2026-01-23T14:32:47.305Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769177926500-28n8f9jvp",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "31507afd-8d37-411f-a631-ea0bd5fc72f6",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769177974275-04gzaj2a3\" has been verified and is complete.",
+      "createdAt": "2026-01-23T14:36:54.560Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769177974275-04gzaj2a3",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "288a8838-3cd6-4c70-ad6b-3a9355842275",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"global-loading-states\" has been verified and is complete.",
+      "createdAt": "2026-01-23T14:51:01.562Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "global-loading-states",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "dc417c1e-d1ef-4964-8210-3cff73bb791c",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769181523724-cajuyn79d\" has been verified and is complete.",
+      "createdAt": "2026-01-23T15:29:36.877Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769181523724-cajuyn79d",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "2babf92d-49f0-44fc-8bf2-67436b2f699c",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769190703050-amb5bafbl\" has been verified and is complete.",
+      "createdAt": "2026-01-23T17:54:33.055Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769190703050-amb5bafbl",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "185b0118-bb5a-4d4a-98de-d79b06d6dc3b",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769190523308-huar4j8q2\" has been verified and is complete.",
+      "createdAt": "2026-01-23T17:55:07.943Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769190523308-huar4j8q2",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "f04e0b2e-d542-4d7f-88d4-75c4b19c6e64",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769190826925-m3e51ns8s\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:01:00.067Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769190826925-m3e51ns8s",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "ff091003-d9cb-4bed-8485-cdeb627e7889",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769190859877-j8huaccb7\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:01:24.004Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769190859877-j8huaccb7",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "6d394b0d-a4a7-43aa-9370-de6d541bd084",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769190584213-puqznjvbg\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:02:34.805Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769190584213-puqznjvbg",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "93d8fc62-cd09-4350-a5ad-e25b253e9090",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769190735778-wjrr4oyoe\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:06:08.895Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769190735778-wjrr4oyoe",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "a778b7fb-ef63-49b9-882b-c28122f9391a",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769191096543-e8lk1wet6\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:10:23.024Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769191096543-e8lk1wet6",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "d8cb34b9-3c8a-4130-9514-d69116abf933",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769191072561-dens23yck\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:13:09.986Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769191072561-dens23yck",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "a9f85f2d-771f-44d2-bd00-1882275e96c0",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769191925365-sjkar2lj8\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:20:08.929Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769191925365-sjkar2lj8",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "ff7e05df-ddb1-4000-b92a-b0692c4f23d2",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769192471515-vh0p8gwoi\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:24:06.973Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769192471515-vh0p8gwoi",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "9ca37328-d543-4f0d-ab27-25310d1fa044",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769192835791-lf43peajf\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:28:20.510Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769192835791-lf43peajf",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "9bd0fc4c-b8aa-404f-9105-763eadd87920",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769192590738-082bxvnaf\" has been verified and is complete.",
+      "createdAt": "2026-01-23T18:28:52.557Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769192590738-082bxvnaf",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

@@ -1,0 +1,30 @@
+{
+  "category": "bug",
+  "description": "Please fix the error in notifications request:\n\n{,…}\nquery\n: \n\"\\n        query GetRecentNotifications($userId: String!, $limit: Int) {\\n          recentNotifications(userId: $userId, limit: $limit) {\\n            id\\n            userId\\n            type\\n            message\\n            read\\n            actionLink\\n            actionLabel\\n            metadata\\n            createdAt\\n          }\\n          unreadNotificationCount(userId: $userId)\\n        }\\n      \"\nvariables\n: \n{userId: \"e64f1e51-ea6d-4670-aa87-3c153db4f950\", limit: 20}",
+  "title": "Fix GraphQL notification query syntax error",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769176664460-qikt9clq6",
+  "descriptionHistory": [
+    {
+      "description": "Please fix the error in notifications request:\n\n{,…}\nquery\n: \n\"\\n        query GetRecentNotifications($userId: String!, $limit: Int) {\\n          recentNotifications(userId: $userId, limit: $limit) {\\n            id\\n            userId\\n            type\\n            message\\n            read\\n            actionLink\\n            actionLabel\\n            metadata\\n            createdAt\\n          }\\n          unreadNotificationCount(userId: $userId)\\n        }\\n      \"\nvariables\n: \n{userId: \"e64f1e51-ea6d-4670-aa87-3c153db4f950\", limit: 20}",
+      "timestamp": "2026-01-23T13:57:44.557Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T13:57:44.595Z",
+  "updatedAt": "2026-01-23T14:27:35.647Z"
+}

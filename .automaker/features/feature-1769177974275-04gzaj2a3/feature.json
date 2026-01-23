@@ -1,0 +1,30 @@
+{
+  "category": "UI",
+  "description": "Loginj form is filled with test data, please remove it from default form values",
+  "title": "Remove test data from login form defaults",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "completed",
+  "id": "feature-1769177974275-04gzaj2a3",
+  "descriptionHistory": [
+    {
+      "description": "Loginj form is filled with test data, please remove it from default form values",
+      "timestamp": "2026-01-23T14:19:34.407Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-23T14:36:05.026Z",
+  "updatedAt": "2026-01-23T14:36:54.558Z"
+}

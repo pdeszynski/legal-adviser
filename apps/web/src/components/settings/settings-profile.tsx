@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useTranslate, useCustomMutation } from '@refinedev/core';
+import { useState, useEffect } from 'react';
+import { useTranslate, useCustomMutation, useGetIdentity } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
+import { LoadingButton } from '@legal/ui';
 
 interface User {
   id: string;
@@ -23,6 +24,7 @@ export function SettingsProfile({ user }: { user: User }) {
   const translate = useTranslate();
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { refetch: refetchIdentity } = useGetIdentity();
 
   const { mutate, mutation } = useCustomMutation();
   const isLoading = (mutation as any).isLoading ?? (mutation as any).isPending ?? false;
@@ -31,6 +33,8 @@ export function SettingsProfile({ user }: { user: User }) {
     register,
     handleSubmit,
     formState: { errors, isDirty },
+    reset,
+    setValue,
   } = useForm<UpdateProfileInput>({
     defaultValues: {
       email: user.email,
@@ -39,6 +43,23 @@ export function SettingsProfile({ user }: { user: User }) {
       lastName: user.lastName || '',
     },
   });
+
+  // Update form values when user prop changes (e.g., after successful update)
+  useEffect(() => {
+    if (user) {
+      setValue('email', user.email);
+      setValue('username', user.username || '');
+      setValue('firstName', user.firstName || '');
+      setValue('lastName', user.lastName || '');
+      // Reset form dirty state after updating values
+      reset({
+        email: user.email,
+        username: user.username || '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+      });
+    }
+  }, [user, setValue, reset]);
 
   const onSubmit = (data: UpdateProfileInput) => {
     setIsSuccess(false);
@@ -60,6 +81,8 @@ export function SettingsProfile({ user }: { user: User }) {
         onSuccess: () => {
           setIsSuccess(true);
           setTimeout(() => setIsSuccess(false), 3000);
+          // Refetch user identity to get updated data
+          refetchIdentity();
         },
         onError: (err: unknown) => {
           setError(err instanceof Error ? err.message : translate('settings.profile.errorMessage'));
@@ -181,15 +204,14 @@ export function SettingsProfile({ user }: { user: User }) {
 
         {/* Actions */}
         <div className="flex justify-end pt-4 border-t">
-          <button
+          <LoadingButton
             type="submit"
-            disabled={isLoading || !isDirty}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            isLoading={isLoading}
+            loadingText={translate('settings.profile.saving')}
+            disabled={!isDirty}
           >
-            {isLoading
-              ? translate('settings.profile.saving')
-              : translate('settings.profile.saveButton')}
-          </button>
+            {translate('settings.profile.saveButton')}
+          </LoadingButton>
         </div>
       </form>
     </div>

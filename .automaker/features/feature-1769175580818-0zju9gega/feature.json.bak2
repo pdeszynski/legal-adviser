@@ -1,7 +1,7 @@
 {
   "category": "Uncategorized",
   "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix locale redirect routing to prevent 404 errors\n\n**Description:** ## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix invalid locale redirect routing issue\n\n**Description:** Invalid hadnling of intl - changing locale, redirects browsers to /pl (or other locale) but no such address exists. \n\n---\n\n## Task Description\n\nAfter last changes all pages stopped working. These redirect to inexistent pages with locale prefix. Please make sure that pages still work.\n\nDo not forget that this is refine.dev project and might differ from standard next.js\n\n---\n\n## Task Description\n\nRight now main page fails with an error:\n\n<PublicLayout> is an async Client Component. Only Server Components can be async at the moment. This error is often caused by accidentally adding `'use client'` to a module that was originally written for the server.\n\nsrc/app/page.tsx (16:5) @ LandingContent\n\n\n",
-  "title": "",
+  "title": "Fix PublicLayout async Client Component error",
   "images": [],
   "imagePaths": [],
   "textFilePaths": [],
@@ -17,7 +17,7 @@
     "feature-1769165470630-e36giuxbh"
   ],
   "workMode": "current",
-  "titleGenerating": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix locale redirect routing to prevent 404 errors\n\n**Description:** ## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix invalid locale redirect routing issue\n\n**Description:** Invalid hadnling of intl - changing locale, redirects browsers to /pl (or other locale) but no such address exists. \n\n---\n\n## Task Description\n\nAfter last changes all pages stopped working. These redirect to inexistent pages with locale prefix. Please make sure that pages still work.\n\nDo not forget that this is refine.dev project and might differ from standard next.js\n\n---\n\n## Task Description\n\nRight now main page fails with an error:\n\n<PublicLayout> is an async Client Component. Only Server Components can be async at the moment. This error is often caused by accidentally adding `'use client'` to a module that was originally written for the server.\n\nsrc/app/page.tsx (16:5) @ LandingContent",
+  "titleGenerating": false,
   "status": "in_progress",
   "id": "feature-1769175580818-0zju9gega",
   "descriptionHistory": [
