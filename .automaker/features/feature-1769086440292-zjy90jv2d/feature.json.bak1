@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "Fix billing page, when opening:\n\nRuntime Error\n\n\nNot implemented custom on data provider.\n\nsrc/app/(authenticated)/billing/page.tsx (56:65) @ BillingPage\n\n\n  54 |\n  55 |   // Fetch billing info\n> 56 |   const { query: billingQuery, result: billingData } = useCustom<BillingInfo>({\n     |                                                                 ^\n  57 |     url: '',\n  58 |     method: 'get',\n  59 |     config: {\nCall Stack\n14\n\nShow 13 ignore-listed frame(s)\nBillingPage\nsrc/app/(authenticated)/billing/page.tsx (56:65)",
+  "title": "Fix custom data provider implementation in billing page",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769086440292-zjy90jv2d",
+  "descriptionHistory": [
+    {
+      "description": "Fix billing page, when opening:\n\nRuntime Error\n\n\nNot implemented custom on data provider.\n\nsrc/app/(authenticated)/billing/page.tsx (56:65) @ BillingPage\n\n\n  54 |\n  55 |   // Fetch billing info\n> 56 |   const { query: billingQuery, result: billingData } = useCustom<BillingInfo>({\n     |                                                                 ^\n  57 |     url: '',\n  58 |     method: 'get',\n  59 |     config: {\nCall Stack\n14\n\nShow 13 ignore-listed frame(s)\nBillingPage\nsrc/app/(authenticated)/billing/page.tsx (56:65)",
+      "timestamp": "2026-01-22T12:54:00.398Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-22T12:54:00.428Z",
+  "updatedAt": "2026-01-23T05:39:21.633Z"
+}

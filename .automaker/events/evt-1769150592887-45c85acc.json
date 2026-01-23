@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769150592887-45c85acc",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T06:43:12.887Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "debug-docker-build-failure",
+  "featureName": "Debug Docker Compose Build Failure",
+  "error": "Feature completed in 3836s - auto-verified",
+  "passes": true
+}

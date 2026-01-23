@@ -4,7 +4,7 @@
   "id": "debug-docker-build-failure",
   "title": "Debug Docker Compose Build Failure",
   "priority": 1,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,6 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-22T05:27:44.799Z"
+  "updatedAt": "2026-01-23T06:43:12.879Z",
+  "startedAt": "2026-01-22T12:54:02.643Z"
 }

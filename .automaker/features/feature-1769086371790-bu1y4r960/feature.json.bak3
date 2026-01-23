@@ -1,0 +1,29 @@
+{
+  "category": "Uncategorized",
+  "description": "Automatically redirect users to dashbord from login page if they are logged in",
+  "title": "",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "002-legal-ai-core",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": "Automatically redirect users to dashbord from login page if they are logged in",
+  "status": "in_progress",
+  "id": "feature-1769086371790-bu1y4r960",
+  "descriptionHistory": [
+    {
+      "description": "Automatically redirect users to dashbord from login page if they are logged in",
+      "timestamp": "2026-01-22T12:52:51.891Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-22T12:52:51.918Z"
+}

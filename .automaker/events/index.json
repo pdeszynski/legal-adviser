@@ -2,6 +2,46 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769150592887-45c85acc",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T06:43:12.887Z",
+      "featureName": "Debug Docker Compose Build Failure",
+      "featureId": "debug-docker-build-failure"
+    },
+    {
+      "id": "evt-1769150157162-c2acbb3a",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T06:35:57.162Z",
+      "featureName": "Fix Dockerfile Build Issues",
+      "featureId": "fix-dockerfile-build-issues"
+    },
+    {
+      "id": "evt-1769147175763-ef9eaafe",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-23T05:46:15.763Z",
+      "featureName": "Fix custom data provider implementation in billing page",
+      "featureId": "feature-1769086440292-zjy90jv2d"
+    },
+    {
+      "id": "evt-1769086663767-a1a0ea5f",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-22T12:57:43.767Z",
+      "featureName": "",
+      "featureId": "feature-1769086371790-bu1y4r960"
+    },
+    {
+      "id": "evt-1769086440399-d459400c",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-22T12:54:00.399Z",
+      "featureId": "feature-1769086440292-zjy90jv2d"
+    },
+    {
+      "id": "evt-1769086371892-edbd64fb",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-22T12:52:51.892Z",
+      "featureId": "feature-1769086371790-bu1y4r960"
+    },
+    {
       "id": "evt-1769086276576-3226ea18",
       "trigger": "feature_success",
       "timestamp": "2026-01-22T12:51:16.576Z",

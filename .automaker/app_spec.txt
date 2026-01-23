@@ -784,8 +784,45 @@ Validation:
     at Observable.Observable._trySubscribe (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/Observable.ts:235:19)
     at &lt;anonymous&gt; (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/Observable.ts:225:18)
     at Object.errorContext (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/util/errorContext.ts:29:5)
-    at Observable.Observable.subscribe (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/Observable.ts:211:5)
-</description>
+    at Observable.Observable.subscribe (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/rxjs@7.8.2/node_modules/rxjs/src/internal/Observable.ts:211:5)</description>
+    </feature>
+    <feature>
+      <name>Redirect Logged-In Users to Dashboard Automatically</name>
+      <description>Automatically redirect users to dashbord from login page if they are logged in</description>
+    </feature>
+    <feature>
+      <name>Fix custom data provider implementation in billing page</name>
+      <description>Fix billing page, when opening:
+
+Runtime Error
+
+
+Not implemented custom on data provider.
+
+src/app/(authenticated)/billing/page.tsx (56:65) @ BillingPage
+
+
+  54 |
+  55 |   // Fetch billing info
+&gt; 56 |   const { query: billingQuery, result: billingData } = useCustom&lt;BillingInfo&gt;({
+     |                                                                 ^
+  57 |     url: &apos;&apos;,
+  58 |     method: &apos;get&apos;,
+  59 |     config: {
+Call Stack
+14
+
+Show 13 ignore-listed frame(s)
+BillingPage
+src/app/(authenticated)/billing/page.tsx (56:65)</description>
+    </feature>
+    <feature>
+      <name>Fix Dockerfile Build Issues</name>
+      <description>Fix Dockerfile issues identified during debugging. This may include correcting COPY instruction order for better layer caching (as per optimize-docker-layer-caching feature), fixing base image versions, correcting WORKDIR paths, resolving dependency installation failures, or fixing multi-stage build configuration.</description>
+    </feature>
+    <feature>
+      <name>Debug Docker Compose Build Failure</name>
+      <description>Investigate why docker compose up --build fails. Check Dockerfile syntax, base image availability, dependency installation during build, and multi-stage build configuration. Verify docker-compose.yml service configuration and volume mounts. Test building individual services to isolate the failing container.</description>
     </feature>
   </implemented_features>
 

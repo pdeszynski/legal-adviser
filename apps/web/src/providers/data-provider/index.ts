@@ -676,6 +676,143 @@ export const dataProvider: DataProvider = {
   },
 
   /**
+   * Custom GraphQL queries and mutations
+   *
+   * Executes arbitrary GraphQL queries/mutations based on config.
+   * Used by useCustom and useCustomMutation hooks.
+   *
+   * Config format for queries:
+   *   config.query.operation - GraphQL operation name
+   *   config.query.fields - Array of field names to fetch
+   *   config.query.args - Arguments to pass to the operation
+   *
+   * Config format for mutations:
+   *   config.mutation.operation - GraphQL operation name
+   *   config.mutation.fields - Array of field names to fetch
+   *   config.mutation.values - Values to pass as mutation input
+   */
+  custom: async <TData extends BaseRecord = BaseRecord>({
+    method,
+    config,
+  }: {
+    method?: string;
+    config?: {
+      query?: {
+        operation: string;
+        fields?: string[];
+        args?: Record<string, unknown>;
+        variables?: Record<string, unknown>;
+      };
+      mutation?: {
+        operation: string;
+        fields?: string[];
+        values?: Record<string, unknown>;
+        variables?: Record<string, unknown>;
+      };
+    };
+  }) => {
+    const queryConfig = config?.query;
+    const mutationConfig = config?.mutation;
+
+    if (mutationConfig && method === 'post') {
+      // Execute mutation
+      const { operation, fields = [], values, variables } = mutationConfig;
+      const mutationVars = { ...(values || {}), ...(variables || {}) };
+
+      // Build mutation string
+      const fieldsStr = fields.join(' ');
+
+      // Build variable definitions and input arguments
+      const varDefs = Object.entries(mutationVars)
+        .map(([key, value]) => {
+          // Infer type from value
+          const type = typeof value === 'number' ? 'Float' : 'String';
+          return `$${key}: ${type}!`;
+        })
+        .join(', ');
+
+      const inputArgs = Object.keys(mutationVars)
+        .map((key) => `${key}: $${key}`)
+        .join(', ');
+
+      const mutation = `
+        mutation ${operation}(${varDefs ? varDefs : ''}) {
+          ${operation}(${inputArgs ? inputArgs : ''}) {
+            ${fieldsStr}
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<Record<string, TData>>(mutation, mutationVars);
+
+      // Return first key's value as result
+      const resultKey = Object.keys(data)[0];
+      return {
+        data: data[resultKey] as TData,
+      };
+    }
+
+    if (queryConfig) {
+      // Execute query
+      const { operation, fields = [], args, variables } = queryConfig;
+      const queryVars = { ...(args || {}), ...(variables || {}) };
+
+      // Build query string
+      const fieldsStr = fields.join(' ');
+
+      // Build variable definitions and arguments
+      let queryStr = '';
+      if (Object.keys(queryVars).length > 0) {
+        const varDefs = Object.entries(queryVars)
+          .map(([key, value]) => {
+            // Infer type from value
+            const type =
+              typeof value === 'number'
+                ? 'Float'
+                : typeof value === 'boolean'
+                  ? 'Boolean'
+                  : value instanceof Date
+                    ? 'DateTime'
+                    : 'String';
+            return `$${key}: ${type}`;
+          })
+          .join(', ');
+
+        const argsStr = Object.keys(queryVars)
+          .map((key) => `${key}: $${key}`)
+          .join(', ');
+
+        queryStr = `
+          query ${operation}(${varDefs}) {
+            ${operation}(${argsStr}) {
+              ${fieldsStr}
+            }
+          }
+        `;
+      } else {
+        // No arguments
+        queryStr = `
+          query ${operation} {
+            ${operation} {
+              ${fieldsStr}
+            }
+          }
+        `;
+      }
+
+      const data = await executeGraphQL<Record<string, TData>>(queryStr, queryVars);
+
+      // Return first key's value as result
+      const resultKey = Object.keys(data)[0];
+      return {
+        data: data[resultKey] as TData,
+      };
+    }
+
+    throw new Error('Custom query/mutation not configured properly');
+  },
+
+  /**
    * Get API URL (for compatibility)
    */
   getApiUrl: () => GRAPHQL_URL,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useLogin } from '@refinedev/core';
+import { useLogin, useIsAuthenticated, useGo } from '@refinedev/core';
 import {
   Card,
   CardContent,
@@ -14,9 +14,17 @@ import {
   Button,
 } from '@legal/ui';
 import { Scale } from 'lucide-react';
-// ...
+
 export const LoginContent = () => {
   const { mutate: login, isPending: isLoading, error } = useLogin();
+  const { data: authData, isLoading: isAuthLoading } = useIsAuthenticated();
+  const go = useGo();
+
+  useEffect(() => {
+    if (!isAuthLoading && authData?.authenticated) {
+      go({ to: '/dashboard', type: 'replace' });
+    }
+  }, [authData, isAuthLoading, go]);
 
   const [initialError, setInitialError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);

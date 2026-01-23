@@ -989,6 +989,50 @@
       "dismissed": false,
       "featureId": "feature-1769086120587-awha6lzfb",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "177ff4c0-0da7-4e42-8214-9df537084e4f",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769086371790-bu1y4r960\" has been verified and is complete.",
+      "createdAt": "2026-01-22T12:57:43.763Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769086371790-bu1y4r960",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "0fbeb9d0-016c-473b-987a-68ff122665e7",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769086440292-zjy90jv2d\" has been verified and is complete.",
+      "createdAt": "2026-01-23T05:46:15.750Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769086440292-zjy90jv2d",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "8f70c0f3-dcdf-47e6-9ce4-5fb91294e94b",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-dockerfile-build-issues\" has been verified and is complete.",
+      "createdAt": "2026-01-23T06:35:57.152Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-dockerfile-build-issues",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "1a2e93bc-c6bc-49f5-a55b-e2a38179e612",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"debug-docker-build-failure\" has been verified and is complete.",
+      "createdAt": "2026-01-23T06:43:12.881Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "debug-docker-build-failure",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

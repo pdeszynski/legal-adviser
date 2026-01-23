@@ -36,6 +36,7 @@ services:
     build:
       context: .
       dockerfile: apps/backend/Dockerfile
+      target: development
     container_name: legal-ai-backend
     environment:
       DB_HOST: postgres
@@ -60,10 +61,7 @@ services:
       SENDGRID_WEBHOOK_VERIFICATION_KEY: your-webhook-verification-key-here
     ports:
       - '3001:3001'
-    volumes:
-      # Mount entire project for local development
-      - .:/app
-      - backend_node_modules:/app/node_modules
+    # No volume mounts - use the built-in dependencies from the image
     depends_on:
       postgres:
         condition: service_healthy
@@ -77,21 +75,20 @@ services:
     build:
       context: .
       dockerfile: apps/ai-engine/Dockerfile
+      target: development
     container_name: legal-ai-engine
     environment:
       PYTHONUNBUFFERED: '1'
     ports:
       - '8000:8000'
-    volumes:
-      # Mount entire project for local development
-      - .:/app
-      - ai_engine_venv:/app/.venv
+    # No volume mounts - use the built-in dependencies from the image
     restart: always
 
   web:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+      target: development
     container_name: legal-ai-web
     environment:
       NEXT_PUBLIC_GRAPHQL_URL: http://localhost:3001/graphql
@@ -99,10 +96,7 @@ services:
       NODE_ENV: development
     ports:
       - '3000:3000'
-    volumes:
-      # Mount entire project for local development
-      - .:/app
-      - web_node_modules:/app/node_modules
+    # No volume mounts - use the built-in dependencies from the image
     depends_on:
       backend:
         condition: service_started
@@ -111,6 +105,3 @@ services:
 volumes:
   postgres_data:
   redis_data:
-  backend_node_modules:
-  ai_engine_venv:
-  web_node_modules:

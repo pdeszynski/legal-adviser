@@ -4,7 +4,7 @@
   "id": "fix-dockerfile-build-issues",
   "title": "Fix Dockerfile Build Issues",
   "priority": 1,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -12,5 +12,7 @@
       "timestamp": "2026-01-22T05:27:29.662Z",
       "source": "initial"
     }
-  ]
+  ],
+  "startedAt": "2026-01-22T12:54:07.476Z",
+  "updatedAt": "2026-01-23T06:35:57.149Z"
 }

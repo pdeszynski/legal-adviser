@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769147175763-ef9eaafe",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-23T05:46:15.763Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769086440292-zjy90jv2d",
+  "featureName": "Fix custom data provider implementation in billing page",
+  "error": "Feature completed in 414s - auto-verified",
+  "passes": true
+}
