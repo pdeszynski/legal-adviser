@@ -19,6 +19,26 @@ import { getCsrfHeaders } from '@/lib/csrf';
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
 /**
+ * GraphQL Custom Mutation Config
+ *
+ * Type definition for custom mutations using the data provider's custom method.
+ * This is used for executing GraphQL mutations with specific operations, fields, and input data.
+ */
+export type GraphQLMutationConfig<TInput = Record<string, unknown>> = {
+  url: string;
+  method: 'post';
+  config: {
+    mutation: {
+      operation: string;
+      fields: string[];
+      variables: {
+        input: TInput;
+      };
+    };
+  };
+};
+
+/**
  * Cursor cache for pagination
  * Maps resource + filter/sort combination to page cursors
  */

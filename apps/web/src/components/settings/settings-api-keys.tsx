@@ -72,7 +72,7 @@ const API_KEY_SCOPES = [
 ];
 
 interface SettingsApiKeysProps {
-  isActive: boolean;
+  readonly isActive: boolean;
 }
 
 export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
@@ -112,7 +112,7 @@ export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
   });
   const { isLoading, refetch } = apiKeysQuery;
 
-  const apiKeys = apiKeysData?.data ?? [];
+  const apiKeys = Array.isArray(apiKeysData?.data) ? apiKeysData.data : [];
 
   // Create API key mutation
   const { mutate: createApiKey, mutation: createMutation } =
@@ -257,7 +257,8 @@ export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return translate('settings.apiKeys.never');
-    return new Date(dateString).toLocaleDateString();
+    // Use a fixed locale 'en-US' for consistency between server and client to prevent hydration mismatches
+    return new Date(dateString).toLocaleDateString('en-US');
   };
 
   const getStatusBadgeClass = (status: string) => {
@@ -500,11 +501,11 @@ export function SettingsApiKeys({ isActive }: SettingsApiKeysProps) {
 }
 
 interface CreateApiKeyFormProps {
-  onSubmit: (data: CreateApiKeyInput) => void;
-  onCancel: () => void;
-  isLoading: boolean;
-  selectedScopes: string[];
-  setSelectedScopes: Dispatch<React.SetStateAction<string[]>>;
+  readonly onSubmit: (data: CreateApiKeyInput) => void;
+  readonly onCancel: () => void;
+  readonly isLoading: boolean;
+  readonly selectedScopes: string[];
+  readonly setSelectedScopes: Dispatch<React.SetStateAction<string[]>>;
 }
 
 function CreateApiKeyForm({

@@ -5,6 +5,7 @@ import { useTranslate, useDataProvider } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
 import { Lock, KeyRound, ShieldCheck } from 'lucide-react';
+import type { GraphQLMutationConfig } from '@providers/data-provider';
 
 interface ChangePasswordInput {
   currentPassword: string;
@@ -44,21 +45,25 @@ export function SettingsSecurity() {
     setIsLoading(true);
 
     try {
-      // Directly call data provider's custom method with proper config structure
-      await dataProvider.custom({
+      const dp = dataProvider();
+      if (!dp) throw new Error('Data provider not available');
+      const mutationConfig: GraphQLMutationConfig<{ currentPassword: string; newPassword: string }> = {
         url: '',
         method: 'post',
-        values: {
-          operation: 'changePassword',
-          variables: {
-            input: {
-              currentPassword: data.currentPassword,
-              newPassword: data.newPassword,
+        config: {
+          mutation: {
+            operation: 'changePassword',
+            fields: [],
+            variables: {
+              input: {
+                currentPassword: data.currentPassword,
+                newPassword: data.newPassword,
+              },
             },
           },
-          fields: [],
         },
-      });
+      };
+      await (dp as any).custom(mutationConfig);
 
       setIsSuccess(true);
       reset();

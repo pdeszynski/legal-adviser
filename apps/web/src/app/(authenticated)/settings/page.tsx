@@ -49,7 +49,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
 
   // Fetch current user data
-  const { data: userData, isLoading: userLoading } = useGetIdentity<UserIdentity>();
+  const { data: userData, isLoading: userLoading, refetch: refetchUser } = useGetIdentity<UserIdentity>();
 
   // Fetch user preferences
   const { query: preferencesQuery, result: preferencesData } = useCustom<UserPreferences>({
@@ -135,7 +135,7 @@ export default function SettingsPage() {
                   </h2>
                 </div>
 
-                {activeTab === 'profile' && user && <SettingsProfile user={user} />}
+                {activeTab === 'profile' && user && <SettingsProfile user={user} onProfileUpdate={refetchUser} />}
                 {activeTab === 'preferences' && preferences && (
                   <SettingsPreferences preferences={preferences} />
                 )}

@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslate, useGetIdentity, useDataProvider } from '@refinedev/core';
+import { useTranslate, useDataProvider, useGetIdentity } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
 import { User, Mail, UserCircle } from 'lucide-react';
+import type { GraphQLMutationConfig } from '@providers/data-provider';
 
 interface UserIdentity {
   id: string;
@@ -21,7 +22,12 @@ interface UpdateProfileInput {
   lastName?: string;
 }
 
-export function SettingsProfile({ user }: { user: UserIdentity }) {
+interface SettingsProfileProps {
+  user: UserIdentity;
+  onProfileUpdate?: () => void;
+}
+
+export function SettingsProfile({ user, onProfileUpdate }: SettingsProfileProps) {
   const translate = useTranslate();
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,18 +72,22 @@ export function SettingsProfile({ user }: { user: UserIdentity }) {
     setIsLoading(true);
 
     try {
-      // Directly call data provider's custom method with proper config structure
-      await dataProvider.custom({
+      const dp = dataProvider();
+      if (!dp) throw new Error('Data provider not available');
+      const mutationConfig: GraphQLMutationConfig<UpdateProfileInput> = {
         url: '',
         method: 'post',
-        values: {
-          operation: 'updateProfile',
-          variables: {
-            input: data,
+        config: {
+          mutation: {
+            operation: 'updateProfile',
+            fields: ['id', 'email', 'username', 'firstName', 'lastName'],
+            variables: {
+              input: data,
+            },
           },
-          fields: ['id', 'email', 'username', 'firstName', 'lastName'],
         },
-      });
+      };
+      await (dp as any).custom(mutationConfig);
 
       setIsSuccess(true);
       setTimeout(() => setIsSuccess(false), 3000);
@@ -95,19 +105,16 @@ export function SettingsProfile({ user }: { user: UserIdentity }) {
         <h2 className="text-lg font-semibold mb-1">{translate('settings.profile.title')}</h2>
         <p className="text-sm text-muted-foreground">{translate('settings.profile.description')}</p>
       </div>
-
       {isSuccess && (
         <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-700 dark:text-green-300 flex items-center gap-2">
           <span>{translate('settings.profile.successMessage')}</span>
         </div>
       )}
-
       {error && (
         <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-700 dark:text-red-300">
           {error}
         </div>
       )}
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Email */}
         <div className="space-y-2">

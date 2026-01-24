@@ -37,25 +37,25 @@ export function TableSkeleton({ rows = 10, columns = 6, showHeader = true }: Tab
                     {/* Column-specific skeleton sizes to match audit log structure */}
                     {colIndex === 0 ? (
                       // Date & Time column
-                      <div className="space-y-2">
+                      (<div className="space-y-2">
                         <Skeleton className="h-4 w-24" />
                         <Skeleton className="h-3 w-16" />
-                      </div>
+                      </div>)
                     ) : colIndex === 1 ? (
                       // User column
-                      <div className="space-y-1">
+                      (<div className="space-y-1">
                         <Skeleton className="h-4 w-32" />
                         <Skeleton className="h-3 w-20" />
-                      </div>
+                      </div>)
                     ) : colIndex === 2 || colIndex === 3 ? (
                       // Action and Resource columns - badges
-                      <Skeleton className="h-6 w-16 rounded-full" />
+                      (<Skeleton className="h-6 w-16 rounded-full" />)
                     ) : colIndex === 4 ? (
                       // Status column
-                      <Skeleton className="h-6 w-12 rounded-full" />
+                      (<Skeleton className="h-6 w-12 rounded-full" />)
                     ) : (
                       // Details column
-                      <Skeleton className="h-4 w-40" />
+                      (<Skeleton className="h-4 w-40" />)
                     )}
                   </td>
                 ))}

@@ -125,7 +125,6 @@ export default function AnalyticsPage() {
         <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
         <p className="text-muted-foreground">Platform-wide analytics and metrics</p>
       </div>
-
       {/* User Growth Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
@@ -161,7 +160,6 @@ export default function AnalyticsPage() {
           icon="🔐"
         />
       </div>
-
       {/* Document Metrics */}
       <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col space-y-1.5 p-6">
@@ -211,7 +209,6 @@ export default function AnalyticsPage() {
           </div>
         )}
       </div>
-
       {/* Query Metrics */}
       <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col space-y-1.5 p-6">
@@ -237,7 +234,6 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
-
       {/* AI Usage Metrics */}
       <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col space-y-1.5 p-6">
@@ -287,7 +283,6 @@ export default function AnalyticsPage() {
           </div>
         )}
       </div>
-
       {/* System Health */}
       <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
         <div className="flex flex-col space-y-1.5 p-6">
@@ -315,7 +310,6 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
-
       {/* Quick Actions */}
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-xl border bg-card text-card-foreground shadow-sm">

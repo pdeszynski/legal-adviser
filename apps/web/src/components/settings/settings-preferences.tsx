@@ -5,6 +5,7 @@ import { useTranslate, useDataProvider } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
 import { Globe, Moon, Cpu, Clock, Calendar } from 'lucide-react';
+import type { GraphQLMutationConfig } from '@providers/data-provider';
 
 interface UserPreferences {
   id: string;
@@ -64,18 +65,22 @@ export function SettingsPreferences({ preferences }: { preferences: UserPreferen
     setIsLoading(true);
 
     try {
-      // Directly call data provider's custom method with proper config structure
-      const result = await dataProvider.custom({
+      const dp = dataProvider();
+      if (!dp) throw new Error('Data provider not available');
+      const mutationConfig: GraphQLMutationConfig<UpdatePreferencesInput> = {
         url: '',
         method: 'post',
-        values: {
-          operation: 'updateMyPreferences',
-          variables: {
-            input: data,
+        config: {
+          mutation: {
+            operation: 'updateMyPreferences',
+            fields: ['id', 'locale', 'theme', 'aiModel', 'timezone', 'dateFormat'],
+            variables: {
+              input: data,
+            },
           },
-          fields: ['id', 'locale', 'theme', 'aiModel', 'timezone', 'dateFormat'],
         },
-      });
+      };
+      await (dp as any).custom(mutationConfig);
 
       setIsSuccess(true);
       setTimeout(() => setIsSuccess(false), 3000);

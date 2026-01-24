@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslate, useCustomMutation } from '@refinedev/core';
+import { useTranslate, useDataProvider } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
 import { Bell, Mail } from 'lucide-react';
+import type { GraphQLMutationConfig } from '@providers/data-provider';
 
 interface UserPreferences {
   id: string;
@@ -45,16 +46,28 @@ interface UpdateNotificationsInput {
   inAppNotifications?: boolean;
 }
 
-export function SettingsNotifications({ preferences }: { preferences: UserPreferences }) {
+interface UpdateNotificationsInput {
+  notificationPreferences?: {
+    documentUpdates?: boolean;
+    queryResponses?: boolean;
+    systemAlerts?: boolean;
+    marketingEmails?: boolean;
+    channels?: {
+      email?: boolean;
+      inApp?: boolean;
+      push?: boolean;
+    };
+  };
+  emailNotifications?: boolean;
+  inAppNotifications?: boolean;
+}
+
+export function SettingsNotifications({ preferences }: { readonly preferences: UserPreferences }) {
   const translate = useTranslate();
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const { mutate, mutation } = useCustomMutation();
-  const isLoading =
-    (mutation as { isLoading?: boolean } | undefined)?.isLoading ??
-    (mutation as { isPending?: boolean } | undefined)?.isPending ??
-    false;
+  const [isLoading, setIsLoading] = useState(false);
+  const dataProvider = useDataProvider();
 
   const {
     register,
@@ -78,34 +91,36 @@ export function SettingsNotifications({ preferences }: { preferences: UserPrefer
     },
   });
 
-  const onSubmit = (data: UpdateNotificationsInput) => {
+  const onSubmit = async (data: UpdateNotificationsInput) => {
     setIsSuccess(false);
     setError(null);
+    setIsLoading(true);
 
-    mutate(
-      {
+    try {
+      const dp = dataProvider();
+      if (!dp) throw new Error('Data provider not available');
+      const mutationConfig: GraphQLMutationConfig<UpdateNotificationsInput> = {
         url: '',
         method: 'post',
-        values: {
-          operation: 'updateMyPreferences',
-          variables: {
-            input: data,
+        config: {
+          mutation: {
+            operation: 'updateMyPreferences',
+            fields: ['id', 'notificationPreferences', 'emailNotifications', 'inAppNotifications'],
+            variables: {
+              input: data,
+            },
           },
-          fields: ['id', 'notificationPreferences', 'emailNotifications', 'inAppNotifications'],
         },
-      },
-      {
-        onSuccess: () => {
-          setIsSuccess(true);
-          setTimeout(() => setIsSuccess(false), 3000);
-        },
-        onError: (err: unknown) => {
-          setError(
-            err instanceof Error ? err.message : translate('settings.notifications.errorMessage'),
-          );
-        },
-      },
-    );
+      };
+      await (dp as any).custom(mutationConfig);
+
+      setIsSuccess(true);
+      setTimeout(() => setIsSuccess(false), 3000);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : translate('settings.notifications.errorMessage'));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

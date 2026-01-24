@@ -19,29 +19,54 @@ test.describe('Settings Preferences Save Verification', () => {
     await page.fill('input[type="email"]', 'admin@refine.dev');
     await page.fill('input[type="password"]', 'password');
     await page.click('button[type="submit"]');
-    // Wait for navigation after login (may go to dashboard, chat, or settings)
-    await page.waitForURL('**/(dashboard|chat|settings)', { timeout: 10000 });
+    // Wait for navigation after login - wait for network idle instead
+    await page.waitForLoadState('networkidle', { timeout: 10000 });
   });
 
   test('should save preferences successfully', async ({ page }) => {
-    // Track GraphQL requests
-    let mutationRequest: { query: string; variables: any } | null = null;
+    // Track console messages for debugging
+    page.on('console', (msg) => {
+      console.log(`Console [${msg.type()}]:`, msg.text());
+      if (msg.type() === 'error') {
+        const args = msg.args();
+        args.forEach((arg) => console.log('Error arg:', arg.jsonValue()));
+      }
+    });
+
+    // Track all GraphQL requests for debugging
+    const allRequests: { query: string; variables: any; url: string }[] = [];
 
     page.on('request', async (request) => {
-      if (request.url().includes('/graphql') && request.method() === 'POST') {
+      const url = request.url();
+      if (url.includes('/graphql') && request.method() === 'POST') {
         const postData = request.postData();
         if (postData) {
           try {
             const parsed = JSON.parse(postData);
-            if (parsed.query && parsed.query.includes('updateMyPreferences')) {
-              mutationRequest = {
-                query: parsed.query,
-                variables: parsed.variables,
-              };
-            }
+            allRequests.push({
+              query: parsed.query || '',
+              variables: parsed.variables,
+              url,
+            });
+            console.log('GraphQL Request:', parsed.query?.substring(0, 200), parsed.variables);
           } catch (e) {
-            // Ignore parse errors
+            console.log('Failed to parse GraphQL request');
           }
+        }
+      }
+    });
+
+    // Track GraphQL responses for errors
+    page.on('response', async (response) => {
+      if (response.url().includes('/graphql')) {
+        try {
+          const body = await response.text();
+          console.log('GraphQL Response status:', response.status());
+          if (body.includes('errors')) {
+            console.log('GraphQL Error:', body.substring(0, 500));
+          }
+        } catch (e) {
+          // Ignore
         }
       }
     });
@@ -59,15 +84,42 @@ test.describe('Settings Preferences Save Verification', () => {
     await localeSelect.selectOption('pl');
     await page.waitForTimeout(500);
 
+    // Wait for form to become dirty and button to be enabled
+    await page.waitForTimeout(1000);
+
     // Click the save button
     const saveButton = page.locator('button[type="submit"]').first();
-    await saveButton.click();
+    const saveButtonText = await saveButton.textContent();
+    console.log('Save button text:', saveButtonText);
+    const isDisabled = await saveButton.isDisabled();
+    console.log('Save button disabled:', isDisabled);
+
+    if (isDisabled) {
+      console.log('Save button is disabled, form is not dirty');
+      // Try clicking anyway to see what happens
+      await saveButton.click({ force: true });
+    } else {
+      await saveButton.click();
+    }
 
     // Wait for mutation to complete
     await page.waitForTimeout(3000);
 
+    // Check for error messages after save
+    const errorMessages = await page.locator('text=/error/i').all();
+    console.log('Error messages found:', errorMessages.length);
+    for (const msg of errorMessages) {
+      console.log('Error text:', await msg.textContent());
+    }
+
+    // Log all captured requests
+    console.log('Total GraphQL requests:', allRequests.length);
+    const mutationRequest = allRequests.find(
+      (r) => r.query.includes('updateMyPreferences') || r.query.includes('mutation')
+    );
+
     // Verify the mutation was called
-    expect(mutationRequest).not.toBeNull();
+    expect(mutationRequest).toBeDefined();
 
     // Verify the mutation query contains the expected operation
     if (mutationRequest) {

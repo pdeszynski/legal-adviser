@@ -90,6 +90,7 @@ export const AdminMainLayout: React.FC<React.PropsWithChildren> = ({ children })
       options={{
         syncWithLocation: true,
         warnWhenUnsavedChanges: true,
+        projectId: "GCrk8D-oPupRw-ZMrDtj"
       }}
     >
       <div className="flex h-screen w-full flex-col">

@@ -1814,6 +1814,17 @@
       "dismissed": false,
       "featureId": "loading-skeleton-e2e-tests",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "b3dd4f98-7f37-4c2f-ac7c-a03d680001ab",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769196300782-pvkhbfbdh\" has been verified and is complete.",
+      "createdAt": "2026-01-23T21:37:16.382Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769196300782-pvkhbfbdh",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

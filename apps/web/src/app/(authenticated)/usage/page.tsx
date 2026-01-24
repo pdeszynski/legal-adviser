@@ -167,7 +167,6 @@ export default function UsageDashboardPage() {
           {translate('usage.subtitle') || 'Track your AI usage and costs'}
         </p>
       </div>
-
       {/* Period Selector */}
       <div className="mb-6 flex gap-2">
         {[
@@ -188,7 +187,6 @@ export default function UsageDashboardPage() {
           </button>
         ))}
       </div>
-
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {/* Total Requests */}
@@ -278,7 +276,6 @@ export default function UsageDashboardPage() {
           </div>
         </div>
       </div>
-
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Daily Usage Chart */}
@@ -341,7 +338,6 @@ export default function UsageDashboardPage() {
           </ResponsiveContainer>
         </div>
       </div>
-
       {/* Tokens by Day Bar Chart */}
       <div className="bg-white rounded-lg shadow p-6 mb-8">
         <h2 className="text-lg font-semibold mb-4">
@@ -362,7 +358,6 @@ export default function UsageDashboardPage() {
           </BarChart>
         </ResponsiveContainer>
       </div>
-
       {/* Operation Breakdown Table */}
       {stats?.breakdownByOperation && stats.breakdownByOperation.length > 0 && (
         <div className="bg-white rounded-lg shadow p-6">
@@ -403,7 +398,6 @@ export default function UsageDashboardPage() {
           </div>
         </div>
       )}
-
       {/* Empty State */}
       {!isLoadingDaily && !isLoadingStats && chartData.length === 0 && (
         <div className="bg-white rounded-lg shadow p-12 text-center">

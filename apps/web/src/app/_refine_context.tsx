@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, type PropsWithChildren } from 'react';
+import React, { type PropsWithChildren } from 'react';
 import { type I18nProvider, Refine } from '@refinedev/core';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 import routerProvider from '@refinedev/nextjs-router';
@@ -31,107 +31,106 @@ export const RefineContext = ({ children }: PropsWithChildren) => {
   };
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Refine
+      routerProvider={routerProvider}
+      dataProvider={dataProvider}
+      authProvider={authProviderClient}
+      auditLogProvider={auditLogProvider}
+      i18nProvider={i18nProvider}
+      resources={[
+        {
+          name: 'chat',
+          list: '/chat',
+          meta: {
+            label: 'Legal Q&A Chat',
+            canDelete: false,
+          },
+        },
+        {
+          name: 'documents',
+          list: '/documents',
+          create: '/documents/create',
+          edit: '/documents/edit/:id',
+          show: '/documents/show/:id',
+          meta: {
+            canDelete: true,
+            label: 'Documents',
+          },
+        },
+        {
+          name: 'templates',
+          list: '/templates',
+          meta: {
+            label: 'Templates',
+            canDelete: false,
+          },
+        },
+        {
+          name: 'dashboard',
+          list: '/dashboard',
+          meta: {
+            label: 'Dashboard',
+            icon: <span aria-label="dashboard">📊</span>,
+          },
+        },
+        {
+          name: 'notifications',
+          list: '/notifications',
+          meta: {
+            label: 'Notifications',
+            canDelete: false,
+          },
+        },
+        {
+          name: 'settings',
+          list: '/settings',
+          meta: {
+            label: 'Settings',
+            icon: <span aria-label="settings">⚙️</span>,
+            canDelete: false,
+          },
+        },
+        {
+          name: 'billing',
+          list: '/billing',
+          meta: {
+            label: 'Billing',
+            icon: <span aria-label="billing">💳</span>,
+            canDelete: false,
+          },
+        },
+        {
+          name: 'usage',
+          list: '/usage',
+          meta: {
+            label: 'Usage',
+            icon: <span aria-label="usage">📈</span>,
+            canDelete: false,
+          },
+        },
+        {
+          name: 'audit_logs',
+          list: '/audit-logs',
+          meta: {
+            label: 'Audit Logs',
+            canDelete: false,
+          },
+        },
+      ]}
+      options={{
+        syncWithLocation: true,
+        warnWhenUnsavedChanges: true,
+        projectId: "GCrk8D-oPupRw-ZMrDtj"
+      }}
+    >
       <RefineKbarProvider>
         <CsrfProvider>
           <DevtoolsProvider>
-            <Refine
-              routerProvider={routerProvider}
-              dataProvider={dataProvider}
-              authProvider={authProviderClient}
-              auditLogProvider={auditLogProvider}
-              i18nProvider={i18nProvider}
-              resources={[
-                {
-                  name: 'chat',
-                  list: '/chat',
-                  meta: {
-                    label: 'Legal Q&A Chat',
-                    canDelete: false,
-                  },
-                },
-                {
-                  name: 'documents',
-                  list: '/documents',
-                  create: '/documents/create',
-                  edit: '/documents/edit/:id',
-                  show: '/documents/show/:id',
-                  meta: {
-                    canDelete: true,
-                    label: 'Documents',
-                  },
-                },
-                {
-                  name: 'templates',
-                  list: '/templates',
-                  meta: {
-                    label: 'Templates',
-                    canDelete: false,
-                  },
-                },
-                {
-                  name: 'dashboard',
-                  list: '/dashboard',
-                  meta: {
-                    label: 'Dashboard',
-                    icon: <span aria-label="dashboard">📊</span>,
-                  },
-                },
-                {
-                  name: 'notifications',
-                  list: '/notifications',
-                  meta: {
-                    label: 'Notifications',
-                    canDelete: false,
-                  },
-                },
-                {
-                  name: 'settings',
-                  list: '/settings',
-                  meta: {
-                    label: 'Settings',
-                    icon: <span aria-label="settings">⚙️</span>,
-                    canDelete: false,
-                  },
-                },
-                {
-                  name: 'billing',
-                  list: '/billing',
-                  meta: {
-                    label: 'Billing',
-                    icon: <span aria-label="billing">💳</span>,
-                    canDelete: false,
-                  },
-                },
-                {
-                  name: 'usage',
-                  list: '/usage',
-                  meta: {
-                    label: 'Usage',
-                    icon: <span aria-label="usage">📈</span>,
-                    canDelete: false,
-                  },
-                },
-                {
-                  name: 'audit_logs',
-                  list: '/audit-logs',
-                  meta: {
-                    label: 'Audit Logs',
-                    canDelete: false,
-                  },
-                },
-              ]}
-              options={{
-                syncWithLocation: true,
-                warnWhenUnsavedChanges: true,
-              }}
-            >
-              {children}
-              <RefineKbar />
-            </Refine>
+            <RefineKbar />
+            {children}
           </DevtoolsProvider>
         </CsrfProvider>
       </RefineKbarProvider>
-    </Suspense>
+    </Refine>
   );
 };

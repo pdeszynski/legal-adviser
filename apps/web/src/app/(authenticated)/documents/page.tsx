@@ -233,7 +233,6 @@ export default function DocumentList() {
           </Link>
         </div>
       </div>
-
       {/* Filters Section */}
       <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
         <div className="flex flex-wrap gap-4 items-end">
@@ -299,7 +298,6 @@ export default function DocumentList() {
           )}
         </div>
       </div>
-
       {/* Content Area */}
       {isLoading ? (
         viewMode === 'grid' ? (
@@ -354,7 +352,7 @@ export default function DocumentList() {
         </div>
       ) : (
         /* List View (Table) */
-        <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+        (<div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-border">
               <thead className="bg-muted/50">
@@ -411,9 +409,8 @@ export default function DocumentList() {
               </tbody>
             </table>
           </div>
-        </div>
+        </div>)
       )}
-
       {/* Pagination */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border">
         <div className="flex items-center gap-2">

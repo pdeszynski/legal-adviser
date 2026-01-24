@@ -209,7 +209,6 @@ export default function DocumentEdit() {
           )}
         </p>
       </div>
-
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         {/* Document Title */}
         <div className="space-y-2">

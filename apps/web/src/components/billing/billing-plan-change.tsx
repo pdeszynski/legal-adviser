@@ -105,7 +105,6 @@ export function BillingPlanChange({
       <p className="text-gray-600 mb-6">
         {translate('billing.planChange.currentPlan', { plan: currentPlanName })}
       </p>
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {sortedPlans.map((plan) => {
           const isSelected = selectedPlan === plan.id;
@@ -131,11 +130,8 @@ export function BillingPlanChange({
                   </span>
                 )}
               </div>
-
               <p className="text-2xl font-bold mb-4">{getPlanPrice(plan)}</p>
-
               {plan.description && <p className="text-sm text-gray-600 mb-4">{plan.description}</p>}
-
               <ul className="space-y-2">
                 {getFeatures(plan.features).map((feature) => (
                   <li key={feature} className="flex items-center text-sm">
@@ -158,7 +154,6 @@ export function BillingPlanChange({
           );
         })}
       </div>
-
       {selectedPlan && (
         <div className="flex items-center space-x-4">
           <button
