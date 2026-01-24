@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769271306356-a3db5ad8",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T16:15:06.356Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "ai-engine-turbo-dev-integration",
+  "featureName": "Integrate AI Engine into Turbo Dev Command",
+  "error": "Feature completed in 441s - auto-verified",
+  "passes": true
+}

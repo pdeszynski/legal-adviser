@@ -36,15 +36,52 @@ pip install -e .
 
 ## Running the Service
 
-### Development Mode
+### Development Mode (with Hot Reload)
 
 ```bash
-# Using uv
-uv run uvicorn src.main:app --reload --port 8000
+# Using the dev script (recommended - includes --reload and debug logging)
+uv run dev
 
-# Or using uvicorn directly
-uvicorn src.main:app --reload --port 8000
+# Or using uv directly
+uv run uvicorn src.main:app --reload --port 8000 --log-level debug
 ```
+
+**Hot Reload Behavior:**
+
+The `--reload` flag enables uvicorn's auto-reload feature, which automatically restarts the server when Python source code changes are detected. This provides a rapid development workflow similar to Node.js HMR (Hot Module Replacement).
+
+**Watched Paths:**
+
+By default, uvicorn monitors:
+
+- `src/` - All Python modules
+- `tests/` - Test files
+- Current working directory for configuration changes
+
+**How It Works:**
+
+1. uvicorn uses a file watcher to detect changes to `.py` files
+2. On file change, the worker process gracefully shuts down
+3. A new worker process starts with the updated code
+4. In-flight requests complete before the old process exits
+5. New requests are handled by the reloaded process
+
+**Limitations vs Node.js HMR:**
+
+| Feature            | Python (uvicorn)    | Node.js (HMR)              |
+| ------------------ | ------------------- | -------------------------- |
+| Module replacement | Full server restart | Individual module hot-swap |
+| State preservation | Lost on restart     | Preserved (with care)      |
+| Connection pooling | Reset on restart    | Maintained                 |
+| Startup time       | ~1-2 seconds        | Instant                    |
+| CSS/style updates  | N/A                 | Instant without refresh    |
+
+**Best Practices:**
+
+- Avoid storing in-memory state that shouldn't be lost on reload
+- Use external stores (Redis, database) for shared state
+- The `generation_tasks` dict in `main.py` will be reset on reload
+- For stateful development, consider persisting to disk between reloads
 
 The service will be available at:
 

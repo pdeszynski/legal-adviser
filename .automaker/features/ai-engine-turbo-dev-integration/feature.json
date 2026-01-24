@@ -1,0 +1,19 @@
+{
+  "category": "enhancement",
+  "description": "Configure turbo.json to include AI Engine (Python/FastAPI) in the dev pipeline. Update turbo dev command to spawn Python uvicorn server alongside Node.js services. Ensure proper process management and port configuration for local development environment. The AI Engine should automatically start when `pnpm dev` or `pnpm dlx turbo dev` is executed, running concurrently with backend and web services.",
+  "id": "ai-engine-turbo-dev-integration",
+  "title": "Integrate AI Engine into Turbo Dev Command",
+  "dependencies": [],
+  "priority": 1,
+  "status": "verified",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Configure turbo.json to include AI Engine (Python/FastAPI) in the dev pipeline. Update turbo dev command to spawn Python uvicorn server alongside Node.js services. Ensure proper process management and port configuration for local development environment. The AI Engine should automatically start when `pnpm dev` or `pnpm dlx turbo dev` is executed, running concurrently with backend and web services.",
+      "timestamp": "2026-01-24T16:07:41.296Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-24T16:07:45.013Z",
+  "updatedAt": "2026-01-24T16:15:06.348Z"
+}

@@ -111,7 +111,7 @@ services:
       redis:
         condition: service_healthy
       ai-engine:
-        condition: service_started
+        condition: service_healthy
     networks:
       - legal-ai-network
     restart: always
@@ -131,6 +131,12 @@ services:
     volumes:
       - ./apps/ai-engine/src:/app/src:ro
       - ai_engine_venv:/app/.venv
+    healthcheck:
+      test: ['CMD', 'python', '-c', 'import urllib.request; urllib.request.urlopen("http://localhost:8000/health").read()']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - legal-ai-network
     restart: always

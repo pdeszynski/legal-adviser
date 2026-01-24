@@ -2,7 +2,7 @@
   "id": "email-queue-processor",
   "category": "Core",
   "title": "Email Queue Processor",
-  "description": "Create Bull queue consumer for sending emails asynchronously. Handle retry logic, bounce tracking, and delivery status updates.",
+  "description": "DEPRECATED - Use migrate-email-queue-to-temporal feature instead. This feature is being replaced by Temporal workflow implementation.",
   "status": "completed",
   "priority": 2,
   "complexity": "simple",
@@ -34,6 +34,12 @@
   "thinkingLevel": "none",
   "reasoningEffort": "none",
   "branchName": "002-legal-ai-core",
-  "descriptionHistory": [],
+  "descriptionHistory": [
+    {
+      "description": "DEPRECATED - Use migrate-email-queue-to-temporal feature instead. This feature is being replaced by Temporal workflow implementation.",
+      "timestamp": "2026-01-24T16:03:10.025Z",
+      "source": "edit"
+    }
+  ],
   "startedAt": "2026-01-21T07:04:31.353Z"
 }

@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "PDF Export Queue Processor",
   "description": "Create Bull queue consumer for asynchronous PDF generation. Handle large documents, template rendering, and file storage integration.",
-  "status": "verified",
+  "status": "completed",
   "priority": 2,
   "complexity": "moderate",
   "createdAt": "2026-01-12T10:31:20.828Z",

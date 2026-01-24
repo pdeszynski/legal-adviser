@@ -2265,6 +2265,50 @@
       "dismissed": false,
       "featureId": "graphql-codegen-persisted-queries",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "792f0de9-b53c-4293-a6d0-beb09d44bc00",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-dev-watch-mode\" has been verified and is complete.",
+      "createdAt": "2026-01-24T16:12:22.433Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-dev-watch-mode",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "1db0090a-c7a3-402b-b2fc-657b2fa3025b",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-process-manager\" has been verified and is complete.",
+      "createdAt": "2026-01-24T16:14:47.867Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-process-manager",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "e314680d-8f75-42a4-901d-ffa71ba9ae6d",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-turbo-dev-integration\" has been verified and is complete.",
+      "createdAt": "2026-01-24T16:15:06.349Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-turbo-dev-integration",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "a1cd0f5d-ae6a-4100-8839-944d8cb9165e",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"dev-mode-service-dependency-order\" has been verified and is complete.",
+      "createdAt": "2026-01-24T16:18:16.182Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "dev-mode-service-dependency-order",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

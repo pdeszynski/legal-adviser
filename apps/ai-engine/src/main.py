@@ -9,6 +9,9 @@ This service provides AI-powered legal assistance including:
 Features distributed tracing with Sentry for APM.
 """
 
+import asyncio
+import logging
+import signal
 import time
 import uuid
 from contextlib import asynccontextmanager
@@ -48,15 +51,36 @@ from .sentry_init import init_sentry
 # Initialize Sentry for error tracking and APM
 init_sentry()
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Global state for graceful shutdown
+shutdown_event = asyncio.Event()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Lifespan context manager for startup/shutdown events."""
+    """Lifespan context manager for startup/shutdown events with graceful shutdown."""
     # Startup
-    print("Legal AI Engine starting up...")
+    logger.info("Legal AI Engine starting up...")
+
+    # Set up signal handlers for graceful shutdown
+    def handle_shutdown(signum, frame):
+        logger.info(f"Received signal {signum}, initiating graceful shutdown...")
+        shutdown_event.set()
+
+    signal.signal(signal.SIGINT, handle_shutdown)
+    signal.signal(signal.SIGTERM, handle_shutdown)
+
     yield
-    # Shutdown
-    print("Legal AI Engine shutting down...")
+
+    # Shutdown - wait for in-flight requests to complete
+    logger.info("Legal AI Engine shutting down gracefully...")
+    logger.info(f"Active generation tasks: {len(generation_tasks)}")
 
 
 app = FastAPI(
@@ -119,8 +143,53 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint."""
-    return {"status": "ok"}
+    """Health check endpoint for process monitoring and load balancers.
+
+    Returns:
+        - status: "ok" if service is healthy
+        - service: Service name
+        - version: Service version
+        - uptime_seconds: Time since service started
+        - active_tasks: Number of active document generation tasks
+
+    This endpoint is designed for:
+    - Process manager health checks (PM2, Kubernetes, etc.)
+    - Load balancer probes
+    - Monitoring systems (Prometheus, DataDog, etc.)
+    """
+    import os
+
+    import psutil
+
+    # Get process uptime
+    process = psutil.Process(os.getpid())
+    uptime_seconds = time.time() - process.create_time()
+
+    return {
+        "status": "ok",
+        "service": "legal-ai-engine",
+        "version": "0.1.0",
+        "uptime_seconds": round(uptime_seconds, 2),
+        "active_tasks": len(generation_tasks),
+    }
+
+
+@app.get("/health/ready")
+async def readiness_check():
+    """Readiness check endpoint for Kubernetes-style probes.
+
+    Returns 200 if the service is ready to accept traffic.
+    """
+    return {"status": "ready"}
+
+
+@app.get("/health/live")
+async def liveness_check():
+    """Liveness check endpoint for Kubernetes-style probes.
+
+    Returns 200 if the service is running and responsive.
+    """
+    return {"status": "alive"}
 
 
 @app.post("/api/v1/qa", response_model=QAResponse)

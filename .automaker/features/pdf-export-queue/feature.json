@@ -2,7 +2,7 @@
   "id": "pdf-export-queue",
   "category": "Core",
   "title": "PDF Export Queue Processor",
-  "description": "Create Bull queue consumer for asynchronous PDF generation. Handle large documents, template rendering, and file storage integration.",
+  "description": "DEPRECATED - Use migrate-pdf-export-queue-to-temporal feature instead. This feature is being replaced by Temporal workflow implementation.",
   "status": "completed",
   "priority": 2,
   "complexity": "moderate",
@@ -11,5 +11,11 @@
   "model": "sonnet",
   "thinkingLevel": "none",
   "reasoningEffort": "none",
-  "descriptionHistory": []
+  "descriptionHistory": [
+    {
+      "description": "DEPRECATED - Use migrate-pdf-export-queue-to-temporal feature instead. This feature is being replaced by Temporal workflow implementation.",
+      "timestamp": "2026-01-24T16:03:10.026Z",
+      "source": "edit"
+    }
+  ]
 }

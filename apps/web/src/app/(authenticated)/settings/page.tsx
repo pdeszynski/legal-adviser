@@ -8,7 +8,7 @@ import { SettingsSecurity } from '@/components/settings/settings-security';
 import { SettingsNotifications } from '@/components/settings/settings-notifications';
 import { SettingsApiKeys } from '@/components/settings/settings-api-keys';
 import { SettingsTabSkeleton } from '@/components/skeleton';
-import { User, Settings, Shield, Bell, Key } from 'lucide-react';
+import { User, Settings, Shield, Bell, Key, AlertCircle } from 'lucide-react';
 import { cn } from '@legal/ui';
 import { useGetMyPreferencesQuery } from '@/generated/graphql';
 
@@ -37,6 +37,7 @@ export default function SettingsPage() {
   const {
     data: preferencesData,
     isLoading: preferencesLoading,
+    error: preferencesError,
     refetch: refetchPreferences,
   } = useGetMyPreferencesQuery();
 
@@ -51,6 +52,7 @@ export default function SettingsPage() {
   const user = userData;
   const preferences = preferencesData?.myPreferences;
   const isLoading = userLoading || preferencesLoading;
+  const hasPreferencesError = Boolean(preferencesError);
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-6xl">
@@ -103,15 +105,55 @@ export default function SettingsPage() {
                 {activeTab === 'profile' && user && (
                   <SettingsProfile user={user} onProfileUpdate={refetchUser} />
                 )}
-                {activeTab === 'preferences' && preferences && (
-                  <SettingsPreferences
-                    preferences={preferences}
-                    onUpdateSuccess={() => refetchPreferences()}
-                  />
+                {activeTab === 'preferences' && (
+                  <>
+                    {hasPreferencesError ? (
+                      <div className="flex flex-col items-center justify-center py-12">
+                        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+                        <h3 className="text-lg font-semibold mb-2">Unable to load preferences</h3>
+                        <p className="text-sm text-muted-foreground mb-4 text-center">
+                          {preferencesError instanceof Error
+                            ? preferencesError.message
+                            : 'There was a problem loading your preferences.'}
+                        </p>
+                        <button
+                          onClick={() => refetchPreferences()}
+                          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                        >
+                          Try Again
+                        </button>
+                      </div>
+                    ) : preferences ? (
+                      <SettingsPreferences
+                        preferences={preferences}
+                        onUpdateSuccess={() => refetchPreferences()}
+                      />
+                    ) : null}
+                  </>
                 )}
                 {activeTab === 'security' && <SettingsSecurity />}
-                {activeTab === 'notifications' && preferences && (
-                  <SettingsNotifications preferences={preferences} />
+                {activeTab === 'notifications' && (
+                  <>
+                    {hasPreferencesError ? (
+                      <div className="flex flex-col items-center justify-center py-12">
+                        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+                        <h3 className="text-lg font-semibold mb-2">Unable to load preferences</h3>
+                        <p className="text-sm text-muted-foreground mb-4 text-center">
+                          {preferencesError instanceof Error
+                            ? preferencesError.message
+                            : 'There was a problem loading your notification preferences.'}
+                        </p>
+                        <button
+                          onClick={() => refetchPreferences()}
+                          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                        >
+                          Try Again
+                        </button>
+                      </div>
+                    ) : preferences ? (
+                      <SettingsNotifications preferences={preferences} />
+                    ) : null}
+                  </>
                 )}
                 {activeTab === 'apiKeys' && <SettingsApiKeys isActive={activeTab === 'apiKeys'} />}
               </>

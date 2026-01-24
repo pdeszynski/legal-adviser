@@ -5,7 +5,9 @@ from pathlib import Path
 
 from main import app
 
-if __name__ == "__main__":
+
+def main():
+    """Export OpenAPI schema to JSON file."""
     openapi_schema = app.openapi()
 
     # Save to file
@@ -14,3 +16,7 @@ if __name__ == "__main__":
         json.dump(openapi_schema, f, indent=2)
 
     print(f"OpenAPI schema exported to: {output_path}")
+
+
+if __name__ == "__main__":
+    main()

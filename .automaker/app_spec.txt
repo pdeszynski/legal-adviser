@@ -2914,6 +2914,22 @@ path
       <name>Implement Persisted Queries with GraphQL Codegen</name>
       <description>Configure GraphQL Codegen to generate persisted query documents and manifest. Set up automatic query hashing and persisted query support in backend. Replace runtime query parsing with pre-registered query IDs. Improves performance and security by eliminating ad-hoc queries.</description>
     </feature>
+    <feature>
+      <name>Configure AI Engine Hot-Reload in Dev Mode</name>
+      <description>Ensure AI Engine runs with auto-reload enabled in development mode. Verify uvicorn configuration includes --reload flag for development. Configure file watching for Python source code changes in apps/ai-engine/src. Test that code changes trigger automatic server restart. Document hot-reload behavior and any limitations compared to Node.js HMR.</description>
+    </feature>
+    <feature>
+      <name>Add AI Engine Process Manager to Monorepo</name>
+      <description>Create process manager configuration for AI Engine service in development mode. Add npm script in root package.json to start AI Engine using `uv run dev` from apps/ai-engine directory. Configure concurrent process execution with proper logging and hot-reload support. Ensure process health checks and graceful shutdown handling. Update turbo.json tasks to include ai-engine:dev task with proper caching disabled and persistent process configuration.</description>
+    </feature>
+    <feature>
+      <name>Integrate AI Engine into Turbo Dev Command</name>
+      <description>Configure turbo.json to include AI Engine (Python/FastAPI) in the dev pipeline. Update turbo dev command to spawn Python uvicorn server alongside Node.js services. Ensure proper process management and port configuration for local development environment. The AI Engine should automatically start when `pnpm dev` or `pnpm dlx turbo dev` is executed, running concurrently with backend and web services.</description>
+    </feature>
+    <feature>
+      <name>Configure Service Startup Order in Dev Mode</name>
+      <description>Define proper startup sequence for development services: Database (PostgreSQL) -&gt; Backend (NestJS) -&gt; AI Engine (FastAPI) -&gt; Frontend (Next.js). Update turbo.json or package.json scripts to enforce dependency ordering. Add environment variable checks to ensure backend waits for AI Engine health check before starting dependent features. Document service startup order and interdependencies.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

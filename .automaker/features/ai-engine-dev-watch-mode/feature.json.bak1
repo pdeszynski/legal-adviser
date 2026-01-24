@@ -1,0 +1,21 @@
+{
+  "category": "enhancement",
+  "description": "Ensure AI Engine runs with auto-reload enabled in development mode. Verify uvicorn configuration includes --reload flag for development. Configure file watching for Python source code changes in apps/ai-engine/src. Test that code changes trigger automatic server restart. Document hot-reload behavior and any limitations compared to Node.js HMR.",
+  "id": "ai-engine-dev-watch-mode",
+  "title": "Configure AI Engine Hot-Reload in Dev Mode",
+  "dependencies": [
+    "ai-engine-process-manager"
+  ],
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Ensure AI Engine runs with auto-reload enabled in development mode. Verify uvicorn configuration includes --reload flag for development. Configure file watching for Python source code changes in apps/ai-engine/src. Test that code changes trigger automatic server restart. Document hot-reload behavior and any limitations compared to Node.js HMR.",
+      "timestamp": "2026-01-24T16:07:41.297Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-24T16:08:01.354Z",
+  "updatedAt": "2026-01-24T16:08:08.833Z"
+}

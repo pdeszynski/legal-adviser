@@ -1,0 +1,18 @@
+{
+  "name": "@legal/ai-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Engine for Legal Platform - Python/FastAPI Service",
+  "scripts": {
+    "dev": "uv run uvicorn src.main:app --reload --port 8000 --log-level debug",
+    "start": "uv run uvicorn src.main:app --host 0.0.0.0 --port 8000",
+    "build": "echo 'No build step for Python service'",
+    "test": "uv run pytest",
+    "lint": "uv run ruff check .",
+    "typecheck": "uv run ruff check --select I .",
+    "clean": "rm -rf .venv __pycache__ .pytest_cache **/__pycache__"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

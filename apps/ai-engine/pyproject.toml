@@ -14,13 +14,14 @@ dependencies = [
     "python-dotenv",
     "pydantic-settings",
     "sentry-sdk>=2.50.0",
+    "psutil",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
 license = { text = "MIT" }
 
 [project.scripts]
-dev = "uvicorn src.main:app --reload --port 8000"
+dev = "uvicorn src.main:app --reload --port 8000 --log-level debug"
 start = "uvicorn src.main:app --host 0.0.0.0 --port 8000"
 export-openapi = "python src/export_openapi.py"
 

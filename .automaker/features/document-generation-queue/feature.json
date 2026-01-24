@@ -2,7 +2,7 @@
   "id": "document-generation-queue",
   "category": "Core",
   "title": "Document Generation Queue Processor",
-  "description": "Implement Bull queue consumer in infrastructure layer for asynchronous document generation jobs. Create application service use case to orchestrate document generation workflow. Handle job status updates, error recovery, and AI service communication through domain events and queue system following layered architecture.",
+  "description": "DEPRECATED - Use migrate-document-generation-to-temporal feature instead. This feature is being replaced by Temporal workflow implementation.",
   "status": "completed",
   "priority": 1,
   "complexity": "complex",
@@ -34,6 +34,11 @@
     {
       "description": "Implement Bull queue consumer in infrastructure layer for asynchronous document generation jobs. Create application service use case to orchestrate document generation workflow. Handle job status updates, error recovery, and AI service communication through domain events and queue system following layered architecture.",
       "timestamp": "2026-01-13T11:07:03.824Z",
+      "source": "edit"
+    },
+    {
+      "description": "DEPRECATED - Use migrate-document-generation-to-temporal feature instead. This feature is being replaced by Temporal workflow implementation.",
+      "timestamp": "2026-01-24T16:03:10.024Z",
       "source": "edit"
     }
   ],

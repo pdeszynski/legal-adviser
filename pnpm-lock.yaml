@@ -30,6 +30,8 @@ importers:
         specifier: latest
         version: 2.7.5
 
+  apps/ai-engine: {}
+
   apps/backend:
     dependencies:
       '@apollo/server':

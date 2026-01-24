@@ -2,6 +2,34 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769271496195-9dd2cb51",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T16:18:16.195Z",
+      "featureName": "Configure Service Startup Order in Dev Mode",
+      "featureId": "dev-mode-service-dependency-order"
+    },
+    {
+      "id": "evt-1769271306356-a3db5ad8",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T16:15:06.356Z",
+      "featureName": "Integrate AI Engine into Turbo Dev Command",
+      "featureId": "ai-engine-turbo-dev-integration"
+    },
+    {
+      "id": "evt-1769271287882-36a65fab",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T16:14:47.882Z",
+      "featureName": "Add AI Engine Process Manager to Monorepo",
+      "featureId": "ai-engine-process-manager"
+    },
+    {
+      "id": "evt-1769271142440-6fdef8cf",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T16:12:22.440Z",
+      "featureName": "Configure AI Engine Hot-Reload in Dev Mode",
+      "featureId": "ai-engine-dev-watch-mode"
+    },
+    {
       "id": "evt-1769250993602-6b717464",
       "trigger": "auto_mode_complete",
       "timestamp": "2026-01-24T10:36:33.602Z"

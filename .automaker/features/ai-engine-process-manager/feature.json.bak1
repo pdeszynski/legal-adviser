@@ -1,0 +1,21 @@
+{
+  "category": "enhancement",
+  "description": "Create process manager configuration for AI Engine service in development mode. Add npm script in root package.json to start AI Engine using `uv run dev` from apps/ai-engine directory. Configure concurrent process execution with proper logging and hot-reload support. Ensure process health checks and graceful shutdown handling. Update turbo.json tasks to include ai-engine:dev task with proper caching disabled and persistent process configuration.",
+  "id": "ai-engine-process-manager",
+  "title": "Add AI Engine Process Manager to Monorepo",
+  "dependencies": [
+    "ai-engine-turbo-dev-integration"
+  ],
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create process manager configuration for AI Engine service in development mode. Add npm script in root package.json to start AI Engine using `uv run dev` from apps/ai-engine directory. Configure concurrent process execution with proper logging and hot-reload support. Ensure process health checks and graceful shutdown handling. Update turbo.json tasks to include ai-engine:dev task with proper caching disabled and persistent process configuration.",
+      "timestamp": "2026-01-24T16:07:41.297Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-24T16:07:57.789Z",
+  "updatedAt": "2026-01-24T16:08:09.781Z"
+}

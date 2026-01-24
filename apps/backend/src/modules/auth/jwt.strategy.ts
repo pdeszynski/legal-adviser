@@ -19,7 +19,7 @@ interface JwtPayload {
  * Available in request.user after authentication
  */
 export interface ValidatedUser {
-  userId: string; // User UUID
+  id: string; // User UUID
   username: string;
   email: string;
   roles: string[];
@@ -47,7 +47,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    */
   validate(payload: JwtPayload): ValidatedUser {
     return {
-      userId: payload.sub,
+      id: payload.sub,
       username: payload.username,
       email: payload.email,
       roles: payload.roles || ['user'],

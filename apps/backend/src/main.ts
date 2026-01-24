@@ -7,9 +7,61 @@ import * as Sentry from '@sentry/node';
 import { AppModule } from './app.module';
 import { setupBullBoard } from './shared/queues/bull-board.setup';
 import { AppLogger } from './shared/logger';
+import {
+  buildDependencyChecks,
+  validateDependencies,
+  waitForDependency,
+} from './shared/startup';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
+
+  // Validate external dependencies before starting NestJS
+  const dependencies = buildDependencyChecks();
+
+  if (dependencies.length > 0) {
+    logger.log('Validating external dependencies...');
+
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const skipAiEngineCheck = process.env.SKIP_AI_ENGINE_CHECK === 'true';
+
+    if (isDevelopment && !skipAiEngineCheck) {
+      // In development, wait for AI Engine with retries but don't fail if unavailable
+      const aiEngineUrl = process.env.AI_ENGINE_URL || 'http://localhost:8000';
+      const healthUrl = `${aiEngineUrl}/health`;
+
+      logger.log(`Waiting for AI Engine at ${healthUrl}...`);
+      const isHealthy = await waitForDependency(healthUrl, {
+        maxRetries: 15,
+        retryDelay: 2000,
+        timeout: 5000,
+        logPrefix: 'Bootstrap',
+      });
+
+      if (!isHealthy) {
+        logger.warn(
+          'AI Engine is not available. Some features may not work correctly. ' +
+            'Set SKIP_AI_ENGINE_CHECK=true to suppress this warning.',
+        );
+      }
+    } else if (!skipAiEngineCheck) {
+      // In production, validate all required dependencies
+      const results = await validateDependencies(dependencies);
+      const requiredUnhealthy = results.filter((r) => !r.healthy);
+
+      if (requiredUnhealthy.length > 0) {
+        logger.error('Required dependencies are unhealthy:');
+        for (const result of requiredUnhealthy) {
+          logger.error(
+            `  - ${result.name}: ${result.error || 'Unknown error'}`,
+          );
+        }
+        throw new Error(
+          'Cannot start application: required dependencies are unavailable',
+        );
+      }
+    }
+  }
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: ['log', 'error', 'warn', 'debug', 'verbose'],

@@ -2,7 +2,7 @@
   "id": "ruling-indexing-job",
   "category": "Core",
   "title": "Ruling Indexing Background Job",
-  "description": "Create Bull queue processor for periodically fetching and indexing new rulings from external sources. Schedule daily sync jobs.",
+  "description": "DEPRECATED - Use migrate-ruling-indexing-to-temporal feature instead. This feature is being replaced by Temporal scheduled workflow implementation.",
   "status": "completed",
   "priority": 2,
   "complexity": "moderate",
@@ -11,5 +11,11 @@
   "model": "sonnet",
   "thinkingLevel": "none",
   "reasoningEffort": "none",
-  "descriptionHistory": []
+  "descriptionHistory": [
+    {
+      "description": "DEPRECATED - Use migrate-ruling-indexing-to-temporal feature instead. This feature is being replaced by Temporal scheduled workflow implementation.",
+      "timestamp": "2026-01-24T16:03:10.027Z",
+      "source": "edit"
+    }
+  ]
 }

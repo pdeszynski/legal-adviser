@@ -14,6 +14,7 @@ import { LegalQuery } from '../modules/queries/entities/legal-query.entity';
 import { AuditLog } from '../modules/audit-log/entities/audit-log.entity';
 import { RoleEntity } from '../modules/authorization/entities/role.entity';
 import { UserRoleEntity } from '../modules/authorization/entities';
+import { UserPreferences } from '../modules/user-preferences/entities/user-preferences.entity';
 
 // Seed data
 import {
@@ -65,6 +66,8 @@ export class SeedService {
     private readonly roleRepository: Repository<RoleEntity>,
     @InjectRepository(UserRoleEntity)
     private readonly userRoleRepository: Repository<UserRoleEntity>,
+    @InjectRepository(UserPreferences)
+    private readonly userPreferencesRepository: Repository<UserPreferences>,
   ) {}
 
   /**
@@ -92,6 +95,7 @@ export class SeedService {
       await this.seedRoles();
       await this.seedUsers();
       await this.seedUserRoles();
+      await this.seedUserPreferences();
       await this.seedSessions();
       await this.seedDocuments();
       await this.seedAnalyses();
@@ -128,6 +132,7 @@ export class SeedService {
       await queryRunner.query('DELETE FROM legal_analyses');
       await queryRunner.query('DELETE FROM legal_documents');
       await queryRunner.query('DELETE FROM user_sessions');
+      await queryRunner.query('DELETE FROM user_preferences');
       await queryRunner.query('DELETE FROM user_roles');
       await queryRunner.query('DELETE FROM roles');
       await queryRunner.query('DELETE FROM users');
@@ -277,6 +282,37 @@ export class SeedService {
     }
 
     this.logger.log(`Seeded ${count} user-role assignments`);
+  }
+
+  /**
+   * Seed user preferences
+   * Creates default preferences for each seeded user
+   */
+  private async seedUserPreferences(): Promise<void> {
+    this.logger.log('Seeding user preferences...');
+
+    let count = 0;
+    for (const [email, user] of this.userMap.entries()) {
+      // Check if preferences already exist
+      const existingPrefs = await this.userPreferencesRepository.findOne({
+        where: { userId: user.id },
+      });
+
+      if (existingPrefs) {
+        this.logger.debug(`Preferences for ${email} already exist, skipping`);
+        continue;
+      }
+
+      const prefs = this.userPreferencesRepository.create(
+        UserPreferences.createDefault(user.id),
+      );
+
+      await this.userPreferencesRepository.save(prefs);
+      count++;
+      this.logger.debug(`Created preferences for user: ${email}`);
+    }
+
+    this.logger.log(`Seeded ${count} user preferences`);
   }
 
   /**
@@ -491,6 +527,7 @@ export class SeedService {
     this.logger.log(`Roles: ${this.roleMap.size}`);
     this.logger.log(`Users: ${this.userMap.size}`);
     this.logger.log(`User Roles: ${userRolesSeedData.length}`);
+    this.logger.log(`User Preferences: ${this.userMap.size}`);
     this.logger.log(`Sessions: ${this.sessionList.length}`);
     this.logger.log(`Documents: ${documentsSeedData.length}`);
     this.logger.log(`Analyses: ${analysesSeedData.length}`);
@@ -529,6 +566,7 @@ export class SeedService {
     roles: number;
     users: number;
     userRoles: number;
+    userPreferences: number;
     sessions: number;
     documents: number;
     analyses: number;
@@ -540,6 +578,7 @@ export class SeedService {
       roles,
       users,
       userRoles,
+      userPreferences,
       sessions,
       documents,
       analyses,
@@ -550,6 +589,7 @@ export class SeedService {
       this.roleRepository.count(),
       this.userRepository.count(),
       this.userRoleRepository.count(),
+      this.userPreferencesRepository.count(),
       this.sessionRepository.count(),
       this.documentRepository.count(),
       this.analysisRepository.count(),
@@ -562,6 +602,7 @@ export class SeedService {
       roles,
       users,
       userRoles,
+      userPreferences,
       sessions,
       documents,
       analyses,

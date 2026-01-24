@@ -1,0 +1,21 @@
+{
+  "category": "enhancement",
+  "description": "Define proper startup sequence for development services: Database (PostgreSQL) -> Backend (NestJS) -> AI Engine (FastAPI) -> Frontend (Next.js). Update turbo.json or package.json scripts to enforce dependency ordering. Add environment variable checks to ensure backend waits for AI Engine health check before starting dependent features. Document service startup order and interdependencies.",
+  "id": "dev-mode-service-dependency-order",
+  "title": "Configure Service Startup Order in Dev Mode",
+  "dependencies": [
+    "ai-engine-health-check-dev"
+  ],
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Define proper startup sequence for development services: Database (PostgreSQL) -> Backend (NestJS) -> AI Engine (FastAPI) -> Frontend (Next.js). Update turbo.json or package.json scripts to enforce dependency ordering. Add environment variable checks to ensure backend waits for AI Engine health check before starting dependent features. Document service startup order and interdependencies.",
+      "timestamp": "2026-01-24T16:07:41.299Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-24T16:08:05.887Z",
+  "updatedAt": "2026-01-24T16:08:12.067Z"
+}

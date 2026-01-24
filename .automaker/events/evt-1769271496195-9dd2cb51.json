@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769271496195-9dd2cb51",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T16:18:16.195Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "dev-mode-service-dependency-order",
+  "featureName": "Configure Service Startup Order in Dev Mode",
+  "error": "Feature completed in 604s - auto-verified",
+  "passes": true
+}

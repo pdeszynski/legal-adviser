@@ -1,0 +1,101 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+    - generic [ref=e2]:
+        - banner [ref=e3]:
+            - generic [ref=e6]:
+                - img [ref=e7]
+                - textbox "Search documents, rulings, templates..." [ref=e10]
+            - generic [ref=e11]:
+                - button "🇬🇧 English" [ref=e13] [cursor=pointer]:
+                    - img [ref=e14]
+                    - generic [ref=e17]: 🇬🇧 English
+                - button "Notifications" [ref=e19] [cursor=pointer]:
+                    - img [ref=e20]
+                - generic [ref=e22]: Admin Usera
+                - button "Logout" [ref=e23] [cursor=pointer]
+        - generic [ref=e24]:
+            - complementary [ref=e25]:
+                - generic [ref=e26]:
+                    - navigation [ref=e27]:
+                        - link "Legal Q&A Chat" [ref=e28] [cursor=pointer]:
+                            - /url: /chat
+                            - img [ref=e29]
+                            - generic [ref=e31]: Legal Q&A Chat
+                        - link "Documents" [ref=e32] [cursor=pointer]:
+                            - /url: /documents
+                            - img [ref=e33]
+                            - generic [ref=e36]: Documents
+                        - link "Templates" [ref=e37] [cursor=pointer]:
+                            - /url: /templates
+                            - img [ref=e38]
+                            - generic [ref=e42]: Templates
+                        - link "Dashboard" [ref=e43] [cursor=pointer]:
+                            - /url: /dashboard
+                            - img [ref=e44]
+                            - generic [ref=e49]: Dashboard
+                        - link "Notifications" [ref=e50] [cursor=pointer]:
+                            - /url: /notifications
+                            - img [ref=e51]
+                            - generic [ref=e54]: Notifications
+                        - link "Settings" [ref=e55] [cursor=pointer]:
+                            - /url: /settings
+                            - img [ref=e56]
+                            - generic [ref=e59]: Settings
+                        - link "Billing" [ref=e60] [cursor=pointer]:
+                            - /url: /billing
+                            - img [ref=e61]
+                            - generic [ref=e63]: Billing
+                        - link "Usage" [ref=e64] [cursor=pointer]:
+                            - /url: /usage
+                            - img [ref=e65]
+                            - generic [ref=e68]: Usage
+                    - button "Light Mode" [ref=e70] [cursor=pointer]:
+                        - img [ref=e71]
+                        - generic [ref=e77]: Light Mode
+            - main [ref=e78]:
+                - generic [ref=e80]:
+                    - generic [ref=e81]:
+                        - heading "Settings" [level=1] [ref=e82]
+                        - paragraph [ref=e83]: Manage your account settings and preferences
+                    - generic [ref=e84]:
+                        - complementary [ref=e85]:
+                            - navigation [ref=e86]:
+                                - button "Profile" [ref=e87] [cursor=pointer]:
+                                    - img [ref=e88]
+                                    - text: Profile
+                                - button "Preferences" [ref=e91] [cursor=pointer]:
+                                    - img [ref=e92]
+                                    - text: Preferences
+                                - button "Security" [ref=e95] [cursor=pointer]:
+                                    - img [ref=e96]
+                                    - text: Security
+                                - button "Notifications" [ref=e98] [cursor=pointer]:
+                                    - img [ref=e99]
+                                    - text: Notifications
+                                - button "API Keys" [ref=e102] [cursor=pointer]:
+                                    - img [ref=e103]
+                                    - text: API Keys
+                        - main [ref=e107]
+    - generic [ref=e128]:
+        - button [ref=e129] [cursor=pointer]:
+            - img [ref=e130]
+            - button "Element Selector" [ref=e138]:
+                - img
+        - generic:
+            - iframe
+            - generic:
+                - img
+            - generic:
+                - img
+            - generic:
+                - img
+            - generic:
+                - img
+    - region "Notifications (F8)":
+        - list
+    - button "Open Next.js Dev Tools" [ref=e144] [cursor=pointer]:
+        - img [ref=e145]
+    - alert [ref=e148]
+```
