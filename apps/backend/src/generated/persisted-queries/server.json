@@ -1,0 +1,401 @@
+{
+  "format": "apollo-persisted-query-manifest",
+  "version": 1,
+  "operations": {
+    "sha256:e84bcbdccd37ddea1943cb27258f4f081b4316b1dd1612ef65fea1615d358993": {
+      "type": "query",
+      "name": "GetAdminAnalyticsDashboard",
+      "body": "query GetAdminAnalyticsDashboard($input: DashboardAnalyticsInput) {\n  analyticsDashboard(input: $input) {\n    userGrowth {\n      ...UserGrowthMetricsFragment\n      __typename\n    }\n    documents {\n      ...DocumentMetricsFragment\n      __typename\n    }\n    documentTypeDistribution {\n      ...DocumentTypeDistributionFragment\n      __typename\n    }\n    queries {\n      ...QueryMetricsFragment\n      __typename\n    }\n    aiUsage {\n      ...AiUsageMetricsFragment\n      __typename\n    }\n    aiOperationBreakdown {\n      ...AiOperationBreakdownFragment\n      __typename\n    }\n    systemHealth {\n      ...SystemHealthMetricsFragment\n      __typename\n    }\n    generatedAt\n    __typename\n  }\n}\n\nfragment UserGrowthMetricsFragment on UserGrowthMetrics {\n  totalUsers\n  activeUsers\n  newUsers\n  adminUsers\n  growthRate\n  periodStart\n  periodEnd\n  __typename\n}\n\nfragment DocumentMetricsFragment on DocumentMetrics {\n  totalDocuments\n  completedDocuments\n  draftDocuments\n  failedDocuments\n  generatingDocuments\n  successRate\n  periodStart\n  periodEnd\n  __typename\n}\n\nfragment DocumentTypeDistributionFragment on DocumentTypeDistribution {\n  documentType\n  count\n  percentage\n  __typename\n}\n\nfragment QueryMetricsFragment on QueryMetrics {\n  totalQueries\n  uniqueUsers\n  avgQueriesPerUser\n  totalCitations\n  avgCitationsPerQuery\n  periodStart\n  periodEnd\n  __typename\n}\n\nfragment AiUsageMetricsFragment on AiUsageMetrics {\n  totalRequests\n  totalTokens\n  totalCost\n  avgCostPerRequest\n  avgTokensPerRequest\n  periodStart\n  periodEnd\n  __typename\n}\n\nfragment AiOperationBreakdownFragment on AiOperationBreakdown {\n  operationType\n  requestCount\n  totalTokens\n  totalCost\n  costPercentage\n  __typename\n}\n\nfragment SystemHealthMetricsFragment on SystemHealthMetrics {\n  documentSuccessRate\n  avgResponseTime\n  activeSessions\n  timestamp\n  __typename\n}"
+    },
+    "sha256:faf21458dd03f6964b54f680d5b4fded45878446ac540bfd935059c31d938a5e": {
+      "type": "query",
+      "name": "GetAdminUserGrowthMetrics",
+      "body": "query GetAdminUserGrowthMetrics($input: DashboardAnalyticsInput) {\n  userGrowthMetrics(input: $input) {\n    ...UserGrowthMetricsFragment\n    __typename\n  }\n}\n\nfragment UserGrowthMetricsFragment on UserGrowthMetrics {\n  totalUsers\n  activeUsers\n  newUsers\n  adminUsers\n  growthRate\n  periodStart\n  periodEnd\n  __typename\n}"
+    },
+    "sha256:33b8b30eef660249eaf6db567a4aff147baabc3ef047d66aa6489e22bc0460ef": {
+      "type": "query",
+      "name": "GetAdminDocumentMetrics",
+      "body": "query GetAdminDocumentMetrics($input: DashboardAnalyticsInput) {\n  documentMetrics(input: $input) {\n    ...DocumentMetricsFragment\n    __typename\n  }\n}\n\nfragment DocumentMetricsFragment on DocumentMetrics {\n  totalDocuments\n  completedDocuments\n  draftDocuments\n  failedDocuments\n  generatingDocuments\n  successRate\n  periodStart\n  periodEnd\n  __typename\n}"
+    },
+    "sha256:f6f2234c75cf760ca1de46a48fffb232659b9add466e311fefb040d385f71f0f": {
+      "type": "query",
+      "name": "GetAdminQueryMetrics",
+      "body": "query GetAdminQueryMetrics($input: DashboardAnalyticsInput) {\n  queryMetrics(input: $input) {\n    ...QueryMetricsFragment\n    __typename\n  }\n}\n\nfragment QueryMetricsFragment on QueryMetrics {\n  totalQueries\n  uniqueUsers\n  avgQueriesPerUser\n  totalCitations\n  avgCitationsPerQuery\n  periodStart\n  periodEnd\n  __typename\n}"
+    },
+    "sha256:326ce6d88449d5bf59ac7e578d753c769491f647caf43778758286a6f253761b": {
+      "type": "query",
+      "name": "GetAdminAiUsageMetrics",
+      "body": "query GetAdminAiUsageMetrics($input: DashboardAnalyticsInput) {\n  aiUsageMetrics(input: $input) {\n    ...AiUsageMetricsFragment\n    __typename\n  }\n}\n\nfragment AiUsageMetricsFragment on AiUsageMetrics {\n  totalRequests\n  totalTokens\n  totalCost\n  avgCostPerRequest\n  avgTokensPerRequest\n  periodStart\n  periodEnd\n  __typename\n}"
+    },
+    "sha256:3a62681a39848b001a18f344e226ea246b3a009d54922af5baa77e670646ef0e": {
+      "type": "query",
+      "name": "GetAdminSystemHealthMetrics",
+      "body": "query GetAdminSystemHealthMetrics($input: DashboardAnalyticsInput) {\n  systemHealthMetrics(input: $input) {\n    ...SystemHealthMetricsFragment\n    __typename\n  }\n}\n\nfragment SystemHealthMetricsFragment on SystemHealthMetrics {\n  documentSuccessRate\n  avgResponseTime\n  activeSessions\n  timestamp\n  __typename\n}"
+    },
+    "sha256:73b0ce547471cfd9e55ea4bc9e998fcd96dc0b063747aa2f60221c4d758e83d8": {
+      "type": "query",
+      "name": "GetAdminUsers",
+      "body": "query GetAdminUsers($filter: UserFilter, $sorting: [UserSort!], $paging: CursorPaging) {\n  users(filter: $filter, sorting: $sorting, paging: $paging) {\n    ...UserPageResultFragment\n    __typename\n  }\n}\n\nfragment UserPageResultFragment on UserConnection {\n  totalCount\n  edges {\n    node {\n      ...UserFragment\n      __typename\n    }\n    __typename\n  }\n  pageInfo {\n    ...PageInfoFragment\n    __typename\n  }\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  __typename\n}\n\nfragment PageInfoFragment on PageInfo {\n  hasNextPage\n  hasPreviousPage\n  startCursor\n  endCursor\n  __typename\n}"
+    },
+    "sha256:daf7b5fa64577b969e2e974671d2bf82e34c2914b005d0e7b402fac85b491ccd": {
+      "type": "query",
+      "name": "GetAdminUser",
+      "body": "query GetAdminUser($id: ID!) {\n  user(id: $id) {\n    ...AdminUserFragment\n    __typename\n  }\n}\n\nfragment AdminUserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:c472b4409d1037a12560ffbf7d5bea5fcd2f581d3cb67d8cfa4a39a6c8feca6b": {
+      "type": "mutation",
+      "name": "AdminCreateUser",
+      "body": "mutation AdminCreateUser($input: CreateOneUserInput!) {\n  createOneUser(input: $input) {\n    ...AdminUserFragment\n    __typename\n  }\n}\n\nfragment AdminUserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:f5ee6babb465c698a24d31d0378592868b17cab49eed9ef777bda09f7e2035be": {
+      "type": "mutation",
+      "name": "AdminUpdateUser",
+      "body": "mutation AdminUpdateUser($input: UpdateOneUserInput!) {\n  updateOneUser(input: $input) {\n    ...AdminUserMinimalFragment\n    __typename\n  }\n}\n\nfragment AdminUserMinimalFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  createdAt\n  __typename\n}"
+    },
+    "sha256:34fa548d859440fa4b63ed247f06c58a6b1da23052de3cb3efc8558a6689cb97": {
+      "type": "mutation",
+      "name": "AdminDeleteUser",
+      "body": "mutation AdminDeleteUser($input: DeleteOneUserInput!) {\n  deleteOneUser(input: $input) {\n    id\n    email\n    __typename\n  }\n}"
+    },
+    "sha256:5d57b4de7e5d7a76e3f2e9e6590cd2476641da386a049bdb686718af25565a57": {
+      "type": "mutation",
+      "name": "AdminSuspendUser",
+      "body": "mutation AdminSuspendUser($input: SuspendUserInput!) {\n  suspendUser(input: $input) {\n    ...AdminUserMinimalFragment\n    __typename\n  }\n}\n\nfragment AdminUserMinimalFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  createdAt\n  __typename\n}"
+    },
+    "sha256:0a5f1b9d8e4ac31d16e9f00272101680c75497ded85488582881dd1762f1964f": {
+      "type": "mutation",
+      "name": "AdminActivateUser",
+      "body": "mutation AdminActivateUser($input: ActivateUserInput!) {\n  activateUser(input: $input) {\n    ...AdminUserMinimalFragment\n    __typename\n  }\n}\n\nfragment AdminUserMinimalFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  createdAt\n  __typename\n}"
+    },
+    "sha256:8d86602fdc2a980e94d0608e2aa1844d8b30222d3463e85a937e5698ad703d2a": {
+      "type": "mutation",
+      "name": "AdminChangeUserRole",
+      "body": "mutation AdminChangeUserRole($input: ChangeUserRoleInput!) {\n  changeUserRole(input: $input) {\n    ...AdminUserMinimalFragment\n    __typename\n  }\n}\n\nfragment AdminUserMinimalFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  createdAt\n  __typename\n}"
+    },
+    "sha256:4c1747628a126c4a7a62d437386c45dfd20b324e6dfff942123e27a0a1d1ab21": {
+      "type": "mutation",
+      "name": "AdminResetUserPassword",
+      "body": "mutation AdminResetUserPassword($input: ResetUserPasswordInput!) {\n  resetUserPassword(input: $input) {\n    ...AdminUserMinimalFragment\n    __typename\n  }\n}\n\nfragment AdminUserMinimalFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  createdAt\n  __typename\n}"
+    },
+    "sha256:db1fd0c05b94aac93140315ff65712f6a78931e964646538c310875cbfd46a3a": {
+      "type": "query",
+      "name": "AuditLogs",
+      "body": "query AuditLogs($filter: AuditLogFilter, $paging: CursorPaging, $sorting: [AuditLogSort!]) {\n  auditLogs(filter: $filter, paging: $paging, sorting: $sorting) {\n    edges {\n      node {\n        ...AuditLogFragment\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n      __typename\n    }\n    totalCount\n    __typename\n  }\n}\n\nfragment AuditLogFragment on AuditLog {\n  id\n  action\n  resourceType\n  resourceId\n  userId\n  ipAddress\n  statusCode\n  errorMessage\n  userAgent\n  createdAt\n  updatedAt\n  user {\n    ...UserMinimalFragment\n    __typename\n  }\n  __typename\n}\n\nfragment UserMinimalFragment on User {\n  id\n  email\n  firstName\n  lastName\n  __typename\n}"
+    },
+    "sha256:627a37ce6164e91724a7d4cee0b712fafe052e8c6701cbe49ff1d2ca5d49d4ee": {
+      "type": "query",
+      "name": "AuditLog",
+      "body": "query AuditLog($id: ID!) {\n  auditLog(id: $id) {\n    ...AuditLogFragment\n    __typename\n  }\n}\n\nfragment AuditLogFragment on AuditLog {\n  id\n  action\n  resourceType\n  resourceId\n  userId\n  ipAddress\n  statusCode\n  errorMessage\n  userAgent\n  createdAt\n  updatedAt\n  user {\n    ...UserMinimalFragment\n    __typename\n  }\n  __typename\n}\n\nfragment UserMinimalFragment on User {\n  id\n  email\n  firstName\n  lastName\n  __typename\n}"
+    },
+    "sha256:55d6167f0424fb0bd9f9fc72519d9ec803c1673c6ac8679d4615548692c0d8bc": {
+      "type": "query",
+      "name": "MyBillingInfo",
+      "body": "query MyBillingInfo {\n  myBillingInfo {\n    ...BillingInfoFragment\n    __typename\n  }\n}\n\nfragment BillingInfoFragment on BillingInfo {\n  subscriptionId\n  planTier\n  planName\n  status\n  currentPeriodStart\n  currentPeriodEnd\n  daysRemaining\n  cancelAtPeriodEnd\n  usage\n  nextBillingAmount\n  paymentHistory {\n    ...PaymentHistoryItemFragment\n    __typename\n  }\n  paymentMethods {\n    ...PaymentMethodInfoFragment\n    __typename\n  }\n  __typename\n}\n\nfragment PaymentHistoryItemFragment on PaymentHistoryItem {\n  id\n  amount\n  currency\n  status\n  method\n  description\n  invoiceId\n  createdAt\n  refundedAt\n  refundAmount\n  __typename\n}\n\nfragment PaymentMethodInfoFragment on PaymentMethodInfo {\n  id\n  brand\n  last4\n  expiryMonth\n  expiryYear\n  isDefault\n  __typename\n}"
+    },
+    "sha256:7d1f36d286f68b16e913b32304d5a3ed931c6dfbe1241b7c83ff4152dd6f0c05": {
+      "type": "query",
+      "name": "MyPaymentHistory",
+      "body": "query MyPaymentHistory {\n  myPaymentHistory {\n    ...PaymentHistoryItemFragment\n    __typename\n  }\n}\n\nfragment PaymentHistoryItemFragment on PaymentHistoryItem {\n  id\n  amount\n  currency\n  status\n  method\n  description\n  invoiceId\n  createdAt\n  refundedAt\n  refundAmount\n  __typename\n}"
+    },
+    "sha256:a1738101fffcb6e03e06fe97c1ecdb215ee884923ca79780f951be283d2d895d": {
+      "type": "query",
+      "name": "SubscriptionPlans",
+      "body": "query SubscriptionPlans {\n  subscriptionPlans {\n    ...SubscriptionPlanFragment\n    __typename\n  }\n}\n\nfragment SubscriptionPlanFragment on SubscriptionPlan {\n  id\n  name\n  description\n  price\n  billingInterval\n  features\n  tier\n  isActive\n  displayOrder\n  maxUsers\n  createdAt\n  __typename\n}"
+    },
+    "sha256:5b83da43516e120a53dd839d3b1a1bdd92fc1ad3f3b5cdc108c4f822291b0404": {
+      "type": "query",
+      "name": "SubscriptionPlan",
+      "body": "query SubscriptionPlan($id: String!) {\n  subscriptionPlan(id: $id) {\n    ...SubscriptionPlanFragment\n    __typename\n  }\n}\n\nfragment SubscriptionPlanFragment on SubscriptionPlan {\n  id\n  name\n  description\n  price\n  billingInterval\n  features\n  tier\n  isActive\n  displayOrder\n  maxUsers\n  createdAt\n  __typename\n}"
+    },
+    "sha256:aa81b473146ab522e58c03088166ea4dc70a39b03db365d478aa967cd5811d88": {
+      "type": "mutation",
+      "name": "CancelMySubscription",
+      "body": "mutation CancelMySubscription($input: CancelSubscriptionInput!) {\n  cancelMySubscription(input: $input) {\n    ...UserSubscriptionFragment\n    __typename\n  }\n}\n\nfragment UserSubscriptionFragment on UserSubscription {\n  id\n  planId\n  status\n  currentPeriodStart\n  currentPeriodEnd\n  cancelAtPeriodEnd\n  canceledAt\n  trialEndDate\n  startDate\n  lastPaymentAt\n  lastPaymentAmount\n  stripeCustomerId\n  stripeSubscriptionId\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:9b12f98218e7c065006b1a8eae5c6937ab256c942bd7da4d7f23672bfe3431f4": {
+      "type": "mutation",
+      "name": "ResumeMySubscription",
+      "body": "mutation ResumeMySubscription {\n  resumeMySubscription {\n    ...UserSubscriptionFragment\n    __typename\n  }\n}\n\nfragment UserSubscriptionFragment on UserSubscription {\n  id\n  planId\n  status\n  currentPeriodStart\n  currentPeriodEnd\n  cancelAtPeriodEnd\n  canceledAt\n  trialEndDate\n  startDate\n  lastPaymentAt\n  lastPaymentAmount\n  stripeCustomerId\n  stripeSubscriptionId\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:f5dc08997aa2908555c8fdd722de6df931260fe52fca2f85d87162e1487b9c8d": {
+      "type": "mutation",
+      "name": "ChangeSubscriptionPlan",
+      "body": "mutation ChangeSubscriptionPlan($newPlanId: String!) {\n  changeSubscriptionPlan(newPlanId: $newPlanId) {\n    ...UserSubscriptionFragment\n    __typename\n  }\n}\n\nfragment UserSubscriptionFragment on UserSubscription {\n  id\n  planId\n  status\n  currentPeriodStart\n  currentPeriodEnd\n  cancelAtPeriodEnd\n  canceledAt\n  trialEndDate\n  startDate\n  lastPaymentAt\n  lastPaymentAmount\n  stripeCustomerId\n  stripeSubscriptionId\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:a47bfc7f797f6bb56b3072919e5351209b7ef50bfac8e17372b86d068e866f2b": {
+      "type": "mutation",
+      "name": "CreateMySubscription",
+      "body": "mutation CreateMySubscription($input: CreateUserSubscriptionInput!) {\n  createMySubscription(input: $input) {\n    ...UserSubscriptionFragment\n    __typename\n  }\n}\n\nfragment UserSubscriptionFragment on UserSubscription {\n  id\n  planId\n  status\n  currentPeriodStart\n  currentPeriodEnd\n  cancelAtPeriodEnd\n  canceledAt\n  trialEndDate\n  startDate\n  lastPaymentAt\n  lastPaymentAmount\n  stripeCustomerId\n  stripeSubscriptionId\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:66d6bb9e93ab7893f501bed060c73acad24c9985c67725c3a62e5666e22f8507": {
+      "type": "mutation",
+      "name": "AskLegalQuestion",
+      "body": "mutation AskLegalQuestion($input: AskLegalQuestionInput!) {\n  askLegalQuestion(input: $input) {\n    ...LegalQueryFragment\n    __typename\n  }\n}\n\nfragment LegalQueryFragment on LegalQuery {\n  id\n  question\n  answerMarkdown\n  citations {\n    source\n    url\n    excerpt\n    article\n    __typename\n  }\n  sessionId\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:55bf097309ed8f9a4c387eb36e2c424734a32ed0addc5370fb54e1c4566fb1f6": {
+      "type": "query",
+      "name": "GetLegalQuery",
+      "body": "query GetLegalQuery($id: ID!) {\n  legalQuery(id: $id) {\n    ...LegalQueryFragment\n    __typename\n  }\n}\n\nfragment LegalQueryFragment on LegalQuery {\n  id\n  question\n  answerMarkdown\n  citations {\n    source\n    url\n    excerpt\n    article\n    __typename\n  }\n  sessionId\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:503c23f54fc4cadfd9be9edf6d9ff22d4f1e3347baf0d81fffdf6fc299181e62": {
+      "type": "query",
+      "name": "GetSessionQueries",
+      "body": "query GetSessionQueries($sessionId: String!) {\n  queriesBySession(sessionId: $sessionId) {\n    ...LegalQueryFragment\n    __typename\n  }\n}\n\nfragment LegalQueryFragment on LegalQuery {\n  id\n  question\n  answerMarkdown\n  citations {\n    source\n    url\n    excerpt\n    article\n    __typename\n  }\n  sessionId\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:e8bbd00eae8ec35161a2412f238e9ecc150a4a0b720801384bef75a7d2842f15": {
+      "type": "query",
+      "name": "GetPendingQueries",
+      "body": "query GetPendingQueries {\n  pendingQueries {\n    ...LegalQueryFragment\n    __typename\n  }\n}\n\nfragment LegalQueryFragment on LegalQuery {\n  id\n  question\n  answerMarkdown\n  citations {\n    source\n    url\n    excerpt\n    article\n    __typename\n  }\n  sessionId\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:d96e2b54f2beffe16fcc914d37ef5d035533d0e7743a874eeba5624ed78f319b": {
+      "type": "query",
+      "name": "GetLegalDocuments",
+      "body": "query GetLegalDocuments($filter: LegalDocumentFilter, $paging: CursorPaging, $sorting: [LegalDocumentSort!]) {\n  legalDocuments(filter: $filter, paging: $paging, sorting: $sorting) {\n    totalCount\n    edges {\n      node {\n        ...LegalDocumentFragment\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      ...PageInfoFragment\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment LegalDocumentFragment on LegalDocument {\n  id\n  sessionId\n  title\n  type\n  status\n  contentRaw\n  metadata {\n    plaintiffName\n    defendantName\n    claimAmount\n    claimCurrency\n    __typename\n  }\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment PageInfoFragment on PageInfo {\n  hasNextPage\n  hasPreviousPage\n  startCursor\n  endCursor\n  __typename\n}"
+    },
+    "sha256:79f52ac18ee31613896f93463c7412740659076f1765d4971c9890ec2633f467": {
+      "type": "query",
+      "name": "GetLegalDocument",
+      "body": "query GetLegalDocument($id: ID!) {\n  legalDocument(id: $id) {\n    ...LegalDocumentFragment\n    __typename\n  }\n}\n\nfragment LegalDocumentFragment on LegalDocument {\n  id\n  sessionId\n  title\n  type\n  status\n  contentRaw\n  metadata {\n    plaintiffName\n    defendantName\n    claimAmount\n    claimCurrency\n    __typename\n  }\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:7a026b1eecce686b26a4fcdb3a1b6b9f62d75e0d5b8c8e9109ae0f6199a39e0a": {
+      "type": "mutation",
+      "name": "GenerateDocument",
+      "body": "mutation GenerateDocument($input: GenerateDocumentInput!) {\n  generateDocument(input: $input) {\n    ...LegalDocumentFragment\n    __typename\n  }\n}\n\nfragment LegalDocumentFragment on LegalDocument {\n  id\n  sessionId\n  title\n  type\n  status\n  contentRaw\n  metadata {\n    plaintiffName\n    defendantName\n    claimAmount\n    claimCurrency\n    __typename\n  }\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:1e202a001a66c5fb0ca0164742a2be823f8f3ed922bacc000bf9f708b70b36f9": {
+      "type": "mutation",
+      "name": "UpdateDocument",
+      "body": "mutation UpdateDocument($id: ID!, $input: UpdateDocumentInput!) {\n  updateDocument(id: $id, input: $input) {\n    ...LegalDocumentFragment\n    __typename\n  }\n}\n\nfragment LegalDocumentFragment on LegalDocument {\n  id\n  sessionId\n  title\n  type\n  status\n  contentRaw\n  metadata {\n    plaintiffName\n    defendantName\n    claimAmount\n    claimCurrency\n    __typename\n  }\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:29009db93a1aff7cfd172e68bdef06f26885bff18fab3e6dfa90f7aced229830": {
+      "type": "mutation",
+      "name": "DeleteDocument",
+      "body": "mutation DeleteDocument($id: ID!) {\n  deleteDocument(id: $id)\n}"
+    },
+    "sha256:819e283197534578e52667381bf71239b2c45f5a26a08551ea9eb08d13380312": {
+      "type": "query",
+      "name": "GetDocumentTemplates",
+      "body": "query GetDocumentTemplates($filter: DocumentTemplateFilter, $paging: CursorPaging) {\n  documentTemplates(filter: $filter, paging: $paging) {\n    totalCount\n    edges {\n      node {\n        ...DocumentTemplateFragment\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      ...PageInfoFragment\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment DocumentTemplateFragment on DocumentTemplate {\n  id\n  name\n  category\n  description\n  content\n  variables\n  conditionalSections\n  polishFormattingRules\n  isActive\n  usageCount\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment PageInfoFragment on PageInfo {\n  hasNextPage\n  hasPreviousPage\n  startCursor\n  endCursor\n  __typename\n}"
+    },
+    "sha256:d234f14cd9dc20c27bbcec0316ad8201e7f4255f22ccabe4ce057190094ca689": {
+      "type": "query",
+      "name": "GetDocumentTemplate",
+      "body": "query GetDocumentTemplate($id: ID!) {\n  documentTemplate(id: $id) {\n    ...DocumentTemplateFragment\n    __typename\n  }\n}\n\nfragment DocumentTemplateFragment on DocumentTemplate {\n  id\n  name\n  category\n  description\n  content\n  variables\n  conditionalSections\n  polishFormattingRules\n  isActive\n  usageCount\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:e2f93a666cacf099b6e82a420cc89b567831046f809671727fdd985f2996dc89": {
+      "type": "mutation",
+      "name": "CreateDocumentTemplate",
+      "body": "mutation CreateDocumentTemplate($input: CreateTemplateInput!) {\n  createDocumentTemplate(input: $input) {\n    ...DocumentTemplateFragment\n    __typename\n  }\n}\n\nfragment DocumentTemplateFragment on DocumentTemplate {\n  id\n  name\n  category\n  description\n  content\n  variables\n  conditionalSections\n  polishFormattingRules\n  isActive\n  usageCount\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:71e2cb40046e3f872c6553c2a89480b962f8ee500cb1eb41a3e72eb84ae1455c": {
+      "type": "mutation",
+      "name": "UpdateDocumentTemplate",
+      "body": "mutation UpdateDocumentTemplate($id: ID!, $input: UpdateTemplateInput!) {\n  updateDocumentTemplate(id: $id, input: $input) {\n    ...DocumentTemplateFragment\n    __typename\n  }\n}\n\nfragment DocumentTemplateFragment on DocumentTemplate {\n  id\n  name\n  category\n  description\n  content\n  variables\n  conditionalSections\n  polishFormattingRules\n  isActive\n  usageCount\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:50b4adf2bb0361127aed37339b3913be3c0adf181eafe125e1d8303f9448a18d": {
+      "type": "mutation",
+      "name": "DeleteDocumentTemplate",
+      "body": "mutation DeleteDocumentTemplate($id: ID!) {\n  deleteDocumentTemplate(id: $id)\n}"
+    },
+    "sha256:bc5f6ad9220b7f6d364fef14c0859d16846d4b34c2de27a604226f73ce39fce1": {
+      "type": "query",
+      "name": "GetLegalRulings",
+      "body": "query GetLegalRulings($filter: LegalRulingFilter, $paging: CursorPaging, $sorting: [LegalRulingSort!]) {\n  legalRulings(filter: $filter, paging: $paging, sorting: $sorting) {\n    totalCount\n    edges {\n      node {\n        ...LegalRulingFragment\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      ...PageInfoFragment\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment LegalRulingFragment on LegalRuling {\n  id\n  signature\n  courtName\n  courtType\n  rulingDate\n  summary\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment PageInfoFragment on PageInfo {\n  hasNextPage\n  hasPreviousPage\n  startCursor\n  endCursor\n  __typename\n}"
+    },
+    "sha256:1733914be75b777e7cd303b8684152a51fcefaeeb0e86748d0aaa7b06ab0bd25": {
+      "type": "query",
+      "name": "GetLegalRuling",
+      "body": "query GetLegalRuling($id: ID!) {\n  legalRuling(id: $id) {\n    ...LegalRulingFragment\n    __typename\n  }\n}\n\nfragment LegalRulingFragment on LegalRuling {\n  id\n  signature\n  courtName\n  courtType\n  rulingDate\n  summary\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:63b09a5fab0f985f7e36b0947a0b27eab58d11656a988d92f0b1326f1c88afac": {
+      "type": "query",
+      "name": "GetLegalRulingDetail",
+      "body": "query GetLegalRulingDetail($id: ID!) {\n  legalRuling(id: $id) {\n    ...LegalRulingDetailFragment\n    __typename\n  }\n}\n\nfragment LegalRulingDetailFragment on LegalRuling {\n  ...LegalRulingFragment\n  fullText\n  metadata {\n    legalArea\n    keywords\n    relatedCases\n    sourceReference\n    __typename\n  }\n  __typename\n}\n\nfragment LegalRulingFragment on LegalRuling {\n  id\n  signature\n  courtName\n  courtType\n  rulingDate\n  summary\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:9e25bf35488ea3c5e961287bd2440e807d4aff6c670f26710af7d9035d5098a2": {
+      "type": "mutation",
+      "name": "Login",
+      "body": "mutation Login($input: LoginInput!) {\n  login(input: $input) {\n    ...AuthPayloadFragment\n    __typename\n  }\n}\n\nfragment AuthPayloadFragment on AuthPayload {\n  accessToken\n  refreshToken\n  user {\n    ...AuthUserFragment\n    __typename\n  }\n  __typename\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  role\n  __typename\n}"
+    },
+    "sha256:350f22dac0e242be578b70b6d3e3c613adb370120b8aee1cd6dfba6503d53bc4": {
+      "type": "mutation",
+      "name": "Register",
+      "body": "mutation Register($input: RegisterInput!) {\n  register(input: $input) {\n    ...AuthPayloadFragment\n    __typename\n  }\n}\n\nfragment AuthPayloadFragment on AuthPayload {\n  accessToken\n  refreshToken\n  user {\n    ...AuthUserFragment\n    __typename\n  }\n  __typename\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  role\n  __typename\n}"
+    },
+    "sha256:f5b59dcaa9d1e27431d45c8baa918f66af9a94a5345d6a598e311da107ab377a": {
+      "type": "mutation",
+      "name": "RefreshToken",
+      "body": "mutation RefreshToken($input: RefreshTokenInput!) {\n  refreshToken(input: $input) {\n    ...RefreshTokenPayloadFragment\n    __typename\n  }\n}\n\nfragment RefreshTokenPayloadFragment on RefreshTokenPayload {\n  accessToken\n  refreshToken\n  __typename\n}"
+    },
+    "sha256:5bb0e9130867e46ee534a757d96d319b0cb6931f68f0ebe19c0c21faa92230c9": {
+      "type": "mutation",
+      "name": "AcceptDisclaimer",
+      "body": "mutation AcceptDisclaimer {\n  acceptDisclaimer {\n    ...AuthUserFragment\n    __typename\n  }\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  role\n  __typename\n}"
+    },
+    "sha256:4db1f44e34498a99114bf7b74fcec3a60fa321f331d1dda1ccc1af3537d9c87f": {
+      "type": "mutation",
+      "name": "MarkNotificationAsRead",
+      "body": "mutation MarkNotificationAsRead($notificationId: String!, $userId: String!) {\n  markNotificationAsRead(notificationId: $notificationId, userId: $userId)\n}"
+    },
+    "sha256:d4b588f1b2a7d20f840aed5ce25da841be2cc54d0552f57bc1856f24c01e7659": {
+      "type": "mutation",
+      "name": "MarkAllNotificationsAsRead",
+      "body": "mutation MarkAllNotificationsAsRead($userId: String!) {\n  markAllNotificationsAsRead(userId: $userId)\n}"
+    },
+    "sha256:255aabec65485a0c304821aa5aa4daa3796465a8982d9615e0949234a8648c73": {
+      "type": "mutation",
+      "name": "UpsertSystemSetting",
+      "body": "mutation UpsertSystemSetting($input: SystemSettingInput!) {\n  upsertSystemSetting(input: $input) {\n    ...SystemSettingFragment\n    __typename\n  }\n}\n\nfragment SystemSettingFragment on SystemSetting {\n  id\n  key\n  value\n  valueType\n  category\n  description\n  metadata\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:69cacc2b9c413bccc185016d7c8095764d8bfaba5a6594203ed5f36a014f05f8": {
+      "type": "mutation",
+      "name": "BulkUpsertSystemSettings",
+      "body": "mutation BulkUpsertSystemSettings($input: BulkUpdateSettingsInput!) {\n  bulkUpsertSystemSettings(input: $input) {\n    ...SystemSettingFragment\n    __typename\n  }\n}\n\nfragment SystemSettingFragment on SystemSetting {\n  id\n  key\n  value\n  valueType\n  category\n  description\n  metadata\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:1172d5de337be4b9d4cba036e8cd74e161f5f6345fc13b4f7e14e75dbf1662a6": {
+      "type": "mutation",
+      "name": "UpdateMyPreferences",
+      "body": "mutation UpdateMyPreferences($input: UpdateUserPreferencesInput!) {\n  updateMyPreferences(input: $input) {\n    ...UserPreferencesFragment\n    __typename\n  }\n}\n\nfragment UserPreferencesFragment on UserPreferences {\n  id\n  userId\n  locale\n  theme\n  aiModel\n  getNotificationPreferences {\n    documentUpdates\n    queryResponses\n    systemAlerts\n    marketingEmails\n    channels {\n      email\n      inApp\n      push\n      __typename\n    }\n    __typename\n  }\n  emailNotifications\n  inAppNotifications\n  timezone\n  dateFormat\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:eb91ab31a690a82d5e64c8d525a1100346c6e2ced06eccf2015e3c3ed4625188": {
+      "type": "mutation",
+      "name": "ResetMyPreferences",
+      "body": "mutation ResetMyPreferences {\n  resetMyPreferences {\n    ...UserPreferencesFragment\n    __typename\n  }\n}\n\nfragment UserPreferencesFragment on UserPreferences {\n  id\n  userId\n  locale\n  theme\n  aiModel\n  getNotificationPreferences {\n    documentUpdates\n    queryResponses\n    systemAlerts\n    marketingEmails\n    channels {\n      email\n      inApp\n      push\n      __typename\n    }\n    __typename\n  }\n  emailNotifications\n  inAppNotifications\n  timezone\n  dateFormat\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:b4611948c080cff51f45ceda3de5cc65386730461cfda7930e32a2cbd1ee135c": {
+      "type": "mutation",
+      "name": "UpdateOneUserPreference",
+      "body": "mutation UpdateOneUserPreference($input: UpdateOneUserPreferencesInput!) {\n  updateOneUserPreference(input: $input) {\n    ...UserPreferencesFragment\n    __typename\n  }\n}\n\nfragment UserPreferencesFragment on UserPreferences {\n  id\n  userId\n  locale\n  theme\n  aiModel\n  getNotificationPreferences {\n    documentUpdates\n    queryResponses\n    systemAlerts\n    marketingEmails\n    channels {\n      email\n      inApp\n      push\n      __typename\n    }\n    __typename\n  }\n  emailNotifications\n  inAppNotifications\n  timezone\n  dateFormat\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:e0c665af157909d1e835f4902a6decadb546b2e3a854c1cf68261a972c591020": {
+      "type": "mutation",
+      "name": "CreateOneUserPreference",
+      "body": "mutation CreateOneUserPreference($input: CreateOneUserPreferencesInput!) {\n  createOneUserPreference(input: $input) {\n    ...UserPreferencesFragment\n    __typename\n  }\n}\n\nfragment UserPreferencesFragment on UserPreferences {\n  id\n  userId\n  locale\n  theme\n  aiModel\n  getNotificationPreferences {\n    documentUpdates\n    queryResponses\n    systemAlerts\n    marketingEmails\n    channels {\n      email\n      inApp\n      push\n      __typename\n    }\n    __typename\n  }\n  emailNotifications\n  inAppNotifications\n  timezone\n  dateFormat\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:e5aadbe507640acc144ee19dd087607f5be543f23b6107bf5d87f95594b1c7bc": {
+      "type": "mutation",
+      "name": "DeleteOneUserPreference",
+      "body": "mutation DeleteOneUserPreference($input: DeleteOneUserPreferencesInput!) {\n  deleteOneUserPreference(input: $input) {\n    id\n    __typename\n  }\n}"
+    },
+    "sha256:7967df2ae8b05552a7ec1e8d44266ef55fa1fc273a4176f0a5c658e04707a5d2": {
+      "type": "query",
+      "name": "GetRecentNotifications",
+      "body": "query GetRecentNotifications($userId: String!, $limit: Int) {\n  recentNotifications(userId: $userId, limit: $limit) {\n    ...NotificationFragment\n    __typename\n  }\n}\n\nfragment NotificationFragment on InAppNotification {\n  id\n  userId\n  type\n  message\n  read\n  actionLink\n  actionLabel\n  metadata\n  createdAt\n  __typename\n}"
+    },
+    "sha256:40d4ef27eb9614e9817abdb158f19ffba1984a65434b1a40768125d7bb7b0447": {
+      "type": "query",
+      "name": "GetUnreadNotificationCount",
+      "body": "query GetUnreadNotificationCount($userId: String!) {\n  unreadNotificationCount(userId: $userId)\n}"
+    },
+    "sha256:6d74ea7c6f877fbeb94ab33ae262441a23cffbfe3a510ce75eeb7a02b38cd40e": {
+      "type": "subscription",
+      "name": "InAppNotificationCreated",
+      "body": "subscription InAppNotificationCreated($userId: String) {\n  inAppNotificationCreated(userId: $userId) {\n    notificationId\n    userId\n    type\n    message\n    actionLink\n    actionLabel\n    metadata\n    createdAt\n    __typename\n  }\n}"
+    },
+    "sha256:b687da4227656259cae738340a5f29159161455b8bd16b589f73ca64813ac7ba": {
+      "type": "query",
+      "name": "GetCurrentUser",
+      "body": "query GetCurrentUser {\n  me {\n    id\n    email\n    username\n    firstName\n    lastName\n    isActive\n    disclaimerAccepted\n    disclaimerAcceptedAt\n    role\n    __typename\n  }\n}"
+    },
+    "sha256:ebd2b4896454b06702db95560b2822063b77280594b39fedd7741c632207c1cb": {
+      "type": "query",
+      "name": "GetAnalyticsDashboard",
+      "body": "query GetAnalyticsDashboard($input: DashboardAnalyticsInput) {\n  analyticsDashboard(input: $input) {\n    userGrowth {\n      ...UserGrowthMetricsFragment\n      __typename\n    }\n    documents {\n      ...DocumentMetricsFragment\n      __typename\n    }\n    documentTypeDistribution {\n      ...DocumentTypeDistributionFragment\n      __typename\n    }\n    queries {\n      ...QueryMetricsFragment\n      __typename\n    }\n    aiUsage {\n      ...AiUsageMetricsFragment\n      __typename\n    }\n    aiOperationBreakdown {\n      ...AiOperationBreakdownFragment\n      __typename\n    }\n    systemHealth {\n      ...SystemHealthMetricsFragment\n      __typename\n    }\n    generatedAt\n    __typename\n  }\n}\n\nfragment UserGrowthMetricsFragment on UserGrowthMetrics {\n  totalUsers\n  activeUsers\n  newUsers\n  adminUsers\n  growthRate\n  periodStart\n  periodEnd\n  __typename\n}\n\nfragment DocumentMetricsFragment on DocumentMetrics {\n  totalDocuments\n  completedDocuments\n  draftDocuments\n  failedDocuments\n  generatingDocuments\n  successRate\n  periodStart\n  periodEnd\n  __typename\n}\n\nfragment DocumentTypeDistributionFragment on DocumentTypeDistribution {\n  documentType\n  count\n  percentage\n  __typename\n}\n\nfragment QueryMetricsFragment on QueryMetrics {\n  totalQueries\n  uniqueUsers\n  avgQueriesPerUser\n  totalCitations\n  avgCitationsPerQuery\n  periodStart\n  periodEnd\n  __typename\n}\n\nfragment AiUsageMetricsFragment on AiUsageMetrics {\n  totalRequests\n  totalTokens\n  totalCost\n  avgCostPerRequest\n  avgTokensPerRequest\n  periodStart\n  periodEnd\n  __typename\n}\n\nfragment AiOperationBreakdownFragment on AiOperationBreakdown {\n  operationType\n  requestCount\n  totalTokens\n  totalCost\n  costPercentage\n  __typename\n}\n\nfragment SystemHealthMetricsFragment on SystemHealthMetrics {\n  documentSuccessRate\n  avgResponseTime\n  activeSessions\n  timestamp\n  __typename\n}"
+    },
+    "sha256:a4b55b37ea342f2a0c1a8c69ad664fd5ed4b3a78f1a0dd47f270dbe6aacac418": {
+      "type": "query",
+      "name": "GetUserGrowthMetrics",
+      "body": "query GetUserGrowthMetrics($input: DashboardAnalyticsInput) {\n  userGrowthMetrics(input: $input) {\n    ...UserGrowthMetricsFragment\n    __typename\n  }\n}\n\nfragment UserGrowthMetricsFragment on UserGrowthMetrics {\n  totalUsers\n  activeUsers\n  newUsers\n  adminUsers\n  growthRate\n  periodStart\n  periodEnd\n  __typename\n}"
+    },
+    "sha256:72d58e093a39e02bfd9020603cdfab37fd70034061c1dd5097f7e54979bc9b93": {
+      "type": "query",
+      "name": "GetDocumentMetrics",
+      "body": "query GetDocumentMetrics($input: DashboardAnalyticsInput) {\n  documentMetrics(input: $input) {\n    ...DocumentMetricsFragment\n    __typename\n  }\n}\n\nfragment DocumentMetricsFragment on DocumentMetrics {\n  totalDocuments\n  completedDocuments\n  draftDocuments\n  failedDocuments\n  generatingDocuments\n  successRate\n  periodStart\n  periodEnd\n  __typename\n}"
+    },
+    "sha256:b2873ad7b7f038e113e5875f6a39da442ba9259c7f4ea75da42195d9a7a521e8": {
+      "type": "query",
+      "name": "GetQueryMetrics",
+      "body": "query GetQueryMetrics($input: DashboardAnalyticsInput) {\n  queryMetrics(input: $input) {\n    ...QueryMetricsFragment\n    __typename\n  }\n}\n\nfragment QueryMetricsFragment on QueryMetrics {\n  totalQueries\n  uniqueUsers\n  avgQueriesPerUser\n  totalCitations\n  avgCitationsPerQuery\n  periodStart\n  periodEnd\n  __typename\n}"
+    },
+    "sha256:a6980c68d210e4e3d5cae3caa5c623d0285b1c86db9c9931e84212f3892cb616": {
+      "type": "query",
+      "name": "GetAiUsageMetrics",
+      "body": "query GetAiUsageMetrics($input: DashboardAnalyticsInput) {\n  aiUsageMetrics(input: $input) {\n    ...AiUsageMetricsFragment\n    __typename\n  }\n}\n\nfragment AiUsageMetricsFragment on AiUsageMetrics {\n  totalRequests\n  totalTokens\n  totalCost\n  avgCostPerRequest\n  avgTokensPerRequest\n  periodStart\n  periodEnd\n  __typename\n}"
+    },
+    "sha256:c5148900fd33d1b1555bf5caa71f37539a195202a4385600311c110af2bdcbc2": {
+      "type": "query",
+      "name": "GetSystemHealthMetrics",
+      "body": "query GetSystemHealthMetrics($input: DashboardAnalyticsInput) {\n  systemHealthMetrics(input: $input) {\n    ...SystemHealthMetricsFragment\n    __typename\n  }\n}\n\nfragment SystemHealthMetricsFragment on SystemHealthMetrics {\n  documentSuccessRate\n  avgResponseTime\n  activeSessions\n  timestamp\n  __typename\n}"
+    },
+    "sha256:c3774b140405205d9538d122a0c7126b93eb80fd8ad1c746075ee086148b9630": {
+      "type": "query",
+      "name": "Me",
+      "body": "query Me {\n  me {\n    ...AuthUserFragment\n    __typename\n  }\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  role\n  __typename\n}"
+    },
+    "sha256:948453ec15dfd8aa76a2c0ca658847fc91421c5eedeac1ec84de1c3953e1b643": {
+      "type": "query",
+      "name": "GetSystemSettings",
+      "body": "query GetSystemSettings {\n  systemSettings {\n    ...SystemSettingFragment\n    __typename\n  }\n}\n\nfragment SystemSettingFragment on SystemSetting {\n  id\n  key\n  value\n  valueType\n  category\n  description\n  metadata\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:720b1cd0ed29e6d98e5364e942fc6dea982ca12ba16498aa596ead320435efa3": {
+      "type": "query",
+      "name": "GetSystemSettingsByCategory",
+      "body": "query GetSystemSettingsByCategory($category: SettingCategory!) {\n  systemSettingsByCategory(category: $category) {\n    ...SystemSettingFragment\n    __typename\n  }\n}\n\nfragment SystemSettingFragment on SystemSetting {\n  id\n  key\n  value\n  valueType\n  category\n  description\n  metadata\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:67a9c966db2848632bcdeb2b2a08063fd18709f9923ed9c81dccc6bfd4430b38": {
+      "type": "query",
+      "name": "GetSystemSetting",
+      "body": "query GetSystemSetting($key: String!) {\n  systemSetting(key: $key) {\n    ...SystemSettingFragment\n    __typename\n  }\n}\n\nfragment SystemSettingFragment on SystemSetting {\n  id\n  key\n  value\n  valueType\n  category\n  description\n  metadata\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:5ae50a4bb34a163b5288e39d8dcf07336ac60cfbb571b1295566893332b14f0b": {
+      "type": "query",
+      "name": "GetMyPreferences",
+      "body": "query GetMyPreferences {\n  myPreferences {\n    ...UserPreferencesFragment\n    __typename\n  }\n}\n\nfragment UserPreferencesFragment on UserPreferences {\n  id\n  userId\n  locale\n  theme\n  aiModel\n  getNotificationPreferences {\n    documentUpdates\n    queryResponses\n    systemAlerts\n    marketingEmails\n    channels {\n      email\n      inApp\n      push\n      __typename\n    }\n    __typename\n  }\n  emailNotifications\n  inAppNotifications\n  timezone\n  dateFormat\n  createdAt\n  updatedAt\n  __typename\n}"
+    },
+    "sha256:f4972e6f067f9878b4672a54839e8db44e1aef26a463bdb607a21c7e19849664": {
+      "type": "query",
+      "name": "AggregatedSearchLegalRulings",
+      "body": "query AggregatedSearchLegalRulings($input: AggregatedSearchLegalRulingsInput!) {\n  aggregatedSearchLegalRulings(input: $input) {\n    count\n    hasMore\n    offset\n    totalCount\n    results {\n      ...AggregatedRulingSearchResultFragment\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment AggregatedRulingSearchResultFragment on AggregatedLegalRulingSearchResult {\n  ruling {\n    id\n    courtName\n    courtType\n    rulingDate\n    signature\n    summary\n    fullText\n    metadata {\n      keywords\n      legalArea\n      relatedCases\n      sourceReference\n      __typename\n    }\n    createdAt\n    updatedAt\n    __typename\n  }\n  rank\n  headline\n  source\n  __typename\n}"
+    },
+    "sha256:b7937d74f572b0b95fcce57a09d74a116d7a27a758800a4a87deddcffa2c640b": {
+      "type": "query",
+      "name": "AdvancedSearchLegalRulings",
+      "body": "query AdvancedSearchLegalRulings($input: AdvancedSearchLegalRulingsInput!) {\n  advancedSearchLegalRulings(input: $input) {\n    count\n    hasMore\n    offset\n    totalCount\n    queryExplanation\n    results {\n      ...AdvancedRulingSearchResultFragment\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment AdvancedRulingSearchResultFragment on AggregatedLegalRulingSearchResult {\n  ruling {\n    id\n    courtName\n    courtType\n    rulingDate\n    signature\n    summary\n    fullText\n    metadata {\n      keywords\n      legalArea\n      relatedCases\n      sourceReference\n      __typename\n    }\n    createdAt\n    updatedAt\n    __typename\n  }\n  rank\n  headline\n  source\n  __typename\n}"
+    },
+    "sha256:929064cc01407b40c0675a5ec84bee401356d0f3c31794a919085858dc513443": {
+      "type": "query",
+      "name": "SearchLegalRulings",
+      "body": "query SearchLegalRulings($input: SearchLegalRulingsInput!) {\n  searchLegalRulings(input: $input) {\n    results {\n      ...SimpleRulingSearchResultFragment\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment SimpleRulingSearchResultFragment on LegalRulingSearchResult {\n  ruling {\n    id\n    signature\n    courtName\n    __typename\n  }\n  rank\n  __typename\n}"
+    },
+    "sha256:a37f4a60fc12465d0d778af612ce843bf3f2fd64ed8849896267a2792b9333c1": {
+      "type": "query",
+      "name": "SearchDocuments",
+      "body": "query SearchDocuments($filter: LegalDocumentFilter!) {\n  legalDocuments(filter: $filter, paging: {first: 3}) {\n    edges {\n      node {\n        id\n        title\n        type\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}"
+    },
+    "sha256:dd975fa5f37e013d1310f381cecac178f933bb445dbab28f2ffc02872e586406": {
+      "type": "query",
+      "name": "GetUsers",
+      "body": "query GetUsers($filter: UserFilter, $paging: CursorPaging, $sorting: [UserSort!]) {\n  users(filter: $filter, paging: $paging, sorting: $sorting) {\n    totalCount\n    edges {\n      node {\n        ...UserDetailFragment\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      ...PageInfoFragment\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  __typename\n}\n\nfragment PageInfoFragment on PageInfo {\n  hasNextPage\n  hasPreviousPage\n  startCursor\n  endCursor\n  __typename\n}"
+    },
+    "sha256:c2dc9bd6798a77bce6d9ffaac759500c8d8897519e6b3625f21ad2d041376cd5": {
+      "type": "query",
+      "name": "GetUser",
+      "body": "query GetUser($id: ID!) {\n  user(id: $id) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  __typename\n}"
+    },
+    "sha256:2eb81756a4c649dc15c973c9939823bd9920790e9b020f9d9a0b8312bae3543e": {
+      "type": "mutation",
+      "name": "CreateOneUser",
+      "body": "mutation CreateOneUser($input: CreateOneUserInput!) {\n  createOneUser(input: $input) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  __typename\n}"
+    },
+    "sha256:d63eb0d4a6c9892a7216a230affb208ebfb0beb9efe63937f3193d24291c20ac": {
+      "type": "mutation",
+      "name": "UpdateOneUser",
+      "body": "mutation UpdateOneUser($input: UpdateOneUserInput!) {\n  updateOneUser(input: $input) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  __typename\n}"
+    },
+    "sha256:19091eb412b1e9c375ab4be64ffe7d515d1a101787b4cf5cf17dc8445c63e80a": {
+      "type": "mutation",
+      "name": "DeleteOneUser",
+      "body": "mutation DeleteOneUser($input: DeleteOneUserInput!) {\n  deleteOneUser(input: $input) {\n    id\n    email\n    __typename\n  }\n}"
+    }
+  }
+}

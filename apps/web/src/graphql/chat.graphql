@@ -1,0 +1,47 @@
+# GraphQL Operations for Chat Module
+# Contains queries and mutations for legal Q&A functionality
+
+# Fragment for LegalQuery fields - reused across queries and mutations
+fragment LegalQueryFragment on LegalQuery {
+  id
+  question
+  answerMarkdown
+  citations {
+    source
+    url
+    excerpt
+    article
+  }
+  sessionId
+  createdAt
+  updatedAt
+}
+
+# Mutation: Ask a legal question and get AI answer synchronously
+mutation AskLegalQuestion($input: AskLegalQuestionInput!) {
+  askLegalQuestion(input: $input) {
+    ...LegalQueryFragment
+  }
+}
+
+# Query: Get a single legal query by ID
+query GetLegalQuery($id: ID!) {
+  legalQuery(id: $id) {
+    ...LegalQueryFragment
+  }
+}
+
+# Query: Get all queries for a specific session (for chat history)
+# Uses the queriesBySession field from the Query type
+query GetSessionQueries($sessionId: String!) {
+  queriesBySession(sessionId: $sessionId) {
+    ...LegalQueryFragment
+  }
+}
+
+# Query: Get pending queries (queries without answers)
+query GetPendingQueries {
+  pendingQueries {
+    ...LegalQueryFragment
+  }
+}

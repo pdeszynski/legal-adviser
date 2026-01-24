@@ -183,12 +183,172 @@ pnpm seed
 
 ### Default Login Credentials
 
-| Email                  | Password      | Role         | Notes                      |
-| ---------------------- | ------------- | ------------ | -------------------------- |
-| `admin@refine.dev`     | `password`    | Admin        | Primary admin user         |
-| `lawyer@example.com`   | `password123` | Lawyer       | Sample lawyer user         |
-| `user@example.com`     | `password123` | Regular user | Sample regular user        |
-| `inactive@example.com` | `password123` | Inactive     | For testing inactive state |
-| `minimal@example.com`  | `password123` | Minimal      | User without username/name |
+| Email                  | Password      | Role        | Notes                      |
+| ---------------------- | ------------- | ----------- | -------------------------- |
+| `admin@refine.dev`     | `password`    | Super Admin | Primary admin user         |
+| `lawyer@example.com`   | `password123` | Lawyer      | Sample lawyer user         |
+| `user@example.com`     | `password123` | Client      | Sample regular user        |
+| `inactive@example.com` | `password123` | Inactive    | For testing inactive state |
+| `minimal@example.com`  | `password123` | Client      | User without username/name |
 
 **Note:** These are development credentials only. Ensure they are not used in production.
+
+## Role-Based Access Control (RBAC)
+
+### Role Hierarchy
+
+The platform implements a hierarchical role system with the following levels (highest to lowest):
+
+```
+SUPER_ADMIN (5) > ADMIN (4) > LAWYER (3) > PARALEGAL (2) > CLIENT (1) > GUEST (0)
+```
+
+### Role Definitions
+
+| Role        | Level | Description                               | Permissions                                                                  |
+| ----------- | ----- | ----------------------------------------- | ---------------------------------------------------------------------------- |
+| SUPER_ADMIN | 5     | Platform owner with full system access    | All permissions, user management, system configuration, billing management   |
+| ADMIN       | 4     | Platform administrator                    | User management, content moderation, analytics, system health monitoring     |
+| LAWYER      | 3     | Legal professional                        | Full document and analysis access, AI query generation, client collaboration |
+| PARALEGAL   | 2     | Legal support staff                       | Limited document and analysis access, draft creation, research assistance    |
+| CLIENT      | 1     | Regular user (basic access)               | Own documents only, basic AI queries                                         |
+| GUEST       | 0     | Limited access for demonstration purposes | Read-only access to public documents                                         |
+
+### Backend Authorization
+
+#### RoleGuard
+
+Location: `apps/backend/src/modules/auth/guards/role.guard.ts`
+
+Guards GraphQL resolvers based on user roles. Supports role hierarchy (higher roles can access lower role resources).
+
+```typescript
+// Require specific role
+@RequireRole(UserRole.ADMIN)
+@Query(() => [User])
+async adminOnlyQuery(): Promise<User[]> { ... }
+
+// Require any of multiple roles
+@RequireRole(UserRole.LAWYER, UserRole.PARALEGAL)
+@Query(() => [LegalDocument])
+async legalProfessionalsQuery(): Promise<LegalDocument[]> { ... }
+
+// Require admin access (convenience decorator)
+@RequireAdmin()
+@Mutation(() => User)
+async createUser(): Promise<User> { ... }
+```
+
+#### AdminGuard
+
+Location: `apps/backend/src/modules/auth/guards/admin.guard.ts`
+
+Simple guard for admin-only routes. Checks if user has ADMIN or SUPER_ADMIN role.
+
+```typescript
+@UseGuards(AdminGuard)
+@Query(() => String)
+async adminDashboard(): Promise<string> { ... }
+```
+
+### Frontend Authorization
+
+#### Admin Route Protection
+
+Location: `apps/web/src/app/admin/layout.tsx`
+
+Admin routes are protected at the layout level. Non-admin users are redirected to the dashboard.
+
+```tsx
+// Admin layout checks authentication and permissions
+const permissions = await getPermissions();
+const isAdmin = permissions?.some((p) => ['ADMIN', 'SUPER_ADMIN'].includes(p));
+if (!isAdmin) redirect('/dashboard');
+```
+
+#### Role-Based Menu System
+
+Location: `apps/web/src/config/menu.config.tsx`
+
+Menu items can be filtered based on user roles:
+
+```tsx
+{
+  name: 'Admin Panel',
+  to: '/admin',
+  minRole: UserRole.ADMIN, // Only visible to ADMIN and above
+}
+```
+
+#### useUserRole Hook
+
+Location: `apps/web/src/hooks/use-user-role.tsx`
+
+Provides role checking utilities:
+
+```tsx
+const { hasRole, hasRoleLevel, isAdmin, isLegalProfessional, isClient } = useUserRole();
+
+// Check specific role
+if (hasRole(UserRole.ADMIN)) { ... }
+
+// Check minimum role level
+if (hasRoleLevel(UserRole.LAWYER)) { ... } // LAWYER, ADMIN, SUPER_ADMIN pass
+
+// Convenience checks
+if (isAdmin) { ... }
+if (isLegalProfessional) { ... } // LAWYER or PARALEGAL
+if (isClient) { ... } // CLIENT or higher
+```
+
+### RBAC Testing
+
+#### E2E Tests
+
+Location: `apps/web/tests/rbac-e2e.spec.ts`
+
+Comprehensive E2E tests validate:
+
+- Role assignment and persistence
+- Admin route access control
+- Menu filtering based on roles
+- Permission-based UI rendering
+
+```bash
+# Run RBAC E2E tests
+cd apps/web && playwright test rbac-e2e.spec.ts
+```
+
+#### Backend Guard Tests
+
+Location: `apps/backend/src/modules/auth/guards/role.guard.spec.ts`
+
+Unit tests for role guard behavior including hierarchy and multiple role support.
+
+```bash
+# Run backend guard tests
+cd apps/backend && jest role.guard.spec.ts
+```
+
+### DDD Authorization Structure
+
+The authorization module follows Domain-Driven Design principles:
+
+- **Aggregates**: `RoleAggregate` in `apps/backend/src/domain/authorization/aggregates/`
+- **Value Objects**: `RoleType`, `Permission` in `apps/backend/src/domain/authorization/value-objects/`
+- **Events**: Role-related events (role-created, role-assigned, etc.)
+- **Repositories**: Interface and implementation for role persistence
+
+### Permission Matrix
+
+| Resource            | SUPER_ADMIN | ADMIN | LAWYER | PARALEGAL | CLIENT | GUEST |
+| ------------------- | :---------: | :---: | :----: | :-------: | :----: | :---: |
+| Admin Panel         |      ✓      |   ✓   |        |           |        |       |
+| User Management     |      ✓      |   ✓   |        |           |        |       |
+| Create Documents    |      ✓      |   ✓   |   ✓    |     ✓     |   ✓    |       |
+| Edit Any Document   |      ✓      |   ✓   |   ✓    |     ✓     |        |       |
+| Edit Own Documents  |      ✓      |   ✓   |   ✓    |     ✓     |   ✓    |       |
+| Delete Documents    |      ✓      |   ✓   |   ✓    |           |        |       |
+| AI Query Generation |      ✓      |   ✓   |   ✓    |     ✓     |   ✓    |       |
+| View Analytics      |      ✓      |   ✓   |        |           |        |       |
+| System Settings     |      ✓      |       |        |           |        |       |

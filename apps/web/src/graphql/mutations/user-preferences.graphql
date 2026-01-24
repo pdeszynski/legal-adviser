@@ -1,0 +1,39 @@
+# User Preferences Mutations
+# These mutations will be used by GraphQL Code Generator to generate TypeScript types
+
+#import "../fragments/user-preferences.graphql"
+
+# Update current user's preferences
+mutation UpdateMyPreferences($input: UpdateUserPreferencesInput!) {
+  updateMyPreferences(input: $input) {
+    ...UserPreferencesFragment
+  }
+}
+
+# Reset current user's preferences to defaults
+mutation ResetMyPreferences {
+  resetMyPreferences {
+    ...UserPreferencesFragment
+  }
+}
+
+# Update user preferences (admin)
+mutation UpdateOneUserPreference($input: UpdateOneUserPreferencesInput!) {
+  updateOneUserPreference(input: $input) {
+    ...UserPreferencesFragment
+  }
+}
+
+# Create user preferences (admin)
+mutation CreateOneUserPreference($input: CreateOneUserPreferencesInput!) {
+  createOneUserPreference(input: $input) {
+    ...UserPreferencesFragment
+  }
+}
+
+# Delete user preferences (admin)
+mutation DeleteOneUserPreference($input: DeleteOneUserPreferencesInput!) {
+  deleteOneUserPreference(input: $input) {
+    id
+  }
+}

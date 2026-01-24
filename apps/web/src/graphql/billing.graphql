@@ -1,0 +1,67 @@
+# GraphQL Billing Operations
+# Contains queries and mutations for billing and subscription management
+
+#import "./fragments/billing.graphql"
+
+# Query: Get current user's billing information
+# Returns subscription status, payment history, and payment methods
+query MyBillingInfo {
+  myBillingInfo {
+    ...BillingInfoFragment
+  }
+}
+
+# Query: Get payment history for the current user
+# Returns array of past payment transactions
+query MyPaymentHistory {
+  myPaymentHistory {
+    ...PaymentHistoryItemFragment
+  }
+}
+
+# Query: Get all available subscription plans
+# Returns all active subscription plans ordered by display order
+query SubscriptionPlans {
+  subscriptionPlans {
+    ...SubscriptionPlanFragment
+  }
+}
+
+# Query: Get a specific subscription plan by ID
+query SubscriptionPlan($id: String!) {
+  subscriptionPlan(id: $id) {
+    ...SubscriptionPlanFragment
+  }
+}
+
+# Mutation: Cancel the current user's subscription
+# Can cancel immediately or at the end of the current billing period
+mutation CancelMySubscription($input: CancelSubscriptionInput!) {
+  cancelMySubscription(input: $input) {
+    ...UserSubscriptionFragment
+  }
+}
+
+# Mutation: Resume a subscription that was scheduled for cancellation
+# Restores the subscription to active status
+mutation ResumeMySubscription {
+  resumeMySubscription {
+    ...UserSubscriptionFragment
+  }
+}
+
+# Mutation: Change subscription plan (upgrade or downgrade)
+# Switches the user to a different subscription plan
+mutation ChangeSubscriptionPlan($newPlanId: String!) {
+  changeSubscriptionPlan(newPlanId: $newPlanId) {
+    ...UserSubscriptionFragment
+  }
+}
+
+# Mutation: Create a new subscription for the current user
+# Used when a user first subscribes to a plan
+mutation CreateMySubscription($input: CreateUserSubscriptionInput!) {
+  createMySubscription(input: $input) {
+    ...UserSubscriptionFragment
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Extract audit log operations (auditLogs query, filtering, pagination) from inline strings to apps/web/src/graphql/audit-logs.graphql. Create AuditLogFragment excluding changeDetails JSON field from sub-selections. Generate types resolving JSON serialization errors. Update audit log list view to use generated types with proper pagination typing.",
+  "id": "graphql-codegen-audit-logs-queries",
+  "title": "Migrate Audit Logs Queries to GraphQL Codegen",
+  "dependencies": [
+    "graphql-codegen-fragments-extraction"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Extract audit log operations (auditLogs query, filtering, pagination) from inline strings to apps/web/src/graphql/audit-logs.graphql. Create AuditLogFragment excluding changeDetails JSON field from sub-selections. Generate types resolving JSON serialization errors. Update audit log list view to use generated types with proper pagination typing.",
+      "timestamp": "2026-01-24T08:51:34.543Z",
+      "source": "initial"
+    }
+  ]
+}

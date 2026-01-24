@@ -814,5 +814,15 @@
       "title": "Potrzebujesz pomocy?",
       "text": "Możesz wrócić do strony głównej lub zalogować się, aby uzyskać dostęp do swojego konta."
     }
+  },
+  "forbidden": {
+    "title": "Dostęp zabroniony",
+    "description": "Nie masz uprawnień do dostępu do tej strony.",
+    "goDashboard": "Przejdź do panelu",
+    "goHome": "Przejdź do strony głównej",
+    "help": {
+      "title": "Potrzebujesz pomocy?",
+      "text": "Jeśli uważasz, że to błąd, skontaktuj się z administratorem."
+    }
   }
 }

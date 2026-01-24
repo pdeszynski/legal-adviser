@@ -40,11 +40,7 @@
     "test:e2e": {
       "dependsOn": ["^build"],
       "outputs": ["playwright-report/**", "test-results/**"],
-      "inputs": [
-        "tests/**/*.ts",
-        "e2e/**/*.ts",
-        "playwright.config.ts"
-      ],
+      "inputs": ["tests/**/*.ts", "e2e/**/*.ts", "playwright.config.ts"],
       "cache": false
     },
     "test:integration": {
@@ -62,6 +58,10 @@
     },
     "generate": {
       "dependsOn": ["^generate"],
+      "outputs": ["src/generated/**"],
+      "cache": true
+    },
+    "codegen": {
       "outputs": ["src/generated/**"],
       "cache": true
     },

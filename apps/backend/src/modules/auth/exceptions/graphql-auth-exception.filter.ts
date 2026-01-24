@@ -2,6 +2,7 @@ import {
   ExceptionFilter,
   Catch,
   ArgumentsHost,
+  ExecutionContext,
   HttpException,
   HttpStatus,
   Injectable,
@@ -9,14 +10,16 @@ import {
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 
-import {
-  BaseAuthException,
-  TokenExpiredException,
-  InvalidTokenException,
-  MissingTokenException,
-  ForbiddenAccessException,
-  UserInactiveException,
-} from './auth.exceptions';
+import { BaseAuthException, TokenExpiredException } from './auth.exceptions';
+
+/**
+ * GraphQL context with response
+ */
+interface GqlContext {
+  res?: {
+    status: (code: number) => void;
+  };
+}
 
 /**
  * GraphQL Authentication Exception Filter
@@ -35,25 +38,24 @@ import {
 export class GqlAuthExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     // GraphQL context is accessed via GqlExecutionContext
-    // The host needs to be cast to ExecutionContext for GqlExecutionContext.create
-    const ctx = GqlExecutionContext.create(host as any);
-    const { res } = ctx.getContext();
+    // ArgumentsHost must be cast to ExecutionContext
+    const ctx = GqlExecutionContext.create(host as unknown as ExecutionContext);
+    const context = ctx.getContext<GqlContext>();
+    const res = context.res;
 
     // Default values
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let code = 'INTERNAL_SERVER_ERROR';
-    let extensions: Record<string, any> = {};
+    const extensions: Record<string, unknown> = {};
 
     // Handle BaseAuthException (our custom exceptions)
     if (exception instanceof BaseAuthException) {
       status = exception.httpStatus;
       message = exception.message;
       code = exception.code;
-      extensions = {
-        code,
-        httpStatus: exception.httpStatus,
-      };
+      extensions.code = code;
+      extensions.httpStatus = exception.httpStatus;
 
       // Add specific extension for token expiry
       if (exception instanceof TokenExpiredException) {
@@ -68,8 +70,8 @@ export class GqlAuthExceptionFilter implements ExceptionFilter {
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
       } else if (typeof exceptionResponse === 'object') {
-        const responseObj = exceptionResponse as any;
-        message = responseObj.message || exception.message;
+        const responseObj = exceptionResponse as Record<string, unknown>;
+        message = (responseObj.message as string) ?? exception.message;
         // Handle array of messages from validation
         if (Array.isArray(message)) {
           message = message.join(', ');
@@ -79,10 +81,8 @@ export class GqlAuthExceptionFilter implements ExceptionFilter {
       }
 
       code = this.getErrorCodeFromStatus(status);
-      extensions = {
-        code,
-        httpStatus: status,
-      };
+      extensions.code = code;
+      extensions.httpStatus = status;
 
       // Detect token expiry from standard unauthorized exception
       if (
@@ -90,6 +90,7 @@ export class GqlAuthExceptionFilter implements ExceptionFilter {
         message.toLowerCase().includes('expired')
       ) {
         extensions.expired = true;
+        (extensions.code as string) = 'TOKEN_EXPIRED';
         code = 'TOKEN_EXPIRED';
       }
     }
@@ -102,22 +103,28 @@ export class GqlAuthExceptionFilter implements ExceptionFilter {
         status = HttpStatus.UNAUTHORIZED;
         code = 'TOKEN_EXPIRED';
         message = 'Token has expired';
-        extensions = { code, httpStatus: status, expired: true };
+        extensions.code = code;
+        extensions.httpStatus = status;
+        extensions.expired = true;
       } else if (exception.name === 'JsonWebTokenError') {
         status = HttpStatus.UNAUTHORIZED;
         code = 'INVALID_TOKEN';
         message = 'Invalid token';
-        extensions = { code, httpStatus: status };
+        extensions.code = code;
+        extensions.httpStatus = status;
       } else if (exception.name === 'NotBeforeError') {
         status = HttpStatus.UNAUTHORIZED;
         code = 'INVALID_TOKEN';
         message = 'Token not yet valid';
-        extensions = { code, httpStatus: status };
+        extensions.code = code;
+        extensions.httpStatus = status;
       }
     }
 
-    // Set HTTP status code on response
-    res.status(status);
+    // Set HTTP status code on response (if available)
+    if (res) {
+      res.status(status);
+    }
 
     // Return GraphQL error
     return new GraphQLError(message, {
@@ -135,7 +142,8 @@ export class GqlAuthExceptionFilter implements ExceptionFilter {
    * Map HTTP status codes to error codes
    */
   private getErrorCodeFromStatus(status: number): string {
-    switch (status) {
+    const statusCode = status as HttpStatus;
+    switch (statusCode) {
       case HttpStatus.UNAUTHORIZED:
         return 'UNAUTHORIZED';
       case HttpStatus.FORBIDDEN:

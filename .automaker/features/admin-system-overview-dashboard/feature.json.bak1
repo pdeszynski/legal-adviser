@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Create comprehensive admin dashboard at /admin/dashboard displaying system-wide statistics and real-time metrics. Show total document count, documents currently generating (by status), completed vs failed document ratios, total users count, active sessions, estimated token usage (daily/monthly), AI query volume, and system health indicators. Implement auto-refresh every 30 seconds for real-time data. Create dedicated GraphQL queries aggregating statistics across all entities (LegalDocument, User, LegalQuery, UsageRecord). Display charts for token usage trends, document generation throughput, and user activity over time.",
+  "id": "admin-system-overview-dashboard",
+  "title": "Admin System Overview Dashboard",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive admin dashboard at /admin/dashboard displaying system-wide statistics and real-time metrics. Show total document count, documents currently generating (by status), completed vs failed document ratios, total users count, active sessions, estimated token usage (daily/monthly), AI query volume, and system health indicators. Implement auto-refresh every 30 seconds for real-time data. Create dedicated GraphQL queries aggregating statistics across all entities (LegalDocument, User, LegalQuery, UsageRecord). Display charts for token usage trends, document generation throughput, and user activity over time.",
+      "timestamp": "2026-01-24T08:43:29.447Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T09:10:40.252Z"
+}

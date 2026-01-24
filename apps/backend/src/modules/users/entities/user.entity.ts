@@ -95,6 +95,13 @@ export class User {
   @OneToMany(() => UserSession, (session) => session.user, { cascade: true })
   sessions: UserSession[];
 
+  /**
+   * User role assignments from the authorization module
+   * Using string reference to avoid circular dependency
+   */
+  @OneToMany('user_roles', 'user')
+  roleAssignments: any[];
+
   @CreateDateColumn({ type: 'timestamp' })
   @FilterableField(() => GraphQLISODateTime)
   createdAt: Date;

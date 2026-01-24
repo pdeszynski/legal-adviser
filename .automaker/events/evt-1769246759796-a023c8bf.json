@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769246759796-a023c8bf",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T09:25:59.796Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-user-management-crud",
+  "featureName": "Admin User Management CRUD Operations",
+  "error": "Feature completed in 890s - auto-verified",
+  "passes": true
+}

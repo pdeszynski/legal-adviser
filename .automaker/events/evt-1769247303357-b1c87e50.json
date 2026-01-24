@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769247303357-b1c87e50",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T09:35:03.357Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "graphql-codegen-chat-queries",
+  "featureName": "Migrate Legal Q&A Chat Queries to GraphQL Codegen",
+  "error": "Feature completed in 280s - auto-verified",
+  "passes": true
+}

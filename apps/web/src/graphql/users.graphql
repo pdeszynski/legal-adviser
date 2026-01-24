@@ -1,0 +1,53 @@
+# User GraphQL Operations
+# Contains queries and mutations for user management
+
+#import "./fragments/user.graphql"
+#import "./fragments/pagination.graphql"
+
+# Query: Get paginated list of users
+query GetUsers(
+  $filter: UserFilter
+  $paging: CursorPaging
+  $sorting: [UserSort!]
+) {
+  users(filter: $filter, paging: $paging, sorting: $sorting) {
+    totalCount
+    edges {
+      node {
+        ...UserDetailFragment
+      }
+    }
+    pageInfo {
+      ...PageInfoFragment
+    }
+  }
+}
+
+# Query: Get a single user by ID
+query GetUser($id: ID!) {
+  user(id: $id) {
+    ...UserDetailFragment
+  }
+}
+
+# Mutation: Create a new user
+mutation CreateOneUser($input: CreateOneUserInput!) {
+  createOneUser(input: $input) {
+    ...UserDetailFragment
+  }
+}
+
+# Mutation: Update an existing user
+mutation UpdateOneUser($input: UpdateOneUserInput!) {
+  updateOneUser(input: $input) {
+    ...UserDetailFragment
+  }
+}
+
+# Mutation: Delete a user
+mutation DeleteOneUser($input: DeleteOneUserInput!) {
+  deleteOneUser(input: $input) {
+    id
+    email
+  }
+}

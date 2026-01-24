@@ -5,9 +5,9 @@ relevantTo: [error, bug, fix, issue, problem]
 importance: 0.9
 relatedFiles: []
 usageStats:
-  loaded: 584
-  referenced: 211
-  successfulFeatures: 211
+  loaded: 619
+  referenced: 250
+  successfulFeatures: 250
 ---
 # Gotchas
 
@@ -104,3 +104,91 @@ Mistakes and edge cases to avoid. These are lessons learned from past issues.
      await (dp as any).custom(mutationConfig);
      ```
   4. The `@tanstack/react-query` package is required for refine's QueryClient to work properly. If you see "No QueryClient set" errors, ensure the package is installed.
+
+#### [Gotcha] TypeScript compilation errors from incorrect import paths in monorepo (2026-01-24)
+
+- **Situation:** Domain layer imports from modules were failing with "Cannot find module" errors even though files existed
+- **Root cause:** Incorrect relative path calculation. From `apps/backend/src/modules/authorization/` to `apps/backend/src/domain/authorization/`, the correct path is `../../domain/...` not `../../../domain/...`
+- **Path Reference:**
+  - `src/modules/authorization/` → `src/domain/authorization/` = `../../domain/...`
+  - `src/seeds/` → `src/modules/authorization/entities/` = `../modules/authorization/entities/` (not individual files)
+- **How to avoid:** Count directory levels carefully:
+  - From `modules/X/` to `src/`: `../..`
+  - From `modules/X/` to `domain/Y/`: `../../domain/Y/`
+
+#### [Gotcha] NestJS decorator type errors when implementing custom decorators (2026-01-24)
+
+- **Situation:** `SetMetadata` decorator calls fail TypeScript compilation with "Argument of type 'string | symbol | undefined' is not assignable" errors
+- **Root cause:** Custom decorators must handle both method decorators (where `propertyKey` and `descriptor` are defined) and class decorators (where they're `undefined`)
+- **How to avoid:** Always guard for undefined values:
+  ```typescript
+  export const RequireRole = (...roles: UserRole[]): MethodDecorator & ClassDecorator => {
+    return (target, propertyKey?: string | symbol, descriptor?: PropertyDescriptor) => {
+      if (descriptor && propertyKey) {
+        // Method decorator
+        SetMetadata(ROLES_KEY, roles)(target, propertyKey, descriptor);
+      } else {
+        // Class decorator - cast target to Function
+        SetMetadata(ROLES_KEY, roles)(target as Function);
+      }
+    };
+  };
+  ```
+
+#### [Gotcha] TypeORM entity exports from barrel index files (2026-01-24)
+
+- **Situation:** Importing entity fails with "Cannot find module" even though the `.entity.ts` file exists
+- **Root cause:** Entity files must be explicitly exported from the `index.ts` barrel file in the entities directory
+- **How to avoid:** Always update the index file when creating new entities:
+  ```typescript
+  // entities/index.ts
+  export * from './role.entity';
+  export * from './user-role.entity'; // Add new entities here!
+  ```
+
+#### [Gotcha] Enum exports with barrel files using `export *` (2026-01-24)
+
+- **Situation:** Importing enums from barrel index file fails even though the individual file exports them
+- **Root cause:** While `export * from './file'` exports classes, some TypeScript configurations require explicit enum re-exports
+- **How to avoid:** Re-export enums explicitly in barrel files:
+  ```typescript
+  export * from './permission-type.vo';
+  export * from './resource-type.vo';
+  // Re-export enums explicitly for convenience
+  export { PermissionTypeEnum } from './permission-type.vo';
+  export { ResourceTypeEnum } from './resource-type.vo';
+  export { RoleTypeEnum } from './role-type.vo';
+  ```
+
+#### [Gotcha] Domain layer aggregates must generate IDs dynamically, not hardcode static values (2026-01-24)
+
+- **Situation:** System role factory methods in domain aggregates were using hardcoded UUID strings like `'00000000-0000-4000-8000-000000000001'` for ID generation
+- **Root cause:** Domain layer should use dynamic ID generation via `RoleId.generate()` rather than static hardcoded values. Hardcoded IDs violate DDD principles where the domain layer should be independent of persistence concerns
+- **How to avoid:**
+  1. **Domain aggregates** - Always use `RoleId.generate()` for creating new entities:
+     ```typescript
+     // Correct - domain/authorization/aggregates/role.aggregate.ts
+     static createSuperAdmin(): RoleAggregate {
+       return new RoleAggregate({
+         id: RoleId.generate(),  // Dynamic generation
+         name: 'Super Administrator',
+         // ...
+       });
+     }
+     ```
+  2. **Seed data** - Use deterministic UUIDs only in seed files for reproducible test data:
+     ```typescript
+     // Correct - seeds/data/roles.seed.ts
+     function seedUuid(namespace: string, index: number): string {
+       const suffix = String(index).padStart(12, '0');
+       return `00000000-0000-4000-8000-0000000${suffix}`;
+     }
+     export const rolesSeedData = [
+       { id: seedUuid('roles', 1), name: 'Super Administrator', ... },
+     ];
+     ```
+  3. The `reconstitute()` method is the exception - it uses `RoleId.fromString(id)` to restore entities from persistence (database, seeds) where IDs already exist
+  4. Static IDs should only appear in:
+     - Seed data files (for reproducible tests)
+     - Database migrations (for consistency)
+     - Test fixtures (for predictable test data)

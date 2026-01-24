@@ -1,0 +1,11 @@
+# User Preferences Queries
+# These queries will be used by GraphQL Code Generator to generate TypeScript types
+
+#import "../fragments/user-preferences.graphql"
+
+# Get current user's preferences
+query GetMyPreferences {
+  myPreferences {
+    ...UserPreferencesFragment
+  }
+}

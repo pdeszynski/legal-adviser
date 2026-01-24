@@ -5,6 +5,23 @@ import { UserRole } from '../enums/user-role.enum';
 import { MissingTokenException, ForbiddenAccessException } from '../exceptions';
 
 /**
+ * User object from request
+ */
+interface RequestUser {
+  roles?: string[];
+  role?: string;
+}
+
+/**
+ * GraphQL request context
+ */
+interface GqlContext {
+  req?: {
+    user?: RequestUser;
+  };
+}
+
+/**
  * Admin Guard
  *
  * Protects GraphQL resolvers and REST routes to ensure only users with admin role can access them.
@@ -25,14 +42,15 @@ export class AdminGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const ctx = GqlExecutionContext.create(context);
-    const user = ctx.getContext().req?.user;
+    const gqlContext = ctx.getContext<GqlContext>();
+    const user = gqlContext.req?.user;
 
     if (!user) {
       throw new MissingTokenException('User not authenticated');
     }
 
     // Check if user has admin role (user.roles from JWT or user.role from User entity)
-    const userRoles = user.roles || (user.role ? [user.role] : []);
+    const userRoles = user.roles ?? (user.role ? [user.role] : []);
     if (!userRoles.includes(UserRole.ADMIN)) {
       throw new ForbiddenAccessException('Admin access required');
     }

@@ -17,25 +17,10 @@ import {
 } from 'lucide-react';
 import { cn } from '@legal/ui';
 import { DocumentTableSkeleton, DocumentGridSkeleton } from '@/components/skeleton/TableSkeleton';
+import type { LegalDocumentFragmentFragment } from '@/generated/graphql';
 
-interface DocumentMetadata {
-  plaintiffName?: string;
-  defendantName?: string;
-  claimAmount?: number;
-  claimCurrency?: string;
-}
-
-interface LegalDocument {
-  id: string;
-  title: string;
-  type: string;
-  status: string;
-  sessionId: string;
-  contentRaw?: string | null;
-  metadata?: DocumentMetadata | null;
-  createdAt: string;
-  updatedAt: string;
-}
+// Use the generated type from GraphQL Codegen
+type LegalDocument = LegalDocumentFragmentFragment;
 
 const DOCUMENT_TYPES = ['LAWSUIT', 'COMPLAINT', 'CONTRACT', 'OTHER'] as const;
 const DOCUMENT_STATUSES = ['DRAFT', 'GENERATING', 'COMPLETED', 'FAILED'] as const;
@@ -352,7 +337,7 @@ export default function DocumentList() {
         </div>
       ) : (
         /* List View (Table) */
-        (<div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-border">
               <thead className="bg-muted/50">
@@ -409,7 +394,7 @@ export default function DocumentList() {
               </tbody>
             </table>
           </div>
-        </div>)
+        </div>
       )}
       {/* Pagination */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border">

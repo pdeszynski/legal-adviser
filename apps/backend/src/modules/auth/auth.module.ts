@@ -11,6 +11,7 @@ import { UsersModule } from '../users/users.module';
 import { ApiKeysModule } from '../api-keys/api-keys.module';
 import { GqlAuthGuard } from './guards/gql-auth.guard';
 import { GqlHybridAuthGuard } from './guards/gql-hybrid-auth.guard';
+import { RoleGuard } from './guards/role.guard';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { GqlHybridAuthGuard } from './guards/gql-hybrid-auth.guard';
     AuthResolver,
     GqlAuthGuard,
     GqlHybridAuthGuard,
+    RoleGuard,
   ],
-  exports: [AuthService, GqlAuthGuard, GqlHybridAuthGuard],
+  exports: [AuthService, GqlAuthGuard, GqlHybridAuthGuard, RoleGuard],
 })
 export class AuthModule {}

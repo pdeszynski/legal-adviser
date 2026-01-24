@@ -5,8 +5,6 @@ import { SubscriptionsService } from './subscriptions.service';
 import { SubscriptionPlan } from './entities/subscription-plan.entity';
 import { UserSubscription } from './entities/user-subscription.entity';
 import {
-  CreateSubscriptionPlanInput,
-  UpdateSubscriptionPlanInput,
   CreateUserSubscriptionInput,
   UpdateUserSubscriptionInput,
   CancelSubscriptionInput,
@@ -20,12 +18,14 @@ import {
 /**
  * GraphQL Resolver for Subscription Management
  *
- * Handles operations for:
- * - Managing subscription plans (admin only)
+ * Handles user-facing operations for:
+ * - Viewing subscription plans
  * - User subscription lifecycle
  * - Feature access control
  * - Usage quota management
  * - Stripe payment integration
+ *
+ * Admin-only plan management operations are in SubscriptionsAdminResolver.
  */
 @Resolver()
 export class SubscriptionsResolver {
@@ -133,45 +133,6 @@ export class SubscriptionsResolver {
       return null;
     }
     return this.service.getUserUsageStats(userId);
-  }
-
-  /**
-   * Mutation: Create a subscription plan (admin only)
-   */
-  @Mutation(() => SubscriptionPlan, {
-    name: 'createSubscriptionPlan',
-    description: 'Create a new subscription plan',
-  })
-  async createPlan(
-    @Args('input') input: CreateSubscriptionPlanInput,
-  ): Promise<SubscriptionPlan> {
-    return this.service.createPlan(input);
-  }
-
-  /**
-   * Mutation: Update a subscription plan (admin only)
-   */
-  @Mutation(() => SubscriptionPlan, {
-    name: 'updateSubscriptionPlan',
-    description: 'Update an existing subscription plan',
-  })
-  async updatePlan(
-    @Args('id') id: string,
-    @Args('input') input: UpdateSubscriptionPlanInput,
-  ): Promise<SubscriptionPlan> {
-    return this.service.updatePlan(id, input);
-  }
-
-  /**
-   * Mutation: Delete a subscription plan (admin only)
-   */
-  @Mutation(() => Boolean, {
-    name: 'deleteSubscriptionPlan',
-    description: 'Delete a subscription plan',
-  })
-  async deletePlan(@Args('id') id: string): Promise<boolean> {
-    await this.service.deletePlan(id);
-    return true;
   }
 
   /**

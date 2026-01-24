@@ -815,5 +815,15 @@
       "title": "Need help?",
       "text": "You can return to the homepage or sign in to access your account."
     }
+  },
+  "forbidden": {
+    "title": "Access Denied",
+    "description": "You don't have permission to access this page.",
+    "goDashboard": "Go to Dashboard",
+    "goHome": "Go to Homepage",
+    "help": {
+      "title": "Need help?",
+      "text": "If you believe this is an error, please contact your administrator."
+    }
   }
 }

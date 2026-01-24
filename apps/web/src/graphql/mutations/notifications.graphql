@@ -1,0 +1,12 @@
+# Notification Mutations
+# These mutations will be used by GraphQL Code Generator to generate TypeScript types
+
+# Mark a single notification as read
+mutation MarkNotificationAsRead($notificationId: String!, $userId: String!) {
+  markNotificationAsRead(notificationId: $notificationId, userId: $userId)
+}
+
+# Mark all notifications as read for a user
+mutation MarkAllNotificationsAsRead($userId: String!) {
+  markAllNotificationsAsRead(userId: $userId)
+}

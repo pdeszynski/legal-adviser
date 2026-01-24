@@ -3,50 +3,43 @@
 import { useTranslate } from '@refinedev/core';
 import { useState } from 'react';
 import { AdvancedSearchSkeleton, AdvancedSearchPaginationSkeleton } from '@/components/skeleton';
+import {
+  AdvancedSearchLegalRulingsDocument,
+  type AdvancedSearchLegalRulingsQueryVariables,
+  type CourtType,
+  type SearchSource,
+  type BooleanOperator,
+  type SearchField,
+  type RulingMetadata,
+  type LegalRuling,
+  type AggregatedLegalRulingSearchResult,
+  type AdvancedLegalRulingSearchResponse,
+} from '@/generated/graphql';
 
-/**
- * Court type enum matching GraphQL CourtType
- */
-enum CourtType {
-  ADMINISTRATIVE_COURT = 'ADMINISTRATIVE_COURT',
-  APPELLATE_COURT = 'APPELLATE_COURT',
-  CONSTITUTIONAL_TRIBUNAL = 'CONSTITUTIONAL_TRIBUNAL',
-  DISTRICT_COURT = 'DISTRICT_COURT',
-  OTHER = 'OTHER',
-  REGIONAL_COURT = 'REGIONAL_COURT',
-  SUPREME_COURT = 'SUPREME_COURT',
-}
+// Enum constant values (matching generated types)
+const COURT_TYPES = [
+  'ADMINISTRATIVE_COURT',
+  'APPELLATE_COURT',
+  'CONSTITUTIONAL_TRIBUNAL',
+  'DISTRICT_COURT',
+  'OTHER',
+  'REGIONAL_COURT',
+  'SUPREME_COURT',
+] as const;
 
-/**
- * Search source enum matching GraphQL SearchSource
- */
-enum SearchSource {
-  ISAP = 'ISAP',
-  LOCAL = 'LOCAL',
-  SAOS = 'SAOS',
-}
+const SEARCH_SOURCES = ['ISAP', 'LOCAL', 'SAOS'] as const;
 
-/**
- * Boolean operator enum matching GraphQL BooleanOperator
- */
-enum BooleanOperator {
-  AND = 'AND',
-  OR = 'OR',
-  NOT = 'NOT',
-}
+const BOOLEAN_OPERATORS = ['AND', 'OR', 'NOT'] as const;
 
-/**
- * Search field enum matching GraphQL SearchField
- */
-enum SearchField {
-  ALL = 'ALL',
-  COURT_NAME = 'COURT_NAME',
-  FULL_TEXT = 'FULL_TEXT',
-  KEYWORDS = 'KEYWORDS',
-  LEGAL_AREA = 'LEGAL_AREA',
-  SIGNATURE = 'SIGNATURE',
-  SUMMARY = 'SUMMARY',
-}
+const SEARCH_FIELDS = [
+  'ALL',
+  'COURT_NAME',
+  'FULL_TEXT',
+  'KEYWORDS',
+  'LEGAL_AREA',
+  'SIGNATURE',
+  'SUMMARY',
+] as const;
 
 /**
  * Search term input interface
@@ -59,52 +52,14 @@ interface SearchTermInput {
 }
 
 /**
- * Ruling metadata interface
- */
-interface RulingMetadata {
-  keywords?: string[] | null;
-  legalArea?: string | null;
-  relatedCases?: string[] | null;
-  sourceReference?: string | null;
-}
-
-/**
- * Legal ruling interface
- */
-interface LegalRuling {
-  id: string;
-  courtName: string;
-  courtType: CourtType;
-  rulingDate: string;
-  signature: string;
-  summary?: string | null;
-  fullText?: string | null;
-  metadata?: RulingMetadata | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-/**
  * Search result interface with relevance ranking
  */
-interface RulingSearchResult {
-  ruling: LegalRuling;
-  rank: number;
-  headline?: string | null;
-  source: SearchSource;
-}
+type RulingSearchResult = AggregatedLegalRulingSearchResult;
 
 /**
  * Search response interface
  */
-interface SearchResponse {
-  count: number;
-  hasMore: boolean;
-  offset: number;
-  results: RulingSearchResult[];
-  totalCount: number;
-  queryExplanation?: string | null;
-}
+type SearchResponse = AdvancedLegalRulingSearchResponse;
 
 /**
  * Court type display labels
@@ -145,22 +100,22 @@ const SOURCE_COLORS: Record<SearchSource, string> = {
  * Search field display labels
  */
 const SEARCH_FIELD_LABELS: Record<SearchField, string> = {
-  [SearchField.ALL]: 'All Fields',
-  [SearchField.SIGNATURE]: 'Signature',
-  [SearchField.COURT_NAME]: 'Court Name',
-  [SearchField.SUMMARY]: 'Summary',
-  [SearchField.FULL_TEXT]: 'Full Text',
-  [SearchField.KEYWORDS]: 'Keywords',
-  [SearchField.LEGAL_AREA]: 'Legal Area',
+  ALL: 'All Fields',
+  COURT_NAME: 'Court Name',
+  FULL_TEXT: 'Full Text',
+  KEYWORDS: 'Keywords',
+  LEGAL_AREA: 'Legal Area',
+  SIGNATURE: 'Signature',
+  SUMMARY: 'Summary',
 };
 
 /**
  * Boolean operator display labels
  */
 const OPERATOR_LABELS: Record<BooleanOperator, string> = {
-  [BooleanOperator.AND]: 'AND',
-  [BooleanOperator.OR]: 'OR',
-  [BooleanOperator.NOT]: 'NOT',
+  AND: 'AND',
+  OR: 'OR',
+  NOT: 'NOT',
 };
 
 /**
@@ -169,9 +124,9 @@ const OPERATOR_LABELS: Record<BooleanOperator, string> = {
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
 /**
- * Execute GraphQL query with authentication
+ * GraphQL fetcher using generated query document
  */
-async function executeGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
+async function fetcher<TData, TVariables>(query: string, variables?: TVariables): Promise<TData> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -205,7 +160,7 @@ async function executeGraphQL<T>(query: string, variables?: Record<string, unkno
 }
 
 /**
- * Search legal rulings using the advanced search query
+ * Search legal rulings using the advanced search query with generated types
  */
 async function advancedSearchLegalRulings(params: {
   searchTerms: SearchTermInput[];
@@ -218,41 +173,7 @@ async function advancedSearchLegalRulings(params: {
   limit?: number;
   offset?: number;
 }): Promise<SearchResponse> {
-  const query = `
-    query AdvancedSearchLegalRulings($input: AdvancedSearchLegalRulingsInput!) {
-      advancedSearchLegalRulings(input: $input) {
-        count
-        hasMore
-        offset
-        totalCount
-        queryExplanation
-        results {
-          ruling {
-            id
-            courtName
-            courtType
-            rulingDate
-            signature
-            summary
-            fullText
-            metadata {
-              keywords
-              legalArea
-              relatedCases
-              sourceReference
-            }
-            createdAt
-            updatedAt
-          }
-          rank
-          headline
-          source
-        }
-      }
-    }
-  `;
-
-  const data = await executeGraphQL<{ advancedSearchLegalRulings: SearchResponse }>(query, {
+  const variables: AdvancedSearchLegalRulingsQueryVariables = {
     input: {
       searchTerms: params.searchTerms.map(({ id, ...rest }) => rest),
       courtType: params.courtType,
@@ -260,11 +181,18 @@ async function advancedSearchLegalRulings(params: {
       keywords: params.keywords,
       dateFrom: params.dateFrom,
       dateTo: params.dateTo,
-      sources: params.sources || [SearchSource.LOCAL, SearchSource.SAOS, SearchSource.ISAP],
+      sources: params.sources || ['LOCAL', 'SAOS', 'ISAP'],
       limit: params.limit || 20,
       offset: params.offset || 0,
     },
-  });
+  };
+
+  const data = await fetcher<
+    {
+      advancedSearchLegalRulings: SearchResponse;
+    },
+    AdvancedSearchLegalRulingsQueryVariables
+  >(AdvancedSearchLegalRulingsDocument, variables);
 
   return data.advancedSearchLegalRulings;
 }
@@ -274,7 +202,7 @@ export default function AdvancedSearchPage() {
 
   // Search terms state
   const [searchTerms, setSearchTerms] = useState<SearchTermInput[]>([
-    { id: '1', term: '', field: SearchField.ALL, operator: BooleanOperator.AND },
+    { id: '1', term: '', field: 'ALL', operator: 'AND' },
   ]);
 
   // Filter state
@@ -284,9 +212,9 @@ export default function AdvancedSearchPage() {
   const [dateFromFilter, setDateFromFilter] = useState<string>('');
   const [dateToFilter, setDateToFilter] = useState<string>('');
   const [sourcesFilter, setSourcesFilter] = useState<SearchSource[]>([
-    SearchSource.LOCAL,
-    SearchSource.SAOS,
-    SearchSource.ISAP,
+    'LOCAL' as SearchSource,
+    'SAOS' as SearchSource,
+    'ISAP' as SearchSource,
   ]);
 
   // Results state
@@ -347,10 +275,7 @@ export default function AdvancedSearchPage() {
   // Add search term
   const addSearchTerm = () => {
     const newId = (Math.max(...searchTerms.map((st) => Number.parseInt(st.id))) + 1).toString();
-    setSearchTerms([
-      ...searchTerms,
-      { id: newId, term: '', field: SearchField.ALL, operator: BooleanOperator.AND },
-    ]);
+    setSearchTerms([...searchTerms, { id: newId, term: '', field: 'ALL', operator: 'AND' }]);
   };
 
   // Remove search term
@@ -378,12 +303,12 @@ export default function AdvancedSearchPage() {
   const hasPrevPage = currentPage > 0;
 
   // Format date for display
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateValue: Date | string) => {
     try {
-      const date = new Date(dateString);
+      const date = typeof dateValue === 'string' ? new Date(dateValue) : dateValue;
       return date.toLocaleDateString();
     } catch {
-      return dateString;
+      return typeof dateValue === 'string' ? dateValue : String(dateValue);
     }
   };
 
@@ -437,9 +362,9 @@ export default function AdvancedSearchPage() {
                       }
                       className="w-20 px-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      {Object.values(BooleanOperator).map((op) => (
+                      {BOOLEAN_OPERATORS.map((op) => (
                         <option key={op} value={op}>
-                          {OPERATOR_LABELS[op]}
+                          {OPERATOR_LABELS[op as BooleanOperator]}
                         </option>
                       ))}
                     </select>
@@ -468,9 +393,9 @@ export default function AdvancedSearchPage() {
                     }
                     className="w-40 px-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    {Object.values(SearchField).map((field) => (
+                    {SEARCH_FIELDS.map((field) => (
                       <option key={field} value={field}>
-                        {SEARCH_FIELD_LABELS[field]}
+                        {SEARCH_FIELD_LABELS[field as SearchField]}
                       </option>
                     ))}
                   </select>
@@ -512,9 +437,9 @@ export default function AdvancedSearchPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">{translate('common.all') || 'All'}</option>
-                {Object.values(CourtType).map((type) => (
+                {COURT_TYPES.map((type) => (
                   <option key={type} value={type}>
-                    {COURT_TYPE_LABELS[type]}
+                    {COURT_TYPE_LABELS[type as CourtType]}
                   </option>
                 ))}
               </select>
@@ -586,13 +511,13 @@ export default function AdvancedSearchPage() {
               {translate('advancedSearch.fields.sources') || 'Data Sources'}
             </label>
             <div className="flex flex-wrap gap-2">
-              {Object.values(SearchSource).map((source) => (
+              {SEARCH_SOURCES.map((source) => (
                 <button
                   key={source}
                   type="button"
-                  onClick={() => toggleSource(source)}
+                  onClick={() => toggleSource(source as SearchSource)}
                   className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                    sourcesFilter.includes(source)
+                    sourcesFilter.includes(source as SearchSource)
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
@@ -623,15 +548,13 @@ export default function AdvancedSearchPage() {
               <button
                 type="button"
                 onClick={() => {
-                  setSearchTerms([
-                    { id: '1', term: '', field: SearchField.ALL, operator: BooleanOperator.AND },
-                  ]);
+                  setSearchTerms([{ id: '1', term: '', field: 'ALL', operator: 'AND' }]);
                   setCourtTypeFilter('');
                   setLegalAreaFilter('');
                   setKeywordsFilter('');
                   setDateFromFilter('');
                   setDateToFilter('');
-                  setSourcesFilter([SearchSource.LOCAL, SearchSource.SAOS, SearchSource.ISAP]);
+                  setSourcesFilter(['LOCAL', 'SAOS', 'ISAP'] as SearchSource[]);
                   setSearchResults(null);
                   setHasSearched(false);
                   setError(null);

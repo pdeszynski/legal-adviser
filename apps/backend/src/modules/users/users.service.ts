@@ -165,6 +165,15 @@ export class UsersService {
   }
 
   /**
+   * Find all users
+   */
+  async findAll(): Promise<User[]> {
+    return this.userRepository.find({
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  /**
    * Update a user
    */
   async updateUser(
@@ -175,6 +184,7 @@ export class UsersService {
       firstName: string;
       lastName: string;
       isActive: boolean;
+      disclaimerAccepted: boolean;
     }>,
   ): Promise<User> {
     const user = await this.findById(id);
@@ -396,5 +406,131 @@ export class UsersService {
     );
 
     return savedUser;
+  }
+
+  /**
+   * Bulk operation result type
+   */
+  bulkResult<T>(): {
+    success: T[];
+    failed: Array<{ id: string; error: string }>;
+  } {
+    return { success: [], failed: [] };
+  }
+
+  /**
+   * Bulk suspend users (admin only)
+   */
+  async bulkSuspendUsers(
+    userIds: string[],
+    reason: string,
+    suspendedBy: string,
+  ): Promise<{
+    success: User[];
+    failed: Array<{ id: string; error: string }>;
+  }> {
+    const result = this.bulkResult<User>();
+
+    for (const userId of userIds) {
+      try {
+        const user = await this.suspendUser(userId, reason, suspendedBy);
+        result.success.push(user);
+      } catch (error) {
+        result.failed.push({
+          id: userId,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Bulk activate users (admin only)
+   */
+  async bulkActivateUsers(
+    userIds: string[],
+    activatedBy: string,
+  ): Promise<{
+    success: User[];
+    failed: Array<{ id: string; error: string }>;
+  }> {
+    const result = this.bulkResult<User>();
+
+    for (const userId of userIds) {
+      try {
+        const user = await this.activateUser(userId, activatedBy);
+        result.success.push(user);
+      } catch (error) {
+        result.failed.push({
+          id: userId,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Bulk change user roles (admin only)
+   */
+  async bulkChangeUserRoles(
+    userIds: string[],
+    newRole: 'user' | 'admin',
+    changedBy: string,
+  ): Promise<{
+    success: User[];
+    failed: Array<{ id: string; error: string }>;
+  }> {
+    const result = this.bulkResult<User>();
+
+    for (const userId of userIds) {
+      try {
+        const user = await this.changeUserRole(userId, newRole, changedBy);
+        result.success.push(user);
+      } catch (error) {
+        result.failed.push({
+          id: userId,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Bulk delete users (admin only)
+   */
+  async bulkDeleteUsers(
+    userIds: string[],
+    deletedBy: string,
+  ): Promise<{
+    success: string[];
+    failed: Array<{ id: string; error: string }>;
+  }> {
+    const result: {
+      success: string[];
+      failed: Array<{ id: string; error: string }>;
+    } = {
+      success: [],
+      failed: [],
+    };
+
+    for (const userId of userIds) {
+      try {
+        await this.userRepository.delete(userId);
+        result.success.push(userId);
+      } catch (error) {
+        result.failed.push({
+          id: userId,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
+    }
+
+    return result;
   }
 }

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769250967851-361ca49d",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T10:36:07.851Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-user-bulk-operations",
+  "featureName": "Admin User Bulk Operations",
+  "error": "Feature completed in 663s - auto-verified",
+  "passes": true
+}

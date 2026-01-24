@@ -1,0 +1,11 @@
+# Authentication Queries
+# These queries will be used by GraphQL Code Generator to generate TypeScript types
+
+#import "../fragments/user.graphql"
+
+# Get current authenticated user
+query Me {
+  me {
+    ...AuthUserFragment
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Audit all existing GraphQL queries/mutations embedded in TSX files and extract reusable fragments into separate .graphql files. Create fragments for common entities: UserFragment, LegalDocumentFragment, NotificationFragment, AuditLogFragment, LegalQueryFragment. Store fragments in apps/web/src/graphql/fragments/ directory. Ensure fragments include all fields currently used in inline queries.",
+  "id": "graphql-codegen-fragments-extraction",
+  "title": "Extract GraphQL Fragments to Separate Files",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Audit all existing GraphQL queries/mutations embedded in TSX files and extract reusable fragments into separate .graphql files. Create fragments for common entities: UserFragment, LegalDocumentFragment, NotificationFragment, AuditLogFragment, LegalQueryFragment. Store fragments in apps/web/src/graphql/fragments/ directory. Ensure fragments include all fields currently used in inline queries.",
+      "timestamp": "2026-01-24T08:51:34.539Z",
+      "source": "initial"
+    }
+  ]
+}

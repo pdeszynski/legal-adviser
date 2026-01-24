@@ -1,0 +1,14 @@
+# System Setting Fragment for reuse across queries
+# Used for system-wide configuration settings
+
+fragment SystemSettingFragment on SystemSetting {
+  id
+  key
+  value
+  valueType
+  category
+  description
+  metadata
+  createdAt
+  updatedAt
+}

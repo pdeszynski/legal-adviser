@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769245327682-71b03f82",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T09:02:07.682Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "session-expiry-e2e-tests",
+  "featureName": "Session Expiry E2E Tests",
+  "error": "Feature completed in 1476s - auto-verified",
+  "passes": true
+}

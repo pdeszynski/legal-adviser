@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Create comprehensive token usage analytics page at /admin/analytics/tokens. Display aggregate token consumption metrics: total tokens used (all time, this month, today), average tokens per query, per-user token usage leaderboard, token usage trends over time (line chart), breakdown by operation type (document generation, Q&A, classification). Implement filtering by date range and user. Show cost estimation based on token pricing. Create export functionality for usage reports (CSV/PDF). Add alerts for unusual usage patterns (spikes, high-consuming users). Integrate with existing UsageRecord entity.",
+  "id": "admin-token-usage-analytics",
+  "title": "Admin Token Usage Analytics",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive token usage analytics page at /admin/analytics/tokens. Display aggregate token consumption metrics: total tokens used (all time, this month, today), average tokens per query, per-user token usage leaderboard, token usage trends over time (line chart), breakdown by operation type (document generation, Q&A, classification). Implement filtering by date range and user. Show cost estimation based on token pricing. Create export functionality for usage reports (CSV/PDF). Add alerts for unusual usage patterns (spikes, high-consuming users). Integrate with existing UsageRecord entity.",
+      "timestamp": "2026-01-24T08:43:29.450Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T09:50:07.138Z"
+}

@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Extract chat operations (askLegalQuestion mutation, legalQueries query, session history) from inline strings to apps/web/src/graphql/chat.graphql. Use LegalQueryFragment for consistent fields. Generate types for AskLegalQuestionMutationVariables, LegalQuery. Update chat components and hooks to use generated types. Ensure session ID typing matches backend UUID validation.",
+  "id": "graphql-codegen-chat-queries",
+  "title": "Migrate Legal Q&A Chat Queries to GraphQL Codegen",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Extract chat operations (askLegalQuestion mutation, legalQueries query, session history) from inline strings to apps/web/src/graphql/chat.graphql. Use LegalQueryFragment for consistent fields. Generate types for AskLegalQuestionMutationVariables, LegalQuery. Update chat components and hooks to use generated types. Ensure session ID typing matches backend UUID validation.",
+      "timestamp": "2026-01-24T08:51:34.541Z",
+      "source": "initial"
+    }
+  ]
+}

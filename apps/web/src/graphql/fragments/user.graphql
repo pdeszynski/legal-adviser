@@ -1,0 +1,60 @@
+# User Fragment for reuse across queries
+# Core user fields used throughout the application
+fragment UserFragment on User {
+  id
+  email
+  username
+  firstName
+  lastName
+  isActive
+  role
+}
+
+# Extended User Fragment with all fields used in data provider
+# Includes additional fields for admin views and detailed user information
+fragment UserDetailFragment on User {
+  ...UserFragment
+  disclaimerAccepted
+  disclaimerAcceptedAt
+  stripeCustomerId
+  createdAt
+  updatedAt
+}
+
+# AuthUser Fragment for authentication operations
+# Used for current authenticated user context
+fragment AuthUserFragment on AuthUser {
+  id
+  email
+  username
+  firstName
+  lastName
+  isActive
+  disclaimerAccepted
+  disclaimerAcceptedAt
+  role
+}
+
+# Minimal User Fragment for audit logs and references
+# Used when user is embedded in other entities
+fragment UserMinimalFragment on User {
+  id
+  email
+  firstName
+  lastName
+}
+
+# AuthPayload Fragment for login/register responses
+fragment AuthPayloadFragment on AuthPayload {
+  accessToken
+  refreshToken
+  user {
+    ...AuthUserFragment
+  }
+}
+
+# RefreshTokenPayload Fragment for token refresh responses
+fragment RefreshTokenPayloadFragment on RefreshTokenPayload {
+  accessToken
+  refreshToken
+}

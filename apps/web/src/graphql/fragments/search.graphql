@@ -1,0 +1,72 @@
+# Search Result Fragments
+# Reusable fragments for search operations across legal rulings, documents, and templates
+
+#import "./legal-ruling.graphql"
+
+# Search metadata for legal rulings
+fragment RulingSearchMetadataFragment on RulingMetadata {
+  keywords
+  legalArea
+  relatedCases
+  sourceReference
+}
+
+# Simple search result for omnisearch (limited fields)
+# Used by SearchLegalRulings query
+fragment SimpleRulingSearchResultFragment on LegalRulingSearchResult {
+  ruling {
+    id
+    signature
+    courtName
+  }
+  rank
+}
+
+# Aggregated search result with source information
+# Used by AggregatedSearchLegalRulings query
+fragment AggregatedRulingSearchResultFragment on AggregatedLegalRulingSearchResult {
+  ruling {
+    id
+    courtName
+    courtType
+    rulingDate
+    signature
+    summary
+    fullText
+    metadata {
+      keywords
+      legalArea
+      relatedCases
+      sourceReference
+    }
+    createdAt
+    updatedAt
+  }
+  rank
+  headline
+  source
+}
+
+# Advanced search result (same as aggregated but used in advanced search context)
+fragment AdvancedRulingSearchResultFragment on AggregatedLegalRulingSearchResult {
+  ruling {
+    id
+    courtName
+    courtType
+    rulingDate
+    signature
+    summary
+    fullText
+    metadata {
+      keywords
+      legalArea
+      relatedCases
+      sourceReference
+    }
+    createdAt
+    updatedAt
+  }
+  rank
+  headline
+  source
+}

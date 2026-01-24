@@ -1,0 +1,24 @@
+{
+  "category": "refactor",
+  "description": "Create database seeding system with fixtures for development and testing. Include initial admin user (admin@refine.dev / password) and sample data for all entities. Use TypeORM seeding or custom seed scripts to populate database with realistic test data.",
+  "title": "Database Fixtures with Initial User",
+  "dependencies": [
+    "user-entity-nestjs-query",
+    "nestjs-query-migration"
+  ],
+  "priority": 1,
+  "status": "completed",
+  "id": "feature-1768891942209-cwdzmphno",
+  "descriptionHistory": [
+    {
+      "description": "Create database seeding system with fixtures for development and testing. Include initial admin user (admin@refine.dev / password) and sample data for all entities. Use TypeORM seeding or custom seed scripts to populate database with realistic test data.",
+      "timestamp": "2026-01-20T06:52:22.209Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-20T06:53:02.695Z",
+  "updatedAt": "2026-01-20T07:01:40.934Z",
+  "model": "sonnet",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none"
+}

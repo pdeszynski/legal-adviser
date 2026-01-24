@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Create documentation for using GraphQL Codegen in the project. Include examples of defining queries in .graphql files, using generated types, and working with generated React Query hooks. Document fragment composition, type generation workflow, and best practices. Add troubleshooting guide for common codegen issues.",
+  "id": "graphql-codegen-documentation",
+  "title": "Document GraphQL Codegen Usage Patterns",
+  "dependencies": [
+    "graphql-codegen-migration-setup"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create documentation for using GraphQL Codegen in the project. Include examples of defining queries in .graphql files, using generated types, and working with generated React Query hooks. Document fragment composition, type generation workflow, and best practices. Add troubleshooting guide for common codegen issues.",
+      "timestamp": "2026-01-24T08:51:34.546Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -3,19 +3,20 @@
 import { useState, useCallback } from 'react';
 import { getAccessToken } from '@/providers/auth-provider/auth-provider.client';
 import { getCsrfHeaders } from '@/lib/csrf';
+import {
+  AskLegalQuestionDocument,
+  type AskLegalQuestionMutationVariables,
+  type LegalQueryFragmentFragment,
+} from '@/generated/graphql';
 
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
-interface Citation {
-  source: string;
-  url?: string;
-  excerpt?: string;
-  article?: string;
-}
+// Chat response types using generated GraphQL types
+export type ChatCitation = NonNullable<LegalQueryFragmentFragment['citations']>[number];
 
 interface ChatResponse {
   answerMarkdown: string;
-  citations: Citation[];
+  citations: ChatCitation[];
 }
 
 export type ChatMode = 'LAWYER' | 'SIMPLE';
@@ -62,38 +63,17 @@ export function useChat(): UseChatReturn {
         // or if the provided session ID doesn't exist
         let sessionId = localStorage.getItem('chat_session_id');
 
-        const mutation = `
-          mutation AskLegalQuestion($input: AskLegalQuestionInput!) {
-            askLegalQuestion(input: $input) {
-              id
-              question
-              answerMarkdown
-              citations {
-                source
-                url
-                excerpt
-                article
-              }
-              sessionId
-              createdAt
-              updatedAt
-            }
-          }
-        `;
-
-        const inputVariables: {
-          question: string;
-          sessionId?: string;
-          mode: string;
-        } = {
-          question,
-          mode: selectedMode || mode, // Use provided mode or current mode
+        const inputVariables: AskLegalQuestionMutationVariables = {
+          input: {
+            question,
+            mode: selectedMode || mode, // Use provided mode or current mode
+          },
         };
 
         // Only include sessionId if we have one from a previous response
         // This allows the backend to auto-create a session on first message
         if (sessionId) {
-          inputVariables.sessionId = sessionId;
+          inputVariables.input.sessionId = sessionId;
         }
 
         const response = await fetch(GRAPHQL_URL, {
@@ -101,10 +81,8 @@ export function useChat(): UseChatReturn {
           headers,
           credentials: 'include',
           body: JSON.stringify({
-            query: mutation,
-            variables: {
-              input: inputVariables,
-            },
+            query: AskLegalQuestionDocument,
+            variables: inputVariables,
           }),
         });
 

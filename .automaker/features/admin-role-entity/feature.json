@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Design Role entity following DDD principles with bounded context for Authorization. Define Role aggregate with enum-based roles (ADMIN, LAWYER, USER) and permission system. Create value objects for Permission with granular access control (READ, WRITE, DELETE, MANAGE) per resource type. Establish domain events for role changes. Implement role hierarchy and permission inheritance in domain layer.",
+  "id": "admin-role-entity",
+  "title": "Admin Role and RBAC Entity Design",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Design Role entity following DDD principles with bounded context for Authorization. Define Role aggregate with enum-based roles (ADMIN, LAWYER, USER) and permission system. Create value objects for Permission with granular access control (READ, WRITE, DELETE, MANAGE) per resource type. Establish domain events for role changes. Implement role hierarchy and permission inheritance in domain layer.",
+      "timestamp": "2026-01-24T08:41:43.824Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T09:11:08.146Z"
+}

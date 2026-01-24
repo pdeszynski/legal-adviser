@@ -9,7 +9,6 @@ import type {
 } from '@refinedev/core';
 import { getAccessToken, tryRefreshToken } from '../auth-provider/auth-provider.client';
 import { getCsrfHeaders } from '@/lib/csrf';
-import { executeGraphQLWithInterceptor, resetSessionExpiryFlag } from '@/lib/http-interceptor';
 
 /**
  * GraphQL Data Provider
@@ -469,6 +468,95 @@ export const dataProvider: DataProvider = {
     filters?: CrudFilters;
     sorters?: CrudSorting;
   }) => {
+    if (resource === 'users') {
+      const query = `
+        query GetUsers($filter: UserFilter, $paging: CursorPaging, $sorting: [UserSort!]) {
+          users(filter: $filter, paging: $paging, sorting: $sorting) {
+            totalCount
+            edges {
+              node {
+                id
+                email
+                username
+                firstName
+                lastName
+                isActive
+                role
+                disclaimerAccepted
+                stripeCustomerId
+                createdAt
+                updatedAt
+              }
+            }
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+          }
+        }
+      `;
+
+      const currentPage = pagination?.currentPage || 1;
+      const pageSize = pagination?.pageSize || 10;
+
+      let prefetchCursor: string | undefined = undefined;
+      if (currentPage > 1) {
+        prefetchCursor = await ensureCursorsCached(
+          resource,
+          currentPage,
+          pageSize,
+          query,
+          filters,
+          sorters,
+        );
+      }
+
+      const graphqlFilter = buildGraphQLFilter(filters);
+      const graphqlSorting = buildGraphQLSorting(sorters) || [
+        { field: 'createdAt', direction: 'DESC' },
+      ];
+
+      let graphqlPaging: { first: number; after?: string };
+      if (currentPage <= 1) {
+        graphqlPaging = { first: pageSize };
+      } else if (prefetchCursor) {
+        graphqlPaging = { first: pageSize, after: prefetchCursor };
+      } else {
+        graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+      }
+
+      const data = await executeGraphQL<{
+        users: {
+          totalCount: number;
+          edges: Array<{ node: TData }>;
+          pageInfo: {
+            hasNextPage: boolean;
+            hasPreviousPage: boolean;
+            startCursor: string;
+            endCursor: string;
+          };
+        };
+      }>(query, {
+        filter: graphqlFilter || {},
+        paging: graphqlPaging,
+        sorting: graphqlSorting,
+      });
+
+      const errors = getProviderErrors(data);
+      const items = data.users.edges.map((edge) => edge.node);
+
+      const cacheKey = getCacheKey(resource, filters, sorters);
+      storeCursor(cacheKey, currentPage, data.users.pageInfo.endCursor, data.users.totalCount);
+
+      return {
+        data: items,
+        total: data.users.totalCount,
+        ...(errors.length > 0 && { _errors: errors }),
+      };
+    }
+
     if (resource === 'audit_logs') {
       const query = `
         query GetAuditLogs($filter: AuditLogFilter, $paging: CursorPaging, $sorting: [AuditLogSort!]) {
@@ -789,6 +877,32 @@ export const dataProvider: DataProvider = {
     resource: string;
     id: string | number;
   }) => {
+    if (resource === 'users') {
+      const query = `
+        query GetUser($id: ID!) {
+          user(id: $id) {
+            id
+            email
+            username
+            firstName
+            lastName
+            isActive
+            role
+            disclaimerAccepted
+            disclaimerAcceptedAt
+            stripeCustomerId
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ user: TData }>(query, { id });
+      return {
+        data: data.user,
+      };
+    }
+
     if (resource === 'audit_logs') {
       const query = `
         query GetAuditLog($id: ID!) {
@@ -893,6 +1007,34 @@ export const dataProvider: DataProvider = {
     variables: TVariables;
     meta?: { operation?: string; [key: string]: unknown };
   }) => {
+    // User creation via nestjs-query auto-generated mutation
+    if (resource === 'users') {
+      const mutation = `
+        mutation CreateOneUser($input: CreateUserInput!) {
+          createOneUser(input: $input) {
+            id
+            email
+            username
+            firstName
+            lastName
+            isActive
+            role
+            disclaimerAccepted
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ createOneUser: TData }>(mutation, {
+        input: variables,
+      });
+
+      return {
+        data: data.createOneUser,
+      };
+    }
+
     // Document generation via GraphQL mutation
     if (resource === 'documents') {
       const mutation = `
@@ -974,6 +1116,34 @@ export const dataProvider: DataProvider = {
     variables: TVariables;
     meta?: { operation?: string; [key: string]: unknown };
   }) => {
+    if (resource === 'users') {
+      const mutation = `
+        mutation UpdateOneUser($id: ID!, $input: UpdateUserInput!) {
+          updateOneUser(id: $id, input: $input) {
+            id
+            email
+            username
+            firstName
+            lastName
+            isActive
+            role
+            disclaimerAccepted
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ updateOneUser: TData }>(mutation, {
+        id,
+        input: variables,
+      });
+
+      return {
+        data: data.updateOneUser,
+      };
+    }
+
     if (resource === 'documents') {
       const mutation = `
         mutation UpdateDocument($id: ID!, $input: UpdateDocumentInput!) {
@@ -1052,6 +1222,23 @@ export const dataProvider: DataProvider = {
     resource: string;
     id: string | number;
   }) => {
+    if (resource === 'users') {
+      const mutation = `
+        mutation DeleteOneUser($id: ID!) {
+          deleteOneUser(id: $id) {
+            id
+            email
+          }
+        }
+      `;
+
+      await executeGraphQL<{ deleteOneUser: TData }>(mutation, { id });
+
+      return {
+        data: { id } as TData,
+      };
+    }
+
     if (resource === 'documents') {
       const mutation = `
         mutation DeleteDocument($id: ID!) {
@@ -1278,13 +1465,22 @@ export const dataProvider: DataProvider = {
           })
           .join(', ');
 
-        mutation = `
-          mutation ${operation} {
-            ${operation}(input: { ${inputFields} }) {
-              ${fieldsStr}
+        // For scalar returns (Boolean, String, etc.) with no fields, don't use selection set
+        if (fieldsStr) {
+          mutation = `
+            mutation ${operation} {
+              ${operation}(input: { ${inputFields} }) {
+                ${fieldsStr}
+              }
             }
-          }
-        `;
+          `;
+        } else {
+          mutation = `
+            mutation ${operation} {
+              ${operation}(input: { ${inputFields} })
+            }
+          `;
+        }
         varsToPass = {};
       } else {
         // Build variable definitions and input arguments for simple types
@@ -1305,13 +1501,22 @@ export const dataProvider: DataProvider = {
           .map((key) => `${key}: $${key}`)
           .join(', ');
 
-        mutation = `
-          mutation ${operation}(${varDefs ? varDefs : ''}) {
-            ${operation}(${inputArgs ? inputArgs : ''}) {
-              ${fieldsStr}
+        // For scalar returns (Boolean, String, etc.) with no fields, don't use selection set
+        if (fieldsStr) {
+          mutation = `
+            mutation ${operation}(${varDefs ? varDefs : ''}) {
+              ${operation}(${inputArgs ? inputArgs : ''}) {
+                ${fieldsStr}
+              }
             }
-          }
-        `;
+          `;
+        } else {
+          mutation = `
+            mutation ${operation}(${varDefs ? varDefs : ''}) {
+              ${operation}(${inputArgs ? inputArgs : ''})
+            }
+          `;
+        }
         varsToPass = mutationVars;
       }
 

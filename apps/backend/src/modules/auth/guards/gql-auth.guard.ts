@@ -8,6 +8,14 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { MissingTokenException } from '../exceptions';
 
 /**
+ * JWT Strategy error info interface
+ */
+interface StrategyInfo {
+  name?: string;
+  message?: string;
+}
+
+/**
  * GraphQL Authentication Guard
  *
  * Extends the default JWT AuthGuard to work with GraphQL context
@@ -22,8 +30,9 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
   /**
    * Override getRequest to extract the request from GraphQL context
    */
-  getRequest(context: ExecutionContext) {
+  getRequest(context: ExecutionContext): unknown {
     const ctx = GqlExecutionContext.create(context);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return ctx.getContext().req;
   }
 
@@ -33,11 +42,12 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
    * When authentication fails, this method is called with the error.
    * We convert errors to our custom exceptions for consistent error handling.
    */
-  handleRequest<TUser = any>(
-    err: any,
+  handleRequest<TUser = unknown>(
+    err: unknown,
     user: TUser,
-    info: any,
-    context: ExecutionContext,
+    info: StrategyInfo | undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _context: ExecutionContext,
   ): TUser {
     // If authentication succeeded, return the user
     if (user) {
@@ -45,28 +55,33 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     }
 
     // Handle specific JWT errors
-    if (info) {
-      // No token provided
-      if (info.name === 'NoAuthTokenError' || !info) {
-        throw new MissingTokenException();
-      }
-      // Token expired
-      if (info.name === 'TokenExpiredError') {
-        const exception = new Error('Token has expired');
-        (exception as any).name = 'TokenExpiredError';
-        throw exception;
-      }
-      // Invalid token
-      if (info.name === 'JsonWebTokenError') {
-        const exception = new Error('Invalid token');
-        (exception as any).name = 'JsonWebTokenError';
-        throw exception;
-      }
+    if (info?.name === 'NoAuthTokenError' || !info) {
+      throw new MissingTokenException();
+    }
+
+    // Token expired - throw error that exception filter will recognize
+    if (info?.name === 'TokenExpiredError') {
+      const exception = new Error('Token has expired') as Error & {
+        name: string;
+      };
+      exception.name = 'TokenExpiredError';
+      throw exception;
+    }
+
+    // Invalid token - throw error that exception filter will recognize
+    if (info?.name === 'JsonWebTokenError') {
+      const exception = new Error('Invalid token') as Error & {
+        name: string;
+      };
+      exception.name = 'JsonWebTokenError';
+      throw exception;
     }
 
     // General authentication failure
     if (err || !user) {
-      throw err || new UnauthorizedException('Authentication failed');
+      throw err instanceof Error
+        ? err
+        : new UnauthorizedException('Authentication failed');
     }
 
     return user;

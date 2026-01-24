@@ -6,29 +6,7 @@ import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
 import { Bell, Mail } from 'lucide-react';
 import type { GraphQLMutationConfig } from '@providers/data-provider';
-
-interface UserPreferences {
-  id: string;
-  userId: string;
-  locale: string;
-  theme: string;
-  aiModel: string;
-  notificationPreferences: {
-    documentUpdates: boolean;
-    queryResponses: boolean;
-    systemAlerts: boolean;
-    marketingEmails: boolean;
-    channels: {
-      email: boolean;
-      inApp: boolean;
-      push: boolean;
-    };
-  };
-  emailNotifications: boolean;
-  inAppNotifications: boolean;
-  timezone?: string | null;
-  dateFormat?: string | null;
-}
+import type { UserPreferencesFragmentFragment } from '@/generated/graphql';
 
 interface UpdateNotificationsInput {
   notificationPreferences?: {
@@ -46,28 +24,18 @@ interface UpdateNotificationsInput {
   inAppNotifications?: boolean;
 }
 
-interface UpdateNotificationsInput {
-  notificationPreferences?: {
-    documentUpdates?: boolean;
-    queryResponses?: boolean;
-    systemAlerts?: boolean;
-    marketingEmails?: boolean;
-    channels?: {
-      email?: boolean;
-      inApp?: boolean;
-      push?: boolean;
-    };
-  };
-  emailNotifications?: boolean;
-  inAppNotifications?: boolean;
-}
-
-export function SettingsNotifications({ preferences }: { readonly preferences: UserPreferences }) {
+export function SettingsNotifications({
+  preferences,
+}: {
+  readonly preferences: UserPreferencesFragmentFragment;
+}) {
   const translate = useTranslate();
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const dataProvider = useDataProvider();
+
+  const notificationPrefs = preferences.getNotificationPreferences;
 
   const {
     register,
@@ -76,14 +44,14 @@ export function SettingsNotifications({ preferences }: { readonly preferences: U
   } = useForm<UpdateNotificationsInput>({
     defaultValues: {
       notificationPreferences: {
-        documentUpdates: preferences?.notificationPreferences?.documentUpdates ?? false,
-        queryResponses: preferences?.notificationPreferences?.queryResponses ?? false,
-        systemAlerts: preferences?.notificationPreferences?.systemAlerts ?? false,
-        marketingEmails: preferences?.notificationPreferences?.marketingEmails ?? false,
+        documentUpdates: notificationPrefs?.documentUpdates ?? false,
+        queryResponses: notificationPrefs?.queryResponses ?? false,
+        systemAlerts: notificationPrefs?.systemAlerts ?? false,
+        marketingEmails: notificationPrefs?.marketingEmails ?? false,
         channels: {
-          email: preferences?.notificationPreferences?.channels?.email ?? false,
-          inApp: preferences?.notificationPreferences?.channels?.inApp ?? false,
-          push: preferences?.notificationPreferences?.channels?.push ?? false,
+          email: notificationPrefs?.channels?.email ?? false,
+          inApp: notificationPrefs?.channels?.inApp ?? false,
+          push: notificationPrefs?.channels?.push ?? false,
         },
       },
       emailNotifications: preferences?.emailNotifications ?? false,
@@ -105,7 +73,12 @@ export function SettingsNotifications({ preferences }: { readonly preferences: U
         config: {
           mutation: {
             operation: 'updateMyPreferences',
-            fields: ['id', 'notificationPreferences', 'emailNotifications', 'inAppNotifications'],
+            fields: [
+              'id',
+              'getNotificationPreferences',
+              'emailNotifications',
+              'inAppNotifications',
+            ],
             variables: {
               input: data,
             },
@@ -117,7 +90,9 @@ export function SettingsNotifications({ preferences }: { readonly preferences: U
       setIsSuccess(true);
       setTimeout(() => setIsSuccess(false), 3000);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : translate('settings.notifications.errorMessage'));
+      setError(
+        err instanceof Error ? err.message : translate('settings.notifications.errorMessage'),
+      );
     } finally {
       setIsLoading(false);
     }

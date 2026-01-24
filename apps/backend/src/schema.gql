@@ -6,6 +6,34 @@ input ActivateUserInput {
   userId: ID!
 }
 
+type ActiveUsersCount {
+  calculatedAt: DateTime!
+
+  """Users active in last 7 days"""
+  last7Days: Int!
+
+  """Users active in last 24 hours"""
+  last24Hours: Int!
+
+  """Users active in last 30 days"""
+  last30Days: Int!
+}
+
+input AddPermissionInput {
+  permission: String!
+  roleId: String!
+}
+
+input AdminCreateUserInput {
+  email: String!
+  firstName: String
+  isActive: Boolean = true
+  lastName: String
+  password: String!
+  role: String = "user"
+  username: String
+}
+
 type AdvancedLegalRulingSearchResponse {
   """Number of results returned"""
   count: Int!
@@ -247,6 +275,12 @@ enum AnalyticsPeriod {
   MONTHLY
   WEEKLY
   YEARLY
+}
+
+type AnalyticsTimeSeriesPoint {
+  count: Int!
+  timestamp: DateTime!
+  value: Float
 }
 
 input AnswerLegalQueryInput {
@@ -587,11 +621,39 @@ input BooleanFieldComparison {
   isNot: Boolean
 }
 
+input BooleanFilter {
+  eq: Boolean
+  is: Boolean
+}
+
 """Boolean operators for combining search terms"""
 enum BooleanOperator {
   AND
   NOT
   OR
+}
+
+input BulkActivateUsersInput {
+  userIds: [ID!]!
+}
+
+input BulkChangeUserRolesInput {
+  role: String!
+  userIds: [ID!]!
+}
+
+input BulkDeleteUsersInput {
+  userIds: [ID!]!
+}
+
+type BulkDeleteUsersResult {
+  failed: [BulkOperationError!]!
+  success: [ID!]!
+}
+
+type BulkOperationError {
+  error: String!
+  id: String!
 }
 
 input BulkSendNotificationInput {
@@ -625,8 +687,18 @@ type BulkSendNotificationResponse {
   totalSent: Int!
 }
 
+input BulkSuspendUsersInput {
+  reason: String!
+  userIds: [ID!]!
+}
+
 input BulkUpdateSettingsInput {
   settings: [SystemSettingInput!]!
+}
+
+type BulkUsersResult {
+  failed: [BulkOperationError!]!
+  success: [User!]!
 }
 
 input CancelSubscriptionInput {
@@ -644,6 +716,18 @@ input ChangePasswordInput {
 input ChangeUserRoleInput {
   role: String!
   userId: ID!
+}
+
+type CheckEmailExistsResult {
+  exists: Boolean!
+  userId: String
+  username: String
+}
+
+input CheckPermissionInput {
+  permissionType: String!
+  resourceType: String!
+  roleNames: [String!]!
 }
 
 input CheckQuotaInput {
@@ -978,14 +1062,17 @@ input CreateOneNotificationInput {
   notification: CreateNotificationInput!
 }
 
-input CreateOneUserInput {
-  """The record to create"""
-  user: CreateUserInput!
-}
-
 input CreateOneUserPreferencesInput {
   """The record to create"""
   userPreferences: CreateUserPreferencesInput!
+}
+
+input CreateRoleInput {
+  description: String
+  inheritsFrom: String
+  name: String!
+  permissions: [String!]!
+  type: String!
 }
 
 input CreateRulingMetadataInput {
@@ -1188,11 +1275,6 @@ input DeleteOneLegalRulingInput {
   id: ID!
 }
 
-input DeleteOneUserInput {
-  """The id of the record to delete."""
-  id: ID!
-}
-
 input DeleteOneUserPreferencesInput {
   """The id of the record to delete."""
   id: ID!
@@ -1209,6 +1291,27 @@ enum DeliveryStatus {
   PENDING
   RETRYING
   SUCCESS
+}
+
+type DocumentActivityEntry {
+  createdAt: DateTime!
+  documentId: ID!
+
+  """Document type"""
+  documentType: String
+
+  """Error message if failed"""
+  errorMessage: String
+
+  """The status of the document"""
+  status: String!
+  title: String!
+
+  """When the status last changed"""
+  updatedAt: DateTime!
+
+  """User who owns the document"""
+  userId: ID
 }
 
 type DocumentComment {
@@ -1361,6 +1464,25 @@ type DocumentEditEventPayload {
   version: Float!
 }
 
+type DocumentGenerationMetrics {
+  """Average generation time in seconds"""
+  avgGenerationTime: Int!
+
+  """Failed document generations"""
+  failedDocuments: Int!
+  periodEnd: DateTime!
+  periodStart: DateTime!
+
+  """Success rate as percentage"""
+  successRate: Float!
+
+  """Successfully generated documents"""
+  successfulDocuments: Int!
+
+  """Total documents generated"""
+  totalDocuments: Int!
+}
+
 type DocumentMetadata {
   claimAmount: Float
   claimCurrency: String
@@ -1388,6 +1510,22 @@ type DocumentMetrics {
   """Success rate as percentage"""
   successRate: Float!
   totalDocuments: Int!
+}
+
+type DocumentQueueMetrics {
+  calculatedAt: DateTime!
+
+  """Documents in COMPLETED status (total)"""
+  completedCount: Int!
+
+  """Documents currently in DRAFT status"""
+  draftCount: Int!
+
+  """Documents in FAILED status (total)"""
+  failedCount: Int!
+
+  """Documents currently in GENERATING status"""
+  generatingCount: Int!
 }
 
 type DocumentShare {
@@ -1783,6 +1921,20 @@ input EmailTemplateTypeFilterComparison {
   notILike: EmailTemplateType
   notIn: [EmailTemplateType!]
   notLike: EmailTemplateType
+}
+
+type ErrorSummary {
+  count: Float!
+  message: String!
+  timestamp: String!
+  type: String!
+}
+
+type ErrorTrackingStatus {
+  criticalErrors: Float!
+  lastError: ErrorSummary
+  recentErrors: Float!
+  totalErrors: Float!
 }
 
 input ExportDocumentToPdfInput {
@@ -2760,6 +2912,21 @@ type Mutation {
   """Add a citation to an existing legal query"""
   addCitationToQuery(citation: CreateCitationInput!, queryId: ID!): LegalQuery!
 
+  """Add a permission to a role"""
+  addPermissionToRole(input: AddPermissionInput!): Role!
+
+  """Create a backup (admin only)"""
+  adminCreateBackup(input: CreateBackupInput): Backup!
+
+  """Create a new user with password and role (admin only)"""
+  adminCreateUser(input: AdminCreateUserInput!): User!
+
+  """Delete a backup (admin only)"""
+  adminDeleteBackup(id: ID!): Boolean!
+
+  """Restore a backup (admin only)"""
+  adminRestoreBackup(input: RestoreBackupInput!): Boolean!
+
   """Add AI-generated answer to a legal query"""
   answerLegalQuery(id: ID!, input: AnswerLegalQueryInput!): LegalQuery!
 
@@ -2768,6 +2935,18 @@ type Mutation {
 
   """Ask a legal question and get AI answer synchronously"""
   askLegalQuestion(input: AskLegalQuestionInput!): LegalQuery!
+
+  """Activate multiple user accounts (admin only)"""
+  bulkActivateUsers(input: BulkActivateUsersInput!): BulkUsersResult!
+
+  """Change roles for multiple users (admin only)"""
+  bulkChangeUserRoles(input: BulkChangeUserRolesInput!): BulkUsersResult!
+
+  """Delete multiple user accounts (admin only)"""
+  bulkDeleteUsers(input: BulkDeleteUsersInput!): BulkDeleteUsersResult!
+
+  """Suspend multiple user accounts (admin only)"""
+  bulkSuspendUsers(input: BulkSuspendUsersInput!): BulkUsersResult!
   bulkUpsertSystemSettings(input: BulkUpdateSettingsInput!): [SystemSetting!]!
 
   """Cancel the current user subscription"""
@@ -2789,7 +2968,6 @@ type Mutation {
 
   """Create a new API key. The raw key is only shown once."""
   createApiKey(input: CreateApiKeyInput!): CreateApiKeyResponse!
-  createBackup(input: CreateBackupInput): Backup!
   createDocumentTemplate(input: CreateTemplateInput!): DocumentTemplate!
   createDocumentV2(input: CreateLegalDocumentInputV2!): LegalDocumentV2!
 
@@ -2804,10 +2982,15 @@ type Mutation {
   createOneLegalQuery(input: CreateOneLegalQueryInput!): LegalQuery!
   createOneLegalRuling(input: CreateOneLegalRulingInput!): LegalRuling!
   createOneNotification(input: CreateOneNotificationInput!): Notification!
-  createOneUser(input: CreateOneUserInput!): User!
+
+  """Create a new user (admin only)"""
+  createOneUser(input: CreateUserInput!): User!
   createOneUserPreference(input: CreateOneUserPreferencesInput!): UserPreferences!
 
-  """Create a new subscription plan"""
+  """Create a new custom role"""
+  createRole(input: CreateRoleInput!): Role!
+
+  """Create a new subscription plan (admin only)"""
   createSubscriptionPlan(input: CreateSubscriptionPlanInput!): SubscriptionPlan!
   createUsageRecord(input: CreateAiUsageRecordInput!): AiUsageRecord!
 
@@ -2819,7 +3002,6 @@ type Mutation {
 
   """Delete an API key permanently. This action cannot be undone."""
   deleteApiKey(id: String!): Boolean!
-  deleteBackup(id: ID!): Boolean!
   deleteDocument(id: ID!): Boolean! @deprecated(reason: "Use deleteOneLegalDocument instead")
   deleteDocumentTemplate(id: ID!): Boolean!
   deleteDocumentV2(input: DeleteDocumentInputV2!): Boolean!
@@ -2833,11 +3015,16 @@ type Mutation {
   deleteOneLegalDocument(input: DeleteOneLegalDocumentInput!): LegalDocumentDeleteResponse!
   deleteOneLegalQuery(input: DeleteOneLegalQueryInput!): LegalQueryDeleteResponse!
   deleteOneLegalRuling(input: DeleteOneLegalRulingInput!): LegalRulingDeleteResponse!
-  deleteOneUser(input: DeleteOneUserInput!): UserDeleteResponse!
+
+  """Delete a user (admin only)"""
+  deleteOneUser(id: ID!): User!
   deleteOneUserPreference(input: DeleteOneUserPreferencesInput!): UserPreferencesDeleteResponse!
   deleteOneUserSession(input: DeleteOneUserSessionInput!): UserSessionDeleteResponse!
 
-  """Delete a subscription plan"""
+  """Delete a custom role (system roles cannot be deleted)"""
+  deleteRole(id: String!): Boolean!
+
+  """Delete a subscription plan (admin only)"""
   deleteSubscriptionPlan(id: String!): Boolean!
   deleteSystemSetting(key: String!): Boolean!
 
@@ -2880,6 +3067,9 @@ type Mutation {
   """Reject a document after moderation review"""
   rejectDocument(input: RejectDocumentInput!): ModerationActionResult!
 
+  """Remove a permission from a role"""
+  removePermissionFromRole(input: RemovePermissionInput!): Role!
+
   """
   Render a template with variable substitution without creating a document
   """
@@ -2888,7 +3078,6 @@ type Mutation {
 
   """Reset a user password (admin only)"""
   resetUserPassword(input: ResetUserPasswordInput!): User!
-  restoreBackup(input: RestoreBackupInput!): Boolean!
 
   """Resume a subscription that was scheduled for cancellation"""
   resumeMySubscription: UserSubscription!
@@ -2947,13 +3136,18 @@ type Mutation {
   updateOneLegalQuery(input: UpdateOneLegalQueryInput!): LegalQuery!
   updateOneLegalRuling(input: UpdateOneLegalRulingInput!): LegalRuling!
   updateOneNotification(input: UpdateOneNotificationInput!): Notification!
-  updateOneUser(input: UpdateOneUserInput!): User!
+
+  """Update a user (admin only)"""
+  updateOneUser(id: ID!, input: UpdateUserInput!): User!
   updateOneUserPreference(input: UpdateOneUserPreferencesInput!): UserPreferences!
 
   """Update profile information for the current user"""
   updateProfile(input: UpdateProfileInput!): AuthUser!
 
-  """Update an existing subscription plan"""
+  """Update role name or description"""
+  updateRole(id: String!, input: UpdateRoleInput!): Role!
+
+  """Update an existing subscription plan (admin only)"""
   updateSubscriptionPlan(id: String!, input: UpdateSubscriptionPlanInput!): SubscriptionPlan!
 
   """Update an existing webhook (name, URL, events, headers, status)"""
@@ -3391,6 +3585,17 @@ enum PdfPageFormat {
   LETTER
 }
 
+type Permission {
+  condition: String
+  resource: String!
+  type: String!
+}
+
+type PermissionCheckResult {
+  allowed: Boolean!
+  permissions: [String!]
+}
+
 """Subscription plan tiers"""
 enum PlanTier {
   BASIC
@@ -3413,6 +3618,15 @@ input PublishDocumentInputV2 {
 }
 
 type Query {
+  """Get a backup by ID (admin only)"""
+  adminBackup(id: ID!): Backup
+
+  """Get backup statistics (admin only)"""
+  adminBackupStats: BackupStats!
+
+  """Get all backups (admin only)"""
+  adminBackups(limit: Float = 50, offset: Float = 0): [Backup!]!
+
   """
   Advanced search with boolean operators (AND, OR, NOT) and field-specific search
   """
@@ -3442,12 +3656,12 @@ type Query {
     """Specify to sort results."""
     sorting: [AuditLogSort!]! = []
   ): AuditLogConnection!
-  backup(id: ID!): Backup
-  backupStats: BackupStats!
-  backups(limit: Float = 50, offset: Float = 0): [Backup!]!
 
   """Check if the current user can access a specific feature"""
   canAccessFeature(featureKey: String!): Boolean!
+
+  """Check if email is already registered (admin only)"""
+  checkEmailExists(email: String!): CheckEmailExistsResult
 
   """Check the current user quota for a specific resource"""
   checkQuota(input: CheckQuotaInput!): CheckQuotaResponse!
@@ -3476,6 +3690,7 @@ type Query {
   """Get the latest version of a document"""
   documentLatestVersion(documentId: ID!): DocumentVersion
   documentMetrics(input: DashboardAnalyticsInput): DocumentMetrics!
+  documentQueueMetrics: DocumentQueueMetrics!
 
   """Get all shares for a document"""
   documentShares(documentId: ID!): [DocumentShare!]!
@@ -3533,6 +3748,15 @@ type Query {
 
   """Filter legal rulings by multiple criteria"""
   filterLegalRulings(input: FilterLegalRulingsInput!): [LegalRuling!]!
+  getActiveUsersCount: ActiveUsersCount!
+  getDocumentGenerationMetrics(input: DashboardAnalyticsInput): DocumentGenerationMetrics!
+  getQueryVolume(input: DashboardAnalyticsInput): [AnalyticsTimeSeriesPoint!]!
+  getTotalDocumentCount(input: DashboardAnalyticsInput): DocumentMetrics!
+  getTotalTokenUsage(input: DashboardAnalyticsInput): [TokenUsageBreakdown!]!
+  getUserGrowthStats(input: DashboardAnalyticsInput): UserGrowthStats!
+
+  """Check if the given roles have a specific permission"""
+  hasPermission(input: CheckPermissionInput!): PermissionCheckResult!
   inAppNotification(
     """The id of the record to find."""
     id: ID!
@@ -3696,9 +3920,19 @@ type Query {
   """Get all legal queries for a specific session"""
   queriesBySession(sessionId: String!): [LegalQuery!]!
   queryMetrics(input: DashboardAnalyticsInput): QueryMetrics!
+  recentDocumentActivity(limit: Int = 10): RecentDocumentActivity!
 
   """Get recent notifications for a user"""
   recentNotifications(limit: Int, unreadOnly: Boolean, userId: String!): [InAppNotification!]!
+
+  """Get a role by ID"""
+  role(id: String!): Role
+
+  """Get a role by name"""
+  roleByName(name: String!): Role
+
+  """Get all roles in the system"""
+  roles: [Role!]!
 
   """Full-text search across documents with relevance ranking"""
   searchLegalDocuments(input: SearchLegalDocumentsInput!): LegalDocumentSearchResponse!
@@ -3714,23 +3948,25 @@ type Query {
 
   """Get all active subscription plans ordered by price"""
   subscriptionPlans: [SubscriptionPlan!]!
+
+  """Get comprehensive system health status for admin dashboard"""
+  systemHealth: SystemHealthResponse!
   systemHealthMetrics(input: DashboardAnalyticsInput): SystemHealthMetrics!
   systemSetting(key: String!): SystemSetting
   systemSettings: [SystemSetting!]!
   systemSettingsByCategory(category: SettingCategory!): [SystemSetting!]!
+  tokenUsageAnalytics(input: DashboardAnalyticsInput): TokenUsageAnalytics!
+  tokenUsageByOperation(input: DashboardAnalyticsInput): [TokenUsageByOperation!]!
+  tokenUsageExport(input: DashboardAnalyticsInput): TokenUsageExport!
+  tokenUsageTrend(input: DashboardAnalyticsInput): [TokenUsageTrend!]!
   topUsersByUsage(by: String = "tokens", endDate: DateTime, limit: Float = 10, startDate: DateTime): String!
 
   """Get count of unread notifications for a user"""
   unreadNotificationCount(userId: String!): Int!
   usageStats(query: UsageStatsQueryInput!): UsageStatsResponse!
-  user(
-    """The id of the record to find."""
-    id: ID!
-  ): User!
-  userAggregate(
-    """Filter to find records to aggregate on"""
-    filter: UserAggregateFilter
-  ): [UserAggregateResponse!]!
+
+  """Get a user by ID (admin only)"""
+  user(id: ID!): User
   userGrowthMetrics(input: DashboardAnalyticsInput): UserGrowthMetrics!
   userPreference(
     """The id of the record to find."""
@@ -3768,17 +4004,11 @@ type Query {
     """Specify to sort results."""
     sorting: [UserSessionSort!]! = []
   ): UserSessionConnection!
+  userTokenLeaderboard(input: DashboardAnalyticsInput, limit: Int = 20): [UserTokenUsage!]!
   userUsageRecords(endDate: DateTime, limit: Float = 100, offset: Float = 0, operationType: AiOperationType, startDate: DateTime, userId: String!): [AiUsageRecord!]!
-  users(
-    """Specify to filter the records returned."""
-    filter: UserFilter! = {}
 
-    """Limit or page results."""
-    paging: CursorPaging! = {first: 10}
-
-    """Specify to sort results."""
-    sorting: [UserSort!]! = []
-  ): UserConnection!
+  """Get all users with filtering, sorting, and paging (admin only)"""
+  users(filter: UserFilter, paging: UserPaging, sorting: [UserSort!]): [User!]!
 
   """Validate an API key and check if it has the required scopes"""
   validateApiKey(input: ValidateApiKeyInput!): ValidateApiKeyResponse!
@@ -3806,6 +4036,28 @@ type QueryMetrics {
   totalCitations: Int!
   totalQueries: Int!
   uniqueUsers: Int!
+}
+
+type QueueHealth {
+  active: Float!
+  delayed: Float!
+  depth: Float!
+  failed: Float!
+  lastProcessed: String
+}
+
+type QueueHealthStatus {
+  documentGeneration: QueueHealth!
+  email: QueueHealth!
+  webhook: QueueHealth!
+}
+
+type RecentDocumentActivity {
+  """Documents currently being generated"""
+  currentlyGenerating: [DocumentActivityEntry!]!
+  fetchedAt: DateTime!
+  recentCompletions: [DocumentActivityEntry!]!
+  recentFailures: [DocumentActivityEntry!]!
 }
 
 input RefreshTokenInput {
@@ -3860,6 +4112,11 @@ input RelatedDocumentLinkInput {
   relevanceScore: Float
 }
 
+input RemovePermissionInput {
+  permission: String!
+  roleId: String!
+}
+
 input RenderTemplateInput {
   templateId: String!
   variables: JSON!
@@ -3880,6 +4137,18 @@ input RestoreBackupInput {
 
   """Target database name (defaults to current)"""
   targetDatabase: String
+}
+
+type Role {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  inheritsFrom: String
+  isSystemRole: Boolean!
+  name: String!
+  permissions: [Permission!]!
+  type: String!
+  updatedAt: DateTime!
 }
 
 type RulingMetadata {
@@ -4019,6 +4288,28 @@ type SendNotificationResponse {
   notificationId: String
 }
 
+type ServiceHealth {
+  error: String
+  lastCheck: String
+  latency: Float
+  status: ServiceStatus!
+}
+
+type ServiceHealthStatus {
+  aiEngine: ServiceHealth!
+  database: ServiceHealth!
+  isapApi: ServiceHealth!
+  redis: ServiceHealth!
+  saosApi: ServiceHealth!
+}
+
+"""Health status of a service or system component"""
+enum ServiceStatus {
+  DEGRADED
+  HEALTHY
+  UNHEALTHY
+}
+
 """Mode of operation for a user session"""
 enum SessionMode {
   LAWYER
@@ -4107,6 +4398,12 @@ input StringFieldComparison {
   notILike: String
   notIn: [String!]
   notLike: String
+}
+
+input StringFilter {
+  eq: String
+  iLike: String
+  in: [String!]
 }
 
 input SubmitLegalQueryInput {
@@ -4214,6 +4511,15 @@ type SystemHealthMetrics {
   timestamp: DateTime!
 }
 
+type SystemHealthResponse {
+  errors: ErrorTrackingStatus!
+  queues: QueueHealthStatus!
+  services: ServiceHealthStatus!
+  status: ServiceStatus!
+  timestamp: String!
+  uptime: Float!
+}
+
 type SystemSetting {
   category: SettingCategory!
   createdAt: DateTime!
@@ -4314,6 +4620,91 @@ input ThemePreferenceFilterComparison {
 `Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
 """
 scalar Timestamp
+
+type TokenUsageAnalytics {
+  """All-time total cost"""
+  allTimeCost: Float!
+
+  """All-time total tokens"""
+  allTimeTokens: Int!
+
+  """Detected usage anomalies"""
+  anomalies: [UsageAnomaly!]!
+
+  """Average tokens per query"""
+  avgTokensPerQuery: Int!
+
+  """Breakdown by operation type"""
+  byOperation: [TokenUsageByOperation!]!
+  generatedAt: DateTime!
+  periodEnd: DateTime!
+  periodStart: DateTime!
+
+  """Cost this month"""
+  thisMonthCost: Float!
+
+  """Tokens this month"""
+  thisMonthTokens: Int!
+
+  """Cost today"""
+  todayCost: Float!
+
+  """Tokens today"""
+  todayTokens: Int!
+
+  """Token usage over time"""
+  trend: [TokenUsageTrend!]!
+
+  """Per-user usage leaderboard"""
+  userLeaderboard: [UserTokenUsage!]!
+}
+
+type TokenUsageBreakdown {
+  periodEnd: DateTime!
+  periodStart: DateTime!
+
+  """Total cost in USD"""
+  totalCost: Float!
+
+  """Total requests"""
+  totalRequests: Int!
+
+  """Total tokens used"""
+  totalTokens: Int!
+}
+
+type TokenUsageByOperation {
+  """Average tokens per request"""
+  avgTokensPerRequest: Int!
+
+  """Percentage of total cost"""
+  costPercentage: Float!
+  operationType: AiOperationType!
+  requestCount: Int!
+
+  """Percentage of total tokens"""
+  tokenPercentage: Float!
+  totalCost: Float!
+  totalTokens: Int!
+}
+
+type TokenUsageExport {
+  exportedAt: DateTime!
+  operationBreakdown: [TokenUsageByOperation!]!
+  periodEnd: DateTime!
+  periodStart: DateTime!
+  trendData: [TokenUsageTrend!]!
+  userUsageData: [UserTokenUsage!]!
+}
+
+type TokenUsageTrend {
+  """Percentage change from previous period"""
+  changePercentage: Float
+  cost: Float!
+  requests: Int!
+  timestamp: DateTime!
+  tokens: Int!
+}
 
 input UpdateApiKeyInput {
   description: String
@@ -4521,14 +4912,6 @@ input UpdateOneNotificationInput {
   update: UpdateNotificationInput!
 }
 
-input UpdateOneUserInput {
-  """The id of the record to update"""
-  id: ID!
-
-  """The update to apply."""
-  update: UpdateUserInput!
-}
-
 input UpdateOneUserPreferencesInput {
   """The id of the record to update"""
   id: ID!
@@ -4549,6 +4932,11 @@ input UpdateProfileInput {
 
   """Username"""
   username: String
+}
+
+input UpdateRoleInput {
+  description: String
+  name: String
 }
 
 input UpdateSharePermissionInput {
@@ -4616,6 +5004,26 @@ input UpdateWebhookInput {
   url: String
 }
 
+type UsageAnomaly {
+  """Type of anomaly detected"""
+  anomalyType: String!
+
+  """Description of the anomaly"""
+  description: String!
+  detectedAt: DateTime!
+
+  """Deviation from expected (percentage)"""
+  deviationPercentage: Float!
+
+  """Expected/normal token count"""
+  expectedValue: Float!
+
+  """Token count that triggered the anomaly"""
+  tokenCount: Int!
+  userEmail: String
+  userId: ID
+}
+
 input UsageStatsQueryInput {
   endDate: DateTime
   operationType: AiOperationType
@@ -4643,91 +5051,16 @@ type User {
   isActive: Boolean!
   lastName: String
   role: String!
-  sessions: UserSession
   stripeCustomerId: String
   updatedAt: DateTime!
   username: String
 }
 
-input UserAggregateFilter {
-  and: [UserAggregateFilter!]
-  createdAt: DateFieldComparison
-  email: StringFieldComparison
-  id: IDFilterComparison
-  isActive: BooleanFieldComparison
-  or: [UserAggregateFilter!]
-  role: StringFieldComparison
-  updatedAt: DateFieldComparison
-}
-
-type UserAggregateGroupBy {
-  createdAt(by: GroupBy! = DAY): DateTime
-  email: String
-  id: ID
-  isActive: Boolean
-  role: String
-  updatedAt(by: GroupBy! = DAY): DateTime
-}
-
-type UserAggregateResponse {
-  count: UserCountAggregate
-  groupBy: UserAggregateGroupBy
-  max: UserMaxAggregate
-  min: UserMinAggregate
-}
-
-type UserConnection {
-  """Array of edges."""
-  edges: [UserEdge!]!
-
-  """Paging information"""
-  pageInfo: PageInfo!
-
-  """Fetch total count of records"""
-  totalCount: Int!
-}
-
-type UserCountAggregate {
-  createdAt: Int
-  email: Int
-  id: Int
-  isActive: Int
-  role: Int
-  updatedAt: Int
-}
-
-type UserDeleteResponse {
-  createdAt: DateTime
-  disclaimerAccepted: Boolean
-  disclaimerAcceptedAt: DateTime
-  email: String
-  firstName: String
-  id: ID
-  isActive: Boolean
-  lastName: String
-  role: String
-  stripeCustomerId: String
-  updatedAt: DateTime
-  username: String
-}
-
-type UserEdge {
-  """Cursor for this node."""
-  cursor: ConnectionCursor!
-
-  """The node containing the User"""
-  node: User!
-}
-
 input UserFilter {
-  and: [UserFilter!]
-  createdAt: DateFieldComparison
-  email: StringFieldComparison
-  id: IDFilterComparison
-  isActive: BooleanFieldComparison
-  or: [UserFilter!]
-  role: StringFieldComparison
-  updatedAt: DateFieldComparison
+  email: StringFilter
+  isActive: BooleanFilter
+  role: StringFilter
+  username: StringFilter
 }
 
 type UserGrowthMetrics {
@@ -4740,6 +5073,17 @@ type UserGrowthMetrics {
   periodEnd: DateTime!
   periodStart: DateTime!
   totalUsers: Int!
+}
+
+type UserGrowthStats {
+  """Average growth rate"""
+  avgGrowthRate: Float!
+  newUsersPerPeriod: [AnalyticsTimeSeriesPoint!]!
+  periodEnd: DateTime!
+  periodStart: DateTime!
+
+  """Total new users in range"""
+  totalNewUsers: Int!
 }
 
 type UserJoinedEventPayload {
@@ -4757,20 +5101,9 @@ type UserLeftEventPayload {
   userName: String!
 }
 
-type UserMaxAggregate {
-  createdAt: DateTime
-  email: String
-  id: ID
-  role: String
-  updatedAt: DateTime
-}
-
-type UserMinAggregate {
-  createdAt: DateTime
-  email: String
-  id: ID
-  role: String
-  updatedAt: DateTime
+input UserPaging {
+  after: String
+  first: Int
 }
 
 type UserPreferences {
@@ -5034,18 +5367,8 @@ enum UserSessionSortFields {
 }
 
 input UserSort {
-  direction: SortDirection!
-  field: UserSortFields!
-  nulls: SortNulls
-}
-
-enum UserSortFields {
-  createdAt
-  email
-  id
-  isActive
-  role
-  updatedAt
+  direction: String!
+  field: String!
 }
 
 type UserSubscription {
@@ -5066,6 +5389,25 @@ type UserSubscription {
   updatedAt: DateTime!
   usage: String!
   userId: String!
+}
+
+type UserTokenUsage {
+  """Average tokens per request"""
+  avgTokensPerRequest: Float!
+  periodEnd: DateTime!
+  periodStart: DateTime!
+
+  """Number of requests"""
+  requestCount: Int!
+
+  """Total cost in USD"""
+  totalCost: Float!
+
+  """Total tokens used by this user"""
+  totalTokens: Int!
+  userEmail: String
+  userId: ID!
+  userName: String
 }
 
 input ValidateApiKeyInput {

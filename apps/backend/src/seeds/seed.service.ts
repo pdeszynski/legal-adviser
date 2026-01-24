@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { randomUUID } from 'crypto';
 
 // Entities
 import { User } from '../modules/users/entities/user.entity';
@@ -11,6 +12,8 @@ import { LegalAnalysis } from '../modules/documents/entities/legal-analysis.enti
 import { LegalRuling } from '../modules/documents/entities/legal-ruling.entity';
 import { LegalQuery } from '../modules/queries/entities/legal-query.entity';
 import { AuditLog } from '../modules/audit-log/entities/audit-log.entity';
+import { RoleEntity } from '../modules/authorization/entities/role.entity';
+import { UserRoleEntity } from '../modules/authorization/entities';
 
 // Seed data
 import {
@@ -21,6 +24,8 @@ import {
   rulingsSeedData,
   queriesSeedData,
   auditLogsSeedData,
+  rolesSeedData,
+  userRolesSeedData,
 } from './data';
 
 const BCRYPT_SALT_ROUNDS = 10;
@@ -38,6 +43,7 @@ export class SeedService {
   // Store created entities for reference during seeding
   private userMap: Map<string, User> = new Map();
   private sessionList: UserSession[] = [];
+  private roleMap: Map<string, RoleEntity> = new Map();
 
   constructor(
     private readonly dataSource: DataSource,
@@ -55,6 +61,10 @@ export class SeedService {
     private readonly queryRepository: Repository<LegalQuery>,
     @InjectRepository(AuditLog)
     private readonly auditLogRepository: Repository<AuditLog>,
+    @InjectRepository(RoleEntity)
+    private readonly roleRepository: Repository<RoleEntity>,
+    @InjectRepository(UserRoleEntity)
+    private readonly userRoleRepository: Repository<UserRoleEntity>,
   ) {}
 
   /**
@@ -79,7 +89,9 @@ export class SeedService {
 
     try {
       // Seed in order of dependencies
+      await this.seedRoles();
       await this.seedUsers();
+      await this.seedUserRoles();
       await this.seedSessions();
       await this.seedDocuments();
       await this.seedAnalyses();
@@ -116,6 +128,8 @@ export class SeedService {
       await queryRunner.query('DELETE FROM legal_analyses');
       await queryRunner.query('DELETE FROM legal_documents');
       await queryRunner.query('DELETE FROM user_sessions');
+      await queryRunner.query('DELETE FROM user_roles');
+      await queryRunner.query('DELETE FROM roles');
       await queryRunner.query('DELETE FROM users');
 
       this.logger.log('Database cleaned successfully');
@@ -126,6 +140,44 @@ export class SeedService {
     // Clear local maps
     this.userMap.clear();
     this.sessionList = [];
+    this.roleMap.clear();
+  }
+
+  /**
+   * Seed roles
+   * Must be seeded before users so user-role relationships can be established
+   */
+  private async seedRoles(): Promise<void> {
+    this.logger.log('Seeding roles...');
+
+    for (const roleData of rolesSeedData) {
+      // Check if role already exists
+      const existingRole = await this.roleRepository.findOne({
+        where: { id: roleData.id },
+      });
+
+      if (existingRole) {
+        this.logger.debug(`Role ${roleData.name} already exists, skipping`);
+        this.roleMap.set(roleData.type, existingRole);
+        continue;
+      }
+
+      const role = this.roleRepository.create({
+        id: roleData.id,
+        name: roleData.name,
+        description: roleData.description,
+        type: roleData.type,
+        permissions: roleData.permissions,
+        inheritsFrom: roleData.inheritsFrom,
+        isSystemRole: roleData.isSystemRole,
+      });
+
+      const savedRole = await this.roleRepository.save(role);
+      this.roleMap.set(roleData.type, savedRole);
+      this.logger.debug(`Created role: ${roleData.name}`);
+    }
+
+    this.logger.log(`Seeded ${this.roleMap.size} roles`);
   }
 
   /**
@@ -167,6 +219,64 @@ export class SeedService {
     }
 
     this.logger.log(`Seeded ${this.userMap.size} users`);
+  }
+
+  /**
+   * Seed user-role relationships
+   * Must be seeded after both users and roles
+   */
+  private async seedUserRoles(): Promise<void> {
+    this.logger.log('Seeding user roles...');
+
+    let count = 0;
+    for (const userRoleData of userRolesSeedData) {
+      const user = this.userMap.get(userRoleData.userEmail);
+      const role = this.roleMap.get(userRoleData.roleType);
+
+      if (!user) {
+        this.logger.warn(
+          `User ${userRoleData.userEmail} not found for role assignment, skipping`,
+        );
+        continue;
+      }
+
+      if (!role) {
+        this.logger.warn(
+          `Role ${userRoleData.roleType} not found for user ${userRoleData.userEmail}, skipping`,
+        );
+        continue;
+      }
+
+      // Check if user-role already exists
+      const existingUserRole = await this.userRoleRepository.findOne({
+        where: { userId: user.id, roleId: role.id },
+      });
+
+      if (existingUserRole) {
+        this.logger.debug(
+          `User-role for ${userRoleData.userEmail} with role ${userRoleData.roleType} already exists, skipping`,
+        );
+        continue;
+      }
+
+      const userRole = this.userRoleRepository.create({
+        id: randomUUID(),
+        userId: user.id,
+        roleId: role.id,
+        priority: userRoleData.priority ?? 100,
+        notes: userRoleData.notes,
+        expiresAt: userRoleData.expiresAt,
+        isActive: true,
+      });
+
+      await this.userRoleRepository.save(userRole);
+      count++;
+      this.logger.debug(
+        `Assigned role ${userRoleData.roleType} to user ${userRoleData.userEmail}`,
+      );
+    }
+
+    this.logger.log(`Seeded ${count} user-role assignments`);
   }
 
   /**
@@ -378,7 +488,9 @@ export class SeedService {
    */
   private printSummary(): void {
     this.logger.log('=== Seeding Summary ===');
+    this.logger.log(`Roles: ${this.roleMap.size}`);
     this.logger.log(`Users: ${this.userMap.size}`);
+    this.logger.log(`User Roles: ${userRolesSeedData.length}`);
     this.logger.log(`Sessions: ${this.sessionList.length}`);
     this.logger.log(`Documents: ${documentsSeedData.length}`);
     this.logger.log(`Analyses: ${analysesSeedData.length}`);
@@ -387,9 +499,16 @@ export class SeedService {
     this.logger.log(`Audit Logs: ${auditLogsSeedData.length}`);
     this.logger.log('=======================');
     this.logger.log('');
-    this.logger.log('Admin credentials:');
-    this.logger.log('  Email: admin@refine.dev');
-    this.logger.log('  Password: password');
+    this.logger.log('Default credentials:');
+    this.logger.log('  Admin (super_admin):');
+    this.logger.log('    Email: admin@refine.dev');
+    this.logger.log('    Password: password');
+    this.logger.log('  Lawyer:');
+    this.logger.log('    Email: lawyer@example.com');
+    this.logger.log('    Password: password123');
+    this.logger.log('  User (client):');
+    this.logger.log('    Email: user@example.com');
+    this.logger.log('    Password: password123');
     this.logger.log('');
   }
 
@@ -407,7 +526,9 @@ export class SeedService {
    * Get seeding statistics
    */
   async getStats(): Promise<{
+    roles: number;
     users: number;
+    userRoles: number;
     sessions: number;
     documents: number;
     analyses: number;
@@ -415,19 +536,32 @@ export class SeedService {
     queries: number;
     auditLogs: number;
   }> {
-    const [users, sessions, documents, analyses, rulings, queries, auditLogs] =
-      await Promise.all([
-        this.userRepository.count(),
-        this.sessionRepository.count(),
-        this.documentRepository.count(),
-        this.analysisRepository.count(),
-        this.rulingRepository.count(),
-        this.queryRepository.count(),
-        this.auditLogRepository.count(),
-      ]);
+    const [
+      roles,
+      users,
+      userRoles,
+      sessions,
+      documents,
+      analyses,
+      rulings,
+      queries,
+      auditLogs,
+    ] = await Promise.all([
+      this.roleRepository.count(),
+      this.userRepository.count(),
+      this.userRoleRepository.count(),
+      this.sessionRepository.count(),
+      this.documentRepository.count(),
+      this.analysisRepository.count(),
+      this.rulingRepository.count(),
+      this.queryRepository.count(),
+      this.auditLogRepository.count(),
+    ]);
 
     return {
+      roles,
       users,
+      userRoles,
       sessions,
       documents,
       analyses,

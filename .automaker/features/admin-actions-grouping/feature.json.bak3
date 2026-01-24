@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Refactor GraphQL resolvers to group admin-specific mutations and queries in dedicated Admin resolvers. Apply @Roles(ADMIN) decorator to all admin resolver methods. Separate admin mutations (userCreate, roleAssign, systemUpdate) from regular user operations. Ensure admin actions require both authentication AND admin role through guard combination.",
+  "id": "admin-actions-grouping",
+  "title": "Group Admin Actions in Dedicated Resolvers",
+  "dependencies": [
+    "admin-role-guard"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Refactor GraphQL resolvers to group admin-specific mutations and queries in dedicated Admin resolvers. Apply @Roles(ADMIN) decorator to all admin resolver methods. Separate admin mutations (userCreate, roleAssign, systemUpdate) from regular user operations. Ensure admin actions require both authentication AND admin role through guard combination.",
+      "timestamp": "2026-01-24T08:41:43.831Z",
+      "source": "initial"
+    }
+  ]
+}

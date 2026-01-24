@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769248439825-677b08c3",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T09:53:59.825Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "graphql-codegen-document-queries",
+  "featureName": "Migrate Document Queries to GraphQL Codegen",
+  "error": "Feature completed in 1189s - auto-verified",
+  "passes": true
+}

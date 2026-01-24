@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769247022358-93a8deb7",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T09:30:22.358Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "frontend-role-check",
+  "featureName": "Frontend Role-Based Route Protection",
+  "error": "Feature completed in 647s - auto-verified",
+  "passes": true
+}

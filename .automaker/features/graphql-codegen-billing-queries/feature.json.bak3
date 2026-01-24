@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Extract billing operations (billingInfo query, updateSubscription mutation, paymentHistory query) from inline strings to apps/web/src/graphql/billing.graphql. Create fragments for billing entities. Generate types and update billing page to use generated types. Resolve any custom query configuration issues with proper type generation.",
+  "id": "graphql-codegen-billing-queries",
+  "title": "Migrate Billing/Subscription Queries to GraphQL Codegen",
+  "dependencies": [
+    "graphql-codegen-fragments-extraction"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Extract billing operations (billingInfo query, updateSubscription mutation, paymentHistory query) from inline strings to apps/web/src/graphql/billing.graphql. Create fragments for billing entities. Generate types and update billing page to use generated types. Resolve any custom query configuration issues with proper type generation.",
+      "timestamp": "2026-01-24T08:51:34.543Z",
+      "source": "initial"
+    }
+  ]
+}

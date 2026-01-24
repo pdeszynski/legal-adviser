@@ -5,9 +5,9 @@ relevantTo: [architecture]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 69
-  referenced: 3
-  successfulFeatures: 3
+  loaded: 70
+  referenced: 4
+  successfulFeatures: 4
 ---
 # architecture
 
@@ -113,6 +113,24 @@ usageStats:
   - **Future Microservices:** Modules can be extracted to separate services by replacing in-memory events with message queue (Redis Pub/Sub, RabbitMQ) with minimal code changes
 - **Trade-offs:** More discipline required (developers must use events instead of direct service calls), slightly more complex testing setup (mock event emitter), eventual consistency between modules
 - **Breaking if changed:** Allowing direct module imports creates tight coupling, making it impossible to extract modules to microservices later. Database transactions across modules become complex
+
+### [Principle] Role-Based Access Control (RBAC) with Hierarchical Roles (2026-01-24)
+- **Context:** Legal AI platform requires different access levels for various user types (super admins, platform admins, lawyers, paralegals, clients, guests)
+- **Why:** Hierarchical RBAC provides flexible permission management with role inheritance, reducing permission matrix complexity. Higher roles automatically inherit lower role permissions
+- **Role Hierarchy (Highest to Lowest):**
+  - `SUPER_ADMIN` (5): Platform owner, full system access including user management and billing
+  - `ADMIN` (4): Platform administrator, user management, content moderation, analytics
+  - `LAWYER` (3): Legal professional, full document/analysis access, AI query generation
+  - `PARALEGAL` (2): Legal support, limited document/analysis access, draft creation
+  - `CLIENT` (1): Regular user, own documents only, basic AI queries
+  - `GUEST` (0): Demo access, read-only public documents
+- **Implementation:**
+  - **Backend:** RoleGuard and AdminGuard in `apps/backend/src/modules/auth/guards/` protect GraphQL resolvers
+  - **Frontend:** Admin layout protection at `apps/web/src/app/admin/layout.tsx`, role-based menu filtering in `apps/web/src/config/menu.config.tsx`
+  - **Hook:** `useUserRole` in `apps/web/src/hooks/use-user-role.tsx` provides role checking utilities
+- **Seed Users:** `admin@refine.dev` (SUPER_ADMIN), `lawyer@example.com` (LAWYER), `user@example.com` (CLIENT)
+- **Trade-offs:** Hierarchical roles simplify permission checks but reduce fine-grained control; additional roles require level assignment
+- **Breaking if changed:** Removing role hierarchy breaks all `hasRoleLevel()` checks; changing role levels requires database migration of existing user roles
 
 #### [Pattern] Maintain translation key parity across all locales by using a validation gate that enforces identical key structures before code can proceed (2026-01-12)
 - **Problem solved:** Multi-locale system where partial translations are deployed, causing runtime failures when UI components reference non-existent keys in some locales

@@ -3,80 +3,39 @@
 import { useTranslate } from '@refinedev/core';
 import { useState } from 'react';
 import { RulingSearchSkeleton, RulingPaginationSkeleton } from '@/components/skeleton';
+import {
+  AggregatedSearchLegalRulingsDocument,
+  type AggregatedSearchLegalRulingsQueryVariables,
+  type CourtType,
+  type SearchSource,
+  type RulingMetadata,
+  type LegalRuling,
+  type AggregatedLegalRulingSearchResult,
+  type AggregatedLegalRulingSearchResponse,
+} from '@/generated/graphql';
 
-/**
- * Court type enum matching GraphQL CourtType
- */
-enum CourtType {
-  ADMINISTRATIVE_COURT = 'ADMINISTRATIVE_COURT',
-  APPELLATE_COURT = 'APPELLATE_COURT',
-  CONSTITUTIONAL_TRIBUNAL = 'CONSTITUTIONAL_TRIBUNAL',
-  DISTRICT_COURT = 'DISTRICT_COURT',
-  OTHER = 'OTHER',
-  REGIONAL_COURT = 'REGIONAL_COURT',
-  SUPREME_COURT = 'SUPREME_COURT',
-}
+// Enum constant values (matching generated types)
+const COURT_TYPES = [
+  'ADMINISTRATIVE_COURT',
+  'APPELLATE_COURT',
+  'CONSTITUTIONAL_TRIBUNAL',
+  'DISTRICT_COURT',
+  'OTHER',
+  'REGIONAL_COURT',
+  'SUPREME_COURT',
+] as const;
 
-/**
- * Search source enum matching GraphQL SearchSource
- */
-enum SearchSource {
-  ISAP = 'ISAP',
-  LOCAL = 'LOCAL',
-  SAOS = 'SAOS',
-}
-
-/**
- * Ruling metadata interface
- */
-interface RulingMetadata {
-  keywords?: string[] | null;
-  legalArea?: string | null;
-  relatedCases?: string[] | null;
-  sourceReference?: string | null;
-}
-
-/**
- * Legal ruling interface
- */
-interface LegalRuling {
-  id: string;
-  courtName: string;
-  courtType: CourtType;
-  rulingDate: string;
-  signature: string;
-  summary?: string | null;
-  fullText?: string | null;
-  metadata?: RulingMetadata | null;
-  createdAt: string;
-  updatedAt: string;
-}
+const SEARCH_SOURCES = ['ISAP', 'LOCAL', 'SAOS'] as const;
 
 /**
  * Search result interface with relevance ranking
  */
-interface RulingSearchResult {
-  ruling: LegalRuling;
-  rank: number;
-  headline?: string | null;
-  source: SearchSource;
-}
+type RulingSearchResult = AggregatedLegalRulingSearchResult;
 
 /**
  * Search response interface
  */
-interface SearchResponse {
-  count: number;
-  hasMore: boolean;
-  offset: number;
-  results: RulingSearchResult[];
-  totalCount: number;
-}
-
-/**
- * Court types for filtering
- */
-const COURT_TYPES = Object.values(CourtType);
+type SearchResponse = AggregatedLegalRulingSearchResponse;
 
 /**
  * Court type display labels
@@ -119,9 +78,9 @@ const SOURCE_COLORS: Record<SearchSource, string> = {
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
 /**
- * Execute GraphQL query with authentication
+ * GraphQL fetcher using generated query document
  */
-async function executeGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
+async function fetcher<TData, TVariables>(query: string, variables?: TVariables): Promise<TData> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -155,7 +114,7 @@ async function executeGraphQL<T>(query: string, variables?: Record<string, unkno
 }
 
 /**
- * Search legal rulings using the aggregated search query
+ * Search legal rulings using the aggregated search query with generated types
  */
 async function searchLegalRulings(params: {
   query: string;
@@ -166,50 +125,24 @@ async function searchLegalRulings(params: {
   limit?: number;
   offset?: number;
 }): Promise<SearchResponse> {
-  const query = `
-    query AggregatedSearchLegalRulings($input: AggregatedSearchLegalRulingsInput!) {
-      aggregatedSearchLegalRulings(input: $input) {
-        count
-        hasMore
-        offset
-        totalCount
-        results {
-          ruling {
-            id
-            courtName
-            courtType
-            rulingDate
-            signature
-            summary
-            fullText
-            metadata {
-              keywords
-              legalArea
-              relatedCases
-              sourceReference
-            }
-            createdAt
-            updatedAt
-          }
-          rank
-          headline
-          source
-        }
-      }
-    }
-  `;
-
-  const data = await executeGraphQL<{ aggregatedSearchLegalRulings: SearchResponse }>(query, {
+  const variables: AggregatedSearchLegalRulingsQueryVariables = {
     input: {
       query: params.query,
       courtType: params.courtType,
       dateFrom: params.dateFrom,
       dateTo: params.dateTo,
-      sources: params.sources || [SearchSource.LOCAL, SearchSource.SAOS, SearchSource.ISAP],
+      sources: params.sources || ['LOCAL', 'SAOS', 'ISAP'],
       limit: params.limit || 20,
       offset: params.offset || 0,
     },
-  });
+  };
+
+  const data = await fetcher<
+    {
+      aggregatedSearchLegalRulings: SearchResponse;
+    },
+    AggregatedSearchLegalRulingsQueryVariables
+  >(AggregatedSearchLegalRulingsDocument, variables);
 
   return data.aggregatedSearchLegalRulings;
 }
@@ -223,9 +156,9 @@ export default function RulingSearchPage() {
   const [dateFromFilter, setDateFromFilter] = useState('');
   const [dateToFilter, setDateToFilter] = useState('');
   const [sourcesFilter, setSourcesFilter] = useState<SearchSource[]>([
-    SearchSource.LOCAL,
-    SearchSource.SAOS,
-    SearchSource.ISAP,
+    'LOCAL' as SearchSource,
+    'SAOS' as SearchSource,
+    'ISAP' as SearchSource,
   ]);
 
   // Results state
@@ -296,12 +229,12 @@ export default function RulingSearchPage() {
   const hasPrevPage = currentPage > 0;
 
   // Format date for display
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateValue: Date | string) => {
     try {
-      const date = new Date(dateString);
+      const date = typeof dateValue === 'string' ? new Date(dateValue) : dateValue;
       return date.toLocaleDateString();
     } catch {
-      return dateString;
+      return typeof dateValue === 'string' ? dateValue : String(dateValue);
     }
   };
 
@@ -409,13 +342,13 @@ export default function RulingSearchPage() {
               {translate('rulingSearch.fields.sources') || 'Data Sources'}
             </label>
             <div className="flex flex-wrap gap-2">
-              {Object.values(SearchSource).map((source) => (
+              {SEARCH_SOURCES.map((source) => (
                 <button
                   key={source}
                   type="button"
-                  onClick={() => toggleSource(source)}
+                  onClick={() => toggleSource(source as SearchSource)}
                   className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                    sourcesFilter.includes(source)
+                    sourcesFilter.includes(source as SearchSource)
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
@@ -445,7 +378,7 @@ export default function RulingSearchPage() {
                   setCourtTypeFilter('');
                   setDateFromFilter('');
                   setDateToFilter('');
-                  setSourcesFilter([SearchSource.LOCAL, SearchSource.SAOS, SearchSource.ISAP]);
+                  setSourcesFilter(['LOCAL', 'SAOS', 'ISAP'] as SearchSource[]);
                   setSearchResults(null);
                   setHasSearched(false);
                   setError(null);

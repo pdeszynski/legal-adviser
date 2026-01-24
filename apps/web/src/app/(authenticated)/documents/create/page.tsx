@@ -16,27 +16,10 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import { cn } from '@legal/ui';
+import type { GenerateDocumentInput } from '@/generated/graphql';
 
-enum DocumentType {
-  LAWSUIT = 'LAWSUIT',
-  COMPLAINT = 'COMPLAINT',
-  CONTRACT = 'CONTRACT',
-  OTHER = 'OTHER',
-}
-
-interface DocumentMetadataInput {
-  plaintiffName?: string;
-  defendantName?: string;
-  claimAmount?: number;
-  claimCurrency?: string;
-}
-
-interface GenerateDocumentInput {
-  sessionId: string;
-  title: string;
-  type: DocumentType;
-  metadata?: DocumentMetadataInput;
-}
+// Document type string literals
+type DocumentType = 'COMPLAINT' | 'CONTRACT' | 'LAWSUIT' | 'OTHER';
 
 const STEPS = [
   { id: 1, title: 'Type', description: 'Select document type' },
@@ -66,7 +49,7 @@ export default function DocumentCreateWizard() {
     },
     defaultValues: {
       sessionId: '00000000-0000-0000-0000-000000000000',
-      type: DocumentType.LAWSUIT,
+      type: 'LAWSUIT',
       metadata: { claimCurrency: 'PLN' },
     },
   });
@@ -152,7 +135,7 @@ export default function DocumentCreateWizard() {
           {currentStep === 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-right-4 duration-300">
               <div
-                onClick={() => setType(DocumentType.LAWSUIT)}
+                onClick={() => setType('LAWSUIT')}
                 className="cursor-pointer group relative p-6 border-2 border-border rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all text-left"
               >
                 <div className="h-12 w-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -162,7 +145,7 @@ export default function DocumentCreateWizard() {
                 <p className="text-sm text-muted-foreground">
                   Formal legal action against a party to recover debt or damages.
                 </p>
-                {watch('type') === DocumentType.LAWSUIT && (
+                {watch('type') === 'LAWSUIT' && (
                   <div className="absolute top-4 right-4 h-6 w-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                     <Check className="h-4 w-4" />
                   </div>
@@ -170,7 +153,7 @@ export default function DocumentCreateWizard() {
               </div>
 
               <div
-                onClick={() => setType(DocumentType.CONTRACT)}
+                onClick={() => setType('CONTRACT')}
                 className="cursor-pointer group relative p-6 border-2 border-border rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all text-left"
               >
                 <div className="h-12 w-12 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -180,7 +163,7 @@ export default function DocumentCreateWizard() {
                 <p className="text-sm text-muted-foreground">
                   Legally binding agreement between two or more parties.
                 </p>
-                {watch('type') === DocumentType.CONTRACT && (
+                {watch('type') === 'CONTRACT' && (
                   <div className="absolute top-4 right-4 h-6 w-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                     <Check className="h-4 w-4" />
                   </div>
@@ -188,7 +171,7 @@ export default function DocumentCreateWizard() {
               </div>
 
               <div
-                onClick={() => setType(DocumentType.COMPLAINT)}
+                onClick={() => setType('COMPLAINT')}
                 className="cursor-pointer group relative p-6 border-2 border-border rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all text-left"
               >
                 <div className="h-12 w-12 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -198,7 +181,7 @@ export default function DocumentCreateWizard() {
                 <p className="text-sm text-muted-foreground">
                   Formal complaint to an authority or organization.
                 </p>
-                {watch('type') === DocumentType.COMPLAINT && (
+                {watch('type') === 'COMPLAINT' && (
                   <div className="absolute top-4 right-4 h-6 w-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                     <Check className="h-4 w-4" />
                   </div>
@@ -206,7 +189,7 @@ export default function DocumentCreateWizard() {
               </div>
 
               <div
-                onClick={() => setType(DocumentType.OTHER)}
+                onClick={() => setType('OTHER')}
                 className="cursor-pointer group relative p-6 border-2 border-border rounded-xl hover:border-primary/50 hover:bg-primary/5 transition-all text-left"
               >
                 <div className="h-12 w-12 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -216,7 +199,7 @@ export default function DocumentCreateWizard() {
                 <p className="text-sm text-muted-foreground">
                   Generic document type for other needs.
                 </p>
-                {watch('type') === DocumentType.OTHER && (
+                {watch('type') === 'OTHER' && (
                   <div className="absolute top-4 right-4 h-6 w-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                     <Check className="h-4 w-4" />
                   </div>

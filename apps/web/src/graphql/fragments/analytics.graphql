@@ -1,0 +1,120 @@
+# Analytics Fragments
+# Reusable fragments for analytics-related GraphQL operations
+
+# User growth metrics fragment
+fragment UserGrowthMetricsFragment on UserGrowthMetrics {
+  totalUsers
+  activeUsers
+  newUsers
+  adminUsers
+  growthRate
+  periodStart
+  periodEnd
+}
+
+# Document metrics fragment
+fragment DocumentMetricsFragment on DocumentMetrics {
+  totalDocuments
+  completedDocuments
+  draftDocuments
+  failedDocuments
+  generatingDocuments
+  successRate
+  periodStart
+  periodEnd
+}
+
+# Document type distribution fragment
+fragment DocumentTypeDistributionFragment on DocumentTypeDistribution {
+  documentType
+  count
+  percentage
+}
+
+# Query metrics fragment
+fragment QueryMetricsFragment on QueryMetrics {
+  totalQueries
+  uniqueUsers
+  avgQueriesPerUser
+  totalCitations
+  avgCitationsPerQuery
+  periodStart
+  periodEnd
+}
+
+# AI usage metrics fragment
+fragment AiUsageMetricsFragment on AiUsageMetrics {
+  totalRequests
+  totalTokens
+  totalCost
+  avgCostPerRequest
+  avgTokensPerRequest
+  periodStart
+  periodEnd
+}
+
+# AI operation breakdown fragment
+fragment AiOperationBreakdownFragment on AiOperationBreakdown {
+  operationType
+  requestCount
+  totalTokens
+  totalCost
+  costPercentage
+}
+
+# System health metrics fragment
+fragment SystemHealthMetricsFragment on SystemHealthMetrics {
+  documentSuccessRate
+  avgResponseTime
+  activeSessions
+  timestamp
+}
+
+# NOTE: Token usage fragments (TokenUsageTrend, UserTokenUsage, TokenUsageByOperation, UsageAnomaly)
+# are commented out as these types are not yet implemented in the backend schema.
+# Uncomment them when the backend adds support for token usage analytics.
+
+# # Token usage trend fragment
+# fragment TokenUsageTrendFragment on TokenUsageTrend {
+#   timestamp
+#   tokens
+#   cost
+#   requests
+#   changePercentage
+# }
+#
+# # User token usage fragment for leaderboard
+# fragment UserTokenUsageFragment on UserTokenUsage {
+#   userId
+#   userEmail
+#   userName
+#   totalTokens
+#   totalCost
+#   requestCount
+#   avgTokensPerRequest
+#   periodStart
+#   periodEnd
+# }
+#
+# # Token usage by operation fragment
+# fragment TokenUsageByOperationFragment on TokenUsageByOperation {
+#   operationType
+#   totalTokens
+#   totalCost
+#   requestCount
+#   tokenPercentage
+#   costPercentage
+#   avgTokensPerRequest
+# }
+#
+# # Usage anomaly fragment
+# fragment UsageAnomalyFragment on UsageAnomaly {
+#   userId
+#   userEmail
+#   detectedAt
+#   anomalyType
+#   description
+#   tokenCount
+#   expectedValue
+#   deviationPercentage
+# }

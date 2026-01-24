@@ -1,0 +1,16 @@
+# Notification Queries
+# These queries will be used by GraphQL Code Generator to generate TypeScript types
+
+#import "../fragments/notification.graphql"
+
+# Get recent notifications for a user
+query GetRecentNotifications($userId: String!, $limit: Int) {
+  recentNotifications(userId: $userId, limit: $limit) {
+    ...NotificationFragment
+  }
+}
+
+# Get unread notification count for a user
+query GetUnreadNotificationCount($userId: String!) {
+  unreadNotificationCount(userId: $userId)
+}

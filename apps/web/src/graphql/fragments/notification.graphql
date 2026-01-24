@@ -1,0 +1,14 @@
+# Notification Fragment for reuse across queries
+# Used by in-app notification system
+
+fragment NotificationFragment on InAppNotification {
+  id
+  userId
+  type
+  message
+  read
+  actionLink
+  actionLabel
+  metadata
+  createdAt
+}

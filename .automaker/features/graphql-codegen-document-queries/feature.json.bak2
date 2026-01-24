@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Extract all document-related GraphQL operations (legalDocuments query, documentCreate mutation, documentUpdate mutation, documentDetail query) from inline strings to apps/web/src/graphql/documents.graphql. Use LegalDocumentFragment for consistent field selection. Generate types and update components (DocumentList, DocumentDetail, DocumentEdit) to use generated DocumentQueries and DocumentMutations types.",
+  "id": "graphql-codegen-document-queries",
+  "title": "Migrate Document Queries to GraphQL Codegen",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Extract all document-related GraphQL operations (legalDocuments query, documentCreate mutation, documentUpdate mutation, documentDetail query) from inline strings to apps/web/src/graphql/documents.graphql. Use LegalDocumentFragment for consistent field selection. Generate types and update components (DocumentList, DocumentDetail, DocumentEdit) to use generated DocumentQueries and DocumentMutations types.",
+      "timestamp": "2026-01-24T08:51:34.540Z",
+      "source": "initial"
+    }
+  ]
+}

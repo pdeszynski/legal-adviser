@@ -1,19 +1,13 @@
 import { useState } from 'react';
-import { useTranslate, useCustomMutation } from '@refinedev/core';
+import { useTranslate } from '@refinedev/core';
+import {
+  useCancelMySubscriptionMutation,
+  useResumeMySubscriptionMutation,
+} from '@/generated/graphql';
+import type { MyBillingInfoQuery } from '@/generated/graphql';
 
 interface BillingSubscriptionProps {
-  billingInfo: {
-    subscriptionId: string;
-    planTier: string;
-    planName: string;
-    status: string;
-    currentPeriodStart: string;
-    currentPeriodEnd: string;
-    daysRemaining: number;
-    cancelAtPeriodEnd: boolean;
-    usage: string;
-    nextBillingAmount: string | null;
-  };
+  billingInfo: NonNullable<MyBillingInfoQuery['myBillingInfo']>;
   onSuccess: (message: string) => void;
   onError: (message: string) => void;
 }
@@ -23,9 +17,9 @@ export function BillingSubscription({ billingInfo, onSuccess, onError }: Billing
   const [isCancelling, setIsCancelling] = useState(false);
   const [isResuming, setIsResuming] = useState(false);
 
-  const { mutate: cancelSubscription } = useCustomMutation();
+  const { mutate: cancelSubscription } = useCancelMySubscriptionMutation();
 
-  const { mutate: resumeSubscription } = useCustomMutation();
+  const { mutate: resumeSubscription } = useResumeMySubscriptionMutation();
 
   const handleCancel = async () => {
     if (!confirm(translate('billing.cancelConfirmation'))) {
@@ -35,14 +29,12 @@ export function BillingSubscription({ billingInfo, onSuccess, onError }: Billing
     setIsCancelling(true);
     try {
       await cancelSubscription({
-        url: '',
-        method: 'post',
-        values: {
+        input: {
           immediately: false,
         },
       });
       onSuccess(translate('billing.cancelSuccess'));
-    } catch (error) {
+    } catch {
       onError(translate('billing.cancelError'));
     } finally {
       setIsCancelling(false);
@@ -52,13 +44,9 @@ export function BillingSubscription({ billingInfo, onSuccess, onError }: Billing
   const handleResume = async () => {
     setIsResuming(true);
     try {
-      await resumeSubscription({
-        url: '',
-        method: 'post',
-        values: {},
-      });
+      await resumeSubscription({});
       onSuccess(translate('billing.resumeSuccess'));
-    } catch (error) {
+    } catch {
       onError(translate('billing.resumeError'));
     } finally {
       setIsResuming(false);

@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Extract admin operations (adminStats, userManagement, bulkUserOperations, systemHealth) from inline strings to apps/web/src/graphql/admin.graphql. Create fragments for admin-specific entities. Generate types for all admin dashboard queries and mutations. Update admin components to use generated types with proper role-based access typing.",
+  "id": "graphql-codegen-admin-queries",
+  "title": "Migrate Admin Dashboard Queries to GraphQL Codegen",
+  "dependencies": [
+    "graphql-codegen-fragments-extraction"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Extract admin operations (adminStats, userManagement, bulkUserOperations, systemHealth) from inline strings to apps/web/src/graphql/admin.graphql. Create fragments for admin-specific entities. Generate types for all admin dashboard queries and mutations. Update admin components to use generated types with proper role-based access typing.",
+      "timestamp": "2026-01-24T08:51:34.542Z",
+      "source": "initial"
+    }
+  ]
+}

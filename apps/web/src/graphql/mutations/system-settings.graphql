@@ -1,0 +1,18 @@
+# System Settings Mutations
+# These mutations will be used by GraphQL Code Generator to generate TypeScript types
+
+#import "../fragments/system-setting.graphql"
+
+# Upsert (create or update) a single system setting
+mutation UpsertSystemSetting($input: SystemSettingInput!) {
+  upsertSystemSetting(input: $input) {
+    ...SystemSettingFragment
+  }
+}
+
+# Bulk upsert multiple system settings
+mutation BulkUpsertSystemSettings($input: BulkUpdateSettingsInput!) {
+  bulkUpsertSystemSettings(input: $input) {
+    ...SystemSettingFragment
+  }
+}

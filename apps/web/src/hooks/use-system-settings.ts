@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useGetIdentity } from '@refinedev/core';
 import { getAccessToken } from '@/providers/auth-provider/auth-provider.client';
+import { GetSystemSettingsDocument } from '@/generated/graphql';
 
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
@@ -38,7 +39,9 @@ export interface UseSystemSettingsReturn {
   error: string | null;
   fetchSettings: () => Promise<void>;
   updateSetting: (key: string, value: string, valueType?: SettingValueType) => Promise<boolean>;
-  bulkUpdateSettings: (updates: Array<{ key: string; value: string; valueType?: SettingValueType }>) => Promise<boolean>;
+  bulkUpdateSettings: (
+    updates: Array<{ key: string; value: string; valueType?: SettingValueType }>,
+  ) => Promise<boolean>;
   getSettingValue: <T = string>(key: string, defaultValue?: T) => T | null;
   getSettingsByCategory: (category: SettingCategory) => SystemSetting[];
 }
@@ -49,6 +52,9 @@ export interface UseSystemSettingsReturn {
  * Custom hook for managing system-wide settings.
  * Fetches settings and provides methods to update them.
  * Admin-only access.
+ *
+ * Uses GraphQL fragments defined in src/graphql/queries/system-settings.graphql
+ * for type safety and consistency.
  */
 export function useSystemSettings(): UseSystemSettingsReturn {
   const { data: user } = useGetIdentity<{ id: string; role?: string }>();
@@ -72,27 +78,13 @@ export function useSystemSettings(): UseSystemSettingsReturn {
         headers['Authorization'] = `Bearer ${accessToken}`;
       }
 
-      const query = `
-        query GetSystemSettings {
-          systemSettings {
-            id
-            key
-            value
-            valueType
-            category
-            description
-            metadata
-            createdAt
-            updatedAt
-          }
-        }
-      `;
-
       const response = await fetch(GRAPHQL_URL, {
         method: 'POST',
         headers,
         credentials: 'include',
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({
+          query: GetSystemSettingsDocument,
+        }),
       });
 
       if (!response.ok) {
@@ -115,7 +107,11 @@ export function useSystemSettings(): UseSystemSettingsReturn {
   }, [user?.id]);
 
   const updateSetting = useCallback(
-    async (key: string, value: string, valueType: SettingValueType = SettingValueType.STRING): Promise<boolean> => {
+    async (
+      key: string,
+      value: string,
+      valueType: SettingValueType = SettingValueType.STRING,
+    ): Promise<boolean> => {
       if (!user?.id) return false;
 
       try {
@@ -171,7 +167,7 @@ export function useSystemSettings(): UseSystemSettingsReturn {
           const existing = prev.find((s) => s.key === key);
           if (existing) {
             return prev.map((s) =>
-              s.key === key ? { ...s, value, valueType, updatedAt: new Date().toISOString() } : s
+              s.key === key ? { ...s, value, valueType, updatedAt: new Date().toISOString() } : s,
             );
           }
           return [...prev, result.data?.upsertSystemSetting];
@@ -184,12 +180,12 @@ export function useSystemSettings(): UseSystemSettingsReturn {
         return false;
       }
     },
-    [user?.id]
+    [user?.id],
   );
 
   const bulkUpdateSettings = useCallback(
     async (
-      updates: Array<{ key: string; value: string; valueType?: SettingValueType }>
+      updates: Array<{ key: string; value: string; valueType?: SettingValueType }>,
     ): Promise<boolean> => {
       if (!user?.id) return false;
 
@@ -255,7 +251,7 @@ export function useSystemSettings(): UseSystemSettingsReturn {
         return false;
       }
     },
-    [user?.id, fetchSettings]
+    [user?.id, fetchSettings],
   );
 
   const getSettingValue = useCallback(
@@ -281,14 +277,14 @@ export function useSystemSettings(): UseSystemSettingsReturn {
           return setting.value as T;
       }
     },
-    [settings]
+    [settings],
   );
 
   const getSettingsByCategory = useCallback(
     (category: SettingCategory): SystemSetting[] => {
       return settings.filter((s) => s.category === category);
     },
-    [settings]
+    [settings],
   );
 
   // Fetch settings on mount

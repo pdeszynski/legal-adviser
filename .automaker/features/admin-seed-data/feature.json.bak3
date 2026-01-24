@@ -1,0 +1,19 @@
+{
+  "category": "Database",
+  "description": "Update database seed files to include users with different roles: admin user (admin@refine.dev with ADMIN role), lawyer user (lawyer@example.com with LAWYER role), and regular user (user@example.com with USER role). Add Role seed data with all role definitions. Create UserRole seed relationships. Ensure seeds properly populate RBAC tables for development and testing.",
+  "id": "admin-seed-data",
+  "title": "Admin and Non-Admin Seed Data",
+  "dependencies": [
+    "user-role-relationship"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Update database seed files to include users with different roles: admin user (admin@refine.dev with ADMIN role), lawyer user (lawyer@example.com with LAWYER role), and regular user (user@example.com with USER role). Add Role seed data with all role definitions. Create UserRole seed relationships. Ensure seeds properly populate RBAC tables for development and testing.",
+      "timestamp": "2026-01-24T08:41:43.829Z",
+      "source": "initial"
+    }
+  ]
+}

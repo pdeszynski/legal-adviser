@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769250096195-d1eae24e",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T10:21:36.195Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "graphql-codegen-notification-queries",
+  "featureName": "Migrate Notification Queries to GraphQL Codegen",
+  "error": "Feature completed in 365s - auto-verified",
+  "passes": true
+}

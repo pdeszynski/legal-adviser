@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769250303164-afa429e5",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T10:25:03.164Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "graphql-codegen-billing-queries",
+  "featureName": "Migrate Billing/Subscription Queries to GraphQL Codegen",
+  "error": "Feature completed in 961s - auto-verified",
+  "passes": true
+}

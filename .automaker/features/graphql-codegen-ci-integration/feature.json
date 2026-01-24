@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Add GraphQL Codegen type generation step to CI pipeline. Fail build if codegen detects breaking changes or type mismatches. Run codegen before TypeScript compilation. Add pre-commit hook to generate types when .graphql files change. Ensure type generation works in Docker build environment.",
+  "id": "graphql-codegen-ci-integration",
+  "title": "Integrate GraphQL Codegen into CI/CD Pipeline",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Add GraphQL Codegen type generation step to CI pipeline. Fail build if codegen detects breaking changes or type mismatches. Run codegen before TypeScript compilation. Add pre-commit hook to generate types when .graphql files change. Ensure type generation works in Docker build environment.",
+      "timestamp": "2026-01-24T08:51:34.546Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T10:15:02.705Z"
+}

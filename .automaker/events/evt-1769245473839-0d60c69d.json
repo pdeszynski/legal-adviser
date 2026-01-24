@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769245473839-0d60c69d",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T09:04:33.839Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "user-role-relationship",
+  "featureName": "User-Role Relationship Entity",
+  "error": "Feature completed in 812s - auto-verified",
+  "passes": true
+}

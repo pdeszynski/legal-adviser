@@ -1,0 +1,18 @@
+{
+  "category": "refactor",
+  "description": "Install and configure GraphQL Code Generator (@graphql-codegen/cli) to auto-generate TypeScript types from GraphQL schema. Set up codegen.yml configuration file with TypeScript, TypeScript Operations, and TypeScript React Query plugins. Configure document loading patterns for .graphql files in apps/web. Add npm scripts for generating types (codegen, codegen:watch). Integrate with existing GraphQL schema from backend.",
+  "id": "graphql-codegen-migration-setup",
+  "title": "GraphQL Code Generator Setup and Configuration",
+  "dependencies": [],
+  "priority": 1,
+  "status": "verified",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Install and configure GraphQL Code Generator (@graphql-codegen/cli) to auto-generate TypeScript types from GraphQL schema. Set up codegen.yml configuration file with TypeScript, TypeScript Operations, and TypeScript React Query plugins. Configure document loading patterns for .graphql files in apps/web. Add npm scripts for generating types (codegen, codegen:watch). Integrate with existing GraphQL schema from backend.",
+      "timestamp": "2026-01-24T08:51:34.538Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T09:29:26.618Z"
+}

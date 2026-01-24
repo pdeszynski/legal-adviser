@@ -142,3 +142,75 @@ export class UpdateUserInput {
   @IsBoolean({ message: 'disclaimerAccepted must be a boolean value' })
   disclaimerAccepted?: boolean;
 }
+
+/**
+ * DTO for admin user creation with password and role
+ * Used by adminCreateUser mutation
+ */
+@InputType('AdminCreateUserInput')
+export class AdminCreateUserInput {
+  @Field(() => String)
+  @IsEmail({}, { message: 'Please provide a valid email address' })
+  @IsNotEmpty({ message: 'Email is required' })
+  @MaxLength(254, { message: 'Email must be at most 254 characters long' })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
+  email: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @MinLength(3, { message: 'Username must be at least 3 characters long' })
+  @MaxLength(50, { message: 'Username must be at most 50 characters long' })
+  @Matches(/^[a-zA-Z0-9_.-]+$/, {
+    message:
+      'Username can only contain letters, numbers, underscores, dots, and hyphens',
+  })
+  @Transform(({ value }) => sanitizeString(value))
+  username?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @MinLength(1, { message: 'First name must be at least 1 character long' })
+  @MaxLength(100, { message: 'First name must be at most 100 characters long' })
+  @Matches(/^[a-zA-ZÀ-ÿ\s'-]+$/, {
+    message:
+      'First name can only contain letters, spaces, hyphens, and apostrophes',
+  })
+  @Transform(({ value }) => sanitizeString(value))
+  firstName?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  @MinLength(1, { message: 'Last name must be at least 1 character long' })
+  @MaxLength(100, { message: 'Last name must be at most 100 characters long' })
+  @Matches(/^[a-zA-ZÀ-ÿ\s'-]+$/, {
+    message:
+      'Last name can only contain letters, spaces, hyphens, and apostrophes',
+  })
+  @Transform(({ value }) => sanitizeString(value))
+  lastName?: string;
+
+  @Field(() => String)
+  @IsString()
+  @IsNotEmpty({ message: 'Password is required' })
+  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  @MaxLength(100, { message: 'Password must be at most 100 characters long' })
+  password: string;
+
+  @Field(() => String, { nullable: true, defaultValue: 'user' })
+  @IsOptional()
+  @IsString()
+  @Matches(/^(user|admin)$/, {
+    message: 'Role must be either "user" or "admin"',
+  })
+  role?: 'user' | 'admin';
+
+  @Field(() => Boolean, { nullable: true, defaultValue: true })
+  @IsOptional()
+  @IsBoolean({ message: 'isActive must be a boolean value' })
+  isActive?: boolean;
+}

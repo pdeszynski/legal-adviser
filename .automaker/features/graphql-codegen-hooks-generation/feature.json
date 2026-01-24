@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Configure GraphQL Codegen to auto-generate React Query hooks (useQuery, useMutation) from GraphQL operations. Use @graphql-codegen/typescript-react-query plugin. Replace manual useCustom and data provider calls with generated hooks. Update all components to use generated hooks for type-safe data fetching and mutations.",
+  "id": "graphql-codegen-hooks-generation",
+  "title": "Generate React Query Hooks with GraphQL Codegen",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Configure GraphQL Codegen to auto-generate React Query hooks (useQuery, useMutation) from GraphQL operations. Use @graphql-codegen/typescript-react-query plugin. Replace manual useCustom and data provider calls with generated hooks. Update all components to use generated hooks for type-safe data fetching and mutations.",
+      "timestamp": "2026-01-24T08:51:34.545Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T10:30:10.084Z"
+}

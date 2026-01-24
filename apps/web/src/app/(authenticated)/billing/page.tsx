@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslate, useCustom, useNotification } from '@refinedev/core';
+import { useTranslate, useNotification } from '@refinedev/core';
+import { useMyBillingInfoQuery } from '@/generated/graphql';
 import { BillingSubscription } from '@/components/billing/billing-subscription';
 import { BillingPaymentHistory } from '@/components/billing/billing-payment-history';
 import { BillingPlanChange } from '@/components/billing/billing-plan-change';
@@ -10,87 +11,31 @@ import { BillingSkeleton } from '@/components/skeleton/BillingSkeleton';
 
 type BillingTab = 'subscription' | 'paymentHistory' | 'planChange' | 'paymentMethods';
 
-interface BillingInfo {
-  subscriptionId: string;
-  planTier: string;
-  planName: string;
-  status: string;
-  currentPeriodStart: string;
-  currentPeriodEnd: string;
-  daysRemaining: number;
-  cancelAtPeriodEnd: boolean;
-  usage: string;
-  paymentHistory: PaymentHistoryItem[];
-  paymentMethods: PaymentMethodInfo[] | null;
-  nextBillingAmount: string | null;
-}
-
-interface PaymentHistoryItem {
-  id: string;
-  amount: string;
-  currency: string;
-  status: string;
-  method: string;
-  description: string | null;
-  invoiceId: string | null;
-  createdAt: string;
-  refundedAt: string | null;
-  refundAmount: string | null;
-}
-
-interface PaymentMethodInfo {
-  id: string;
-  brand: string;
-  last4: string;
-  expiryMonth: string;
-  expiryYear: string;
-  isDefault: boolean;
-}
-
 export default function BillingPage() {
   const translate = useTranslate();
-  const { open, close } = useNotification();
+  const { open } = useNotification();
   const [activeTab, setActiveTab] = useState<BillingTab>('subscription');
-  const [refetchKey, setRefetchKey] = useState(0);
 
-  // Fetch billing info
-  const { query: billingQuery, result: billingData } = useCustom<BillingInfo>({
-    url: '',
-    method: 'get',
-    config: {
-      query: {
-        operation: 'myBillingInfo',
-        fields: [
-          'subscriptionId',
-          'planTier',
-          'planName',
-          'status',
-          'currentPeriodStart',
-          'currentPeriodEnd',
-          'daysRemaining',
-          'cancelAtPeriodEnd',
-          'usage',
-          'nextBillingAmount',
-          'paymentHistory { id amount currency status method description invoiceId createdAt refundedAt refundAmount }',
-          'paymentMethods { id brand last4 expiryMonth expiryYear isDefault }',
-        ],
-      },
-    },
-    queryOptions: {
+  // Fetch billing info using generated hook
+  const {
+    data: billingData,
+    isLoading,
+    refetch,
+  } = useMyBillingInfoQuery(
+    {},
+    {
       enabled: true,
       refetchOnWindowFocus: false,
     },
-  });
-  const { isLoading, refetch } = billingQuery;
+  );
 
-  const billingInfo = billingData?.data;
+  const billingInfo = billingData?.myBillingInfo;
 
   const handleSuccess = (message: string) => {
     open?.({
       type: 'success',
       message,
     });
-    setRefetchKey((prev) => prev + 1);
     refetch();
   };
 

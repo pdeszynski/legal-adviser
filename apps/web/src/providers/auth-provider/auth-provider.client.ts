@@ -4,6 +4,18 @@ import type { AuthProvider } from '@refinedev/core';
 import Cookies from 'js-cookie';
 import { parseGraphQLError, parseExceptionError } from '@/lib/auth-errors';
 import { getCsrfHeaders } from '@/lib/csrf';
+import {
+  LoginDocument,
+  RegisterDocument,
+  RefreshTokenDocument,
+  MeDocument,
+  AcceptDisclaimerDocument,
+  type LoginMutation,
+  type RegisterMutation,
+  type RefreshTokenMutation,
+  type MeQuery,
+  type AcceptDisclaimerMutation,
+} from '@/generated/graphql';
 
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
@@ -17,38 +29,15 @@ const ACCESS_TOKEN_EXPIRY = 1 / 24; // 1 hour (60 minutes)
 const REFRESH_TOKEN_EXPIRY = 7; // 7 days
 
 /**
- * GraphQL query/mutation types
+ * GraphQL response wrapper type
  */
-interface AuthUser {
-  id: string;
-  email: string;
-  username?: string;
-  firstName?: string;
-  lastName?: string;
-  isActive: boolean;
-  disclaimerAccepted: boolean;
-  disclaimerAcceptedAt?: string;
-  role: string;
-}
-
-interface AuthPayload {
-  accessToken: string;
-  refreshToken: string;
-  user: AuthUser;
-}
-
-interface RefreshTokenPayload {
-  accessToken: string;
-  refreshToken: string;
-}
-
 interface GraphQLResponse<T> {
   data?: T;
   errors?: Array<{ message: string; extensions?: Record<string, unknown> }>;
 }
 
 /**
- * Execute a GraphQL mutation or query
+ * Execute a GraphQL mutation or query using generated document nodes
  */
 async function executeGraphQL<T>(
   query: string,
@@ -88,93 +77,9 @@ async function executeGraphQL<T>(
 }
 
 /**
- * GraphQL Mutations and Queries
- */
-const LOGIN_MUTATION = `
-  mutation Login($input: LoginInput!) {
-    login(input: $input) {
-      accessToken
-      refreshToken
-      user {
-        id
-        email
-        username
-        firstName
-        lastName
-        isActive
-        disclaimerAccepted
-        disclaimerAcceptedAt
-        role
-      }
-    }
-  }
-`;
-
-const REGISTER_MUTATION = `
-  mutation Register($input: RegisterInput!) {
-    register(input: $input) {
-      accessToken
-      refreshToken
-      user {
-        id
-        email
-        username
-        firstName
-        lastName
-        isActive
-        disclaimerAccepted
-        disclaimerAcceptedAt
-        role
-      }
-    }
-  }
-`;
-
-const REFRESH_TOKEN_MUTATION = `
-  mutation RefreshToken($input: RefreshTokenInput!) {
-    refreshToken(input: $input) {
-      accessToken
-      refreshToken
-    }
-  }
-`;
-
-const ME_QUERY = `
-  query Me {
-    me {
-      id
-      email
-      username
-      firstName
-      lastName
-      isActive
-      disclaimerAccepted
-      disclaimerAcceptedAt
-      role
-    }
-  }
-`;
-
-const ACCEPT_DISCLAIMER_MUTATION = `
-  mutation AcceptDisclaimer {
-    acceptDisclaimer {
-      id
-      email
-      username
-      firstName
-      lastName
-      isActive
-      disclaimerAccepted
-      disclaimerAcceptedAt
-      role
-    }
-  }
-`;
-
-/**
  * Store authentication tokens and user data in cookies
  */
-function storeAuthData(payload: AuthPayload): void {
+function storeAuthData(payload: LoginMutation['login'] | RegisterMutation['register']): void {
   // Store tokens separately for easier management
   Cookies.set(ACCESS_TOKEN_COOKIE, payload.accessToken, {
     expires: ACCESS_TOKEN_EXPIRY,
@@ -206,7 +111,7 @@ function storeAuthData(payload: AuthPayload): void {
 /**
  * Update tokens after refresh
  */
-function updateTokens(payload: RefreshTokenPayload): void {
+function updateTokens(payload: RefreshTokenMutation['refreshToken']): void {
   Cookies.set(ACCESS_TOKEN_COOKIE, payload.accessToken, {
     expires: ACCESS_TOKEN_EXPIRY,
     path: '/',
@@ -253,10 +158,9 @@ async function tryRefreshToken(): Promise<boolean> {
   }
 
   try {
-    const result = await executeGraphQL<{ refreshToken: RefreshTokenPayload }>(
-      REFRESH_TOKEN_MUTATION,
-      { input: { refreshToken } },
-    );
+    const result = await executeGraphQL<RefreshTokenMutation>(RefreshTokenDocument, {
+      input: { refreshToken },
+    });
 
     if (result.errors || !result.data?.refreshToken) {
       return false;
@@ -294,7 +198,7 @@ export const authProviderClient: AuthProvider = {
    */
   login: async ({ email, password }) => {
     try {
-      const result = await executeGraphQL<{ login: AuthPayload }>(LOGIN_MUTATION, {
+      const result = await executeGraphQL<LoginMutation>(LoginDocument, {
         input: {
           username: email, // Backend accepts email as username
           password,
@@ -345,7 +249,7 @@ export const authProviderClient: AuthProvider = {
    */
   register: async ({ email, password, firstName, lastName, username }) => {
     try {
-      const result = await executeGraphQL<{ register: AuthPayload }>(REGISTER_MUTATION, {
+      const result = await executeGraphQL<RegisterMutation>(RegisterDocument, {
         input: {
           email,
           password,
@@ -494,16 +398,12 @@ export const authProviderClient: AuthProvider = {
 
     try {
       const parsedAuth = JSON.parse(auth);
-      const cachedUser = parsedAuth.user as AuthUser;
+      const cachedUser = parsedAuth.user as MeQuery['me'];
 
       // If we have an access token, try to get fresh user data
       if (accessToken) {
         try {
-          const result = await executeGraphQL<{ me: AuthUser | null }>(
-            ME_QUERY,
-            undefined,
-            accessToken,
-          );
+          const result = await executeGraphQL<MeQuery>(MeDocument, undefined, accessToken);
 
           if (result.data?.me) {
             // Update cached user data
@@ -532,6 +432,7 @@ export const authProviderClient: AuthProvider = {
       }
 
       // Return cached user data
+      if (!cachedUser) return null;
       return {
         ...cachedUser,
         name:
@@ -579,8 +480,8 @@ async function acceptDisclaimer(): Promise<{ success: boolean; error?: string }>
   }
 
   try {
-    const result = await executeGraphQL<{ acceptDisclaimer: AuthUser }>(
-      ACCEPT_DISCLAIMER_MUTATION,
+    const result = await executeGraphQL<AcceptDisclaimerMutation>(
+      AcceptDisclaimerDocument,
       undefined,
       accessToken,
     );

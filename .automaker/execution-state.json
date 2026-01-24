@@ -5,7 +5,10 @@
   "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
   "branchName": null,
   "runningFeatureIds": [
-    "feature-1769196300782-pvkhbfbdh"
+    "graphql-codegen-hooks-generation",
+    "graphql-codegen-search-queries",
+    "admin-user-bulk-operations",
+    "graphql-codegen-persisted-queries"
   ],
-  "savedAt": "2026-01-23T21:29:19.747Z"
+  "savedAt": "2026-01-24T10:26:37.805Z"
 }

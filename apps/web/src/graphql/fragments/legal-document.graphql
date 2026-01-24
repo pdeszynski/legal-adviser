@@ -1,0 +1,30 @@
+# Legal Document Fragment for reuse across queries
+# Core fields for legal documents generated or stored in the system
+
+fragment LegalDocumentFragment on LegalDocument {
+  id
+  sessionId
+  title
+  type
+  status
+  contentRaw
+  metadata {
+    plaintiffName
+    defendantName
+    claimAmount
+    claimCurrency
+  }
+  createdAt
+  updatedAt
+}
+
+# Extended fragment with additional fields for detail views
+fragment LegalDocumentDetailFragment on LegalDocument {
+  ...LegalDocumentFragment
+  pdfUrl
+  moderationStatus
+  flaggedAt
+  moderatedAt
+  moderatedById
+  moderationReason
+}

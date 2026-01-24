@@ -1,0 +1,91 @@
+# GraphQL Code Generator Configuration
+# Generates TypeScript types from the backend GraphQL schema
+
+schema:
+  # Point to the backend's auto-generated GraphQL schema
+  - ../backend/src/schema.gql
+documents:
+  # Load GraphQL documents (queries, mutations) from the web app
+  - "**/*.graphql"
+  - "**/*.gql"
+  # Also scan TypeScript/TSX files for GraphQL tagged templates
+  - "src/**/*.{ts,tsx}"
+
+generates:
+  # Generate TypeScript types for the GraphQL schema
+  src/generated/graphql.ts:
+    plugins:
+      # TypeScript types for all GraphQL schema types
+      - typescript
+      # TypeScript types for operations (queries/mutations) found in documents
+      - typescript-operations
+      # React Query hooks for operations
+      - typescript-react-query
+    config:
+      # Use fetch for GraphQL requests (can be customized)
+      fetcher:
+        func: ./graphql-fetcher#fetcher
+      # React Query v5 configuration
+      reactQueryVersion: 5
+      exposeFetcher: true
+      exposeDocumentNode: true
+      # Use strict typing for better type safety
+      strictScalars: true
+      # Enum values as strings (not enum types)
+      enumsAsTypes: true
+      # Optional fields marked with ? in generated types
+      maybeValue: T | null | undefined
+      # Naming conventions
+      namingConvention:
+        enumValues: keep
+        typeNames: change-case#pascalCase
+        transformUnderscore: true
+      # Skip typename for fragments to reduce bundle size
+      skipTypename: false
+
+  # Generate a schema introspection file for tools like Apollo Studio
+  src/generated/introspection.json:
+    plugins:
+      - introspection
+
+  # Generate persisted query manifest for client (operation name -> hash)
+  # This file is used by the frontend to send persisted queries
+  src/generated/persisted-queries/client.json:
+    plugins:
+      - "@replit/graphql-codegen-persisted-queries"
+    config:
+      output: client
+      algorithm: sha256
+      includeAlgorithmPrefix: true
+
+  # Generate persisted query manifest for server (hash -> operation details)
+  # This file is imported by the backend to validate persisted queries
+  ../backend/src/generated/persisted-queries/server.json:
+    plugins:
+      - "@replit/graphql-codegen-persisted-queries"
+    config:
+      output: server
+      algorithm: sha256
+      includeAlgorithmPrefix: true
+
+# Hooks to run before/after code generation
+hooks:
+  afterAllFileWrite:
+    - pnpm prettier --write
+
+# Configuration for the CLI
+config:
+  # Scalar types mapping
+  scalars:
+    Date: Date
+    DateTime: Date
+    Time: Date
+    Timestamp: Date
+    ISO8601DateTime: string
+    JSON: unknown
+    UUID: string
+    Long: number
+    ConnectionCursor: string
+    ID: string
+  # Treat unknown scalars as strings
+  defaultScalarType: string

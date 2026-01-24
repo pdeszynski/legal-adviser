@@ -1,84 +1,35 @@
 import type { AuditLogProvider } from '@refinedev/core';
+import type {
+  AuditLogsQuery,
+  AuditLogsQueryVariables,
+  AuditLogFragmentFragment,
+} from '@/generated/graphql';
+import { AuditLogsDocument } from '@/generated/graphql';
+import { fetcher } from '@/generated/graphql-fetcher';
+import { getAccessToken } from '../auth-provider/auth-provider.client';
+
+/**
+ * Audit Log Provider
+ *
+ * Uses GraphQL Code Generator generated types and query documents.
+ * This provides type safety and avoids inline query strings.
+ *
+ * Note: changeDetails is excluded from AuditLogFragment to avoid JSON
+ * serialization issues in sub-selections. It can be added separately if needed.
+ */
 
 const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
-const AUDIT_LOGS_QUERY = `
-  query AuditLogs($filter: AuditLogFilter, $paging: CursorPaging, $sorting: [AuditLogSort!]) {
-    auditLogs(filter: $filter, paging: $paging, sorting: $sorting) {
-      edges {
-        node {
-          id
-          action
-          resourceType
-          resourceId
-          userId
-          user {
-            id
-            email
-            firstName
-            lastName
-          }
-          ipAddress
-          userAgent
-          statusCode
-          errorMessage
-          changeDetails
-          createdAt
-          updatedAt
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-        startCursor
-        endCursor
-      }
-      totalCount
-    }
+/**
+ * Get the access token from cookies
+ */
+const getAuthToken = (): string | undefined => {
+  const token = getAccessToken();
+  if (token) {
+    return token;
   }
-`;
 
-interface AuditLog {
-  id: string;
-  action: string;
-  resourceType: string;
-  resourceId?: string;
-  userId?: string;
-  user?: {
-    id: string;
-    email: string;
-    firstName?: string;
-    lastName?: string;
-  };
-  ipAddress?: string;
-  userAgent?: string;
-  statusCode?: number;
-  errorMessage?: string;
-  changeDetails?: {
-    before?: Record<string, unknown>;
-    after?: Record<string, unknown>;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface GraphQLResponse {
-  data?: {
-    auditLogs?: {
-      edges: Array<{ node: AuditLog }>;
-      pageInfo: {
-        hasNextPage: boolean;
-        hasPreviousPage: boolean;
-        startCursor?: string;
-        endCursor?: string;
-      };
-      totalCount: number;
-    };
-  };
-  errors?: Array<{ message: string }>;
-}
-
-const getAccessToken = (): string | undefined => {
+  // Fallback to cookie parsing for SSR
   if (typeof document === 'undefined') {
     return undefined;
   }
@@ -87,10 +38,82 @@ const getAccessToken = (): string | undefined => {
   return authCookie?.split('=')[1];
 };
 
+/**
+ * Execute the AuditLogs query with proper typing
+ */
+async function fetchAuditLogs(variables: AuditLogsQueryVariables): Promise<AuditLogsQuery | null> {
+  const token = getAuthToken();
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  try {
+    const response = await fetch(GRAPHQL_ENDPOINT, {
+      method: 'POST',
+      headers,
+      credentials: 'include',
+      body: JSON.stringify({
+        query: AuditLogsDocument,
+        variables,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result.errors) {
+      throw new Error(result.errors[0]?.message || 'GraphQL error');
+    }
+
+    return result.data as AuditLogsQuery;
+  } catch (error) {
+    console.error('Failed to fetch audit logs:', error);
+    return null;
+  }
+}
+
+/**
+ * Transform an AuditLogFragment to Refine's LogParams format
+ */
+function transformAuditLogToLogParams(log: AuditLogFragmentFragment) {
+  const userName = log.user
+    ? `${log.user.firstName || ''} ${log.user.lastName || ''}`.trim() || log.user.email
+    : 'System';
+
+  return {
+    id: log.id,
+    action: log.action.toLowerCase(),
+    resource: log.resourceType.toLowerCase(),
+    meta: {
+      id: log.resourceId,
+      userId: log.userId,
+      ipAddress: log.ipAddress,
+      userAgent: log.userAgent,
+      statusCode: log.statusCode,
+      errorMessage: log.errorMessage,
+    },
+    author: log.user
+      ? {
+          id: log.user.id,
+          name: userName,
+        }
+      : undefined,
+    date: new Date(log.createdAt),
+  };
+}
+
+/**
+ * Audit Log Provider for Refine
+ *
+ * Provides audit log functionality using the GraphQL API.
+ * Uses generated types for type safety.
+ */
 export const auditLogProvider: AuditLogProvider = {
   get: async ({ resource, action, meta, author }) => {
-    const token = getAccessToken();
-
     // Build filter based on parameters
     const filter: Record<string, unknown> = {};
 
@@ -110,72 +133,23 @@ export const auditLogProvider: AuditLogProvider = {
       filter.userId = { eq: author.id };
     }
 
-    // Build GraphQL variables
-    const variables: Record<string, unknown> = {
+    // Build GraphQL variables with proper typing
+    const variables: AuditLogsQueryVariables = {
       paging: { first: 50 },
       sorting: [{ field: 'createdAt', direction: 'DESC' }],
+      ...(Object.keys(filter).length > 0 && {
+        filter: filter as AuditLogsQueryVariables['filter'],
+      }),
     };
 
-    if (Object.keys(filter).length > 0) {
-      variables.filter = filter;
-    }
+    const result = await fetchAuditLogs(variables);
 
-    try {
-      const response = await fetch(GRAPHQL_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          query: AUDIT_LOGS_QUERY,
-          variables,
-        }),
-      });
-
-      const result: GraphQLResponse = await response.json();
-
-      if (result.errors) {
-        throw new Error(result.errors[0]?.message || 'GraphQL error');
-      }
-
-      const auditLogs = result.data?.auditLogs?.edges.map((edge) => edge.node) || [];
-
-      // Transform to Refine's LogParams format
-      return auditLogs.map((log) => {
-        const userName = log.user
-          ? `${log.user.firstName || ''} ${log.user.lastName || ''}`.trim() || log.user.email
-          : 'System';
-
-        return {
-          id: log.id,
-          action: log.action.toLowerCase(),
-          resource: log.resourceType.toLowerCase(),
-          meta: {
-            id: log.resourceId,
-            userId: log.userId,
-            ipAddress: log.ipAddress,
-            userAgent: log.userAgent,
-            statusCode: log.statusCode,
-            errorMessage: log.errorMessage,
-            changeDetails: log.changeDetails,
-          },
-          author: log.user
-            ? {
-                id: log.user.id,
-                name: userName,
-              }
-            : undefined,
-          date: new Date(log.createdAt),
-          previousData: log.changeDetails?.before,
-          data: log.changeDetails?.after,
-        };
-      });
-    } catch (error) {
-      console.error('Failed to fetch audit logs:', error);
+    if (!result?.auditLogs) {
       return [];
     }
+
+    // Transform to Refine's LogParams format
+    return result.auditLogs.edges.map((edge) => transformAuditLogToLogParams(edge.node));
   },
 
   create: async (params) => {
@@ -191,3 +165,6 @@ export const auditLogProvider: AuditLogProvider = {
     return params;
   },
 };
+
+// Re-export types for use in components
+export type { AuditLogFragmentFragment, AuditLogsQuery, AuditLogsQueryVariables };

@@ -1,0 +1,20 @@
+# GraphQL Queries for the Legal AI Platform
+# These queries will be used by GraphQL Code Generator to generate TypeScript types
+
+# Get current authenticated user
+query GetCurrentUser {
+  me {
+    id
+    email
+    username
+    firstName
+    lastName
+    isActive
+    disclaimerAccepted
+    disclaimerAcceptedAt
+    role
+  }
+}
+
+# Example query to test code generation
+# More queries will be added as needed

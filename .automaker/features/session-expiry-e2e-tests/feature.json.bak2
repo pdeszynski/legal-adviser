@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Create Playwright E2E tests to verify session expiry handling. Test scenarios: 1) Manual JWT token expiration manipulation, 2) Waiting for token timeout, 3) Backend session invalidation, 4) Verify automatic logout and redirect to login page, 5) Verify user-friendly error message is displayed. Use test utilities to simulate expired tokens and backend responses.",
+  "id": "session-expiry-e2e-tests",
+  "title": "Session Expiry E2E Tests",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create Playwright E2E tests to verify session expiry handling. Test scenarios: 1) Manual JWT token expiration manipulation, 2) Waiting for token timeout, 3) Backend session invalidation, 4) Verify automatic logout and redirect to login page, 5) Verify user-friendly error message is displayed. Use test utilities to simulate expired tokens and backend responses.",
+      "timestamp": "2026-01-24T08:37:27.215Z",
+      "source": "initial"
+    }
+  ]
+}

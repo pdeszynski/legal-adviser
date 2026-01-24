@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Extract search operations (globalSearch, rulingSearch, advancedSearch) from inline strings to apps/web/src/graphql/search.graphql. Create fragments for search results. Generate types with proper search filter and result typing. Update search components and global search bar to use generated types.",
+  "id": "graphql-codegen-search-queries",
+  "title": "Migrate Search Queries to GraphQL Codegen",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Extract search operations (globalSearch, rulingSearch, advancedSearch) from inline strings to apps/web/src/graphql/search.graphql. Create fragments for search results. Generate types with proper search filter and result typing. Update search components and global search bar to use generated types.",
+      "timestamp": "2026-01-24T08:51:34.544Z",
+      "source": "initial"
+    }
+  ]
+}

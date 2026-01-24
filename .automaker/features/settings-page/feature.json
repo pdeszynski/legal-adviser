@@ -11,5 +11,8 @@
   "model": "sonnet",
   "thinkingLevel": "none",
   "reasoningEffort": "none",
-  "descriptionHistory": []
+  "descriptionHistory": [],
+  "dependencies": [
+    "two-factor-setup-page"
+  ]
 }

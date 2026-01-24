@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769247270204-f0f46fd3",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T09:34:30.204Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "graphql-codegen-auth-queries",
+  "featureName": "Migrate Auth Queries to GraphQL Codegen",
+  "error": "Feature completed in 299s - auto-verified",
+  "passes": true
+}

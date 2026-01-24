@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Ensure backend GraphQL authentication layer returns proper HTTP status codes (401 for expired/invalid tokens, 403 for forbidden access) instead of generic errors. Update JWT guard and authentication strategy to throw appropriate exceptions with correct status codes. Verify GraphQL error responses include clear expiry indicators.",
+  "id": "backend-auth-error-handling",
+  "title": "Backend Authentication Error Responses",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Ensure backend GraphQL authentication layer returns proper HTTP status codes (401 for expired/invalid tokens, 403 for forbidden access) instead of generic errors. Update JWT guard and authentication strategy to throw appropriate exceptions with correct status codes. Verify GraphQL error responses include clear expiry indicators.",
+      "timestamp": "2026-01-24T08:37:27.214Z",
+      "source": "initial"
+    }
+  ]
+}

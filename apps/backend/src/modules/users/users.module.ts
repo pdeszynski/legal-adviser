@@ -7,6 +7,7 @@ import { User } from './entities/user.entity';
 import { UserSession } from './entities/user-session.entity';
 import { CreateUserInput, UpdateUserInput } from './dto';
 import { UsersAdminResolver } from './users-admin.resolver';
+import { UsersCrudResolver } from './users-crud.resolver';
 
 /**
  * Users Module
@@ -15,12 +16,18 @@ import { UsersAdminResolver } from './users-admin.resolver';
  *
  * Primary API: GraphQL (auto-generated CRUD) - per constitution
  *
- * Uses nestjs-query for auto-generated CRUD operations:
- * - users: Query all users with filtering, sorting, paging
- * - user: Query single user by ID
- * - createOneUser: Create a new user
- * - updateOneUser: Update a user
- * - deleteOneUser: Delete a user
+ * Uses nestjs-query for auto-generated CRUD operations with admin guards:
+ * - users: Query all users with filtering, sorting, paging (admin only)
+ * - user: Query single user by ID (admin only)
+ * - createOneUser: Create a new user (admin only)
+ * - updateOneUser: Update a user (admin only)
+ * - deleteOneUser: Delete a user (admin only)
+ *
+ * Admin-only operations:
+ * - suspendUser: Suspend a user account
+ * - activateUser: Activate a user account
+ * - changeUserRole: Change a user's role
+ * - resetUserPassword: Reset a user's password
  *
  * This module manages:
  * - User accounts and profiles
@@ -31,38 +38,10 @@ import { UsersAdminResolver } from './users-admin.resolver';
   imports: [
     // TypeORM repository for custom service
     TypeOrmModule.forFeature([User, UserSession]),
-    // nestjs-query auto-generated CRUD resolvers
+    // nestjs-query for UserSession resolvers (not user, which uses custom resolver)
     NestjsQueryGraphQLModule.forFeature({
-      imports: [NestjsQueryTypeOrmModule.forFeature([User, UserSession])],
+      imports: [NestjsQueryTypeOrmModule.forFeature([UserSession])],
       resolvers: [
-        {
-          DTOClass: User,
-          EntityClass: User,
-          CreateDTOClass: CreateUserInput,
-          UpdateDTOClass: UpdateUserInput,
-          enableTotalCount: true,
-          enableAggregate: true,
-          read: {
-            // Enable standard read operations
-            many: { name: 'users' },
-            one: { name: 'user' },
-          },
-          create: {
-            // Enable create mutation
-            one: { name: 'createOneUser' },
-            many: { disabled: true },
-          },
-          update: {
-            // Enable update mutation
-            one: { name: 'updateOneUser' },
-            many: { disabled: true },
-          },
-          delete: {
-            // Enable delete mutation
-            one: { name: 'deleteOneUser' },
-            many: { disabled: true },
-          },
-        },
         {
           DTOClass: UserSession,
           EntityClass: UserSession,
@@ -90,7 +69,7 @@ import { UsersAdminResolver } from './users-admin.resolver';
       ],
     }),
   ],
-  providers: [UsersService, UsersAdminResolver],
+  providers: [UsersService, UsersAdminResolver, UsersCrudResolver],
   exports: [UsersService],
 })
 export class UsersModule {}

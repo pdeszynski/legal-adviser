@@ -1,0 +1,25 @@
+# Legal Ruling Fragment for reuse across queries
+# Used for court rulings and legal precedents
+
+fragment LegalRulingFragment on LegalRuling {
+  id
+  signature
+  courtName
+  courtType
+  rulingDate
+  summary
+  createdAt
+  updatedAt
+}
+
+# Extended fragment with full text and metadata for detail views
+fragment LegalRulingDetailFragment on LegalRuling {
+  ...LegalRulingFragment
+  fullText
+  metadata {
+    legalArea
+    keywords
+    relatedCases
+    sourceReference
+  }
+}

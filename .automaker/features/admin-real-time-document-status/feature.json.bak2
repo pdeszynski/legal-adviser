@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Implement real-time monitoring of document generation status across all users. Create GraphQL subscription 'documentStatusChanged' emitting events when documents transition between DRAFT, GENERATING, COMPLETED, FAILED states. Display live count of documents currently in GENERATING status on admin dashboard. Add document status queue visualization showing pending, processing, completed, and failed document counts. Implement auto-refresh every 10 seconds for document queue metrics. Create recent activity feed showing latest document completions and failures. Integrate with existing DocumentStatusTracking feature.",
+  "id": "admin-real-time-document-status",
+  "title": "Admin Real-Time Document Status Monitoring",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Implement real-time monitoring of document generation status across all users. Create GraphQL subscription 'documentStatusChanged' emitting events when documents transition between DRAFT, GENERATING, COMPLETED, FAILED states. Display live count of documents currently in GENERATING status on admin dashboard. Add document status queue visualization showing pending, processing, completed, and failed document counts. Implement auto-refresh every 10 seconds for document queue metrics. Create recent activity feed showing latest document completions and failures. Integrate with existing DocumentStatusTracking feature.",
+      "timestamp": "2026-01-24T08:43:29.449Z",
+      "source": "initial"
+    }
+  ]
+}

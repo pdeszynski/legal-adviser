@@ -3,7 +3,7 @@
 import { useEffect, type PropsWithChildren } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLogout } from '@refinedev/core';
-import { initializeSessionHandler, resetSessionExpiryFlag } from '@/providers/data-provider';
+import { initializeSessionHandler } from '@/providers/data-provider';
 import {
   createSessionExpiryHandler,
   resetSessionExpiryFlag as resetInterceptorFlag,
@@ -40,12 +40,11 @@ export const SessionInterceptorProvider = ({ children }: PropsWithChildren) => {
     initializeSessionHandler(handleSessionExpiry);
 
     // Also initialize the interceptor's handler (for direct use)
-    const interceptorHandler = createSessionExpiryHandler({
+    createSessionExpiryHandler({
       onSessionExpiry: handleSessionExpiry,
     });
 
     // Reset flags on mount (in case user just logged in)
-    resetSessionExpiryFlag();
     resetInterceptorFlag();
 
     // Cleanup on unmount

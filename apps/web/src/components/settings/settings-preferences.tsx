@@ -1,55 +1,52 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslate, useDataProvider } from '@refinedev/core';
+import { useTranslate } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
 import { Globe, Moon, Cpu, Clock, Calendar } from 'lucide-react';
-import type { GraphQLMutationConfig } from '@providers/data-provider';
+import {
+  useUpdateMyPreferencesMutation,
+  type UpdateUserPreferencesInput,
+  type ThemePreference,
+  type AiModelType,
+} from '@/generated/graphql';
 
-interface UserPreferences {
-  id: string;
-  userId: string;
-  locale: string;
-  theme: string;
-  aiModel: string;
-  notificationPreferences: {
-    documentUpdates: boolean;
-    queryResponses: boolean;
-    systemAlerts: boolean;
-    marketingEmails: boolean;
-    channels: {
-      email: boolean;
-      inApp: boolean;
-      push: boolean;
-    };
-  };
-  emailNotifications: boolean;
-  inAppNotifications: boolean;
-  timezone?: string | null;
-  dateFormat?: string | null;
-}
-
-interface UpdatePreferencesInput {
+interface PreferencesFormData {
   locale?: string;
-  theme?: string;
-  aiModel?: string;
+  theme?: ThemePreference;
+  aiModel?: AiModelType;
   timezone?: string;
   dateFormat?: string;
 }
 
-export function SettingsPreferences({ preferences }: { preferences: UserPreferences }) {
+interface UserPreferencesData {
+  id: string;
+  locale: string;
+  theme: ThemePreference;
+  aiModel: AiModelType;
+  timezone?: string | null;
+  dateFormat?: string | null;
+}
+
+interface SettingsPreferencesProps {
+  readonly preferences: UserPreferencesData;
+  readonly onUpdateSuccess?: () => void;
+}
+
+export function SettingsPreferences({ preferences, onUpdateSuccess }: SettingsPreferencesProps) {
   const translate = useTranslate();
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const dataProvider = useDataProvider();
+
+  // Use the generated GraphQL Codegen hook
+  const updatePreferencesMutation = useUpdateMyPreferencesMutation();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isDirty },
-  } = useForm<UpdatePreferencesInput>({
+  } = useForm<PreferencesFormData>({
     defaultValues: {
       locale: preferences.locale,
       theme: preferences.theme,
@@ -59,35 +56,27 @@ export function SettingsPreferences({ preferences }: { preferences: UserPreferen
     },
   });
 
-  const onSubmit = async (data: UpdatePreferencesInput) => {
+  const onSubmit = async (data: PreferencesFormData) => {
     setIsSuccess(false);
     setError(null);
-    setIsLoading(true);
 
     try {
-      const dp = dataProvider();
-      if (!dp) throw new Error('Data provider not available');
-      const mutationConfig: GraphQLMutationConfig<UpdatePreferencesInput> = {
-        url: '',
-        method: 'post',
-        config: {
-          mutation: {
-            operation: 'updateMyPreferences',
-            fields: ['id', 'locale', 'theme', 'aiModel', 'timezone', 'dateFormat'],
-            variables: {
-              input: data,
-            },
-          },
+      // Use the generated mutation hook with type-safe input
+      await updatePreferencesMutation.mutateAsync({
+        input: {
+          locale: data.locale,
+          theme: data.theme,
+          aiModel: data.aiModel,
+          timezone: data.timezone || null,
+          dateFormat: data.dateFormat || null,
         },
-      };
-      await (dp as any).custom(mutationConfig);
+      });
 
       setIsSuccess(true);
+      onUpdateSuccess?.();
       setTimeout(() => setIsSuccess(false), 3000);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : translate('settings.preferences.errorMessage'));
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -234,7 +223,7 @@ export function SettingsPreferences({ preferences }: { preferences: UserPreferen
         <div className="flex justify-end pt-4 border-t border-border mt-8">
           <LoadingButton
             type="submit"
-            isLoading={isLoading}
+            isLoading={updatePreferencesMutation.isPending}
             loadingText={translate('settings.preferences.saving')}
             disabled={!isDirty}
             className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-6"

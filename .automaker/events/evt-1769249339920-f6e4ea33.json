@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769249339920-f6e4ea33",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T10:08:59.920Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-token-usage-analytics",
+  "featureName": "Admin Token Usage Analytics",
+  "error": "Feature completed in 1133s - auto-verified",
+  "passes": true
+}

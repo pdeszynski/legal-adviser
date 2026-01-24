@@ -32,6 +32,14 @@ import { CollaborationModule } from './modules/collaboration/collaboration.modul
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { SystemSettingsModule } from './modules/system-settings/system-settings.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
+import { SystemHealthModule } from './modules/system-health/system-health.module';
+// Authorization - Role-Based Access Control following DDD
+import { AuthorizationModule } from './modules/authorization/authorization.module';
+// Persisted Queries - Automatic Persisted Queries (APQ) support
+import {
+  PersistedQueriesModule,
+  createPersistedQueriesPlugin,
+} from './modules/persisted-queries';
 // Strict Layered Architecture - new modules following DDD patterns
 import { PresentationModule } from './presentation/presentation.module';
 // Interceptors
@@ -44,41 +52,51 @@ import { LoggerModule } from './shared/logger';
 import { LoggingInterceptor } from './shared/logger';
 // Exception filters
 import { GqlAuthExceptionFilter } from './modules/auth/exceptions';
+// Inject the PersistedQueriesService to use in GraphQL module
+import { PersistedQueriesService } from './modules/persisted-queries';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    // Persisted Queries Module - Must be imported before GraphQLModule
+    PersistedQueriesModule,
     // GraphQL Module - Code-First approach per constitution
     // Subscriptions enabled via graphql-ws for real-time document status updates
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    // Includes Automatic Persisted Queries (APQ) support
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      sortSchema: true,
-      playground: process.env.NODE_ENV !== 'production',
-      introspection: process.env.NODE_ENV !== 'production',
-      // Pass Express request and response to GraphQL context
-      context: ({
-        req,
-        res,
-      }: {
-        req: Record<string, any>;
-        res: Record<string, any>;
-      }) => ({ req, res }),
-      // Enable GraphQL subscriptions via WebSocket (graphql-ws protocol)
-      subscriptions: {
-        'graphql-ws': {
-          path: '/graphql',
-          onConnect: () => {
-            // Connection established - could add auth validation here
-            console.log('GraphQL subscription client connected');
-          },
-          onDisconnect: () => {
-            console.log('GraphQL subscription client disconnected');
+      inject: [PersistedQueriesService],
+      useFactory: (persistedQueriesService: PersistedQueriesService) => ({
+        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+        sortSchema: true,
+        playground: process.env.NODE_ENV !== 'production',
+        introspection: process.env.NODE_ENV !== 'production',
+        // Pass Express request and response to GraphQL context
+        context: ({
+          req,
+          res,
+        }: {
+          req: Record<string, any>;
+          res: Record<string, any>;
+        }) => ({ req, res }),
+        // Enable GraphQL subscriptions via WebSocket (graphql-ws protocol)
+        subscriptions: {
+          'graphql-ws': {
+            path: '/graphql',
+            onConnect: () => {
+              // Connection established - could add auth validation here
+              console.log('GraphQL subscription client connected');
+            },
+            onDisconnect: () => {
+              console.log('GraphQL subscription client disconnected');
+            },
           },
         },
-      },
+        // Apollo Server plugins for persisted queries support
+        plugins: [createPersistedQueriesPlugin(persistedQueriesService)],
+      }),
     }),
     // Database Module - Centralized TypeORM configuration
     DatabaseModule,
@@ -144,6 +162,9 @@ import { GqlAuthExceptionFilter } from './modules/auth/exceptions';
     SubscriptionsModule,
     SystemSettingsModule,
     WebhooksModule,
+    SystemHealthModule,
+    // Authorization - Role-Based Access Control
+    AuthorizationModule,
     // Domain Event System - Event dispatcher for reliable event delivery
     EventDispatcherModule,
     // Error tracking with Sentry

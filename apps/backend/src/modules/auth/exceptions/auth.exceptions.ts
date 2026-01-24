@@ -83,11 +83,19 @@ export class UserInactiveException extends BaseAuthException {
 }
 
 /**
+ * Error types from JWT library
+ */
+interface JwtError {
+  name?: string;
+  message?: string;
+}
+
+/**
  * Convert NestJS HTTP exceptions to our custom exceptions
  * Used in guards and strategies for consistent error handling
  */
 export function toAuthException(
-  error: any,
+  error: unknown,
 ): BaseAuthException | UnauthorizedException | ForbiddenException {
   // If it's already one of our custom exceptions, return as-is
   if (error instanceof BaseAuthException) {
@@ -95,20 +103,21 @@ export function toAuthException(
   }
 
   // Convert JWT expiry error
-  if (error?.name === 'TokenExpiredError') {
+  const jwtError = error as JwtError;
+  if (jwtError.name === 'TokenExpiredError') {
     return new TokenExpiredException();
   }
 
   // Convert JWT validation error
-  if (error?.name === 'JsonWebTokenError') {
-    return new InvalidTokenException(error.message);
+  if (jwtError.name === 'JsonWebTokenError') {
+    return new InvalidTokenException(jwtError.message ?? 'Invalid token');
   }
 
   // Convert not before error
-  if (error?.name === 'NotBeforeError') {
+  if (jwtError.name === 'NotBeforeError') {
     return new InvalidTokenException('Token not yet valid');
   }
 
   // Return generic unauthorized exception
-  return new UnauthorizedException(error?.message || 'Authentication failed');
+  return new UnauthorizedException(jwtError.message ?? 'Authentication failed');
 }

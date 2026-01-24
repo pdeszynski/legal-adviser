@@ -1,0 +1,54 @@
+# Notification Operations
+# These queries, mutations, and subscriptions will be used by GraphQL Code Generator
+# to generate TypeScript types and React Query hooks.
+
+#import "./fragments/notification.graphql"
+
+# ============================================
+# QUERIES
+# ============================================
+
+# Get recent notifications for a user
+query GetRecentNotifications($userId: String!, $limit: Int) {
+  recentNotifications(userId: $userId, limit: $limit) {
+    ...NotificationFragment
+  }
+}
+
+# Get unread notification count for a user
+query GetUnreadNotificationCount($userId: String!) {
+  unreadNotificationCount(userId: $userId)
+}
+
+# ============================================
+# MUTATIONS
+# ============================================
+
+# Mark a single notification as read
+mutation MarkNotificationAsRead($notificationId: String!, $userId: String!) {
+  markNotificationAsRead(notificationId: $notificationId, userId: $userId)
+}
+
+# Mark all notifications as read for a user
+mutation MarkAllNotificationsAsRead($userId: String!) {
+  markAllNotificationsAsRead(userId: $userId)
+}
+
+# ============================================
+# SUBSCRIPTIONS
+# ============================================
+
+# Subscribe to new in-app notifications for real-time updates
+# Optionally filter by userId to receive only notifications for a specific user
+subscription InAppNotificationCreated($userId: String) {
+  inAppNotificationCreated(userId: $userId) {
+    notificationId
+    userId
+    type
+    message
+    actionLink
+    actionLabel
+    metadata
+    createdAt
+  }
+}

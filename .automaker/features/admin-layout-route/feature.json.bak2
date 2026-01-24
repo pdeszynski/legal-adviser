@@ -1,0 +1,16 @@
+{
+  "category": "UI",
+  "description": "Create dedicated admin section under /admin path with separate layout component. Implement AdminLayout component with admin-specific navigation, sidebar, and header. Configure Next.js middleware to redirect non-admin users away from /admin routes. Add admin route group in app directory structure. Separate admin concerns from regular user-facing pages.",
+  "id": "admin-layout-route",
+  "title": "Admin Layout and Routing Structure",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create dedicated admin section under /admin path with separate layout component. Implement AdminLayout component with admin-specific navigation, sidebar, and header. Configure Next.js middleware to redirect non-admin users away from /admin routes. Add admin route group in app directory structure. Separate admin concerns from regular user-facing pages.",
+      "timestamp": "2026-01-24T08:41:43.828Z",
+      "source": "initial"
+    }
+  ]
+}

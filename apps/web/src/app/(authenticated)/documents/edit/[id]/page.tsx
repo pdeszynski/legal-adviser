@@ -6,51 +6,15 @@ import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PageSkeleton } from '@/components/skeleton';
+import type {
+  UpdateLegalDocumentInput,
+  DocumentType,
+  LegalDocumentFragmentFragment,
+} from '@/generated/graphql';
 
-/**
- * Document Type enum matching backend GraphQL schema
- */
-enum DocumentType {
-  LAWSUIT = 'LAWSUIT',
-  COMPLAINT = 'COMPLAINT',
-  CONTRACT = 'CONTRACT',
-  OTHER = 'OTHER',
-}
-
-/**
- * Metadata input matching GraphQL CreateDocumentMetadataInput
- */
-interface DocumentMetadataInput {
-  plaintiffName?: string;
-  defendantName?: string;
-  claimAmount?: number;
-  claimCurrency?: string;
-}
-
-/**
- * Update Document Input matching GraphQL UpdateLegalDocumentInput
- */
-interface UpdateDocumentInput {
-  title?: string;
-  type?: DocumentType;
-  contentRaw?: string;
-  metadata?: DocumentMetadataInput;
-}
-
-/**
- * Full Document interface for fetching existing data
- */
-interface LegalDocument {
-  id: string;
-  title: string;
-  type: DocumentType;
-  status: string;
-  contentRaw?: string | null;
-  metadata?: DocumentMetadataInput | null;
-  sessionId: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// Use the generated type from GraphQL Codegen
+type LegalDocument = LegalDocumentFragmentFragment;
+type UpdateDocumentInput = UpdateLegalDocumentInput;
 
 /**
  * Document Edit Form
@@ -249,7 +213,7 @@ export default function DocumentEdit() {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register('type')}
           >
-            {Object.values(DocumentType).map((type) => (
+            {(['LAWSUIT', 'COMPLAINT', 'CONTRACT', 'OTHER'] as DocumentType[]).map((type) => (
               <option key={type} value={type}>
                 {translate(`documents.types.${type}`)}
               </option>

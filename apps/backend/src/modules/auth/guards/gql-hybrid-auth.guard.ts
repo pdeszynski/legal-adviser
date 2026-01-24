@@ -9,6 +9,24 @@ import { Observable } from 'rxjs';
 import { MissingTokenException } from '../exceptions';
 
 /**
+ * Request object with headers
+ */
+interface RequestWithHeaders {
+  headers?: {
+    authorization?: string;
+    'x-api-key'?: string;
+  };
+}
+
+/**
+ * JWT Strategy error info interface
+ */
+interface StrategyInfo {
+  name?: string;
+  message?: string;
+}
+
+/**
  * GraphQL Hybrid Authentication Guard
  *
  * Supports both JWT and API key authentication methods.
@@ -29,19 +47,20 @@ export class GqlHybridAuthGuard extends AuthGuard(['jwt', 'api-key']) {
   /**
    * Override getRequest to extract the request from GraphQL context
    */
-  getRequest(context: ExecutionContext) {
+  getRequest(context: ExecutionContext): RequestWithHeaders {
     const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext().req;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    return ctx.getContext().req as RequestWithHeaders;
   }
 
   /**
    * Override handleRequest to allow fallback between strategies
    * When JWT fails, try API key authentication
    */
-  handleRequest<TUser = any>(
-    err: any,
+  handleRequest<TUser = unknown>(
+    err: unknown,
     user: TUser,
-    info: any,
+    info: StrategyInfo | undefined,
     context: ExecutionContext,
   ): TUser {
     if (err || !user) {
@@ -65,8 +84,10 @@ export class GqlHybridAuthGuard extends AuthGuard(['jwt', 'api-key']) {
 
       // JWT was provided but failed
       if (info?.name === 'TokenExpiredError') {
-        const exception = new Error('Token has expired');
-        (exception as any).name = 'TokenExpiredError';
+        const exception = new Error('Token has expired') as Error & {
+          name: string;
+        };
+        exception.name = 'TokenExpiredError';
         throw exception;
       }
 
@@ -82,7 +103,7 @@ export class GqlHybridAuthGuard extends AuthGuard(['jwt', 'api-key']) {
   /**
    * Check if the request contains an API key header
    */
-  private hasApiKeyHeader(req: any): boolean {
+  private hasApiKeyHeader(req: RequestWithHeaders): boolean {
     const authHeader = req.headers?.authorization;
     const xApiKey = req.headers?.['x-api-key'];
 
@@ -106,7 +127,7 @@ export class GqlHybridAuthGuard extends AuthGuard(['jwt', 'api-key']) {
   /**
    * Check if the request contains a JWT token in Authorization header
    */
-  private hasJwtHeader(req: any): boolean {
+  private hasJwtHeader(req: RequestWithHeaders): boolean {
     const authHeader = req.headers?.authorization;
     if (authHeader) {
       const parts = authHeader.split(' ');

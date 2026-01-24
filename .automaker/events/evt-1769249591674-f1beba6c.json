@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769249591674-f1beba6c",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T10:13:11.674Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "graphql-codegen-analytics-queries",
+  "featureName": "Migrate Analytics Dashboard Queries to GraphQL Codegen",
+  "error": "Feature completed in 473s - auto-verified",
+  "passes": true
+}

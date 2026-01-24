@@ -5,7 +5,12 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { RefineContext } from './_refine_context';
 import { Toaster } from '@/components/ui/toaster';
+import { initializePersistedQueries } from '@/lib/persisted-queries';
 import './globals.css';
+
+// Initialize persisted queries client-side manifest
+// This loads the operation name -> hash mapping for APQ
+void initializePersistedQueries();
 
 export const metadata: Metadata = {
   title: 'Legal AI',

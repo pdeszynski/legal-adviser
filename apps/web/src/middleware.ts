@@ -1,8 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE, I18N_COOKIE_NAME } from './i18n/config';
 
+// Cookie keys for authentication (must match auth-provider.server.ts)
+const AUTH_COOKIE = 'auth';
+const ACCESS_TOKEN_COOKIE = 'access_token';
+const REFRESH_TOKEN_COOKIE = 'refresh_token';
+
+/**
+ * Check if the user is authenticated by verifying auth cookies
+ */
+function isAuthenticated(request: NextRequest): boolean {
+  const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE);
+  const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE);
+  const auth = request.cookies.get(AUTH_COOKIE);
+
+  // User is authenticated if they have access token and auth data,
+  // or if they have a refresh token (client will handle refresh)
+  return !!(accessToken?.value && auth?.value) || !!(refreshToken?.value && auth?.value);
+}
+
+/**
+ * Check if the user has admin role
+ */
+function hasAdminRole(request: NextRequest): boolean {
+  const auth = request.cookies.get(AUTH_COOKIE);
+
+  if (!auth?.value) {
+    return false;
+  }
+
+  try {
+    const parsedAuth = JSON.parse(auth.value);
+    const roles = parsedAuth.roles || [];
+    return Array.isArray(roles) && roles.includes('admin');
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Check if the pathname is an admin route
+ */
+function isAdminRoute(pathname: string): boolean {
+  return pathname === '/admin' || pathname.startsWith('/admin/');
+}
+
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  // Admin route protection - must come before locale handling
+  if (isAdminRoute(pathname)) {
+    // Check if user is authenticated
+    if (!isAuthenticated(request)) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    // Check if user has admin role
+    if (!hasAdminRole(request)) {
+      // Non-admin users trying to access admin routes are redirected to dashboard
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+  }
 
   // Check if there is any supported locale in the pathname
   const pathnameHasLocale = SUPPORTED_LOCALES.some(

@@ -1,0 +1,27 @@
+# User Preferences Fragment for reuse across queries
+# Used for user-specific settings and preferences
+
+fragment UserPreferencesFragment on UserPreferences {
+  id
+  userId
+  locale
+  theme
+  aiModel
+  getNotificationPreferences {
+    documentUpdates
+    queryResponses
+    systemAlerts
+    marketingEmails
+    channels {
+      email
+      inApp
+      push
+    }
+  }
+  emailNotifications
+  inAppNotifications
+  timezone
+  dateFormat
+  createdAt
+  updatedAt
+}

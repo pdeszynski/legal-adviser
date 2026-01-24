@@ -1,0 +1,56 @@
+# Search GraphQL Operations
+# Contains queries for searching legal rulings with various filters and options
+
+#import "./fragments/search.graphql"
+
+# Query: Aggregated search across multiple sources (ISAP, LOCAL, SAOS)
+# Used for the main rulings search page
+query AggregatedSearchLegalRulings($input: AggregatedSearchLegalRulingsInput!) {
+  aggregatedSearchLegalRulings(input: $input) {
+    count
+    hasMore
+    offset
+    totalCount
+    results {
+      ...AggregatedRulingSearchResultFragment
+    }
+  }
+}
+
+# Query: Advanced search with boolean operators (AND, OR, NOT)
+# and field-specific filters (signature, court name, summary, full text, keywords, legal area)
+query AdvancedSearchLegalRulings($input: AdvancedSearchLegalRulingsInput!) {
+  advancedSearchLegalRulings(input: $input) {
+    count
+    hasMore
+    offset
+    totalCount
+    queryExplanation
+    results {
+      ...AdvancedRulingSearchResultFragment
+    }
+  }
+}
+
+# Query: Simple search for omnisearch dropdown
+# Returns minimal fields for quick results display
+query SearchLegalRulings($input: SearchLegalRulingsInput!) {
+  searchLegalRulings(input: $input) {
+    results {
+      ...SimpleRulingSearchResultFragment
+    }
+  }
+}
+
+# Query: Documents search (for omnisearch)
+query SearchDocuments($filter: LegalDocumentFilter!) {
+  legalDocuments(filter: $filter, paging: { first: 3 }) {
+    edges {
+      node {
+        id
+        title
+        type
+      }
+    }
+  }
+}

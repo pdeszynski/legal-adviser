@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Create Playwright E2E tests validating RBAC implementation. Test scenarios: 1) Regular user cannot access /admin routes, 2) Admin can access user management, 3) Role-based menu shows correct items, 4) Non-admin gets 403 when attempting admin mutations, 5) Seed users have correct roles. Test with admin@refine.dev and user@example.com credentials. Verify guards work on both frontend and backend.",
+  "id": "rbac-e2e-tests",
+  "title": "E2E Tests for Role-Based Access Control",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create Playwright E2E tests validating RBAC implementation. Test scenarios: 1) Regular user cannot access /admin routes, 2) Admin can access user management, 3) Role-based menu shows correct items, 4) Non-admin gets 403 when attempting admin mutations, 5) Seed users have correct roles. Test with admin@refine.dev and user@example.com credentials. Verify guards work on both frontend and backend.",
+      "timestamp": "2026-01-24T08:41:43.831Z",
+      "source": "initial"
+    }
+  ]
+}

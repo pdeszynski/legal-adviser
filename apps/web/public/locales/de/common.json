@@ -816,5 +816,15 @@
       "title": "Benötigen Sie Hilfe?",
       "text": "Sie können zur Startseite zurückkehren oder sich anmelden, um auf Ihr Konto zuzugreifen."
     }
+  },
+  "forbidden": {
+    "title": "Zugriff verweigert",
+    "description": "Sie haben keine Berechtigung, auf diese Seite zuzugreifen.",
+    "goDashboard": "Zum Dashboard",
+    "goHome": "Zur Startseite",
+    "help": {
+      "title": "Benötigen Sie Hilfe?",
+      "text": "Wenn Sie glauben, dass dies ein Fehler ist, wenden Sie sich bitte an Ihren Administrator."
+    }
   }
 }

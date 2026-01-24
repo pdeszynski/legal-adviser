@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Create application service in backend for aggregating usage statistics across all users. Implement GraphQL queries for: getTotalDocumentCount (grouped by status), getActiveUsersCount (users active in last 24h/7d/30d), getTotalTokenUsage (daily/monthly breakdown), getQueryVolume (queries per day chart), getDocumentGenerationMetrics (average generation time, success rate), getUserGrowthStats (new users per period). Create StatsResolver with @Admin guard. Implement efficient database queries using aggregation functions and materialized views if needed. Cache results with TTL for performance. Support date range filtering for all statistics.",
+  "id": "admin-usage-statistics-aggregation",
+  "title": "Admin Usage Statistics Aggregation Service",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create application service in backend for aggregating usage statistics across all users. Implement GraphQL queries for: getTotalDocumentCount (grouped by status), getActiveUsersCount (users active in last 24h/7d/30d), getTotalTokenUsage (daily/monthly breakdown), getQueryVolume (queries per day chart), getDocumentGenerationMetrics (average generation time, success rate), getUserGrowthStats (new users per period). Create StatsResolver with @Admin guard. Implement efficient database queries using aggregation functions and materialized views if needed. Cache results with TTL for performance. Support date range filtering for all statistics.",
+      "timestamp": "2026-01-24T08:43:29.448Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T09:10:47.337Z"
+}

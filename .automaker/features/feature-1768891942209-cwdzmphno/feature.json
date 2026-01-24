@@ -1,6 +1,6 @@
 {
   "category": "refactor",
-  "description": "Create database seeding system with fixtures for development and testing. Include initial admin user (admin@refine.dev / password) and sample data for all entities. Use TypeORM seeding or custom seed scripts to populate database with realistic test data.",
+  "description": "Update database seeding system with fixtures for development and testing. Include users with different roles: admin user (admin@refine.dev / password with ADMIN role), lawyer user (lawyer@example.com / password123 with LAWYER role), and regular user (user@example.com / password123 with USER role). Seed Role entities and UserRole relationships. Use TypeORM seeding or custom seed scripts to populate database with realistic test data including RBAC setup.",
   "title": "Database Fixtures with Initial User",
   "dependencies": [
     "user-entity-nestjs-query",
@@ -14,6 +14,11 @@
       "description": "Create database seeding system with fixtures for development and testing. Include initial admin user (admin@refine.dev / password) and sample data for all entities. Use TypeORM seeding or custom seed scripts to populate database with realistic test data.",
       "timestamp": "2026-01-20T06:52:22.209Z",
       "source": "initial"
+    },
+    {
+      "description": "Update database seeding system with fixtures for development and testing. Include users with different roles: admin user (admin@refine.dev / password with ADMIN role), lawyer user (lawyer@example.com / password123 with LAWYER role), and regular user (user@example.com / password123 with USER role). Seed Role entities and UserRole relationships. Use TypeORM seeding or custom seed scripts to populate database with realistic test data including RBAC setup.",
+      "timestamp": "2026-01-24T08:41:43.831Z",
+      "source": "edit"
     }
   ],
   "startedAt": "2026-01-20T06:53:02.695Z",

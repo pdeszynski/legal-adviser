@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769245835550-45e0f3bd",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T09:10:35.550Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-actions-grouping",
+  "featureName": "Group Admin Actions in Dedicated Resolvers",
+  "error": "Feature completed in 507s - auto-verified",
+  "passes": true
+}

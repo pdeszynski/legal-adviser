@@ -3,11 +3,50 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useGetIdentity } from '@refinedev/core';
 import { getAccessToken } from '@/providers/auth-provider/auth-provider.client';
+import {
+  GetRecentNotificationsDocument,
+  MarkNotificationAsReadDocument,
+  MarkAllNotificationsAsReadDocument,
+  InAppNotificationCreatedDocument,
+  type InAppNotification as GraphQLInAppNotification,
+  type InAppNotificationType as GraphQLInAppNotificationType,
+  type InAppNotificationCreatedSubscriptionVariables,
+} from '@/generated/graphql';
 
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
+// Lowercase notification type for UI components (matches component expectations)
 export type InAppNotificationType = 'info' | 'success' | 'warning' | 'error' | 'system';
 
+// Convert generated enum to lowercase type
+const toLowercaseNotificationType = (type: GraphQLInAppNotificationType): InAppNotificationType => {
+  const typeMap: Record<GraphQLInAppNotificationType, InAppNotificationType> = {
+    INFO: 'info',
+    SUCCESS: 'success',
+    WARNING: 'warning',
+    ERROR: 'error',
+    SYSTEM: 'system',
+  };
+  return typeMap[type] ?? 'info';
+};
+
+// Convert generated notification to UI-friendly format
+const toUiNotification = (notification: GraphQLInAppNotification): InAppNotification => ({
+  id: notification.id,
+  userId: notification.userId,
+  type: toLowercaseNotificationType(notification.type),
+  message: notification.message,
+  read: notification.read,
+  actionLink: notification.actionLink,
+  actionLabel: notification.actionLabel,
+  metadata: notification.metadata as Record<string, unknown> | null,
+  createdAt:
+    notification.createdAt instanceof Date
+      ? notification.createdAt.toISOString()
+      : (notification.createdAt as string),
+});
+
+// UI-friendly notification interface (lowercase types)
 export interface InAppNotification {
   id: string;
   userId: string;
@@ -19,6 +58,13 @@ export interface InAppNotification {
   metadata?: Record<string, unknown> | null;
   createdAt: string;
 }
+
+// Re-export generated types for advanced usage
+export type { InAppNotificationCreatedSubscriptionVariables } from '@/generated/graphql';
+// Export the generated GraphQL types with different names to avoid conflicts
+// Use a type import with an alias, then export it
+export type GeneratedInAppNotification = GraphQLInAppNotification;
+export type GeneratedInAppNotificationType = GraphQLInAppNotificationType;
 
 export interface UseNotificationsReturn {
   notifications: InAppNotification[];
@@ -36,6 +82,9 @@ export interface UseNotificationsReturn {
  * Custom hook for managing in-app notifications.
  * Fetches notifications for the current user and provides
  * methods to mark them as read.
+ *
+ * Uses GraphQL documents defined in src/graphql/notifications.graphql
+ * for type safety and consistency.
  */
 export function useNotifications(limit: number = 20): UseNotificationsReturn {
   const { data: user } = useGetIdentity<{ id: string }>();
@@ -60,29 +109,12 @@ export function useNotifications(limit: number = 20): UseNotificationsReturn {
         headers['Authorization'] = `Bearer ${accessToken}`;
       }
 
-      const query = `
-        query GetRecentNotifications($userId: String!, $limit: Int) {
-          recentNotifications(userId: $userId, limit: $limit) {
-            id
-            userId
-            type
-            message
-            read
-            actionLink
-            actionLabel
-            metadata
-            createdAt
-          }
-          unreadNotificationCount(userId: $userId)
-        }
-      `;
-
       const response = await fetch(GRAPHQL_URL, {
         method: 'POST',
         headers,
         credentials: 'include',
         body: JSON.stringify({
-          query,
+          query: GetRecentNotificationsDocument,
           variables: { userId: user.id, limit },
         }),
       });
@@ -97,7 +129,7 @@ export function useNotifications(limit: number = 20): UseNotificationsReturn {
         throw new Error(result.errors[0].message || 'GraphQL error');
       }
 
-      setNotifications(result.data?.recentNotifications || []);
+      setNotifications((result.data?.recentNotifications || []).map(toUiNotification));
       setUnreadCount(result.data?.unreadNotificationCount || 0);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch notifications';
@@ -121,18 +153,12 @@ export function useNotifications(limit: number = 20): UseNotificationsReturn {
           headers['Authorization'] = `Bearer ${accessToken}`;
         }
 
-        const mutation = `
-          mutation MarkNotificationAsRead($notificationId: String!, $userId: String!) {
-            markNotificationAsRead(notificationId: $notificationId, userId: $userId)
-          }
-        `;
-
         const response = await fetch(GRAPHQL_URL, {
           method: 'POST',
           headers,
           credentials: 'include',
           body: JSON.stringify({
-            query: mutation,
+            query: MarkNotificationAsReadDocument,
             variables: { notificationId, userId: user.id },
           }),
         });
@@ -149,14 +175,14 @@ export function useNotifications(limit: number = 20): UseNotificationsReturn {
 
         // Update local state
         setNotifications((prev) =>
-          prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
+          prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n)),
         );
         setUnreadCount((prev) => Math.max(0, prev - 1));
       } catch {
-        // Silently handle error - notification remains unread
+        // Silently handle error - notification remain unread
       }
     },
-    [user?.id]
+    [user?.id],
   );
 
   const markAllAsRead = useCallback(async () => {
@@ -172,18 +198,12 @@ export function useNotifications(limit: number = 20): UseNotificationsReturn {
         headers['Authorization'] = `Bearer ${accessToken}`;
       }
 
-      const mutation = `
-        mutation MarkAllNotificationsAsRead($userId: String!) {
-          markAllNotificationsAsRead(userId: $userId)
-        }
-      `;
-
       const response = await fetch(GRAPHQL_URL, {
         method: 'POST',
         headers,
         credentials: 'include',
         body: JSON.stringify({
-          query: mutation,
+          query: MarkAllNotificationsAsReadDocument,
           variables: { userId: user.id },
         }),
       });
@@ -223,3 +243,6 @@ export function useNotifications(limit: number = 20): UseNotificationsReturn {
     markAllAsRead,
   };
 }
+
+// Export the subscription document for use in components
+export { InAppNotificationCreatedDocument };

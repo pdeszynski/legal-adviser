@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Create an HTTP interceptor in the frontend to catch 401 Unauthorized and 403 Forbidden responses from the backend. When session expiry is detected, automatically trigger logout flow and redirect to login page. Show user-friendly toast notification indicating session has expired.",
+  "id": "session-expiry-interceptor",
+  "title": "Session Expiry HTTP Interceptor",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create an HTTP interceptor in the frontend to catch 401 Unauthorized and 403 Forbidden responses from the backend. When session expiry is detected, automatically trigger logout flow and redirect to login page. Show user-friendly toast notification indicating session has expired.",
+      "timestamp": "2026-01-24T08:37:27.213Z",
+      "source": "initial"
+    }
+  ]
+}

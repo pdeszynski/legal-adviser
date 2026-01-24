@@ -1,0 +1,25 @@
+# System Settings Queries
+# These queries will be used by GraphQL Code Generator to generate TypeScript types
+
+#import "../fragments/system-setting.graphql"
+
+# Get all system settings
+query GetSystemSettings {
+  systemSettings {
+    ...SystemSettingFragment
+  }
+}
+
+# Get system settings by category
+query GetSystemSettingsByCategory($category: SettingCategory!) {
+  systemSettingsByCategory(category: $category) {
+    ...SystemSettingFragment
+  }
+}
+
+# Get a single system setting by key
+query GetSystemSetting($key: String!) {
+  systemSetting(key: $key) {
+    ...SystemSettingFragment
+  }
+}

@@ -1,0 +1,85 @@
+# Billing Fragments for reuse across billing queries
+# Contains fragments for billing-related entities
+
+# Payment History Item Fragment
+# Represents a single payment transaction in the payment history
+fragment PaymentHistoryItemFragment on PaymentHistoryItem {
+  id
+  amount
+  currency
+  status
+  method
+  description
+  invoiceId
+  createdAt
+  refundedAt
+  refundAmount
+}
+
+# Payment Method Info Fragment
+# Represents a saved payment method (credit card, PayPal, etc.)
+fragment PaymentMethodInfoFragment on PaymentMethodInfo {
+  id
+  brand
+  last4
+  expiryMonth
+  expiryYear
+  isDefault
+}
+
+# Billing Info Fragment
+# Main billing information including subscription status and payment history
+fragment BillingInfoFragment on BillingInfo {
+  subscriptionId
+  planTier
+  planName
+  status
+  currentPeriodStart
+  currentPeriodEnd
+  daysRemaining
+  cancelAtPeriodEnd
+  usage
+  nextBillingAmount
+  paymentHistory {
+    ...PaymentHistoryItemFragment
+  }
+  paymentMethods {
+    ...PaymentMethodInfoFragment
+  }
+}
+
+# User Subscription Fragment
+# Detailed subscription information
+fragment UserSubscriptionFragment on UserSubscription {
+  id
+  planId
+  status
+  currentPeriodStart
+  currentPeriodEnd
+  cancelAtPeriodEnd
+  canceledAt
+  trialEndDate
+  startDate
+  lastPaymentAt
+  lastPaymentAmount
+  stripeCustomerId
+  stripeSubscriptionId
+  createdAt
+  updatedAt
+}
+
+# Subscription Plan Fragment
+# Available subscription plan details
+fragment SubscriptionPlanFragment on SubscriptionPlan {
+  id
+  name
+  description
+  price
+  billingInterval
+  features
+  tier
+  isActive
+  displayOrder
+  maxUsers
+  createdAt
+}

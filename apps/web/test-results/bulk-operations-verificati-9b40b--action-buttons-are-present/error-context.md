@@ -1,0 +1,101 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+    - generic [ref=e2]:
+        - banner [ref=e3]:
+            - generic [ref=e4]:
+                - link "Legal AI" [ref=e5] [cursor=pointer]:
+                    - /url: /
+                - generic [ref=e6]:
+                    - button "🇬🇧 English" [ref=e8] [cursor=pointer]:
+                        - img [ref=e9]
+                        - generic [ref=e12]: 🇬🇧 English
+                    - link "Sign In" [ref=e13] [cursor=pointer]:
+                        - /url: /login
+        - main [ref=e14]:
+            - generic [ref=e16]:
+                - heading "404" [level=1] [ref=e19]
+                - generic [ref=e20]:
+                    - heading "Page Not Found" [level=2] [ref=e21]
+                    - paragraph [ref=e22]: The page you're looking for doesn't exist or has been moved.
+                    - generic [ref=e23]:
+                        - link "Go to Homepage" [ref=e24] [cursor=pointer]:
+                            - /url: /
+                            - img [ref=e25]
+                            - text: Go to Homepage
+                        - link "Sign In" [ref=e27] [cursor=pointer]:
+                            - /url: /login
+                    - paragraph [ref=e29]: Need help? You can return to the homepage or sign in to access your account.
+        - contentinfo [ref=e30]:
+            - generic [ref=e31]:
+                - generic [ref=e32]:
+                    - generic [ref=e33]:
+                        - heading "Legal AI" [level=4] [ref=e34]
+                        - paragraph [ref=e35]: Empowering legal professionals with next-generation AI tools. Secure, accurate, and efficient.
+                    - generic [ref=e36]:
+                        - heading "Product" [level=4] [ref=e37]
+                        - list [ref=e38]:
+                            - listitem [ref=e39]:
+                                - link "Features" [ref=e40] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e41]:
+                                - link "Pricing" [ref=e42] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e43]:
+                                - link "Security" [ref=e44] [cursor=pointer]:
+                                    - /url: '#'
+                    - generic [ref=e45]:
+                        - heading "Company" [level=4] [ref=e46]
+                        - list [ref=e47]:
+                            - listitem [ref=e48]:
+                                - link "About Us" [ref=e49] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e50]:
+                                - link "Careers" [ref=e51] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e52]:
+                                - link "Contact" [ref=e53] [cursor=pointer]:
+                                    - /url: '#'
+                    - generic [ref=e54]:
+                        - heading "Legal" [level=4] [ref=e55]
+                        - list [ref=e56]:
+                            - listitem [ref=e57]:
+                                - link "Privacy Policy" [ref=e58] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e59]:
+                                - link "Terms of Service" [ref=e60] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e61]:
+                                - link "Cookie Policy" [ref=e62] [cursor=pointer]:
+                                    - /url: '#'
+                - generic [ref=e63]:
+                    - paragraph [ref=e64]: © 2026 Legal AI. All rights reserved.
+                    - generic [ref=e65]:
+                        - link "Twitter" [ref=e66] [cursor=pointer]:
+                            - /url: '#'
+                        - link "LinkedIn" [ref=e67] [cursor=pointer]:
+                            - /url: '#'
+                        - link "GitHub" [ref=e68] [cursor=pointer]:
+                            - /url: '#'
+    - generic [ref=e69]:
+        - button [ref=e70] [cursor=pointer]:
+            - img [ref=e71]
+            - button "Element Selector" [ref=e79]:
+                - img
+        - generic:
+            - iframe
+            - generic:
+                - img
+            - generic:
+                - img
+            - generic:
+                - img
+            - generic:
+                - img
+    - region "Notifications (F8)":
+        - list
+    - button "Open Next.js Dev Tools" [ref=e85] [cursor=pointer]:
+        - img [ref=e86]
+    - alert [ref=e89]
+```

@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Update .claude/CLAUDE.md, .speckit, and .automaker documentation to include RBAC architecture overview, role definitions, and permission matrix. Document all seed user credentials with their roles: admin@refine.dev (Admin role), lawyer@example.com (Lawyer role), user@example.com (User role). Include examples of accessing admin routes, role-based guards, and testing RBAC functionality. Add testing guide for role-based access control.",
+  "id": "rbac-documentation-update",
+  "title": "Update Project Documentation for RBAC and Seed Users",
+  "dependencies": [
+    "admin-seed-data"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Update .claude/CLAUDE.md, .speckit, and .automaker documentation to include RBAC architecture overview, role definitions, and permission matrix. Document all seed user credentials with their roles: admin@refine.dev (Admin role), lawyer@example.com (Lawyer role), user@example.com (User role). Include examples of accessing admin routes, role-based guards, and testing RBAC functionality. Add testing guide for role-based access control.",
+      "timestamp": "2026-01-24T08:41:43.830Z",
+      "source": "initial"
+    }
+  ]
+}

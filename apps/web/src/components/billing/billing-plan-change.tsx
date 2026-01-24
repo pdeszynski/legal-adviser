@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { useTranslate, useCustom, useCustomMutation } from '@refinedev/core';
+import { useTranslate } from '@refinedev/core';
+import { useSubscriptionPlansQuery, useChangeSubscriptionPlanMutation } from '@/generated/graphql';
+import type { SubscriptionPlansQuery } from '@/generated/graphql';
 import { BillingPlanChangeSkeleton } from '@/components/skeleton/BillingSkeleton';
 
 interface BillingPlanChangeProps {
@@ -7,15 +9,6 @@ interface BillingPlanChangeProps {
   currentPlanName: string;
   onSuccess: (message: string) => void;
   onError: (message: string) => void;
-}
-
-interface PlanOption {
-  id: string;
-  tier: string;
-  name: string;
-  price: number;
-  description: string | null;
-  features: string;
 }
 
 export function BillingPlanChange({
@@ -28,26 +21,18 @@ export function BillingPlanChange({
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [isChanging, setIsChanging] = useState(false);
 
-  // Fetch available plans
-  const { query: plansQuery, result: plansData } = useCustom<{ plans: PlanOption[] }>({
-    url: '',
-    method: 'get',
-    config: {
-      query: {
-        operation: 'subscriptionPlans',
-        fields: ['id', 'tier', 'name', 'price', 'description', 'features'],
-      },
-    },
-    queryOptions: {
+  // Fetch available plans using generated hook
+  const { data: plansData, isLoading } = useSubscriptionPlansQuery(
+    {},
+    {
       enabled: true,
       refetchOnWindowFocus: false,
     },
-  });
-  const { isLoading } = plansQuery;
+  );
 
-  const { mutate: changePlan } = useCustomMutation();
+  const { mutate: changePlan } = useChangeSubscriptionPlanMutation();
 
-  const plans = plansData?.data?.plans || [];
+  const plans = plansData?.subscriptionPlans || [];
 
   const handleChangePlan = async () => {
     if (!selectedPlan) {
@@ -58,22 +43,18 @@ export function BillingPlanChange({
     setIsChanging(true);
     try {
       await changePlan({
-        url: '',
-        method: 'post',
-        values: {
-          newPlanId: selectedPlan,
-        },
+        newPlanId: selectedPlan,
       });
       onSuccess(translate('billing.planChange.success'));
       setSelectedPlan(null);
-    } catch (error) {
+    } catch {
       onError(translate('billing.planChange.error'));
     } finally {
       setIsChanging(false);
     }
   };
 
-  const getPlanPrice = (plan: PlanOption) => {
+  const getPlanPrice = (plan: SubscriptionPlansQuery['subscriptionPlans'][number]) => {
     return `$${plan.price}/mo`;
   };
 
@@ -81,7 +62,7 @@ export function BillingPlanChange({
     try {
       const features = JSON.parse(featuresJson);
       return Object.entries(features)
-        .filter(([_, value]) => value === true || (typeof value === 'number' && value > 0))
+        .filter(([, value]) => value === true || (typeof value === 'number' && value > 0))
         .map(([key]) => key);
     } catch {
       return [];

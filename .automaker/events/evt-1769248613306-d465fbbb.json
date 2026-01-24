@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769248613306-d465fbbb",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T09:56:53.307Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-real-time-document-status",
+  "featureName": "Admin Real-Time Document Status Monitoring",
+  "error": "Feature completed in 772s - auto-verified",
+  "passes": true
+}

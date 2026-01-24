@@ -1,15 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslate, useCustom, useGetIdentity } from '@refinedev/core';
+import { useTranslate, useGetIdentity } from '@refinedev/core';
 import { SettingsProfile } from '@/components/settings/settings-profile';
 import { SettingsPreferences } from '@/components/settings/settings-preferences';
 import { SettingsSecurity } from '@/components/settings/settings-security';
 import { SettingsNotifications } from '@/components/settings/settings-notifications';
 import { SettingsApiKeys } from '@/components/settings/settings-api-keys';
 import { SettingsTabSkeleton } from '@/components/skeleton';
-import { User, Settings, Shield, Bell, Key, Menu } from 'lucide-react';
+import { User, Settings, Shield, Bell, Key } from 'lucide-react';
 import { cn } from '@legal/ui';
+import { useGetMyPreferencesQuery } from '@/generated/graphql';
 
 type SettingsTab = 'profile' | 'preferences' | 'security' | 'notifications' | 'apiKeys';
 
@@ -21,59 +22,23 @@ interface UserIdentity {
   lastName?: string;
 }
 
-interface UserPreferences {
-  id: string;
-  userId: string;
-  locale: string;
-  theme: string;
-  aiModel: string;
-  notificationPreferences: {
-    documentUpdates: boolean;
-    queryResponses: boolean;
-    systemAlerts: boolean;
-    marketingEmails: boolean;
-    channels: {
-      email: boolean;
-      inApp: boolean;
-      push: boolean;
-    };
-  };
-  emailNotifications: boolean;
-  inAppNotifications: boolean;
-  timezone?: string | null;
-  dateFormat?: string | null;
-}
-
 export default function SettingsPage() {
   const translate = useTranslate();
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
 
   // Fetch current user data
-  const { data: userData, isLoading: userLoading, refetch: refetchUser } = useGetIdentity<UserIdentity>();
+  const {
+    data: userData,
+    isLoading: userLoading,
+    refetch: refetchUser,
+  } = useGetIdentity<UserIdentity>();
 
-  // Fetch user preferences
-  const { query: preferencesQuery, result: preferencesData } = useCustom<UserPreferences>({
-    url: '',
-    method: 'get',
-    config: {
-      query: {
-        operation: 'myPreferences',
-        fields: [
-          'id',
-          'userId',
-          'locale',
-          'theme',
-          'aiModel',
-          'notificationPreferences',
-          'emailNotifications',
-          'inAppNotifications',
-          'timezone',
-          'dateFormat',
-        ],
-      },
-    },
-  });
-  const { isLoading: preferencesLoading } = preferencesQuery;
+  // Fetch user preferences using the generated GraphQL Codegen hook
+  const {
+    data: preferencesData,
+    isLoading: preferencesLoading,
+    refetch: refetchPreferences,
+  } = useGetMyPreferencesQuery();
 
   const tabs = [
     { id: 'profile' as const, label: translate('settings.tabs.profile'), icon: User },
@@ -84,7 +49,7 @@ export default function SettingsPage() {
   ];
 
   const user = userData;
-  const preferences = preferencesData?.data;
+  const preferences = preferencesData?.myPreferences;
   const isLoading = userLoading || preferencesLoading;
 
   return (
@@ -135,9 +100,14 @@ export default function SettingsPage() {
                   </h2>
                 </div>
 
-                {activeTab === 'profile' && user && <SettingsProfile user={user} onProfileUpdate={refetchUser} />}
+                {activeTab === 'profile' && user && (
+                  <SettingsProfile user={user} onProfileUpdate={refetchUser} />
+                )}
                 {activeTab === 'preferences' && preferences && (
-                  <SettingsPreferences preferences={preferences} />
+                  <SettingsPreferences
+                    preferences={preferences}
+                    onUpdateSuccess={() => refetchPreferences()}
+                  />
                 )}
                 {activeTab === 'security' && <SettingsSecurity />}
                 {activeTab === 'notifications' && preferences && (

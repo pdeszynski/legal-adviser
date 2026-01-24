@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageList } from './message-list';
 import { MessageInput } from './message-input';
-import { useChat } from '@/hooks/use-chat';
+import { useChat, type ChatCitation } from '@/hooks/use-chat';
 import { Bot, Plus, Scale, Sparkles, MessageSquareText, ShieldQuestion } from 'lucide-react';
 import { cn } from '@legal/ui';
 
@@ -11,12 +11,7 @@ export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  citations?: Array<{
-    source: string;
-    url?: string;
-    excerpt?: string;
-    article?: string;
-  }>;
+  citations?: ChatCitation[];
   timestamp: Date;
   isStreaming?: boolean;
 }

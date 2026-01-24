@@ -1,0 +1,38 @@
+# Legal Ruling GraphQL Operations
+# Contains queries for legal rulings and court precedents
+
+#import "./fragments/legal-ruling.graphql"
+#import "./fragments/pagination.graphql"
+
+# Query: Get paginated list of legal rulings
+query GetLegalRulings(
+  $filter: LegalRulingFilter
+  $paging: CursorPaging
+  $sorting: [LegalRulingSort!]
+) {
+  legalRulings(filter: $filter, paging: $paging, sorting: $sorting) {
+    totalCount
+    edges {
+      node {
+        ...LegalRulingFragment
+      }
+    }
+    pageInfo {
+      ...PageInfoFragment
+    }
+  }
+}
+
+# Query: Get a single legal ruling by ID
+query GetLegalRuling($id: ID!) {
+  legalRuling(id: $id) {
+    ...LegalRulingFragment
+  }
+}
+
+# Query: Get legal ruling with full details
+query GetLegalRulingDetail($id: ID!) {
+  legalRuling(id: $id) {
+    ...LegalRulingDetailFragment
+  }
+}

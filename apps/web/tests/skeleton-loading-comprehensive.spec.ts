@@ -25,7 +25,7 @@ async function login(page: any) {
 
   // Wait for navigation with increased timeout
   await page.waitForURL(
-    (url) =>
+    (url: URL) =>
       url.pathname.includes('/dashboard') ||
       url.pathname.includes('/chat') ||
       url.pathname.includes('/settings'),

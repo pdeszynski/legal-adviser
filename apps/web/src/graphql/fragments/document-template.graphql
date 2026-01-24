@@ -1,0 +1,17 @@
+# Document Template Fragment for reuse across queries
+# Used for document templates that can be used to generate legal documents
+
+fragment DocumentTemplateFragment on DocumentTemplate {
+  id
+  name
+  category
+  description
+  content
+  variables
+  conditionalSections
+  polishFormattingRules
+  isActive
+  usageCount
+  createdAt
+  updatedAt
+}

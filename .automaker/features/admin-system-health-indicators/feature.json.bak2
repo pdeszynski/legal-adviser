@@ -1,0 +1,16 @@
+{
+  "category": "enhancement",
+  "description": "Add system health monitoring section to admin dashboard. Display service status: database connectivity (PostgreSQL), cache status (Redis), AI Engine availability, external API status (SAOS, ISAP). Show response times for critical services. Implement health check GraphQL queries calling each service's /health endpoint. Add color-coded status indicators (green=healthy, yellow=degraded, red=down). Display error counts and recent errors from error tracking (Sentry). Show queue sizes: document generation queue depth, email queue depth, webhook delivery queue depth. Implement auto-refresh every 30 seconds.",
+  "id": "admin-system-health-indicators",
+  "title": "Admin System Health Indicators",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Add system health monitoring section to admin dashboard. Display service status: database connectivity (PostgreSQL), cache status (Redis), AI Engine availability, external API status (SAOS, ISAP). Show response times for critical services. Implement health check GraphQL queries calling each service's /health endpoint. Add color-coded status indicators (green=healthy, yellow=degraded, red=down). Display error counts and recent errors from error tracking (Sentry). Show queue sizes: document generation queue depth, email queue depth, webhook delivery queue depth. Implement auto-refresh every 30 seconds.",
+      "timestamp": "2026-01-24T08:43:29.451Z",
+      "source": "initial"
+    }
+  ]
+}

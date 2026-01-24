@@ -1,0 +1,68 @@
+# Analytics Queries
+# These queries will be used by GraphQL Code Generator to generate TypeScript types
+# Only includes queries that exist in the backend schema
+
+#import "../fragments/analytics.graphql"
+
+# Query: Get complete dashboard analytics
+query GetAnalyticsDashboard($input: DashboardAnalyticsInput) {
+  analyticsDashboard(input: $input) {
+    userGrowth {
+      ...UserGrowthMetricsFragment
+    }
+    documents {
+      ...DocumentMetricsFragment
+    }
+    documentTypeDistribution {
+      ...DocumentTypeDistributionFragment
+    }
+    queries {
+      ...QueryMetricsFragment
+    }
+    aiUsage {
+      ...AiUsageMetricsFragment
+    }
+    aiOperationBreakdown {
+      ...AiOperationBreakdownFragment
+    }
+    systemHealth {
+      ...SystemHealthMetricsFragment
+    }
+    generatedAt
+  }
+}
+
+# Query: Get user growth metrics
+query GetUserGrowthMetrics($input: DashboardAnalyticsInput) {
+  userGrowthMetrics(input: $input) {
+    ...UserGrowthMetricsFragment
+  }
+}
+
+# Query: Get document metrics
+query GetDocumentMetrics($input: DashboardAnalyticsInput) {
+  documentMetrics(input: $input) {
+    ...DocumentMetricsFragment
+  }
+}
+
+# Query: Get query metrics
+query GetQueryMetrics($input: DashboardAnalyticsInput) {
+  queryMetrics(input: $input) {
+    ...QueryMetricsFragment
+  }
+}
+
+# Query: Get AI usage metrics
+query GetAiUsageMetrics($input: DashboardAnalyticsInput) {
+  aiUsageMetrics(input: $input) {
+    ...AiUsageMetricsFragment
+  }
+}
+
+# Query: Get system health metrics
+query GetSystemHealthMetrics($input: DashboardAnalyticsInput) {
+  systemHealthMetrics(input: $input) {
+    ...SystemHealthMetricsFragment
+  }
+}

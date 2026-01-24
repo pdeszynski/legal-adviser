@@ -1,0 +1,60 @@
+# Pagination Fragments for cursor-based pagination
+# Used by nestjs-query for paginated results
+
+# Page info fragment - contains pagination metadata
+fragment PageInfoFragment on PageInfo {
+  hasNextPage
+  hasPreviousPage
+  startCursor
+  endCursor
+}
+
+# Page result wrapper - common structure for paginated queries
+# This is a type-level fragment for use with generic types
+fragment UserPageResultFragment on UserConnection {
+  totalCount
+  edges {
+    node {
+      ...UserFragment
+    }
+  }
+  pageInfo {
+    ...PageInfoFragment
+  }
+}
+
+fragment LegalDocumentPageResultFragment on LegalDocumentConnection {
+  totalCount
+  edges {
+    node {
+      ...LegalDocumentFragment
+    }
+  }
+  pageInfo {
+    ...PageInfoFragment
+  }
+}
+
+fragment AuditLogPageResultFragment on AuditLogConnection {
+  totalCount
+  edges {
+    node {
+      ...AuditLogFragment
+    }
+  }
+  pageInfo {
+    ...PageInfoFragment
+  }
+}
+
+fragment LegalRulingPageResultFragment on LegalRulingConnection {
+  totalCount
+  edges {
+    node {
+      ...LegalRulingFragment
+    }
+  }
+  pageInfo {
+    ...PageInfoFragment
+  }
+}

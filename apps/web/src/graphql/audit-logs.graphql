@@ -1,0 +1,59 @@
+# Audit Log GraphQL Operations
+# Extracted for type generation and proper pagination support
+
+#import "./fragments/user.graphql"
+
+# Audit Log Fragment - core fields for list views
+# Excludes changeDetails JSON field to avoid serialization issues
+fragment AuditLogFragment on AuditLog {
+  id
+  action
+  resourceType
+  resourceId
+  userId
+  ipAddress
+  statusCode
+  errorMessage
+  userAgent
+  createdAt
+  updatedAt
+  user {
+    ...UserMinimalFragment
+  }
+}
+
+# Audit Log Detail Fragment - includes all fields for detail views
+# Adds changeDetails for full audit information
+fragment AuditLogDetailFragment on AuditLog {
+  ...AuditLogFragment
+  changeDetails
+}
+
+# Query to fetch audit logs with filtering, pagination, and sorting
+query AuditLogs(
+  $filter: AuditLogFilter
+  $paging: CursorPaging
+  $sorting: [AuditLogSort!]
+) {
+  auditLogs(filter: $filter, paging: $paging, sorting: $sorting) {
+    edges {
+      node {
+        ...AuditLogFragment
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+# Query to fetch a single audit log by ID
+query AuditLog($id: ID!) {
+  auditLog(id: $id) {
+    ...AuditLogFragment
+  }
+}

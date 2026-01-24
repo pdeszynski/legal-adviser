@@ -1,0 +1,181 @@
+# Admin GraphQL Operations
+# All queries, mutations, and fragments for admin dashboard functionality
+#
+# NOTE: This file contains admin-specific GraphQL operations that are currently
+# implemented in the backend schema. As the admin functionality expands, more
+# operations can be added here.
+
+# Import existing analytics fragments from fragments/analytics.graphql
+# - UserGrowthMetricsFragment, DocumentMetricsFragment, QueryMetricsFragment
+# - AiUsageMetricsFragment, SystemHealthMetricsFragment, etc.
+
+# ============================================================
+# ADMIN-SPECIFIC FRAGMENTS
+# ============================================================
+
+# Admin user fragment with all fields needed for admin views
+fragment AdminUserFragment on User {
+  id
+  email
+  username
+  firstName
+  lastName
+  isActive
+  role
+  disclaimerAccepted
+  disclaimerAcceptedAt
+  stripeCustomerId
+  createdAt
+  updatedAt
+}
+
+# Minimal admin user fragment for list views
+fragment AdminUserMinimalFragment on User {
+  id
+  email
+  username
+  firstName
+  lastName
+  isActive
+  role
+  createdAt
+}
+
+# ============================================================
+# ADMIN QUERIES
+# ============================================================
+
+# Admin dashboard analytics - comprehensive dashboard data
+query GetAdminAnalyticsDashboard($input: DashboardAnalyticsInput) {
+  analyticsDashboard(input: $input) {
+    userGrowth {
+      ...UserGrowthMetricsFragment
+    }
+    documents {
+      ...DocumentMetricsFragment
+    }
+    documentTypeDistribution {
+      ...DocumentTypeDistributionFragment
+    }
+    queries {
+      ...QueryMetricsFragment
+    }
+    aiUsage {
+      ...AiUsageMetricsFragment
+    }
+    aiOperationBreakdown {
+      ...AiOperationBreakdownFragment
+    }
+    systemHealth {
+      ...SystemHealthMetricsFragment
+    }
+    generatedAt
+  }
+}
+
+# User growth metrics query
+query GetAdminUserGrowthMetrics($input: DashboardAnalyticsInput) {
+  userGrowthMetrics(input: $input) {
+    ...UserGrowthMetricsFragment
+  }
+}
+
+# Document metrics query
+query GetAdminDocumentMetrics($input: DashboardAnalyticsInput) {
+  documentMetrics(input: $input) {
+    ...DocumentMetricsFragment
+  }
+}
+
+# Query metrics query
+query GetAdminQueryMetrics($input: DashboardAnalyticsInput) {
+  queryMetrics(input: $input) {
+    ...QueryMetricsFragment
+  }
+}
+
+# AI usage metrics query
+query GetAdminAiUsageMetrics($input: DashboardAnalyticsInput) {
+  aiUsageMetrics(input: $input) {
+    ...AiUsageMetricsFragment
+  }
+}
+
+# System health metrics query
+query GetAdminSystemHealthMetrics($input: DashboardAnalyticsInput) {
+  systemHealthMetrics(input: $input) {
+    ...SystemHealthMetricsFragment
+  }
+}
+
+# Get users with filtering and pagination (nestjs-query auto-generated)
+query GetAdminUsers(
+  $filter: UserFilter
+  $sorting: [UserSort!]
+  $paging: CursorPaging
+) {
+  users(filter: $filter, sorting: $sorting, paging: $paging) {
+    ...UserPageResultFragment
+  }
+}
+
+# Get single user by ID
+query GetAdminUser($id: ID!) {
+  user(id: $id) {
+    ...AdminUserFragment
+  }
+}
+
+# ============================================================
+# ADMIN MUTATIONS
+# ============================================================
+
+# Create user using nestjs-query auto-generated mutation
+mutation AdminCreateUser($input: CreateOneUserInput!) {
+  createOneUser(input: $input) {
+    ...AdminUserFragment
+  }
+}
+
+# Update user using nestjs-query auto-generated mutation
+mutation AdminUpdateUser($input: UpdateOneUserInput!) {
+  updateOneUser(input: $input) {
+    ...AdminUserMinimalFragment
+  }
+}
+
+# Delete user using nestjs-query auto-generated mutation
+mutation AdminDeleteUser($input: DeleteOneUserInput!) {
+  deleteOneUser(input: $input) {
+    id
+    email
+  }
+}
+
+# Suspend user mutation
+mutation AdminSuspendUser($input: SuspendUserInput!) {
+  suspendUser(input: $input) {
+    ...AdminUserMinimalFragment
+  }
+}
+
+# Activate user mutation
+mutation AdminActivateUser($input: ActivateUserInput!) {
+  activateUser(input: $input) {
+    ...AdminUserMinimalFragment
+  }
+}
+
+# Change user role mutation
+mutation AdminChangeUserRole($input: ChangeUserRoleInput!) {
+  changeUserRole(input: $input) {
+    ...AdminUserMinimalFragment
+  }
+}
+
+# Reset user password mutation
+mutation AdminResetUserPassword($input: ResetUserPasswordInput!) {
+  resetUserPassword(input: $input) {
+    ...AdminUserMinimalFragment
+  }
+}

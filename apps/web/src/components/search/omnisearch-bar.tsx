@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from '@refinedev/core';
 import { Search, FileText, Scale, LayoutTemplate, Loader2 } from 'lucide-react';
 import { OmnisearchSkeleton } from '@/components/skeleton';
+import {
+  SearchLegalRulingsDocument,
+  type SearchLegalRulingsQueryVariables,
+} from '@/generated/graphql';
 
 interface SearchResultItem {
   id: string;
@@ -16,7 +20,7 @@ interface SearchResultItem {
 
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
-async function executeGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
+async function fetcher<TData, TVariables>(query: string, variables?: TVariables): Promise<TData> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -54,31 +58,22 @@ async function searchAll(query: string): Promise<SearchResultItem[]> {
   const results: SearchResultItem[] = [];
 
   try {
-    // Search legal rulings
-    const rulingQuery = `
-      query SearchLegalRulings($input: SearchLegalRulingsInput!) {
-        searchLegalRulings(input: $input) {
-          results {
-            ruling {
-              id
-              signature
-              courtName
-            }
-          }
-        }
-      }
-    `;
-
-    const rulingData = await executeGraphQL<{
-      searchLegalRulings: {
-        results: Array<{ ruling: { id: string; signature: string; courtName: string } }>;
-      };
-    }>(rulingQuery, {
+    // Search legal rulings using generated query
+    const rulingVariables: SearchLegalRulingsQueryVariables = {
       input: {
         query,
         limit: 3,
       },
-    });
+    };
+
+    const rulingData = await fetcher<
+      {
+        searchLegalRulings: {
+          results: Array<{ ruling: { id: string; signature: string; courtName: string } }>;
+        };
+      },
+      SearchLegalRulingsQueryVariables
+    >(SearchLegalRulingsDocument, rulingVariables);
 
     if (rulingData?.searchLegalRulings?.results) {
       rulingData.searchLegalRulings.results.forEach(({ ruling }) => {
@@ -111,11 +106,14 @@ async function searchAll(query: string): Promise<SearchResultItem[]> {
       }
     `;
 
-    const documentData = await executeGraphQL<{
-      legalDocuments: {
-        edges: Array<{ node: { id: string; title: string; type: string } }>;
-      };
-    }>(documentQuery, {
+    const documentData = await fetcher<
+      {
+        legalDocuments: {
+          edges: Array<{ node: { id: string; title: string; type: string } }>;
+        };
+      },
+      { filter: { title: { iLike: string } } }
+    >(documentQuery, {
       filter: {
         title: { iLike: `%${query}%` },
       },
@@ -148,9 +146,12 @@ async function searchAll(query: string): Promise<SearchResultItem[]> {
       }
     `;
 
-    const templateData = await executeGraphQL<{
-      documentTemplates: Array<{ id: string; name: string; category: string }>;
-    }>(templateQuery);
+    const templateData = await fetcher<
+      {
+        documentTemplates: Array<{ id: string; name: string; category: string }>;
+      },
+      unknown
+    >(templateQuery);
 
     if (templateData?.documentTemplates) {
       const filteredTemplates = templateData.documentTemplates

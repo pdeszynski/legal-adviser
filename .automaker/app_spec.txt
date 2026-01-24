@@ -2699,6 +2699,221 @@ path
       <name>Add E2E Tests for Loading Skeleton States</name>
       <description>Create Playwright E2E tests verifying skeleton components appear correctly during data loading. Test that: 1) Skeletons show immediately on page load, 2) Skeletons smoothly transition to real data, 3) No layout shift occurs, 4) Skeletons disappear when data loads, 5) Error states handle properly. Test all major pages: dashboard, documents, audit logs, settings, chat.</description>
     </feature>
+    <feature>
+      <name>Fix GraphQL enum validation for preference mutations</name>
+      <description>Fix the backend error when saving prerefences:
+
+{
+    &quot;errors&quot;: [
+        {
+            &quot;message&quot;: &quot;Enum \&quot;ThemePreference\&quot; cannot represent non-enum value: \&quot;SYSTEM\&quot;. Did you mean the enum value \&quot;SYSTEM\&quot;?&quot;,
+            &quot;locations&quot;: [
+                {
+                    &quot;line&quot;: 3,
+                    &quot;column&quot;: 63
+                }
+            ],
+            &quot;extensions&quot;: {
+                &quot;code&quot;: &quot;GRAPHQL_VALIDATION_FAILED&quot;,
+                &quot;stacktrace&quot;: [
+                    &quot;GraphQLError: Enum \&quot;ThemePreference\&quot; cannot represent non-enum value: \&quot;SYSTEM\&quot;. Did you mean the enum value \&quot;SYSTEM\&quot;?&quot;,
+                    &quot;    at GraphQLEnumType.parseLiteral (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/type/definition.js:1158:13)&quot;,
+                    &quot;    at isValidValueNode (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/validation/rules/ValuesOfCorrectTypeRule.js:171:30)&quot;,
+                    &quot;    at Object.StringValue (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/validation/rules/ValuesOfCorrectTypeRule.js:135:28)&quot;,
+                    &quot;    at Object.enter (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/language/visitor.js:298:32)&quot;,
+                    &quot;    at Object.enter (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/utilities/TypeInfo.js:391:27)&quot;,
+                    &quot;    at visit (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/language/visitor.js:194:21)&quot;,
+                    &quot;    at validate (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/validation/validate.js:91:24)&quot;,
+                    &quot;    at processGraphQLRequest (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/requestPipeline.ts:263:38)&quot;,
+                    &quot;    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)&quot;,
+                    &quot;    at async internalExecuteOperation (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/ApolloServer.ts:1362:12)&quot;
+                ]
+            }
+        },
+        {
+            &quot;message&quot;: &quot;Enum \&quot;AiModelType\&quot; cannot represent non-enum value: \&quot;GPT_4_TURBO\&quot;. Did you mean the enum value \&quot;GPT_4_TURBO\&quot; or \&quot;GPT_3_5_TURBO\&quot;?&quot;,
+            &quot;locations&quot;: [
+                {
+                    &quot;line&quot;: 3,
+                    &quot;column&quot;: 82
+                }
+            ],
+            &quot;extensions&quot;: {
+                &quot;code&quot;: &quot;GRAPHQL_VALIDATION_FAILED&quot;,
+                &quot;stacktrace&quot;: [
+                    &quot;GraphQLError: Enum \&quot;AiModelType\&quot; cannot represent non-enum value: \&quot;GPT_4_TURBO\&quot;. Did you mean the enum value \&quot;GPT_4_TURBO\&quot; or \&quot;GPT_3_5_TURBO\&quot;?&quot;,
+                    &quot;    at GraphQLEnumType.parseLiteral (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/type/definition.js:1158:13)&quot;,
+                    &quot;    at isValidValueNode (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/validation/rules/ValuesOfCorrectTypeRule.js:171:30)&quot;,
+                    &quot;    at Object.StringValue (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/validation/rules/ValuesOfCorrectTypeRule.js:135:28)&quot;,
+                    &quot;    at Object.enter (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/language/visitor.js:298:32)&quot;,
+                    &quot;    at Object.enter (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/utilities/TypeInfo.js:391:27)&quot;,
+                    &quot;    at visit (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/language/visitor.js:194:21)&quot;,
+                    &quot;    at validate (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/graphql@16.12.0/node_modules/graphql/validation/validate.js:91:24)&quot;,
+                    &quot;    at processGraphQLRequest (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/requestPipeline.ts:263:38)&quot;,
+                    &quot;    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)&quot;,
+                    &quot;    at async internalExecuteOperation (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@apollo+server@5.2.0_graphql@16.12.0/node_modules/@apollo/server/src/ApolloServer.ts:1362:12)&quot;
+                ]
+            }
+        }
+    ]
+}</description>
+    </feature>
+    <feature>
+      <name>Session Expiry HTTP Interceptor</name>
+      <description>Create an HTTP interceptor in the frontend to catch 401 Unauthorized and 403 Forbidden responses from the backend. When session expiry is detected, automatically trigger logout flow and redirect to login page. Show user-friendly toast notification indicating session has expired.</description>
+    </feature>
+    <feature>
+      <name>Backend Authentication Error Responses</name>
+      <description>Ensure backend GraphQL authentication layer returns proper HTTP status codes (401 for expired/invalid tokens, 403 for forbidden access) instead of generic errors. Update JWT guard and authentication strategy to throw appropriate exceptions with correct status codes. Verify GraphQL error responses include clear expiry indicators.</description>
+    </feature>
+    <feature>
+      <name>Admin Layout and Routing Structure</name>
+      <description>Create dedicated admin section under /admin path with separate layout component. Implement AdminLayout component with admin-specific navigation, sidebar, and header. Configure Next.js middleware to redirect non-admin users away from /admin routes. Add admin route group in app directory structure. Separate admin concerns from regular user-facing pages.</description>
+    </feature>
+    <feature>
+      <name>Session Expiry E2E Tests</name>
+      <description>Create Playwright E2E tests to verify session expiry handling. Test scenarios: 1) Manual JWT token expiration manipulation, 2) Waiting for token timeout, 3) Backend session invalidation, 4) Verify automatic logout and redirect to login page, 5) Verify user-friendly error message is displayed. Use test utilities to simulate expired tokens and backend responses.</description>
+    </feature>
+    <feature>
+      <name>User-Role Relationship Entity</name>
+      <description>Create many-to-many relationship between User and Role entities in infrastructure layer. Implement UserRole entity with timestamps and audit trail. Add repository interface in domain layer and concrete implementation using nestjs-query. Support multiple roles per user with role priority ordering.</description>
+    </feature>
+    <feature>
+      <name>Group Admin Actions in Dedicated Resolvers</name>
+      <description>Refactor GraphQL resolvers to group admin-specific mutations and queries in dedicated Admin resolvers. Apply @Roles(ADMIN) decorator to all admin resolver methods. Separate admin mutations (userCreate, roleAssign, systemUpdate) from regular user operations. Ensure admin actions require both authentication AND admin role through guard combination.</description>
+    </feature>
+    <feature>
+      <name>Admin and Non-Admin Seed Data</name>
+      <description>Update database seed files to include users with different roles: admin user (admin@refine.dev with ADMIN role), lawyer user (lawyer@example.com with LAWYER role), and regular user (user@example.com with USER role). Add Role seed data with all role definitions. Create UserRole seed relationships. Ensure seeds properly populate RBAC tables for development and testing.</description>
+    </feature>
+    <feature>
+      <name>Admin Role and RBAC Entity Design</name>
+      <description>Design Role entity following DDD principles with bounded context for Authorization. Define Role aggregate with enum-based roles (ADMIN, LAWYER, USER) and permission system. Create value objects for Permission with granular access control (READ, WRITE, DELETE, MANAGE) per resource type. Establish domain events for role changes. Implement role hierarchy and permission inheritance in domain layer.</description>
+    </feature>
+    <feature>
+      <name>Admin Role Guard Implementation</name>
+      <description>Create NestJS guard decorated with @UseGuards that checks user roles before allowing access to admin routes. Implement RoleGuard that reads user roles from JWT/context and validates against required roles using metadata from @Roles decorator. Support role hierarchy (ADMIN can access USER routes). Apply to all admin resolvers and routes.</description>
+    </feature>
+    <feature>
+      <name>Admin System Overview Dashboard</name>
+      <description>Create comprehensive admin dashboard at /admin/dashboard displaying system-wide statistics and real-time metrics. Show total document count, documents currently generating (by status), completed vs failed document ratios, total users count, active sessions, estimated token usage (daily/monthly), AI query volume, and system health indicators. Implement auto-refresh every 30 seconds for real-time data. Create dedicated GraphQL queries aggregating statistics across all entities (LegalDocument, User, LegalQuery, UsageRecord). Display charts for token usage trends, document generation throughput, and user activity over time.</description>
+    </feature>
+    <feature>
+      <name>Admin Usage Statistics Aggregation Service</name>
+      <description>Create application service in backend for aggregating usage statistics across all users. Implement GraphQL queries for: getTotalDocumentCount (grouped by status), getActiveUsersCount (users active in last 24h/7d/30d), getTotalTokenUsage (daily/monthly breakdown), getQueryVolume (queries per day chart), getDocumentGenerationMetrics (average generation time, success rate), getUserGrowthStats (new users per period). Create StatsResolver with @Admin guard. Implement efficient database queries using aggregation functions and materialized views if needed. Cache results with TTL for performance. Support date range filtering for all statistics.</description>
+    </feature>
+    <feature>
+      <name>Admin User Management CRUD Operations</name>
+      <description>Implement full CRUD operations for user management in admin section using nestjs-query auto-generated resolvers. Add mutations for creating users, updating user roles, suspending accounts, and resetting passwords. Apply RoleGuard to ensure only admins can access. Create admin UI page at /admin/users with table view, search, filters, and bulk actions.</description>
+    </feature>
+    <feature>
+      <name>Admin User Management CRUD Page</name>
+      <description>Implement comprehensive user management interface at /admin/users using Refine&apos;s useTable hook with GraphQL data provider. Display user list with columns: email, username, roles, status (active/inactive), created date, last login. Implement filtering by role and status, sorting by all columns, and pagination. Add row actions: view details, edit user, suspend/activate account, reset password, delete user (with confirmation). Create UserListDialog component for inline actions. Apply RoleGuard to ensure only admins can access. Integrate with existing User, Role, and UserRole entities.</description>
+    </feature>
+    <feature>
+      <name>GraphQL Code Generator Setup and Configuration</name>
+      <description>Install and configure GraphQL Code Generator (@graphql-codegen/cli) to auto-generate TypeScript types from GraphQL schema. Set up codegen.yml configuration file with TypeScript, TypeScript Operations, and TypeScript React Query plugins. Configure document loading patterns for .graphql files in apps/web. Add npm scripts for generating types (codegen, codegen:watch). Integrate with existing GraphQL schema from backend.</description>
+    </feature>
+    <feature>
+      <name>Frontend Role-Based Route Protection</name>
+      <description>Implement frontend route protection that checks user role before navigating to protected routes. Create useUserRole hook to fetch user roles from GraphQL. Add ProtectedRoute wrapper component that redirects unauthorized users. Integrate with Refine&apos;s authProvider to include role information in identity context. Show 403 page for insufficient permissions.</description>
+    </feature>
+    <feature>
+      <name>Migrate Audit Logs Queries to GraphQL Codegen</name>
+      <description>Extract audit log operations (auditLogs query, filtering, pagination) from inline strings to apps/web/src/graphql/audit-logs.graphql. Create AuditLogFragment excluding changeDetails JSON field from sub-selections. Generate types resolving JSON serialization errors. Update audit log list view to use generated types with proper pagination typing.</description>
+    </feature>
+    <feature>
+      <name>Migrate Auth Queries to GraphQL Codegen</name>
+      <description>Move authentication GraphQL operations (login, register, refreshToken, logout) from inline strings to .graphql files in apps/web/src/graphql/queries/auth.graphql and apps/web/src/graphql/mutations/auth.graphql. Generate TypeScript types using codegen. Update auth provider to use generated types (AuthLoginMutation, AuthRegisterMutation, etc.). Replace manual type definitions with codegen-generated types.</description>
+    </feature>
+    <feature>
+      <name>Migrate Legal Q&amp;A Chat Queries to GraphQL Codegen</name>
+      <description>Extract chat operations (askLegalQuestion mutation, legalQueries query, session history) from inline strings to apps/web/src/graphql/chat.graphql. Use LegalQueryFragment for consistent fields. Generate types for AskLegalQuestionMutationVariables, LegalQuery. Update chat components and hooks to use generated types. Ensure session ID typing matches backend UUID validation.</description>
+    </feature>
+    <feature>
+      <name>Extract GraphQL Fragments to Separate Files</name>
+      <description>Audit all existing GraphQL queries/mutations embedded in TSX files and extract reusable fragments into separate .graphql files. Create fragments for common entities: UserFragment, LegalDocumentFragment, NotificationFragment, AuditLogFragment, LegalQueryFragment. Store fragments in apps/web/src/graphql/fragments/ directory. Ensure fragments include all fields currently used in inline queries.</description>
+    </feature>
+    <feature>
+      <name>Migrate Settings/Preferences Queries to GraphQL Codegen</name>
+      <description>Extract settings operations (userPreferences query, updateUserPreferences mutation) from inline strings to apps/web/src/graphql/settings.graphql. Create UserPreferencesFragment. Generate types resolving enum validation issues (ThemePreference, AiModelType enums should use enum values not strings). Update settings page to use generated types with proper enum handling.</description>
+    </feature>
+    <feature>
+      <name>E2E Tests for Role-Based Access Control</name>
+      <description>Create Playwright E2E tests validating RBAC implementation. Test scenarios: 1) Regular user cannot access /admin routes, 2) Admin can access user management, 3) Role-based menu shows correct items, 4) Non-admin gets 403 when attempting admin mutations, 5) Seed users have correct roles. Test with admin@refine.dev and user@example.com credentials. Verify guards work on both frontend and backend.</description>
+    </feature>
+    <feature>
+      <name>Dynamic Menu System Based on User Role</name>
+      <description>Implement dynamic menu rendering that shows different navigation options based on user&apos;s role. Admin users see full admin menu (user management, system settings, audit logs, analytics). Regular users see simplified menu (documents, chat, settings). Create menu configuration registry mapping roles to menu items. Update Refine menu provider to check user permissions before rendering menu items.</description>
+    </feature>
+    <feature>
+      <name>Migrate Document Queries to GraphQL Codegen</name>
+      <description>Extract all document-related GraphQL operations (legalDocuments query, documentCreate mutation, documentUpdate mutation, documentDetail query) from inline strings to apps/web/src/graphql/documents.graphql. Use LegalDocumentFragment for consistent field selection. Generate types and update components (DocumentList, DocumentDetail, DocumentEdit) to use generated DocumentQueries and DocumentMutations types.</description>
+    </feature>
+    <feature>
+      <name>Admin Real-Time Document Status Monitoring</name>
+      <description>Implement real-time monitoring of document generation status across all users. Create GraphQL subscription &apos;documentStatusChanged&apos; emitting events when documents transition between DRAFT, GENERATING, COMPLETED, FAILED states. Display live count of documents currently in GENERATING status on admin dashboard. Add document status queue visualization showing pending, processing, completed, and failed document counts. Implement auto-refresh every 10 seconds for document queue metrics. Create recent activity feed showing latest document completions and failures. Integrate with existing DocumentStatusTracking feature.</description>
+    </feature>
+    <feature>
+      <name>Admin User Creation Form</name>
+      <description>Create user creation modal/page at /admin/users/new accessible from admin user management. Implement form with fields: email, username, password (with generate option), roles (multi-select), status (active/inactive), optional profile fields. Include email validation checking for existing users. Send welcome email upon creation with temporary password if auto-generated. Apply RoleGuard for admin-only access. On success, redirect to user detail view or back to user list. Handle errors (duplicate email, validation failures) with user-friendly messages.</description>
+    </feature>
+    <feature>
+      <name>Admin System Health Indicators</name>
+      <description>Add system health monitoring section to admin dashboard. Display service status: database connectivity (PostgreSQL), cache status (Redis), AI Engine availability, external API status (SAOS, ISAP). Show response times for critical services. Implement health check GraphQL queries calling each service&apos;s /health endpoint. Add color-coded status indicators (green=healthy, yellow=degraded, red=down). Display error counts and recent errors from error tracking (Sentry). Show queue sizes: document generation queue depth, email queue depth, webhook delivery queue depth. Implement auto-refresh every 30 seconds.</description>
+    </feature>
+    <feature>
+      <name>Admin Token Usage Analytics</name>
+      <description>Create comprehensive token usage analytics page at /admin/analytics/tokens. Display aggregate token consumption metrics: total tokens used (all time, this month, today), average tokens per query, per-user token usage leaderboard, token usage trends over time (line chart), breakdown by operation type (document generation, Q&amp;A, classification). Implement filtering by date range and user. Show cost estimation based on token pricing. Create export functionality for usage reports (CSV/PDF). Add alerts for unusual usage patterns (spikes, high-consuming users). Integrate with existing UsageRecord entity.</description>
+    </feature>
+    <feature>
+      <name>Admin User Detail View</name>
+      <description>Create detailed user view page at /admin/users/:id showing comprehensive user profile information. Display user details (email, username, roles, status, timestamps), activity timeline (recent logins, actions taken, documents created), usage statistics (total documents, queries submitted, tokens consumed), and session history. Add tabs for: Documents (list of all user&apos;s documents), Queries (Q&amp;A history), Settings (user preferences and roles), Audit Log (user actions). Implement role assignment with multi-select dropdown. Support account suspension with reason field. Include password reset functionality sending email to user.</description>
+    </feature>
+    <feature>
+      <name>Migrate Analytics Dashboard Queries to GraphQL Codegen</name>
+      <description>Extract analytics operations (usageStats, tokenUsage, documentMetrics, userActivity) from inline strings to apps/web/src/graphql/analytics.graphql. Generate types for analytics responses with proper chart data typing. Update analytics dashboard to use generated types. Ensure aggregated statistics are properly typed.</description>
+    </feature>
+    <feature>
+      <name>Integrate GraphQL Codegen into CI/CD Pipeline</name>
+      <description>Add GraphQL Codegen type generation step to CI pipeline. Fail build if codegen detects breaking changes or type mismatches. Run codegen before TypeScript compilation. Add pre-commit hook to generate types when .graphql files change. Ensure type generation works in Docker build environment.</description>
+    </feature>
+    <feature>
+      <name>Document GraphQL Codegen Usage Patterns</name>
+      <description>Create documentation for using GraphQL Codegen in the project. Include examples of defining queries in .graphql files, using generated types, and working with generated React Query hooks. Document fragment composition, type generation workflow, and best practices. Add troubleshooting guide for common codegen issues.</description>
+    </feature>
+    <feature>
+      <name>Migrate Admin Dashboard Queries to GraphQL Codegen</name>
+      <description>Extract admin operations (adminStats, userManagement, bulkUserOperations, systemHealth) from inline strings to apps/web/src/graphql/admin.graphql. Create fragments for admin-specific entities. Generate types for all admin dashboard queries and mutations. Update admin components to use generated types with proper role-based access typing.</description>
+    </feature>
+    <feature>
+      <name>Migrate Notification Queries to GraphQL Codegen</name>
+      <description>Extract notification operations (recentNotifications query, markAsRead mutation, unreadNotificationCount query) from inline strings to apps/web/src/graphql/notifications.graphql. Use NotificationFragment. Generate types and update notification center and bell components to use generated types. Ensure subscription types are generated for real-time notifications.</description>
+    </feature>
+    <feature>
+      <name>Migrate Billing/Subscription Queries to GraphQL Codegen</name>
+      <description>Extract billing operations (billingInfo query, updateSubscription mutation, paymentHistory query) from inline strings to apps/web/src/graphql/billing.graphql. Create fragments for billing entities. Generate types and update billing page to use generated types. Resolve any custom query configuration issues with proper type generation.</description>
+    </feature>
+    <feature>
+      <name>Update Project Documentation for RBAC and Seed Users</name>
+      <description>Update .claude/CLAUDE.md, .speckit, and .automaker documentation to include RBAC architecture overview, role definitions, and permission matrix. Document all seed user credentials with their roles: admin@refine.dev (Admin role), lawyer@example.com (Lawyer role), user@example.com (User role). Include examples of accessing admin routes, role-based guards, and testing RBAC functionality. Add testing guide for role-based access control.</description>
+    </feature>
+    <feature>
+      <name>Generate React Query Hooks with GraphQL Codegen</name>
+      <description>Configure GraphQL Codegen to auto-generate React Query hooks (useQuery, useMutation) from GraphQL operations. Use @graphql-codegen/typescript-react-query plugin. Replace manual useCustom and data provider calls with generated hooks. Update all components to use generated hooks for type-safe data fetching and mutations.</description>
+    </feature>
+    <feature>
+      <name>Migrate Search Queries to GraphQL Codegen</name>
+      <description>Extract search operations (globalSearch, rulingSearch, advancedSearch) from inline strings to apps/web/src/graphql/search.graphql. Create fragments for search results. Generate types with proper search filter and result typing. Update search components and global search bar to use generated types.</description>
+    </feature>
+    <feature>
+      <name>Admin User Bulk Operations</name>
+      <description>Implement bulk operations on admin user management page. Add checkboxes for selecting multiple users. Support bulk actions: suspend accounts (with reason), activate accounts, assign roles (add/remove), export selected users (CSV), delete users (with confirmation and warning). Implement BulkUserMutation GraphQL resolver with proper authorization. Show confirmation dialogs before executing bulk operations. Display progress indicators for operations. Audit log all bulk actions with admin user ID and affected users.</description>
+    </feature>
+    <feature>
+      <name>Implement Persisted Queries with GraphQL Codegen</name>
+      <description>Configure GraphQL Codegen to generate persisted query documents and manifest. Set up automatic query hashing and persisted query support in backend. Replace runtime query parsing with pre-registered query IDs. Improves performance and security by eliminating ad-hoc queries.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

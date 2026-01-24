@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Extract analytics operations (usageStats, tokenUsage, documentMetrics, userActivity) from inline strings to apps/web/src/graphql/analytics.graphql. Generate types for analytics responses with proper chart data typing. Update analytics dashboard to use generated types. Ensure aggregated statistics are properly typed.",
+  "id": "graphql-codegen-analytics-queries",
+  "title": "Migrate Analytics Dashboard Queries to GraphQL Codegen",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Extract analytics operations (usageStats, tokenUsage, documentMetrics, userActivity) from inline strings to apps/web/src/graphql/analytics.graphql. Generate types for analytics responses with proper chart data typing. Update analytics dashboard to use generated types. Ensure aggregated statistics are properly typed.",
+      "timestamp": "2026-01-24T08:51:34.544Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -12,11 +12,15 @@
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
     "test:integration": "turbo run test:integration",
+    "db:seed": "turbo run db:seed --filter=@legal/backend",
+    "db:seed:clean": "turbo run db:seed:clean --filter=@legal/backend",
+    "db:seed:status": "turbo run db:seed:status --filter=@legal/backend",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
     "clean": "turbo run clean && rm -rf node_modules",
     "clean:turbo": "rm -rf .turbo && rm -rf apps/*/.turbo && rm -rf packages/*/.turbo",
+    "codegen": "turbo run codegen",
     "prepare": "husky && turbo run build --filter='./packages/*'"
   },
   "devDependencies": {

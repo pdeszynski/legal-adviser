@@ -1,16 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-
-interface Citation {
-  source: string;
-  url?: string;
-  excerpt?: string;
-  article?: string;
-}
+import type { ChatCitation } from '@/hooks/use-chat';
 
 interface CitationRendererProps {
-  readonly citations: Citation[];
+  readonly citations: ChatCitation[];
   readonly className?: string;
 }
 
@@ -43,9 +37,7 @@ export function CitationRenderer({ citations, className = '' }: CitationRenderer
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
           />
         </svg>
-        <span className="text-xs font-semibold text-gray-700">
-          Sources ({citations.length})
-        </span>
+        <span className="text-xs font-semibold text-gray-700">Sources ({citations.length})</span>
       </div>
 
       <div className="space-y-2">
@@ -97,9 +89,7 @@ export function CitationRenderer({ citations, className = '' }: CitationRenderer
                   )}
 
                   {citation.article && (
-                    <span className="text-sm text-gray-600">
-                      {' '}- {citation.article}
-                    </span>
+                    <span className="text-sm text-gray-600"> - {citation.article}</span>
                   )}
                 </div>
 
@@ -134,16 +124,9 @@ export function CitationRenderer({ citations, className = '' }: CitationRenderer
             {/* Hover Preview Tooltip */}
             {citation.excerpt && citation.excerpt.length > 100 && hoveredIndex === index && (
               <div className="absolute z-50 left-0 right-0 top-full mt-2 p-4 bg-gray-900 text-white rounded-lg shadow-xl">
-                <p className="text-sm leading-relaxed">
-                  &quot;{citation.excerpt}&quot;
-                </p>
+                <p className="text-sm leading-relaxed">&quot;{citation.excerpt}&quot;</p>
                 <div className="mt-2 pt-2 border-t border-gray-700 flex items-center gap-2 text-xs text-gray-400">
-                  <svg
-                    className="w-3 h-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"

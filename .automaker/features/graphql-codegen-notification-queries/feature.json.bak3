@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Extract notification operations (recentNotifications query, markAsRead mutation, unreadNotificationCount query) from inline strings to apps/web/src/graphql/notifications.graphql. Use NotificationFragment. Generate types and update notification center and bell components to use generated types. Ensure subscription types are generated for real-time notifications.",
+  "id": "graphql-codegen-notification-queries",
+  "title": "Migrate Notification Queries to GraphQL Codegen",
+  "dependencies": [
+    "graphql-codegen-fragments-extraction"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Extract notification operations (recentNotifications query, markAsRead mutation, unreadNotificationCount query) from inline strings to apps/web/src/graphql/notifications.graphql. Use NotificationFragment. Generate types and update notification center and bell components to use generated types. Ensure subscription types are generated for real-time notifications.",
+      "timestamp": "2026-01-24T08:51:34.543Z",
+      "source": "initial"
+    }
+  ]
+}

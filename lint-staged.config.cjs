@@ -41,6 +41,12 @@ module.exports = {
     'cd apps/ai-engine && uv run ruff format', // Format with Ruff
   ],
 
+  // === GraphQL files ===
+  // Run codegen when GraphQL files change
+  'apps/web/src/**/*.{gql,graphql}': [
+    'cd apps/web && pnpm codegen', // Generate TypeScript types from GraphQL
+  ],
+
   // === Type checking (runs once per affected app) ===
   // When any TS file in backend changes, typecheck the whole backend
   'apps/backend/**/*.{ts,tsx}': () => 'cd apps/backend && npx tsc --noEmit',

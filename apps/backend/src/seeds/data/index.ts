@@ -8,3 +8,5 @@ export { analysesSeedData, type AnalysisSeedData } from './analyses.seed';
 export { rulingsSeedData, type RulingSeedData } from './rulings.seed';
 export { queriesSeedData, type QuerySeedData } from './queries.seed';
 export { auditLogsSeedData, type AuditLogSeedData } from './audit-logs.seed';
+export { rolesSeedData, type RoleSeedData } from './roles.seed';
+export { userRolesSeedData, type UserRoleSeedData } from './user-roles.seed';

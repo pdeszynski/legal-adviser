@@ -1,0 +1,16 @@
+{
+  "category": "Security",
+  "description": "Implement frontend route protection that checks user role before navigating to protected routes. Create useUserRole hook to fetch user roles from GraphQL. Add ProtectedRoute wrapper component that redirects unauthorized users. Integrate with Refine's authProvider to include role information in identity context. Show 403 page for insufficient permissions.",
+  "id": "frontend-role-check",
+  "title": "Frontend Role-Based Route Protection",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Implement frontend route protection that checks user role before navigating to protected routes. Create useUserRole hook to fetch user roles from GraphQL. Add ProtectedRoute wrapper component that redirects unauthorized users. Integrate with Refine's authProvider to include role information in identity context. Show 403 page for insufficient permissions.",
+      "timestamp": "2026-01-24T08:41:43.830Z",
+      "source": "initial"
+    }
+  ]
+}

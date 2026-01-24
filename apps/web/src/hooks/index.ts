@@ -48,3 +48,14 @@ export type {
 
 export { useFormWithSkeleton } from './use-form-with-skeleton';
 export type { UseFormWithSkeletonProps, UseFormWithSkeletonResult } from './use-form-with-skeleton';
+
+export { useUserRole } from './use-user-role';
+export type { UserRole, UseUserRoleReturn } from './use-user-role';
+
+export { useDocumentMonitoring } from './use-document-monitoring';
+export type {
+  DocumentQueueMetrics,
+  DocumentActivityEntry,
+  RecentDocumentActivity,
+  UseDocumentMonitoringReturn,
+} from './use-document-monitoring';

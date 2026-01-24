@@ -1,0 +1,96 @@
+# Document GraphQL Operations
+# Contains queries and mutations for legal document management
+
+#import "./fragments/legal-document.graphql"
+#import "./fragments/document-template.graphql"
+#import "./fragments/user.graphql"
+#import "./fragments/pagination.graphql"
+
+# Query: Get paginated list of legal documents
+query GetLegalDocuments(
+  $filter: LegalDocumentFilter
+  $paging: CursorPaging
+  $sorting: [LegalDocumentSort!]
+) {
+  legalDocuments(filter: $filter, paging: $paging, sorting: $sorting) {
+    totalCount
+    edges {
+      node {
+        ...LegalDocumentFragment
+      }
+    }
+    pageInfo {
+      ...PageInfoFragment
+    }
+  }
+}
+
+# Query: Get a single legal document by ID
+query GetLegalDocument($id: ID!) {
+  legalDocument(id: $id) {
+    ...LegalDocumentFragment
+  }
+}
+
+# Mutation: Generate a new legal document using AI
+mutation GenerateDocument($input: GenerateDocumentInput!) {
+  generateDocument(input: $input) {
+    ...LegalDocumentFragment
+  }
+}
+
+# Mutation: Update an existing legal document
+mutation UpdateDocument($id: ID!, $input: UpdateDocumentInput!) {
+  updateDocument(id: $id, input: $input) {
+    ...LegalDocumentFragment
+  }
+}
+
+# Mutation: Delete a legal document
+mutation DeleteDocument($id: ID!) {
+  deleteDocument(id: $id)
+}
+
+# Query: Get document templates
+query GetDocumentTemplates(
+  $filter: DocumentTemplateFilter
+  $paging: CursorPaging
+) {
+  documentTemplates(filter: $filter, paging: $paging) {
+    totalCount
+    edges {
+      node {
+        ...DocumentTemplateFragment
+      }
+    }
+    pageInfo {
+      ...PageInfoFragment
+    }
+  }
+}
+
+# Query: Get a single document template
+query GetDocumentTemplate($id: ID!) {
+  documentTemplate(id: $id) {
+    ...DocumentTemplateFragment
+  }
+}
+
+# Mutation: Create a new document template
+mutation CreateDocumentTemplate($input: CreateTemplateInput!) {
+  createDocumentTemplate(input: $input) {
+    ...DocumentTemplateFragment
+  }
+}
+
+# Mutation: Update a document template
+mutation UpdateDocumentTemplate($id: ID!, $input: UpdateTemplateInput!) {
+  updateDocumentTemplate(id: $id, input: $input) {
+    ...DocumentTemplateFragment
+  }
+}
+
+# Mutation: Delete a document template
+mutation DeleteDocumentTemplate($id: ID!) {
+  deleteDocumentTemplate(id: $id)
+}
