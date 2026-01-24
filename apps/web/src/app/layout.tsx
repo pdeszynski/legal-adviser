@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { RefineContext } from './_refine_context';
+import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export default async function RootLayout({
         <Suspense>
           <NextIntlClientProvider locale={locale} messages={messages}>
             <RefineContext>{children}</RefineContext>
+            <Toaster />
           </NextIntlClientProvider>
         </Suspense>
       </body>

@@ -6,7 +6,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
 import { join } from 'node:path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -42,6 +42,8 @@ import { SentryModule } from './common/sentry/sentry.module';
 // Structured logging
 import { LoggerModule } from './shared/logger';
 import { LoggingInterceptor } from './shared/logger';
+// Exception filters
+import { GqlAuthExceptionFilter } from './modules/auth/exceptions';
 
 @Module({
   imports: [
@@ -171,6 +173,12 @@ import { LoggingInterceptor } from './shared/logger';
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
+    },
+    // Apply GraphQL authentication exception filter globally
+    // This ensures proper HTTP status codes (401, 403) are returned for auth errors
+    {
+      provide: APP_FILTER,
+      useClass: GqlAuthExceptionFilter,
     },
   ],
 })

@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { DevtoolsProvider } from '@providers/devtools';
 import { CsrfProvider } from '@providers/csrf-provider';
+import { SessionInterceptorProvider } from '@providers/session-interceptor-provider';
 import { authProviderClient } from '@providers/auth-provider/auth-provider.client';
 import { dataProvider } from '@providers/data-provider';
 import { auditLogProvider } from '@providers/audit-log-provider';
@@ -120,15 +121,17 @@ export const RefineContext = ({ children }: PropsWithChildren) => {
       options={{
         syncWithLocation: true,
         warnWhenUnsavedChanges: true,
-        projectId: "GCrk8D-oPupRw-ZMrDtj"
+        projectId: 'GCrk8D-oPupRw-ZMrDtj',
       }}
     >
       <RefineKbarProvider>
         <CsrfProvider>
-          <DevtoolsProvider>
-            <RefineKbar />
-            {children}
-          </DevtoolsProvider>
+          <SessionInterceptorProvider>
+            <DevtoolsProvider>
+              <RefineKbar />
+              {children}
+            </DevtoolsProvider>
+          </SessionInterceptorProvider>
         </CsrfProvider>
       </RefineKbarProvider>
     </Refine>

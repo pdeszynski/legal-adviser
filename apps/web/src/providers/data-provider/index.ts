@@ -7,8 +7,9 @@ import type {
   CrudSorting,
   Pagination,
 } from '@refinedev/core';
-import { getAccessToken } from '../auth-provider/auth-provider.client';
+import { getAccessToken, tryRefreshToken } from '../auth-provider/auth-provider.client';
 import { getCsrfHeaders } from '@/lib/csrf';
+import { executeGraphQLWithInterceptor, resetSessionExpiryFlag } from '@/lib/http-interceptor';
 
 /**
  * GraphQL Data Provider
@@ -17,6 +18,20 @@ import { getCsrfHeaders } from '@/lib/csrf';
  * This provider connects to the NestJS GraphQL endpoint.
  */
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
+
+/**
+ * Session expiry handler callback
+ * Set by initializeSessionHandler to enable logout on 401/403
+ */
+let sessionExpiryHandler: (() => void) | null = null;
+
+/**
+ * Initialize the session expiry handler
+ * Call this from a component that has access to logout and router
+ */
+export function initializeSessionHandler(handler: () => void): void {
+  sessionExpiryHandler = handler;
+}
 
 /**
  * GraphQL Custom Mutation Config
@@ -121,6 +136,7 @@ export type ProviderResult<T> = T & { _errors?: GraphQLErrorItem[] };
 /**
  * Execute a GraphQL query or mutation
  * Automatically includes authentication token if available
+ * Intercepts 401/403 responses to trigger session expiry handling
  *
  * Returns the full response including errors for partial data handling.
  * When errors are present, they are attached to the result object as _errors.
@@ -150,7 +166,50 @@ async function executeGraphQL<T>(
     }),
   });
 
+  // Handle session expiry (401/403)
   if (!response.ok) {
+    // Check for 401 Unauthorized or 403 Forbidden
+    if (response.status === 401 || response.status === 403) {
+      // Try to refresh token first on 401
+      if (response.status === 401) {
+        const refreshed = await tryRefreshToken();
+        if (refreshed) {
+          // Retry the request with new token
+          const newAccessToken = getAccessToken();
+          if (newAccessToken) {
+            headers['Authorization'] = `Bearer ${newAccessToken}`;
+          }
+          const retryResponse = await fetch(GRAPHQL_URL, {
+            method: 'POST',
+            headers,
+            credentials: 'include',
+            body: JSON.stringify({
+              query,
+              variables,
+            }),
+          });
+          if (retryResponse.ok) {
+            const result = (await retryResponse.json()) as GraphQLResult<T>;
+            if (result.data && result.errors && result.errors.length > 0) {
+              return {
+                ...result.data,
+                _errors: result.errors,
+              } as ProviderResult<T> & T;
+            }
+            if (result.errors && result.errors.length > 0) {
+              const errorMessages = result.errors.map((e) => e.message).join('; ');
+              throw new Error(errorMessages || 'GraphQL error');
+            }
+            return result.data as ProviderResult<T> & T;
+          }
+        }
+      }
+
+      // Trigger session expiry handling
+      if (sessionExpiryHandler) {
+        sessionExpiryHandler();
+      }
+    }
     throw new Error(`GraphQL request failed: ${response.status}`);
   }
 
@@ -1152,10 +1211,17 @@ export const dataProvider: DataProvider = {
       if (hasInputObject) {
         // For input objects, inline the values directly to avoid type inference issues
         const inputObj = mutationVars.input as Record<string, unknown>;
+
+        // Fields that should be treated as enum values (not quoted in GraphQL)
+        const enumFields = ['theme', 'aiModel', 'role'];
+
         const inputFields = Object.entries(inputObj)
           .filter(([_, value]) => value !== '')
           .map(([key, value]) => {
-            if (typeof value === 'string') {
+            // Enum values should not be quoted in GraphQL
+            if (enumFields.includes(key) && typeof value === 'string') {
+              return `${key}: ${value}`;
+            } else if (typeof value === 'string') {
               return `${key}: "${value}"`;
             } else if (typeof value === 'boolean') {
               return `${key}: ${value}`;

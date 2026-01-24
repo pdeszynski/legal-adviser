@@ -115,6 +115,49 @@ After completing any feature, ALWAYS run the following validation:
 - **Async Communication**: Use events for cross-module interaction in the backend.
 - **SSOT**: Environment variables are the only source for secrets/config.
 
+### refine.dev Custom Mutations (2026-01-24)
+
+When implementing custom GraphQL mutations (settings updates, profile changes), use the data provider's `custom` method directly. The `useCustom` hook is for queries only.
+
+**Pattern:**
+
+```tsx
+import { useDataProvider } from '@refinedev/core';
+import type { GraphQLMutationConfig } from '@providers/data-provider';
+
+// Get data provider (returns a function)
+const dp = dataProvider();
+if (!dp) throw new Error('Data provider not available');
+
+// Define mutation config
+const mutationConfig: GraphQLMutationConfig<UpdateInputType> = {
+  url: '',
+  method: 'post',
+  config: {
+    mutation: {
+      operation: 'mutationName',
+      fields: ['id', 'field1', 'field2'],
+      variables: {
+        input: {
+          /* data */
+        },
+      },
+    },
+  },
+};
+
+// Execute mutation (requires type assertion due to refine types)
+await (dp as any).custom(mutationConfig);
+```
+
+**Key Points:**
+
+- `useDataProvider()` returns a function - must call it: `const dp = dataProvider()`
+- `useCustom` hook is for queries (GET) only - returns `{ query, result }`, not `mutate`
+- `GraphQLMutationConfig<TInput>` type defined in `apps/web/src/providers/data-provider/index.ts`
+- Enum fields (`theme`, `aiModel`, `role`) are not quoted in GraphQL mutation
+- Empty string values are filtered out automatically
+
 ## Database Seeding
 
 ### Seed File Location

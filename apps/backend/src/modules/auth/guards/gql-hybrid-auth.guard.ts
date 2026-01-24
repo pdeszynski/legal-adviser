@@ -6,6 +6,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
+import { MissingTokenException } from '../exceptions';
 
 /**
  * GraphQL Hybrid Authentication Guard
@@ -48,14 +49,30 @@ export class GqlHybridAuthGuard extends AuthGuard(['jwt', 'api-key']) {
       const req = this.getRequest(context);
       const hasApiKey = this.hasApiKeyHeader(req);
 
+      // Check for missing auth
+      const hasJwt = this.hasJwtHeader(req);
+
+      if (!hasApiKey && !hasJwt) {
+        throw new MissingTokenException(
+          'Authentication required. Provide a valid JWT token or API key.',
+        );
+      }
+
       if (hasApiKey) {
         // API key was provided but authentication failed
         throw new UnauthorizedException('Invalid or expired API key');
       }
 
+      // JWT was provided but failed
+      if (info?.name === 'TokenExpiredError') {
+        const exception = new Error('Token has expired');
+        (exception as any).name = 'TokenExpiredError';
+        throw exception;
+      }
+
       // No valid authentication found
       throw new UnauthorizedException(
-        'Authentication required. Provide a valid JWT token or API key.',
+        'Authentication failed. Provide a valid JWT token or API key.',
       );
     }
 
@@ -83,6 +100,22 @@ export class GqlHybridAuthGuard extends AuthGuard(['jwt', 'api-key']) {
       }
     }
 
+    return false;
+  }
+
+  /**
+   * Check if the request contains a JWT token in Authorization header
+   */
+  private hasJwtHeader(req: any): boolean {
+    const authHeader = req.headers?.authorization;
+    if (authHeader) {
+      const parts = authHeader.split(' ');
+      if (parts.length === 2 && parts[0] === 'Bearer') {
+        const token = parts[1];
+        // JWT tokens don't start with pk_ (which is API key format)
+        return token.length > 0 && !token.startsWith('pk_');
+      }
+    }
     return false;
   }
 

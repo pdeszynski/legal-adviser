@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  ExecutionContext,
-  ForbiddenException,
-  UnauthorizedException,
-  SetMetadata,
-} from '@nestjs/common';
+import { Injectable, ExecutionContext, SetMetadata } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Reflector } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,6 +8,7 @@ import {
   DocumentShare,
   SharePermission,
 } from '../../documents/entities/document-share.entity';
+import { MissingTokenException, ForbiddenAccessException } from '../exceptions';
 
 /**
  * Permission metadata key for decorator
@@ -37,6 +32,10 @@ export enum DocumentPermissionLevel {
  * to access a document based on:
  * 1. Document ownership (via UserSession)
  * 2. Document shares (via DocumentShare entity)
+ *
+ * Returns proper HTTP status codes:
+ * - 401 Unauthorized: User not authenticated
+ * - 403 Forbidden: User authenticated but lacks permission
  *
  * Usage:
  * @UseGuards(DocumentPermissionGuard)
@@ -76,7 +75,7 @@ export class DocumentPermissionGuard {
     const userId = req.user?.userId;
 
     if (!userId) {
-      throw new UnauthorizedException('User not authenticated');
+      throw new MissingTokenException('User not authenticated');
     }
 
     // Extract document ID from arguments
@@ -96,7 +95,7 @@ export class DocumentPermissionGuard {
     );
 
     if (!hasPermission) {
-      throw new ForbiddenException(
+      throw new ForbiddenAccessException(
         `You do not have ${requiredPermission} permission for this document`,
       );
     }
