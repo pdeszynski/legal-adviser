@@ -4,7 +4,7 @@
   "id": "migrate-ruling-indexing-to-temporal",
   "title": "Migrate Ruling Indexing to Temporal Scheduled Workflow",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "feature/temporal",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T03:20:56.677Z"
+  "updatedAt": "2026-01-25T03:36:14.899Z"
 }

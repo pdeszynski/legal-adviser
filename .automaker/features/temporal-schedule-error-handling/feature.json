@@ -1,0 +1,23 @@
+{
+  "category": "feature",
+  "description": "Implement error handling for all schedule operations (create, describe, pause, resume, delete). Handle specific Temporal errors: ScheduleNotFound, ScheduleAlreadyExists, InvalidCronExpression, WorkflowNotFound. Create custom error classes extending TemporalError. Log errors with context. Return user-friendly error messages for API responses.",
+  "id": "temporal-schedule-error-handling",
+  "title": "Add Comprehensive Error Handling for Schedule Operations",
+  "dependencies": [
+    "temporal-schedule-creation-implementation",
+    "temporal-schedule-description-implementation",
+    "temporal-schedule-pause-implementation",
+    "temporal-schedule-resume-implementation",
+    "temporal-schedule-deletion-implementation"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Implement error handling for all schedule operations (create, describe, pause, resume, delete). Handle specific Temporal errors: ScheduleNotFound, ScheduleAlreadyExists, InvalidCronExpression, WorkflowNotFound. Create custom error classes extending TemporalError. Log errors with context. Return user-friendly error messages for API responses.",
+      "timestamp": "2026-01-25T15:05:01.025Z",
+      "source": "initial"
+    }
+  ]
+}

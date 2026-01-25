@@ -80,7 +80,7 @@ export interface StuckActivityInfo {
 export class TemporalObservabilityService {
   private readonly logger = new Logger(TemporalObservabilityService.name);
   private readonly loggerService: AppLogger;
-  private readonly stuckActivityThresholdMinutes = 30;
+  private stuckActivityThresholdMinutes = 30;
   private readonly workflowActivityMap = new Map<string, Map<string, Date>>();
 
   constructor() {
@@ -302,7 +302,7 @@ export class TemporalObservabilityService {
               workflow_id: workflowId,
               stuck_duration_minutes: String(stuckInfo.durationMinutes),
             },
-            extra: stuckInfo,
+            extra: stuckInfo as unknown as Record<string, unknown>,
           });
         }
       }

@@ -1,0 +1,24 @@
+{
+  "category": "feature",
+  "description": "Create GraphQL resolvers for schedule management operations. Add mutations: createTemporalSchedule, pauseTemporalSchedule, resumeTemporalSchedule, deleteTemporalSchedule. Add queries: temporalSchedule (by ID), temporalSchedules (list with pagination). Apply @RequireRole(ADMIN) decorator for admin-only access. Integrate with TemporalService methods. Return typed responses with schedule details.",
+  "id": "temporal-schedule-graphql-integration",
+  "title": "Add GraphQL Mutations and Queries for Schedule Management",
+  "dependencies": [
+    "temporal-schedule-creation-implementation",
+    "temporal-schedule-description-implementation",
+    "temporal-schedule-pause-implementation",
+    "temporal-schedule-resume-implementation",
+    "temporal-schedule-deletion-implementation",
+    "admin-role-guard"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Create GraphQL resolvers for schedule management operations. Add mutations: createTemporalSchedule, pauseTemporalSchedule, resumeTemporalSchedule, deleteTemporalSchedule. Add queries: temporalSchedule (by ID), temporalSchedules (list with pagination). Apply @RequireRole(ADMIN) decorator for admin-only access. Integrate with TemporalService methods. Return typed responses with schedule details.",
+      "timestamp": "2026-01-25T15:05:01.026Z",
+      "source": "initial"
+    }
+  ]
+}

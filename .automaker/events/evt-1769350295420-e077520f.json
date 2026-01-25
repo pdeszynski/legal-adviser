@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769350295420-e077520f",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T14:11:35.420Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "client-side-session-expiry-detection",
+  "featureName": "Client-Side Session Expiry Detection and Redirect",
+  "error": "Feature completed in 883s - auto-verified",
+  "passes": true
+}

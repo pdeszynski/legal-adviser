@@ -5,12 +5,13 @@ import {
   HubSpotContactResponse,
   LeadQualificationResponse,
 } from './dto/hubspot.dto';
+import { Public } from '../../auth/decorators/public.decorator';
 
 /**
  * HubSpot GraphQL Resolver
  *
- * Provides mutations for interacting with HubSpot CRM.
- * All mutations are protected by authentication guards.
+ * Provides public mutations for interacting with HubSpot CRM from forms.
+ * All mutations are publicly accessible (no authentication required).
  */
 @Resolver(() => Object)
 export class HubSpotResolver {
@@ -25,6 +26,7 @@ export class HubSpotResolver {
    * @param input Contact creation data
    * @returns Created contact with ID
    */
+  @Public()
   @Mutation(() => HubSpotContactResponse, {
     description: 'Create a contact in HubSpot from form submission',
     nullable: true,
@@ -71,6 +73,7 @@ export class HubSpotResolver {
    * @param listType 'demo' or 'waitlist'
    * @returns Qualification result
    */
+  @Public()
   @Mutation(() => LeadQualificationResponse, {
     description: 'Sync a lead to HubSpot with automatic qualification',
   })
@@ -117,6 +120,7 @@ export class HubSpotResolver {
    * @param input Contact data to evaluate
    * @returns Qualification result
    */
+  @Public()
   @Mutation(() => LeadQualificationResponse, {
     description: 'Check if a lead qualifies for deal creation',
   })

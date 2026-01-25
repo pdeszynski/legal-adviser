@@ -12,6 +12,7 @@ import {
 } from './dto/system-setting.dto';
 import { GqlAuthGuard } from '../auth/guards';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { Public } from '../auth/decorators/public.decorator';
 
 /**
  * System Settings Resolver
@@ -47,6 +48,7 @@ export class SystemSettingsResolver {
   /**
    * Get public settings (no auth required - used by frontend for feature flags)
    */
+  @Public()
   @Query(() => [SystemSetting], { name: 'publicSystemSettings' })
   async publicSettings(): Promise<SystemSetting[]> {
     // Return only safe, non-sensitive settings

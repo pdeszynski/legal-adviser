@@ -4588,20 +4588,6 @@ type QueryMetrics {
   uniqueUsers: Int!
 }
 
-type QueueHealth {
-  active: Float!
-  delayed: Float!
-  depth: Float!
-  failed: Float!
-  lastProcessed: String
-}
-
-type QueueHealthStatus {
-  documentGeneration: QueueHealth!
-  email: QueueHealth!
-  webhook: QueueHealth!
-}
-
 type RecentDocumentActivity {
   """Documents currently being generated"""
   currentlyGenerating: [DocumentActivityEntry!]!
@@ -4855,14 +4841,6 @@ type ServiceHealth {
   status: ServiceStatus!
 }
 
-type ServiceHealthStatus {
-  aiEngine: ServiceHealth!
-  database: ServiceHealth!
-  isapApi: ServiceHealth!
-  redis: ServiceHealth!
-  saosApi: ServiceHealth!
-}
-
 """Health status of a service or system component"""
 enum ServiceStatus {
   DEGRADED
@@ -5073,8 +5051,7 @@ type SystemHealthMetrics {
 
 type SystemHealthResponse {
   errors: ErrorTrackingStatus!
-  queues: QueueHealthStatus!
-  services: ServiceHealthStatus!
+  services: [ServiceHealth!]
   status: ServiceStatus!
   timestamp: String!
   uptime: Float!

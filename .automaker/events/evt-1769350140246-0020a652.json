@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769350140246-0020a652",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T14:09:00.246Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "audit-graphql-auth-guards-consistency",
+  "featureName": "Audit GraphQL Authorization Guards Consistency",
+  "error": "Feature completed in 726s - auto-verified",
+  "passes": true
+}

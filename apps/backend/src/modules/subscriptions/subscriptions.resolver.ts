@@ -14,16 +14,17 @@ import {
   BillingInfo,
   PaymentHistoryItem,
 } from './dto/subscription.dto';
+import { Public } from '../auth/decorators/public.decorator';
 
 /**
  * GraphQL Resolver for Subscription Management
  *
  * Handles user-facing operations for:
- * - Viewing subscription plans
- * - User subscription lifecycle
- * - Feature access control
- * - Usage quota management
- * - Stripe payment integration
+ * - Viewing subscription plans (public)
+ * - User subscription lifecycle (authenticated)
+ * - Feature access control (authenticated)
+ * - Usage quota management (authenticated)
+ * - Stripe payment integration (authenticated)
  *
  * Admin-only plan management operations are in SubscriptionsAdminResolver.
  */
@@ -32,8 +33,9 @@ export class SubscriptionsResolver {
   constructor(private readonly service: SubscriptionsService) {}
 
   /**
-   * Query: Get all active subscription plans
+   * Query: Get all active subscription plans (public catalog)
    */
+  @Public()
   @Query(() => [SubscriptionPlan], {
     name: 'subscriptionPlans',
     description: 'Get all active subscription plans ordered by price',
@@ -43,8 +45,9 @@ export class SubscriptionsResolver {
   }
 
   /**
-   * Query: Get a subscription plan by ID
+   * Query: Get a subscription plan by ID (public catalog)
    */
+  @Public()
   @Query(() => SubscriptionPlan, {
     name: 'subscriptionPlan',
     description: 'Get a subscription plan by ID',

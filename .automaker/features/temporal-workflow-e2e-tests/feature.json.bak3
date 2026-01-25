@@ -3,9 +3,6 @@
   "description": "Create comprehensive E2E tests for all Temporal workflows using test workflow environment. Test scenarios: 1) Document generation workflow completes successfully, 2) Email workflow retries on failure, 3) PDF export workflow handles long-running tasks, 4) Ruling indexing workflow runs on schedule, 5) Webhook delivery workflow handles endpoint failures. Use Temporal test environment for workflow simulation. Verify workflow state transitions and activity outputs. Test workflow cancellation and timeouts. Validate idempotency (re-running workflow with same ID doesn't duplicate work).",
   "id": "temporal-workflow-e2e-tests",
   "title": "E2E Tests for Temporal Workflows",
-  "dependencies": [
-    "migrate-pdf-export-queue-to-temporal"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "feature/temporal",

@@ -19,7 +19,6 @@ interface TwoFactorInputProps {
   email: string;
   password: string;
   onCancel: () => void;
-  onSuccess: () => void;
 }
 
 /**
@@ -32,7 +31,7 @@ interface TwoFactorInputProps {
  * - Countdown timer for token expiry
  * - Cancel button to return to login
  */
-export const TwoFactorInput = ({ email, password, onCancel, onSuccess }: TwoFactorInputProps) => {
+export const TwoFactorInput = ({ email, password, onCancel }: TwoFactorInputProps) => {
   const [code, setCode] = useState('');
   const [backupCode, setBackupCode] = useState('');
   const [showBackupCode, setShowBackupCode] = useState(false);

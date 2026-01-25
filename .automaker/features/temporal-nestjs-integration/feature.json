@@ -5,7 +5,7 @@
   "title": "Temporal Client Integration with NestJS Backend",
   "priority": 1,
   "status": "verified",
-  "branchName": "feature/temporal",
+  "branchName": null,
   "descriptionHistory": [
     {
       "description": "Create TemporalModule in NestJS backend integrating Temporal SDK. Implement TemporalService providing workflow execution methods: startDocumentGeneration(documentId), startEmailSend(emailData), startPdfExport(documentId), startRulingIndexing(), startWebhookDelivery(webhookId). Configure Temporal connection via environment variables. Create worker services for each workflow type registered as NestJS providers. Implement activity registration and workflow stub creation. Add error handling and retry logic at client level.",

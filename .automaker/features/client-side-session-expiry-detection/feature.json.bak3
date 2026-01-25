@@ -4,7 +4,7 @@
   "id": "client-side-session-expiry-detection",
   "title": "Client-Side Session Expiry Detection and Redirect",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-25T13:44:04.754Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T13:44:13.148Z"
 }

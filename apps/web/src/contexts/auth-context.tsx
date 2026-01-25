@@ -1,24 +1,15 @@
 'use client';
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLogout } from '@refinedev/core';
 import { toast } from '@/hooks/use-toast';
-import {
-  resetSessionExpiryFlag,
-  type InterceptorOptions,
-} from '@/lib/http-interceptor';
+import { resetSessionExpiryFlag } from '@/lib/http-interceptor';
 
 /**
  * Session expiry handler options
  */
-interface SessionExpiryOptions extends InterceptorOptions {
+interface SessionExpiryOptions {
   /**
    * Whether to show a toast notification
    * @default true

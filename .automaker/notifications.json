@@ -2815,6 +2815,39 @@
       "dismissed": false,
       "featureId": "fix-graphql-mutation-authorization-context",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "05fd9af6-4cae-4735-a36b-82fde64c3e1c",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"audit-graphql-auth-guards-consistency\" has been verified and is complete.",
+      "createdAt": "2026-01-25T14:09:00.222Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "audit-graphql-auth-guards-consistency",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "0a8b42d3-74d6-4298-9735-201ed7503a68",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"auth-state-sync-redirect-middleware\" has been verified and is complete.",
+      "createdAt": "2026-01-25T14:09:05.844Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "auth-state-sync-redirect-middleware",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "3f0fc6d0-15c5-44f1-b3b8-ce584e3298b4",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"client-side-session-expiry-detection\" has been verified and is complete.",
+      "createdAt": "2026-01-25T14:11:35.412Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "client-side-session-expiry-detection",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

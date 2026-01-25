@@ -16,6 +16,7 @@ import {
   DocumentGenerationActivities,
   createDocumentGenerationActivities,
 } from './document-generation.activities';
+import { DocumentType } from '../../../documents/entities/legal-document.entity';
 
 /**
  * Activities implementation for the Temporal worker
@@ -64,7 +65,7 @@ export function createActivities(dependencies: {
       id: string;
       title: string;
       contentRaw: string | null;
-      type: string;
+      type: DocumentType;
       pdfUrl: string | null;
       session?: {
         user?: {

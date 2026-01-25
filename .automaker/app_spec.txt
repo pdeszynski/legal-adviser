@@ -3114,6 +3114,18 @@ path
       <name>Fix GraphQL Mutation Authorization Context Loss</name>
       <description>Investigate and fix authorization failures on GraphQL mutations (e.g., updateProfile) where authenticated users receive unauthorized errors. Root cause appears to be JWT token/context not being properly passed to mutation resolvers. Verify that: 1) GraphQL context includes authenticated user from JWT, 2) @UseGuards(AuthGuard) is applied to mutation resolvers, 3) GqlAuthGuard correctly extracts and validates JWT from Authorization header, 4) Frontend includes Authorization header in mutation requests, 5) Cookies (if used) are properly sent with GraphQL requests. Test with admin@refine.dev user performing updateProfile mutation. Ensure authorization mechanism is consistent across all mutations and queries.</description>
     </feature>
+    <feature>
+      <name>Audit GraphQL Authorization Guards Consistency</name>
+      <description>Perform comprehensive audit of all GraphQL resolvers to ensure consistent authorization guards. Verify: 1) All mutations require authentication (have @UseGuards(GqlAuthGuard) or equivalent), 2) All queries (except public ones) require authentication, 3) Admin-only mutations have additional @RequireRole or AdminGuard, 4) Guard execution order is correct (auth -&gt; role -&gt; permission), 5) Public resolvers are explicitly marked (e.g., @Public() decorator), 6) No authentication bypass exists via missing guards. Create checklist of all resolvers and their guard configuration. Fix any missing or inconsistent guards. Document authorization patterns in CLAUDE.md.</description>
+    </feature>
+    <feature>
+      <name>Auth State Sync on Navigation and Redirects</name>
+      <description>Implement middleware or router guard that checks authentication state before protected routes. Create: 1) Next.js middleware or Refine authProvider check that runs on route change, 2) Validation of stored token validity (check expiry, format), 3) Automatic redirect to /login if invalid or missing token, 4) Preservation of intended destination (redirect after login), 5) Auth state refresh on window focus (optional), 6) Handling of browser back button to expired sessions. Ensure this works client-side without full server round-trip. Integrate with client-side-session-expiry-detection feature. Test on all authenticated routes including /settings, /documents, /chat.</description>
+    </feature>
+    <feature>
+      <name>Client-Side Session Expiry Detection and Redirect</name>
+      <description>Implement client-side session expiry detection that works without full page reload. Currently, session expiry only triggers on server-side navigation. Create: 1) Apollo GraphQL link or interceptor to catch 401/403 responses, 2) Client-side authProvider logout method that clears tokens and redirects, 3) useAuth hook or context that provides auth state to components, 4) Automatic redirect to /login on 401/403, 5) User-friendly toast notification &apos;Your session has expired. Please log in again.&apos;, 6) Session refresh logic before token expiry (optional). Ensure redirect works on SPA navigation, not just full page reload. Test expiry on various pages (settings, documents, chat).</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

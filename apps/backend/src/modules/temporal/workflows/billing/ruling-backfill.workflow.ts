@@ -12,11 +12,12 @@
  * - Idempotency keys to prevent duplicate processing
  */
 
-import { proxies } from '@temporalio/workflow';
-import type { CourtType } from '../../../../documents/entities/legal-ruling.entity';
+import { proxyActivities } from '@temporalio/workflow';
+import { CourtType } from '../../../documents/entities/legal-ruling.entity';
+import { RulingSource } from './ruling-indexing.workflow';
 
 // Re-export RulingSource for use in this module
-export type { RulingSource } from './ruling-indexing.workflow';
+export { RulingSource };
 
 /**
  * Ruling Backfill Workflow Input
@@ -207,7 +208,7 @@ export async function rulingBackfill(
   } = input;
 
   // Create activity proxies with retry policy
-  const activities = proxies.activities<BackfillActivities>({
+  const activities = proxyActivities<BackfillActivities>({
     startToCloseTimeout: '24h', // Long-running workflow for backfill
     retry: {
       initialInterval: 5000,

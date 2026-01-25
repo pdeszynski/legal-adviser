@@ -5,7 +5,7 @@
   "title": "Migrate Email Queue to Temporal Workflow",
   "priority": 1,
   "status": "verified",
-  "branchName": "feature/temporal",
+  "branchName": null,
   "descriptionHistory": [
     {
       "description": "Replace Bull-based email queue with Temporal workflow. Create EmailWorkflow with activities for: 1) Render email template, 2) Send via SendGrid/email provider, 3) Handle rate limiting, 4) Log delivery status, 5) Retry on failure with exponential backoff. Implement workflow for bulk emails with parallel execution limits. Add dead-letter queue handling for permanently failing emails. Migrate existing queued emails during deployment.",

@@ -106,100 +106,133 @@ export class TemporalMetricsService {
   constructor() {
     const commonLabels = ['workflow_type', 'task_queue'];
 
+    // Helper to get or create metric to handle duplicate registration
+    const getOrCreateCounter = (
+      name: string,
+      help: string,
+      labelNames: string[],
+    ): Counter<string> => {
+      const existing = register.getSingleMetric(name) as
+        | Counter<string>
+        | undefined;
+      if (existing) return existing;
+      return new Counter({ name, help, labelNames });
+    };
+
+    const getOrCreateHistogram = (
+      name: string,
+      help: string,
+      labelNames: string[],
+      buckets: number[],
+    ): Histogram<string> => {
+      const existing = register.getSingleMetric(name) as
+        | Histogram<string>
+        | undefined;
+      if (existing) return existing;
+      return new Histogram({ name, help, labelNames, buckets });
+    };
+
+    const getOrCreateGauge = (
+      name: string,
+      help: string,
+      labelNames: string[],
+    ): Gauge<string> => {
+      const existing = register.getSingleMetric(name) as
+        | Gauge<string>
+        | undefined;
+      if (existing) return existing;
+      return new Gauge({ name, help, labelNames });
+    };
+
     // Counters
-    this.workflowsStartedTotal = new Counter({
-      name: `${this.prefix}workflows_started_total`,
-      help: 'Total number of workflows started',
-      labelNames: [...commonLabels, 'namespace'],
-    });
+    this.workflowsStartedTotal = getOrCreateCounter(
+      `${this.prefix}workflows_started_total`,
+      'Total number of workflows started',
+      [...commonLabels, 'namespace'],
+    );
 
-    this.workflowsCompletedTotal = new Counter({
-      name: `${this.prefix}workflows_completed_total`,
-      help: 'Total number of workflows completed successfully',
-      labelNames: commonLabels,
-    });
+    this.workflowsCompletedTotal = getOrCreateCounter(
+      `${this.prefix}workflows_completed_total`,
+      'Total number of workflows completed successfully',
+      commonLabels,
+    );
 
-    this.workflowsFailedTotal = new Counter({
-      name: `${this.prefix}workflows_failed_total`,
-      help: 'Total number of workflows that failed',
-      labelNames: [...commonLabels, 'failure_reason'],
-    });
+    this.workflowsFailedTotal = getOrCreateCounter(
+      `${this.prefix}workflows_failed_total`,
+      'Total number of workflows that failed',
+      [...commonLabels, 'failure_reason'],
+    );
 
-    this.workflowsCanceledTotal = new Counter({
-      name: `${this.prefix}workflows_canceled_total`,
-      help: 'Total number of workflows canceled',
-      labelNames: commonLabels,
-    });
+    this.workflowsCanceledTotal = getOrCreateCounter(
+      `${this.prefix}workflows_canceled_total`,
+      'Total number of workflows canceled',
+      commonLabels,
+    );
 
-    this.workflowsTimedOutTotal = new Counter({
-      name: `${this.prefix}workflows_timed_out_total`,
-      help: 'Total number of workflows that timed out',
-      labelNames: commonLabels,
-    });
+    this.workflowsTimedOutTotal = getOrCreateCounter(
+      `${this.prefix}workflows_timed_out_total`,
+      'Total number of workflows that timed out',
+      commonLabels,
+    );
 
-    this.activitiesExecutedTotal = new Counter({
-      name: `${this.prefix}activities_executed_total`,
-      help: 'Total number of activities executed successfully',
-      labelNames: ['activity_type', 'workflow_type', 'task_queue'],
-    });
+    this.activitiesExecutedTotal = getOrCreateCounter(
+      `${this.prefix}activities_executed_total`,
+      'Total number of activities executed successfully',
+      ['activity_type', 'workflow_type', 'task_queue'],
+    );
 
-    this.activitiesFailedTotal = new Counter({
-      name: `${this.prefix}activities_failed_total`,
-      help: 'Total number of activities that failed',
-      labelNames: [
-        'activity_type',
-        'workflow_type',
-        'task_queue',
-        'failure_reason',
-      ],
-    });
+    this.activitiesFailedTotal = getOrCreateCounter(
+      `${this.prefix}activities_failed_total`,
+      'Total number of activities that failed',
+      ['activity_type', 'workflow_type', 'task_queue', 'failure_reason'],
+    );
 
     // Histograms - with buckets for common temporal durations
     const defaultBuckets = [
       1000, 5000, 10000, 30000, 60000, 120000, 300000, 600000, 1800000,
     ];
 
-    this.workflowExecutionDuration = new Histogram({
-      name: `${this.prefix}workflow_execution_duration_seconds`,
-      help: 'Workflow execution duration in seconds',
-      labelNames: commonLabels,
-      buckets: defaultBuckets.map((b) => b / 1000), // Convert ms to seconds
-    });
+    this.workflowExecutionDuration = getOrCreateHistogram(
+      `${this.prefix}workflow_execution_duration_seconds`,
+      'Workflow execution duration in seconds',
+      commonLabels,
+      defaultBuckets.map((b) => b / 1000), // Convert ms to seconds
+    );
 
-    this.activityExecutionLatency = new Histogram({
-      name: `${this.prefix}activity_execution_latency_seconds`,
-      help: 'Activity execution latency in seconds',
-      labelNames: ['activity_type', 'workflow_type', 'task_queue'],
-      buckets: [0.1, 0.5, 1, 2, 5, 10, 30, 60, 120],
-    });
+    this.activityExecutionLatency = getOrCreateHistogram(
+      `${this.prefix}activity_execution_latency_seconds`,
+      'Activity execution latency in seconds',
+      ['activity_type', 'workflow_type', 'task_queue'],
+      [0.1, 0.5, 1, 2, 5, 10, 30, 60, 120],
+    );
 
-    this.workflowEndToEndLatency = new Histogram({
-      name: `${this.prefix}workflow_end_to_end_latency_seconds`,
-      help: 'Workflow end-to-end latency from start to completion in seconds',
-      labelNames: commonLabels,
-      buckets: defaultBuckets.map((b) => b / 1000),
-    });
+    this.workflowEndToEndLatency = getOrCreateHistogram(
+      `${this.prefix}workflow_end_to_end_latency_seconds`,
+      'Workflow end-to-end latency from start to completion in seconds',
+      commonLabels,
+      defaultBuckets.map((b) => b / 1000),
+    );
 
     // Gauges
-    this.activeWorkflowsGauge = new Gauge({
-      name: `${this.prefix}active_workflows`,
-      help: 'Current number of active workflows',
-      labelNames: ['task_queue'],
-    });
+    this.activeWorkflowsGauge = getOrCreateGauge(
+      `${this.prefix}active_workflows`,
+      'Current number of active workflows',
+      ['task_queue'],
+    );
 
-    this.pendingActivitiesGauge = new Gauge({
-      name: `${this.prefix}pending_activities`,
-      help: 'Current number of pending activities',
-      labelNames: ['task_queue', 'activity_type'],
-    });
+    this.pendingActivitiesGauge = getOrCreateGauge(
+      `${this.prefix}pending_activities`,
+      'Current number of pending activities',
+      ['task_queue', 'activity_type'],
+    );
 
-    this.workerTaskQueueBacklog = new Gauge({
-      name: `${this.prefix}task_queue_backlog`,
-      help: 'Current task queue backlog (number of pending workflow tasks)',
-      labelNames: ['task_queue'],
-    });
+    this.workerTaskQueueBacklog = getOrCreateGauge(
+      `${this.prefix}task_queue_backlog`,
+      'Current task queue backlog (number of pending workflow tasks)',
+      ['task_queue'],
+    );
 
-    // Register all metrics
+    // Register all metrics that aren't already registered
     this.registerMetrics();
 
     this.logger.log('Temporal metrics service initialized');

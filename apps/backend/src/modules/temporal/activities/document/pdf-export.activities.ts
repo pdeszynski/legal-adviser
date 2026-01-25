@@ -16,7 +16,7 @@
  */
 
 import { Logger } from '@nestjs/common';
-import { DocumentType } from '../../../../documents/entities/legal-document.entity';
+import { DocumentType } from '../../../documents/entities/legal-document.entity';
 
 /**
  * Initialize Export Activity Input

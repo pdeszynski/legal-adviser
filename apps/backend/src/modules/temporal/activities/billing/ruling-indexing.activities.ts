@@ -16,12 +16,12 @@
  */
 
 import { Injectable, Logger } from '@nestjs/common';
-import { CourtType } from '../../../../documents/entities/legal-ruling.entity';
+import { CourtType } from '../../../documents/entities/legal-ruling.entity';
 import { SaosAdapter } from '../../../../infrastructure/anti-corruption/saos/saos.adapter';
 import { IsapAdapter } from '../../../../infrastructure/anti-corruption/isap/isap.adapter';
-import { LegalRulingService } from '../../../../documents/services/legal-ruling.service';
-import { VectorStoreService } from '../../../../documents/services/vector-store.service';
-import { SearchRulingsQuery } from '../../../../../domain/legal-rulings/value-objects/ruling-source.vo';
+import { LegalRulingService } from '../../../documents/services/legal-ruling.service';
+import { VectorStoreService } from '../../../documents/services/vector-store.service';
+import type { SearchRulingsQuery } from '../../../../domain/legal-rulings/value-objects/ruling-source.vo';
 
 /**
  * Initialize Indexing Activity Input
@@ -754,5 +754,12 @@ export const createRulingIndexingActivities = (dependencies: {
   legalRulingService: LegalRulingService;
   vectorStoreService: VectorStoreService;
 }): RulingIndexingActivities => {
-  return new RulingIndexingActivities(dependencies);
+  const { saosAdapter, isapAdapter, legalRulingService, vectorStoreService } =
+    dependencies;
+  return new RulingIndexingActivities(
+    saosAdapter,
+    isapAdapter,
+    legalRulingService,
+    vectorStoreService,
+  );
 };

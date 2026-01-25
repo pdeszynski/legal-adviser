@@ -102,9 +102,10 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
 
     try {
       // Dynamic import to handle ESM-only temporalio package
-      // @ts-expect-error - temporalio uses ESM-only exports, types not available at compile time
       const workerModule = await import('@temporalio/worker');
-      this.Worker = workerModule.Worker as new (...args: unknown[]) => unknown;
+      this.Worker = workerModule.Worker as unknown as new (
+        ...args: unknown[]
+      ) => unknown;
       return this.Worker;
     } catch (error) {
       this.logger.error('Failed to load Temporal Worker SDK', error);

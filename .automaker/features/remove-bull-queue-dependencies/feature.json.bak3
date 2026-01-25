@@ -4,7 +4,7 @@
   "id": "remove-bull-queue-dependencies",
   "title": "Remove Bull Queue Dependencies and Clean Up Code",
   "priority": 2,
-  "status": "in_progress",
+  "status": "backlog",
   "branchName": "feature/temporal",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T06:56:48.663Z"
+  "updatedAt": "2026-01-25T07:00:18.830Z"
 }

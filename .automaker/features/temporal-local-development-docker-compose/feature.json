@@ -5,7 +5,7 @@
   "title": "Configure Temporal for Local Development with Docker Compose",
   "priority": 1,
   "status": "verified",
-  "branchName": "feature/temporal",
+  "branchName": null,
   "descriptionHistory": [
     {
       "description": "Update docker-compose.yml to include Temporal server services for local development. Add temporal service (latest Temporal server image), temporal-ui (web UI), and dependencies (PostgreSQL for Temporal backend). Configure volume mounts for Temporal data persistence. Expose Temporal UI on localhost:8088 for workflow inspection. Set TEMPORAL_CLUSTER_URL=localhost:7233 environment variable for backend. Ensure services start in correct order (DB -> Temporal -> Backend). Add docker-compose.override.yml for production differences.",

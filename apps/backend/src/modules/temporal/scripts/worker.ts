@@ -12,6 +12,7 @@
 
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
+import { promises as fs } from 'node:fs';
 
 interface WorkerOptions {
   taskQueue?: string;
@@ -73,8 +74,6 @@ async function runWorker(): Promise<void> {
     // Dynamic import for temporalio (ESM-only package)
     const workerModule = await import('@temporalio/worker');
     const { Worker } = workerModule;
-    const activitiesModule = await import('../activities');
-    const activities = activitiesModule;
 
     const connectionOptions: Record<string, unknown> = {
       address: clusterUrl,
@@ -83,21 +82,27 @@ async function runWorker(): Promise<void> {
     if (tlsEnabled) {
       connectionOptions.tls = {
         serverName: config.get<string>('TEMPORAL_SERVER_NAME'),
-        serverRootCACertificatePath: config.get<string>(
-          'TEMPORAL_SERVER_ROOT_CA_CERT_PATH',
+        serverRootCACertificate: await fs.readFile(
+          config.get<string>('TEMPORAL_SERVER_ROOT_CA_CERT_PATH', ''),
+          'utf-8',
         ),
         clientCertPair: {
-          crtPath: config.get<string>('TEMPORAL_CLIENT_CERT_PATH'),
-          keyPath: config.get<string>('TEMPORAL_CLIENT_PRIVATE_KEY_PATH'),
+          crt: await fs.readFile(
+            config.get<string>('TEMPORAL_CLIENT_CERT_PATH', ''),
+            'utf-8',
+          ),
+          key: await fs.readFile(
+            config.get<string>('TEMPORAL_CLIENT_PRIVATE_KEY_PATH', ''),
+            'utf-8',
+          ),
         },
       };
     }
 
     const worker = await Worker.create({
-      connectionOptions,
+      ...connectionOptions,
       namespace,
       taskQueue: options.taskQueue!,
-      activities,
       maxConcurrentActivityTaskExecutions:
         options.maxConcurrentActivityTaskExecutions,
       maxConcurrentWorkflowTaskExecutions:

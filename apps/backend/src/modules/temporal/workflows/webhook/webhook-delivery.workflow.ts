@@ -12,7 +12,7 @@
  * - Dead-letter queue for permanently failing webhooks
  */
 
-import { proxies, sleep } from '@temporalio/workflow';
+import { proxyActivities, sleep } from '@temporalio/workflow';
 
 /**
  * Webhook Delivery Workflow Input
@@ -191,7 +191,7 @@ export async function webhookDelivery(
   } = input;
 
   // Create activity proxies with retry policy
-  const activities = proxies.activities<WebhookDeliveryActivities>({
+  const activities = proxyActivities<WebhookDeliveryActivities>({
     startToCloseTimeout: '5m',
     retry: {
       maximumAttempts: 1, // We handle retries in the workflow

@@ -96,7 +96,6 @@ export class TemporalService {
 
     try {
       // Dynamic import to handle ESM-only temporalio package
-      // @ts-expect-error - temporalio uses ESM-only exports, types not available at compile time
       const clientModule = await import('@temporalio/client');
       const { Connection, Client } = clientModule;
 
@@ -106,8 +105,7 @@ export class TemporalService {
       const connection = await Connection.connect({
         address: this.options.clusterUrl,
         tls: this.options.tlsEnabled
-          ? {
-              serverName: this.options.serverName,
+          ? ({
               serverRootCACertificate: await this.loadCertificate(
                 this.options.serverRootCaCertPath,
               ),
@@ -117,7 +115,7 @@ export class TemporalService {
                   this.options.clientPrivateKeyPath,
                 ),
               },
-            }
+            } as any)
           : undefined,
       });
 
@@ -623,5 +621,66 @@ export class TemporalService {
       this.logger.error(`Failed to load certificate from ${path}`, error);
       throw new BadRequestException(`Failed to load certificate from ${path}`);
     }
+  }
+
+  /**
+   * Create a schedule (stub implementation - not yet implemented)
+   *
+   * TODO: Implement Temporal schedule creation
+   */
+  async createSchedule(_options: {
+    scheduleId: string;
+    action: {
+      workflowType: string;
+      workflowId: string;
+      taskQueue: string;
+      args: unknown[];
+    };
+    spec: {
+      cronExpression: string;
+    };
+    policies?: {
+      overlap?: 'SKIP' | 'ALLOW_ALL' | 'BUFFER_ONE';
+    };
+  }): Promise<string> {
+    this.logger.warn('Temporal schedule creation not yet implemented');
+    return 'stub-schedule-id';
+  }
+
+  /**
+   * Describe a schedule (stub implementation - not yet implemented)
+   *
+   * TODO: Implement Temporal schedule description
+   */
+  async describeSchedule(_scheduleId: string): Promise<unknown> {
+    this.logger.warn('Temporal schedule description not yet implemented');
+    return { scheduleId: _scheduleId, exists: false };
+  }
+
+  /**
+   * Pause a schedule (stub implementation - not yet implemented)
+   *
+   * TODO: Implement Temporal schedule pause
+   */
+  async pauseSchedule(_scheduleId: string): Promise<void> {
+    this.logger.warn('Temporal schedule pause not yet implemented');
+  }
+
+  /**
+   * Resume a schedule (stub implementation - not yet implemented)
+   *
+   * TODO: Implement Temporal schedule resume
+   */
+  async resumeSchedule(_scheduleId: string): Promise<void> {
+    this.logger.warn('Temporal schedule resume not yet implemented');
+  }
+
+  /**
+   * Delete a schedule (stub implementation - not yet implemented)
+   *
+   * TODO: Implement Temporal schedule deletion
+   */
+  async deleteSchedule(_scheduleId: string): Promise<void> {
+    this.logger.warn('Temporal schedule deletion not yet implemented');
   }
 }

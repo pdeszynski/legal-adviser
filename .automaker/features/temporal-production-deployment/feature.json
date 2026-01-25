@@ -5,7 +5,7 @@
   "title": "Configure Temporal for Production Deployment",
   "priority": 1,
   "status": "verified",
-  "branchName": "feature/temporal",
+  "branchName": null,
   "descriptionHistory": [
     {
       "description": "Set up Temporal for production self-hosted deployment following Temporal deployment guide. Configure production-grade Temporal cluster with: 1) Frontend service (replicated), 2) History service (replicated), 3) Matching service (replicated), 4) Worker service (replicated), 5) PostgreSQL/MySQL for backend persistence, 6) Prometheus for metrics. Create Kubernetes manifests or Docker Swarm configuration. Configure TLS/SSL for service communication. Set up Temporal UI with authentication. Implement health checks and monitoring. Configure archival for workflow history.",

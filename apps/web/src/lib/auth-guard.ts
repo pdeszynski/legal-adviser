@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useIsAuthenticated, useLogout } from '@refinedev/core';
+import { usePathname } from 'next/navigation';
+import { useIsAuthenticated } from '@refinedev/core';
 import { getAccessToken, getRefreshToken } from '@providers/auth-provider/auth-provider.client';
 import { useAuthContext } from '@/contexts/auth-context';
 
@@ -159,16 +159,10 @@ interface AuthGuardOptions {
  * ```
  */
 export function useAuthGuard(options: AuthGuardOptions = {}) {
-  const {
-    enableFocusRefresh = true,
-    expiryBufferSeconds = 60,
-    onAuthFailed,
-  } = options;
+  const { enableFocusRefresh = true, expiryBufferSeconds = 60, onAuthFailed } = options;
 
   const pathname = usePathname();
-  const router = useRouter();
   const { data: authData, isLoading: isAuthLoading } = useIsAuthenticated();
-  const { mutate: logout } = useLogout();
   const { handleSessionExpiry } = useAuthContext();
 
   // Track previous path to detect back navigation
@@ -176,18 +170,6 @@ export function useAuthGuard(options: AuthGuardOptions = {}) {
   const isCheckingRef = useRef(false);
   const lastCheckTimeRef = useRef(0);
   const CHECK_THROTTLE_MS = 1000; // Don't check more than once per second
-
-  /**
-   * Redirect to login with return URL
-   */
-  const redirectToLogin = useCallback(
-    (returnUrl?: string) => {
-      const redirectParam = returnUrl || pathname;
-      const loginUrl = `/login?redirect=${encodeURIComponent(redirectParam)}`;
-      router.push(loginUrl);
-    },
-    [pathname, router],
-  );
 
   /**
    * Perform authentication check
@@ -212,7 +194,6 @@ export function useAuthGuard(options: AuthGuardOptions = {}) {
       const tokenValidation = areTokensValid();
 
       if (!tokenValidation.valid) {
-        console.log('[AuthGuard] Token validation failed:', tokenValidation.reason);
         onAuthFailed?.(tokenValidation.reason || 'unknown');
 
         // Clear auth and redirect
@@ -226,7 +207,6 @@ export function useAuthGuard(options: AuthGuardOptions = {}) {
 
       // If Refine says not authenticated but tokens exist, tokens might be invalid
       if (!authData?.authenticated) {
-        console.log('[AuthGuard] Refine auth check failed');
         handleSessionExpiry({
           showNotification: true,
           notificationMessage: 'Please log in to continue.',
@@ -239,7 +219,6 @@ export function useAuthGuard(options: AuthGuardOptions = {}) {
       if (accessToken) {
         const timeUntilExpiry = JWTUtils.getTimeUntilExpiry(accessToken);
         if (timeUntilExpiry !== null && timeUntilExpiry < expiryBufferSeconds) {
-          console.log('[AuthGuard] Token expiring soon, attempting refresh');
           // The auth provider will handle refresh on next API call
           // We could proactively trigger it here if needed
         }
@@ -247,13 +226,7 @@ export function useAuthGuard(options: AuthGuardOptions = {}) {
     } finally {
       isCheckingRef.current = false;
     }
-  }, [
-    authData,
-    isAuthLoading,
-    expiryBufferSeconds,
-    onAuthFailed,
-    handleSessionExpiry,
-  ]);
+  }, [authData, isAuthLoading, expiryBufferSeconds, onAuthFailed, handleSessionExpiry]);
 
   /**
    * Handle route changes
@@ -276,7 +249,6 @@ export function useAuthGuard(options: AuthGuardOptions = {}) {
     if (previousPathRef.current !== pathname) {
       // Path changed, check if it's a back navigation to protected route
       if (isProtectedRoute(pathname) && !isProtectedRoute(previousPathRef.current)) {
-        console.log('[AuthGuard] Back navigation to protected route, checking auth');
         performAuthCheck();
       }
       previousPathRef.current = pathname;
@@ -293,7 +265,6 @@ export function useAuthGuard(options: AuthGuardOptions = {}) {
     const handleFocus = () => {
       // Only check if currently on a protected route
       if (isProtectedRoute(pathname)) {
-        console.log('[AuthGuard] Window focused, checking auth');
         performAuthCheck();
       }
     };
@@ -311,7 +282,6 @@ export function useAuthGuard(options: AuthGuardOptions = {}) {
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && isProtectedRoute(pathname)) {
-        console.log('[AuthGuard] Tab became visible, checking auth');
         performAuthCheck();
       }
     };

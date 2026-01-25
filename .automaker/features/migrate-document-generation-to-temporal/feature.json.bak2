@@ -4,7 +4,7 @@
   "id": "migrate-document-generation-to-temporal",
   "title": "Migrate Document Generation Queue to Temporal Workflow",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "feature/temporal",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-24T16:43:46.090Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-24T21:37:08.822Z"
 }

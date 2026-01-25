@@ -13,13 +13,16 @@
  * - Completion notification
  */
 
-import { proxies, workflowInfo } from '@temporalio/workflow';
-import type { CourtType } from '../../../../documents/entities/legal-ruling.entity';
+import { proxyActivities, workflowInfo } from '@temporalio/workflow';
+import { CourtType } from '../../../documents/entities/legal-ruling.entity';
 
 /**
  * Ruling Indexing Source
  */
-export type RulingSource = 'SAOS' | 'ISAP';
+export enum RulingSource {
+  SAOS = 'SAOS',
+  ISAP = 'ISAP',
+}
 
 /**
  * Ruling Indexing Workflow Input
@@ -178,7 +181,7 @@ export async function rulingIndexing(
   } = input;
 
   // Create activity proxies with retry policy
-  const activities = proxies.activities<RulingIndexingActivities>({
+  const activities = proxyActivities<RulingIndexingActivities>({
     startToCloseTimeout: '4h', // Long-running workflow for large batches
     retry: {
       initialInterval: 2000,

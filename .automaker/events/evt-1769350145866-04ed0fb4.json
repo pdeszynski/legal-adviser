@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769350145866-04ed0fb4",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T14:09:05.866Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "auth-state-sync-redirect-middleware",
+  "featureName": "Auth State Sync on Navigation and Redirects",
+  "error": "Feature completed in 730s - auto-verified",
+  "passes": true
+}

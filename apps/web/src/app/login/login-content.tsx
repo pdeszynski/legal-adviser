@@ -18,7 +18,7 @@ import { TwoFactorInput } from './two-factor-input';
 import { useStoredRedirect } from '@/lib/auth-guard';
 
 export const LoginContent = () => {
-  const { mutate: login, isPending: isLoading, error } = useLogin();
+  const { isPending: isLoading, error } = useLogin();
   const { data: authData, isLoading: isAuthLoading } = useIsAuthenticated();
   const { data: identity, isLoading: isIdentityLoading } = useGetIdentity();
   const go = useGo();
@@ -201,12 +201,6 @@ export const LoginContent = () => {
     setPendingCredentials(null);
   };
 
-  const handleTwoFactorSuccess = () => {
-    setShowTwoFactor(false);
-    setPendingCredentials(null);
-    // Redirect will be handled by the TwoFactorInput component
-  };
-
   // Show 2FA input if required
   if (showTwoFactor && pendingCredentials) {
     return (
@@ -214,7 +208,6 @@ export const LoginContent = () => {
         email={pendingCredentials.email}
         password={pendingCredentials.password}
         onCancel={handleTwoFactorCancel}
-        onSuccess={handleTwoFactorSuccess}
       />
     );
   }

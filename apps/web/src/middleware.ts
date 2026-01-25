@@ -100,7 +100,9 @@ export function middleware(request: NextRequest) {
     // Check if user is authenticated
     if (!isAuthenticated(request)) {
       const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
+      // Include query parameters in the redirect
+      const fullPath = request.nextUrl.pathname + request.nextUrl.search;
+      loginUrl.searchParams.set('redirect', fullPath);
       return NextResponse.redirect(loginUrl);
     }
 

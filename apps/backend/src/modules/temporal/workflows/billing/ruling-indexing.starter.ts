@@ -16,7 +16,7 @@ import { TEMPORAL_TASK_QUEUES } from '../../temporal.constants';
 import {
   generateWorkflowId,
   type RulingIndexingInput,
-  type RulingSource,
+  RulingSource,
 } from './ruling-indexing.workflow';
 import type { CourtType } from '../../../documents/entities/legal-ruling.entity';
 
@@ -191,14 +191,14 @@ export class RulingIndexingStarter {
     // Start both workflows in parallel
     const [saos, isap] = await Promise.all([
       this.startRulingIndexing({
-        source: 'SAOS',
+        source: RulingSource.SAOS,
         dateFrom,
         dateTo,
         batchSize: 100,
         updateExisting: true,
       }),
       this.startRulingIndexing({
-        source: 'ISAP',
+        source: RulingSource.ISAP,
         dateFrom,
         dateTo,
         batchSize: 100,

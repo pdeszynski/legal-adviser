@@ -11,7 +11,7 @@
  * - Update payload before redelivery
  */
 
-import { proxies, sleep } from '@temporalio/workflow';
+import { proxyActivities, sleep } from '@temporalio/workflow';
 
 /**
  * Webhook Replay Workflow Input
@@ -143,7 +143,7 @@ export async function webhookReplay(
   } = input;
 
   // Create activity proxies
-  const activities = proxies.activities<WebhookReplayActivities>({
+  const activities = proxyActivities<WebhookReplayActivities>({
     startToCloseTimeout: '5m',
     retry: {
       maximumAttempts: 1,

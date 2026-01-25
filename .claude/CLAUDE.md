@@ -423,6 +423,170 @@ The authorization module follows Domain-Driven Design principles:
 | View Analytics      |      ✓      |   ✓   |        |           |        |       |
 | System Settings     |      ✓      |       |        |           |        |       |
 
+## GraphQL Authorization Patterns
+
+### Overview
+
+All GraphQL resolvers MUST have proper authorization guards. The platform uses a layered guard system with the following execution order:
+
+1. **Authentication** (`GqlAuthGuard`) - Verifies user identity via JWT
+2. **Public bypass** (`@Public()`) - Marks intentionally public endpoints
+3. **Role** (`RoleGuard`/`AdminGuard`) - Checks user permissions
+4. **Resource** (`DocumentPermissionGuard`) - Validates access to specific resources
+
+### Available Guards
+
+| Guard                     | Location                                           | Purpose                                   |
+| ------------------------- | -------------------------------------------------- | ----------------------------------------- |
+| `GqlAuthGuard`            | `modules/auth/guards/gql-auth.guard.ts`            | Requires valid JWT authentication         |
+| `GqlHybridAuthGuard`      | `modules/auth/guards/gql-hybrid-auth.guard.ts`     | Optional auth - allows anonymous access   |
+| `RoleGuard`               | `modules/auth/guards/role.guard.ts`                | Role-based access control with hierarchy  |
+| `AdminGuard`              | `modules/auth/guards/admin.guard.ts`               | Simple admin check (ADMIN or SUPER_ADMIN) |
+| `DocumentPermissionGuard` | `modules/auth/guards/document-permission.guard.ts` | Document-specific permissions             |
+| `QuotaGuard`              | `modules/shared/`                                  | Usage quota validation                    |
+
+### Available Decorators
+
+| Decorator           | Location                                      | Purpose                               |
+| ------------------- | --------------------------------------------- | ------------------------------------- |
+| `@Public()`         | `modules/auth/decorators/public.decorator.ts` | Marks endpoint as publicly accessible |
+| `@RequireAdmin()`   | `modules/auth/guards/role.guard.ts`           | Requires admin role                   |
+| `@RequireRole(...)` | `modules/auth/guards/role.guard.ts`           | Requires specific role(s)             |
+
+### Standard Authorization Patterns
+
+#### Pattern 1: Authenticated Users Only
+
+Most operations require authenticated users:
+
+```typescript
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../auth/guards';
+
+@Resolver(() => MyEntity)
+@UseGuards(GqlAuthGuard)
+export class MyResolver {
+  @Query(() => MyEntity)
+  async getMyData() { ... }
+}
+```
+
+#### Pattern 2: Admin-Only Operations
+
+Admin operations require both auth and admin role:
+
+```typescript
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../auth/guards';
+import { AdminGuard } from '../auth/guards/admin.guard';
+
+@Resolver(() => SensitiveEntity)
+@UseGuards(GqlAuthGuard, AdminGuard)
+export class AdminResolver {
+  @Query(() => [SensitiveEntity])
+  async getAllData() { ... }
+}
+```
+
+#### Pattern 3: Role-Based Access with Hierarchy
+
+For fine-grained role control with hierarchy support:
+
+```typescript
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard, RoleGuard } from '../auth/guards';
+import { RequireRole } from '../auth/guards/role.guard';
+import { UserRole } from '../auth/enums';
+
+@Resolver(() => ResourceEntity)
+@UseGuards(GqlAuthGuard, RoleGuard)
+@RequireRole(UserRole.LAWYER)
+export class ResourceResolver {
+  @Query(() => [ResourceEntity])
+  async getResources() { ... }
+}
+```
+
+#### Pattern 4: Public Endpoints
+
+For intentionally public operations (e.g., login, subscription catalog):
+
+```typescript
+import { Public } from '../auth/decorators/public.decorator';
+
+@Resolver()
+export class PublicResolver {
+  @Public()
+  @Mutation(() => AuthResponse)
+  async login() { ... }
+}
+```
+
+#### Pattern 5: Mixed Public and Protected
+
+Resolvers can have both public and protected operations:
+
+```typescript
+@Resolver(() => CatalogEntity)
+@UseGuards(GqlAuthGuard)
+export class CatalogResolver {
+  // Public catalog view
+  @Public()
+  @Query(() => [CatalogEntity])
+  async getCatalog() { ... }
+
+  // User-specific actions
+  @Mutation(() => CatalogEntity)
+  async purchaseItem() { ... }
+}
+```
+
+### Guard Execution Order
+
+The correct order for guard application is:
+
+```typescript
+@Resolver(() => MyEntity)
+@UseGuards(GqlAuthGuard, RoleGuard, DocumentPermissionGuard)
+@RequireRole(UserRole.LAWYER)
+export class MyResolver {
+  // Guards execute left-to-right:
+  // 1. GqlAuthGuard - validates JWT
+  // 2. RoleGuard - checks role hierarchy
+  // 3. DocumentPermissionGuard - validates resource access
+}
+```
+
+### Public Endpoints List
+
+The following endpoints are intentionally public (marked with `@Public()`):
+
+| Module            | Operations                                                | Purpose                                  |
+| ----------------- | --------------------------------------------------------- | ---------------------------------------- |
+| `auth`            | login, register, resetPassword, etc.                      | Authentication flow                      |
+| `demo-request`    | submitDemoRequest                                         | Public demo request form                 |
+| `hubspot`         | createHubSpotContact, syncHubSpotLead, qualifyHubSpotLead | Public form submissions                  |
+| `subscriptions`   | subscriptionPlans, subscriptionPlan                       | Public catalog viewing                   |
+| `system-settings` | publicSystemSettings                                      | Feature flags for frontend               |
+| `documents`       | legalRulingBySignature                                    | Public ruling lookup                     |
+| `api-keys`        | validateApiKey                                            | API key validation for external services |
+
+### Security Rules
+
+1. **Default to Secure**: All endpoints require authentication by default
+2. **Explicit Public**: Use `@Public()` decorator for intentionally public endpoints
+3. **No Manual Auth Checks**: Use guards instead of manual `if (!user) throw new Error()`
+4. **Guard Order**: Always apply guards before other decorators
+5. **Class-Level Guards**: Use class-level guards when all operations need auth
+6. **Method-Level Guards**: Use method-level for mixed public/protected resolvers
+
+### Resolver Audit
+
+A comprehensive audit of all resolvers and their guard configurations is maintained at:
+`.automaker/features/audit-graphql-auth-guards-consistency/resolver-audit-checklist.md`
+
+When adding new resolvers, update this checklist to maintain security visibility.
+
 ## Two-Factor Authentication (2FA)
 
 ### Overview

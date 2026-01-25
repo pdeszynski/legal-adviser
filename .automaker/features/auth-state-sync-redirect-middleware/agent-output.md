@@ -218,3 +218,336 @@ Input: {
   "offset": 95,
   "limit": 30
 }
+I see - line 103 only uses `request.nextUrl.pathname` which doesn't include query parameters. We need to include the full path with query parameters. Let me fix that:
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/middleware.ts",
+  "old_string": "export function middleware(request: NextRequest) {\n  const pathname = request.nextUrl.pathname;\n\n  // Protected route authentication check - must come before locale handling\n  if (isProtectedRoute(pathname)) {\n    // Check if user is authenticated\n    if (!isAuthenticated(request)) {\n      const loginUrl = new URL('/login', request.url);\n      loginUrl.searchParams.set('redirect', pathname);\n      return NextResponse.redirect(loginUrl);\n    }",
+  "new_string": "export function middleware(request: NextRequest) {\n  const pathname = request.nextUrl.pathname;\n\n  // Protected route authentication check - must come before locale handling\n  if (isProtectedRoute(pathname)) {\n    // Check if user is authenticated\n    if (!isAuthenticated(request)) {\n      const loginUrl = new URL('/login', request.url);\n      // Include query parameters in the redirect\n      const fullPath = request.nextUrl.pathname + request.nextUrl.search;\n      loginUrl.searchParams.set('redirect', fullPath);\n      return NextResponse.redirect(loginUrl);\n    }"
+}
+Now let's run the test again:
+
+🔧 Tool: Bash
+Input: {
+  "command": "npx playwright test auth-redirect-verification.spec.ts --reporter=list 2>&1",
+  "description": "Run Playwright auth redirect verification test after fix",
+  "timeout": 120000
+}
+All 6 tests passed. Now let me delete the temporary verification test file as instructed:
+
+🔧 Tool: Bash
+Input: {
+  "command": "rm /Users/piteer/workspace/radca-prawny/legal/apps/web/tests/auth-redirect-verification.spec.ts",
+  "description": "Delete temporary verification test file"
+}
+
+🔧 Tool: TodoWrite
+Input: {
+  "todos": [
+    {
+      "activeForm": "Exploring codebase for auth middleware structure",
+      "content": "Explore codebase for auth middleware and router guard structure",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Reviewing auth provider and state management",
+      "content": "Review existing auth provider and auth state management",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Reviewing session expiry detection feature",
+      "content": "Review client-side session expiry detection feature",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Planning implementation approach",
+      "content": "Plan implementation approach",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Implementing auth middleware/guard",
+      "content": "Implement auth state sync and redirect middleware/guard",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Creating verification test",
+      "content": "Create Playwright verification test",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Running verification and fixing issues",
+      "content": "Run verification and fix any issues",
+      "status": "completed"
+    }
+  ]
+}
+Now let me also run type checking and linting to ensure there are no issues:
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm dlx tsc --noEmit 2>&1 | head -30",
+  "description": "Run TypeScript type checking on web app",
+  "timeout": 60000
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm dlx -p typescript tsc --noEmit 2>&1 | head -50",
+  "description": "Run TypeScript type checking on web app",
+  "timeout": 120000
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm exec tsc --noEmit 2>&1 | head -50",
+  "description": "Run TypeScript type checking on web app",
+  "timeout": 120000
+}
+The type errors are pre-existing issues in other files, not related to our changes. Let me specifically check if our new files have any type errors:
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm exec tsc --noEmit 2>&1 | grep -E \"(auth-guard|middleware\\.ts|login|two-factor)\" | head -20",
+  "description": "Check type errors for auth-related files"
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm exec tsc --noEmit 2>&1 | grep -E \"(src/lib/auth-guard|src/middleware\\.ts|src/app/login|src/components/layout/main-layout)\"",
+  "description": "Check type errors for our modified files"
+}
+No type errors in our modified files. Let me run ESLint on the new auth-guard file to ensure code quality:
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm dlx eslint src/lib/auth-guard.ts src/middleware.ts 2>&1",
+  "description": "Run ESLint on modified auth files"
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm lint 2>&1 | grep -E \"(auth-guard|middleware\\.ts|main-layout|login-content|two-factor-input)\" | head -20",
+  "description": "Run project lint to check our files"
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm lint 2>&1 | grep -A5 \"auth-guard\\|middleware\\.ts\\|login-content\\|two-factor-input\\|main-layout\" | head -30",
+  "description": "Run project lint to check for errors"
+}
+Let me fix the linting errors in our modified files:
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/auth-guard.ts",
+  "offset": 165,
+  "limit": 30
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/auth-guard.ts",
+  "old_string": "  const pathname = usePathname();\n  const router = useRouter();\n  const { data: authData, isLoading: isAuthLoading } = useIsAuthenticated();\n  const { mutate: logout } = useLogout();\n  const { handleSessionExpiry } = useAuthContext();\n\n  // Track previous path to detect back navigation\n  const previousPathRef = useRef(pathname);\n  const isCheckingRef = useRef(false);\n  const lastCheckTimeRef = useRef(0);\n  const CHECK_THROTTLE_MS = 1000; // Don't check more than once per second\n\n  /**\n   * Redirect to login with return URL\n   */\n  const redirectToLogin = useCallback(\n    (returnUrl?: string) => {\n      const redirectParam = returnUrl || pathname;\n      const loginUrl = `/login?redirect=${encodeURIComponent(redirectParam)}`;\n      router.push(loginUrl);\n    },\n    [pathname, router],\n  );",
+  "new_string": "  const pathname = usePathname();\n  const router = useRouter();\n  const { data: authData, isLoading: isAuthLoading } = useIsAuthenticated();\n  const { handleSessionExpiry } = useAuthContext();\n\n  // Track previous path to detect back navigation\n  const previousPathRef = useRef(pathname);\n  const isCheckingRef = useRef(false);\n  const lastCheckTimeRef = useRef(0);\n  const CHECK_THROTTLE_MS = 1000; // Don't check more than once per second\n\n  /**\n   * Redirect to login with return URL\n   */\n  const redirectToLogin = useCallback(\n    (returnUrl?: string) => {\n      const redirectParam = returnUrl || pathname;\n      const loginUrl = `/login?redirect=${encodeURIComponent(redirectParam)}`;\n      router.push(loginUrl);\n    },\n    [pathname, router],\n  );"
+}
+Now let me remove the console statements and replace them with a proper logger:
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/auth-guard.ts",
+  "limit": 60,
+  "offset": 200
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/auth-guard.ts",
+  "old_string": "      // Check token validity\n      const tokenValidation = areTokensValid();\n\n      if (!tokenValidation.valid) {\n        console.log('[AuthGuard] Token validation failed:', tokenValidation.reason);\n        onAuthFailed?.(tokenValidation.reason || 'unknown');\n\n        // Clear auth and redirect\n        handleSessionExpiry({\n          showNotification: true,\n          notificationMessage: 'Your session has expired. Please log in again.',\n        });\n\n        return;\n      }\n\n      // If Refine says not authenticated but tokens exist, tokens might be invalid\n      if (!authData?.authenticated) {\n        console.log('[AuthGuard] Refine auth check failed');\n        handleSessionExpiry({\n          showNotification: true,\n          notificationMessage: 'Please log in to continue.',\n        });\n        return;\n      }\n\n      // Check if access token is expiring soon (within buffer)\n      const accessToken = getAccessToken();\n      if (accessToken) {\n        const timeUntilExpiry = JWTUtils.getTimeUntilExpiry(accessToken);\n        if (timeUntilExpiry !== null && timeUntilExpiry < expiryBufferSeconds) {\n          console.log('[AuthGuard] Token expiring soon, attempting refresh');\n          // The auth provider will handle refresh on next API call\n          // We could proactively trigger it here if needed\n        }\n      }",
+  "new_string": "      // Check token validity\n      const tokenValidation = areTokensValid();\n\n      if (!tokenValidation.valid) {\n        onAuthFailed?.(tokenValidation.reason || 'unknown');\n\n        // Clear auth and redirect\n        handleSessionExpiry({\n          showNotification: true,\n          notificationMessage: 'Your session has expired. Please log in again.',\n        });\n\n        return;\n      }\n\n      // If Refine says not authenticated but tokens exist, tokens might be invalid\n      if (!authData?.authenticated) {\n        handleSessionExpiry({\n          showNotification: true,\n          notificationMessage: 'Please log in to continue.',\n        });\n        return;\n      }\n\n      // Check if access token is expiring soon (within buffer)\n      const accessToken = getAccessToken();\n      if (accessToken) {\n        const timeUntilExpiry = JWTUtils.getTimeUntilExpiry(accessToken);\n        if (timeUntilExpiry !== null && timeUntilExpiry < expiryBufferSeconds) {\n          // The auth provider will handle refresh on next API call\n          // We could proactively trigger it here if needed\n        }\n      }"
+}
+Now let me also remove the console.log statements from the other parts of the file:
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/auth-guard.ts",
+  "limit": 60,
+  "offset": 265
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/auth-guard.ts",
+  "old_string": "  useEffect(() => {\n    if (previousPathRef.current !== pathname) {\n      // Path changed, check if it's a back navigation to protected route\n      if (isProtectedRoute(pathname) && !isProtectedRoute(previousPathRef.current)) {\n        console.log('[AuthGuard] Back navigation to protected route, checking auth');\n        performAuthCheck();\n      }\n      previousPathRef.current = pathname;\n    }\n  }, [pathname, performAuthCheck]);\n\n  /**\n   * Window focus refresh\n   * Check auth when user returns to the tab\n   */\n  useEffect(() => {\n    if (!enableFocusRefresh) return;\n\n    const handleFocus = () => {\n      // Only check if currently on a protected route\n      if (isProtectedRoute(pathname)) {\n        console.log('[AuthGuard] Window focused, checking auth');\n        performAuthCheck();\n      }\n    };\n\n    window.addEventListener('focus', handleFocus);\n    return () => window.removeEventListener('focus', handleFocus);\n  }, [pathname, enableFocusRefresh, performAuthCheck]);\n\n  /**\n   * Visibility change handler\n   * Also check when tab becomes visible again\n   */\n  useEffect(() => {\n    if (!enableFocusRefresh) return;\n\n    const handleVisibilityChange = () => {\n      if (document.visibilityState === 'visible' && isProtectedRoute(pathname)) {\n        console.log('[AuthGuard] Tab became visible, checking auth');\n        performAuthCheck();\n      }\n    };\n\n    document.addEventListener('visibilitychange', handleVisibilityChange);\n    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);\n  }, [pathname, enableFocusRefresh, performAuthCheck]);",
+  "new_string": "  useEffect(() => {\n    if (previousPathRef.current !== pathname) {\n      // Path changed, check if it's a back navigation to protected route\n      if (isProtectedRoute(pathname) && !isProtectedRoute(previousPathRef.current)) {\n        performAuthCheck();\n      }\n      previousPathRef.current = pathname;\n    }\n  }, [pathname, performAuthCheck]);\n\n  /**\n   * Window focus refresh\n   * Check auth when user returns to the tab\n   */\n  useEffect(() => {\n    if (!enableFocusRefresh) return;\n\n    const handleFocus = () => {\n      // Only check if currently on a protected route\n      if (isProtectedRoute(pathname)) {\n        performAuthCheck();\n      }\n    };\n\n    window.addEventListener('focus', handleFocus);\n    return () => window.removeEventListener('focus', handleFocus);\n  }, [pathname, enableFocusRefresh, performAuthCheck]);\n\n  /**\n   * Visibility change handler\n   * Also check when tab becomes visible again\n   */\n  useEffect(() => {\n    if (!enableFocusRefresh) return;\n\n    const handleVisibilityChange = () => {\n      if (document.visibilityState === 'visible' && isProtectedRoute(pathname)) {\n        performAuthCheck();\n      }\n    };\n\n    document.addEventListener('visibilitychange', handleVisibilityChange);\n    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);\n  }, [pathname, enableFocusRefresh, performAuthCheck]);"
+}
+Now let me fix the unused variables in login-content.tsx and two-factor-input.tsx:
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/app/login/login-content.tsx",
+  "old_string": "export const LoginContent = () => {\n  const { mutate: login, isPending: isLoading, error } = useLogin();\n  const { data: authData, isLoading: isAuthLoading } = useIsAuthenticated();",
+  "new_string": "export const LoginContent = () => {\n  const { isPending: isLoading, error } = useLogin();\n  const { data: authData, isLoading: isAuthLoading } = useIsAuthenticated();"
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/app/login/two-factor-input.tsx",
+  "old_string": "interface TwoFactorInputProps {\n  email: string;\n  password: string;\n  onCancel: () => void;\n  onSuccess: () => void;\n}",
+  "new_string": "interface TwoFactorInputProps {\n  email: string;\n  password: string;\n  onCancel: () => void;\n}"
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/app/login/two-factor-input.tsx",
+  "old_string": "export const TwoFactorInput = ({ email, password, onCancel, onSuccess }: TwoFactorInputProps) => {",
+  "new_string": "export const TwoFactorInput = ({ email, password, onCancel }: TwoFactorInputProps) => {"
+}
+Now update the parent component (login-content.tsx) that calls TwoFactorInput:
+
+🔧 Tool: Grep
+Input: {
+  "pattern": "TwoFactorInput",
+  "path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/app/login",
+  "output_mode": "content",
+  "-n": true
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/app/login/login-content.tsx",
+  "limit": 30,
+  "offset": 195
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/app/login/login-content.tsx",
+  "old_string": "  const handleTwoFactorCancel = () => {\n    setShowTwoFactor(false);\n    setPendingCredentials(null);\n  };\n\n  const handleTwoFactorSuccess = () => {\n    setShowTwoFactor(false);\n    setPendingCredentials(null);\n    // Redirect will be handled by the TwoFactorInput component\n  };\n\n  // Show 2FA input if required\n  if (showTwoFactor && pendingCredentials) {\n    return (\n      <TwoFactorInput\n        email={pendingCredentials.email}\n        password={pendingCredentials.password}\n        onCancel={handleTwoFactorCancel}\n        onSuccess={handleTwoFactorSuccess}\n      />\n    );\n  }",
+  "new_string": "  const handleTwoFactorCancel = () => {\n    setShowTwoFactor(false);\n    setPendingCredentials(null);\n  };\n\n  // Show 2FA input if required\n  if (showTwoFactor && pendingCredentials) {\n    return (\n      <TwoFactorInput\n        email={pendingCredentials.email}\n        password={pendingCredentials.password}\n        onCancel={handleTwoFactorCancel}\n      />\n    );\n  }"
+}
+Now let me run lint again to verify our changes:
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm lint 2>&1 | grep -E \"(auth-guard|middleware\\.ts|login-content|two-factor-input)\" | head -20",
+  "description": "Check lint status for our modified files"
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm lint 2>&1 | grep -A5 \"auth-guard\\|middleware\\.ts\" | head -30",
+  "description": "Check actual lint errors for our files"
+}
+Let me fix the remaining issues in auth-guard.ts:
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/auth-guard.ts",
+  "old_string": "import { useEffect, useRef, useCallback } from 'react';\nimport { usePathname, useRouter } from 'next/navigation';\nimport { useIsAuthenticated, useLogout } from '@refinedev/core';\nimport { getAccessToken, getRefreshToken } from '@providers/auth-provider/auth-provider.client';\nimport { useAuthContext } from '@/contexts/auth-context';",
+  "new_string": "import { useEffect, useRef, useCallback } from 'react';\nimport { usePathname, useRouter } from 'next/navigation';\nimport { useIsAuthenticated } from '@refinedev/core';\nimport { getAccessToken, getRefreshToken } from '@providers/auth-provider/auth-provider.client';\nimport { useAuthContext } from '@/contexts/auth-context';"
+}
+Now let me check if `redirectToLogin` is used - it looks like it might be useful for the future but currently unused. Let me keep it but mark it with an eslint-disable comment:
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/auth-guard.ts",
+  "limit": 30,
+  "offset": 170
+}
+The `redirectToLogin` function is defined but not currently used. The code uses `handleSessionExpiry` instead. I'll remove it since it's not being used - `handleSessionExpiry` from the auth context already handles the redirect:
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/auth-guard.ts",
+  "old_string": "  const { data: authData, isLoading: isAuthLoading } = useIsAuthenticated();\n  const { handleSessionExpiry } = useAuthContext();\n\n  // Track previous path to detect back navigation\n  const previousPathRef = useRef(pathname);\n  const isCheckingRef = useRef(false);\n  const lastCheckTimeRef = useRef(0);\n  const CHECK_THROTTLE_MS = 1000; // Don't check more than once per second\n\n  /**\n   * Redirect to login with return URL\n   */\n  const redirectToLogin = useCallback(\n    (returnUrl?: string) => {\n      const redirectParam = returnUrl || pathname;\n      const loginUrl = `/login?redirect=${encodeURIComponent(redirectParam)}`;\n      router.push(loginUrl);\n    },\n    [pathname, router],\n  );\n\n  /**\n   * Perform authentication check\n   */",
+  "new_string": "  const { data: authData, isLoading: isAuthLoading } = useIsAuthenticated();\n  const { handleSessionExpiry } = useAuthContext();\n\n  // Track previous path to detect back navigation\n  const previousPathRef = useRef(pathname);\n  const isCheckingRef = useRef(false);\n  const lastCheckTimeRef = useRef(0);\n  const CHECK_THROTTLE_MS = 1000; // Don't check more than once per second\n\n  /**\n   * Perform authentication check\n   */"
+}
+Now we also need to remove `useRouter` since it's no longer used:
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/auth-guard.ts",
+  "old_string": "import { useEffect, useRef, useCallback } from 'react';\nimport { usePathname, useRouter } from 'next/navigation';\nimport { useIsAuthenticated } from '@refinedev/core';\nimport { getAccessToken, getRefreshToken } from '@providers/auth-provider/auth-provider.client';\nimport { useAuthContext } from '@/contexts/auth-context';",
+  "new_string": "import { useEffect, useRef, useCallback } from 'react';\nimport { usePathname } from 'next/navigation';\nimport { useIsAuthenticated } from '@refinedev/core';\nimport { getAccessToken, getRefreshToken } from '@providers/auth-provider/auth-provider.client';\nimport { useAuthContext } from '@/contexts/auth-context';"
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/auth-guard.ts",
+  "old_string": "  const pathname = usePathname();\n  const router = useRouter();\n  const { data: authData, isLoading: isAuthLoading } = useIsAuthenticated();",
+  "new_string": "  const pathname = usePathname();\n  const { data: authData, isLoading: isAuthLoading } = useIsAuthenticated();"
+}
+Now let me verify the lint again:
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm lint 2>&1 | grep -E \"(auth-guard\\.ts|middleware\\.ts)\" | head -20",
+  "description": "Check lint status for our modified files"
+}
+Good - auth-guard.ts no longer has errors. The middleware.ts has some pre-existing errors with `any` type which are not related to our changes. Let me verify our changes work by running the verification test one more time:
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm exec tsc --noEmit 2>&1 | grep -E \"(auth-guard|middleware\\.ts|login-content|two-factor-input|main-layout)\"",
+  "description": "Check type errors for our files"
+}
+No type errors for our modified files. Now let me provide a final summary:
+
+<summary>
+## Summary: Auth State Sync and Redirect Middleware/Guard
+
+### Changes Implemented
+
+1. **Created new auth guard utilities** (`apps/web/src/lib/auth-guard.ts`):
+   - `useAuthGuard()` hook - Client-side router guard that checks authentication on route changes
+   - `useStoredRedirect()` hook - Helper to extract and validate redirect URLs from query parameters
+   - JWT token validation utilities (`JWTUtils`) - Decode and check JWT expiry client-side
+   - Protected/public route pattern definitions
+   - Window focus and visibility change handlers for auth state refresh
+   - Browser back button handling for expired sessions
+
+2. **Updated middleware** (`apps/web/src/middleware.ts`):
+   - Extended protected route patterns to include all authenticated routes (`/dashboard`, `/settings`, `/documents`, `/chat`, etc.)
+   - Preserves query parameters in redirect URL (e.g., `/documents?filter=active` → `?redirect=/documents?filter=active`)
+   - Added validation logic for public vs protected routes
+
+3. **Updated login flow** (`apps/web/src/app/login/login-content.tsx`):
+   - Added `useStoredRedirect` hook to read redirect parameter
+   - Login now redirects to the intended destination after successful authentication
+   - Redirect URL validation prevents open redirects (only allows relative paths starting with `/`)
+
+4. **Updated 2FA login** (`apps/web/src/app/login/two-factor-input.tsx`):
+   - Added `useStoredRedirect` hook for consistent redirect behavior
+   - Both TOTP and backup code flows now respect the redirect parameter
+
+5. **Integrated auth guard** (`apps/web/src/components/layout/main-layout.tsx`):
+   - Added `useAuthGuard()` hook to MainLayout to enable client-side route protection
+
+### Files Modified
+- `apps/web/src/lib/auth-guard.ts` (new file, ~320 lines)
+- `apps/web/src/middleware.ts` (extended protected routes, added query param preservation)
+- `apps/web/src/app/login/login-content.tsx` (added redirect handling)
+- `apps/web/src/app/login/two-factor-input.tsx` (added redirect handling)
+- `apps/web/src/components/layout/main-layout.tsx` (added auth guard hook)
+
+### Notes for Developer
+- The middleware provides server-side redirect protection for all protected routes
+- The client-side auth guard adds additional protection for SPA navigation
+- Redirect URLs are validated to prevent open redirect attacks (must start with `/` and not `//`)
+- Query parameters in the original URL are preserved in the redirect
+- The auth guard performs throttled checks (max once per second) to avoid excessive calls
+- Window focus and visibility change handlers ensure auth state is refreshed when user returns to the tab
+- All code passes TypeScript type checking and ESLint (no new warnings/errors)
+
+### Verification Status
+- Created temporary Playwright test (`auth-redirect-verification.spec.ts`) with 6 test cases
+- All 6 tests passed successfully:
+  1. Middleware redirects to login with redirect parameter ✓
+  2. Public routes do not redirect to login ✓
+  3. Admin routes redirect to login with redirect parameter ✓
+  4. Redirect validation prevents open redirects ✓
+  5. Nested protected routes redirect with full path ✓
+  6. Middleware preserves query parameters when redirecting ✓
+- Temporary test file deleted after verification
+</summary>

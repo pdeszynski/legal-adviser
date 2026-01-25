@@ -9,6 +9,7 @@ import { GqlThrottlerGuard } from '../../shared/throttler/gql-throttler.guard';
 import { UseGuards } from '@nestjs/common';
 import { SkipCsrf } from '../../shared/csrf';
 import { Logger } from '@nestjs/common';
+import { Public } from '../auth/decorators/public.decorator';
 
 /**
  * GraphQL Resolver for Demo Requests
@@ -39,6 +40,7 @@ export class DemoRequestResolver {
    * @param input Demo request data
    * @returns Success response with confirmation message and reference ID
    */
+  @Public()
   @Mutation(() => DemoRequestResponse, {
     name: 'submitDemoRequest',
     description:

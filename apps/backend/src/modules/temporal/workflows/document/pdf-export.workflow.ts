@@ -15,13 +15,13 @@
  */
 
 import {
-  proxies,
+  proxyActivities,
   workflowInfo,
   defineSignal,
   setHandler,
   defineQuery,
 } from '@temporalio/workflow';
-import { DocumentType } from '../../../../documents/entities/legal-document.entity';
+import { DocumentType } from '../../../documents/entities/legal-document.entity';
 
 /**
  * Cancel signal
@@ -212,12 +212,13 @@ export async function pdfExport(
   });
 
   // Set up query handler for export state
-  defineQuery('getState', (): ExportStateQuery => {
+  const getStateQuery = defineQuery<ExportStateQuery>('getState');
+  setHandler(getStateQuery, (): ExportStateQuery => {
     return { ...exportState };
   });
 
   // Create activity proxies with retry policy and heartbeat
-  const activities = proxies.activities<PdfExportActivities>({
+  const activities = proxyActivities<PdfExportActivities>({
     startToCloseTimeout: '30m',
     heartbeatTimeout: '60s', // Detect stalled activities
     retry: {
@@ -296,7 +297,7 @@ export async function pdfExport(
         exportId,
         documentId,
         title,
-        pdfUrl: pdfResult.result.pdfUrl,
+        pdfUrl: pdfResult.pdfUrl,
         userId,
         frontendUrl,
       });
@@ -317,9 +318,9 @@ export async function pdfExport(
       exportId,
       documentId,
       status: 'COMPLETED',
-      pdfUrl: pdfResult.result.pdfUrl,
-      pageCount: pdfResult.result.pageCount,
-      fileSize: pdfResult.result.fileSize,
+      pdfUrl: pdfResult.pdfUrl,
+      pageCount: pdfResult.pageCount,
+      fileSize: pdfResult.fileSize,
       completedAt: new Date().toISOString(),
       exportTimeMs: Date.now() - startTime,
     };

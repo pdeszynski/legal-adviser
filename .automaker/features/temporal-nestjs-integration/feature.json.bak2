@@ -4,7 +4,7 @@
   "id": "temporal-nestjs-integration",
   "title": "Temporal Client Integration with NestJS Backend",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "feature/temporal",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T02:20:52.182Z"
+  "updatedAt": "2026-01-25T02:20:53.787Z"
 }

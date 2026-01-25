@@ -15,7 +15,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { TemporalService } from '../../temporal.service';
 import { RulingIndexingStarter } from './ruling-indexing.starter';
 import { RulingBackfillStarter } from './ruling-backfill.starter';
-import type { RulingSource } from './ruling-indexing.workflow';
+import { RulingSource } from './ruling-indexing.workflow';
 
 /**
  * Schedule Configuration
@@ -129,7 +129,7 @@ export class RulingIndexingSchedulerService {
   private initializeDefaultSchedules(): void {
     // SAOS nightly sync at 2 AM
     this.createSchedule({
-      source: 'SAOS',
+      source: RulingSource.SAOS,
       cronExpression: DEFAULT_CRON_EXPRESSIONS.NIGHTLY_2AM,
       daysBack: 1,
       description: 'Nightly sync of SAOS rulings (last 1 day)',
@@ -137,7 +137,7 @@ export class RulingIndexingSchedulerService {
 
     // ISAP nightly sync at 2 AM
     this.createSchedule({
-      source: 'ISAP',
+      source: RulingSource.ISAP,
       cronExpression: DEFAULT_CRON_EXPRESSIONS.NIGHTLY_2AM,
       daysBack: 1,
       description: 'Nightly sync of ISAP rulings (last 1 day)',
@@ -145,14 +145,14 @@ export class RulingIndexingSchedulerService {
 
     // Weekly deep sync at 3 AM on Sunday
     this.createSchedule({
-      source: 'SAOS',
+      source: RulingSource.SAOS,
       cronExpression: DEFAULT_CRON_EXPRESSIONS.WEEKLY_SUNDAY_3AM,
       daysBack: 7,
       description: 'Weekly deep sync of SAOS rulings (last 7 days)',
     });
 
     this.createSchedule({
-      source: 'ISAP',
+      source: RulingSource.ISAP,
       cronExpression: DEFAULT_CRON_EXPRESSIONS.WEEKLY_SUNDAY_3AM,
       daysBack: 7,
       description: 'Weekly deep sync of ISAP rulings (last 7 days)',
@@ -460,7 +460,7 @@ export class RulingIndexingSchedulerService {
         },
         spec: {
           // Run once immediately
-          startTime: new Date(),
+          cronExpression: '0 * * * * *', // Run immediately
         },
         policies: {
           overlap: 'SKIP',
