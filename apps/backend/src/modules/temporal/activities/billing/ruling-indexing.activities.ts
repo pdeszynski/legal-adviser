@@ -1,0 +1,758 @@
+/**
+ * Ruling Indexing Activities
+ *
+ * Individual activities that can be called within workflows
+ * for ruling indexing operations from external sources (SAOS, ISAP).
+ *
+ * These activities replace the Bull-based ruling indexing queue with
+ * Temporal workflow activities.
+ *
+ * Activities handle:
+ * - Fetching new rulings from SAOS/ISAP APIs
+ * - Processing and parsing ruling data
+ * - Indexing in vector store for RAG
+ * - Storing in database with deduplication
+ * - API rate limiting
+ */
+
+import { Injectable, Logger } from '@nestjs/common';
+import { CourtType } from '../../../../documents/entities/legal-ruling.entity';
+import { SaosAdapter } from '../../../../infrastructure/anti-corruption/saos/saos.adapter';
+import { IsapAdapter } from '../../../../infrastructure/anti-corruption/isap/isap.adapter';
+import { LegalRulingService } from '../../../../documents/services/legal-ruling.service';
+import { VectorStoreService } from '../../../../documents/services/vector-store.service';
+import { SearchRulingsQuery } from '../../../../../domain/legal-rulings/value-objects/ruling-source.vo';
+
+/**
+ * Initialize Indexing Activity Input
+ *
+ * Input for initializing a ruling indexing job.
+ * Estimates the total available rulings for batching.
+ */
+export interface InitializeIndexingInput {
+  /** Unique indexing job ID */
+  jobId: string;
+  /** Data source to index from */
+  source: 'SAOS' | 'ISAP';
+  /** Start date for filtering */
+  dateFrom?: Date;
+  /** End date for filtering */
+  dateTo?: Date;
+  /** Filter by court type */
+  courtType?: CourtType;
+  /** User ID for tracking */
+  userId?: string;
+}
+
+/**
+ * Initialize Indexing Activity Output
+ *
+ * Output from initialization with estimated batch counts.
+ */
+export interface InitializeIndexingOutput {
+  /** Total number of rulings available from source */
+  totalAvailable: number;
+  /** Estimated number of batches needed */
+  estimatedBatches: number;
+  /** Timestamp of initialization */
+  initializedAt: string;
+}
+
+/**
+ * Process Indexing Batch Activity Input
+ *
+ * Input for processing a single batch of rulings.
+ */
+export interface ProcessIndexingBatchInput {
+  /** Unique indexing job ID */
+  jobId: string;
+  /** Data source to index from */
+  source: 'SAOS' | 'ISAP';
+  /** Batch number for progress tracking */
+  batchNumber: number;
+  /** Offset for pagination */
+  offset: number;
+  /** Number of rulings to process in this batch */
+  batchSize: number;
+  /** Start date for filtering */
+  dateFrom?: Date;
+  /** End date for filtering */
+  dateTo?: Date;
+  /** Filter by court type */
+  courtType?: CourtType;
+  /** Whether to update existing rulings */
+  updateExisting?: boolean;
+  /** Idempotency key for this batch */
+  idempotencyKey?: string;
+}
+
+/**
+ * Process Indexing Batch Activity Output
+ *
+ * Output from processing a batch of rulings.
+ */
+export interface ProcessIndexingBatchOutput {
+  /** Batch number */
+  batchNumber: number;
+  /** Number of rulings processed */
+  processed: number;
+  /** Number of rulings indexed successfully */
+  indexed: number;
+  /** Number of rulings skipped (already exists, no update) */
+  skipped: number;
+  /** Number of rulings that failed */
+  failed: number;
+  /** Signatures of processed rulings */
+  processedSignatures: string[];
+  /** Processing time in milliseconds */
+  processingTimeMs: number;
+}
+
+/**
+ * Complete Indexing Activity Input
+ *
+ * Input for marking an indexing job as complete.
+ */
+export interface CompleteIndexingInput {
+  /** Unique indexing job ID */
+  jobId: string;
+  /** Data source that was indexed */
+  source: 'SAOS' | 'ISAP';
+  /** Total number of rulings indexed */
+  totalIndexed: number;
+  /** Total number of rulings that failed */
+  totalFailed: number;
+  /** User ID for tracking */
+  userId?: string;
+}
+
+/**
+ * Complete Indexing Activity Output
+ *
+ * Output from completing an indexing job.
+ */
+export interface CompleteIndexingOutput {
+  /** Job ID */
+  jobId: string;
+  /** Timestamp of completion */
+  completedAt: string;
+}
+
+/**
+ * Fail Indexing Activity Input
+ *
+ * Input for marking an indexing job as failed.
+ */
+export interface FailIndexingInput {
+  /** Unique indexing job ID */
+  jobId: string;
+  /** Data source that was being indexed */
+  source: 'SAOS' | 'ISAP';
+  /** Error message describing the failure */
+  errorMessage: string;
+  /** User ID for tracking */
+  userId?: string;
+}
+
+/**
+ * Fail Indexing Activity Output
+ *
+ * Output from failing an indexing job.
+ */
+export interface FailIndexingOutput {
+  /** Job ID */
+  jobId: string;
+  /** Timestamp of failure */
+  failedAt: string;
+  /** Error message */
+  errorMessage: string;
+}
+
+/**
+ * Rate Limit Check Activity Input
+ */
+export interface CheckRateLimitInput {
+  /** Source being accessed */
+  source: 'SAOS' | 'ISAP';
+  /** Number of requests about to be made */
+  requestCount: number;
+}
+
+/**
+ * Rate Limit Check Activity Output
+ */
+export interface CheckRateLimitOutput {
+  /** Whether requests are allowed */
+  allowed: boolean;
+  /** Time to wait before next request if not allowed (milliseconds) */
+  waitTimeMs?: number;
+  /** Current rate limit window info */
+  windowInfo?: {
+    remaining: number;
+    resetAt: string;
+  };
+}
+
+/**
+ * Index in Vector Store Activity Input
+ */
+export interface IndexInVectorStoreInput {
+  /** Ruling ID to index */
+  rulingId: string;
+  /** Full text content to index */
+  fullText: string;
+  /** Metadata for the embeddings */
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Index in Vector Store Activity Output
+ */
+export interface IndexInVectorStoreOutput {
+  /** Number of chunks indexed */
+  chunkCount: number;
+  /** Timestamp of indexing */
+  indexedAt: string;
+}
+
+/**
+ * Ruling Indexing Activities Container Class
+ *
+ * This class contains all activity implementations for ruling indexing.
+ * Activities are registered with Temporal workers and called from workflows.
+ */
+@Injectable()
+export class RulingIndexingActivities {
+  private readonly logger = new Logger(RulingIndexingActivities.name);
+
+  // Rate limiting state (in production, use Redis)
+  private readonly rateLimitState = new Map<
+    string,
+    { count: number; resetAt: number }
+  >();
+  private readonly RATE_LIMITS = {
+    SAOS: { maxRequests: 100, windowMs: 60000 }, // 100 requests per minute
+    ISAP: { maxRequests: 50, windowMs: 60000 }, // 50 requests per minute
+  };
+
+  // Idempotency tracking for processed batches
+  private readonly processedBatches = new Set<string>();
+
+  constructor(
+    private readonly saosAdapter: SaosAdapter,
+    private readonly isapAdapter: IsapAdapter,
+    private readonly legalRulingService: LegalRulingService,
+    private readonly vectorStoreService: VectorStoreService,
+  ) {}
+
+  /**
+   * Initialize Indexing Activity
+   *
+   * Queries the external source to estimate total available rulings
+   * and calculates the number of batches needed.
+   */
+  async initializeIndexing(
+    input: InitializeIndexingInput,
+  ): Promise<InitializeIndexingOutput> {
+    const { jobId, source, dateFrom, dateTo, courtType } = input;
+
+    this.logger.log(
+      `Initializing ruling indexing job ${jobId} for source ${source}`,
+    );
+
+    try {
+      // Build search query to get count
+      const searchQuery: SearchRulingsQuery = {
+        query: '',
+        courtType: courtType ? this.mapToDomainCourtType(courtType) : undefined,
+        dateFrom,
+        dateTo,
+        limit: 1, // Just need to check availability
+      };
+
+      const adapter = source === 'SAOS' ? this.saosAdapter : this.isapAdapter;
+      const result = await adapter.search(searchQuery);
+
+      if (!result.success || !result.data) {
+        this.logger.warn(
+          `Failed to query ${source} during initialization: ${result.error?.message}`,
+        );
+        return {
+          totalAvailable: 0,
+          estimatedBatches: 0,
+          initializedAt: new Date().toISOString(),
+        };
+      }
+
+      // For estimation, we'll use a reasonable batch size
+      // In a real implementation, the API might return total count
+      const estimatedCount = result.data.length > 0 ? 1000 : 0; // Default estimate
+      const batchSize = 100;
+      const estimatedBatches = Math.ceil(estimatedCount / batchSize);
+
+      this.logger.log(
+        `Initialized indexing job ${jobId}: ~${estimatedCount} rulings, ${estimatedBatches} batches`,
+      );
+
+      return {
+        totalAvailable: estimatedCount,
+        estimatedBatches,
+        initializedAt: new Date().toISOString(),
+      };
+    } catch (error) {
+      this.logger.error(`Failed to initialize indexing job ${jobId}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process Indexing Batch Activity
+   *
+   * Fetches a batch of rulings from the external source,
+   * processes them, and stores them in the database with vector indexing.
+   */
+  async processIndexingBatch(
+    input: ProcessIndexingBatchInput,
+  ): Promise<ProcessIndexingBatchOutput> {
+    const {
+      jobId,
+      source,
+      batchNumber,
+      offset,
+      batchSize,
+      dateFrom,
+      dateTo,
+      courtType,
+      updateExisting = true,
+      idempotencyKey,
+    } = input;
+
+    const startTime = Date.now();
+
+    // Check idempotency - if this batch was already processed, return cached result
+    if (idempotencyKey && this.processedBatches.has(idempotencyKey)) {
+      this.logger.debug(
+        `Batch ${batchNumber} (job ${jobId}) already processed, skipping`,
+      );
+      return {
+        batchNumber,
+        processed: 0,
+        indexed: 0,
+        skipped: 0,
+        failed: 0,
+        processedSignatures: [],
+        processingTimeMs: 0,
+      };
+    }
+
+    this.logger.debug(
+      `Processing batch ${batchNumber} (job ${jobId}): offset=${offset}, size=${batchSize}`,
+    );
+
+    // Check rate limits before making requests
+    const rateLimitCheck = await this.checkRateLimit({
+      source,
+      requestCount: 1,
+    });
+
+    if (!rateLimitCheck.allowed && rateLimitCheck.waitTimeMs) {
+      this.logger.debug(
+        `Rate limit reached for ${source}, waiting ${rateLimitCheck.waitTimeMs}ms`,
+      );
+      await this.sleep(rateLimitCheck.waitTimeMs);
+    }
+
+    let indexed = 0;
+    let skipped = 0;
+    let failed = 0;
+    const processedSignatures: string[] = [];
+
+    try {
+      // Fetch rulings from external source
+      const externalRulings = await this.fetchFromExternalSource({
+        source,
+        limit: batchSize,
+        offset,
+        dateFrom,
+        dateTo,
+        courtType,
+      });
+
+      this.logger.debug(
+        `Fetched ${externalRulings.length} rulings from ${source} for batch ${batchNumber}`,
+      );
+
+      // Process each ruling
+      for (const { ruling, sourceReference } of externalRulings) {
+        try {
+          const result = await this.indexSingleRuling({
+            ruling,
+            source,
+            sourceReference,
+            updateExisting,
+          });
+
+          if (result.indexed) {
+            indexed++;
+            processedSignatures.push(ruling.signature);
+          } else if (result.skipped) {
+            skipped++;
+          } else {
+            failed++;
+          }
+        } catch (error) {
+          failed++;
+          this.logger.error(
+            `Failed to index ruling ${ruling.signature}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+        }
+      }
+
+      const processingTimeMs = Date.now() - startTime;
+
+      this.logger.log(
+        `Batch ${batchNumber} (job ${jobId}) completed: ` +
+          `indexed=${indexed}, skipped=${skipped}, failed=${failed} in ${processingTimeMs}ms`,
+      );
+
+      // Mark batch as processed for idempotency
+      if (idempotencyKey) {
+        this.processedBatches.add(idempotencyKey);
+      }
+
+      return {
+        batchNumber,
+        processed: externalRulings.length,
+        indexed,
+        skipped,
+        failed,
+        processedSignatures,
+        processingTimeMs,
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `Failed to process batch ${batchNumber} (job ${jobId}): ${errorMessage}`,
+      );
+
+      return {
+        batchNumber,
+        processed: 0,
+        indexed,
+        skipped,
+        failed,
+        processedSignatures,
+        processingTimeMs: Date.now() - startTime,
+      };
+    }
+  }
+
+  /**
+   * Complete Indexing Activity
+   *
+   * Marks an indexing job as complete and logs the results.
+   */
+  async completeIndexing(
+    input: CompleteIndexingInput,
+  ): Promise<CompleteIndexingOutput> {
+    const { jobId, source, totalIndexed, totalFailed } = input;
+
+    this.logger.log(
+      `Ruling indexing job ${jobId} completed for source ${source}: ` +
+        `indexed=${totalIndexed}, failed=${totalFailed}`,
+    );
+
+    // Clean up idempotency tracking for this job
+    for (const key of this.processedBatches) {
+      if (key.startsWith(`${jobId}-`)) {
+        this.processedBatches.delete(key);
+      }
+    }
+
+    return {
+      jobId,
+      completedAt: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Fail Indexing Activity
+   *
+   * Marks an indexing job as failed and logs the error.
+   */
+  async failIndexing(input: FailIndexingInput): Promise<FailIndexingOutput> {
+    const { jobId, source, errorMessage } = input;
+
+    this.logger.error(
+      `Ruling indexing job ${jobId} failed for source ${source}: ${errorMessage}`,
+    );
+
+    // Clean up idempotency tracking for this job
+    for (const key of this.processedBatches) {
+      if (key.startsWith(`${jobId}-`)) {
+        this.processedBatches.delete(key);
+      }
+    }
+
+    return {
+      jobId,
+      failedAt: new Date().toISOString(),
+      errorMessage,
+    };
+  }
+
+  /**
+   * Check Rate Limit Activity
+   *
+   * Checks if the API request is within rate limits.
+   * Uses in-memory tracking (use Redis in production).
+   */
+  async checkRateLimit(
+    input: CheckRateLimitInput,
+  ): Promise<CheckRateLimitOutput> {
+    const { source, requestCount } = input;
+    const now = Date.now();
+    const limit = this.RATE_LIMITS[source];
+
+    // Get or create rate limit entry
+    let entry = this.rateLimitState.get(source);
+    if (!entry || entry.resetAt < now) {
+      entry = { count: 0, resetAt: now + limit.windowMs };
+      this.rateLimitState.set(source, entry);
+    }
+
+    const allowed = entry.count + requestCount <= limit.maxRequests;
+    const waitTimeMs = allowed ? 0 : entry.resetAt - now;
+
+    if (allowed) {
+      entry.count += requestCount;
+    }
+
+    return {
+      allowed,
+      waitTimeMs,
+      windowInfo: {
+        remaining: limit.maxRequests - entry.count,
+        resetAt: new Date(entry.resetAt).toISOString(),
+      },
+    };
+  }
+
+  /**
+   * Index in Vector Store Activity
+   *
+   * Indexes a ruling's full text in the vector store for semantic search.
+   */
+  async indexInVectorStore(
+    input: IndexInVectorStoreInput,
+  ): Promise<IndexInVectorStoreOutput> {
+    const { rulingId, fullText, metadata } = input;
+
+    if (!fullText || fullText.trim().length === 0) {
+      this.logger.debug(`No full text to index for ruling ${rulingId}`);
+      return {
+        chunkCount: 0,
+        indexedAt: new Date().toISOString(),
+      };
+    }
+
+    try {
+      const embeddings = await this.vectorStoreService.indexDocument(
+        rulingId,
+        fullText,
+        {
+          chunkSize: 500,
+          chunkOverlap: 50,
+          metadata,
+        },
+      );
+
+      this.logger.debug(
+        `Indexed ${embeddings.length} chunks for ruling ${rulingId}`,
+      );
+
+      return {
+        chunkCount: embeddings.length,
+        indexedAt: new Date().toISOString(),
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to index ruling ${rulingId} in vector store: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      // Don't throw - vector indexing is best-effort
+      return {
+        chunkCount: 0,
+        indexedAt: new Date().toISOString(),
+      };
+    }
+  }
+
+  /**
+   * Fetch rulings from external source
+   *
+   * Private helper method to fetch rulings from SAOS or ISAP.
+   */
+  private async fetchFromExternalSource(input: {
+    source: 'SAOS' | 'ISAP';
+    limit: number;
+    offset: number;
+    dateFrom?: Date;
+    dateTo?: Date;
+    courtType?: CourtType;
+  }): Promise<Array<{ ruling: any; sourceReference?: string }>> {
+    const { source, limit, offset, dateFrom, dateTo, courtType } = input;
+
+    const adapter = source === 'SAOS' ? this.saosAdapter : this.isapAdapter;
+
+    const searchQuery: SearchRulingsQuery = {
+      query: '',
+      courtType: courtType ? this.mapToDomainCourtType(courtType) : undefined,
+      dateFrom,
+      dateTo,
+      limit,
+      offset,
+    };
+
+    const result = await adapter.search(searchQuery);
+
+    if (!result.success || !result.data) {
+      this.logger.warn(
+        `Failed to fetch from ${source}: ${result.error?.message ?? 'Unknown error'}`,
+      );
+      return [];
+    }
+
+    return result.data.map((item) => ({
+      ruling: item.ruling,
+      sourceReference: item.ruling.metadata?.sourceReference,
+    }));
+  }
+
+  /**
+   * Index a single ruling
+   *
+   * Private helper method to index one ruling with deduplication.
+   */
+  private async indexSingleRuling(input: {
+    ruling: any;
+    source: 'SAOS' | 'ISAP';
+    sourceReference?: string;
+    updateExisting: boolean;
+  }): Promise<{ indexed: boolean; skipped: boolean }> {
+    const { ruling, source, sourceReference, updateExisting } = input;
+
+    // Check if ruling already exists
+    const existingRuling = await this.legalRulingService.findBySignature(
+      ruling.signature,
+    );
+
+    if (existingRuling) {
+      if (updateExisting) {
+        // Update existing ruling
+        await this.legalRulingService.update(existingRuling.id, {
+          ...ruling,
+          metadata: {
+            ...ruling.metadata,
+            sourceReference:
+              sourceReference ?? ruling.metadata?.sourceReference,
+            indexedFrom: source,
+            indexedAt: new Date().toISOString(),
+          },
+        });
+
+        // Re-index in vector store if full text changed
+        if (ruling.fullText) {
+          await this.indexInVectorStore({
+            rulingId: existingRuling.id,
+            fullText: ruling.fullText,
+            metadata: {
+              signature: ruling.signature,
+              courtName: ruling.courtName,
+              source,
+            },
+          });
+        }
+
+        return { indexed: true, skipped: false };
+      } else {
+        // Skip existing ruling
+        return { indexed: false, skipped: true };
+      }
+    } else {
+      // Insert new ruling
+      const createdRuling = await this.legalRulingService.create({
+        ...ruling,
+        metadata: {
+          ...ruling.metadata,
+          sourceReference: sourceReference ?? ruling.metadata?.sourceReference,
+          indexedFrom: source,
+          indexedAt: new Date().toISOString(),
+        },
+      });
+
+      // Index in vector store
+      if (ruling.fullText) {
+        await this.indexInVectorStore({
+          rulingId: createdRuling.id,
+          fullText: ruling.fullText,
+          metadata: {
+            signature: ruling.signature,
+            courtName: ruling.courtName,
+            source,
+          },
+        });
+      }
+
+      return { indexed: true, skipped: false };
+    }
+  }
+
+  /**
+   * Map entity CourtType to domain CourtType
+   */
+  private mapToDomainCourtType(entityCourtType: CourtType): any {
+    const {
+      DomainCourtType,
+    } = require('../../../../../domain/legal-rulings/value-objects/ruling-source.vo');
+
+    const mapping: Record<CourtType, any> = {
+      [CourtType.SUPREME_COURT]: DomainCourtType.SUPREME_COURT,
+      [CourtType.APPELLATE_COURT]: DomainCourtType.APPELLATE_COURT,
+      [CourtType.DISTRICT_COURT]: DomainCourtType.DISTRICT_COURT,
+      [CourtType.REGIONAL_COURT]: DomainCourtType.REGIONAL_COURT,
+      [CourtType.CONSTITUTIONAL_TRIBUNAL]:
+        DomainCourtType.CONSTITUTIONAL_TRIBUNAL,
+      [CourtType.ADMINISTRATIVE_COURT]: DomainCourtType.ADMINISTRATIVE_COURT,
+      [CourtType.OTHER]: DomainCourtType.SUPREME_ADMINISTRATIVE_COURT,
+    };
+
+    return mapping[entityCourtType] || DomainCourtType.REGIONAL_COURT;
+  }
+
+  /**
+   * Sleep utility for rate limiting
+   */
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+}
+
+/**
+ * Activity registration function
+ *
+ * Creates and returns the activities object with all dependencies injected.
+ * This function is called by the Temporal worker to register activities.
+ */
+export type RulingIndexingActivitiesImpl = InstanceType<
+  typeof RulingIndexingActivities
+>;
+
+export const createRulingIndexingActivities = (dependencies: {
+  saosAdapter: SaosAdapter;
+  isapAdapter: IsapAdapter;
+  legalRulingService: LegalRulingService;
+  vectorStoreService: VectorStoreService;
+}): RulingIndexingActivities => {
+  return new RulingIndexingActivities(dependencies);
+};

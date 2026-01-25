@@ -9,6 +9,7 @@ import { GqlAuthGuard } from './guards/gql-auth.guard';
 import { GqlThrottlerGuard } from '../../shared/throttler/gql-throttler.guard';
 import { AuthService } from './auth.service';
 import { SkipCsrf } from '../../shared/csrf';
+import type { ValidatedUser } from './jwt.strategy';
 import {
   LoginInput,
   RegisterInput,
@@ -152,9 +153,9 @@ export class AuthResolver {
   })
   @UseGuards(GqlAuthGuard)
   async me(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: ValidatedUser } },
   ): Promise<AuthUserPayload | null> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       return null;
     }

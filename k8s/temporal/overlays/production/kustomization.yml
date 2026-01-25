@@ -1,0 +1,75 @@
+# ============================================================================
+# Kustomization Production Overlay for Temporal Cluster
+# ============================================================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: temporal
+
+resources:
+  - ../../base
+
+# Production-specific patches
+patches:
+  # Enable TLS for frontend
+  - patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: TLS_ENABLED
+          value: "true"
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: TLS_SERVER_NAME
+          value: "temporal.production.local"
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: TLS_CERT_FILE
+          value: "/etc/tls/cert.pem"
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: TLS_KEY_FILE
+          value: "/etc/tls/key.pem"
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts/-
+        value:
+          name: tls-certs
+          mountPath: /etc/tls
+          readOnly: true
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: tls-certs
+          secret:
+            secretName: temporal-tls
+    target:
+      kind: Deployment
+      labelSelector: app.kubernetes.io/component=frontend
+
+# Production resource overrides
+images:
+  - name: temporalio/server
+    newTag: latest-production
+
+# Common annotations
+commonAnnotations:
+  environment: production
+  deployed-by: kustomize
+
+# ConfigMap generator for production
+configMapGenerator:
+  - name: temporal-production-config
+    literals:
+      - CLUSTER_NAME=legal-ai-temporal-prod
+      - NUM_HISTORY_SHARDS=1024
+      - ENVIRONMENT=production
+
+# Secret generator (use external secrets in production)
+secretGenerator:
+  - name: temporal-production-secrets
+    literals:
+      - POSTGRES_PASSWORD=${TEMPORAL_POSTGRES_PASSWORD}
+      - GRAFANA_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}

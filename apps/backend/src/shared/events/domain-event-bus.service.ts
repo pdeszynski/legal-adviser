@@ -1,28 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { InjectQueue } from '@nestjs/bull';
-import type { Queue } from 'bull';
 import type { DomainEvent } from '../../domain/shared/base/domain-event.base';
 
 /**
  * Domain Event Bus
  *
- * Central service for publishing domain events to both in-process subscribers
- * (via EventEmitter2) and external message queues (via Bull) for async processing
- * and eventual consistency.
+ * Central service for publishing domain events to in-process subscribers
+ * via EventEmitter2 for immediate synchronous event handling.
  *
  * ## Architecture
  *
- * 1. **In-Process Events** (EventEmitter2):
+ * **In-Process Events** (EventEmitter2):
  *    - Immediate, synchronous execution within the same process
  *    - Used for same-bounded context reactions
  *    - Example: Updating audit logs when any entity changes
  *
- * 2. **Out-of-Process Events** (Bull/Redis):
- *    - Asynchronous, durable, distributed processing
- *    - Used for cross-bounded context communication
- *    - Example: Sending email when user registers
- *    - Enables eventual consistency between modules
+ * For async, durable, cross-module communication, use Temporal workflows.
  *
  * ## Event Flow
  *
@@ -33,8 +26,6 @@ import type { DomainEvent } from '../../domain/shared/base/domain-event.base';
  * Application Service -> domainEventBus.publish()
  *                           |
  *                           +-> EventEmitter2 (in-process)
- *                           |
- *                           +-> Bull Queue (out-of-process)
  * ```
  *
  * ## Usage
@@ -78,18 +69,13 @@ import type { DomainEvent } from '../../domain/shared/base/domain-event.base';
 export class DomainEventBus {
   private readonly logger = new Logger(DomainEventBus.name);
 
-  constructor(
-    private readonly eventEmitter: EventEmitter2,
-    @InjectQueue('domain-events')
-    private readonly domainEventQueue: Queue,
-  ) {}
+  constructor(private readonly eventEmitter: EventEmitter2) {}
 
   /**
    * Publish a single domain event
    *
-   * Events are published to both:
-   * 1. EventEmitter2 - for immediate in-process handling
-   * 2. Bull Queue - for durable async processing and cross-module communication
+   * Events are published to EventEmitter2 for immediate in-process handling.
+   * For async, durable, cross-module communication, use Temporal workflows.
    *
    * @param event - The domain event to publish
    */
@@ -98,41 +84,8 @@ export class DomainEventBus {
       `Publishing domain event: ${event.eventName} (${event.eventId})`,
     );
 
-    // 1. Publish to in-process subscribers (immediate)
+    // Publish to in-process subscribers (immediate)
     this.eventEmitter.emit(event.eventName, event);
-
-    // 2. Publish to message queue for async processing (eventual consistency)
-    try {
-      await this.domainEventQueue.add(
-        event.eventName,
-        {
-          eventId: event.eventId,
-          eventName: event.eventName,
-          occurredAt: event.occurredAt.toISOString(),
-          eventVersion: event.eventVersion,
-          payload: event.toPayload(),
-        },
-        {
-          attempts: 3, // Retry failed events 3 times
-          backoff: {
-            type: 'exponential',
-            delay: 2000, // Start with 2s, double each retry
-          },
-          removeOnComplete: false, // Keep completed jobs for monitoring
-          removeOnFail: false, // Keep failed jobs for debugging
-        },
-      );
-
-      this.logger.debug(
-        `Domain event queued: ${event.eventName} (${event.eventId})`,
-      );
-    } catch (error) {
-      this.logger.error(
-        `Failed to queue domain event: ${event.eventName}`,
-        error,
-      );
-      throw error;
-    }
   }
 
   /**
@@ -202,8 +155,8 @@ export class DomainEventBus {
     events: DomainEvent[],
     transactionCallback: () => Promise<T>,
   ): Promise<T> {
-    // TODO: Implement proper outbox pattern with event store table
-    // For now, we publish after the transaction completes
+    // The EventDispatcherService handles the outbox pattern
+    // This publishes after the transaction completes
     const result = await transactionCallback();
 
     // Only publish after successful transaction commit

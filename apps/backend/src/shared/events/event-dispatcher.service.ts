@@ -2,22 +2,21 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { InjectQueue } from '@nestjs/bull';
-import type { Queue } from 'bull';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EventStore } from './entities/event-store.entity';
 
 /**
  * Event Dispatcher Service
  *
  * Processes pending events from the event store (outbox) and publishes
- * them to the message queue. This ensures reliable event delivery with
+ * them to the event emitter. This ensures reliable event delivery with
  * the transactional outbox pattern.
  *
  * ## How It Works
  *
  * 1. Application saves entity + event to event store in one transaction
  * 2. Event dispatcher picks up pending events (via cron)
- * 3. Events are published to Bull queue for processing
+ * 3. Events are published via EventEmitter2 for processing
  * 4. On success, event status is updated to PUBLISHED
  * 5. On failure, event status is FAILED and scheduled for retry
  *
@@ -42,8 +41,7 @@ export class EventDispatcherService {
   constructor(
     @InjectRepository(EventStore)
     private readonly eventStoreRepository: Repository<EventStore>,
-    @InjectQueue('domain-events')
-    private readonly domainEventQueue: Queue,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   /**
@@ -87,38 +85,20 @@ export class EventDispatcherService {
   }
 
   /**
-   * Publish a single event to the message queue
+   * Publish a single event via EventEmitter2
    *
    * @param eventStore - The event store record to publish
    */
   private async publishEvent(eventStore: EventStore): Promise<void> {
     try {
-      // Add to Bull queue
-      const job = await this.domainEventQueue.add(
-        eventStore.eventName,
-        {
-          eventId: eventStore.eventId,
-          eventName: eventStore.eventName,
-          occurredAt: eventStore.occurredAt.toISOString(),
-          eventVersion: eventStore.eventVersion,
-          payload: eventStore.payload,
-        },
-        {
-          jobId: eventStore.eventId, // Idempotent - prevents duplicates
-          attempts: this.MAX_ATTEMPTS,
-          backoff: {
-            type: 'exponential',
-            delay: 2000,
-          },
-          removeOnComplete: {
-            age: 24 * 3600, // Remove completed jobs after 24 hours
-            count: 1000, // Keep last 1000 completed jobs
-          },
-          removeOnFail: {
-            age: 7 * 24 * 3600, // Keep failed jobs for 7 days
-          },
-        },
-      );
+      // Emit event via EventEmitter2
+      this.eventEmitter.emit(eventStore.eventName, {
+        eventId: eventStore.eventId,
+        eventName: eventStore.eventName,
+        occurredAt: eventStore.occurredAt.toISOString(),
+        eventVersion: eventStore.eventVersion,
+        payload: eventStore.payload,
+      });
 
       // Update event store status
       eventStore.status = 'PUBLISHED';
@@ -130,7 +110,7 @@ export class EventDispatcherService {
       await this.eventStoreRepository.save(eventStore);
 
       this.logger.debug(
-        `Event published: ${eventStore.eventName} (${eventStore.eventId}) - Job ID: ${job.id}`,
+        `Event published: ${eventStore.eventName} (${eventStore.eventId})`,
       );
     } catch (error) {
       this.logger.error(

@@ -1,0 +1,132 @@
+# ============================================================================
+# Temporal Archival Configuration
+# ============================================================================
+#
+# This configuration enables workflow history archival for long-term storage
+# and compliance. Archived workflows can be queried and restored if needed.
+#
+# Archival supports multiple backends:
+# - S3/GCS/Azure Blob Storage for cloud storage
+# - File system for local storage
+#
+# ============================================================================
+
+# Enable archival feature
+archival:
+  enable: true
+
+  # Default namespace configuration
+  defaultNamespace:
+    name: "production"
+
+  # History archival configuration
+  history:
+    state:
+      # Enable/disable history archival
+      enabled: true
+
+      # Provider configuration (s3, gcs, azureblob, filestore)
+      provider: "s3"
+
+      # S3 configuration (if using s3 provider)
+      s3:
+        region: "${AWS_REGION:-us-east-1}"
+        # Use IAM role for credentials or provide access keys
+        # credentials:
+        #   accessKey: "${AWS_ACCESS_KEY_ID}"
+        #   secretKey: "${AWS_SECRET_ACCESS_KEY}"
+        endpoint: "${AWS_ENDPOINT:-s3.amazonaws.com}"
+        # S3 bucket configuration
+        bucket: "${TEMPORAL_ARCHIVE_BUCKET:-temporal-archive-legal-ai}"
+        prefix: "history/"
+
+      # GCS configuration (if using gcs provider)
+      gcs:
+        credentialsPath: "${GCS_CREDENTIALS_PATH:-/etc/gcs-credentials.json}"
+        bucket: "${TEMPORAL_ARCHIVE_BUCKET:-temporal-archive-legal-ai}"
+        prefix: "history/"
+
+      # Azure Blob Storage configuration (if using azureblob provider)
+      azureblob:
+        accountName: "${AZURE_ACCOUNT_NAME}"
+        accountKey: "${AZURE_ACCOUNT_KEY}"
+        container: "${TEMPORAL_ARCHIVE_CONTAINER:-temporal-archive}"
+        prefix: "history/"
+
+      # Filestore configuration (if using filestore provider)
+      filestore:
+        # File path for archival storage
+        filePermissions: "0666"
+        dirPermissions: "0777"
+        # Path for archived history files
+        filePath: "/mnt/temporal-archival/history/"
+
+    # Read configuration for accessing archived history
+    read:
+      provider: "s3"
+      s3:
+        region: "${AWS_REGION:-us-east-1}"
+        endpoint: "${AWS_ENDPOINT:-s3.amazonaws.com}"
+        bucket: "${TEMPORAL_ARCHIVE_BUCKET:-temporal-archive-legal-ai}"
+        prefix: "history/"
+
+  # Visibility archival configuration
+  visibility:
+    state:
+      enabled: true
+      provider: "s3"
+      s3:
+        region: "${AWS_REGION:-us-east-1}"
+        endpoint: "${AWS_ENDPOINT:-s3.amazonaws.com}"
+        bucket: "${TEMPORAL_ARCHIVE_BUCKET:-temporal-archive-legal-ai}"
+        prefix: "visibility/"
+
+    read:
+      provider: "s3"
+      s3:
+        region: "${AWS_REGION:-us-east-1}"
+        endpoint: "${AWS_ENDPOINT:-s3.amazonaws.com}"
+        bucket: "${TEMPORAL_ARCHIVE_BUCKET:-temporal-archive-legal-ai}"
+        prefix: "visibility/"
+
+# Namespace-specific archival configuration
+namespaces:
+  - name: "production"
+    historyArchival:
+      state: "enabled"
+      uri: "s3://temporal-archive-legal-ai/history/?region=us-east-1"
+    visibilityArchival:
+      state: "enabled"
+      uri: "s3://temporal-archive-legal-ai/visibility/?region=us-east-1"
+
+  - name: "staging"
+    historyArchival:
+      state: "enabled"
+      uri: "file:///mnt/temporal-archival/history/"
+    visibilityArchival:
+      state: "enabled"
+      uri: "file:///mnt/temporal-archival/visibility/"
+
+  - name: "default"
+    historyArchival:
+      state: "disabled"
+    visibilityArchival:
+      state: "disabled"
+
+# Retention configuration
+retention:
+  # Workflow execution retention period
+  workflow:
+    # Default retention for completed workflows
+    defaultRetentionDays: 30
+
+    # Namespace-specific retention
+    namespaceRetention:
+      production: 90
+      staging: 30
+      default: 7
+
+  # Archived data retention
+  archive:
+    # How long to keep archived data (in days)
+    retentionDays: 2555  # 7 years for compliance

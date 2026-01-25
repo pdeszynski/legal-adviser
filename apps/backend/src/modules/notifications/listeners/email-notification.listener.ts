@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { ConfigService } from '@nestjs/config';
 import { EVENT_PATTERNS } from '../../../shared/events/base/event-patterns';
-import { EmailSendProducer } from '../queues/email-send.producer';
+import { EmailQueueService } from '../services/email-queue.service';
 import { EmailTemplateType } from '../dto/send-email.input';
 
 /**
@@ -15,7 +15,7 @@ export class EmailNotificationListener {
   private readonly frontendUrl: string;
 
   constructor(
-    private readonly emailProducer: EmailSendProducer,
+    private readonly emailQueueService: EmailQueueService,
     private readonly configService: ConfigService,
   ) {
     this.frontendUrl =
@@ -31,7 +31,7 @@ export class EmailNotificationListener {
       this.logger.log(`Handling user.created event for user: ${event.userId}`);
 
       // Queue welcome email
-      await this.emailProducer.queueEmail({
+      await this.emailQueueService.queueEmail({
         to: event.email,
         subject: 'Welcome to Legal AI Platform',
         template: EmailTemplateType.WELCOME,
@@ -76,7 +76,7 @@ export class EmailNotificationListener {
       }
 
       // Queue document completed email
-      await this.emailProducer.queueEmail({
+      await this.emailQueueService.queueEmail({
         to: event.userEmail,
         subject: 'Your Legal Document is Ready',
         template: EmailTemplateType.DOCUMENT_COMPLETED,
@@ -124,7 +124,7 @@ export class EmailNotificationListener {
       }
 
       // Queue document failed email
-      await this.emailProducer.queueEmail({
+      await this.emailQueueService.queueEmail({
         to: event.userEmail,
         subject: 'Document Generation Failed',
         template: EmailTemplateType.DOCUMENT_FAILED,
@@ -171,7 +171,7 @@ export class EmailNotificationListener {
       }
 
       // Queue document shared notification
-      await this.emailProducer.queueEmail({
+      await this.emailQueueService.queueEmail({
         to: event.sharedWithEmail,
         subject: 'A Legal Document Has Been Shared With You',
         template: EmailTemplateType.SYSTEM_NOTIFICATION,

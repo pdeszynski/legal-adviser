@@ -2,7 +2,6 @@ import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 import { ServiceStatus } from './system-health.types';
 import type {
   ServiceHealth,
-  QueueHealth,
   ErrorTrackingStatus,
   ErrorSummary,
 } from './system-health.types';
@@ -25,24 +24,6 @@ export class GraphQLServiceHealth implements ServiceHealth {
 
   @Field(() => String, { nullable: true })
   lastCheck?: string;
-}
-
-@ObjectType('QueueHealth')
-export class GraphQLQueueHealth implements QueueHealth {
-  @Field()
-  depth: number;
-
-  @Field()
-  active: number;
-
-  @Field()
-  delayed: number;
-
-  @Field()
-  failed: number;
-
-  @Field(() => String, { nullable: true })
-  lastProcessed?: string;
 }
 
 @ObjectType('ErrorSummary')
@@ -75,36 +56,6 @@ export class GraphQLErrorTrackingStatus implements ErrorTrackingStatus {
   lastError?: ErrorSummary;
 }
 
-@ObjectType('ServiceHealthStatus')
-export class GraphQLServiceHealthStatus {
-  @Field(() => GraphQLServiceHealth)
-  database: ServiceHealth;
-
-  @Field(() => GraphQLServiceHealth)
-  redis: ServiceHealth;
-
-  @Field(() => GraphQLServiceHealth)
-  aiEngine: ServiceHealth;
-
-  @Field(() => GraphQLServiceHealth)
-  saosApi: ServiceHealth;
-
-  @Field(() => GraphQLServiceHealth)
-  isapApi: ServiceHealth;
-}
-
-@ObjectType('QueueHealthStatus')
-export class GraphQLQueueHealthStatus {
-  @Field(() => GraphQLQueueHealth)
-  documentGeneration: QueueHealth;
-
-  @Field(() => GraphQLQueueHealth)
-  email: QueueHealth;
-
-  @Field(() => GraphQLQueueHealth)
-  webhook: QueueHealth;
-}
-
 @ObjectType('SystemHealthResponse')
 export class SystemHealthResponse {
   @Field(() => ServiceStatus)
@@ -113,11 +64,8 @@ export class SystemHealthResponse {
   @Field()
   timestamp: string;
 
-  @Field(() => GraphQLServiceHealthStatus)
-  services: any;
-
-  @Field(() => GraphQLQueueHealthStatus)
-  queues: any;
+  @Field(() => [GraphQLServiceHealth], { nullable: true })
+  services?: Record<string, ServiceHealth>;
 
   @Field(() => GraphQLErrorTrackingStatus)
   errors: ErrorTrackingStatus;

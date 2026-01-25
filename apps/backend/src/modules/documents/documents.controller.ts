@@ -24,7 +24,7 @@ import { DocumentsService } from './services/documents.service';
 import { PdfUrlService } from './services/pdf-url.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { LegalDocument, DocumentType } from './entities/legal-document.entity';
-import { DocumentGenerationProducer } from './queues/document-generation.producer';
+import { DocumentGenerationStarter } from '../temporal/workflows/document/document-generation.starter';
 
 /**
  * Documents REST Controller
@@ -36,7 +36,7 @@ import { DocumentGenerationProducer } from './queues/document-generation.produce
 export class DocumentsController {
   constructor(
     private readonly documentsService: DocumentsService,
-    private readonly documentGenerationProducer: DocumentGenerationProducer,
+    private readonly documentGenerationStarter: DocumentGenerationStarter,
     private readonly progressPubSub: DocumentProgressPubSubService,
     private readonly pdfUrlService: PdfUrlService,
   ) {}
@@ -47,7 +47,7 @@ export class DocumentsController {
    * Creates a document and queues it for AI generation processing.
    * Returns the document with status GENERATING.
    *
-   * The actual content generation happens asynchronously via the Bull queue.
+   * The actual content generation happens asynchronously via Temporal workflow.
    * Poll GET /api/documents/:id to check for completion.
    */
   @Post('generate')
@@ -63,8 +63,8 @@ export class DocumentsController {
       document.id,
     );
 
-    // Step 3: Queue the generation job for async processing
-    await this.documentGenerationProducer.queueDocumentGeneration({
+    // Step 3: Start the Temporal workflow for async processing
+    await this.documentGenerationStarter.startDocumentGeneration({
       documentId: document.id,
       sessionId: createDocumentDto.sessionId,
       documentType: createDocumentDto.type || DocumentType.OTHER,
@@ -87,22 +87,6 @@ export class DocumentsController {
     return this.documentsService.findByIdOrFail(id);
   }
 
-  /**
-   * Get queue statistics
-   *
-   * Returns current queue status including job counts.
-   */
-  @Get('queue/stats')
-  async getQueueStats(): Promise<{
-    waiting: number;
-    active: number;
-    completed: number;
-    failed: number;
-    delayed: number;
-    paused: number;
-  }> {
-    return this.documentGenerationProducer.getQueueStats();
-  }
   /**
    * Stream document generation progress
    *

@@ -1,0 +1,77 @@
+# ============================================================================
+# Prometheus Configuration for Temporal Cluster
+# ============================================================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'legal-ai-temporal'
+    environment: 'production'
+
+# Alerting configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# Rule files
+rule_files:
+  - '/etc/prometheus/temporal-alerts.yml'
+
+# Scrape configurations
+scrape_configs:
+  # Temporal Frontend Service Metrics
+  - job_name: 'temporal-frontend'
+    static_configs:
+      - targets:
+          - temporal-frontend:9090
+        labels:
+          service: 'temporal-frontend'
+
+  # Temporal History Service Metrics
+  - job_name: 'temporal-history'
+    static_configs:
+      - targets:
+          - temporal-history:9091
+        labels:
+          service: 'temporal-history'
+
+  # Temporal Matching Service Metrics
+  - job_name: 'temporal-matching'
+    static_configs:
+      - targets:
+          - temporal-matching:9092
+        labels:
+          service: 'temporal-matching'
+
+  # Temporal Worker Service Metrics
+  - job_name: 'temporal-worker'
+    static_configs:
+      - targets:
+          - temporal-worker:9093
+        labels:
+          service: 'temporal-worker'
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+          - localhost:9090
+
+  # PostgreSQL Exporter (optional - add postgres-exporter container if needed)
+  - job_name: 'postgres-temporal'
+    static_configs:
+      - targets:
+          - postgres-exporter:9187
+        labels:
+          service: 'postgres-temporal'
+
+  # Elasticsearch Exporter (optional)
+  - job_name: 'elasticsearch'
+    static_configs:
+      - targets:
+          - elasticsearch-exporter:9114
+        labels:
+          service: 'elasticsearch'

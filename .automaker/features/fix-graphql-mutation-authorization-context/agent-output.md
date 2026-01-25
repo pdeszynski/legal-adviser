@@ -400,3 +400,209 @@ Input: {
   "description": "Run ESLint on auth.resolver.ts",
   "timeout": 60000
 }
+
+🔧 Tool: TodoWrite
+Input: {
+  "todos": [
+    {
+      "activeForm": "Exploring GraphQL authentication setup",
+      "content": "Explore GraphQL authentication and authorization setup",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Investigating GqlAuthGuard and JWT context",
+      "content": "Investigate GqlAuthGuard and JWT context",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Checking frontend Authorization header setup",
+      "content": "Check frontend Authorization header setup",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Identifying root cause of authorization failures",
+      "content": "Identify root cause of authorization failures",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Fixing authorization issues",
+      "content": "Fix authorization issues",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Creating and running Playwright verification test",
+      "content": "Create and run Playwright verification test",
+      "status": "in_progress"
+    }
+  ]
+}
+Now let me create a Playwright verification test to ensure the fix works correctly:
+
+🔧 Tool: Write
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/tests/playwright/verify-update-profile-auth.spec.ts",
+  "content": "import { test, expect, APIRequestContext } from '@playwright/test';\n\n/**\n * Temporary verification test for updateProfile mutation authentication\n * This test verifies that the fix for JWT context property name works correctly\n * The issue was: JwtStrategy returns { id } but AuthResolver was using { userId }\n */\n\nconst GRAPHQL_ENDPOINT = process.env.GRAPHQL_URL || 'http://localhost:3333/graphql';\n\n// Helper function to execute GraphQL requests\nasync function graphqlRequest(\n  request: APIRequestContext,\n  query: string,\n  variables: Record<string, unknown> = {},\n  headers: Record<string, string> = {},\n) {\n  const response = await request.post(GRAPHQL_ENDPOINT, {\n    data: {\n      query,\n      variables,\n    },\n    headers: {\n      'Content-Type': 'application/json',\n      ...headers,\n    },\n  });\n  return response;\n}\n\ntest.describe('updateProfile Mutation Authentication', () => {\n  test('should update profile for authenticated user', async ({ request }) => {\n    // First register a user\n    const timestamp = Date.now();\n    const email = `update-profile-${timestamp}@example.com`;\n    const password = 'TestPassword123!';\n\n    const registerMutation = `\n      mutation Register($input: RegisterInput!) {\n        register(input: $input) {\n          accessToken\n          user {\n            id\n            email\n            firstName\n            lastName\n          }\n        }\n      }\n    `;\n\n    const registerResponse = await graphqlRequest(request, registerMutation, {\n      input: {\n        email,\n        password,\n        username: `updateuser${timestamp}`,\n        firstName: 'Original',\n        lastName: 'Name',\n      },\n    });\n\n    expect(registerResponse.status()).toBe(200);\n    const registerBody = await registerResponse.json();\n    expect(registerBody.errors).toBeUndefined();\n\n    const { accessToken } = registerBody.data.register;\n\n    // Now update profile with authentication\n    const updateProfileMutation = `\n      mutation UpdateProfile($input: UpdateProfileInput!) {\n        updateProfile(input: $input) {\n          id\n          email\n          firstName\n          lastName\n        }\n      }\n    `;\n\n    const updateResponse = await graphqlRequest(\n      request,\n      updateProfileMutation,\n      {\n        input: {\n          firstName: 'Updated',\n          lastName: 'Surname',\n        },\n      },\n      {\n        Authorization: `Bearer ${accessToken}`,\n      },\n    );\n\n    expect(updateResponse.status()).toBe(200);\n    const updateBody = await updateResponse.json();\n\n    // Verify the mutation succeeded (no errors)\n    expect(updateBody.errors).toBeUndefined();\n    expect(updateBody.data.updateProfile).toBeDefined();\n    expect(updateBody.data.updateProfile.firstName).toBe('Updated');\n    expect(updateBody.data.updateProfile.lastName).toBe('Surname');\n    expect(updateBody.data.updateProfile.email).toBe(email);\n  });\n\n  test('should return error for updateProfile without auth token', async ({ request }) => {\n    const updateProfileMutation = `\n      mutation UpdateProfile($input: UpdateProfileInput!) {\n        updateProfile(input: $input) {\n          id\n          email\n        }\n      }\n    `;\n\n    const response = await graphqlRequest(request, updateProfileMutation, {\n      input: {\n        firstName: 'No',\n        lastName: 'Auth',\n      },\n    });\n\n    const body = await response.json();\n    // Should return an error because @UseGuards(GqlAuthGuard) requires auth\n    expect(body.errors).toBeDefined();\n  });\n\n  test('should get me query with valid access token', async ({ request }) => {\n    // Register a user\n    const timestamp = Date.now();\n    const email = `me-query-${timestamp}@example.com`;\n\n    const registerMutation = `\n      mutation Register($input: RegisterInput!) {\n        register(input: $input) {\n          accessToken\n          user {\n            id\n            email\n            firstName\n            lastName\n          }\n        }\n      }\n    `;\n\n    const registerResponse = await graphqlRequest(request, registerMutation, {\n      input: {\n        email,\n        password: 'TestPassword123!',\n        username: `meuser${timestamp}`,\n        firstName: 'Me',\n        lastName: 'Query',\n      },\n    });\n\n    const registerBody = await registerResponse.json();\n    const { accessToken } = registerBody.data.register;\n\n    // Query current user with access token\n    const meQuery = `\n      query Me {\n        me {\n          id\n          email\n          firstName\n          lastName\n          isActive\n        }\n      }\n    `;\n\n    const response = await graphqlRequest(request, meQuery, {}, {\n      Authorization: `Bearer ${accessToken}`,\n    });\n\n    expect(response.status()).toBe(200);\n    const body = await response.json();\n\n    expect(body.errors).toBeUndefined();\n    expect(body.data.me).toBeDefined();\n    expect(body.data.me.email).toBe(email);\n    expect(body.data.me.firstName).toBe('Me');\n    expect(body.data.me.lastName).toBe('Query');\n    expect(body.data.me.isActive).toBe(true);\n  });\n\n  test('should accept disclaimer for authenticated user', async ({ request }) => {\n    // Register a user\n    const timestamp = Date.now();\n    const email = `disclaimer-${timestamp}@example.com`;\n\n    const registerMutation = `\n      mutation Register($input: RegisterInput!) {\n        register(input: $input) {\n          accessToken\n          user {\n            id\n            disclaimerAccepted\n          }\n        }\n      }\n    `;\n\n    const registerResponse = await graphqlRequest(request, registerMutation, {\n      input: {\n        email,\n        password: 'TestPassword123!',\n        username: `disclaimeruser${timestamp}`,\n      },\n    });\n\n    const registerBody = await registerResponse.json();\n    const { accessToken, user } = registerBody.data.register;\n\n    // User should not have disclaimer accepted initially\n    expect(user.disclaimerAccepted).toBe(false);\n\n    // Accept disclaimer\n    const acceptDisclaimerMutation = `\n      mutation AcceptDisclaimer {\n        acceptDisclaimer {\n          id\n          disclaimerAccepted\n          disclaimerAcceptedAt\n        }\n      }\n    `;\n\n    const response = await graphqlRequest(\n      request,\n      acceptDisclaimerMutation,\n      {},\n      {\n        Authorization: `Bearer ${accessToken}`,\n      },\n    );\n\n    expect(response.status()).toBe(200);\n    const body = await response.json();\n\n    expect(body.errors).toBeUndefined();\n    expect(body.data.acceptDisclaimer).toBeDefined();\n    expect(body.data.acceptDisclaimer.disclaimerAccepted).toBe(true);\n    expect(body.data.acceptDisclaimer.disclaimerAcceptedAt).toBeTruthy();\n  });\n});\n"
+}
+Now let's run the verification test. First, I need to make sure the backend server is running:
+
+🔧 Tool: Bash
+Input: {
+  "command": "lsof -i :3333 2>/dev/null | head -5 || echo \"Port 3333 is not in use\"",
+  "description": "Check if backend server is running on port 3333"
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "curl -s http://localhost:3333/health 2>/dev/null || echo \"Server not responding\"",
+  "description": "Check backend health endpoint"
+}
+The backend server is not running. Let me start it:
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm dev:backend 2>&1 &\nsleep 30\ncurl -s http://localhost:3333/health || echo \"Server not responding after startup\"",
+  "description": "Start backend server and check health",
+  "timeout": 120000,
+  "run_in_background": true
+}
+
+🔧 Tool: TaskOutput
+Input: {
+  "task_id": "b9e0010",
+  "block": true,
+  "timeout": 30000
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "cd /Users/piteer/workspace/radca-prawny/legal && pnpm run dev:backend 2>&1 &\nsleep 30\ncurl -s http://localhost:3333/health || echo \"Server not responding after startup\"",
+  "description": "Start backend server from project root",
+  "timeout": 120000,
+  "run_in_background": true
+}
+
+🔧 Tool: TaskOutput
+Input: {
+  "task_id": "b0517ca",
+  "block": true,
+  "timeout": 45000
+}
+There's another merge conflict in the package.json file. Let me fix that:
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/package.json",
+  "limit": 60,
+  "offset": 30
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/package.json",
+  "old_string": "<<<<<<< HEAD\n    \"@bull-board/api\": \"^5.22.0\",\n    \"@bull-board/express\": \"^5.22.0\",\n    \"@hubspot/api-client\": \"^13.4.0\",\n=======\n>>>>>>> feature/temporal",
+  "new_string": "    \"@bull-board/api\": \"^5.22.0\",\n    \"@bull-board/express\": \"^5.22.0\",\n    \"@hubspot/api-client\": \"^13.4.0\","
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/package.json",
+  "limit": 60,
+  "offset": 30
+}
+Good, that merge conflict was already resolved. Let me try to run the TypeScript check again and build the project:
+
+🔧 Tool: Bash
+Input: {
+  "command": "npx tsc --noEmit 2>&1 | head -10",
+  "description": "Run TypeScript type checking",
+  "timeout": 120000
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/app.module.ts",
+  "limit": 50,
+  "offset": 30
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/app.module.ts",
+  "limit": 30,
+  "offset": 160
+}
+I see there are still merge conflicts. These are unrelated to the auth fix but need to be resolved to run tests. Let me fix them:
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/app.module.ts",
+  "old_string": "<<<<<<< HEAD\nimport { HubSpotModule } from './modules/integrations/hubspot/hubspot.module';\nimport { DemoRequestModule } from './modules/demo-request/demo-request.module';\n=======\n// Temporal - Workflow orchestration for long-running processes\nimport { TemporalModule } from './modules/temporal/temporal.module';\n>>>>>>> feature/temporal",
+  "new_string": "// Temporal - Workflow orchestration for long-running processes\nimport { TemporalModule } from './modules/temporal/temporal.module';\nimport { HubSpotModule } from './modules/integrations/hubspot/hubspot.module';\nimport { DemoRequestModule } from './modules/demo-request/demo-request.module';"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/app.module.ts",
+  "limit": 30,
+  "offset": 160
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/app.module.ts",
+  "old_string": "<<<<<<< HEAD\n    // HubSpot Integration for lead management\n    HubSpotModule,\n    // Demo Request Module - Public demo request submissions\n    DemoRequestModule,\n=======\n    // Temporal - Workflow orchestration\n    TemporalModule.forRootWithDefaults(),\n>>>>>>> feature/temporal",
+  "new_string": "    // Temporal - Workflow orchestration\n    TemporalModule.forRootWithDefaults(),\n    // HubSpot Integration for lead management\n    HubSpotModule,\n    // Demo Request Module - Public demo request submissions\n    DemoRequestModule,"
+}
+Now let me run the type check again:
+
+🔧 Tool: Bash
+Input: {
+  "command": "npx tsc --noEmit 2>&1 | head -10",
+  "description": "Run TypeScript type checking",
+  "timeout": 120000
+}
+These are pre-existing type errors unrelated to the auth fix. Let me check if the auth-related files compile correctly:
+
+🔧 Tool: Bash
+Input: {
+  "command": "npx tsc --noEmit src/modules/auth/auth.resolver.ts 2>&1",
+  "description": "Type check only the auth.resolver.ts file",
+  "timeout": 60000
+}
+These errors are not related to our auth fix. Let me verify the change is syntactically correct by reading the updated auth.resolver.ts:
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/auth.resolver.ts",
+  "limit": 60
+}
+I see the ValidatedUser import didn't get added. Let me check and fix that:
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/auth.resolver.ts",
+  "limit": 30
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/auth.resolver.ts",
+  "old_string": "import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql';\nimport {\n  UseGuards,\n  UnauthorizedException,\n  BadRequestException,\n} from '@nestjs/common';\nimport { Throttle } from '@nestjs/throttler';\nimport { GqlAuthGuard } from './guards/gql-auth.guard';\nimport { GqlThrottlerGuard } from '../../shared/throttler/gql-throttler.guard';\nimport { AuthService } from './auth.service';\nimport { SkipCsrf } from '../../shared/csrf';\nimport {\n  LoginInput,\n  RegisterInput,\n  RefreshTokenInput,\n  AuthPayload,\n  RefreshTokenPayload,\n  AuthUserPayload,\n  UpdateProfileInput,\n  ChangePasswordInput,\n  CompleteTwoFactorLoginInput,\n} from './dto/auth.graphql-dto';",
+  "new_string": "import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql';\nimport {\n  UseGuards,\n  UnauthorizedException,\n  BadRequestException,\n} from '@nestjs/common';\nimport { Throttle } from '@nestjs/throttler';\nimport { GqlAuthGuard } from './guards/gql-auth.guard';\nimport { GqlThrottlerGuard } from '../../shared/throttler/gql-throttler.guard';\nimport { AuthService } from './auth.service';\nimport { SkipCsrf } from '../../shared/csrf';\nimport type { ValidatedUser } from './jwt.strategy';\nimport {\n  LoginInput,\n  RegisterInput,\n  RefreshTokenInput,\n  AuthPayload,\n  RefreshTokenPayload,\n  AuthUserPayload,\n  UpdateProfileInput,\n  ChangePasswordInput,\n  CompleteTwoFactorLoginInput,\n} from './dto/auth.graphql-dto';"
+}
+Now let me verify the updated file is complete and read the full updated sections to make sure all the changes are there:
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/auth.resolver.ts",
+  "limit": 100,
+  "offset": 140
+}
+I see the changes weren't applied to the actual function bodies. Let me re-apply them properly:
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/auth.resolver.ts",
+  "old_string": "  @Query(() => AuthUserPayload, {\n    name: 'me',\n    description: 'Get current authenticated user information',\n    nullable: true,\n  })\n  @UseGuards(GqlAuthGuard)\n  async me(\n    @Context() context: { req: { user: { userId: string } } },\n  ): Promise<AuthUserPayload | null> {\n    const userId = context.req.user?.userId;\n    if (!userId) {\n      return null;\n    }",
+  "new_string": "  @Query(() => AuthUserPayload, {\n    name: 'me',\n    description: 'Get current authenticated user information',\n    nullable: true,\n  })\n  @UseGuards(GqlAuthGuard)\n  async me(\n    @Context() context: { req: { user: ValidatedUser } },\n  ): Promise<AuthUserPayload | null> {\n    const userId = context.req.user?.id;\n    if (!userId) {\n      return null;\n    }"
+}

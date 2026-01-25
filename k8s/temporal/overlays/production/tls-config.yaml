@@ -1,0 +1,102 @@
+# ============================================================================
+# TLS Certificate Configuration for Production
+# ============================================================================
+#
+# This file contains the TLS certificate configuration for Temporal services.
+# In production, you should use certificates from a trusted CA or Let's Encrypt.
+#
+# For generating self-signed certificates for testing:
+#
+# # Generate CA
+# openssl genrsa -out ca.key 2048
+# openssl req -x509 -new -nodes -key ca.key -sha256 -days 3650 -out ca.crt -subj "/CN=Temporal CA"
+#
+# # Generate server certificate
+# openssl genrsa -out server.key 2048
+# openssl req -new -key server.key -out server.csr -subj "/CN=temporal.production.local"
+# openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365 -sha256
+#
+# # Generate client certificate
+# openssl genrsa -out client.key 2048
+# openssl req -new -key client.key -out client.csr -subj "/CN=temporal-client"
+# openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365 -sha256
+#
+# # Create Kubernetes secret
+# kubectl create secret tls temporal-tls \
+#   --cert=server.crt \
+#   --key=server.key \
+#   --namespace=temporal
+#
+# kubectl create secret generic temporal-ca-cert \
+#   --from-file=ca.crt=ca.crt \
+#   --namespace=temporal
+#
+# ============================================================================
+
+---
+# Certificate for Temporal Frontend (external facing)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: temporal-frontend-cert
+  namespace: temporal
+spec:
+  secretName: temporal-tls
+  dnsNames:
+    - temporal.production.local
+    - temporal.yourdomain.com
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  usages:
+    - server auth
+    - client auth
+
+---
+# Certificate for internal Temporal service communication
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: temporal-internal-cert
+  namespace: temporal
+spec:
+  secretName: temporal-tls-internal
+  dnsNames:
+    - temporal-frontend.temporal.svc.cluster.local
+    - temporal-history.temporal.svc.cluster.local
+    - temporal-matching.temporal.svc.cluster.local
+    - temporal-worker.temporal.svc.cluster.local
+  issuerRef:
+    name: temporal-internal-issuer
+    kind: Issuer
+  usages:
+    - server auth
+    - client auth
+
+---
+# Internal Issuer for Temporal services
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: temporal-internal-issuer
+  namespace: temporal
+spec:
+  selfSigned: {}
+
+---
+# ClusterIssuer for Let's Encrypt (production)
+# This is a placeholder - configure based on your environment
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: ops@yourdomain.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+      - http01:
+          ingress:
+            class: nginx

@@ -2,7 +2,7 @@
  * System Health Types
  *
  * Defines the types for system health monitoring including service status,
- * queue metrics, and error tracking information.
+ * Temporal metrics, and error tracking information.
  */
 
 export enum ServiceStatus {
@@ -14,18 +14,9 @@ export enum ServiceStatus {
 export interface SystemHealthResponse {
   status: ServiceStatus;
   timestamp: string;
-  services: ServiceHealthStatus;
-  queues: QueueHealthStatus;
+  services: Record<string, ServiceHealth>;
   errors: ErrorTrackingStatus;
   uptime: number;
-}
-
-export interface ServiceHealthStatus {
-  database: ServiceHealth;
-  redis: ServiceHealth;
-  aiEngine: ServiceHealth;
-  saosApi: ServiceHealth;
-  isapApi: ServiceHealth;
 }
 
 export interface ServiceHealth {
@@ -33,20 +24,6 @@ export interface ServiceHealth {
   latency?: number;
   error?: string;
   lastCheck?: string;
-}
-
-export interface QueueHealthStatus {
-  documentGeneration: QueueHealth;
-  email: QueueHealth;
-  webhook: QueueHealth;
-}
-
-export interface QueueHealth {
-  depth: number;
-  active: number;
-  delayed: number;
-  failed: number;
-  lastProcessed?: string;
 }
 
 export interface ErrorTrackingStatus {

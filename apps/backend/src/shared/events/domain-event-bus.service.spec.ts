@@ -1,10 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { InjectQueue } from '@nestjs/bull';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { DomainEventBus } from './domain-event-bus.service';
-import { EventStore } from './entities/event-store.entity';
 import { DomainEvent } from '../../domain/shared/base/domain-event.base';
 
 // Test domain event
@@ -24,14 +20,9 @@ class TestDomainEvent extends DomainEvent {
 
 describe('DomainEventBus', () => {
   let service: DomainEventBus;
-  let eventEmitter: EventEmitter2;
-  let domainEventQueue: any;
+  let eventEmitter: jest.Mocked<EventEmitter2>;
 
   beforeEach(async () => {
-    const mockQueue = {
-      add: jest.fn().mockResolvedValue({ id: 'job-id' }),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DomainEventBus,
@@ -41,17 +32,13 @@ describe('DomainEventBus', () => {
             emit: jest.fn(),
           },
         },
-        // Use the InjectQueue decorator's token format
-        {
-          provide: 'BullQueue_domain-events',
-          useValue: mockQueue,
-        },
       ],
     }).compile();
 
     service = module.get<DomainEventBus>(DomainEventBus);
-    eventEmitter = module.get<EventEmitter2>(EventEmitter2);
-    domainEventQueue = module.get('BullQueue_domain-events');
+    eventEmitter = module.get<EventEmitter2>(
+      EventEmitter2,
+    ) as jest.Mocked<EventEmitter2>;
   });
 
   afterEach(() => {
@@ -63,33 +50,13 @@ describe('DomainEventBus', () => {
   });
 
   describe('publish', () => {
-    it('should publish event to EventEmitter2 and Bull queue', async () => {
+    it('should publish event to EventEmitter2', async () => {
       const event = new TestDomainEvent('test-data');
 
       await service.publish(event);
 
       // Verify EventEmitter2 was called
       expect(eventEmitter.emit).toHaveBeenCalledWith('test.event', event);
-
-      // Verify Bull queue was called
-      expect(domainEventQueue.add).toHaveBeenCalledWith(
-        'test.event',
-        expect.objectContaining({
-          eventId: event.eventId,
-          eventName: 'test.event',
-          payload: { data: 'test-data' },
-        }),
-        expect.objectContaining({
-          attempts: 3,
-        }),
-      );
-    });
-
-    it('should handle queue errors gracefully', async () => {
-      const event = new TestDomainEvent('test-data');
-      domainEventQueue.add.mockRejectedValue(new Error('Queue error'));
-
-      await expect(service.publish(event)).rejects.toThrow('Queue error');
     });
   });
 
@@ -105,14 +72,12 @@ describe('DomainEventBus', () => {
 
       // Verify all events were published
       expect(eventEmitter.emit).toHaveBeenCalledTimes(3);
-      expect(domainEventQueue.add).toHaveBeenCalledTimes(3);
     });
 
     it('should handle empty batch', async () => {
       await service.publishBatch([]);
 
       expect(eventEmitter.emit).not.toHaveBeenCalled();
-      expect(domainEventQueue.add).not.toHaveBeenCalled();
     });
   });
 
@@ -129,7 +94,6 @@ describe('DomainEventBus', () => {
       await service.publishAggregateEvents(mockAggregate);
 
       expect(eventEmitter.emit).toHaveBeenCalledTimes(2);
-      expect(domainEventQueue.add).toHaveBeenCalledTimes(2);
       expect(mockAggregate.clearDomainEvents).toHaveBeenCalled();
     });
 
@@ -142,7 +106,6 @@ describe('DomainEventBus', () => {
       await service.publishAggregateEvents(mockAggregate);
 
       expect(eventEmitter.emit).not.toHaveBeenCalled();
-      expect(domainEventQueue.add).not.toHaveBeenCalled();
       expect(mockAggregate.clearDomainEvents).not.toHaveBeenCalled();
     });
   });
@@ -158,7 +121,6 @@ describe('DomainEventBus', () => {
 
       expect(callback).toHaveBeenCalled();
       expect(eventEmitter.emit).toHaveBeenCalledWith('test.event', events[0]);
-      expect(domainEventQueue.add).toHaveBeenCalled();
       expect(result).toEqual(transactionResult);
     });
   });

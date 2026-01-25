@@ -51,18 +51,7 @@ import {
   CreateDocumentCommentInput,
   UpdateDocumentCommentInput,
 } from './dto/document-comment.dto';
-import { BullModule } from '@nestjs/bull';
-import { QUEUE_NAMES } from '../../shared/queues';
 import { AiClientModule } from '../../shared/ai-client/ai-client.module';
-import { DocumentGenerationProcessor } from './queues/document-generation.processor';
-import { DocumentGenerationProducer } from './queues/document-generation.producer';
-// PDF Export Services
-import { PdfExportProcessor } from './queues/pdf-export.processor';
-import { PdfExportProducer } from './queues/pdf-export.producer';
-// Ruling Indexing Services
-import { RulingIndexingProcessor } from './queues/ruling-index.processor';
-import { RulingIndexingProducer } from './queues/ruling-index.producer';
-import { RulingIndexingScheduler } from './queues/ruling-index.scheduler';
 import { PdfTemplateService, PdfGeneratorService } from './services/pdf';
 import { PdfExportService } from './services/pdf-export.service';
 import { PdfUrlService } from './services/pdf-url.service';
@@ -79,6 +68,9 @@ import {
   DocumentPermissionGuard,
   DocumentPermission,
 } from '../auth/guards';
+// Temporal Module
+import { TemporalModule } from '../temporal/temporal.module';
+import { DocumentGenerationStarter } from '../temporal/workflows/document/document-generation.starter';
 
 /**
  * Documents Module
@@ -100,35 +92,21 @@ import {
  * - generateDocument: Create and start AI generation
  *
  * Queue Processing:
- * - DocumentGenerationProcessor: Handles async document generation via Bull queue
- * - DocumentGenerationProducer: Adds document generation jobs to the queue
- * - RulingIndexingProcessor: Handles async ruling indexing from external sources
- * - RulingIndexingProducer: Adds ruling indexing jobs to the queue
- * - RulingIndexingScheduler: Schedules periodic ruling sync jobs
+ * - Temporal workflows: Handles async document generation, PDF export, and ruling indexing
+ * - DocumentGenerationStarter: Starts document generation workflows
+ * - PdfExportStarter: Starts PDF export workflows
+ * - RulingIndexingStarter: Starts ruling indexing workflows
  *
  * Document Moderation:
  * - DocumentModerationService: Handles flag/approve/reject workflow
  * - DocumentModerationResolver: Admin-only mutations for moderation
- *
- * This module will be expanded with:
- * - PdfExportService (PDF generation) - T020
  */
 @Module({
   imports: [
-    // Register document generation queue
-    BullModule.registerQueue({
-      name: QUEUE_NAMES.DOCUMENT.GENERATION,
-    }),
-    // Register PDF export queue
-    BullModule.registerQueue({
-      name: QUEUE_NAMES.DOCUMENT.EXPORT_PDF,
-    }),
-    // Register ruling indexing queue
-    BullModule.registerQueue({
-      name: QUEUE_NAMES.RULING.INDEX,
-    }),
     // AI client for communication with AI engine
     AiClientModule,
+    // Temporal for workflow orchestration
+    TemporalModule,
     // Anti-corruption layer for external integrations
     SaosModule,
     IsapModule,
@@ -352,18 +330,11 @@ import {
     DocumentVersioningResolver,
     LegalAnalysisResolver,
     DocumentModerationResolver,
-    // Document Generation Queue
-    DocumentGenerationProcessor,
-    DocumentGenerationProducer,
-    // PDF Export Queue
+    // PDF Export Services
     PdfTemplateService,
     PdfGeneratorService,
-    PdfExportProcessor,
-    PdfExportProducer,
-    // Ruling Indexing Queue
-    RulingIndexingProcessor,
-    RulingIndexingProducer,
-    RulingIndexingScheduler,
+    // Temporal Workflow Starters
+    DocumentGenerationStarter,
   ],
   controllers: [DocumentsController, DocumentStreamController],
   exports: [
@@ -378,10 +349,10 @@ import {
     DocumentModerationService,
     RulingSearchAggregatorService,
     AdvancedLegalRulingSearchService,
-    DocumentGenerationProducer,
-    PdfExportProducer,
+    // Export Temporal starter for workflow initiation
+    DocumentGenerationStarter,
+    PdfExportService,
     PdfGeneratorService,
-    RulingIndexingProducer,
   ],
 })
 export class DocumentsModule {}

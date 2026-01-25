@@ -1,0 +1,51 @@
+# ============================================================================
+# Docker Compose - Production Override
+# ============================================================================
+#
+# This file contains production-specific overrides for docker-compose.yml.
+# It is automatically loaded when running: docker compose up
+# To use local development config only: docker compose --file docker-compose.yml up
+#
+# Production differences:
+# - No hot-reload volume mounts
+# - Production Temporal cluster URL instead of local container
+# - Enhanced healthchecks and restart policies
+# - Production image tags
+#
+# Usage:
+#   # Production (with external Temporal cluster)
+#   docker compose -f docker-compose.yml -f docker-compose.override.yml --profile production up
+#
+#   # Local development (with local Temporal container)
+#   docker compose --profile local up
+#
+# ============================================================================
+
+# In production mode, Temporal containers are disabled via profile
+# The backend connects to an external Temporal cluster using production env vars
+
+services:
+  backend:
+    environment:
+      # Production Temporal configuration - override these in .env
+      TEMPORAL_CLUSTER_URL: ${TEMPORAL_CLUSTER_URL:-temporal.example.com:7233}
+      TEMPORAL_NAMESPACE: ${TEMPORAL_NAMESPACE:-default}
+      TEMPORAL_TASK_QUEUE: ${TEMPORAL_TASK_QUEUE:-legal-ai-task-queue}
+      TEMPORAL_TLS_ENABLED: ${TEMPORAL_TLS_ENABLED:-true}
+      TEMPORAL_SERVER_NAME: ${TEMPORAL_SERVER_NAME:-}
+      TEMPORAL_SERVER_ROOT_CA_CERT_PATH: ${TEMPORAL_SERVER_ROOT_CA_CERT_PATH:-}
+      TEMPORAL_CLIENT_CERT_PATH: ${TEMPORAL_CLIENT_CERT_PATH:-}
+      TEMPORAL_CLIENT_PRIVATE_KEY_PATH: ${TEMPORAL_CLIENT_PRIVATE_KEY_PATH:-}
+    # No volume mounts in production (use baked images)
+    volumes: []
+    restart: always
+
+  ai-engine:
+    # No volume mounts in production (use baked images)
+    volumes: []
+    restart: always
+
+  web:
+    # No volume mounts in production (use baked images)
+    volumes: []
+    restart: always

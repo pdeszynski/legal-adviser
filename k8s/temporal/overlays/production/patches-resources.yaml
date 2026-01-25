@@ -1,0 +1,123 @@
+# ============================================================================
+# Production Resource Patches
+# ============================================================================
+
+---
+# Frontend resources
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-frontend
+  namespace: temporal
+spec:
+  template:
+    spec:
+      containers:
+        - name: frontend
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1000m"
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"
+
+---
+# History resources
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-history
+  namespace: temporal
+spec:
+  template:
+    spec:
+      containers:
+        - name: history
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "2000m"
+            limits:
+              memory: "8Gi"
+              cpu: "4000m"
+
+---
+# Matching resources
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-matching
+  namespace: temporal
+spec:
+  template:
+    spec:
+      containers:
+        - name: matching
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1000m"
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"
+
+---
+# Worker resources
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-worker
+  namespace: temporal
+spec:
+  template:
+    spec:
+      containers:
+        - name: worker
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1000m"
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"
+
+---
+# PostgreSQL resources
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: temporal-postgres
+  namespace: temporal
+spec:
+  template:
+    spec:
+      containers:
+        - name: postgres
+          resources:
+            requests:
+              memory: "8Gi"
+              cpu: "4000m"
+            limits:
+              memory: "16Gi"
+              cpu: "8000m"
+
+---
+# Elasticsearch resources
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: temporal-elasticsearch
+  namespace: temporal
+spec:
+  template:
+    spec:
+      containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: "8Gi"
+              cpu: "2000m"
+            limits:
+              memory: "16Gi"
+              cpu: "4000m"

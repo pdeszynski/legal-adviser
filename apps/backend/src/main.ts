@@ -5,7 +5,6 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import * as Sentry from '@sentry/node';
 import { AppModule } from './app.module';
-import { setupBullBoard } from './shared/queues/bull-board.setup';
 import { AppLogger } from './shared/logger';
 import {
   buildDependencyChecks,
@@ -130,16 +129,6 @@ async function bootstrap() {
       },
     }),
   );
-
-  // Setup Bull Board for queue monitoring (development only)
-  try {
-    setupBullBoard(app);
-  } catch (error) {
-    logger.warn(
-      'Bull Board setup skipped:',
-      error instanceof Error ? error.message : 'Unknown error',
-    );
-  }
 
   // Setup Sentry error handler (must be after all other middleware)
   if (process.env.SENTRY_DSN) {

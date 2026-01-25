@@ -1,0 +1,210 @@
+# ============================================================================
+# Prometheus Deployment for Temporal Metrics
+# ============================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-pvc
+  namespace: temporal
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: fast-ssd
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: temporal
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+      external_labels:
+        cluster: 'legal-ai-temporal'
+        environment: 'production'
+
+    scrape_configs:
+      - job_name: 'temporal-frontend'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - temporal
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+            regex: frontend
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_ip]
+            target_label: __address__
+            replacement: $1:9090
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+
+      - job_name: 'temporal-history'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - temporal
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+            regex: history
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_ip]
+            target_label: __address__
+            replacement: $1:9091
+
+      - job_name: 'temporal-matching'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - temporal
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+            regex: matching
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_ip]
+            target_label: __address__
+            replacement: $1:9092
+
+      - job_name: 'temporal-worker'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - temporal
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+            regex: worker
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_ip]
+            target_label: __address__
+            replacement: $1:9093
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: temporal
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: temporal-cluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: prometheus
+        app.kubernetes.io/component: monitoring
+        app.kubernetes.io/part-of: temporal-cluster
+    spec:
+      serviceAccountName: prometheus
+      containers:
+        - name: prometheus
+          image: prom/prometheus:latest
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+            - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+            - '--web.console.templates=/usr/share/prometheus/consoles'
+            - '--web.enable-lifecycle'
+          ports:
+            - containerPort: 9090
+              name: http
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+            - name: storage
+              mountPath: /prometheus
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-config
+        - name: storage
+          persistentVolumeClaim:
+            claimName: prometheus-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: temporal
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: monitoring
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9090
+      targetPort: 9090
+      name: http
+  selector:
+    app.kubernetes.io/name: prometheus
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: temporal
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - nodes/proxy
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: temporal

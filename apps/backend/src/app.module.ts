@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -12,7 +11,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AiClientModule } from './shared/ai-client/ai-client.module';
 import { StreamingModule } from './shared/streaming';
-import { QueueRegistry } from './shared/queues';
 import { CsrfModule } from './shared/csrf';
 import { EncryptionModule } from './shared/encryption/encryption.module';
 import { UsersModule } from './modules/users/users.module';
@@ -34,6 +32,8 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
 import { SystemSettingsModule } from './modules/system-settings/system-settings.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { SystemHealthModule } from './modules/system-health/system-health.module';
+// Temporal - Workflow orchestration for long-running processes
+import { TemporalModule } from './modules/temporal/temporal.module';
 import { HubSpotModule } from './modules/integrations/hubspot/hubspot.module';
 import { DemoRequestModule } from './modules/demo-request/demo-request.module';
 // Authorization - Role-Based Access Control following DDD
@@ -116,14 +116,6 @@ import { PersistedQueriesService } from './modules/persisted-queries';
       // Ignore case when matching event names
       ignoreErrors: false,
     }),
-    // Asynchronous task processing (AI document generation, PDF exports, email notifications)
-    BullModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        redis: QueueRegistry.getRedisConfig(configService),
-      }),
-      inject: [ConfigService],
-    }),
     // Task scheduling for periodic jobs (ruling indexing, etc.)
     ScheduleModule.forRoot(),
     // Rate limiting to protect against abuse - configurable per-IP and per-user limits
@@ -168,6 +160,8 @@ import { PersistedQueriesService } from './modules/persisted-queries';
     SystemSettingsModule,
     WebhooksModule,
     SystemHealthModule,
+    // Temporal - Workflow orchestration
+    TemporalModule.forRootWithDefaults(),
     // HubSpot Integration for lead management
     HubSpotModule,
     // Demo Request Module - Public demo request submissions
