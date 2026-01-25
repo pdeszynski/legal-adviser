@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventStore } from './entities/event-store.entity';
 import { EventDispatcherService } from './event-dispatcher.service';
@@ -39,14 +38,6 @@ import { DomainEventBus } from './domain-event-bus.service';
   imports: [
     // Enable task scheduling for periodic event processing
     ScheduleModule.forRoot(),
-    // Register domain events queue
-    BullModule.registerQueue({
-      name: 'domain-events',
-      defaultJobOptions: {
-        removeOnComplete: false,
-        removeOnFail: false,
-      },
-    }),
     // Event store entity for outbox pattern
     TypeOrmModule.forFeature([EventStore]),
   ],

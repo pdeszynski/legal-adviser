@@ -1,0 +1,401 @@
+# ============================================================================
+# Docker Compose - Production Temporal Cluster
+# ============================================================================
+#
+# This file contains a production-grade Temporal cluster setup with:
+# - Frontend service (replicated for HA)
+# - History service (replicated for HA)
+# - Matching service (replicated for HA)
+# - Worker service (replicated)
+# - PostgreSQL for backend persistence
+# - Prometheus for metrics
+# - Grafana for metrics visualization
+# - Temporal UI with authentication
+#
+# This is a self-hosted deployment suitable for production use.
+# For Kubernetes deployment, see k8s/temporal/ directory.
+#
+# Usage:
+#   docker compose -f docker-compose.temporal.yml up -d
+#
+# Environment variables:
+#   Create a .env file with production values for:
+#   - POSTGRES_PASSWORD, TEMPORAL_TLS_CERT, etc.
+#
+# ============================================================================
+
+services:
+  # --------------------------------------------------------------------------
+  # PostgreSQL - Primary Database for Temporal
+  # --------------------------------------------------------------------------
+  postgres-temporal:
+    image: postgres:15-alpine
+    container_name: temporal-postgres
+    environment:
+      POSTGRES_USER: ${TEMPORAL_POSTGRES_USER:-temporal}
+      POSTGRES_PASSWORD: ${TEMPORAL_POSTGRES_PASSWORD:-change-me-in-production}
+      POSTGRES_DB: ${TEMPORAL_POSTGRES_DB:-temporal}
+    ports:
+      - '${TEMPORAL_POSTGRES_PORT:-5433}:5432'
+    volumes:
+      - temporal_postgres_data:/var/lib/postgresql/data
+      - ./apps/backend/src/modules/temporal/schema/temporal-postgres-init.sql:/docker-entrypoint-initdb.d/01-temporal.sql
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${TEMPORAL_POSTGRES_USER:-temporal} -d ${TEMPORAL_POSTGRES_DB:-temporal}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - temporal-network
+
+  # --------------------------------------------------------------------------
+  # Elasticsearch - For Temporal visibility and search
+  # --------------------------------------------------------------------------
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: temporal-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - '9200:9200'
+    volumes:
+      - temporal_elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:9200/_cluster/health || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - temporal-network
+
+  # --------------------------------------------------------------------------
+  # Temporal Frontend Service
+  # --------------------------------------------------------------------------
+  temporal-frontend:
+    image: temporalio/server:latest
+    container_name: temporal-frontend
+    ports:
+      - '7233:7233'
+    environment:
+      - SERVICES=frontend
+      - TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS:-0.0.0.0:7233}
+      - DB=postgresql
+      - DB_PORT=5432
+      - POSTGRES_USER=${TEMPORAL_POSTGRES_USER:-temporal}
+      - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD:-change-me-in-production}
+      - POSTGRES_SEEDS=postgres-temporal
+      - POSTGRES_DATABASE=${TEMPORAL_POSTGRES_DB:-temporal}
+      - NAMESPACES=default,${TEMPORAL_NAMESPACE:-production}
+      - HISTORY_NAMESPACE=${TEMPORAL_NAMESPACE:-production}
+      - FRONTEND_ADDRESS=${TEMPORAL_ADDRESS:-0.0.0.0:7233}
+      - MEMBERSHIP_PORT=6933
+      - RPC_QUEUE_TYPE=normal
+      - PUBLIC_IP=${TEMPORAL_PUBLIC_IP:-localhost}
+      - SERVE_FRONTEND=true
+      - SERVE_HISTORY=false
+      - SERVE_MATCHER=false
+      - SERVE_WORKER=false
+      - CLUSTER_NAME=${TEMPORAL_CLUSTER_NAME:-legal-ai-temporal}
+      - TLS_ENABLED=${TEMPORAL_TLS_ENABLED:-false}
+      - TLS_SERVER_NAME=${TEMPORAL_TLS_SERVER_NAME:-}
+      - TLS_CERT_FILE=${TEMPORAL_TLS_CERT_FILE:-}
+      - TLS_KEY_FILE=${TEMPORAL_TLS_KEY_FILE:-}
+      - TLS_CLIENT_CA_FILE=${TEMPORAL_TLS_CLIENT_CA_FILE:-}
+      - TLS_INT_SERVER_NAME=${TEMPORAL_TLS_INT_SERVER_NAME:-}
+      - TLS_INT_CERT_FILE=${TEMPORAL_TLS_INT_CERT_FILE:-}
+      - TLS_INT_KEY_FILE=${TEMPORAL_TLS_INT_KEY_FILE:-}
+      - TLS_INT_CLIENT_CA_FILE=${TEMPORAL_TLS_INT_CLIENT_CA_FILE:-}
+      - PROMETHEUS_ENDPOINT=/metrics
+      - PROMETHEUS_LISTEN_ADDRESS=:9090
+      # Elasticsearch for visibility
+      - VISIBILITY_ENABLE=true
+      - ES_SEEDS=elasticsearch
+      - ES_PORT=9200
+      - ES_VERSION=v7
+      - ES_VIS_INDEX=visibility-dev
+      # Archival configuration
+      - HISTORY_ENABLE_EAGER_READ=false
+    depends_on:
+      postgres-temporal:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    command: ['temporal-server', 'start']
+    restart: always
+    healthcheck:
+      test: ['CMD', 'tctl', '--address', 'temporal-frontend:7233', 'cluster', 'health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - temporal-network
+
+  # --------------------------------------------------------------------------
+  # Temporal History Service (Replicated)
+  # --------------------------------------------------------------------------
+  temporal-history:
+    image: temporalio/server:latest
+    container_name: temporal-history
+    environment:
+      - SERVICES=history
+      - DB=postgresql
+      - DB_PORT=5432
+      - POSTGRES_USER=${TEMPORAL_POSTGRES_USER:-temporal}
+      - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD:-change-me-in-production}
+      - POSTGRES_SEEDS=postgres-temporal
+      - POSTGRES_DATABASE=${TEMPORAL_POSTGRES_DB:-temporal}
+      - NAMESPACES=default,${TEMPORAL_NAMESPACE:-production}
+      - HISTORY_NAMESPACE=${TEMPORAL_NAMESPACE:-production}
+      - FRONTEND_ADDRESS=temporal-frontend:7233
+      - MASTER_ADDRESS=temporal-frontend:7233
+      - HISTORY_ADDRESS=0.0.0.0:7234
+      - MEMBERSHIP_PORT=6934
+      - RPC_QUEUE_TYPE=normal
+      - NUM_HISTORY_SHARDS=${TEMPORAL_HISTORY_SHARDS:-512}
+      - HISTORY_ENABLE_EAGER_READ=false
+      - SERVE_FRONTEND=false
+      - SERVE_HISTORY=true
+      - SERVE_MATCHER=false
+      - SERVE_WORKER=false
+      - CLUSTER_NAME=${TEMPORAL_CLUSTER_NAME:-legal-ai-temporal}
+      - TLS_ENABLED=${TEMPORAL_TLS_ENABLED:-false}
+      - TLS_INT_SERVER_NAME=${TEMPORAL_TLS_INT_SERVER_NAME:-}
+      - TLS_INT_CERT_FILE=${TEMPORAL_TLS_INT_CERT_FILE:-}
+      - TLS_INT_KEY_FILE=${TEMPORAL_TLS_INT_KEY_FILE:-}
+      - TLS_INT_CLIENT_CA_FILE=${TEMPORAL_TLS_INT_CLIENT_CA_FILE:-}
+      - PROMETHEUS_ENDPOINT=/metrics
+      - PROMETHEUS_LISTEN_ADDRESS=:9091
+    depends_on:
+      postgres-temporal:
+        condition: service_healthy
+    command: ['temporal-server', 'start']
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:9091/metrics || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - temporal-network
+
+  # --------------------------------------------------------------------------
+  # Temporal Matching Service
+  # --------------------------------------------------------------------------
+  temporal-matching:
+    image: temporalio/server:latest
+    container_name: temporal-matching
+    environment:
+      - SERVICES=matching
+      - DB=postgresql
+      - DB_PORT=5432
+      - POSTGRES_USER=${TEMPORAL_POSTGRES_USER:-temporal}
+      - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD:-change-me-in-production}
+      - POSTGRES_SEEDS=postgres-temporal
+      - POSTGRES_DATABASE=${TEMPORAL_POSTGRES_DB:-temporal}
+      - NAMESPACES=default,${TEMPORAL_NAMESPACE:-production}
+      - MATCHING_NAMESPACE=${TEMPORAL_NAMESPACE:-production}
+      - FRONTEND_ADDRESS=temporal-frontend:7233
+      - MASTER_ADDRESS=temporal-frontend:7233
+      - MATCHING_ADDRESS=0.0.0.0:7235
+      - MEMBERSHIP_PORT=6935
+      - RPC_QUEUE_TYPE=normal
+      - SERVE_FRONTEND=false
+      - SERVE_HISTORY=false
+      - SERVE_MATCHER=true
+      - SERVE_WORKER=false
+      - CLUSTER_NAME=${TEMPORAL_CLUSTER_NAME:-legal-ai-temporal}
+      - TLS_ENABLED=${TEMPORAL_TLS_ENABLED:-false}
+      - TLS_INT_SERVER_NAME=${TEMPORAL_TLS_INT_SERVER_NAME:-}
+      - TLS_INT_CERT_FILE=${TEMPORAL_TLS_INT_CERT_FILE:-}
+      - TLS_INT_KEY_FILE=${TEMPORAL_TLS_INT_KEY_FILE:-}
+      - TLS_INT_CLIENT_CA_FILE=${TEMPORAL_TLS_INT_CLIENT_CA_FILE:-}
+      - PROMETHEUS_ENDPOINT=/metrics
+      - PROMETHEUS_LISTEN_ADDRESS=:9092
+    depends_on:
+      postgres-temporal:
+        condition: service_healthy
+    command: ['temporal-server', 'start']
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:9092/metrics || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - temporal-network
+
+  # --------------------------------------------------------------------------
+  # Temporal Worker Service
+  # --------------------------------------------------------------------------
+  temporal-worker:
+    image: temporalio/server:latest
+    container_name: temporal-worker
+    environment:
+      - SERVICES=worker
+      - DB=postgresql
+      - DB_PORT=5432
+      - POSTGRES_USER=${TEMPORAL_POSTGRES_USER:-temporal}
+      - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD:-change-me-in-production}
+      - POSTGRES_SEEDS=postgres-temporal
+      - POSTGRES_DATABASE=${TEMPORAL_POSTGRES_DB:-temporal}
+      - NAMESPACES=default,${TEMPORAL_NAMESPACE:-production}
+      - FRONTEND_ADDRESS=temporal-frontend:7233
+      - MASTER_ADDRESS=temporal-frontend:7233
+      - WORKER_ADDRESS=0.0.0.0:7236
+      - MEMBERSHIP_PORT=6936
+      - RPC_QUEUE_TYPE=normal
+      - SERVE_FRONTEND=false
+      - SERVE_HISTORY=false
+      - SERVE_MATCHER=false
+      - SERVE_WORKER=true
+      - CLUSTER_NAME=${TEMPORAL_CLUSTER_NAME:-legal-ai-temporal}
+      - TLS_ENABLED=${TEMPORAL_TLS_ENABLED:-false}
+      - TLS_INT_SERVER_NAME=${TEMPORAL_TLS_INT_SERVER_NAME:-}
+      - TLS_INT_CERT_FILE=${TEMPORAL_TLS_INT_CERT_FILE:-}
+      - TLS_INT_KEY_FILE=${TEMPORAL_TLS_INT_KEY_FILE:-}
+      - TLS_INT_CLIENT_CA_FILE=${TEMPORAL_TLS_INT_CLIENT_CA_FILE:-}
+      - PROMETHEUS_ENDPOINT=/metrics
+      - PROMETHEUS_LISTEN_ADDRESS=:9093
+    depends_on:
+      postgres-temporal:
+        condition: service_healthy
+    command: ['temporal-server', 'start']
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:9093/metrics || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - temporal-network
+
+  # --------------------------------------------------------------------------
+  # Temporal Web UI with Authentication
+  # --------------------------------------------------------------------------
+  temporal-ui:
+    image: temporalio/ui:latest
+    container_name: temporal-ui
+    ports:
+      - '${TEMPORAL_UI_PORT:-8088}:8088'
+    environment:
+      - TEMPORAL_ADDRESS=temporal-frontend:7233
+      - TEMPORAL_CORS_ORIGINS=${TEMPORAL_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
+      - TEMPORAL_UI_ENABLED=${TEMPORAL_UI_ENABLED:-true}
+      # Authentication (using OAuth2 proxy)
+      - OAUTH2_PROXY_ENABLED=${TEMPORAL_UI_OAUTH_ENABLED:-false}
+      - OAUTH2_PROXY_CLIENT_ID=${TEMPORAL_UI_OAUTH_CLIENT_ID:-}
+      - OAUTH2_PROXY_CLIENT_SECRET=${TEMPORAL_UI_OAUTH_CLIENT_SECRET:-}
+      - OAUTH2_PROXY_COOKIE_SECRET=${TEMPORAL_UI_OAUTH_COOKIE_SECRET:-}
+      - OAUTH2_PROXY_EMAIL_DOMAIN=${TEMPORAL_UI_OAUTH_EMAIL_DOMAIN:-*}
+    depends_on:
+      temporal-frontend:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:8088/health || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - temporal-network
+
+  # --------------------------------------------------------------------------
+  # Prometheus - Metrics Collection
+  # --------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: temporal-prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./apps/backend/src/modules/temporal/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'wget --no-verbose --tries=1 --spider http://localhost:9090/-/healthy || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - temporal-network
+
+  # --------------------------------------------------------------------------
+  # Grafana - Metrics Visualization
+  # --------------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:latest
+    container_name: temporal-grafana
+    ports:
+      - '3001:3000'
+    environment:
+      - GF_SECURITY_ADMIN_USER=${TEMPORAL_GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${TEMPORAL_GRAFANA_PASSWORD:-change-me-in-production}
+      - GF_INSTALL_PLUGINS=
+      - GF_SERVER_ROOT_URL=http://localhost:3001
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./apps/backend/src/modules/temporal/config/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - ./apps/backend/src/modules/temporal/config/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
+      - ./apps/backend/src/modules/temporal/config/grafana-dashboards:/var/lib/grafana/dashboards:ro
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:3000/api/health || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - temporal-network
+
+  # --------------------------------------------------------------------------
+  # AlertManager - Alerting for Prometheus
+  # --------------------------------------------------------------------------
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: temporal-alertmanager
+    ports:
+      - '9093:9093'
+    volumes:
+      - ./apps/backend/src/modules/temporal/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    restart: always
+    networks:
+      - temporal-network
+
+volumes:
+  temporal_postgres_data:
+    driver: local
+  temporal_elasticsearch_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  alertmanager_data:
+    driver: local
+
+networks:
+  temporal-network:
+    driver: bridge

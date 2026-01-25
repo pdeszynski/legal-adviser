@@ -1,0 +1,153 @@
+# ============================================================================
+# Prometheus Alert Rules for Temporal Cluster
+# ============================================================================
+
+groups:
+  - name: temporal_alerts
+    interval: 30s
+    rules:
+      # Frontend service down
+      - alert: TemporalFrontendDown
+        expr: up{job="temporal-frontend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: temporal-frontend
+        annotations:
+          summary: 'Temporal Frontend service is down'
+          description: 'Temporal Frontend service has been down for more than 1 minute.'
+
+      # History service down
+      - alert: TemporalHistoryDown
+        expr: up{job="temporal-history"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: temporal-history
+        annotations:
+          summary: 'Temporal History service is down'
+          description: 'Temporal History service has been down for more than 1 minute.'
+
+      # Matching service down
+      - alert: TemporalMatchingDown
+        expr: up{job="temporal-matching"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: temporal-matching
+        annotations:
+          summary: 'Temporal Matching service is down'
+          description: 'Temporal Matching service has been down for more than 1 minute.'
+
+      # Worker service down
+      - alert: TemporalWorkerDown
+        expr: up{job="temporal-worker"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          service: temporal-worker
+        annotations:
+          summary: 'Temporal Worker service is down'
+          description: 'Temporal Worker service has been down for more than 2 minutes.'
+
+      # High workflow failure rate
+      - alert: HighWorkflowFailureRate
+        expr: |
+          rate(temporal_workflow_failed[5m]) / rate(temporal_workflow_completed[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High workflow failure rate detected'
+          description: 'Workflow failure rate is above 10% for the last 5 minutes.'
+
+      # High activity failure rate
+      - alert: HighActivityFailureRate
+        expr: |
+          rate(temporal_activity_failed[5m]) / rate(temporal_activity_completed[5m]) > 0.15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High activity failure rate detected'
+          description: 'Activity failure rate is above 15% for the last 5 minutes.'
+
+      # Workflow execution timeout
+      - alert: WorkflowExecutionTimeout
+        expr: |
+          rate(temporal_workflow_timed_out[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High workflow timeout rate'
+          description: 'More than 5% of workflows are timing out.'
+
+      # Service latency high
+      - alert: TemporalServiceLatencyHigh
+        expr: |
+          histogram_quantile(0.99, rate(temporal_request_latency_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Temporal service latency is high'
+          description: 'P99 latency is above 1 second for the last 5 minutes.'
+
+      # Database connection pool exhausted
+      - alert: DatabaseConnectionPoolExhausted
+        expr: |
+          temporal_sql_connections{state="idle"} < 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Database connection pool nearly exhausted'
+          description: 'Less than 5 idle database connections available.'
+
+      # Elasticsearch down
+      - alert: ElasticsearchDown
+        expr: up{job="elasticsearch"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: elasticsearch
+        annotations:
+          summary: 'Elasticsearch is down'
+          description: 'Elasticsearch has been down for more than 2 minutes. Visibility will be affected.'
+
+      # Disk space low
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Disk space is low'
+          description: 'Less than 10% disk space available on temporal server.'
+
+  - name: temporal_resource_alerts
+    interval: 1m
+    rules:
+      # High memory usage
+      - alert: TemporalHighMemoryUsage
+        expr: |
+          (container_memory_usage_bytes{name=~"temporal-.*"} / container_spec_memory_limit_bytes{name=~"temporal-.*"}) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Temporal service high memory usage'
+          description: 'Temporal service {{ $labels.name }} is using more than 90% of its memory limit.'
+
+      # High CPU usage
+      - alert: TemporalHighCPUUsage
+        expr: |
+          rate(container_cpu_usage_seconds_total{name=~"temporal-.*"}[5m]) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Temporal service high CPU usage'
+          description: 'Temporal service {{ $labels.name }} is using more than 80% CPU for 10 minutes.'

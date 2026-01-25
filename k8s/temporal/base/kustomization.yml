@@ -1,0 +1,30 @@
+# ============================================================================
+# Kustomization Base Configuration for Temporal Cluster
+# ============================================================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: temporal
+
+# Resources
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secrets.yaml
+  - postgres.yaml
+  - elasticsearch.yaml
+  - frontend.yaml
+  - history.yaml
+  - matching.yaml
+  - worker.yaml
+  - ui.yaml
+  - prometheus.yaml
+  - grafana.yaml
+  - alertmanager.yaml
+
+# Common labels applied to all resources
+labels:
+  - pairs:
+      app.kubernetes.io/name: temporal
+      app.kubernetes.io/part-of: temporal-cluster
+      app.kubernetes.io/managed-by: kustomize

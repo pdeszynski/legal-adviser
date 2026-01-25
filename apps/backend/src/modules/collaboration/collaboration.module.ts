@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DocumentCursor } from './entities/document-cursor.entity';
 import { CollaborationService } from './services/collaboration.service';
@@ -34,9 +33,6 @@ import { LegalDocument } from '../documents/entities/legal-document.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([DocumentCursor, LegalDocument]),
-    BullModule.registerQueue({
-      name: 'collaboration-cleanup',
-    }),
     ScheduleModule.forRoot(),
   ],
   providers: [

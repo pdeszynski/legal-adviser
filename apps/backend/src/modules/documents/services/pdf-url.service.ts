@@ -1,9 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DocumentsService } from './documents.service';
-import { PdfExportProducer } from '../queues/pdf-export.producer';
 import { DocumentStatus } from '../entities/legal-document.entity';
-import { ExportDocumentToPdfInput } from '../dto/pdf-export.dto';
 
 /**
  * PDF URL Service
@@ -17,7 +15,6 @@ export class PdfUrlService {
 
   constructor(
     private readonly documentsService: DocumentsService,
-    private readonly pdfExportProducer: PdfExportProducer,
     private readonly configService: ConfigService,
   ) {}
 

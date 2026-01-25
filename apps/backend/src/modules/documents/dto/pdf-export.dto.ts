@@ -12,7 +12,15 @@ import {
   IsString,
   IsBoolean,
 } from 'class-validator';
-import { PdfPageFormat } from '../queues/pdf-export.job';
+
+/**
+ * PDF Page Format
+ */
+export enum PdfPageFormat {
+  A4 = 'A4',
+  LETTER = 'Letter',
+  LEGAL = 'Legal',
+}
 
 // Register enum with GraphQL
 registerEnumType(PdfPageFormat, {

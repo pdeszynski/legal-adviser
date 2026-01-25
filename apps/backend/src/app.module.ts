@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { BullModule } from '@nestjs/bull';
 import { ScheduleModule } from '@nestjs/schedule';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -12,7 +11,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AiClientModule } from './shared/ai-client/ai-client.module';
 import { StreamingModule } from './shared/streaming';
-import { QueueRegistry } from './shared/queues';
 import { CsrfModule } from './shared/csrf';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -33,6 +31,8 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
 import { SystemSettingsModule } from './modules/system-settings/system-settings.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { SystemHealthModule } from './modules/system-health/system-health.module';
+// Temporal - Workflow orchestration for long-running processes
+import { TemporalModule } from './modules/temporal/temporal.module';
 // Authorization - Role-Based Access Control following DDD
 import { AuthorizationModule } from './modules/authorization/authorization.module';
 // Persisted Queries - Automatic Persisted Queries (APQ) support
@@ -111,14 +111,6 @@ import { PersistedQueriesService } from './modules/persisted-queries';
       // Ignore case when matching event names
       ignoreErrors: false,
     }),
-    // Asynchronous task processing (AI document generation, PDF exports, email notifications)
-    BullModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        redis: QueueRegistry.getRedisConfig(configService),
-      }),
-      inject: [ConfigService],
-    }),
     // Task scheduling for periodic jobs (ruling indexing, etc.)
     ScheduleModule.forRoot(),
     // Rate limiting to protect against abuse - configurable per-IP and per-user limits
@@ -163,6 +155,8 @@ import { PersistedQueriesService } from './modules/persisted-queries';
     SystemSettingsModule,
     WebhooksModule,
     SystemHealthModule,
+    // Temporal - Workflow orchestration
+    TemporalModule.forRootWithDefaults(),
     // Authorization - Role-Based Access Control
     AuthorizationModule,
     // Domain Event System - Event dispatcher for reliable event delivery

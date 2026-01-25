@@ -1,18 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EventDispatcherService } from './event-dispatcher.service';
 import { EventStore } from './entities/event-store.entity';
 
 describe('EventDispatcherService', () => {
   let service: EventDispatcherService;
   let eventStoreRepository: jest.Mocked<Repository<EventStore>>;
-  let domainEventQueue: any;
+  let eventEmitter: jest.Mocked<EventEmitter2>;
 
   beforeEach(async () => {
-    const mockQueue = {
-      add: jest.fn().mockResolvedValue({ id: 'job-id' }),
-    };
+    const mockEventEmitter = {
+      emit: jest.fn(),
+    } as unknown as jest.Mocked<EventEmitter2>;
 
     const mockRepository = {
       find: jest.fn(),
@@ -28,17 +29,16 @@ describe('EventDispatcherService', () => {
           provide: getRepositoryToken(EventStore),
           useValue: mockRepository,
         },
-        // Use the InjectQueue decorator's token format
         {
-          provide: 'BullQueue_domain-events',
-          useValue: mockQueue,
+          provide: EventEmitter2,
+          useValue: mockEventEmitter,
         },
       ],
     }).compile();
 
     service = module.get<EventDispatcherService>(EventDispatcherService);
     eventStoreRepository = module.get(getRepositoryToken(EventStore));
-    domainEventQueue = module.get('BullQueue_domain-events');
+    eventEmitter = module.get(EventEmitter2);
   });
 
   afterEach(() => {
@@ -85,7 +85,7 @@ describe('EventDispatcherService', () => {
           take: 50,
         }),
       );
-      expect(domainEventQueue.add).toHaveBeenCalled();
+      expect(eventEmitter.emit).toHaveBeenCalled();
       expect(eventStoreRepository.save).toHaveBeenCalled();
     });
 
@@ -94,10 +94,10 @@ describe('EventDispatcherService', () => {
 
       await service.processPendingEvents();
 
-      expect(domainEventQueue.add).not.toHaveBeenCalled();
+      expect(eventEmitter.emit).not.toHaveBeenCalled();
     });
 
-    it('should update event status to FAILED on queue error', async () => {
+    it('should update event status to FAILED on publish error', async () => {
       const pendingEvent = {
         id: '1',
         eventId: 'event-1',
@@ -116,14 +116,16 @@ describe('EventDispatcherService', () => {
       } as EventStore;
 
       eventStoreRepository.find.mockResolvedValue([pendingEvent]);
-      domainEventQueue.add.mockRejectedValue(new Error('Queue error'));
+      eventEmitter.emit.mockImplementation(() => {
+        throw new Error('Emit error');
+      });
       eventStoreRepository.save.mockResolvedValue(pendingEvent);
 
       await service.processPendingEvents();
 
       const savedEvent = eventStoreRepository.save.mock.calls[0][0];
       expect(savedEvent.status).toBe('FAILED');
-      expect(savedEvent.errorMessage).toBe('Queue error');
+      expect(savedEvent.errorMessage).toBe('Emit error');
     });
 
     it('should schedule retry for failed events', async () => {
@@ -138,7 +140,7 @@ describe('EventDispatcherService', () => {
         payload: { data: 'test' },
         status: 'FAILED' as const,
         attempts: 1,
-        errorMessage: 'Queue error',
+        errorMessage: 'Emit error',
         createdAt: new Date(),
         publishedAt: null,
         nextRetryAt: new Date(Date.now() - 1000),
@@ -149,7 +151,7 @@ describe('EventDispatcherService', () => {
 
       await service.processPendingEvents();
 
-      expect(domainEventQueue.add).toHaveBeenCalled();
+      expect(eventEmitter.emit).toHaveBeenCalled();
     });
   });
 

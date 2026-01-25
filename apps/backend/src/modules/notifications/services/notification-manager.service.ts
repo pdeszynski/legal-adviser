@@ -20,7 +20,7 @@ import {
   NotificationDeliveryPreferencesInput,
   BulkSendNotificationInput,
 } from '../dto/notification.dto';
-import { EmailSendProducer } from '../queues/email-send.producer';
+import { EmailQueueService } from './email-queue.service';
 import { EmailTemplatesService } from './email-templates.service';
 import { EVENT_PATTERNS } from '../../../shared/events/base/event-patterns';
 import { GraphQLPubSubService } from '../../../shared/streaming';
@@ -55,7 +55,7 @@ export class NotificationManagerService {
   constructor(
     @InjectRepository(InAppNotification)
     private readonly inAppNotificationRepository: Repository<InAppNotification>,
-    private readonly emailSendProducer: EmailSendProducer,
+    private readonly emailQueueService: EmailQueueService,
     private readonly emailTemplatesService: EmailTemplatesService,
     private readonly eventEmitter: EventEmitter2,
     private readonly pubSubService: GraphQLPubSubService,
@@ -306,7 +306,7 @@ export class NotificationManagerService {
       input.templateData ?? {},
     );
 
-    await this.emailSendProducer.queueEmail({
+    await this.emailQueueService.queueEmail({
       to: input.userEmail,
       subject: templateConfig.subject ?? subject,
       template: templateConfig.emailTemplate,

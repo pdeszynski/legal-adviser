@@ -1,0 +1,11 @@
+# ============================================================================
+# Temporal Namespace
+# ============================================================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: temporal
+  labels:
+    name: temporal
+    app.kubernetes.io/name: temporal
+    app.kubernetes.io/part-of: temporal-cluster

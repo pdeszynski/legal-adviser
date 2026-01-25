@@ -1,20 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { InjectQueue } from '@nestjs/bull';
-import type { Job, Queue } from 'bull';
 import { AiClientService } from '../../shared/ai-client/ai-client.service';
-import { QUEUE_NAMES } from '../../shared/queues/base/queue-names';
 import { SaosAdapter } from '../../infrastructure/anti-corruption/saos/saos.adapter';
 import { IsapAdapter } from '../../infrastructure/anti-corruption/isap/isap.adapter';
 import {
   SystemHealthResponse,
   ServiceStatus,
   ServiceHealth,
-  QueueHealth,
   ErrorTrackingStatus,
   ErrorSummary,
 } from './system-health.types';
+import { TemporalService } from '../temporal/temporal.service';
+import { TemporalMetricsService } from '../temporal/temporal-metrics.service';
+import { TemporalWorkerService } from '../temporal/temporal.worker';
 
 @Injectable()
 export class SystemHealthService {
@@ -28,61 +27,39 @@ export class SystemHealthService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    @InjectQueue(QUEUE_NAMES.DOCUMENT.GENERATION)
-    private readonly documentQueue: Queue,
-    @InjectQueue(QUEUE_NAMES.EMAIL.SEND)
-    private readonly emailQueue: Queue,
-    @InjectQueue(QUEUE_NAMES.WEBHOOK.DELIVER)
-    private readonly webhookQueue: Queue,
     private readonly aiClientService: AiClientService,
     private readonly saosAdapter: SaosAdapter,
     private readonly isapAdapter: IsapAdapter,
+    private readonly temporalService?: TemporalService,
+    private readonly temporalMetricsService?: TemporalMetricsService,
+    private readonly temporalWorkerService?: TemporalWorkerService,
   ) {}
 
   async getSystemHealth(): Promise<SystemHealthResponse> {
     const timestamp = new Date().toISOString();
 
-    const [
-      database,
-      redis,
-      aiEngine,
-      saosApi,
-      isapApi,
-      documentGenerationQueue,
-      emailQueue,
-      webhookQueue,
-    ] = await Promise.all([
+    const [database, aiEngine, saosApi, isapApi, temporal] = await Promise.all([
       this.checkDatabase(),
-      this.checkRedis(),
       this.checkAiEngine(),
       this.checkSaosApi(),
       this.checkIsapApi(),
-      this.getQueueHealth(this.documentQueue),
-      this.getQueueHealth(this.emailQueue),
-      this.getQueueHealth(this.webhookQueue),
+      this.checkTemporal(),
     ]);
 
     const services = {
       database,
-      redis,
       aiEngine,
       saosApi,
       isapApi,
-    };
-
-    const queues = {
-      documentGeneration: documentGenerationQueue,
-      email: emailQueue,
-      webhook: webhookQueue,
+      ...(temporal ? { temporal } : {}),
     };
 
     const errors = this.getErrorTrackingStatus();
 
     return {
-      status: this.calculateOverallStatus({ services, queues }),
+      status: this.calculateOverallStatus({ services }),
       timestamp,
       services,
-      queues,
       errors,
       uptime: Math.floor((Date.now() - this.startTime) / 1000),
     };
@@ -102,31 +79,6 @@ export class SystemHealthService {
     } catch (error) {
       this.trackError('database', error);
       this.logger.error('Database health check failed', error);
-
-      return {
-        status: ServiceStatus.UNHEALTHY,
-        latency: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        lastCheck: new Date().toISOString(),
-      };
-    }
-  }
-
-  private async checkRedis(): Promise<ServiceHealth> {
-    const startTime = Date.now();
-
-    try {
-      const client = this.documentQueue.client;
-      await client.ping();
-
-      return {
-        status: ServiceStatus.HEALTHY,
-        latency: Date.now() - startTime,
-        lastCheck: new Date().toISOString(),
-      };
-    } catch (error) {
-      this.trackError('redis', error);
-      this.logger.error('Redis health check failed', error);
 
       return {
         status: ServiceStatus.UNHEALTHY,
@@ -215,39 +167,32 @@ export class SystemHealthService {
     }
   }
 
-  private async getQueueHealth(queue: Queue): Promise<QueueHealth> {
-    try {
-      const [waiting, active, delayed, failed] = await Promise.all([
-        queue.getWaitingCount(),
-        queue.getActiveCount(),
-        queue.getDelayedCount(),
-        queue.getFailedCount(),
-      ]);
+  private async checkTemporal(): Promise<ServiceHealth | undefined> {
+    if (!this.temporalService) {
+      return undefined;
+    }
 
-      // Get the last processed job timestamp
-      const completedJobs = await queue.getCompleted(0, 1);
-      const lastProcessed =
-        completedJobs.length > 0
-          ? new Date(
-              (completedJobs[0] as Job).finishedOn || Date.now(),
-            ).toISOString()
-          : undefined;
+    const startTime = Date.now();
+
+    try {
+      const result = await this.temporalService.checkHealth();
 
       return {
-        depth: waiting,
-        active,
-        delayed,
-        failed,
-        lastProcessed,
+        status: result.healthy
+          ? ServiceStatus.HEALTHY
+          : ServiceStatus.UNHEALTHY,
+        latency: result.latency,
+        lastCheck: new Date().toISOString(),
       };
     } catch (error) {
-      this.logger.error(`Queue health check failed for ${queue.name}`, error);
+      this.trackError('temporal', error);
+      this.logger.error('Temporal health check failed', error);
 
       return {
-        depth: 0,
-        active: 0,
-        delayed: 0,
-        failed: 0,
+        status: ServiceStatus.UNHEALTHY,
+        latency: Date.now() - startTime,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        lastCheck: new Date().toISOString(),
       };
     }
   }
@@ -317,7 +262,6 @@ export class SystemHealthService {
 
   private calculateOverallStatus(data: {
     services: Record<string, ServiceHealth>;
-    queues: Record<string, QueueHealth>;
   }): ServiceStatus {
     const allServices = Object.values(data.services);
     const healthyCount = allServices.filter(
@@ -329,11 +273,8 @@ export class SystemHealthService {
       return ServiceStatus.HEALTHY;
     }
 
-    // If any critical service (database, redis) is unhealthy, system is unhealthy
-    if (
-      data.services.database.status === ServiceStatus.UNHEALTHY ||
-      data.services.redis.status === ServiceStatus.UNHEALTHY
-    ) {
+    // If database is unhealthy, system is unhealthy
+    if (data.services.database.status === ServiceStatus.UNHEALTHY) {
       return ServiceStatus.UNHEALTHY;
     }
 

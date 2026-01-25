@@ -49,9 +49,52 @@ services:
     networks:
       - legal-ai-network
 
+  # Temporal Server for workflow orchestration
+  temporal:
+    image: temporalio/auto-setup:latest
+    container_name: legal-ai-temporal
+    ports:
+      - '7233:7233'
+    environment:
+      - DB=postgresql
+      - DB_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PWD=password
+      - POSTGRES_SEEDS=postgres
+      - TEMPORAL_ADDRESS=temporal:7233
+      - ADVERTISE_ADDRESS=temporal:7233
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - temporal_data:/temporal
+    healthcheck:
+      test: ['CMD', 'tctl', '--address', 'temporal:7233', 'cluster', 'health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - legal-ai-network
+
+  # Temporal Web UI
+  temporal-ui:
+    image: temporalio/ui:latest
+    container_name: legal-ai-temporal-ui
+    ports:
+      - '8088:8088'
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+    depends_on:
+      - temporal
+    networks:
+      - legal-ai-network
+
 volumes:
   postgres_data:
   redis_data:
+  temporal_data:
 
 networks:
   legal-ai-network:

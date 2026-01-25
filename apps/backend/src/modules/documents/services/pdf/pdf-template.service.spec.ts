@@ -9,7 +9,7 @@ import {
   DocumentTemplateContext,
 } from './pdf-template.service';
 import { DocumentType } from '../../entities/legal-document.entity';
-import { PdfPageFormat } from '../../queues/pdf-export.job';
+import { PdfPageFormat } from '../../dto/pdf-export.dto';
 
 describe('PdfTemplateService', () => {
   let service: PdfTemplateService;

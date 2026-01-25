@@ -1,20 +1,40 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { InjectQueue } from '@nestjs/bull';
-import type { Queue } from 'bull';
 import { AiClientService } from '../../shared/ai-client/ai-client.service';
-import { QUEUE_NAMES } from '../../shared/queues/base/queue-names';
+import { TemporalService } from '../temporal/temporal.service';
+import type { TemporalHealthResult } from '../temporal/temporal.interfaces';
+import { TemporalMetricsService } from '../temporal/temporal-metrics.service';
+import { TemporalWorkerService } from '../temporal/temporal.worker';
 
 export interface HealthCheckResult {
   status: 'healthy' | 'degraded' | 'unhealthy';
   timestamp: string;
   services: {
     database: ServiceHealth;
-    redis: ServiceHealth;
     aiEngine: ServiceHealth;
+    temporal?: TemporalServiceHealth;
+  };
+  metrics?: {
+    temporal?: TemporalMetricsSnapshot;
   };
   uptime: number;
+}
+
+export interface TemporalMetricsSnapshot {
+  workflowsStartedTotal: number;
+  workflowsCompletedTotal: number;
+  workflowsFailedTotal: number;
+  activitiesExecutedTotal: number;
+  activitiesFailedTotal: number;
+  avgWorkflowDurationMs: number;
+  avgActivityLatencyMs: number;
+  activeWorkflowsCount: number;
+  stuckActivityCount: number;
+}
+
+export interface TemporalServiceHealth extends ServiceHealth {
+  namespace?: string;
 }
 
 export interface ServiceHealth {
@@ -31,32 +51,58 @@ export class HealthService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    @InjectQueue(QUEUE_NAMES.DOCUMENT.GENERATION)
-    private readonly documentQueue: Queue,
     private readonly aiClientService: AiClientService,
+    @Optional()
+    private readonly temporalService?: TemporalService,
+    @Optional()
+    private readonly temporalMetricsService?: TemporalMetricsService,
+    @Optional()
+    private readonly temporalWorkerService?: TemporalWorkerService,
   ) {}
 
   async getHealth(): Promise<HealthCheckResult> {
     const startTime = Date.now();
 
-    const results = await Promise.allSettled([
-      this.checkDatabase(),
-      this.checkRedis(),
-      this.checkAiEngine(),
-    ]);
+    const checks = [this.checkDatabase(), this.checkAiEngine()];
 
-    const [dbResult, redisResult, aiEngineResult] = results;
+    // Only check Temporal if the service is available
+    if (this.temporalService) {
+      checks.push(this.checkTemporal());
+    }
+
+    const results = await Promise.allSettled(checks);
+
+    const [dbResult, aiEngineResult, temporalResult] = results;
 
     const health: HealthCheckResult = {
-      status: this.calculateOverallHealth(results),
+      status: this.calculateOverallHealth(
+        results.filter(
+          (r) =>
+            r.status === 'fulfilled' ||
+            r !== temporalResult ||
+            this.temporalService,
+        ),
+      ),
       timestamp: new Date().toISOString(),
       services: {
         database: this.extractServiceHealth(dbResult),
-        redis: this.extractServiceHealth(redisResult),
         aiEngine: this.extractServiceHealth(aiEngineResult),
       },
       uptime: Math.floor((Date.now() - this.startTime) / 1000),
     };
+
+    // Add Temporal health if available
+    if (this.temporalService && temporalResult) {
+      health.services.temporal =
+        this.extractTemporalServiceHealth(temporalResult);
+    }
+
+    // Add Temporal metrics if available
+    if (this.temporalMetricsService || this.temporalWorkerService) {
+      health.metrics = {
+        temporal: await this.getTemporalMetrics(),
+      };
+    }
 
     return health;
   }
@@ -73,28 +119,6 @@ export class HealthService {
       };
     } catch (error) {
       this.logger.error('Database health check failed', error);
-
-      return {
-        status: 'unhealthy',
-        latency: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
-    }
-  }
-
-  private async checkRedis(): Promise<ServiceHealth> {
-    const startTime = Date.now();
-
-    try {
-      const client = this.documentQueue.client;
-      await client.ping();
-
-      return {
-        status: 'healthy',
-        latency: Date.now() - startTime,
-      };
-    } catch (error) {
-      this.logger.error('Redis health check failed', error);
 
       return {
         status: 'unhealthy',
@@ -125,6 +149,30 @@ export class HealthService {
     }
   }
 
+  private async checkTemporal(): Promise<TemporalServiceHealth> {
+    const startTime = Date.now();
+
+    try {
+      const result: TemporalHealthResult =
+        await this.temporalService!.checkHealth();
+
+      return {
+        status: result.healthy ? 'healthy' : 'unhealthy',
+        latency: result.latency,
+        namespace: result.namespace,
+        error: result.error,
+      };
+    } catch (error) {
+      this.logger.error('Temporal health check failed', error);
+
+      return {
+        status: 'unhealthy',
+        latency: Date.now() - startTime,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
   private calculateOverallHealth(
     results: PromiseSettledResult<ServiceHealth>[],
   ): 'healthy' | 'degraded' | 'unhealthy' {
@@ -144,8 +192,22 @@ export class HealthService {
   }
 
   private extractServiceHealth(
-    result: PromiseSettledResult<ServiceHealth>,
+    result: PromiseSettledResult<ServiceHealth | TemporalServiceHealth>,
   ): ServiceHealth {
+    if (result.status === 'fulfilled') {
+      const { status, latency, error } = result.value;
+      return { status, latency, error };
+    }
+
+    return {
+      status: 'unhealthy',
+      error: 'Check failed',
+    };
+  }
+
+  private extractTemporalServiceHealth(
+    result: PromiseSettledResult<TemporalServiceHealth>,
+  ): TemporalServiceHealth {
     if (result.status === 'fulfilled') {
       return result.value;
     }
@@ -153,6 +215,34 @@ export class HealthService {
     return {
       status: 'unhealthy',
       error: 'Check failed',
+    };
+  }
+
+  /**
+   * Get Temporal metrics snapshot
+   *
+   * Aggregates metrics from both TemporalMetricsService and TemporalWorkerService.
+   */
+  private async getTemporalMetrics(): Promise<TemporalMetricsSnapshot> {
+    const baseMetrics = this.temporalMetricsService
+      ? await this.temporalMetricsService.getMetricsSnapshot()
+      : {
+          workflowsStartedTotal: 0,
+          workflowsCompletedTotal: 0,
+          workflowsFailedTotal: 0,
+          activitiesExecutedTotal: 0,
+          activitiesFailedTotal: 0,
+          avgWorkflowDurationMs: 0,
+          avgActivityLatencyMs: 0,
+          activeWorkflowsCount: 0,
+        };
+
+    const workerMetrics =
+      this.temporalWorkerService?.getObservabilityHealthMetrics();
+
+    return {
+      ...baseMetrics,
+      stuckActivityCount: workerMetrics?.stuckActivityCount || 0,
     };
   }
 }

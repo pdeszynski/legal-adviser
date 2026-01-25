@@ -7,7 +7,7 @@ import {
   WebhookDelivery,
   DeliveryStatus,
 } from '../entities/webhook-delivery.entity';
-import { WebhookDeliveryProducer } from '../queues/webhook-delivery.producer';
+import { WebhookDeliveryStarter } from '../../../modules/temporal/workflows/webhook/webhook-delivery.starter';
 
 /**
  * Webhook Payload Interface
@@ -25,7 +25,7 @@ export interface WebhookPayload extends Record<string, unknown> {
  * Handles webhook delivery logic including:
  * - Finding webhooks subscribed to events
  * - Creating delivery log entries
- * - Queueing webhook delivery jobs
+ * - Starting Temporal workflows for webhook delivery
  * - Testing webhooks
  *
  * Bounded Context: Webhooks
@@ -41,7 +41,7 @@ export class WebhookDeliveryService {
     private readonly webhookRepository: Repository<Webhook>,
     @InjectRepository(WebhookDelivery)
     private readonly deliveryRepository: Repository<WebhookDelivery>,
-    private readonly deliveryProducer: WebhookDeliveryProducer,
+    private readonly webhookDeliveryStarter: WebhookDeliveryStarter,
   ) {}
 
   /**
@@ -137,8 +137,8 @@ export class WebhookDeliveryService {
 
     const savedDelivery = await this.deliveryRepository.save(delivery);
 
-    // Queue the delivery job
-    await this.deliveryProducer.queueWebhookDelivery({
+    // Start the Temporal workflow for delivery
+    await this.webhookDeliveryStarter.startWebhookDelivery({
       webhookId: webhook.id,
       deliveryId: savedDelivery.id,
       event,
@@ -152,7 +152,7 @@ export class WebhookDeliveryService {
     });
 
     this.logger.debug(
-      `Queued webhook delivery ${savedDelivery.id} to ${webhook.url}`,
+      `Started webhook delivery workflow ${savedDelivery.id} to ${webhook.url}`,
     );
 
     return savedDelivery;

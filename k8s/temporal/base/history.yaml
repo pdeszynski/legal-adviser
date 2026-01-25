@@ -1,0 +1,149 @@
+# ============================================================================
+# Temporal History Deployment
+# ============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: temporal-history
+  namespace: temporal
+  labels:
+    app.kubernetes.io/name: history
+    app.kubernetes.io/component: history
+    app.kubernetes.io/part-of: temporal-cluster
+spec:
+  type: ClusterIP
+  ports:
+    - port: 7234
+      targetPort: 7234
+      name: grpc
+    - port: 6934
+      targetPort: 6934
+      name: membership
+    - port: 9091
+      targetPort: 9091
+      name: metrics
+  selector:
+    app.kubernetes.io/name: history
+    app.kubernetes.io/component: history
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-history
+  namespace: temporal
+  labels:
+    app.kubernetes.io/name: history
+    app.kubernetes.io/component: history
+    app.kubernetes.io/part-of: temporal-cluster
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: history
+      app.kubernetes.io/component: history
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: history
+        app.kubernetes.io/component: history
+        app.kubernetes.io/part-of: temporal-cluster
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9091"
+    spec:
+      containers:
+        - name: history
+          image: temporalio/server:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7234
+              name: grpc
+            - containerPort: 6934
+              name: membership
+            - containerPort: 9091
+              name: metrics
+          env:
+            - name: SERVICES
+              value: "history"
+            - name: DB
+              value: "postgresql"
+            - name: DB_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: temporal-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: temporal-secrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_SEEDS
+              value: "temporal-postgres"
+            - name: POSTGRES_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: temporal-secrets
+                  key: POSTGRES_DATABASE
+            - name: NAMESPACES
+              value: "default,production"
+            - name: HISTORY_NAMESPACE
+              value: "production"
+            - name: FRONTEND_ADDRESS
+              value: "temporal-frontend:7233"
+            - name: MASTER_ADDRESS
+              value: "temporal-frontend:7233"
+            - name: HISTORY_ADDRESS
+              value: "0.0.0.0:7234"
+            - name: MEMBERSHIP_PORT
+              value: "6934"
+            - name: RPC_QUEUE_TYPE
+              value: "normal"
+            - name: NUM_HISTORY_SHARDS
+              value: "512"
+            - name: HISTORY_ENABLE_EAGER_READ
+              value: "false"
+            - name: SERVE_FRONTEND
+              value: "false"
+            - name: SERVE_HISTORY
+              value: "true"
+            - name: SERVE_MATCHER
+              value: "false"
+            - name: SERVE_WORKER
+              value: "false"
+            - name: CLUSTER_NAME
+              value: "legal-ai-temporal"
+            - name: PROMETHEUS_ENDPOINT
+              value: "/metrics"
+            - name: PROMETHEUS_LISTEN_ADDRESS
+              value: ":9091"
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: 9091
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: 9091
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 2
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"

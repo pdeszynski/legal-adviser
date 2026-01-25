@@ -1,0 +1,191 @@
+# ============================================================================
+# Temporal Worker Configuration
+# ============================================================================
+#
+# This file contains configuration for Temporal workers that process workflows
+# and activities. Workers connect to the Temporal server and poll for tasks from
+# specific task queues.
+#
+# The configuration supports multiple environments:
+# - development: Local Temporal server (localhost:7233)
+# - docker: Temporal server in Docker container (temporal:7233)
+# - production: Production Temporal cluster
+#
+# Usage:
+#   The worker configuration is loaded via environment variables defined in
+#   .env.example. This file serves as documentation for the worker setup.
+#
+# ============================================================================
+
+# Environment-specific configuration
+development:
+  # Temporal server address
+  address: 'localhost:7233'
+  # Temporal namespace
+  namespace: 'default'
+  # Default task queue
+  taskQueue: 'legal-ai-task-queue'
+
+  # Worker pool configuration
+  workerPools:
+    # Document processing workflows
+    - name: 'document-processing'
+      taskQueue: 'document-processing'
+      workerCount: 2
+      workflowsPath: './dist/modules/temporal/workflows/document'
+      activitiesPath: './dist/modules/temporal/activities/document'
+      maxConcurrentWorkflowTasks: 100
+      maxConcurrentActivities: 50
+      maxConcurrentLocalActivities: 100
+
+    # AI-powered workflows
+    - name: 'ai-workflows'
+      taskQueue: 'ai-workflows'
+      workerCount: 3
+      workflowsPath: './dist/modules/temporal/workflows/ai'
+      activitiesPath: './dist/modules/temporal/activities/ai'
+      maxConcurrentWorkflowTasks: 100
+      maxConcurrentActivities: 100
+      maxConcurrentLocalActivities: 100
+
+    # Notification workflows
+    - name: 'notification-workflows'
+      taskQueue: 'notification-workflows'
+      workerCount: 1
+      workflowsPath: './dist/modules/temporal/workflows/notification'
+      activitiesPath: './dist/modules/temporal/activities/notification'
+      maxConcurrentWorkflowTasks: 50
+      maxConcurrentActivities: 20
+      maxConcurrentLocalActivities: 50
+
+    # Billing workflows
+    - name: 'billing-workflows'
+      taskQueue: 'billing-workflows'
+      workerCount: 1
+      workflowsPath: './dist/modules/temporal/workflows/billing'
+      activitiesPath: './dist/modules/temporal/activities/billing'
+      maxConcurrentWorkflowTasks: 50
+      maxConcurrentActivities: 20
+      maxConcurrentLocalActivities: 50
+
+docker:
+  # Temporal server address in Docker network
+  address: 'temporal:7233'
+  namespace: 'default'
+  taskQueue: 'legal-ai-task-queue'
+
+  workerPools:
+    - name: 'document-processing'
+      taskQueue: 'document-processing'
+      workerCount: 2
+      workflowsPath: './dist/modules/temporal/workflows/document'
+      activitiesPath: './dist/modules/temporal/activities/document'
+      maxConcurrentWorkflowTasks: 100
+      maxConcurrentActivities: 50
+
+    - name: 'ai-workflows'
+      taskQueue: 'ai-workflows'
+      workerCount: 3
+      workflowsPath: './dist/modules/temporal/workflows/ai'
+      activitiesPath: './dist/modules/temporal/activities/ai'
+      maxConcurrentWorkflowTasks: 100
+      maxConcurrentActivities: 100
+
+    - name: 'notification-workflows'
+      taskQueue: 'notification-workflows'
+      workerCount: 1
+      workflowsPath: './dist/modules/temporal/workflows/notification'
+      activitiesPath: './dist/modules/temporal/activities/notification'
+      maxConcurrentWorkflowTasks: 50
+      maxConcurrentActivities: 20
+
+    - name: 'billing-workflows'
+      taskQueue: 'billing-workflows'
+      workerCount: 1
+      workflowsPath: './dist/modules/temporal/workflows/billing'
+      activitiesPath: './dist/modules/temporal/activities/billing'
+      maxConcurrentWorkflowTasks: 50
+      maxConcurrentActivities: 20
+
+production:
+  # Production Temporal cluster address
+  address: "${TEMPORAL_CLUSTER_URL}"
+  namespace: "${TEMPORAL_NAMESPACE}"
+  taskQueue: "${TEMPORAL_TASK_QUEUE}"
+
+  workerPools:
+    - name: 'document-processing'
+      taskQueue: 'document-processing'
+      workerCount: 4
+      workflowsPath: './dist/modules/temporal/workflows/document'
+      activitiesPath: './dist/modules/temporal/activities/document'
+      maxConcurrentWorkflowTasks: 200
+      maxConcurrentActivities: 100
+
+    - name: 'ai-workflows'
+      taskQueue: 'ai-workflows'
+      workerCount: 6
+      workflowsPath: './dist/modules/temporal/workflows/ai'
+      activitiesPath: './dist/modules/temporal/activities/ai'
+      maxConcurrentWorkflowTasks: 200
+      maxConcurrentActivities: 200
+
+    - name: 'notification-workflows'
+      taskQueue: 'notification-workflows'
+      workerCount: 2
+      workflowsPath: './dist/modules/temporal/workflows/notification'
+      activitiesPath: './dist/modules/temporal/activities/notification'
+      maxConcurrentWorkflowTasks: 100
+      maxConcurrentActivities: 50
+
+    - name: 'billing-workflows'
+      taskQueue: 'billing-workflows'
+      workerCount: 2
+      workflowsPath: './dist/modules/temporal/workflows/billing'
+      activitiesPath: './dist/modules/temporal/activities/billing'
+      maxConcurrentWorkflowTasks: 100
+      maxConcurrentActivities: 50
+
+# Common workflow configurations
+workflows:
+  # Document Generation Workflow
+  documentGeneration:
+    name: 'DocumentGeneration'
+    taskQueue: 'document-processing'
+    executionTimeout: '60m'
+    taskTimeout: '10s'
+
+  # Document Export Workflow
+  documentExport:
+    name: 'DocumentExport'
+    taskQueue: 'document-processing'
+    executionTimeout: '30m'
+    taskTimeout: '10s'
+
+  # PDF Export Workflow
+  pdfExport:
+    name: 'PdfExport'
+    taskQueue: 'document-processing'
+    executionTimeout: '30m'
+    taskTimeout: '10s'
+
+  # AI Query Processing Workflow
+  aiQueryProcessing:
+    name: 'AIQueryProcessing'
+    taskQueue: 'ai-workflows'
+    executionTimeout: '30m'
+    taskTimeout: '30s'
+
+  # Email Sending Workflow
+  emailSending:
+    name: 'EmailSending'
+    taskQueue: 'notification-workflows'
+    executionTimeout: '5m'
+    taskTimeout: '10s'
+
+  # Subscription Renewal Workflow
+  subscriptionRenewal:
+    name: 'SubscriptionRenewal'
+    taskQueue: 'billing-workflows'
+    executionTimeout: '30m'
+    taskTimeout: '10s'

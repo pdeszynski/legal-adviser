@@ -19,7 +19,7 @@ import {
   LegalDocumentSearchResponse,
 } from './dto/legal-document-search.dto';
 import { LegalDocument, DocumentType } from './entities/legal-document.entity';
-import { DocumentGenerationProducer } from './queues/document-generation.producer';
+import { DocumentGenerationStarter } from '../temporal/workflows/document/document-generation.starter';
 import { PdfExportService } from './services/pdf-export.service';
 import { StrictThrottle, SkipThrottle } from '../../shared/throttler';
 import {
@@ -59,7 +59,7 @@ export class DocumentsResolver {
   constructor(
     private readonly documentsService: DocumentsService,
     private readonly pdfExportService: PdfExportService,
-    private readonly documentGenerationProducer: DocumentGenerationProducer,
+    private readonly documentGenerationStarter: DocumentGenerationStarter,
   ) {}
 
   /**
@@ -133,9 +133,9 @@ export class DocumentsResolver {
    * This is a custom mutation that:
    * 1. Creates the document in DRAFT status
    * 2. Marks it as GENERATING
-   * 3. Queues the generation job for async processing
+   * 3. Starts the Temporal workflow for async processing
    *
-   * The actual content generation happens asynchronously via the Bull queue.
+   * The actual content generation happens asynchronously via Temporal.
    * Poll the document status to check for completion.
    *
    * Quota check: Requires one document generation quota
@@ -159,8 +159,8 @@ export class DocumentsResolver {
       document.id,
     );
 
-    // Step 3: Queue the generation job for async processing
-    await this.documentGenerationProducer.queueDocumentGeneration({
+    // Step 3: Start the Temporal workflow for async processing
+    await this.documentGenerationStarter.startDocumentGeneration({
       documentId: document.id,
       sessionId: input.sessionId,
       documentType: input.type ?? DocumentType.OTHER,

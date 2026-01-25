@@ -1,0 +1,180 @@
+# ============================================================================
+# Temporal ConfigMap
+# ============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: temporal-config
+  namespace: temporal
+data:
+  # Temporal server configuration
+  temporal.yaml: |
+    cluster:
+      name: legal-ai-temporal
+      initialize: true
+
+    frontend:
+      address: "0.0.0.0:7233"
+      membership:
+        address: "0.0.0.0:6933"
+      rps:
+        # Requests per second limits
+        global:
+          frontend: 2000
+          history: 2000
+          matching: 2000
+          worker: 2000
+
+    history:
+      address: "0.0.0.0:7234"
+      membership:
+        address: "0.0.0.0:6934"
+      numHistoryShards: 512
+      historyCacheInitialSize: 1000
+      historyCacheMaxSize: 10000
+      historyCachePersistTransactionKey: false
+
+    matching:
+      address: "0.0.0.0:7235"
+      membership:
+        address: "0.0.0.0:6935"
+
+    worker:
+      address: "0.0.0.0:7236"
+      membership:
+        address: "0.0.0.0:6936"
+
+    publicClient:
+      hostPort: "0.0.0.0:7233"
+
+    # Metrics configuration
+    metrics:
+      tags:
+        environment: production
+        cluster: legal-ai-temporal
+      prometheus:
+        listenAddress: "0.0.0.0:9090"
+      perEndpointHistogram:
+        enabled: true
+
+    # Namespace configuration
+    namespaces:
+      - name: default
+        clusters:
+          - legal-ai-temporal
+        isGlobalNamespace: true
+
+    # Replication configuration for HA
+    replication:
+      enable: true
+      initialFailoverVersion: 0
+      maxWorkflowTimeoutSeconds: 31536000  # 1 year
+
+    # Elasticsearch for visibility
+    elasticsearch:
+      visibility:
+        index: temporal-visibility-dev
+        visibilityIndex: temporal-visibility-dev
+        url:
+          - elasticsearch:9200
+        indices:
+          visibility: visibility
+        enableElasticsearchVisibility: true
+        esType: ""
+        username: ""
+        password: ""
+        version: v7
+
+  # Prometheus configuration
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    scrape_configs:
+      - job_name: 'temporal-frontend'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - temporal
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+            regex: frontend
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_ip]
+            target_label: __address__
+            replacement: $1:9090
+
+      - job_name: 'temporal-history'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - temporal
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+            regex: history
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_ip]
+            target_label: __address__
+            replacement: $1:9091
+
+      - job_name: 'temporal-matching'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - temporal
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+            regex: matching
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_ip]
+            target_label: __address__
+            replacement: $1:9092
+
+      - job_name: 'temporal-worker'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - temporal
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+            regex: worker
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_ip]
+            target_label: __address__
+            replacement: $1:9093
+
+  # Alert configuration
+  temporal-alerts.yml: |
+    groups:
+      - name: temporal_alerts
+        interval: 30s
+        rules:
+          - alert: TemporalFrontendDown
+            expr: up{job="temporal-frontend"} == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Temporal Frontend service is down"
+
+          - alert: TemporalHistoryDown
+            expr: up{job="temporal-history"} == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Temporal History service is down"
+
+          - alert: HighWorkflowFailureRate
+            expr: |
+              rate(temporal_workflow_failed[5m]) / rate(temporal_workflow_completed[5m]) > 0.1
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High workflow failure rate detected"

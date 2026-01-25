@@ -1,16 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BullModule } from '@nestjs/bull';
 import { ConfigModule } from '@nestjs/config';
-import { QUEUE_NAMES } from '../../shared/queues/base/queue-names';
 import { Notification } from './entities/notification.entity';
 import { InAppNotification } from './entities/in-app-notification.entity';
 import { NotificationService } from './services/notification.service';
 import { EmailSenderService } from './services/email-sender.service';
 import { EmailTemplatesService } from './services/email-templates.service';
 import { NotificationManagerService } from './services/notification-manager.service';
-import { EmailSendProcessor } from './queues/email-send.processor';
-import { EmailSendProducer } from './queues/email-send.producer';
+import { EmailQueueService } from './services/email-queue.service';
 import { EmailNotificationListener } from './listeners/email-notification.listener';
 import { SendGridWebhookController } from './controllers/sendgrid-webhook.controller';
 import { NotificationManagerResolver } from './notification-manager.resolver';
@@ -25,6 +22,8 @@ import {
   CreateNotificationInput,
   UpdateNotificationInput,
 } from './dto/notification-crud.dto';
+import { TemporalModule } from '../temporal/temporal.module';
+import { EmailSendingStarter } from '../temporal/workflows/notification/email-sending.starter';
 
 /**
  * Notifications Module
@@ -33,7 +32,7 @@ import {
  * Features:
  * - Email sending via SendGrid
  * - Email templates for various notification types
- * - Queue-based email processing
+ * - Queue-based email processing via Temporal
  * - Event-driven notifications
  * - Notification tracking and history
  * - SendGrid webhook handling for delivery tracking and bounces
@@ -49,9 +48,8 @@ import {
   imports: [
     ConfigModule,
     TypeOrmModule.forFeature([Notification, InAppNotification]),
-    BullModule.registerQueue({
-      name: QUEUE_NAMES.EMAIL.SEND,
-    }),
+    // Temporal module for email workflows
+    TemporalModule.forRootWithDefaults(),
     // nestjs-query auto-generated CRUD resolvers for InAppNotification and Notification
     NestjsQueryGraphQLModule.forFeature({
       imports: [
@@ -124,10 +122,10 @@ import {
     EmailSenderService,
     EmailTemplatesService,
     NotificationManagerService,
+    EmailQueueService,
 
-    // Queue
-    EmailSendProcessor,
-    EmailSendProducer,
+    // Temporal workflow starter
+    EmailSendingStarter,
 
     // Event Listeners
     EmailNotificationListener,
@@ -138,7 +136,8 @@ import {
   ],
   exports: [
     NotificationService,
-    EmailSendProducer,
+    EmailQueueService,
+    EmailSendingStarter,
     EmailSenderService,
     NotificationManagerService,
   ],

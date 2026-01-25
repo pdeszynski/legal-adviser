@@ -1,10 +1,13 @@
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import puppeteer, { Browser, Page, PDFOptions } from 'puppeteer';
-import { PdfExportOptions, PdfPageFormat } from '../../queues/pdf-export.job';
+import { PdfPageFormat } from '../../dto/pdf-export.dto';
 import {
   PdfTemplateService,
   DocumentTemplateContext,
 } from './pdf-template.service';
+
+// Re-export PdfPageFormat for convenience
+export type { PdfPageFormat };
 
 /**
  * PDF Generation Result
