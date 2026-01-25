@@ -51,3 +51,131 @@ Input: {
 Input: {
   "pattern": "apps/web/src/**/*apollo*"
 }
+
+🔧 Tool: Glob
+Input: {
+  "pattern": "apps/web/src/**/*graphql*"
+}
+
+🔧 Tool: Glob
+Input: {
+  "pattern": "apps/web/src/**/*auth*"
+}
+
+🔧 Tool: Glob
+Input: {
+  "pattern": "apps/web/src/**/*data-provider*"
+}
+
+🔧 Tool: Glob
+Input: {
+  "pattern": "apps/web/src/**/*provider*"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/providers/auth-provider/auth-provider.client.ts"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/graphql-errors.ts"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/auth-errors.ts"
+}
+
+🔧 Tool: Glob
+Input: {
+  "pattern": "apps/web/src/**/*app*.{tsx,ts}"
+}
+
+🔧 Tool: Glob
+Input: {
+  "pattern": "apps/web/src/**/layout.tsx"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/app/layout.tsx"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/app/_refine_context.tsx"
+}
+
+🔧 Tool: Glob
+Input: {
+  "pattern": "apps/web/src/**/data-provider*"
+}
+
+🔧 Tool: Glob
+Input: {
+  "pattern": "apps/web/src/**/*provider*"
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "find apps/web/src -name \"*.ts\" -o -name \"*.tsx\" | grep -E \"(provider|data)\" | head -20",
+  "description": "Find provider or data related files in web app"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/providers/data-provider/index.ts"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/providers/session-interceptor-provider/index.tsx"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/http-interceptor.ts"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/providers/csrf-provider.tsx"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/csrf.ts"
+}
+The exploration reveals that this app **does not use Apollo Client** - it uses a custom GraphQL data provider with raw fetch calls. Let me examine the existing error handling and session expiry logic more closely.
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/lib/http-interceptor.ts"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/providers/session-interceptor-provider/index.tsx"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/providers/data-provider/index.ts"
+}
+Now I have a good understanding of the existing setup. Let me check how the app structure works to understand where to place the auth context/hook:
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/app/_refine_context.tsx"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/web/src/providers/auth-provider/auth-provider.client.ts"
+}
+
+🔧 Tool: Glob
+Input: {
+  "pattern": "apps/web/src/hooks/**/*.ts*"
+}
