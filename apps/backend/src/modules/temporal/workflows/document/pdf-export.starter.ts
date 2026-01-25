@@ -16,6 +16,7 @@ import { TemporalService } from '../../temporal.service';
 import { TEMPORAL_TASK_QUEUES } from '../../temporal.constants';
 import { generateWorkflowId, type PdfExportInput } from './pdf-export.workflow';
 import type { DocumentType } from '../../../documents/entities/legal-document.entity';
+import type { PdfExportOptions } from '../../../documents/dto/pdf-export.dto';
 
 /**
  * Start PDF Export Request
@@ -34,12 +35,7 @@ export interface StartPdfExportRequest {
   /** Document content to export */
   content: string;
   /** Export options */
-  options?: {
-    includeHeader?: boolean;
-    includeFooter?: boolean;
-    includePageNumbers?: boolean;
-    watermark?: string;
-  };
+  options?: PdfExportOptions;
   /** User ID for tracking */
   userId?: string;
   /** Additional metadata */

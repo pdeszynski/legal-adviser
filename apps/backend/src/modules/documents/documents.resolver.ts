@@ -163,6 +163,7 @@ export class DocumentsResolver {
     await this.documentGenerationStarter.startDocumentGeneration({
       documentId: document.id,
       sessionId: input.sessionId,
+      title: input.title,
       documentType: input.type ?? DocumentType.OTHER,
       description: input.title, // Use title as the description for AI generation
       context: input.metadata ? { ...input.metadata } : undefined,

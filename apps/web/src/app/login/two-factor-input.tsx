@@ -13,6 +13,7 @@ import {
   Button,
 } from '@legal/ui';
 import { Shield, AlertCircle } from 'lucide-react';
+import { useStoredRedirect } from '@/lib/auth-guard';
 
 interface TwoFactorInputProps {
   email: string;
@@ -38,6 +39,7 @@ export const TwoFactorInput = ({ email, password, onCancel, onSuccess }: TwoFact
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(30);
+  const { getRedirectUrl } = useStoredRedirect();
 
   // Ref to store temporary token from initial login response
   const tempTokenRef = useRef<string | null>(null);
@@ -273,8 +275,11 @@ export const TwoFactorInput = ({ email, password, onCancel, onSuccess }: TwoFact
             },
           );
 
-          // Redirect to dashboard
-          window.location.href = '/dashboard';
+          // Get redirect URL from query params or default to dashboard
+          const redirectUrl = getRedirectUrl();
+
+          // Redirect to the intended destination
+          window.location.href = redirectUrl;
           return;
         }
       }
@@ -311,7 +316,11 @@ export const TwoFactorInput = ({ email, password, onCancel, onSuccess }: TwoFact
             },
           );
 
-          onSuccess();
+          // Get redirect URL from query params or default to dashboard
+          const redirectUrl = getRedirectUrl();
+
+          // Redirect to the intended destination
+          window.location.href = redirectUrl;
           return;
         }
       }

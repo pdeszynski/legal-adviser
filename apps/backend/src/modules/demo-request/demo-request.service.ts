@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import { HubSpotService } from '../../modules/integrations/hubspot/hubspot.service';
 import { EmailSenderService } from '../../modules/notifications/services/email-sender.service';
-import { EmailSendProducer } from '../../modules/notifications/queues/email-send.producer';
+import { EmailSendingStarter } from '../../modules/temporal/workflows/notification/email-sending.starter';
 import { EmailTemplateType } from '../../modules/notifications/dto/send-email.input';
 import { LeadTimeline } from '../../modules/integrations/hubspot/dto/hubspot.types';
 import {
@@ -33,7 +33,7 @@ export class DemoRequestService {
   constructor(
     private readonly hubSpotService: HubSpotService,
     private readonly emailSenderService: EmailSenderService,
-    private readonly emailProducer: EmailSendProducer,
+    private readonly emailSendingStarter: EmailSendingStarter,
     private readonly configService: ConfigService,
   ) {
     this.internalNotificationEmail =
@@ -239,7 +239,7 @@ export class DemoRequestService {
 
   /**
    * Queue confirmation email to the requester
-   * Sent asynchronously via the email queue
+   * Sent asynchronously via Temporal workflow
    */
   private async queueConfirmationEmail(
     request: DemoRequestInput,
@@ -249,7 +249,7 @@ export class DemoRequestService {
     const nameParts = request.fullName.trim().split(' ');
     const firstName = nameParts[0] || '';
 
-    await this.emailProducer.queueEmail({
+    await this.emailSendingStarter.queueEmail({
       to: request.email,
       subject: 'Thank You for Your Demo Request - Legal AI Platform',
       template: EmailTemplateType.DEMO_REQUEST_CONFIRMATION,

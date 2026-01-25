@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769349409029-3b53aa9e",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T13:56:49.029Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "auth-state-sync-redirect-middleware",
+  "featureName": "Auth State Sync on Navigation and Redirects",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

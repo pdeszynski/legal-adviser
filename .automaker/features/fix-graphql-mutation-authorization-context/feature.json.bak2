@@ -3,9 +3,6 @@
   "description": "Investigate and fix authorization failures on GraphQL mutations (e.g., updateProfile) where authenticated users receive unauthorized errors. Root cause appears to be JWT token/context not being properly passed to mutation resolvers. Verify that: 1) GraphQL context includes authenticated user from JWT, 2) @UseGuards(AuthGuard) is applied to mutation resolvers, 3) GqlAuthGuard correctly extracts and validates JWT from Authorization header, 4) Frontend includes Authorization header in mutation requests, 5) Cookies (if used) are properly sent with GraphQL requests. Test with admin@refine.dev user performing updateProfile mutation. Ensure authorization mechanism is consistent across all mutations and queries.",
   "id": "fix-graphql-mutation-authorization-context",
   "title": "Fix GraphQL Mutation Authorization Context Loss",
-  "dependencies": [
-    "graphql-auth-mutations"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "two-factor",

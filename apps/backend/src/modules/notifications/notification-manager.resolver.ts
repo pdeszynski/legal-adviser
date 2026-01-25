@@ -18,14 +18,19 @@ import {
   NotificationDeliveryPreferences,
 } from './dto/notification.dto';
 import { InAppNotification } from './entities/in-app-notification.entity';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
+import { RequireAdmin } from '../auth/guards/role.guard';
+import { RoleGuard } from '../auth/guards/role.guard';
 
 /**
  * Notification Manager Resolver
  *
  * GraphQL resolver for notification management operations.
- * Provides mutations for sending notifications and managing preferences.
+ * All mutations require authentication and admin role (used internally by the system).
  */
 @Resolver(() => InAppNotification)
+@UseGuards(GqlAuthGuard, RoleGuard)
+@RequireAdmin()
 export class NotificationManagerResolver {
   constructor(
     private readonly notificationManager: NotificationManagerService,

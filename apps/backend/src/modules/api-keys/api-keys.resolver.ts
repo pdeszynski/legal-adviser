@@ -9,14 +9,17 @@ import {
   ValidateApiKeyInput,
   ValidateApiKeyResponse,
 } from './dto/api-key.dto';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
+import { Public } from '../auth/decorators/public.decorator';
 
 /**
  * ApiKeys Resolver
  *
  * Provides GraphQL mutations and queries for API key management.
- * Uses the CRUD resolver from nestjs-query for standard operations.
+ * All operations require authentication except validateApiKey.
  */
 @Resolver(() => ApiKey)
+@UseGuards(GqlAuthGuard)
 export class ApiKeysResolver {
   constructor(private readonly apiKeysService: ApiKeysService) {}
 
@@ -29,13 +32,9 @@ export class ApiKeysResolver {
   })
   async createApiKey(
     @Args('input') input: CreateApiKeyInput,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<CreateApiKeyResponse> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     const { entity, rawKey } = await this.apiKeysService.create(userId, input);
 
     return {
@@ -63,13 +62,9 @@ export class ApiKeysResolver {
   async updateApiKey(
     @Args('id', { type: () => String }) id: string,
     @Args('input') input: UpdateApiKeyInput,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<ApiKey> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     const key = await this.apiKeysService.update(id, input);
 
     // Ensure user can only update their own keys
@@ -88,13 +83,9 @@ export class ApiKeysResolver {
   })
   async revokeApiKey(
     @Args('id', { type: () => String }) id: string,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<ApiKey> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     const key = await this.apiKeysService.revoke(id);
 
     // Ensure user can only revoke their own keys
@@ -113,13 +104,9 @@ export class ApiKeysResolver {
   })
   async deleteApiKey(
     @Args('id', { type: () => String }) id: string,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<boolean> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     const key = await this.apiKeysService.findById(id);
 
     // Ensure user can only delete their own keys
@@ -131,8 +118,9 @@ export class ApiKeysResolver {
   }
 
   /**
-   * Validate an API key
+   * Validate an API key (public endpoint for external services)
    */
+  @Public()
   @Query(() => ValidateApiKeyResponse, {
     description: 'Validate an API key and check if it has the required scopes',
   })
@@ -158,13 +146,9 @@ export class ApiKeysResolver {
     description: 'Get all API keys for the current user',
   })
   async myApiKeys(
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<ApiKey[]> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     return this.apiKeysService.findByUserId(userId);
   }
 }

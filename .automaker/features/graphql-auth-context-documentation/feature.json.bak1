@@ -4,8 +4,7 @@
   "id": "graphql-auth-context-documentation",
   "title": "Document GraphQL Authentication Context and Guards",
   "dependencies": [
-    "audit-graphql-auth-guards-consistency",
-    "fix-graphql-mutation-authorization-context"
+    "audit-graphql-auth-guards-consistency"
   ],
   "priority": 2,
   "status": "backlog",

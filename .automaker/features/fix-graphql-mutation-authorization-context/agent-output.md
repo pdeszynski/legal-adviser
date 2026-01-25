@@ -627,3 +627,126 @@ Input: {
   "limit": 40,
   "offset": 245
 }
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/auth.resolver.ts",
+  "old_string": "  @Mutation(() => Boolean, {\n    name: 'changePassword',\n    description: 'Change password for the current user',\n  })\n  @UseGuards(GqlAuthGuard)\n  async changePassword(\n    @Context() context: { req: { user: { userId: string } } },\n    @Args('input') input: ChangePasswordInput,\n  ): Promise<boolean> {\n    const userId = context.req.user?.userId;\n    if (!userId) {\n      throw new UnauthorizedException('User not authenticated');\n    }\n\n    await this.authService.changePassword(userId, input);\n    return true;\n  }\n}",
+  "new_string": "  @Mutation(() => Boolean, {\n    name: 'changePassword',\n    description: 'Change password for the current user',\n  })\n  @UseGuards(GqlAuthGuard)\n  async changePassword(\n    @Context() context: { req: { user: ValidatedUser } },\n    @Args('input') input: ChangePasswordInput,\n  ): Promise<boolean> {\n    const userId = context.req.user?.id;\n    if (!userId) {\n      throw new UnauthorizedException('User not authenticated');\n    }\n\n    await this.authService.changePassword(userId, input);\n    return true;\n  }\n}"
+}
+Now let me verify the complete updated file to ensure all changes are correct:
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/auth.resolver.ts"
+}
+All changes have been applied correctly. Now let me update the todo list and clean up the verification test file:
+
+🔧 Tool: TodoWrite
+Input: {
+  "todos": [
+    {
+      "activeForm": "Exploring GraphQL authentication setup",
+      "content": "Explore GraphQL authentication and authorization setup",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Investigating GqlAuthGuard and JWT context",
+      "content": "Investigate GqlAuthGuard and JWT context",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Checking frontend Authorization header setup",
+      "content": "Check frontend Authorization header setup",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Identifying root cause of authorization failures",
+      "content": "Identify root cause of authorization failures",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Fixing authorization issues",
+      "content": "Fix authorization issues",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Cleaning up verification test file",
+      "content": "Clean up verification test file",
+      "status": "in_progress"
+    }
+  ]
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "rm -f /Users/piteer/workspace/radca-prawny/legal/apps/backend/tests/playwright/verify-update-profile-auth.spec.ts",
+  "description": "Remove temporary verification test file"
+}
+
+🔧 Tool: TodoWrite
+Input: {
+  "todos": [
+    {
+      "activeForm": "Exploring GraphQL authentication setup",
+      "content": "Explore GraphQL authentication and authorization setup",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Investigating GqlAuthGuard and JWT context",
+      "content": "Investigate GqlAuthGuard and JWT context",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Checking frontend Authorization header setup",
+      "content": "Check frontend Authorization header setup",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Identifying root cause of authorization failures",
+      "content": "Identify root cause of authorization failures",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Fixing authorization issues",
+      "content": "Fix authorization issues",
+      "status": "completed"
+    },
+    {
+      "activeForm": "Cleaning up verification test file",
+      "content": "Clean up verification test file",
+      "status": "completed"
+    }
+  ]
+}
+<summary>
+## Summary: Fix GraphQL Mutation Authorization Context
+
+### Changes Implemented
+1. **Fixed property name mismatch** in `apps/backend/src/modules/auth/auth.resolver.ts`:
+   - Changed `context.req.user?.userId` to `context.req.user?.id` across all mutation resolvers
+   - Added `ValidatedUser` type import from `./jwt.strategy` for proper typing
+   - This aligns with how `JwtStrategy.validate()` returns the user object (with `id` property, not `userId`)
+
+2. **Fixed merge conflicts** in `apps/backend/src/app.module.ts`:
+   - Resolved import conflicts between HubSpot/DemoRequest modules and Temporal module
+   - Merged both sets of imports correctly
+
+### Files Modified
+- `apps/backend/src/modules/auth/auth.resolver.ts` - Fixed user ID property access in `me`, `acceptDisclaimer`, `updateProfile`, and `changePassword` resolvers
+- `apps/backend/src/app.module.ts` - Resolved merge conflicts
+
+### Root Cause Analysis
+The authorization failures on GraphQL mutations were caused by a **property name mismatch**:
+- **JwtStrategy** returns `{ id: payload.sub, username, email, roles }`
+- **AuthResolver** was accessing `context.req.user.userId`
+- Other resolvers (user-preferences, usage-tracking, users-admin) correctly used `context.req.user.id`
+
+### Notes for Developer
+The fix ensures consistency across all GraphQL resolvers. The `ValidatedUser` interface from `jwt.strategy.ts` defines the user object structure with `id` as the user identifier property. All guarded resolvers should access `context.req.user.id` to get the authenticated user's ID.
+
+### Verification Status
+- TypeScript compilation passes for the updated auth.resolver.ts file
+- The fix aligns with existing patterns used in other resolvers (user-preferences, usage-tracking, users-admin)
+- The frontend data provider correctly includes `Authorization: Bearer ${accessToken}` header in GraphQL requests
+</summary>

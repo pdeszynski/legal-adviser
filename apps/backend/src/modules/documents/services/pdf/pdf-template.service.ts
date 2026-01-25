@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DocumentType } from '../../entities/legal-document.entity';
-import { PdfPageFormat } from '../../dto/pdf-export.dto';
+import {
+  PdfPageFormat,
+  type PdfExportOptions,
+} from '../../dto/pdf-export.dto';
 
 /**
  * Document Template Context

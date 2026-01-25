@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769349233111-ba27ec56",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T13:53:53.111Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-graphql-mutation-authorization-context",
+  "featureName": "Fix GraphQL Mutation Authorization Context Loss",
+  "error": "Feature completed in 578s - auto-verified",
+  "passes": true
+}

@@ -14,6 +14,28 @@ import {
 } from 'class-validator';
 
 /**
+ * PDF Export Options
+ *
+ * Shared type for PDF export configuration across services
+ */
+export interface PdfExportOptions {
+  /** Page format (default: A4) */
+  format?: PdfPageFormat;
+  /** Include header with document title and date (default: true) */
+  includeHeader?: boolean;
+  /** Include footer with page numbers (default: true) */
+  includeFooter?: boolean;
+  /** Include page numbers in footer (default: true) */
+  includePageNumbers?: boolean;
+  /** Include table of contents (default: false) */
+  includeTableOfContents?: boolean;
+  /** Watermark text (e.g., "DRAFT") */
+  watermark?: string;
+  /** Language for formatting (default: "pl" for Polish) */
+  language?: 'pl' | 'en';
+}
+
+/**
  * PDF Page Format
  */
 export enum PdfPageFormat {

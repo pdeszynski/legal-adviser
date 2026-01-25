@@ -8,6 +8,7 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { Reflector } from '@nestjs/core';
 import { UserRole } from '../enums/user-role.enum';
 import { MissingTokenException, ForbiddenAccessException } from '../exceptions';
+import { PUBLIC_KEY } from '../decorators/public.decorator';
 
 /**
  * Metadata key for storing required roles
@@ -101,6 +102,16 @@ export class RoleGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
+    // Check if the route is marked as public
+    const isPublic = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
     // Get required roles from decorator metadata
     const metadata = this.getRoleMetadata(context);
 

@@ -15,6 +15,7 @@ import {
 } from '@legal/ui';
 import { Scale, AlertCircle, WifiOff, Server } from 'lucide-react';
 import { TwoFactorInput } from './two-factor-input';
+import { useStoredRedirect } from '@/lib/auth-guard';
 
 export const LoginContent = () => {
   const { mutate: login, isPending: isLoading, error } = useLogin();
@@ -22,6 +23,7 @@ export const LoginContent = () => {
   const { data: identity, isLoading: isIdentityLoading } = useGetIdentity();
   const go = useGo();
   const hasRedirected = useRef(false);
+  const { getRedirectUrl } = useStoredRedirect();
 
   useEffect(() => {
     // Only redirect if authenticated, identity is loaded, and we haven't redirected yet
@@ -35,11 +37,13 @@ export const LoginContent = () => {
       hasRedirected.current = true;
       // Use a small delay to ensure all state is propagated
       const redirectTimer = setTimeout(() => {
-        go({ to: '/dashboard', type: 'replace' });
+        // Get the redirect URL from query params or default to dashboard
+        const redirectUrl = getRedirectUrl();
+        go({ to: redirectUrl, type: 'replace' });
       }, 100);
       return () => clearTimeout(redirectTimer);
     }
-  }, [authData, isAuthLoading, isIdentityLoading, identity, go]);
+  }, [authData, isAuthLoading, isIdentityLoading, identity, go, getRedirectUrl]);
 
   const [initialError, setInitialError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -173,8 +177,18 @@ export const LoginContent = () => {
             },
           );
 
-          // Redirect to dashboard
-          window.location.href = '/dashboard';
+          // Get redirect URL from query params or default to dashboard
+          const params = new URLSearchParams(window.location.search);
+          const redirectParam = params.get('redirect');
+
+          // Validate redirect URL to prevent open redirects
+          let redirectUrl = '/dashboard';
+          if (redirectParam && redirectParam.startsWith('/') && !redirectParam.startsWith('//')) {
+            redirectUrl = redirectParam;
+          }
+
+          // Redirect to the intended destination
+          window.location.href = redirectUrl;
         }
       }
     } catch (err) {

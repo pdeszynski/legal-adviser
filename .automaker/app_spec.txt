@@ -3110,6 +3110,10 @@ path
       <name>Verify GraphQL Client Authorization Headers Configuration</name>
       <description>Verify that the frontend GraphQL client (Apollo Client or custom fetch wrapper) is correctly including Authorization headers in all requests. Check: 1) Apollo link chain includes auth link that adds Bearer token, 2) Authorization header format: &apos;Bearer &lt;jwt_token&gt;&apos;, 3) Token is retrieved from authProvider or token storage, 4) Headers are sent on both queries and mutations, 5) CSRF token is included if required (but doesn&apos;t conflict with auth), 6) Cookie credentials are included (&apos;credentials: include&apos; if using cookie-based auth). Test GraphQL requests in browser DevTools Network tab to verify headers. Fix any missing or misconfigured headers. Ensure headers persist across page navigation.</description>
     </feature>
+    <feature>
+      <name>Fix GraphQL Mutation Authorization Context Loss</name>
+      <description>Investigate and fix authorization failures on GraphQL mutations (e.g., updateProfile) where authenticated users receive unauthorized errors. Root cause appears to be JWT token/context not being properly passed to mutation resolvers. Verify that: 1) GraphQL context includes authenticated user from JWT, 2) @UseGuards(AuthGuard) is applied to mutation resolvers, 3) GqlAuthGuard correctly extracts and validates JWT from Authorization header, 4) Frontend includes Authorization header in mutation requests, 5) Cookies (if used) are properly sent with GraphQL requests. Test with admin@refine.dev user performing updateProfile mutation. Ensure authorization mechanism is consistent across all mutations and queries.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

@@ -1,7 +1,9 @@
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
 import { DocumentVersioningService } from './services/document-versioning.service';
 import { DocumentVersion } from './entities/document-version.entity';
 import { LegalDocument } from './entities/legal-document.entity';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 
 /**
  * Document Versioning Resolver
@@ -11,8 +13,11 @@ import { LegalDocument } from './entities/legal-document.entity';
  * - Get specific version
  * - Rollback to previous version
  * - Get diff between versions
+ *
+ * All operations require authentication.
  */
 @Resolver(() => DocumentVersion)
+@UseGuards(GqlAuthGuard)
 export class DocumentVersioningResolver {
   constructor(private readonly versioningService: DocumentVersioningService) {}
 

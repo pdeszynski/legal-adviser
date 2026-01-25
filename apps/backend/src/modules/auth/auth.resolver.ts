@@ -253,10 +253,10 @@ export class AuthResolver {
   })
   @UseGuards(GqlAuthGuard)
   async changePassword(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: ValidatedUser } },
     @Args('input') input: ChangePasswordInput,
   ): Promise<boolean> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }

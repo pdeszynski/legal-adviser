@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769349407980-372cf4c4",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T13:56:47.980Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "client-side-session-expiry-detection",
+  "featureName": "Client-Side Session Expiry Detection and Redirect",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

@@ -86,8 +86,15 @@ test.describe('Session Expiry Handling', () => {
   test.beforeEach(async ({ page, context }) => {
     // Clear all cookies to ensure fresh state for each test
     await context.clearCookies();
+    // Reset any route interceptors from previous tests
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
     // Login before each test
     await performLogin(page);
+  });
+
+  test.afterEach(async ({ page }) => {
+    // Clean up any route handlers after each test
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
   });
 
   test.describe('Manual JWT Token Expiration', () => {

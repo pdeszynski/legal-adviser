@@ -1,4 +1,5 @@
 import { Resolver, Mutation, Args, Context, Query } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
 import { Webhook } from './entities/webhook.entity';
 import { WebhookDelivery } from './entities/webhook-delivery.entity';
 import { WebhooksService } from './services/webhooks.service';
@@ -11,14 +12,16 @@ import {
   TestWebhookResponse,
   WebhookStats,
 } from './dto/webhook.dto';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 
 /**
  * Webhooks Resolver
  *
  * Provides GraphQL mutations and queries for webhook management.
- * Uses the CRUD resolver from nestjs-query for standard operations.
+ * All operations require authentication.
  */
 @Resolver(() => Webhook)
+@UseGuards(GqlAuthGuard)
 export class WebhooksResolver {
   constructor(
     private readonly webhooksService: WebhooksService,
@@ -34,13 +37,9 @@ export class WebhooksResolver {
   })
   async createWebhook(
     @Args('input') input: CreateWebhookInput,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<CreateWebhookResponse> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     const { webhook, secret } = await this.webhooksService.create(
       userId,
       input,
@@ -76,13 +75,9 @@ export class WebhooksResolver {
   async updateWebhook(
     @Args('id', { type: () => String }) id: string,
     @Args('input') input: UpdateWebhookInput,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<Webhook> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     return this.webhooksService.update(id, userId, input);
   }
 
@@ -94,13 +89,9 @@ export class WebhooksResolver {
   })
   async deleteWebhook(
     @Args('id', { type: () => String }) id: string,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<boolean> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     await this.webhooksService.delete(id, userId);
     return true;
   }
@@ -113,13 +104,9 @@ export class WebhooksResolver {
   })
   async activateWebhook(
     @Args('id', { type: () => String }) id: string,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<Webhook> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     return this.webhooksService.activate(id, userId);
   }
 
@@ -131,13 +118,9 @@ export class WebhooksResolver {
   })
   async deactivateWebhook(
     @Args('id', { type: () => String }) id: string,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<Webhook> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     return this.webhooksService.deactivate(id, userId);
   }
 
@@ -149,13 +132,9 @@ export class WebhooksResolver {
   })
   async disableWebhook(
     @Args('id', { type: () => String }) id: string,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<Webhook> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     return this.webhooksService.disable(id, userId);
   }
 
@@ -167,13 +146,9 @@ export class WebhooksResolver {
   })
   async rotateWebhookSecret(
     @Args('id', { type: () => String }) id: string,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<string> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     return this.webhooksService.rotateSecret(id, userId);
   }
 
@@ -185,13 +160,9 @@ export class WebhooksResolver {
   })
   async testWebhook(
     @Args('input') input: TestWebhookInput,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<TestWebhookResponse> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     const result = await this.webhooksService.test(
       input.webhookId,
       userId,
@@ -216,13 +187,9 @@ export class WebhooksResolver {
   })
   async webhook(
     @Args('id', { type: () => String }) id: string,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<Webhook> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     return this.webhooksService.findOneForUser(id, userId);
   }
 
@@ -233,14 +200,10 @@ export class WebhooksResolver {
     description: 'Get all webhooks for the current user',
   })
   async myWebhooks(
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
     @Args('status', { type: () => String, nullable: true }) status?: string,
   ): Promise<Webhook[]> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     return this.webhooksService.findAllForUser(userId, status as any);
   }
 
@@ -251,13 +214,9 @@ export class WebhooksResolver {
     description: 'Get webhook statistics for the current user',
   })
   async webhookStats(
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<WebhookStats> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     const stats = await this.webhooksService.getStats(userId);
     const deliveryStats =
       await this.webhookDeliveryService.getDeliveryStats();
@@ -280,15 +239,11 @@ export class WebhooksResolver {
   })
   async webhookDeliveries(
     @Args('webhookId', { type: () => String }) webhookId: string,
-    @Context() context: { req: { user?: { id: string } } },
+    @Context() context: { req: { user: { id: string } } },
     @Args('limit', { type: () => Number, nullable: true, defaultValue: 50 })
     limit?: number,
   ): Promise<WebhookDelivery[]> {
-    const userId = context.req.user?.id;
-    if (!userId) {
-      throw new Error('Authentication required');
-    }
-
+    const userId = context.req.user.id;
     return this.webhooksService.getRecentDeliveries(webhookId, userId, limit);
   }
 }

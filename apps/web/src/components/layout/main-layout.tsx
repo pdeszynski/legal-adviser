@@ -6,6 +6,7 @@ import { Header } from '@components/layout/header';
 import { Menu } from '@components/menu';
 import { LegalDisclaimerModal } from '@components/legal-disclaimer-modal';
 import { CenteredPageSkeleton } from '@/components/skeleton';
+import { useAuthGuard } from '@/lib/auth-guard';
 import type { SupportedLocale } from '@i18n/config';
 
 interface UserIdentity {
@@ -23,6 +24,12 @@ interface MainLayoutProps {
 export const MainLayout: React.FC<MainLayoutProps> = ({ children, initialLocale }) => {
   const { data: identity, refetch, isLoading: isIdentityLoading } = useGetIdentity<UserIdentity>();
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+
+  // Initialize auth guard for client-side route protection
+  useAuthGuard({
+    enableFocusRefresh: true,
+    expiryBufferSeconds: 60,
+  });
 
   useEffect(() => {
     // Only check disclaimer after identity is fully loaded

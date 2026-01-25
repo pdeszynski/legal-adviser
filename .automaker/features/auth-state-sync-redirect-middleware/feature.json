@@ -4,7 +4,7 @@
   "id": "auth-state-sync-redirect-middleware",
   "title": "Auth State Sync on Navigation and Redirects",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-25T13:44:04.758Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T13:56:56.167Z"
 }

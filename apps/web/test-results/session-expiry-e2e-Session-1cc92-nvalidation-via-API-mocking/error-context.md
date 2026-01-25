@@ -39,7 +39,7 @@
                 - text: password
             - generic [ref=e40]:
               - img [ref=e41]
-              - generic [ref=e43]: "ThrottlerException: Too Many Requests"
+              - generic [ref=e43]: Failed to fetch
           - generic [ref=e44]:
             - button "Sign In" [active] [ref=e45] [cursor=pointer]
             - generic [ref=e46]: Don't have an account? Request access

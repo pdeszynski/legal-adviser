@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769349409362-2f315dff",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T13:56:49.362Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "audit-graphql-auth-guards-consistency",
+  "featureName": "Audit GraphQL Authorization Guards Consistency",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

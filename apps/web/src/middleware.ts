@@ -45,11 +45,58 @@ function isAdminRoute(pathname: string): boolean {
   return pathname === '/admin' || pathname.startsWith('/admin/');
 }
 
+/**
+ * Protected route patterns that require authentication
+ */
+const PROTECTED_ROUTE_PATTERNS = [
+  /^\/dashboard/,
+  /^\/settings/,
+  /^\/documents/,
+  /^\/chat/,
+  /^\/rulings/,
+  /^\/templates/,
+  /^\/notifications/,
+  /^\/billing/,
+  /^\/usage/,
+  /^\/audit-logs/,
+  /^\/analyze-case/,
+  /^\/advanced-search/,
+  /^\/admin/,
+];
+
+/**
+ * Public routes that should not trigger auth checks
+ */
+const PUBLIC_ROUTE_PATTERNS = [
+  /^\/login/,
+  /^\/register/,
+  /^\/forgot-password/,
+  /^\/update-password/,
+  /^\/demo/,
+  /^\/waitlist/,
+  /^\/$/, // homepage
+  /^\/favicon/,
+  /^\/_next/,
+  /^\/api/,
+];
+
+/**
+ * Check if a route requires authentication
+ */
+function isProtectedRoute(pathname: string): boolean {
+  // Skip static files and API routes
+  if (PUBLIC_ROUTE_PATTERNS.some((pattern) => pattern.test(pathname))) {
+    return false;
+  }
+  // Check if it matches protected patterns
+  return PROTECTED_ROUTE_PATTERNS.some((pattern) => pattern.test(pathname));
+}
+
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Admin route protection - must come before locale handling
-  if (isAdminRoute(pathname)) {
+  // Protected route authentication check - must come before locale handling
+  if (isProtectedRoute(pathname)) {
     // Check if user is authenticated
     if (!isAuthenticated(request)) {
       const loginUrl = new URL('/login', request.url);
@@ -57,8 +104,8 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // Check if user has admin role
-    if (!hasAdminRole(request)) {
+    // For admin routes, also check admin role
+    if (isAdminRoute(pathname) && !hasAdminRole(request)) {
       // Non-admin users trying to access admin routes are redirected to dashboard
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }

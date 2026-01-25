@@ -2,6 +2,34 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769349409362-2f315dff",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T13:56:49.362Z",
+      "featureName": "Audit GraphQL Authorization Guards Consistency",
+      "featureId": "audit-graphql-auth-guards-consistency"
+    },
+    {
+      "id": "evt-1769349409029-3b53aa9e",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T13:56:49.029Z",
+      "featureName": "Auth State Sync on Navigation and Redirects",
+      "featureId": "auth-state-sync-redirect-middleware"
+    },
+    {
+      "id": "evt-1769349407980-372cf4c4",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T13:56:47.980Z",
+      "featureName": "Client-Side Session Expiry Detection and Redirect",
+      "featureId": "client-side-session-expiry-detection"
+    },
+    {
+      "id": "evt-1769349233111-ba27ec56",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T13:53:53.111Z",
+      "featureName": "Fix GraphQL Mutation Authorization Context Loss",
+      "featureId": "fix-graphql-mutation-authorization-context"
+    },
+    {
       "id": "evt-1769349147794-7a397af6",
       "trigger": "feature_success",
       "timestamp": "2026-01-25T13:52:27.794Z",

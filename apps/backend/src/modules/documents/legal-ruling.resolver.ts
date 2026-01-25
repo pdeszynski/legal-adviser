@@ -1,4 +1,5 @@
 import { Resolver, Query, Args, Int } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
 import { LegalRulingService } from './services/legal-ruling.service';
 import {
   RulingSearchAggregatorService,
@@ -16,6 +17,8 @@ import {
   AdvancedSearchLegalRulingsInput,
   AdvancedLegalRulingSearchResponse,
 } from './dto/legal-ruling-search.dto';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
+import { Public } from '../auth/decorators/public.decorator';
 
 /**
  * Custom GraphQL Resolver for Legal Rulings
@@ -34,9 +37,12 @@ import {
  * - searchLegalRulings: Full-text search with relevance ranking
  * - legalRulingsByCourtType: Filter by court type
  * - legalRulingsFromHigherCourts: Get rulings from higher courts
- * - legalRulingBySignature: Find by unique case signature
+ * - legalRulingBySignature: Find by unique case signature (public)
+ *
+ * Most operations require authentication, but legalRulingBySignature is public.
  */
 @Resolver(() => LegalRuling)
+@UseGuards(GqlAuthGuard)
 export class LegalRulingResolver {
   constructor(
     private readonly legalRulingService: LegalRulingService,
@@ -146,9 +152,11 @@ export class LegalRulingResolver {
   }
 
   /**
-   * Query: Find ruling by unique signature
+   * Query: Find ruling by unique signature (public)
    * Case signatures are unique identifiers like "III CZP 8/21"
+   * This is a public endpoint for looking up rulings by their signature.
    */
+  @Public()
   @Query(() => LegalRuling, {
     name: 'legalRulingBySignature',
     nullable: true,

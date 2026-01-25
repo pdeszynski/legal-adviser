@@ -67,6 +67,7 @@ export class DocumentsController {
     await this.documentGenerationStarter.startDocumentGeneration({
       documentId: document.id,
       sessionId: createDocumentDto.sessionId,
+      title: createDocumentDto.title,
       documentType: createDocumentDto.type || DocumentType.OTHER,
       description: createDocumentDto.title,
       context: createDocumentDto.metadata

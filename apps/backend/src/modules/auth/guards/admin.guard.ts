@@ -3,6 +3,7 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { Reflector } from '@nestjs/core';
 import { UserRole } from '../enums/user-role.enum';
 import { MissingTokenException, ForbiddenAccessException } from '../exceptions';
+import { PUBLIC_KEY } from '../decorators/public.decorator';
 
 /**
  * User object from request
@@ -41,6 +42,16 @@ export class AdminGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
+    // Check if the route is marked as public
+    const isPublic = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
     const ctx = GqlExecutionContext.create(context);
     const gqlContext = ctx.getContext<GqlContext>();
     const user = gqlContext.req?.user;

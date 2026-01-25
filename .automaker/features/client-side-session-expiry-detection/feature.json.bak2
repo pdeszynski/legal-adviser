@@ -3,11 +3,8 @@
   "description": "Implement client-side session expiry detection that works without full page reload. Currently, session expiry only triggers on server-side navigation. Create: 1) Apollo GraphQL link or interceptor to catch 401/403 responses, 2) Client-side authProvider logout method that clears tokens and redirects, 3) useAuth hook or context that provides auth state to components, 4) Automatic redirect to /login on 401/403, 5) User-friendly toast notification 'Your session has expired. Please log in again.', 6) Session refresh logic before token expiry (optional). Ensure redirect works on SPA navigation, not just full page reload. Test expiry on various pages (settings, documents, chat).",
   "id": "client-side-session-expiry-detection",
   "title": "Client-Side Session Expiry Detection and Redirect",
-  "dependencies": [
-    "session-expiry-interceptor"
-  ],
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -15,5 +12,6 @@
       "timestamp": "2026-01-25T13:44:04.754Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T13:44:13.148Z"
 }

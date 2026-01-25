@@ -2804,6 +2804,17 @@
       "dismissed": false,
       "featureId": "frontend-graphql-client-headers-configuration",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "9983b72e-261e-4db2-8722-4b3cd0ba2a27",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-graphql-mutation-authorization-context\" has been verified and is complete.",
+      "createdAt": "2026-01-25T13:53:53.103Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-graphql-mutation-authorization-context",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

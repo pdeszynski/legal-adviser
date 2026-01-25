@@ -5,7 +5,9 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { Reflector } from '@nestjs/core';
 import { MissingTokenException } from '../exceptions';
+import { PUBLIC_KEY } from '../decorators/public.decorator';
 
 /**
  * JWT Strategy error info interface
@@ -27,6 +29,10 @@ interface StrategyInfo {
  */
 @Injectable()
 export class GqlAuthGuard extends AuthGuard('jwt') {
+  constructor(private reflector: Reflector) {
+    super();
+  }
+
   /**
    * Override getRequest to extract the request from GraphQL context
    */
@@ -34,6 +40,23 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     const ctx = GqlExecutionContext.create(context);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return ctx.getContext().req;
+  }
+
+  /**
+   * Check if the route is marked as public
+   * Routes decorated with @Public() bypass authentication
+   */
+  override canActivate(context: ExecutionContext): boolean {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
+    return super.canActivate(context) as boolean;
   }
 
   /**

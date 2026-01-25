@@ -58,7 +58,7 @@ export class PdfExportService {
 
     this.logger.log(`Starting PDF export workflow for document ${document.id}`);
 
-    const workflowId = await this.pdfExportStarter.startPdfExport({
+    const workflowResult = await this.pdfExportStarter.startPdfExport({
       documentId: document.id,
       sessionId: document.sessionId,
       documentType: document.type,
@@ -78,7 +78,7 @@ export class PdfExportService {
     });
 
     return {
-      jobId: workflowId,
+      jobId: workflowResult.workflowId,
       documentId: document.id,
       status: 'PENDING',
       message: 'PDF export workflow started successfully',
