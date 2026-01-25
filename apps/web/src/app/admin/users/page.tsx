@@ -33,6 +33,7 @@ import type { User } from '@/generated/graphql';
 interface RoleFilter {
   role?: 'user' | 'admin' | 'all';
   status?: 'active' | 'suspended' | 'all';
+  twoFactor?: 'enabled' | 'disabled' | 'all';
   search: string;
 }
 
@@ -41,6 +42,7 @@ export default function AdminUsersPage() {
   const [filters, setFilters] = useState<RoleFilter>({
     role: 'all',
     status: 'all',
+    twoFactor: 'all',
     search: '',
   });
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
@@ -82,6 +84,15 @@ export default function AdminUsersPage() {
         });
       }
 
+      // Apply 2FA filter
+      if (filters.twoFactor && filters.twoFactor !== 'all') {
+        filterList.push({
+          field: 'twoFactorEnabled',
+          operator: 'eq',
+          value: filters.twoFactor === 'enabled',
+        });
+      }
+
       // Apply search filter
       if (filters.search) {
         filterList.push({ field: 'email', operator: 'contains', value: filters.search });
@@ -120,6 +131,11 @@ export default function AdminUsersPage() {
 
   const handleStatusFilterChange = (status: 'active' | 'suspended' | 'all') => {
     setFilters({ ...filters, status });
+    setCurrentPage(1);
+  };
+
+  const handleTwoFactorFilterChange = (twoFactor: 'enabled' | 'disabled' | 'all') => {
+    setFilters({ ...filters, twoFactor });
     setCurrentPage(1);
   };
 
@@ -448,6 +464,29 @@ export default function AdminUsersPage() {
               Suspended
             </Button>
           </div>
+          <div className="flex gap-2">
+            <Button
+              variant={filters.twoFactor === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleTwoFactorFilterChange('all')}
+            >
+              All 2FA
+            </Button>
+            <Button
+              variant={filters.twoFactor === 'enabled' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleTwoFactorFilterChange('enabled')}
+            >
+              2FA Enabled
+            </Button>
+            <Button
+              variant={filters.twoFactor === 'disabled' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleTwoFactorFilterChange('disabled')}
+            >
+              No 2FA
+            </Button>
+          </div>
           <Button variant="outline" size="sm" onClick={fetchUsers}>
             <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
           </Button>
@@ -549,6 +588,7 @@ export default function AdminUsersPage() {
                   <th className="p-4 text-left font-medium text-sm">User</th>
                   <th className="p-4 text-left font-medium text-sm">Role</th>
                   <th className="p-4 text-left font-medium text-sm">Status</th>
+                  <th className="p-4 text-left font-medium text-sm">2FA</th>
                   <th className="p-4 text-left font-medium text-sm">Disclaimer</th>
                   <th className="p-4 text-left font-medium text-sm">Joined</th>
                   <th className="p-4 text-left font-medium text-sm">Actions</th>
@@ -557,13 +597,13 @@ export default function AdminUsersPage() {
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-muted-foreground">
+                    <td colSpan={8} className="p-8 text-center text-muted-foreground">
                       Loading users...
                     </td>
                   </tr>
                 ) : users.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-muted-foreground">
+                    <td colSpan={8} className="p-8 text-center text-muted-foreground">
                       No users found
                     </td>
                   </tr>
@@ -623,6 +663,19 @@ export default function AdminUsersPage() {
                             </>
                           )}
                         </span>
+                      </td>
+                      <td className="p-4">
+                        {user.twoFactorEnabled ? (
+                          <span
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+                            title="Two-Factor Authentication Enabled"
+                          >
+                            <Key className="h-3 w-3" />
+                            2FA
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground text-xs">—</span>
+                        )}
                       </td>
                       <td className="p-4">
                         {user.disclaimerAccepted ? (

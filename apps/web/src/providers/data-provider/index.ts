@@ -864,6 +864,111 @@ export const dataProvider: DataProvider = {
       };
     }
 
+    if (resource === 'demoRequests') {
+      const query = `
+        query GetDemoRequests($filter: DemoRequestFilter, $paging: CursorPaging, $sorting: [DemoRequestSort!]) {
+          demoRequests(filter: $filter, paging: $paging, sorting: $sorting) {
+            totalCount
+            edges {
+              node {
+                id
+                fullName
+                email
+                company
+                companySize
+                industry
+                useCase
+                timeline
+                budget
+                preferredDemoTime
+                status
+                hubspotContactId
+                submittedAt
+                contactedAt
+                createdAt
+                updatedAt
+              }
+            }
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+          }
+        }
+      `;
+
+      const currentPage = pagination?.currentPage || 1;
+      const pageSize = pagination?.pageSize || 10;
+
+      // For pages beyond the first, ensure we have the required cursor
+      let prefetchCursor: string | undefined = undefined;
+      if (currentPage > 1) {
+        prefetchCursor = await ensureCursorsCached(
+          resource,
+          currentPage,
+          pageSize,
+          query,
+          filters,
+          sorters,
+        );
+      }
+
+      const graphqlFilter = buildGraphQLFilter(filters);
+      const graphqlSorting = buildGraphQLSorting(sorters) || [
+        { field: 'submittedAt', direction: 'DESC' },
+      ];
+
+      // Build paging with the potentially prefetched cursor
+      let graphqlPaging: { first: number; after?: string };
+      if (currentPage <= 1) {
+        graphqlPaging = { first: pageSize };
+      } else if (prefetchCursor) {
+        graphqlPaging = { first: pageSize, after: prefetchCursor };
+      } else {
+        graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+      }
+
+      const data = await executeGraphQL<{
+        demoRequests: {
+          totalCount: number;
+          edges: Array<{ node: TData }>;
+          pageInfo: {
+            hasNextPage: boolean;
+            hasPreviousPage: boolean;
+            startCursor: string;
+            endCursor: string;
+          };
+        };
+      }>(query, {
+        filter: graphqlFilter || {},
+        paging: graphqlPaging,
+        sorting: graphqlSorting,
+      });
+
+      // Extract any GraphQL errors from the response
+      const errors = getProviderErrors(data);
+
+      const items = data.demoRequests.edges.map((edge) => edge.node);
+
+      // Store cursor for this page to enable navigation
+      const cacheKey = getCacheKey(resource, filters, sorters);
+      storeCursor(
+        cacheKey,
+        currentPage,
+        data.demoRequests.pageInfo.endCursor,
+        data.demoRequests.totalCount,
+      );
+
+      return {
+        data: items,
+        total: data.demoRequests.totalCount,
+        // Attach errors to the result for components to handle
+        ...(errors.length > 0 && { _errors: errors }),
+      };
+    }
+
     throw new Error(`Unknown resource: ${resource}`);
   },
 
@@ -989,6 +1094,36 @@ export const dataProvider: DataProvider = {
       const data = await executeGraphQL<{ legalRuling: TData }>(query, { id });
       return {
         data: data.legalRuling,
+      };
+    }
+
+    if (resource === 'demoRequests') {
+      const query = `
+        query GetDemoRequest($id: ID!) {
+          demoRequest(id: $id) {
+            id
+            fullName
+            email
+            company
+            companySize
+            industry
+            useCase
+            timeline
+            budget
+            preferredDemoTime
+            status
+            hubspotContactId
+            submittedAt
+            contactedAt
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ demoRequest: TData }>(query, { id });
+      return {
+        data: data.demoRequest,
       };
     }
 

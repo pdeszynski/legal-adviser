@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769307173931-75d865f9",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T02:12:53.931Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "menu-grouping-lawyer-features",
+  "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+  "error": "Feature completed in 722s - auto-verified",
+  "passes": true
+}

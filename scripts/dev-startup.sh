@@ -92,19 +92,68 @@ health_check() {
   log_info "Waiting for $name at $url..."
 
   while [ $attempt -le $max_attempts ]; do
-    if curl -s -f "$url" > /dev/null 2>&1; then
+    response=$(curl -s -w "\n%{http_code}" "$url" 2>/dev/null)
+    http_code=$(echo "$response" | tail -n1)
+    body=$(echo "$response" | sed '$d')
+
+    # Check for HTTP 200 OK
+    if [ "$http_code" = "200" ]; then
+      # For AI Engine, also check startup_complete in response
+      if [[ "$name" == *"AI Engine"* ]] && command -v jq &> /dev/null; then
+        startup_complete=$(echo "$body" | jq -r '.startup_complete // false')
+        if [ "$startup_complete" != "true" ]; then
+          echo -n "."
+          sleep 2
+          attempt=$((attempt + 1))
+          continue
+        fi
+      fi
+
       log_success "$name is healthy!"
       return 0
     fi
 
+    # Check for HTTP 503 (service unavailable - starting up)
+    if [ "$http_code" = "503" ]; then
+      echo -n "."
+      sleep 2
+      attempt=$((attempt + 1))
+      continue
+    fi
+
+    # Connection refused or other error
     echo -n "."
     sleep 2
     attempt=$((attempt + 1))
   done
 
   echo ""
-  log_error "$name failed to start within expected time"
+
+  # Get detailed error info
+  if command -v jq &> /dev/null && [ -n "$body" ]; then
+    error_msg=$(echo "$body" | jq -r '.error // .startup_message // .detail // "Unknown error"' 2>/dev/null)
+    log_error "$name failed to start within expected time"
+    log_error "Error details: $error_msg"
+  else
+    log_error "$name failed to start within expected time"
+  fi
+
+  log_error "Check logs: tail -f $(get_log_path "$name")"
   return 1
+}
+
+# Get log file path for a service
+get_log_path() {
+  local name=$1
+  if [[ "$name" == *"AI Engine"* ]]; then
+    echo "/tmp/ai-engine.log"
+  elif [[ "$name" == *"Backend"* ]]; then
+    echo "/tmp/legal-backend.log"
+  elif [[ "$name" == *"Frontend"* ]]; then
+    echo "/tmp/legal-frontend.log"
+  else
+    echo "/tmp/unknown-service.log"
+  fi
 }
 
 # Check if required tools are available
@@ -163,16 +212,17 @@ start_ai_engine() {
   fi
 
   # Start in background
+  log_info "Launching AI Engine service..."
   uv run dev > /tmp/ai-engine.log 2>&1 &
   AI_ENGINE_PID=$!
 
   echo $AI_ENGINE_PID > /tmp/legal-ai-engine.pid
 
-  # Wait for health check
+  # Wait for readiness check (uses /health/ready which waits for startup_complete)
   cd ../..
-  health_check "http://localhost:8000/health" "AI Engine" 30
+  health_check "http://localhost:8000/health/ready" "AI Engine" 45
 
-  log_success "AI Engine started (PID: $AI_ENGINE_PID)"
+  log_success "AI Engine started and ready (PID: $AI_ENGINE_PID)"
 }
 
 # Start Backend

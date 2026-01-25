@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769313481834-b0ca2f8b",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T03:58:01.834Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-observability-integration",
+  "featureName": "Temporal Observability and Monitoring Integration",
+  "error": "Feature completed in 819s - auto-verified",
+  "passes": true
+}

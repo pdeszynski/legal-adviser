@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@legal/ui';
 import { Button } from '@legal/ui';
-import { format, subDays, subMonths, startOfDay, startOfMonth } from 'date-fns';
+import { format as formatDateFormat, subDays, subMonths, startOfDay, startOfMonth } from 'date-fns';
 
 // Types for the analytics data
 interface DashboardAnalyticsInput {
@@ -197,11 +197,11 @@ function formatPercentage(value: number): string {
 }
 
 function formatDate(dateStr: string): string {
-  return format(new Date(dateStr), 'MMM d, yyyy');
+  return formatDateFormat(new Date(dateStr), 'MMM d, yyyy');
 }
 
 function formatDateTime(dateStr: string): string {
-  return format(new Date(dateStr), 'MMM d, HH:mm');
+  return formatDateFormat(new Date(dateStr), 'MMM d, HH:mm');
 }
 
 // Operation type display names
@@ -273,11 +273,11 @@ export default function TokenAnalyticsPage() {
     },
   });
 
-  const { data: analytics, isLoading } = result;
-  const { refetch } = query;
+  const { data: analytics } = result;
+  const { refetch, isLoading } = query;
 
   useEffect(() => {
-    if (analytics?.data) {
+    if (analytics) {
       setLastRefresh(new Date());
     }
   }, [analytics]);
@@ -287,7 +287,7 @@ export default function TokenAnalyticsPage() {
   };
 
   const handleExport = async (format: 'csv' | 'json') => {
-    const data = analytics?.data;
+    const data = analytics;
     if (!data) return;
 
     if (format === 'json') {
@@ -295,7 +295,7 @@ export default function TokenAnalyticsPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `token-usage-${format(new Date(), 'yyyy-MM-dd')}.json`;
+      a.download = `token-usage-${formatDateFormat(new Date(), 'yyyy-MM-dd')}.json`;
       a.click();
       URL.revokeObjectURL(url);
     } else if (format === 'csv') {
@@ -321,7 +321,7 @@ export default function TokenAnalyticsPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `token-usage-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+      a.download = `token-usage-${formatDateFormat(new Date(), 'yyyy-MM-dd')}.csv`;
       a.click();
       URL.revokeObjectURL(url);
     }
@@ -329,8 +329,8 @@ export default function TokenAnalyticsPage() {
 
   // Prepare chart data
   const trendChartData =
-    analytics?.data?.trend?.map((t) => ({
-      date: format(new Date(t.timestamp), 'MMM d'),
+    analytics?.trend?.map((t) => ({
+      date: formatDateFormat(new Date(t.timestamp), 'MMM d'),
       tokens: t.tokens,
       cost: t.cost,
       requests: t.requests,
@@ -338,7 +338,7 @@ export default function TokenAnalyticsPage() {
     })) || [];
 
   const operationPieData =
-    analytics?.data?.byOperation?.map((op) => ({
+    analytics?.byOperation?.map((op) => ({
       name: OPERATION_LABELS[op.operationType] || op.operationType,
       value: op.totalTokens,
       cost: op.totalCost,
@@ -347,7 +347,7 @@ export default function TokenAnalyticsPage() {
       fill: COLORS[Object.keys(OPERATION_LABELS).indexOf(op.operationType) % COLORS.length],
     })) || [];
 
-  const userLeaderboardData = analytics?.data?.userLeaderboard?.slice(0, 10) || [];
+  const userLeaderboardData = analytics?.userLeaderboard?.slice(0, 10) || [];
 
   return (
     <div className="space-y-6">
@@ -448,10 +448,10 @@ export default function TokenAnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {isLoading ? '...' : formatNumber(analytics?.data?.allTimeTokens || 0)}
+              {isLoading ? '...' : formatNumber(analytics?.allTimeTokens || 0)}
             </div>
             <p className="text-xs text-muted-foreground">
-              Total cost: {isLoading ? '...' : formatCurrency(analytics?.data?.allTimeCost || 0)}
+              Total cost: {isLoading ? '...' : formatCurrency(analytics?.allTimeCost || 0)}
             </p>
           </CardContent>
         </Card>
@@ -464,10 +464,10 @@ export default function TokenAnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {isLoading ? '...' : formatNumber(analytics?.data?.thisMonthTokens || 0)}
+              {isLoading ? '...' : formatNumber(analytics?.thisMonthTokens || 0)}
             </div>
             <p className="text-xs text-muted-foreground">
-              Cost: {isLoading ? '...' : formatCurrency(analytics?.data?.thisMonthCost || 0)}
+              Cost: {isLoading ? '...' : formatCurrency(analytics?.thisMonthCost || 0)}
             </p>
           </CardContent>
         </Card>
@@ -480,10 +480,10 @@ export default function TokenAnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {isLoading ? '...' : formatNumber(analytics?.data?.todayTokens || 0)}
+              {isLoading ? '...' : formatNumber(analytics?.todayTokens || 0)}
             </div>
             <p className="text-xs text-muted-foreground">
-              Cost: {isLoading ? '...' : formatCurrency(analytics?.data?.todayCost || 0)}
+              Cost: {isLoading ? '...' : formatCurrency(analytics?.todayCost || 0)}
             </p>
           </CardContent>
         </Card>
@@ -496,7 +496,7 @@ export default function TokenAnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {isLoading ? '...' : formatNumber(analytics?.data?.avgTokensPerQuery || 0)}
+              {isLoading ? '...' : formatNumber(analytics?.avgTokensPerQuery || 0)}
             </div>
             <p className="text-xs text-muted-foreground">Tokens per query</p>
           </CardContent>
@@ -524,10 +524,11 @@ export default function TokenAnalyticsPage() {
                   <XAxis dataKey="date" />
                   <YAxis />
                   <Tooltip
-                    formatter={(value: number, name: string) => {
-                      if (name === 'cost') return formatCurrency(value);
-                      if (name === 'tokens' || name === 'requests') return formatNumber(value);
-                      return value;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    formatter={(value: any, name: string) => {
+                      if (name === 'cost') return formatCurrency(value ?? 0);
+                      if (name === 'tokens' || name === 'requests') return formatNumber(value ?? 0);
+                      return value ?? 0;
                     }}
                   />
                   <Legend />
@@ -689,7 +690,7 @@ export default function TokenAnalyticsPage() {
       </Card>
 
       {/* Usage Anomalies */}
-      {analytics?.data?.anomalies && analytics.data.anomalies.length > 0 && (
+      {analytics?.anomalies && analytics.anomalies.length > 0 && (
         <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
@@ -699,7 +700,7 @@ export default function TokenAnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {analytics.data.anomalies.map((anomaly, index) => (
+              {analytics.anomalies.map((anomaly, index) => (
                 <div
                   key={index}
                   className="flex items-start gap-3 p-3 bg-background rounded-lg border border-amber-200 dark:border-amber-800"
@@ -766,7 +767,7 @@ export default function TokenAnalyticsPage() {
                 </tr>
               </thead>
               <tbody>
-                {analytics?.data?.byOperation?.map((op) => (
+                {analytics?.byOperation?.map((op) => (
                   <tr key={op.operationType} className="border-b hover:bg-muted/50">
                     <td className="py-3 px-4 text-sm">
                       {OPERATION_LABELS[op.operationType] || op.operationType}

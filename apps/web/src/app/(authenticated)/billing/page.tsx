@@ -107,7 +107,6 @@ export default function BillingPage() {
             {activeTab === 'paymentMethods' && (
               <BillingPaymentMethods
                 paymentMethods={billingInfo.paymentMethods}
-                onSuccess={handleSuccess}
                 onError={handleError}
               />
             )}

@@ -10,10 +10,10 @@ import pytest
 def test_qa_graph_structure():
     """Test that the QA graph has proper structure."""
     from src.graphs.qa_graph import (
-        qa_graph,
-        QAState,
         QAGraphNodes,
+        QAState,
         build_qa_graph,
+        qa_graph,
     )
 
     # Verify graph is instantiated
@@ -61,7 +61,7 @@ def test_qa_graph_structure():
 
 def test_qa_graph_nodes():
     """Test that QA graph nodes are callable."""
-    from src.graphs.qa_graph import QAGraphNodes, QAState
+    from src.graphs.qa_graph import QAGraphNodes
 
     nodes = QAGraphNodes()
 
@@ -100,18 +100,22 @@ def test_qa_graph_edges():
 def test_conditional_edge_functions():
     """Test that conditional edge functions exist and work correctly."""
     from src.graphs.qa_graph import (
-        should_ask_clarification,
         has_context,
+        should_ask_clarification,
         should_format_citations,
     )
 
     # Test should_ask_clarification
     assert should_ask_clarification({"needs_clarification": True}) == "clarification"
-    assert should_ask_clarification({"needs_clarification": False}) == "retrieve_context"
+    assert (
+        should_ask_clarification({"needs_clarification": False}) == "retrieve_context"
+    )
 
     # Test has_context
     assert has_context({"retrieved_contexts": []}) == "no_context"
-    assert has_context({"retrieved_contexts": [{"content": "test"}]}) == "generate_answer"
+    assert (
+        has_context({"retrieved_contexts": [{"content": "test"}]}) == "generate_answer"
+    )
     assert has_context({"retrieved_contexts": None}) == "no_context"
 
     # Test should_format_citations
@@ -119,8 +123,14 @@ def test_conditional_edge_functions():
         should_format_citations({"answer_complete": True, "raw_answer": "answer"})
         == "format_citations"
     )
-    assert should_format_citations({"answer_complete": True, "raw_answer": None}) == "generic_answer"
-    assert should_format_citations({"answer_complete": False, "raw_answer": "answer"}) == "generic_answer"
+    assert (
+        should_format_citations({"answer_complete": True, "raw_answer": None})
+        == "generic_answer"
+    )
+    assert (
+        should_format_citations({"answer_complete": False, "raw_answer": "answer"})
+        == "generic_answer"
+    )
 
     print("\n Conditional edge functions verified")
 

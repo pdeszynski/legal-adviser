@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769292257470-bdf92416",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T22:04:17.470Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "landing-waitlist-page",
+  "featureName": "Landing Page Waitlist/Demo Request Page",
+  "error": "Feature completed in 1163s - auto-verified",
+  "passes": true
+}

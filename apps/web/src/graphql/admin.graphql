@@ -25,6 +25,7 @@ fragment AdminUserFragment on User {
   disclaimerAccepted
   disclaimerAcceptedAt
   stripeCustomerId
+  twoFactorEnabled
   createdAt
   updatedAt
 }
@@ -38,6 +39,7 @@ fragment AdminUserMinimalFragment on User {
   lastName
   isActive
   role
+  twoFactorEnabled
   createdAt
 }
 
@@ -177,5 +179,13 @@ mutation AdminChangeUserRole($input: ChangeUserRoleInput!) {
 mutation AdminResetUserPassword($input: ResetUserPasswordInput!) {
   resetUserPassword(input: $input) {
     ...AdminUserMinimalFragment
+  }
+}
+
+# Force-disable 2FA for a user (admin only)
+mutation AdminForceDisableTwoFactor($input: AdminForceDisableTwoFactorInput!) {
+  adminForceDisableTwoFactor(input: $input) {
+    id
+    twoFactorEnabled
   }
 }

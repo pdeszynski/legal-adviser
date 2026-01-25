@@ -5,10 +5,12 @@
   "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
   "branchName": null,
   "runningFeatureIds": [
-    "graphql-codegen-hooks-generation",
-    "graphql-codegen-search-queries",
-    "admin-user-bulk-operations",
-    "graphql-codegen-persisted-queries"
+    "email-unsubscribe-handler",
+    "engagement-score-system",
+    "prospect-health-score",
+    "client-side-session-expiry-detection",
+    "fix-graphql-mutation-authorization-context",
+    "frontend-graphql-client-headers-configuration"
   ],
-  "savedAt": "2026-01-24T10:26:37.805Z"
+  "savedAt": "2026-01-25T13:44:17.260Z"
 }

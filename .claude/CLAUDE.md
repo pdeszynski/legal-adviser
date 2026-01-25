@@ -193,6 +193,76 @@ pnpm seed
 
 **Note:** These are development credentials only. Ensure they are not used in production.
 
+### Two-Factor Authentication (2FA) Test Users
+
+For testing 2FA functionality, the following pre-configured users are available:
+
+| Email                         | Password      | TOTP Secret        | Backup Codes (first 3)                            | Notes                    |
+| ----------------------------- | ------------- | ------------------ | ------------------------------------------------- | ------------------------ |
+| `user2fa@example.com`         | `password123` | `JBSWY3DPEHPK3PXP` | `A1B2-C3D4-E5F6-A7B8`, `C3D4-E5F6-A7B8-C9D0`, ... | 2FA enabled              |
+| `admin2fa@example.com`        | `password123` | `KRSXG5DSQZKYQPZM` | `A1B2-C3D4-E5F6-A7B8`, `C3D4-E5F6-A7B8-C9D0`, ... | Admin with 2FA enabled   |
+| `user2fa-pending@example.com` | `password123` | `JBSWY3DPEHPK3PXP` | N/A                                               | Secret set, not verified |
+
+#### Using Test TOTP Secrets
+
+For local development and testing, you can generate valid TOTP tokens using the known secrets:
+
+**Option 1: Node.js script**
+
+```javascript
+import otplib from 'otplib';
+
+// Configure TOTP
+otplib.authenticator.options = {
+  digits: 6,
+  period: 30,
+  algorithm: 'sha1',
+};
+
+// Generate current valid token
+const secret = 'JBSWY3DPEHPK3PXP'; // user2fa@example.com
+const token = otplib.authenticator.generate(secret);
+console.log(`Current TOTP token: ${token}`);
+```
+
+**Option 2: Python script**
+
+```python
+import pyotp
+
+# Generate current valid token
+secret = 'JBSWY3DPEHPK3PXP'  # user2fa@example.com
+totp = pyotp.TOTP(secret)
+token = totp.now()
+print(f"Current TOTP token: {token}")
+```
+
+**Option 3: Using the backend test helper**
+
+```bash
+cd apps/backend
+npm run test:totp JBSWY3DPEHPK3PXP
+```
+
+#### Backup Codes for Testing
+
+The seed users have the following pre-generated backup codes (all can be used exactly once):
+
+```
+A1B2-C3D4-E5F6-A7B8
+C3D4-E5F6-A7B8-C9D0
+E5F6-A7B8-C9D0-E1F2
+A7B8-C9D0-E1F2-A3B4
+C9D0-E1F2-A3B4-C5D6
+E1F2-A3B4-C5D6-E7F8
+A3B4-C5D6-E7F8-A9B0
+C5D6-E7F8-A9B0-C1D2
+E7F8-A9B0-C1D2-E3F4
+A9B0-C1D2-E3F4-A5B6
+```
+
+**Important:** These backup codes are stored hashed in the database. Use the exact codes above during testing.
+
 ## Role-Based Access Control (RBAC)
 
 ### Role Hierarchy
@@ -352,3 +422,341 @@ The authorization module follows Domain-Driven Design principles:
 | AI Query Generation |      ✓      |   ✓   |   ✓    |     ✓     |   ✓    |       |
 | View Analytics      |      ✓      |   ✓   |        |           |        |       |
 | System Settings     |      ✓      |       |        |           |        |       |
+
+## Two-Factor Authentication (2FA)
+
+### Overview
+
+The platform implements TOTP-based (Time-based One-Time Password) two-factor authentication using RFC 6238. Users can enable 2FA through their settings, which provides:
+
+- TOTP secret generation for authenticator apps (Google Authenticator, Authy, etc.)
+- QR code scanning for easy setup
+- 10 one-time backup codes for account recovery
+- Admin override for locked-out users
+
+### Entity Relationships
+
+The 2FA system integrates with the existing `User` entity:
+
+```
+User
+├── id: string
+├── email: string
+├── twoFactorEnabled: boolean       // Is 2FA active?
+├── twoFactorSecret: string         // Encrypted TOTP secret (not exposed via GraphQL)
+└── twoFactorBackupCodes: JSON      // Array of {code: hash, used: boolean}
+```
+
+**Key Design Points:**
+
+- TOTP secrets are encrypted using AES-256-GCM before storage
+- Backup codes are hashed using bcrypt before storage
+- `twoFactorEnabled` is only `true` after successful verification
+- The secret is stored during setup but 2FA is not enabled until verified
+
+### Security Measures
+
+#### Encryption
+
+- **TOTP Secrets**: AES-256-GCM encryption via `EncryptionService`
+  - Key derived from `ENCRYPTION_KEY` environment variable using scrypt
+  - Random nonce (16 bytes) per encryption
+  - Authentication tag for integrity verification
+- **Backup Codes**: Hashed using bcrypt via `UsersService`
+  - One-way hashing prevents code recovery if database is compromised
+  - Each code is tracked with a `used` flag
+
+#### Rate Limiting & Account Lockout
+
+| Endpoint                     | Limit    | Lockout              |
+| ---------------------------- | -------- | -------------------- |
+| `verifyTwoFactorSetup`       | 5/minute | 10 failures = 30 min |
+| `completeTwoFactorLogin`     | 5/minute | 10 failures = 30 min |
+| `verifyAndConsumeBackupCode` | 5/minute | 10 failures = 30 min |
+
+- Failed attempts are tracked per-user in the database
+- Locked accounts require admin intervention via `adminForceDisableTwoFactor`
+- Successful verification resets the failed attempt counter
+
+#### Audit Logging
+
+All 2FA events are logged to `AuditLog` with:
+
+- IP address (supports proxy headers: `X-Forwarded-For`, `X-Real-IP`)
+- User agent
+- Success/failure status
+- Action type (`2FA_ENABLED`, `2FA_DISABLED`, `2FA_VERIFICATION_FAILED`, etc.)
+
+#### Session Management
+
+- JWT tokens are invalidated immediately when 2FA is disabled (via `tokenVersion` increment)
+- Two-step login flow: first call returns `twoFactorTempToken`, second call issues session after 2FA verification
+- Sessions are only issued after successful 2FA completion
+
+### GraphQL Mutations
+
+#### User Mutations
+
+**Enable 2FA Setup**
+
+```graphql
+mutation EnableTwoFactorAuth {
+  enableTwoFactorAuth {
+    secret # TOTP secret (base32)
+    qrCodeDataUrl # QR code as data URL
+    backupCodes # Array of 10 backup codes
+  }
+}
+```
+
+**Verify 2FA Setup**
+
+```graphql
+mutation VerifyTwoFactorSetup($input: VerifyTwoFactorSetupInput!) {
+  verifyTwoFactorSetup(input: $input) {
+    success
+    backupCodes # Empty array (codes shown during enable)
+  }
+}
+```
+
+**Disable 2FA**
+
+```graphql
+mutation DisableTwoFactorAuth($input: DisableTwoFactorInput!) {
+  disableTwoFactorAuth(input: { password: "user-password" })
+}
+```
+
+**Regenerate Backup Codes**
+
+```graphql
+mutation RegenerateBackupCodes {
+  regenerateBackupCodes {
+    codes # New array of 10 codes (invalidates old ones)
+  }
+}
+```
+
+**Get 2FA Settings**
+
+```graphql
+query TwoFactorSettings {
+  twoFactorSettings {
+    status # ENABLED | DISABLED
+    enabled # boolean
+    remainingBackupCodes # count or null
+  }
+}
+```
+
+#### Admin Mutations
+
+**Admin Force-Disable 2FA**
+
+```graphql
+mutation AdminForceDisableTwoFactor($input: AdminForceDisableTwoFactorInput!) {
+  adminForceDisableTwoFactor(input: { userId: "user-id" }) {
+    id
+    twoFactorEnabled
+  }
+}
+```
+
+### Frontend Components
+
+#### TwoFactorSetup Component
+
+Location: `apps/web/src/components/settings/two-factor-setup.tsx`
+
+Multi-step wizard flow:
+
+1. **Info**: Explains 2FA benefits and process
+2. **Scan**: Displays QR code with manual secret entry fallback
+3. **Verify**: Input for 6-digit TOTP code (auto-formatted as `XXX XXX`)
+4. **Success**: Shows 10 backup codes with copy/download options
+5. **Disable**: Password confirmation to disable 2FA
+
+**Features:**
+
+- Real-time code formatting (6 digits with space separator)
+- QR code with fallback to manual secret entry
+- Backup codes can be copied to clipboard or downloaded as `.txt`
+- Password visibility toggle for disable confirmation
+
+#### Login Integration
+
+Location: `apps/web/src/app/login/two-factor-input.tsx`
+
+- Displays when `login.requiresTwoFactor` is `true`
+- Accepts 6-digit TOTP code or backup code
+- Uses `twoFactorTempToken` from initial login response
+
+### Testing Guide
+
+#### Test TOTP Secrets
+
+For testing, use known TOTP secrets to generate valid tokens:
+
+```javascript
+// Using the TotpService's test helper
+const token = totpService.generateCurrentToken('JBSWY3DPEHPK3PXP'); // test secret
+
+// Or in Playwright tests, use the secret returned from enableTwoFactorAuth
+const { secret } = await enableTwoFactorAuth(request, accessToken);
+const validToken = generateTOTPToken(secret); // Your implementation
+```
+
+#### Test Helper Functions
+
+```javascript
+/**
+ * Generate a TOTP token for testing (Node.js)
+ * Requires: npm install otplib
+ */
+import otplib from 'otplib';
+
+function generateTOTPToken(secret: string): string {
+  otplib.authenticator.options = { digits: 6, period: 30, algorithm: 'sha1' };
+  return otplib.authenticator.generate(secret);
+}
+
+/**
+ * Verify a TOTP token for testing
+ */
+function verifyTOTPToken(secret: string, token: string): boolean {
+  return otplib.authenticator.check(token, secret);
+}
+
+/**
+ * Generate backup code format for testing
+ * Format: XXXX-XXXX-XXXX-XXXX (hex, uppercase)
+ */
+function generateTestBackupCode(): string {
+  const bytes = require('crypto').randomBytes(16);
+  const hex = bytes.toString('hex').toUpperCase();
+  return `${hex.slice(0,4)}-${hex.slice(4,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}`;
+}
+```
+
+#### E2E Test Example
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+test('2FA setup and login flow', async ({ request }) => {
+  // 1. Login to get access token
+  const loginResult = await loginUser(request, 'user@example.com', 'password');
+  const accessToken = loginResult.data.login.accessToken;
+
+  // 2. Enable 2FA
+  const enableResult = await enableTwoFactorAuth(request, accessToken);
+  const { secret, backupCodes } = enableResult.data.enableTwoFactorAuth;
+
+  // 3. Generate valid TOTP token for verification
+  const token = generateTOTPToken(secret);
+
+  // 4. Verify setup
+  const verifyResult = await verifyTwoFactorSetup(request, accessToken, token);
+  expect(verifyResult.data.verifyTwoFactorSetup.success).toBe(true);
+
+  // 5. Test login with 2FA
+  const loginWith2FA = await loginUser(request, 'user@example.com', 'password');
+  expect(loginWith2FA.data.login.requiresTwoFactor).toBe(true);
+
+  const tempToken = loginWith2FA.data.login.twoFactorTempToken;
+  const loginToken = generateTOTPToken(secret);
+
+  const completeResult = await completeTwoFactorLogin(request, tempToken, loginToken);
+  expect(completeResult.data.completeTwoFactorLogin.accessToken).toBeDefined();
+
+  // 6. Test backup code
+  const backupCode = backupCodes[0];
+  const backupResult = await completeTwoFactorLogin(request, tempToken, undefined, backupCode);
+  expect(backupResult.data.completeTwoFactorLogin.accessToken).toBeDefined();
+});
+```
+
+#### Running 2FA Tests
+
+```bash
+# Frontend E2E tests
+cd apps/web && playwright test two-factor-e2e.spec.ts
+
+# Backend unit tests
+cd apps/backend && jest two-factor.service.spec.ts
+cd apps/backend && jest totp.service.spec.ts
+```
+
+### Troubleshooting
+
+#### QR Code Not Scanning
+
+1. **Check app compatibility**: Ensure authenticator app supports TOTP (Google Authenticator, Authy, 1Password, etc.)
+2. **Manual entry**: Use the "Can't scan?" option to enter the secret manually
+3. **Check secret format**: Secret should be base32 (16+ characters, A-Z, 2-7, =)
+4. **QR code size**: Ensure QR code is generated at minimum 200x200px
+
+#### Clock Skew Issues
+
+TOTP tokens are time-sensitive. Symptoms include "Invalid token" even when code is correct:
+
+**For Users:**
+
+- Ensure device time is set to automatic (network time)
+- Check time zone matches the authenticator app setting
+- Try a new code (wait for next 30-second window)
+
+**For Servers:**
+
+- Ensure NTP is configured and running
+- Check `TOTP_WINDOW` environment variable (default: 1 = ±30 seconds tolerance)
+
+#### Backup Codes Lost
+
+If a user loses all backup codes:
+
+1. **User option**: Use remaining backup codes to regenerate new ones
+2. **Admin option**: Use `adminForceDisableTwoFactor` mutation to reset 2FA
+3. **After reset**: User must go through full setup again
+
+```graphql
+# Admin force-disable example
+mutation AdminReset {
+  adminForceDisableTwoFactor(input: { userId: "user-id" }) {
+    id
+    twoFactorEnabled
+  }
+}
+```
+
+#### Account Locked Out
+
+After 10 failed 2FA attempts, account is locked for 30 minutes:
+
+1. **Wait**: Lockout expires after 30 minutes
+2. **Admin intervention**: Use `adminForceDisableTwoFactor` to immediately unlock
+3. **Check logs**: Review audit logs for suspicious activity patterns
+
+#### Common Error Messages
+
+| Error                        | Cause                                   | Solution                          |
+| ---------------------------- | --------------------------------------- | --------------------------------- |
+| "Invalid token"              | Wrong TOTP code or clock skew           | Check time, try next code window  |
+| "Account is locked"          | 10 failed attempts                      | Wait 30 min or contact admin      |
+| "2FA already enabled"        | User called `enableTwoFactorAuth` twice | Use `disableTwoFactorAuth` first  |
+| "Password is incorrect"      | Wrong password on disable               | User must reset password          |
+| "Invalid backup code format" | Backup code malformed                   | Format: XXXX-XXXX-XXXX-XXXX (hex) |
+| "Backup code already used"   | Reusing a one-time code                 | Use a different backup code       |
+
+### Environment Variables
+
+| Variable          | Default               | Description                              |
+| ----------------- | --------------------- | ---------------------------------------- |
+| `ENCRYPTION_KEY`  | (required, 32+ chars) | Key for AES-256-GCM encryption           |
+| `ENCRYPTION_SALT` | `legal-ai-salt`       | Salt for key derivation                  |
+| `TOTP_APP_NAME`   | `Legal AI Platform`   | App name shown in authenticator          |
+| `TOTP_ALGORITHM`  | `sha1`                | Hash algorithm (sha1, sha256, sha512)    |
+| `TOTP_DIGITS`     | `6`                   | Token length                             |
+| `TOTP_PERIOD`     | `30`                  | Token validity in seconds                |
+| `TOTP_WINDOW`     | `1`                   | Time window tolerance (±period × window) |

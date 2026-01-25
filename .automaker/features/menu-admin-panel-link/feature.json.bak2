@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Add a prominent 'Admin Panel' menu item that appears only for users with ADMIN or SUPER_ADMIN roles. This link should navigate to /admin route. Position it at the top of the menu or in a separate 'Administration' section with visual distinction (different icon, badge, or color). Ensure the link respects existing admin-layout-route and frontend-role-check features. Optionally add keyboard shortcut (Ctrl+Shift+A) for quick admin access.",
+  "id": "menu-admin-panel-link",
+  "title": "Add Admin Panel Link for Administrator Role",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Add a prominent 'Admin Panel' menu item that appears only for users with ADMIN or SUPER_ADMIN roles. This link should navigate to /admin route. Position it at the top of the menu or in a separate 'Administration' section with visual distinction (different icon, badge, or color). Ensure the link respects existing admin-layout-route and frontend-role-check features. Optionally add keyboard shortcut (Ctrl+Shift+A) for quick admin access.",
+      "timestamp": "2026-01-24T22:08:56.723Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T02:01:34.711Z"
+}

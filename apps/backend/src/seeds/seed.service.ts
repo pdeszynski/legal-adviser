@@ -16,6 +16,9 @@ import { RoleEntity } from '../modules/authorization/entities/role.entity';
 import { UserRoleEntity } from '../modules/authorization/entities';
 import { UserPreferences } from '../modules/user-preferences/entities/user-preferences.entity';
 
+// Services
+import { EncryptionService } from '../shared/encryption/encryption.service';
+
 // Seed data
 import {
   usersSeedData,
@@ -68,6 +71,7 @@ export class SeedService {
     private readonly userRoleRepository: Repository<UserRoleEntity>,
     @InjectRepository(UserPreferences)
     private readonly userPreferencesRepository: Repository<UserPreferences>,
+    private readonly encryptionService: EncryptionService,
   ) {}
 
   /**
@@ -208,6 +212,36 @@ export class SeedService {
         BCRYPT_SALT_ROUNDS,
       );
 
+      // Handle 2FA fields if present
+      let encryptedSecret: string | null = null;
+      let hashedBackupCodes: string | null = null;
+
+      if (userData.twoFactorSecret) {
+        // Encrypt the TOTP secret for storage
+        encryptedSecret = this.encryptionService.encrypt(
+          userData.twoFactorSecret,
+        );
+      }
+
+      if (userData.twoFactorBackupCodes) {
+        // Parse and hash backup codes
+        const backupCodesData = JSON.parse(
+          userData.twoFactorBackupCodes,
+        ) as Array<{ codeHash: string; used: boolean }>;
+        const hashedCodes = await Promise.all(
+          backupCodesData.map(
+            async (codeData: { codeHash: string; used: boolean }) => ({
+              codeHash: await bcrypt.hash(
+                codeData.codeHash.toUpperCase().replace(/-/g, ''),
+                BCRYPT_SALT_ROUNDS,
+              ),
+              used: codeData.used,
+            }),
+          ),
+        );
+        hashedBackupCodes = JSON.stringify(hashedCodes);
+      }
+
       const user = this.userRepository.create({
         email: userData.email,
         username: userData.username,
@@ -216,11 +250,16 @@ export class SeedService {
         passwordHash,
         isActive: userData.isActive,
         disclaimerAccepted: userData.disclaimerAccepted,
+        twoFactorEnabled: userData.twoFactorEnabled ?? false,
+        twoFactorSecret: encryptedSecret,
+        twoFactorBackupCodes: hashedBackupCodes,
       });
 
       const savedUser = await this.userRepository.save(user);
       this.userMap.set(userData.email, savedUser);
-      this.logger.debug(`Created user: ${userData.email}`);
+      this.logger.debug(
+        `Created user: ${userData.email}${userData.twoFactorEnabled ? ' (with 2FA)' : ''}`,
+      );
     }
 
     this.logger.log(`Seeded ${this.userMap.size} users`);
@@ -545,6 +584,25 @@ export class SeedService {
     this.logger.log('    Password: password123');
     this.logger.log('  User (client):');
     this.logger.log('    Email: user@example.com');
+    this.logger.log('    Password: password123');
+    this.logger.log('');
+    this.logger.log('Two-Factor Authentication (2FA) test users:');
+    this.logger.log('  User with 2FA enabled:');
+    this.logger.log('    Email: user2fa@example.com');
+    this.logger.log('    Password: password123');
+    this.logger.log('    TOTP Secret: JBSWY3DPEHPK3PXP');
+    this.logger.log(
+      '    Backup codes: A1B2-C3D4-E5F6-A7B8, C3D4-E5F6-A7B8-C9D0, ...',
+    );
+    this.logger.log('  Admin with 2FA enabled:');
+    this.logger.log('    Email: admin2fa@example.com');
+    this.logger.log('    Password: password123');
+    this.logger.log('    TOTP Secret: KRSXG5DSQZKYQPZM');
+    this.logger.log(
+      '    Backup codes: A1B2-C3D4-E5F6-A7B8, C3D4-E5F6-A7B8-C9D0, ...',
+    );
+    this.logger.log('  User with 2FA pending (secret set, not verified):');
+    this.logger.log('    Email: user2fa-pending@example.com');
     this.logger.log('    Password: password123');
     this.logger.log('');
   }

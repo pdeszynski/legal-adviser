@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Organize lawyer-related features under a dedicated 'Legal Work' or 'Lawyer Tools' menu group. This group should include: Document Management, Legal Q&A Chat, Case Analysis, Case Law Search, and Advanced Search. The group should be visible to users with LAWYER, PARALEGAL, and higher roles. Use collapsible submenu or visual separator to distinguish from general features.",
+  "id": "menu-grouping-lawyer-features",
+  "title": "Group Lawyer-Specific Features in Navigation Menu",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Organize lawyer-related features under a dedicated 'Legal Work' or 'Lawyer Tools' menu group. This group should include: Document Management, Legal Q&A Chat, Case Analysis, Case Law Search, and Advanced Search. The group should be visible to users with LAWYER, PARALEGAL, and higher roles. Use collapsible submenu or visual separator to distinguish from general features.",
+      "timestamp": "2026-01-24T22:08:56.720Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T02:00:51.560Z"
+}

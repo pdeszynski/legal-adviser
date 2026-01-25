@@ -14,6 +14,7 @@ import {
   Button,
 } from '@legal/ui';
 import { Scale, AlertCircle, WifiOff, Server } from 'lucide-react';
+import { TwoFactorInput } from './two-factor-input';
 
 export const LoginContent = () => {
   const { mutate: login, isPending: isLoading, error } = useLogin();
@@ -34,7 +35,7 @@ export const LoginContent = () => {
       hasRedirected.current = true;
       // Use a small delay to ensure all state is propagated
       const redirectTimer = setTimeout(() => {
-        go({ to: '/chat', type: 'replace' });
+        go({ to: '/dashboard', type: 'replace' });
       }, 100);
       return () => clearTimeout(redirectTimer);
     }
@@ -51,8 +52,13 @@ export const LoginContent = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showTwoFactor, setShowTwoFactor] = useState(false);
+  const [pendingCredentials, setPendingCredentials] = useState<{
+    email: string;
+    password: string;
+  } | null>(null);
 
-  const handleSubmit = (e: React.SyntheticEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setValidationError(null);
     setInitialError(null);
@@ -78,8 +84,126 @@ export const LoginContent = () => {
       return;
     }
 
-    login({ email, password });
+    // Try direct login first using the standard login hook
+    // The backend will return requiresTwoFactor: true if 2FA is needed
+    try {
+      const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
+
+      const mutation = `
+        mutation Login($input: LoginInput!) {
+          login(input: $input) {
+            accessToken
+            refreshToken
+            requiresTwoFactor
+            twoFactorTempToken
+            user {
+              id
+              email
+              username
+              firstName
+              lastName
+              isActive
+              role
+            }
+          }
+        }
+      `;
+
+      const response = await fetch(GRAPHQL_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          query: mutation,
+          variables: {
+            input: {
+              username: email,
+              password: password,
+            },
+          },
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.errors) {
+        const errorMessage = result.errors[0]?.message || 'Invalid email or password';
+        setValidationError(errorMessage);
+        return;
+      }
+
+      const loginData = result.data?.login;
+
+      if (loginData?.requiresTwoFactor) {
+        // Store credentials for 2FA flow
+        setPendingCredentials({ email, password });
+        setShowTwoFactor(true);
+        return;
+      }
+
+      // Successful login - store tokens and redirect
+      if (loginData?.accessToken) {
+        if (typeof window !== 'undefined') {
+          const Cookies = (await import('js-cookie')).default;
+
+          Cookies.set('access_token', loginData.accessToken, {
+            expires: 1 / 24, // 1 hour
+            path: '/',
+            sameSite: 'lax',
+          });
+
+          Cookies.set('refresh_token', loginData.refreshToken, {
+            expires: 7, // 7 days
+            path: '/',
+            sameSite: 'lax',
+          });
+
+          Cookies.set(
+            'auth',
+            JSON.stringify({
+              user: loginData.user,
+              roles: [loginData.user.role || 'user'],
+            }),
+            {
+              expires: 7,
+              path: '/',
+              sameSite: 'lax',
+            },
+          );
+
+          // Redirect to dashboard
+          window.location.href = '/dashboard';
+        }
+      }
+    } catch (err) {
+      setValidationError(err instanceof Error ? err.message : 'Network error. Please try again.');
+    }
   };
+
+  const handleTwoFactorCancel = () => {
+    setShowTwoFactor(false);
+    setPendingCredentials(null);
+  };
+
+  const handleTwoFactorSuccess = () => {
+    setShowTwoFactor(false);
+    setPendingCredentials(null);
+    // Redirect will be handled by the TwoFactorInput component
+  };
+
+  // Show 2FA input if required
+  if (showTwoFactor && pendingCredentials) {
+    return (
+      <TwoFactorInput
+        email={pendingCredentials.email}
+        password={pendingCredentials.password}
+        onCancel={handleTwoFactorCancel}
+        onSuccess={handleTwoFactorSuccess}
+      />
+    );
+  }
 
   // Determine error type and message
   const getErrorIcon = () => {

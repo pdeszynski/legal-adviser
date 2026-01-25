@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Update all Python development commands in package.json, Makefile, and documentation to use UV instead of Poetry. Replace commands like 'poetry install' with 'uv sync', 'poetry run' with 'uv run', 'poetry add' with 'uv add', etc. Ensure VS Code settings and other tooling configurations use UV for the Python interpreter and package management.",
+  "id": "update-python-commands-for-uv",
+  "title": "Update Python Development Commands for UV",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Update all Python development commands in package.json, Makefile, and documentation to use UV instead of Poetry. Replace commands like 'poetry install' with 'uv sync', 'poetry run' with 'uv run', 'poetry add' with 'uv add', etc. Ensure VS Code settings and other tooling configurations use UV for the Python interpreter and package management.",
+      "timestamp": "2026-01-24T16:12:14.257Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -19,11 +19,11 @@ import { Transform } from 'class-transformer';
 /**
  * Sanitize string input by trimming whitespace
  */
-const sanitizeString = (value: unknown): string | unknown => {
+const sanitizeString = (value: unknown): string | undefined => {
   if (typeof value === 'string') {
     return value.trim();
   }
-  return value;
+  return undefined;
 };
 
 /**
@@ -49,6 +49,23 @@ export class LoginInput {
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
   @MaxLength(128, { message: 'Password must be at most 128 characters long' })
   password!: string;
+
+  @Field({
+    nullable: true,
+    description: '6-digit TOTP token (if 2FA is enabled)',
+  })
+  @IsOptional()
+  @IsString()
+  @Matches(/^[0-9]{6}$/, { message: 'TOTP token must be 6 digits' })
+  twoFactorToken?: string;
+
+  @Field({
+    nullable: true,
+    description: 'Backup code for account recovery (alternative to TOTP token)',
+  })
+  @IsOptional()
+  @IsString()
+  backupCode?: string;
 }
 
 /**
@@ -75,7 +92,7 @@ export class RegisterInput {
   @IsString()
   @MinLength(3, { message: 'Username must be at least 3 characters long' })
   @MaxLength(50, { message: 'Username must be at most 50 characters long' })
-  @Matches(/^[a-zA-Z0-9_.\-]+$/, {
+  @Matches(/^[a-zA-Z0-9_.-]+$/, {
     message:
       'Username can only contain letters, numbers, underscores, dots, and hyphens',
   })
@@ -143,19 +160,41 @@ export class AuthUserPayload {
 
 /**
  * GraphQL Output Type for authentication response
+ * When 2FA is required, tokens and user will be null
  */
 @ObjectType('AuthPayload')
 export class AuthPayload {
-  @Field({ description: 'JWT access token' })
-  accessToken!: string;
+  @Field(() => String, {
+    nullable: true,
+    description: 'JWT access token (null if 2FA is required)',
+  })
+  accessToken!: string | null;
 
-  @Field({ description: 'JWT refresh token for obtaining new access tokens' })
-  refreshToken!: string;
+  @Field(() => String, {
+    nullable: true,
+    description:
+      'JWT refresh token for obtaining new access tokens (null if 2FA is required)',
+  })
+  refreshToken!: string | null;
 
   @Field(() => AuthUserPayload, {
-    description: 'Authenticated user information',
+    nullable: true,
+    description: 'Authenticated user information (null if 2FA is required)',
   })
-  user!: AuthUserPayload;
+  user!: AuthUserPayload | null;
+
+  @Field(() => String, {
+    nullable: true,
+    description:
+      'Temporary token for completing 2FA (only present when 2FA is required)',
+  })
+  twoFactorTempToken?: string | null;
+
+  @Field(() => Boolean, {
+    defaultValue: false,
+    description: 'True if user needs to provide 2FA token to complete login',
+  })
+  requiresTwoFactor!: boolean;
 }
 
 /**
@@ -187,7 +226,7 @@ export class UpdateProfileInput {
   @IsString()
   @MinLength(3, { message: 'Username must be at least 3 characters long' })
   @MaxLength(50, { message: 'Username must be at most 50 characters long' })
-  @Matches(/^[a-zA-Z0-9_.\-]+$/, {
+  @Matches(/^[a-zA-Z0-9_.-]+$/, {
     message:
       'Username can only contain letters, numbers, underscores, dots, and hyphens',
   })
@@ -225,4 +264,34 @@ export class ChangePasswordInput {
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
   @MaxLength(128, { message: 'Password must be at most 128 characters long' })
   newPassword!: string;
+}
+
+/**
+ * GraphQL Input Type for completing 2FA login
+ */
+@InputType()
+export class CompleteTwoFactorLoginInput {
+  @Field({
+    description: 'Temporary token received from login when 2FA is required',
+  })
+  @IsString()
+  @IsNotEmpty({ message: 'Temporary token is required' })
+  twoFactorTempToken!: string;
+
+  @Field({
+    nullable: true,
+    description: 'The 6-digit TOTP token from authenticator app',
+  })
+  @IsOptional()
+  @IsString()
+  @Matches(/^[0-9]{6}$/, { message: 'TOTP token must be 6 digits' })
+  twoFactorToken?: string;
+
+  @Field({
+    nullable: true,
+    description: 'Backup code for account recovery (alternative to TOTP token)',
+  })
+  @IsOptional()
+  @IsString()
+  backupCode?: string;
 }

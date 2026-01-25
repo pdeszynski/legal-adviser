@@ -4,8 +4,6 @@ This agent analyzes case descriptions and identifies applicable legal grounds
 with confidence scores. It returns structured classification results.
 """
 
-from typing import List, Optional
-
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 
@@ -15,7 +13,9 @@ from ..config import get_settings
 class LegalGround(BaseModel):
     """A single legal ground identified in the case."""
 
-    name: str = Field(..., description="Name of the legal ground (e.g., 'Breach of Contract')")
+    name: str = Field(
+        ..., description="Name of the legal ground (e.g., 'Breach of Contract')"
+    )
     description: str = Field(
         ...,
         description="Detailed explanation of how this legal ground applies to the case",
@@ -26,11 +26,11 @@ class LegalGround(BaseModel):
         le=1.0,
         description="Confidence score (0-1) indicating how strongly this ground applies",
     )
-    legal_basis: List[str] = Field(
+    legal_basis: list[str] = Field(
         ...,
         description="List of legal basis references (e.g., 'Art. 471 Kodeks Cywilny')",
     )
-    notes: Optional[str] = Field(
+    notes: str | None = Field(
         default=None,
         description="Additional notes or considerations for this legal ground",
     )
@@ -39,7 +39,7 @@ class LegalGround(BaseModel):
 class ClassificationResult(BaseModel):
     """Complete classification result for a case description."""
 
-    identified_grounds: List[LegalGround] = Field(
+    identified_grounds: list[LegalGround] = Field(
         ...,
         description="List of identified legal grounds with their confidence scores",
     )

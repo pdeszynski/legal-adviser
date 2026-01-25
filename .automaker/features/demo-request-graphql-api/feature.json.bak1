@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Create GraphQL mutation for submitting demo requests. Implement: 1) submitDemoRequest(input: DemoRequestInput!) mutation, 2) DemoRequestInput type with fields: fullName, email, company, companySize, industry, useCase, timeline, budget, preferredDemoTime, 3) Validation using class-validator decorators (email format, required fields, string lengths), 4) Integration with HubSpotService to sync lead to CRM, 5) Return DemoRequestResponse with success status and confirmation message, 6) Email notification to internal team about new demo request. Apply rate limiting to prevent abuse. Allow public access (no authentication required). Add to public GraphQL resolver.",
+  "id": "demo-request-graphql-api",
+  "title": "Demo Request GraphQL Mutation",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create GraphQL mutation for submitting demo requests. Implement: 1) submitDemoRequest(input: DemoRequestInput!) mutation, 2) DemoRequestInput type with fields: fullName, email, company, companySize, industry, useCase, timeline, budget, preferredDemoTime, 3) Validation using class-validator decorators (email format, required fields, string lengths), 4) Integration with HubSpotService to sync lead to CRM, 5) Return DemoRequestResponse with success status and confirmation message, 6) Email notification to internal team about new demo request. Apply rate limiting to prevent abuse. Allow public access (no authentication required). Add to public GraphQL resolver.",
+      "timestamp": "2026-01-24T21:38:47.509Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T21:43:42.664Z"
+}

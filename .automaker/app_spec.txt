@@ -2930,6 +2930,182 @@ path
       <name>Configure Service Startup Order in Dev Mode</name>
       <description>Define proper startup sequence for development services: Database (PostgreSQL) -&gt; Backend (NestJS) -&gt; AI Engine (FastAPI) -&gt; Frontend (Next.js). Update turbo.json or package.json scripts to enforce dependency ordering. Add environment variable checks to ensure backend waits for AI Engine health check before starting dependent features. Document service startup order and interdependencies.</description>
     </feature>
+    <feature>
+      <name>Configure Ruff for Python Linting</name>
+      <description>Configure Ruff as the primary Python linter for the AI Engine, replacing or complementing existing linting tools. Set up ruff.toml or pyproject.toml configuration with project-specific rules. Configure Ruff to check code style, complexity, and potential bugs. Integrate Ruff into the development workflow and ensure it catches the same issues as previous linters.</description>
+    </feature>
+    <feature>
+      <name>Pre-commit Hooks for Ruff and MyPy</name>
+      <description>Configure pre-commit hooks (via Husky and lint-staged) to run Ruff with --fix and MyPy type checker on staged Python files in apps/ai-engine. Ensure hooks run only on changed .py files. Configure Ruff to auto-fix linting issues where possible. Set MyPy to strict mode to enforce strong typing. Fail commits if type errors or unfixable linting issues are detected.</description>
+    </feature>
+    <feature>
+      <name>TOTP Service Implementation</name>
+      <description>Create TOTP service in application layer for generating and validating Time-based One-Time Passwords. Use library like &apos;otplib&apos; or &apos;speakeasy&apos; for TOTP generation and verification. Implement methods: generateSecret() for creating new TOTP secrets, generateQRCode(secret, userEmail) returning QR code image data URL, verifyToken(secret, token) for validating 6-digit codes, and generateBackupCodes() creating 10 recovery codes. Integrate with existing AI Client Service patterns.</description>
+    </feature>
+    <feature>
+      <name>Two-Factor Authentication GraphQL Mutations</name>
+      <description>Implement GraphQL mutations for 2FA setup and management: 1) enableTwoFactorAuth() - generates TOTP secret and QR code URL, 2) verifyTwoFactorSetup(secret, token) - confirms setup by validating first TOTP token, 3) disableTwoFactorAuth() - removes 2FA with password confirmation, 4) regenerateBackupCodes() - creates new recovery codes. All mutations require authentication. Use nestjs-query patterns for consistency. Add @RequireRole decorator for proper authorization.</description>
+    </feature>
+    <feature>
+      <name>Two-Factor Authentication Entity</name>
+      <description>Create TwoFactorAuth entity in infrastructure layer to store TOTP configuration per user. Include fields: userId (FK to User), secret (encrypted TOTP secret), backupCodes (array of hashed recovery codes), isEnabled (boolean), verifiedAt (timestamp), and createdAt/updatedAt timestamps. Add repository interface in domain layer following DDD patterns. Implement encryption for storing TOTP secrets securely.</description>
+    </feature>
+    <feature>
+      <name>Enhanced Login Mutation with Two-Factor Support</name>
+      <description>Update existing login GraphQL mutation to support two-factor authentication flow. Modify login(email, password, twoFactorToken?) mutation to: 1) Validate credentials normally, 2) Check if user has 2FA enabled, 3) If 2FA enabled and no token provided, return requiresTwoFactor: true status, 4) If token provided, validate TOTP code before issuing JWT, 5) Allow backup code submission as alternative to TOTP token. Update auth provider to handle two-step login flow with intermediate state storage.</description>
+    </feature>
+    <feature>
+      <name>Temporal Infrastructure Setup for Development and Production</name>
+      <description>Set up Temporal infrastructure for local development and production deployment. Configure docker-compose.yml with Temporal server, UI, and PostgreSQL dependencies. Create temporal-config.yml for workflow and activity registration. Implement Temporal client factory in NestJS backend for workflow execution. Set up development vs production Temporal server connection via environment variables (TEMPORAL_CLUSTER_URL, TEMPORAL_NAMESPACE). Configure worker pools for each workflow type. Add health check for Temporal connection.</description>
+    </feature>
+    <feature>
+      <name>Login Two-Factor Code Input Step</name>
+      <description>Enhance login page to handle two-factor authentication step. When login returns requiresTwoFactor: true, show intermediate screen with: 1) Logo/title indicating &apos;Two-Factor Authentication&apos;, 2) Instruction text &apos;Enter the 6-digit code from your authenticator app&apos;, 3) 6-digit input field with auto-spacing (XXX XXX), 4) &apos;Verify&apos; button to submit code, 5) &apos;Use backup code&apos; link showing alternative input field, 6) &apos;Cancel&apos; button returning to login. Implement countdown for token expiry. Store temporary credentials in memory during 2FA verification.</description>
+    </feature>
+    <feature>
+      <name>E2E Tests for Two-Factor Authentication</name>
+      <description>Create comprehensive Playwright E2E tests for 2FA functionality. Test scenarios: 1) Setup 2FA with QR code scanning simulation, 2) Verify successful 2FA setup with valid TOTP token, 3) Login with correct 2FA code, 4) Login with incorrect 2FA code (verify error handling), 5) Login using backup code, 6) Disable 2FA from settings, 7) Admin force-disables user 2FA, 8) Regenerate backup codes flow. Use time-based token generation in tests (e.g., authenticate with test secret). Verify JWT is only issued after successful 2FA validation.</description>
+    </feature>
+    <feature>
+      <name>Two-Factor Authentication Setup Page</name>
+      <description>Create user-facing 2FA setup page at /settings/security/two-factor. Display step-by-step setup wizard: 1) Information modal explaining 2FA benefits, 2) QR code display using react-qr-code library, 3) Manual secret entry option as backup, 4) Input field for entering 6-digit verification code, 5) Success state displaying 10 backup codes for download/printing, 6) Warning that codes won&apos;t be shown again. Implement QR code rendering with proper sizing and error correction. Add &apos;Copy to clipboard&apos; functionality for backup codes.</description>
+    </feature>
+    <feature>
+      <name>Two-Factor Security Enhancements</name>
+      <description>Implement security measures for 2FA: 1) Rate limiting on TOTP verification endpoint (5 attempts per minute), 2) Account lockout after 10 failed 2FA attempts (requires admin reset), 3) Encrypt TOTP secrets using AES-256-GCM with key from environment variable, 4) Hash backup codes using bcrypt before storage, 5) Log all 2FA events (setup, verification, disable) in audit logs, 6) Invalidate JWT session immediately when 2FA is disabled, 7) Require password confirmation before disabling 2FA. Integrate with existing audit-logging-interceptor and rate-limiting-middleware.</description>
+    </feature>
+    <feature>
+      <name>Demo Request GraphQL Mutation</name>
+      <description>Create GraphQL mutation for submitting demo requests. Implement: 1) submitDemoRequest(input: DemoRequestInput!) mutation, 2) DemoRequestInput type with fields: fullName, email, company, companySize, industry, useCase, timeline, budget, preferredDemoTime, 3) Validation using class-validator decorators (email format, required fields, string lengths), 4) Integration with HubSpotService to sync lead to CRM, 5) Return DemoRequestResponse with success status and confirmation message, 6) Email notification to internal team about new demo request. Apply rate limiting to prevent abuse. Allow public access (no authentication required). Add to public GraphQL resolver.</description>
+    </feature>
+    <feature>
+      <name>HubSpot CRM Integration Backend Service</name>
+      <description>Create HubSpot integration service in backend to sync leads. Implement: 1) HubSpot API client using @hubspot/api-client npm package, 2) Configuration for HubSpot API key from environment variable (HUBSPOT_API_KEY), 3) Contact creation in HubSpot with form submission data, 4) Custom properties mapping (company, use case, timeline, etc.), 5) Deal creation if lead qualifies (based on company size, timeline), 6) List assignment for &apos;Demo Requests&apos; or &apos;Waitlist&apos; segments, 7) Error handling for HubSpot API failures with retry logic. Create NestJS HubSpotService in modules/integrations/hubspot/. Add HubSpotModule to app.module.ts. Document HubSpot property setup requirements.</description>
+    </feature>
+    <feature>
+      <name>Update Python Development Commands for UV</name>
+      <description>Update all Python development commands in package.json, Makefile, and documentation to use UV instead of Poetry. Replace commands like &apos;poetry install&apos; with &apos;uv sync&apos;, &apos;poetry run&apos; with &apos;uv run&apos;, &apos;poetry add&apos; with &apos;uv add&apos;, etc. Ensure VS Code settings and other tooling configurations use UV for the Python interpreter and package management.</description>
+    </feature>
+    <feature>
+      <name>Migrate Document Generation Queue to Temporal Workflow</name>
+      <description>Replace Bull-based document generation queue with Temporal workflow. Create DocumentGenerationWorkflow with activities for: 1) Initialize document with DRAFT status, 2) Call AI Engine for content generation, 3) Poll for completion, 4) Update document to COMPLETED/FAILED status, 5) Send completion notification email. Implement retry policy with exponential backoff for AI failures. Add workflow ID generation based on document ID for idempotency. Migrate existing queued jobs to Temporal during deployment.</description>
+    </feature>
+    <feature>
+      <name>Add AI Engine Health Check for Dev Mode</name>
+      <description>Implement health check endpoint verification for AI Engine startup in dev mode. Add startup probe to ensure AI Engine is ready before other services attempt to connect. Configure readiness check in turbo pipeline to fail-fast if AI Engine doesn&apos;t start properly. Display clear error messages if AI Engine fails to start. Include health check in `pnpm dev` command output.</description>
+    </feature>
+    <feature>
+      <name>Landing Page Waitlist/Demo Request Page</name>
+      <description>Create a dedicated page on the landing site for users to join a waitlist or request demo access. Build a public-accessible route at /demo or /get-early-access with: 1) Hero section highlighting benefits of early access, 2) Waitlist signup form (name, email, company, role, use case), 3) Social proof section (number of people on waitlist, testimonials if available), 4) FAQ section addressing common questions about pricing, availability, and features. Ensure page is accessible without authentication. Make it visually appealing with clear call-to-action. Integrate with existing Next.js App Router structure.</description>
+    </feature>
+    <feature>
+      <name>Add Admin Panel Link for Administrator Role</name>
+      <description>Add a prominent &apos;Admin Panel&apos; menu item that appears only for users with ADMIN or SUPER_ADMIN roles. This link should navigate to /admin route. Position it at the top of the menu or in a separate &apos;Administration&apos; section with visual distinction (different icon, badge, or color). Ensure the link respects existing admin-layout-route and frontend-role-check features. Optionally add keyboard shortcut (Ctrl+Shift+A) for quick admin access.</description>
+    </feature>
+    <feature>
+      <name>Reorder Menu Items by Usage Frequency</name>
+      <description>Reorganize menu structure based on user workflow priority: 1) Dashboard (first - landing page after login), 2) Legal Q&amp;A Chat (most frequent daily use), 3) Documents (high frequency), 4) Case Analysis (regular use), 5) Case Law Search (regular use), 6) Analytics/Admin (lower frequency), 7) Settings/Billing (infrequent access). Move Dashboard to top position. Ensure order matches typical user journey from login to daily tasks.</description>
+    </feature>
+    <feature>
+      <name>Migrate Email Queue to Temporal Workflow</name>
+      <description>Replace Bull-based email queue with Temporal workflow. Create EmailWorkflow with activities for: 1) Render email template, 2) Send via SendGrid/email provider, 3) Handle rate limiting, 4) Log delivery status, 5) Retry on failure with exponential backoff. Implement workflow for bulk emails with parallel execution limits. Add dead-letter queue handling for permanently failing emails. Migrate existing queued emails during deployment.</description>
+    </feature>
+    <feature>
+      <name>Group Lawyer-Specific Features in Navigation Menu</name>
+      <description>Organize lawyer-related features under a dedicated &apos;Legal Work&apos; or &apos;Lawyer Tools&apos; menu group. This group should include: Document Management, Legal Q&amp;A Chat, Case Analysis, Case Law Search, and Advanced Search. The group should be visible to users with LAWYER, PARALEGAL, and higher roles. Use collapsible submenu or visual separator to distinguish from general features.</description>
+    </feature>
+    <feature>
+      <name>Demo Request Entity for Database Storage</name>
+      <description>Create DemoRequest infrastructure entity to store form submissions locally. Include fields: id (UUID), fullName (string), email (string), company (string, optional), companySize (enum, optional), industry (string, optional), useCase (text), timeline (string, optional), budget (string, optional), preferredDemoTime (datetime, optional), status (enum: NEW, CONTACTED, SCHEDULED, QUALIFIED, CLOSED), hubspotContactId (string, optional), submittedAt (timestamp), contactedAt (timestamp optional), metadata (JSON for additional info). Add repository interface in domain layer. Implement using nestjs-query decorators for auto-generated resolvers. Add indexes for email and status fields.</description>
+    </feature>
+    <feature>
+      <name>Configure Temporal for Local Development with Docker Compose</name>
+      <description>Update docker-compose.yml to include Temporal server services for local development. Add temporal service (latest Temporal server image), temporal-ui (web UI), and dependencies (PostgreSQL for Temporal backend). Configure volume mounts for Temporal data persistence. Expose Temporal UI on localhost:8088 for workflow inspection. Set TEMPORAL_CLUSTER_URL=localhost:7233 environment variable for backend. Ensure services start in correct order (DB -&gt; Temporal -&gt; Backend). Add docker-compose.override.yml for production differences.</description>
+    </feature>
+    <feature>
+      <name>Demo Request Form Frontend Integration</name>
+      <description>Connect the demo request form component to the GraphQL mutation. Implement: 1) useCustomMutation hook or generated GraphQL mutation hook for submitDemoRequest, 2) Form submission handler with loading state and error handling, 3) Success confirmation view with thank you message and next steps, 4) Error messages for validation failures and HubSpot sync errors, 5) Analytics tracking (Google Analytics or similar) for form submissions, 6) ReCAPTCHA or bot protection (optional based on requirements), 7) Email validation check before form submission to prevent fake leads. Store submitted data in localStorage to show &apos;already requested&apos; state if user returns.</description>
+    </feature>
+    <feature>
+      <name>Demo Request Form Component</name>
+      <description>Create a multi-step demo request form similar to 11x.ai&apos;s approach. Implement form with: 1) Contact information step (full name, work email, phone optional), 2) Company information step (company name, size, industry), 3) Use case step (what legal problems they want to solve, current challenges), 4) Timeline step (when they&apos;re looking to implement, budget range), 5) Preferred demo time (calendar integration or time slot selection). Use shadcn/ui form components with validation. Implement step progress indicator. Show form in modal or as embedded component on the waitlist page. Store form state in React Hook Form with proper validation using zod schemas.</description>
+    </feature>
+    <feature>
+      <name>HubSpot Webhook Handler for Lead Sync</name>
+      <description>Implement HubSpot webhook receiver to keep local DemoRequest data in sync with CRM. Create: 1) POST /api/webhooks/hubspot endpoint, 2) Webhook signature verification for security, 3) Handle contact property change events from HubSpot, 4) Update local DemoRequest status when changed in HubSpot (e.g., deal stage changes), 5) Handle contact deletion, 6) Log all webhook events for audit trail. Configure HubSpot webhook to send notifications for contact lifecycle changes. Add to existing webhook-system infrastructure.</description>
+    </feature>
+    <feature>
+      <name>Landing Page Call-to-Action Integration</name>
+      <description>Add prominent CTAs across the landing page directing users to the demo request page. Implement: 1) Hero section CTA button &apos;Request Early Access&apos; or &apos;Book a Demo&apos;, 2) Sticky header CTA on scroll, 3) Feature section CTAs after each major feature description, 4) &apos;Get Started&apos; button in navigation linking to demo request, 5) Exit-intent modal offering demo request when user tries to leave site, 6) Pricing page CTA if pricing page exists. Ensure consistent button styling using shadcn/ui Button components. Track CTA click-through rates with analytics.</description>
+    </feature>
+    <feature>
+      <name>Temporal Client Integration with NestJS Backend</name>
+      <description>Create TemporalModule in NestJS backend integrating Temporal SDK. Implement TemporalService providing workflow execution methods: startDocumentGeneration(documentId), startEmailSend(emailData), startPdfExport(documentId), startRulingIndexing(), startWebhookDelivery(webhookId). Configure Temporal connection via environment variables. Create worker services for each workflow type registered as NestJS providers. Implement activity registration and workflow stub creation. Add error handling and retry logic at client level.</description>
+    </feature>
+    <feature>
+      <name>Group User Settings and Account Features</name>
+      <description>Create a &apos;Account Settings&apos; or &apos;My Account&apos; menu group containing: Settings (profile, preferences, security), Usage/Billing, API Keys, and Notifications. This group should appear at the bottom of the menu or in a separate &apos;Account&apos; section. Use visual separator (divider) to distinguish from main application features. For non-admin users, this consolidates all personal configuration in one location.</description>
+    </feature>
+    <feature>
+      <name>Two-Factor Authentication Documentation</name>
+      <description>Update CLAUDE.md with 2FA architecture documentation. Include: 1) Overview of TOTP implementation, 2) Entity relationships (User -&gt; TwoFactorAuth), 3) Security measures (encryption, rate limiting), 4) GraphQL mutations and their usage, 5) Frontend components and flow diagrams, 6) Testing guide with test TOTP secrets, 7) Troubleshooting common issues (QR code not scanning, clock skew, backup codes lost). Add code examples for generating TOTP tokens in tests.</description>
+    </feature>
+    <feature>
+      <name>Admin Two-Factor Authentication Status</name>
+      <description>Add 2FA status indicator to admin user management view. Show badge on user list indicating whether each user has 2FA enabled. On user detail page, display: 1) 2FA enabled/disabled status, 2) TOTP secret creation date, 3) Last verification date, 4) Option to force-disable 2FA for locked-out users (with admin password confirmation). Add filter to user list for &apos;2FA Enabled&apos; users. Update admin-user-detail-view feature with 2FA section.</description>
+    </feature>
+    <feature>
+      <name>Two-Factor Auth Seed Data Update</name>
+      <description>Update seed data files to include test scenarios for 2FA. Create test user with 2FA already enabled and known TOTP secret for E2E testing. Add seed data entry documenting TOTP secret used in tests (e.g., &apos;JBSWY3DPEHPK3PXP&apos; for test code &apos;123456&apos;). Include user with backup codes pre-generated. Update users.seed.ts with 2FA-enabled test user. Document in CLAUDE.md how to use test secrets for local development.</description>
+    </feature>
+    <feature>
+      <name>Two-Factor Settings in User Preferences</name>
+      <description>Add two-factor authentication section to settings page. Display current 2FA status (enabled/disabled). When enabled, show: 1) Last verified date, 2) &apos;Regenerate backup codes&apos; button, 3) &apos;Disable two-factor authentication&apos; button with password confirmation, 4) Warning text about security implications. When disabled, show &apos;Enable two-factor authentication&apos; button linking to setup page. Integrate with existing UserPreferences entity for storing 2FA preference metadata.</description>
+    </feature>
+    <feature>
+      <name>Configure Temporal for Production Deployment</name>
+      <description>Set up Temporal for production self-hosted deployment following Temporal deployment guide. Configure production-grade Temporal cluster with: 1) Frontend service (replicated), 2) History service (replicated), 3) Matching service (replicated), 4) Worker service (replicated), 5) PostgreSQL/MySQL for backend persistence, 6) Prometheus for metrics. Create Kubernetes manifests or Docker Swarm configuration. Configure TLS/SSL for service communication. Set up Temporal UI with authentication. Implement health checks and monitoring. Configure archival for workflow history.</description>
+    </feature>
+    <feature>
+      <name>Waitlist/Demo Request Confirmation Email</name>
+      <description>Send automated confirmation email to users who submit demo requests. Implement: 1) Email template with thank you message, 2) Information about what to expect next (timeline for demo scheduling, product updates), 3) Links to documentation, blog, or social media, 4) &apos;Add to calendar&apos; link if demo time was scheduled, 5) Unsubscribe/opt-out link for marketing emails, 6) Use existing email-notification-service infrastructure, 7) Send via email queue (or Temporal workflow when migration complete). Ensure email is sent asynchronously after successful HubSpot sync.</description>
+    </feature>
+    <feature>
+      <name>Admin Demo Request Management View</name>
+      <description>Create admin interface for viewing and managing demo requests. Implement: 1) Demo request list page at /admin/demo-requests, 2) Table showing: name, email, company, submitted date, status (new, contacted, scheduled, closed), 3) Filtering by status, date range, company size, 4) Search by name or email, 5) Detail view showing full submission information, 6) Status update workflow (mark as contacted, schedule demo, close), 7) Integration with HubSpot to sync status updates back to CRM, 8) Export to CSV functionality for sales team. Use Refine useTable hook with GraphQL data provider. Apply admin role guard.</description>
+    </feature>
+    <feature>
+      <name>Migrate PDF Export Queue to Temporal Workflow</name>
+      <description>Replace Bull-based PDF export queue with Temporal workflow. Create PdfExportWorkflow with activities for: 1) Retrieve document content, 2) Generate PDF using PDFKit/Puppeteer, 3) Upload to storage, 4) Update document with PDF URL, 5) Notify user on completion. Implement long-running workflow support (PDF generation can take minutes). Add cancellation support for abandoned exports. Configure heartbeat for long activities.</description>
+    </feature>
+    <feature>
+      <name>Demo Request Analytics Dashboard</name>
+      <description>Add demo request metrics to admin analytics dashboard. Track: 1) Total demo requests over time (line chart), 2) Conversion rate (submitted → contacted → scheduled → closed), 3) Lead sources (how they found the page - add UTM tracking), 4) Company size distribution (pie chart), 5) Industry breakdown, 6) Average response time to new leads, 7) Top use cases mentioned, 8) Geography breakdown (if location data collected). Create GraphQL queries aggregating DemoRequest data. Display on existing admin-system-overview-dashboard or dedicated marketing analytics section.</description>
+    </feature>
+    <feature>
+      <name>E2E Tests for Temporal Workflows</name>
+      <description>Create comprehensive E2E tests for all Temporal workflows using test workflow environment. Test scenarios: 1) Document generation workflow completes successfully, 2) Email workflow retries on failure, 3) PDF export workflow handles long-running tasks, 4) Ruling indexing workflow runs on schedule, 5) Webhook delivery workflow handles endpoint failures. Use Temporal test environment for workflow simulation. Verify workflow state transitions and activity outputs. Test workflow cancellation and timeouts. Validate idempotency (re-running workflow with same ID doesn&apos;t duplicate work).</description>
+    </feature>
+    <feature>
+      <name>Migrate Ruling Indexing to Temporal Scheduled Workflow</name>
+      <description>Replace Bull-based ruling indexing job with Temporal scheduled workflow. Create RulingIndexingWorkflow with activities for: 1) Fetch new rulings from SAOS/ISAP APIs, 2) Process and parse ruling data, 3) Index in vector store for RAG, 4) Store in database, 5) Handle API rate limiting. Implement cron schedule for nightly execution. Add backfill workflow for historical data. Configure idempotency keys to prevent duplicate indexing.</description>
+    </feature>
+    <feature>
+      <name>Create Deployment Guide for Temporal Migration</name>
+      <description>Document deployment process for migrating from Bull to Temporal. Include: 1) Pre-deployment checklist (backup Redis queues), 2) Zero-downtime migration strategy (run Bull and Temporal in parallel during transition), 3) Data migration scripts (export Bull jobs, import as Temporal workflows), 4) Rollback procedure if issues occur, 5) Validation steps (verify queue depths match, monitor error rates), 6) Production cutover procedure, 7) Post-migration cleanup. Add environment variable reference for production Temporal cluster configuration. Document monitoring and alerting setup.</description>
+    </feature>
+    <feature>
+      <name>Temporal Observability and Monitoring Integration</name>
+      <description>Integrate Temporal with existing monitoring infrastructure (Sentry for errors, custom metrics). Implement workflow execution logging to structured logger. Create custom metrics exporter for Prometheus: workflows_started_total, workflows_completed_total, workflows_failed_total, activity_latency. Add Sentry integration for workflow failures. Configure Temporal UI access for operations team. Create dashboards for workflow execution metrics. Set up alerts for failed workflows and stuck activities.</description>
+    </feature>
+    <feature>
+      <name>Migrate Webhook Delivery to Temporal Workflow</name>
+      <description>Replace Bull-based webhook delivery queue with Temporal workflow. Create WebhookDeliveryWorkflow with activities for: 1) Prepare webhook payload, 2) Sign request with HMAC, 3) Deliver to endpoint, 4) Handle retry logic with exponential backoff, 5) Update delivery status, 6) Disable webhook after consecutive failures. Implement per-webhook rate limiting. Add workflow for replaying failed webhooks. Configure timeout for webhook endpoint response.</description>
+    </feature>
+    <feature>
+      <name>Remove Bull Queue Dependencies and Clean Up Code</name>
+      <description>After all Temporal migrations are complete and verified, remove Bull queue dependencies from package.json. Delete queue processor files: document-generation-queue.processor.ts, email-queue.processor.ts, pdf-export-queue.processor.ts, ruling-indexing-job.processor.ts, webhook-delivery-queue.processor.ts. Remove Bull configuration from NestJS modules. Clean up queue-related DTOs and interfaces. Remove Redis dependency if no longer needed for caching. Update documentation to reflect Temporal as the only background job system.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

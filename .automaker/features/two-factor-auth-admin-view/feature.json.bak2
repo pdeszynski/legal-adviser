@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Add 2FA status indicator to admin user management view. Show badge on user list indicating whether each user has 2FA enabled. On user detail page, display: 1) 2FA enabled/disabled status, 2) TOTP secret creation date, 3) Last verification date, 4) Option to force-disable 2FA for locked-out users (with admin password confirmation). Add filter to user list for '2FA Enabled' users. Update admin-user-detail-view feature with 2FA section.",
+  "id": "two-factor-auth-admin-view",
+  "title": "Admin Two-Factor Authentication Status",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Add 2FA status indicator to admin user management view. Show badge on user list indicating whether each user has 2FA enabled. On user detail page, display: 1) 2FA enabled/disabled status, 2) TOTP secret creation date, 3) Last verification date, 4) Option to force-disable 2FA for locked-out users (with admin password confirmation). Add filter to user list for '2FA Enabled' users. Update admin-user-detail-view feature with 2FA section.",
+      "timestamp": "2026-01-24T15:49:40.774Z",
+      "source": "initial"
+    }
+  ]
+}

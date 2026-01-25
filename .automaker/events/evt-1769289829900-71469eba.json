@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769289829900-71469eba",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T21:23:49.900Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "ruff-mypy-git-hooks",
+  "featureName": "Pre-commit Hooks for Ruff and MyPy",
+  "error": "Feature completed in 529s - auto-verified",
+  "passes": true
+}

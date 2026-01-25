@@ -13,6 +13,10 @@ import {
   UserCog,
   Activity,
   Coins,
+  Scale,
+  Search,
+  Gavel,
+  Phone,
 } from 'lucide-react';
 
 /**
@@ -38,6 +42,10 @@ export interface MenuItem {
   allowedRoles?: UserRole[];
   /** Whether this is an admin-only item */
   isAdmin?: boolean;
+  /** Whether this is a legal professional-only item (lawyer, paralegal, admin, super_admin) */
+  isLegal?: boolean;
+  /** Whether this is an account settings item (Settings, Billing, Usage, Notifications, API Keys) */
+  isAccount?: boolean;
 }
 
 /**
@@ -62,6 +70,10 @@ const MENU_ICONS: Record<string, MenuItemIcon> = {
   admin_settings: <Settings className="h-4 w-4" />,
   admin_system_health: <Activity className="h-4 w-4" />,
   admin_token_analytics: <Coins className="h-4 w-4" />,
+  admin_demo_requests: <Phone className="h-4 w-4" />,
+  case_analysis: <Gavel className="h-4 w-4" />,
+  case_law_search: <Scale className="h-4 w-4" />,
+  advanced_search: <Search className="h-4 w-4" />,
 };
 
 /**
@@ -75,6 +87,7 @@ export const MENU_CONFIG: Record<string, Omit<MenuItem, 'icon'> & { iconKey?: st
     route: '/chat',
     iconKey: 'chat',
     minRole: 'guest',
+    isLegal: true,
   },
   documents: {
     key: 'documents',
@@ -82,6 +95,31 @@ export const MENU_CONFIG: Record<string, Omit<MenuItem, 'icon'> & { iconKey?: st
     route: '/documents',
     iconKey: 'documents',
     minRole: 'guest',
+    isLegal: true,
+  },
+  case_analysis: {
+    key: 'case_analysis',
+    label: 'Case Analysis',
+    route: '/case-analysis',
+    iconKey: 'case_analysis',
+    minRole: 'paralegal',
+    isLegal: true,
+  },
+  case_law_search: {
+    key: 'case_law_search',
+    label: 'Case Law Search',
+    route: '/case-law',
+    iconKey: 'case_law_search',
+    minRole: 'paralegal',
+    isLegal: true,
+  },
+  advanced_search: {
+    key: 'advanced_search',
+    label: 'Advanced Search',
+    route: '/advanced-search',
+    iconKey: 'advanced_search',
+    minRole: 'paralegal',
+    isLegal: true,
   },
   templates: {
     key: 'templates',
@@ -103,6 +141,7 @@ export const MENU_CONFIG: Record<string, Omit<MenuItem, 'icon'> & { iconKey?: st
     route: '/notifications',
     iconKey: 'notifications',
     minRole: 'client',
+    isAccount: true,
   },
   settings: {
     key: 'settings',
@@ -110,6 +149,7 @@ export const MENU_CONFIG: Record<string, Omit<MenuItem, 'icon'> & { iconKey?: st
     route: '/settings',
     iconKey: 'settings',
     minRole: 'guest',
+    isAccount: true,
   },
   billing: {
     key: 'billing',
@@ -117,6 +157,7 @@ export const MENU_CONFIG: Record<string, Omit<MenuItem, 'icon'> & { iconKey?: st
     route: '/billing',
     iconKey: 'billing',
     minRole: 'client',
+    isAccount: true,
   },
   usage: {
     key: 'usage',
@@ -124,6 +165,7 @@ export const MENU_CONFIG: Record<string, Omit<MenuItem, 'icon'> & { iconKey?: st
     route: '/usage',
     iconKey: 'usage',
     minRole: 'client',
+    isAccount: true,
   },
   audit_logs: {
     key: 'audit_logs',
@@ -145,18 +187,36 @@ export const MENU_CONFIG: Record<string, Omit<MenuItem, 'icon'> & { iconKey?: st
 
 /**
  * Default menu item order for display
+ * Ordered by user workflow priority from most to least frequent:
+ * 1) Dashboard (landing page after login)
+ * 2) Legal Q&A Chat (most frequent daily use)
+ * 3) Documents (high frequency)
+ * 4) Case Analysis (regular use)
+ * 5) Case Law Search (regular use)
+ * 6) Advanced Search (regular use)
+ * 7) Templates
+ * 8) Admin/Analytics (lower frequency)
+ * 9) Account Settings (infrequent access - Settings, Billing, Usage, Notifications)
  */
 export const MENU_ORDER: (keyof typeof MENU_CONFIG)[] = [
+  // Primary workflow - daily tasks
+  'dashboard',
   'chat',
   'documents',
+  // Legal research tools
+  'case_analysis',
+  'case_law_search',
+  'advanced_search',
+  // Secondary tools
   'templates',
-  'dashboard',
+  // Admin (lower frequency)
+  'admin_panel',
+  'audit_logs',
+  // Account Settings (infrequent access - grouped at bottom)
   'notifications',
   'settings',
   'billing',
   'usage',
-  'audit_logs',
-  'admin_panel',
 ];
 
 /**
@@ -277,6 +337,13 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     label: 'Token Analytics',
     route: '/admin/analytics/tokens',
     icon: MENU_ICONS.admin_token_analytics,
+    allowedRoles: ['admin', 'super_admin'],
+  },
+  {
+    key: 'admin_demo_requests',
+    label: 'Demo Requests',
+    route: '/admin/demo-requests',
+    icon: MENU_ICONS.admin_demo_requests,
     allowedRoles: ['admin', 'super_admin'],
   },
 ];

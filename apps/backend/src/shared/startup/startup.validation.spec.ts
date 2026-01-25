@@ -55,8 +55,8 @@ describe('StartupValidation', () => {
     it('should return unhealthy result for failed service', async () => {
       // Create an AxiosError-like object
       const error = new Error('Connection refused');
-      (error as { code: string }).code = 'ECONNREFUSED';
-      (error as { isAxiosError: boolean }).isAxiosError = true;
+      (error as unknown as { code: string }).code = 'ECONNREFUSED';
+      (error as unknown as { isAxiosError: boolean }).isAxiosError = true;
       mockedAxios.get.mockRejectedValue(error);
       // Make axios.isAxiosError return true for our error
       mockedAxios.isAxiosError.mockReturnValue(true);

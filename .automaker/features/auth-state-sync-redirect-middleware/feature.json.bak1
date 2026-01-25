@@ -1,0 +1,19 @@
+{
+  "category": "enhancement",
+  "description": "Implement middleware or router guard that checks authentication state before protected routes. Create: 1) Next.js middleware or Refine authProvider check that runs on route change, 2) Validation of stored token validity (check expiry, format), 3) Automatic redirect to /login if invalid or missing token, 4) Preservation of intended destination (redirect after login), 5) Auth state refresh on window focus (optional), 6) Handling of browser back button to expired sessions. Ensure this works client-side without full server round-trip. Integrate with client-side-session-expiry-detection feature. Test on all authenticated routes including /settings, /documents, /chat.",
+  "id": "auth-state-sync-redirect-middleware",
+  "title": "Auth State Sync on Navigation and Redirects",
+  "dependencies": [
+    "client-side-session-expiry-detection"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Implement middleware or router guard that checks authentication state before protected routes. Create: 1) Next.js middleware or Refine authProvider check that runs on route change, 2) Validation of stored token validity (check expiry, format), 3) Automatic redirect to /login if invalid or missing token, 4) Preservation of intended destination (redirect after login), 5) Auth state refresh on window focus (optional), 6) Handling of browser back button to expired sessions. Ensure this works client-side without full server round-trip. Integrate with client-side-session-expiry-detection feature. Test on all authenticated routes including /settings, /documents, /chat.",
+      "timestamp": "2026-01-25T13:44:04.758Z",
+      "source": "initial"
+    }
+  ]
+}

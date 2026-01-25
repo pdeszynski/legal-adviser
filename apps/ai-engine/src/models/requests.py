@@ -1,7 +1,6 @@
 """Request models for AI Engine API."""
 
 from enum import Enum
-from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -26,7 +25,7 @@ class GenerateDocumentRequest(BaseModel):
     document_type: DocumentType = Field(
         ..., description="Type of legal document to generate"
     )
-    context: Optional[dict] = Field(
+    context: dict | None = Field(
         default=None,
         description="Additional context variables (e.g., defendant name, amounts)",
     )
@@ -48,7 +47,7 @@ class SearchRulingsRequest(BaseModel):
     """Request to search for legal rulings."""
 
     query: str = Field(..., description="Search query", min_length=3)
-    filters: Optional[dict] = Field(
+    filters: dict | None = Field(
         default=None,
         description="Search filters (date range, court type, etc.)",
     )
@@ -64,7 +63,7 @@ class ClassifyCaseRequest(BaseModel):
         min_length=20,
     )
     session_id: str = Field(..., description="User session ID for tracking")
-    context: Optional[dict] = Field(
+    context: dict | None = Field(
         default=None,
         description="Additional context (e.g., document types, parties involved)",
     )
@@ -73,7 +72,7 @@ class ClassifyCaseRequest(BaseModel):
 class GenerateEmbeddingsRequest(BaseModel):
     """Request to generate embeddings for text chunks."""
 
-    texts: List[str] = Field(
+    texts: list[str] = Field(
         ..., description="List of text chunks to generate embeddings for", min_items=1
     )
     model: str = Field(

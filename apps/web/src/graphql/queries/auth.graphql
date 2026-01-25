@@ -9,3 +9,12 @@ query Me {
     ...AuthUserFragment
   }
 }
+
+# Get two-factor authentication settings
+query TwoFactorSettings {
+  twoFactorSettings {
+    status
+    enabled
+    remainingBackupCodes
+  }
+}

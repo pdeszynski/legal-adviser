@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Connect the demo request form component to the GraphQL mutation. Implement: 1) useCustomMutation hook or generated GraphQL mutation hook for submitDemoRequest, 2) Form submission handler with loading state and error handling, 3) Success confirmation view with thank you message and next steps, 4) Error messages for validation failures and HubSpot sync errors, 5) Analytics tracking (Google Analytics or similar) for form submissions, 6) ReCAPTCHA or bot protection (optional based on requirements), 7) Email validation check before form submission to prevent fake leads. Store submitted data in localStorage to show 'already requested' state if user returns.",
+  "id": "demo-request-form-frontend-integration",
+  "title": "Demo Request Form Frontend Integration",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Connect the demo request form component to the GraphQL mutation. Implement: 1) useCustomMutation hook or generated GraphQL mutation hook for submitDemoRequest, 2) Form submission handler with loading state and error handling, 3) Success confirmation view with thank you message and next steps, 4) Error messages for validation failures and HubSpot sync errors, 5) Analytics tracking (Google Analytics or similar) for form submissions, 6) ReCAPTCHA or bot protection (optional based on requirements), 7) Email validation check before form submission to prevent fake leads. Store submitted data in localStorage to show 'already requested' state if user returns.",
+      "timestamp": "2026-01-24T21:38:47.509Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T02:16:43.921Z"
+}

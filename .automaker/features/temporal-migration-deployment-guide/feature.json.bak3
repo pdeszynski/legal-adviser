@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Document deployment process for migrating from Bull to Temporal. Include: 1) Pre-deployment checklist (backup Redis queues), 2) Zero-downtime migration strategy (run Bull and Temporal in parallel during transition), 3) Data migration scripts (export Bull jobs, import as Temporal workflows), 4) Rollback procedure if issues occur, 5) Validation steps (verify queue depths match, monitor error rates), 6) Production cutover procedure, 7) Post-migration cleanup. Add environment variable reference for production Temporal cluster configuration. Document monitoring and alerting setup.",
+  "id": "temporal-migration-deployment-guide",
+  "title": "Create Deployment Guide for Temporal Migration",
+  "dependencies": [
+    "temporal-production-deployment"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "feature/temporal",
+  "descriptionHistory": [
+    {
+      "description": "Document deployment process for migrating from Bull to Temporal. Include: 1) Pre-deployment checklist (backup Redis queues), 2) Zero-downtime migration strategy (run Bull and Temporal in parallel during transition), 3) Data migration scripts (export Bull jobs, import as Temporal workflows), 4) Rollback procedure if issues occur, 5) Validation steps (verify queue depths match, monitor error rates), 6) Production cutover procedure, 7) Post-migration cleanup. Add environment variable reference for production Temporal cluster configuration. Document monitoring and alerting setup.",
+      "timestamp": "2026-01-24T16:43:46.097Z",
+      "source": "initial"
+    }
+  ]
+}

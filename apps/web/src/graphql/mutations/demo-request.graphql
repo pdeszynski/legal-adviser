@@ -1,0 +1,11 @@
+# Demo Request Mutations
+
+# Submit a demo request (public mutation - no authentication required)
+mutation SubmitDemoRequest($input: DemoRequestInput!) {
+  submitDemoRequest(input: $input) {
+    success
+    message
+    referenceId
+    qualified
+  }
+}

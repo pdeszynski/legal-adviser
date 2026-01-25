@@ -124,7 +124,8 @@ export const useUserRole = (): UseUserRoleReturn => {
   // Role type helpers
   const isAdmin = hasRole(['admin', 'super_admin']);
   const isSuperAdmin = hasRole('super_admin');
-  const isLegalProfessional = hasRole(['lawyer', 'paralegal']);
+  // Legal professionals include paralegal, lawyer, admin, and super_admin
+  const isLegalProfessional = hasRole(['lawyer', 'paralegal', 'admin', 'super_admin']);
   const isClient = hasRole(['client', 'guest', 'user']);
 
   return {

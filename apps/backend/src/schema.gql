@@ -34,6 +34,19 @@ input AdminCreateUserInput {
   username: String
 }
 
+input AdminForceDisableTwoFactorInput {
+  """The ID of the user to disable 2FA for"""
+  userId: String!
+}
+
+type AdminForceDisableTwoFactorResponse {
+  """The user ID"""
+  id: String!
+
+  """The updated 2FA status (should be false)"""
+  twoFactorEnabled: Boolean!
+}
+
 type AdvancedLegalRulingSearchResponse {
   """Number of results returned"""
   count: Int!
@@ -519,6 +532,7 @@ enum AuditResourceType {
   SESSION
   SYSTEM
   USER
+  WEBHOOK
 }
 
 input AuditResourceTypeFilterComparison {
@@ -539,14 +553,22 @@ input AuditResourceTypeFilterComparison {
 }
 
 type AuthPayload {
-  """JWT access token"""
-  accessToken: String!
+  """JWT access token (null if 2FA is required)"""
+  accessToken: String
 
-  """JWT refresh token for obtaining new access tokens"""
-  refreshToken: String!
+  """
+  JWT refresh token for obtaining new access tokens (null if 2FA is required)
+  """
+  refreshToken: String
 
-  """Authenticated user information"""
-  user: AuthUser!
+  """True if user needs to provide 2FA token to complete login"""
+  requiresTwoFactor: Boolean!
+
+  """Temporary token for completing 2FA (only present when 2FA is required)"""
+  twoFactorTempToken: String
+
+  """Authenticated user information (null if 2FA is required)"""
+  user: AuthUser
 }
 
 type AuthUser {
@@ -631,6 +653,17 @@ enum BooleanOperator {
   AND
   NOT
   OR
+}
+
+"""Budget ranges for implementation"""
+enum BudgetRange {
+  NOT_SPECIFIED
+  OVER_100K
+  RANGE_5K_10K
+  RANGE_10K_25K
+  RANGE_25K_50K
+  RANGE_50K_100K
+  UNDER_5K
 }
 
 input BulkActivateUsersInput {
@@ -793,6 +826,36 @@ input CommentResolutionStatusFilterComparison {
   notLike: CommentResolutionStatus
 }
 
+"""Company size categories"""
+enum CompanySize {
+  ENTERPRISE_500_PLUS
+  LARGE_201_500
+  MEDIUM_51_200
+  SMALL_2_10
+  SMALL_11_50
+  SOLO
+}
+
+"""Company size categories for demo requests"""
+enum CompanySizeEnum {
+  ENTERPRISE
+  LARGE
+  MEDIUM
+  SMALL
+  SOLO
+}
+
+input CompleteTwoFactorLoginInput {
+  """Backup code for account recovery (alternative to TOTP token)"""
+  backupCode: String
+
+  """Temporary token received from login when 2FA is required"""
+  twoFactorTempToken: String!
+
+  """The 6-digit TOTP token from authenticator app"""
+  twoFactorToken: String
+}
+
 input ConditionalSectionInput {
   condition: String!
   description: String
@@ -917,6 +980,41 @@ input CreateDocumentVersionInput {
   contentSnapshot: String!
   documentId: ID!
   sessionId: ID!
+}
+
+input CreateHubSpotContactInput {
+  """Company name"""
+  company: String
+
+  """Company size"""
+  companySize: String
+
+  """Contact email address (required)"""
+  email: String!
+
+  """First name"""
+  firstName: String
+
+  """Last name"""
+  lastName: String
+
+  """Additional message"""
+  message: String
+
+  """Phone number"""
+  phone: String
+
+  """Lead source"""
+  source: String
+
+  """Implementation timeline"""
+  timeline: LeadTimeline
+
+  """Use case description"""
+  useCase: String
+
+  """Company website"""
+  website: String
 }
 
 input CreateInAppNotificationInput {
@@ -1291,6 +1389,326 @@ enum DeliveryStatus {
   PENDING
   RETRYING
   SUCCESS
+}
+
+type DemoRequest {
+  budget: String
+  company: String
+  companySize: CompanySizeEnum
+  contactedAt: DateTime
+  createdAt: DateTime!
+  email: String!
+  fullName: String!
+  hubspotContactId: String
+  id: ID!
+  industry: String
+  metadata: String
+  preferredDemoTime: DateTime
+  status: DemoRequestStatus!
+  submittedAt: DateTime!
+  timeline: String
+  updatedAt: DateTime!
+  useCase: String!
+}
+
+input DemoRequestAggregateFilter {
+  and: [DemoRequestAggregateFilter!]
+  email: StringFieldComparison
+  id: IDFilterComparison
+  or: [DemoRequestAggregateFilter!]
+  status: DemoRequestStatusFilterComparison
+}
+
+type DemoRequestAggregateGroupBy {
+  email: String
+  id: ID
+  status: DemoRequestStatus
+}
+
+type DemoRequestAggregateResponse {
+  count: DemoRequestCountAggregate
+  groupBy: DemoRequestAggregateGroupBy
+  max: DemoRequestMaxAggregate
+  min: DemoRequestMinAggregate
+}
+
+type DemoRequestAnalytics {
+  """Company size distribution"""
+  companySizeDistribution: [DemoRequestCompanySizeDistribution!]!
+  generatedAt: DateTime!
+
+  """Industry breakdown"""
+  industryBreakdown: [DemoRequestIndustryBreakdown!]!
+
+  """Lead source distribution"""
+  leadSources: [DemoRequestLeadSource!]!
+  metrics: DemoRequestMetrics!
+
+  """Requests over time (by day)"""
+  requestsOverTime: [DemoRequestTimeSeriesPoint!]!
+
+  """Average response time metrics"""
+  responseTimeMetrics: DemoRequestResponseTimeMetrics!
+
+  """Status distribution for funnel visualization"""
+  statusBreakdown: [DemoRequestStatusBreakdown!]!
+
+  """Top mentioned use cases"""
+  topUseCases: [DemoRequestTopUseCase!]!
+}
+
+type DemoRequestCompanySizeDistribution {
+  companySize: String!
+  count: Int!
+
+  """Percentage of total"""
+  percentage: Float!
+}
+
+type DemoRequestConnection {
+  """Array of edges."""
+  edges: [DemoRequestEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type DemoRequestCountAggregate {
+  email: Int
+  id: Int
+  status: Int
+}
+
+type DemoRequestEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the DemoRequest"""
+  node: DemoRequest!
+}
+
+input DemoRequestFilter {
+  and: [DemoRequestFilter!]
+  email: StringFieldComparison
+  id: IDFilterComparison
+  or: [DemoRequestFilter!]
+  status: DemoRequestStatusFilterComparison
+}
+
+type DemoRequestIndustryBreakdown {
+  count: Int!
+  industry: String!
+
+  """Percentage of total"""
+  percentage: Float!
+}
+
+input DemoRequestInput {
+  """Budget range for implementation"""
+  budget: BudgetRange
+
+  """Company name"""
+  company: String!
+
+  """Company size (number of employees)"""
+  companySize: CompanySize!
+
+  """Email address"""
+  email: String!
+
+  """Full name of the requester"""
+  fullName: String!
+
+  """Industry category"""
+  industry: Industry!
+
+  """Preferred time of day for demo"""
+  preferredDemoTime: PreferredTimeSlot
+
+  """Referrer URL for tracking"""
+  referrer: String
+
+  """Timeline for implementation"""
+  timeline: DemoTimeline!
+
+  """Specific use case or requirements"""
+  useCase: String!
+
+  """UTM campaign parameter for tracking"""
+  utmCampaign: String
+
+  """UTM content parameter for tracking"""
+  utmContent: String
+
+  """UTM medium parameter for tracking"""
+  utmMedium: String
+
+  """UTM source parameter for tracking"""
+  utmSource: String
+
+  """UTM term parameter for tracking"""
+  utmTerm: String
+}
+
+type DemoRequestLeadSource {
+  """Number of requests from this source"""
+  count: Int!
+
+  """UTM medium"""
+  medium: String
+
+  """Percentage of total"""
+  percentage: Float!
+
+  """
+  UTM source or "direct"
+  """
+  source: String
+}
+
+type DemoRequestMaxAggregate {
+  email: String
+  id: ID
+  status: DemoRequestStatus
+}
+
+type DemoRequestMetrics {
+  """Requests closed (won or lost)"""
+  closedRequests: Int!
+
+  """Requests that have been contacted"""
+  contactedRequests: Int!
+
+  """Contacted to scheduled conversion rate %"""
+  contactedToScheduledRate: Float!
+
+  """New requests (not yet contacted)"""
+  newRequests: Int!
+
+  """New to contacted conversion rate %"""
+  newToContactedRate: Float!
+
+  """Overall funnel conversion rate %"""
+  overallConversionRate: Float!
+  periodEnd: DateTime!
+  periodStart: DateTime!
+
+  """Requests qualified as leads"""
+  qualifiedRequests: Int!
+
+  """Requests with demos scheduled"""
+  scheduledRequests: Int!
+
+  """Total demo requests in period"""
+  totalRequests: Int!
+}
+
+type DemoRequestMinAggregate {
+  email: String
+  id: ID
+  status: DemoRequestStatus
+}
+
+type DemoRequestResponse {
+  """Confirmation message with next steps"""
+  message: String!
+
+  """Whether the lead was qualified for immediate follow-up"""
+  qualified: Boolean
+
+  """Unique reference ID for the request"""
+  referenceId: String
+
+  """Whether the request was submitted successfully"""
+  success: Boolean!
+}
+
+type DemoRequestResponseTimeMetrics {
+  """Average hours from submission to first contact"""
+  avgHoursToContact: Float!
+  calculatedAt: DateTime!
+
+  """Median hours to contact"""
+  medianHoursToContact: Float!
+
+  """Total contacted requests measured"""
+  totalContacted: Int!
+}
+
+input DemoRequestSort {
+  direction: SortDirection!
+  field: DemoRequestSortFields!
+  nulls: SortNulls
+}
+
+enum DemoRequestSortFields {
+  email
+  id
+  status
+}
+
+"""Demo request status in the sales pipeline"""
+enum DemoRequestStatus {
+  CLOSED
+  CONTACTED
+  NEW
+  QUALIFIED
+  SCHEDULED
+}
+
+type DemoRequestStatusBreakdown {
+  count: Int!
+
+  """Percentage of total"""
+  percentage: Float!
+  status: String!
+}
+
+input DemoRequestStatusFilterComparison {
+  eq: DemoRequestStatus
+  gt: DemoRequestStatus
+  gte: DemoRequestStatus
+  iLike: DemoRequestStatus
+  in: [DemoRequestStatus!]
+  is: Boolean
+  isNot: Boolean
+  like: DemoRequestStatus
+  lt: DemoRequestStatus
+  lte: DemoRequestStatus
+  neq: DemoRequestStatus
+  notILike: DemoRequestStatus
+  notIn: [DemoRequestStatus!]
+  notLike: DemoRequestStatus
+}
+
+type DemoRequestTimeSeriesPoint {
+  count: Int!
+  timestamp: DateTime!
+}
+
+type DemoRequestTopUseCase {
+  """Number of similar requests"""
+  count: Int!
+
+  """Truncated use case text"""
+  useCase: String!
+}
+
+"""Timeline preferences for demo"""
+enum DemoTimeline {
+  ASAP
+  EXPLORING
+  WITHIN_MONTH
+  WITHIN_QUARTER
+  WITHIN_WEEK
+}
+
+input DisableTwoFactorInput {
+  """User password for confirmation"""
+  password: String!
 }
 
 type DocumentActivityEntry {
@@ -1900,6 +2318,7 @@ type DocumentVersionSumAggregate {
 
 """Email template types available in the system"""
 enum EmailTemplateType {
+  DEMO_REQUEST_CONFIRMATION
   DOCUMENT_COMPLETED
   DOCUMENT_FAILED
   SYSTEM_NOTIFICATION
@@ -1921,6 +2340,17 @@ input EmailTemplateTypeFilterComparison {
   notILike: EmailTemplateType
   notIn: [EmailTemplateType!]
   notLike: EmailTemplateType
+}
+
+type EnableTwoFactorResponse {
+  """Backup codes for account recovery (show only once)"""
+  backupCodes: [String!]!
+
+  """QR code as base64 data URL for scanning"""
+  qrCodeDataUrl: String!
+
+  """The TOTP secret key for storing in authenticator app"""
+  secret: String!
 }
 
 type ErrorSummary {
@@ -1996,6 +2426,17 @@ enum GroupBy {
   MONTH
   WEEK
   YEAR
+}
+
+type HubSpotContactResponse {
+  """When the contact was created"""
+  createdAt: String!
+
+  """Contact email"""
+  email: String!
+
+  """HubSpot contact ID"""
+  id: String!
 }
 
 input IDFilterComparison {
@@ -2189,10 +2630,42 @@ input InAppNotificationTypeFilterComparison {
   notLike: InAppNotificationType
 }
 
+"""Industry categories"""
+enum Industry {
+  CONSULTING
+  FINANCE
+  GOVERNMENT
+  HEALTHCARE
+  LAW_FIRM
+  LEGAL_DEPARTMENT
+  OTHER
+  REAL_ESTATE
+  TECHNOLOGY
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
 scalar JSON
+
+type LeadQualificationResponse {
+  """Whether the lead is qualified"""
+  qualified: Boolean!
+
+  """Reason for qualification status"""
+  reason: String
+
+  """Lead qualification score"""
+  score: Float!
+}
+
+"""Timeline for lead implementation"""
+enum LeadTimeline {
+  EXPLORING
+  IMMEDIATE
+  WITHIN_MONTH
+  WITHIN_QUARTER
+}
 
 type LegalAnalysis {
   createdAt: DateTime!
@@ -2854,8 +3327,14 @@ enum LegalRulingSortFields {
 }
 
 input LoginInput {
+  """Backup code for account recovery (alternative to TOTP token)"""
+  backupCode: String
+
   """User password"""
   password: String!
+
+  """6-digit TOTP token (if 2FA is enabled)"""
+  twoFactorToken: String
 
   """Username or email address"""
   username: String!
@@ -2924,6 +3403,9 @@ type Mutation {
   """Delete a backup (admin only)"""
   adminDeleteBackup(id: ID!): Boolean!
 
+  """Admin force-disable 2FA for a user (requires admin role)"""
+  adminForceDisableTwoFactor(input: AdminForceDisableTwoFactorInput!): AdminForceDisableTwoFactorResponse!
+
   """Restore a backup (admin only)"""
   adminRestoreBackup(input: RestoreBackupInput!): Boolean!
 
@@ -2966,10 +3448,18 @@ type Mutation {
   """
   classifyCase(input: ClassifyCaseInput!): LegalAnalysis!
 
+  """
+  Complete login with 2FA token or backup code after receiving requiresTwoFactor response
+  """
+  completeTwoFactorLogin(input: CompleteTwoFactorLoginInput!): AuthPayload!
+
   """Create a new API key. The raw key is only shown once."""
   createApiKey(input: CreateApiKeyInput!): CreateApiKeyResponse!
   createDocumentTemplate(input: CreateTemplateInput!): DocumentTemplate!
   createDocumentV2(input: CreateLegalDocumentInputV2!): LegalDocumentV2!
+
+  """Create a contact in HubSpot from form submission"""
+  createHubSpotContact(input: CreateHubSpotContactInput!): HubSpotContactResponse
 
   """Create a new subscription for the current user"""
   createMySubscription(input: CreateUserSubscriptionInput!): UserSubscription!
@@ -3031,8 +3521,14 @@ type Mutation {
   """Delete a webhook permanently. This action cannot be undone."""
   deleteWebhook(id: String!): Boolean!
 
+  """Disable 2FA with password confirmation"""
+  disableTwoFactorAuth(input: DisableTwoFactorInput!): Boolean!
+
   """Disable a webhook"""
   disableWebhook(id: String!): Webhook!
+
+  """Generate TOTP secret and QR code for 2FA setup"""
+  enableTwoFactorAuth: EnableTwoFactorResponse!
 
   """Queue a document for PDF export"""
   exportDocumentToPdf(input: ExportDocumentToPdfInput!): PdfExportJob!
@@ -3045,7 +3541,9 @@ type Mutation {
   generateDocument(input: GenerateDocumentInput!): LegalDocument!
   generateDocumentFromTemplate(input: GenerateFromTemplateInput!): LegalDocument!
 
-  """Authenticate user with username/email and password"""
+  """
+  Authenticate user with username/email and password. Supports 2FA with twoFactorToken or backupCode.
+  """
   login(input: LoginInput!): AuthPayload!
 
   """Mark all notifications as read for a user"""
@@ -3055,11 +3553,17 @@ type Mutation {
   markNotificationAsRead(notificationId: String!, userId: String!): String!
   publishDocumentV2(input: PublishDocumentInputV2!): LegalDocumentV2!
 
+  """Check if a lead qualifies for deal creation"""
+  qualifyHubSpotLead(input: CreateHubSpotContactInput!): LeadQualificationResponse!
+
   """Record usage for quota tracking"""
   recordUsage(amount: Float, quotaKey: String!): Boolean!
 
   """Refresh access token using a valid refresh token"""
   refreshToken(input: RefreshTokenInput!): RefreshTokenPayload!
+
+  """Generate new backup codes (invalidates old ones)"""
+  regenerateBackupCodes: RegenerateBackupCodesResponse!
 
   """Register a new user account"""
   register(input: RegisterInput!): AuthPayload!
@@ -3095,6 +3599,9 @@ type Mutation {
 
   """Rotate webhook secret. The old secret will no longer work."""
   rotateWebhookSecret(id: String!): String!
+
+  """Schedule a demo time (admin only)"""
+  scheduleDemo(input: ScheduleDemoInput!): DemoRequest!
   seedSystemSettings: Boolean!
 
   """Send bulk notifications to multiple users"""
@@ -3106,17 +3613,28 @@ type Mutation {
   """Share a document with a user"""
   shareDocument(input: ShareDocumentInput!): DocumentShare!
 
+  """
+  Submit a demo request. No authentication required. The request will be synced to HubSpot and the sales team will be notified via email.
+  """
+  submitDemoRequest(input: DemoRequestInput!): DemoRequestResponse!
+
   """Submit a new legal query for AI processing"""
   submitLegalQuery(input: SubmitLegalQueryInput!): LegalQuery!
 
   """Suspend a user account (admin only)"""
   suspendUser(input: SuspendUserInput!): User!
 
+  """Sync a lead to HubSpot with automatic qualification"""
+  syncHubSpotLead(input: CreateHubSpotContactInput!, listType: String = "demo"): LeadQualificationResponse!
+
   """Test a webhook by sending a test event"""
   testWebhook(input: TestWebhookInput!): TestWebhookResponse!
 
   """Update an existing API key (name, scopes, rate limit, expiration)"""
   updateApiKey(id: String!, input: UpdateApiKeyInput!): ApiKey!
+
+  """Update demo request status (admin only)"""
+  updateDemoRequestStatus(input: UpdateDemoRequestStatusInput!): DemoRequest!
   updateDocument(id: ID!, input: UpdateDocumentInput!): LegalDocument!
 
   """Update the permission level of a document share"""
@@ -3153,6 +3671,9 @@ type Mutation {
   """Update an existing webhook (name, URL, events, headers, status)"""
   updateWebhook(id: String!, input: UpdateWebhookInput!): Webhook!
   upsertSystemSetting(input: SystemSettingInput!): SystemSetting!
+
+  """Verify 2FA setup with first TOTP token to enable"""
+  verifyTwoFactorSetup(input: VerifyTwoFactorSetupInput!): VerifyTwoFactorSetupResponse!
 }
 
 type Notification {
@@ -3612,6 +4133,13 @@ input PolishFormattingRulesInput {
   numberFormat: String
 }
 
+"""Preferred time of day for demo"""
+enum PreferredTimeSlot {
+  AFTERNOON
+  EVENING
+  MORNING
+}
+
 input PublishDocumentInputV2 {
   documentId: ID!
   publishedBy: ID!
@@ -3668,6 +4196,25 @@ type Query {
 
   """Count legal rulings matching filter criteria"""
   countLegalRulings(input: FilterLegalRulingsInput): Int!
+  demoRequest(
+    """The id of the record to find."""
+    id: ID!
+  ): DemoRequest!
+  demoRequestAggregate(
+    """Filter to find records to aggregate on"""
+    filter: DemoRequestAggregateFilter
+  ): [DemoRequestAggregateResponse!]!
+  demoRequestAnalytics(input: DashboardAnalyticsInput): DemoRequestAnalytics!
+  demoRequests(
+    """Specify to filter the records returned."""
+    filter: DemoRequestFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [DemoRequestSort!]! = []
+  ): DemoRequestConnection!
   documentComment(
     """The id of the record to find."""
     id: ID!
@@ -3961,6 +4508,9 @@ type Query {
   tokenUsageTrend(input: DashboardAnalyticsInput): [TokenUsageTrend!]!
   topUsersByUsage(by: String = "tokens", endDate: DateTime, limit: Float = 10, startDate: DateTime): String!
 
+  """Get current 2FA settings and status"""
+  twoFactorSettings: TwoFactorSettings
+
   """Get count of unread notifications for a user"""
   unreadNotificationCount(userId: String!): Int!
   usageStats(query: UsageStatsQueryInput!): UsageStatsResponse!
@@ -4073,6 +4623,11 @@ type RefreshTokenPayload {
   refreshToken: String!
 }
 
+type RegenerateBackupCodesResponse {
+  """New backup codes for account recovery (show only once)"""
+  codes: [String!]!
+}
+
 input RegisterInput {
   """Email address"""
   email: String!
@@ -4156,6 +4711,11 @@ type RulingMetadata {
   legalArea: String
   relatedCases: [String!]
   sourceReference: String
+}
+
+input ScheduleDemoInput {
+  demoRequestId: ID!
+  scheduledTime: DateTime!
 }
 
 """Specific fields to search in"""
@@ -4706,12 +5266,38 @@ type TokenUsageTrend {
   tokens: Int!
 }
 
+type TwoFactorSettings {
+  """True if 2FA is fully enabled"""
+  enabled: Boolean!
+
+  """Timestamp when 2FA was last verified/enabled"""
+  lastVerifiedAt: DateTime
+
+  """Number of remaining backup codes"""
+  remainingBackupCodes: Int
+
+  """Current 2FA status"""
+  status: TwoFactorStatus!
+}
+
+"""Status of two-factor authentication"""
+enum TwoFactorStatus {
+  DISABLED
+  ENABLED
+  PENDING
+}
+
 input UpdateApiKeyInput {
   description: String
   expiresAt: String
   name: String
   rateLimitPerMinute: Int
   scopes: [ApiKeyScope!]
+}
+
+input UpdateDemoRequestStatusInput {
+  demoRequestId: ID!
+  status: String!
 }
 
 input UpdateDocumentCommentInput {
@@ -5052,6 +5638,8 @@ type User {
   lastName: String
   role: String!
   stripeCustomerId: String
+  twoFactorEnabled: Boolean!
+  twoFactorVerifiedAt: DateTime
   updatedAt: DateTime!
   username: String
 }
@@ -5422,6 +6010,19 @@ type ValidateApiKeyResponse {
   scopes: [ApiKeyScope!]
   status: ApiKeyStatus
   userId: ID
+}
+
+input VerifyTwoFactorSetupInput {
+  """The 6-digit TOTP token from authenticator app"""
+  token: String!
+}
+
+type VerifyTwoFactorSetupResponse {
+  """Backup codes for account recovery"""
+  backupCodes: [String!]
+
+  """True if verification was successful"""
+  success: Boolean!
 }
 
 type Webhook {

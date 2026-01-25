@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769309218219-ef066dff",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T02:46:58.219Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "two-factor-auth-admin-view",
+  "featureName": "Admin Two-Factor Authentication Status",
+  "error": "Feature completed in 1781s - auto-verified",
+  "passes": true
+}

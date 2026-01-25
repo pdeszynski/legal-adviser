@@ -3,11 +3,8 @@
   "description": "Create TwoFactorAuth entity in infrastructure layer to store TOTP configuration per user. Include fields: userId (FK to User), secret (encrypted TOTP secret), backupCodes (array of hashed recovery codes), isEnabled (boolean), verifiedAt (timestamp), and createdAt/updatedAt timestamps. Add repository interface in domain layer following DDD patterns. Implement encryption for storing TOTP secrets securely.",
   "id": "two-factor-auth-entity",
   "title": "Two-Factor Authentication Entity",
-  "dependencies": [
-    "user-entity-nestjs-query"
-  ],
   "priority": 1,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -15,5 +12,6 @@
       "timestamp": "2026-01-24T15:49:40.770Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-24T21:35:57.339Z"
 }

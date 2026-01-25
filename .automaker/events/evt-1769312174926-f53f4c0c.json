@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769312174926-f53f4c0c",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T03:36:14.926Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "migrate-ruling-indexing-to-temporal",
+  "featureName": "Migrate Ruling Indexing to Temporal Scheduled Workflow",
+  "error": "Feature completed in 918s - auto-verified",
+  "passes": true
+}

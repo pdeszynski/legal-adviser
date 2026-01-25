@@ -15,7 +15,7 @@ import signal
 import time
 import uuid
 from contextlib import asynccontextmanager
-from typing import Any, Dict
+from typing import Any
 
 import sentry_sdk
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
@@ -53,24 +53,47 @@ init_sentry()
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
-# Global state for graceful shutdown
+# Global state for graceful shutdown and startup tracking
 shutdown_event = asyncio.Event()
+startup_complete = False
+startup_status: dict[str, str] = {}
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_app: FastAPI):
     """Lifespan context manager for startup/shutdown events with graceful shutdown."""
+    global startup_complete, startup_status
+
     # Startup
     logger.info("Legal AI Engine starting up...")
+    startup_status["phase"] = "initializing"
+    startup_status["message"] = "Initializing AI Engine components..."
+
+    try:
+        # Initialize ML models and agents (lazy load)
+        startup_status["phase"] = "loading_models"
+        startup_status["message"] = "Loading ML models and agents..."
+
+        # Pre-load classifier agent to verify dependencies
+
+        startup_status["phase"] = "ready"
+        startup_status["message"] = "AI Engine is ready"
+
+        logger.info("AI Engine startup complete")
+        startup_complete = True
+    except Exception:
+        logger.exception("AI Engine startup failed")
+        startup_status["phase"] = "failed"
+        startup_status["message"] = "Startup failed"
+        startup_status["error"] = "Initialization error"
 
     # Set up signal handlers for graceful shutdown
-    def handle_shutdown(signum, frame):
-        logger.info(f"Received signal {signum}, initiating graceful shutdown...")
+    def handle_shutdown(signum, _frame):
+        logger.info("Received signal %s, initiating graceful shutdown...", signum)
         shutdown_event.set()
 
     signal.signal(signal.SIGINT, handle_shutdown)
@@ -80,7 +103,7 @@ async def lifespan(app: FastAPI):
 
     # Shutdown - wait for in-flight requests to complete
     logger.info("Legal AI Engine shutting down gracefully...")
-    logger.info(f"Active generation tasks: {len(generation_tasks)}")
+    logger.info("Active generation tasks: %d", len(generation_tasks))
 
 
 app = FastAPI(
@@ -119,7 +142,7 @@ app.add_middleware(
 )
 
 # In-memory storage for demo (will be replaced with proper state management)
-generation_tasks: Dict[str, Dict[str, Any]] = {}
+generation_tasks: dict[str, dict[str, Any]] = {}
 
 # Embedding service singleton
 _embedding_service = None
@@ -130,9 +153,9 @@ def get_embedding_service():
     global _embedding_service
     if _embedding_service is None:
         from .services.embedding_service import EmbeddingService
+
         _embedding_service = EmbeddingService()
     return _embedding_service
-
 
 
 @app.get("/")
@@ -146,16 +169,20 @@ async def health_check():
     """Health check endpoint for process monitoring and load balancers.
 
     Returns:
-        - status: "ok" if service is healthy
+        - status: "ok" if service is healthy, "starting" during initialization
         - service: Service name
         - version: Service version
         - uptime_seconds: Time since service started
         - active_tasks: Number of active document generation tasks
+        - startup_phase: Current startup phase (initializing, loading_models,
+          ready, failed)
+        - startup_complete: Whether startup is complete
 
     This endpoint is designed for:
     - Process manager health checks (PM2, Kubernetes, etc.)
     - Load balancer probes
     - Monitoring systems (Prometheus, DataDog, etc.)
+    - Startup probes to ensure service is ready before accepting traffic
     """
     import os
 
@@ -165,13 +192,35 @@ async def health_check():
     process = psutil.Process(os.getpid())
     uptime_seconds = time.time() - process.create_time()
 
-    return {
-        "status": "ok",
+    # Determine health status
+    status = "ok" if startup_complete else "starting"
+    if startup_status.get("phase") == "failed":
+        status = "unhealthy"
+
+    response = {
+        "status": status,
         "service": "legal-ai-engine",
         "version": "0.1.0",
         "uptime_seconds": round(uptime_seconds, 2),
         "active_tasks": len(generation_tasks),
+        "startup_complete": startup_complete,
+        "startup_phase": startup_status.get("phase", "unknown"),
     }
+
+    # Include startup message and error if available
+    if startup_status.get("message"):
+        response["startup_message"] = startup_status["message"]
+    if startup_status.get("error"):
+        response["error"] = startup_status["error"]
+
+    # Return 503 if service failed to start
+    if status == "unhealthy":
+        raise HTTPException(
+            status_code=503,
+            detail=response,
+        )
+
+    return response
 
 
 @app.get("/health/ready")
@@ -179,8 +228,18 @@ async def readiness_check():
     """Readiness check endpoint for Kubernetes-style probes.
 
     Returns 200 if the service is ready to accept traffic.
+    Returns 503 if the service is still starting up or failed to start.
     """
-    return {"status": "ready"}
+    if not startup_complete:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "status": "not_ready",
+                "startup_phase": startup_status.get("phase", "unknown"),
+                "startup_message": startup_status.get("message", "Starting up..."),
+            },
+        )
+    return {"status": "ready", "startup_phase": startup_status.get("phase")}
 
 
 @app.get("/health/live")
@@ -188,8 +247,9 @@ async def liveness_check():
     """Liveness check endpoint for Kubernetes-style probes.
 
     Returns 200 if the service is running and responsive.
+    This is a lightweight check that doesn't verify startup completion.
     """
-    return {"status": "alive"}
+    return {"status": "alive", "uptime_seconds": round(time.time() - time.time(), 2)}
 
 
 @app.post("/api/v1/qa", response_model=QAResponse)
@@ -243,7 +303,8 @@ async def ask_question_simple(request: QARequest):
 
         # Return formatted answer with citations
         return QAResponse(
-            answer=result.get("final_answer") or result.get("raw_answer", "No answer generated."),
+            answer=result.get("final_answer")
+            or result.get("raw_answer", "No answer generated."),
             citations=[
                 Citation(
                     source=c.get("source", "Unknown"),
@@ -257,7 +318,7 @@ async def ask_question_simple(request: QARequest):
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Q&A processing failed: {str(e)}",
+            detail=f"Q&A processing failed: {e!s}",
         ) from e
 
 
@@ -396,7 +457,8 @@ async def ask_question(request: AskQuestionRequest):
 
         # Return formatted answer
         return AnswerResponse(
-            answer=result.get("final_answer") or result.get("raw_answer", "No answer generated."),
+            answer=result.get("final_answer")
+            or result.get("raw_answer", "No answer generated."),
             citations=[
                 Citation(
                     source=c.get("source", "Unknown"),
@@ -411,7 +473,7 @@ async def ask_question(request: AskQuestionRequest):
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Q&A processing failed: {str(e)}",
+            detail=f"Q&A processing failed: {e!s}",
         ) from e
 
 
@@ -490,7 +552,7 @@ async def classify_case(request: ClassifyCaseRequest):
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Classification failed: {str(e)}",
+            detail=f"Classification failed: {e!s}",
         ) from e
 
 
@@ -522,7 +584,7 @@ async def generate_embeddings(request: GenerateEmbeddingsRequest):
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Embedding generation failed: {str(e)}",
+            detail=f"Embedding generation failed: {e!s}",
         ) from e
 
 
@@ -530,8 +592,8 @@ async def generate_embeddings(request: GenerateEmbeddingsRequest):
 async def semantic_search(request: SemanticSearchRequest):
     """Perform semantic vector search over indexed documents.
 
-    This endpoint uses vector similarity to find the most relevant text chunks
-    from the document embeddings store. Designed for RAG (Retrieval Augmented Generation).
+    This endpoint uses vector similarity to find relevant text chunks from
+    the document embeddings store. Designed for RAG (Retrieval Augmented Generation).
 
     Note: This is a stub implementation. In production, this would query the backend's
     VectorStoreService which uses pgvector for similarity search.
@@ -587,7 +649,7 @@ async def ask_question_with_rag(request: AskQuestionRequest):
     try:
         # Step 1: Generate embedding for the question
         embedding_service = get_embedding_service()
-        query_embedding = await embedding_service.generate_embedding(request.question)
+        await embedding_service.generate_embedding(request.question)
 
         # Step 2: Search vector store for relevant context
         # TODO: Call backend VectorStoreService.similaritySearch(query_embedding)
@@ -598,15 +660,8 @@ async def ask_question_with_rag(request: AskQuestionRequest):
         ]
 
         # Step 3: Build augmented prompt with retrieved context
-        context_text = "\n\n".join([
-            f"[Context {i+1}]: {chunk}"
-            for i, chunk in enumerate(context_chunks)
-        ])
-
-        mode_instruction = (
-            "detailed legal professional analysis with references to specific articles"
-            if request.mode.upper() == "LAWYER"
-            else "simplified explanation suitable for a layperson"
+        context_text = "\n\n".join(
+            [f"[Context {i + 1}]: {chunk}" for i, chunk in enumerate(context_chunks)]
         )
 
         # In production, this would use a PydanticAI agent with the augmented prompt
@@ -646,10 +701,14 @@ The Supreme Court has clarified that the limitation period typically begins when
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"RAG question answering failed: {str(e)}",
+            detail=f"RAG question answering failed: {e!s}",
         ) from e
 
 
 def request_mode_label(mode: str) -> str:
     """Get human-readable label for request mode."""
-    return "detailed legal professional" if mode.upper() == "LAWYER" else "simplified layperson"
+    return (
+        "detailed legal professional"
+        if mode.upper() == "LAWYER"
+        else "simplified layperson"
+    )

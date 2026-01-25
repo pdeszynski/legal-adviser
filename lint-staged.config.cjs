@@ -35,10 +35,14 @@ module.exports = {
     'prettier --write',
   ],
 
-  // Python files
+  // Python files - run on staged files only
   'apps/ai-engine/**/*.py': [
-    'cd apps/ai-engine && uv run ruff check --fix', // Run Ruff with auto-fix
-    'cd apps/ai-engine && uv run ruff format', // Format with Ruff
+    (filenames) =>
+      `cd apps/ai-engine && uv run ruff check --fix ${filenames.join(' ')}`, // Run Ruff with auto-fix on changed files
+    (filenames) =>
+      `cd apps/ai-engine && uv run ruff format ${filenames.join(' ')}`, // Format changed files
+    (filenames) =>
+      `cd apps/ai-engine && uv run mypy ${filenames.join(' ')}`, // Type check changed files with MyPy
   ],
 
   // === GraphQL files ===

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769293102959-b5903d80",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-24T22:18:22.959Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "hubspot-webhook-handler",
+  "featureName": "HubSpot Webhook Handler for Lead Sync",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

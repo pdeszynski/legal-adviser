@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Create a multi-step demo request form similar to 11x.ai's approach. Implement form with: 1) Contact information step (full name, work email, phone optional), 2) Company information step (company name, size, industry), 3) Use case step (what legal problems they want to solve, current challenges), 4) Timeline step (when they're looking to implement, budget range), 5) Preferred demo time (calendar integration or time slot selection). Use shadcn/ui form components with validation. Implement step progress indicator. Show form in modal or as embedded component on the waitlist page. Store form state in React Hook Form with proper validation using zod schemas.",
+  "id": "demo-request-form-component",
+  "title": "Demo Request Form Component",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create a multi-step demo request form similar to 11x.ai's approach. Implement form with: 1) Contact information step (full name, work email, phone optional), 2) Company information step (company name, size, industry), 3) Use case step (what legal problems they want to solve, current challenges), 4) Timeline step (when they're looking to implement, budget range), 5) Preferred demo time (calendar integration or time slot selection). Use shadcn/ui form components with validation. Implement step progress indicator. Show form in modal or as embedded component on the waitlist page. Store form state in React Hook Form with proper validation using zod schemas.",
+      "timestamp": "2026-01-24T21:38:47.508Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T01:55:52.073Z"
+}

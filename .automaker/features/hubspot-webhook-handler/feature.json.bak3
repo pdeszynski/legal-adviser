@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Implement HubSpot webhook receiver to keep local DemoRequest data in sync with CRM. Create: 1) POST /api/webhooks/hubspot endpoint, 2) Webhook signature verification for security, 3) Handle contact property change events from HubSpot, 4) Update local DemoRequest status when changed in HubSpot (e.g., deal stage changes), 5) Handle contact deletion, 6) Log all webhook events for audit trail. Configure HubSpot webhook to send notifications for contact lifecycle changes. Add to existing webhook-system infrastructure.",
+  "id": "hubspot-webhook-handler",
+  "title": "HubSpot Webhook Handler for Lead Sync",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Implement HubSpot webhook receiver to keep local DemoRequest data in sync with CRM. Create: 1) POST /api/webhooks/hubspot endpoint, 2) Webhook signature verification for security, 3) Handle contact property change events from HubSpot, 4) Update local DemoRequest status when changed in HubSpot (e.g., deal stage changes), 5) Handle contact deletion, 6) Log all webhook events for audit trail. Configure HubSpot webhook to send notifications for contact lifecycle changes. Add to existing webhook-system infrastructure.",
+      "timestamp": "2026-01-24T21:38:47.511Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T22:04:22.103Z"
+}

@@ -14,6 +14,7 @@ export enum EmailTemplateType {
   DOCUMENT_COMPLETED = 'document_completed',
   DOCUMENT_FAILED = 'document_failed',
   SYSTEM_NOTIFICATION = 'system_notification',
+  DEMO_REQUEST_CONFIRMATION = 'demo_request_confirmation',
 }
 
 // Register enum with GraphQL

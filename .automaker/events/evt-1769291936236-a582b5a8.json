@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769291936236-a582b5a8",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T21:58:56.236Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "migrate-document-generation-to-temporal",
+  "featureName": "Migrate Document Generation Queue to Temporal Workflow",
+  "error": "Feature completed in 1307s - auto-verified",
+  "passes": true
+}

@@ -3,8 +3,6 @@
 This service handles text embedding generation using OpenAI's API.
 """
 
-from typing import List
-
 from openai import AsyncOpenAI
 
 from ..config import get_settings
@@ -20,8 +18,8 @@ class EmbeddingService:
         self.default_model = "text-embedding-3-small"  # 1536 dimensions, cost-effective
 
     async def generate_embeddings(
-        self, texts: List[str], model: str | None = None
-    ) -> List[List[float]]:
+        self, texts: list[str], model: str | None = None
+    ) -> list[list[float]]:
         """Generate embeddings for a list of texts.
 
         Args:
@@ -41,18 +39,17 @@ class EmbeddingService:
 
         try:
             # OpenAI supports batch embedding generation
-            response = await self.client.embeddings.create(
-                input=texts, model=model
-            )
+            response = await self.client.embeddings.create(input=texts, model=model)
 
             # Extract embeddings from response
-            embeddings = [item.embedding for item in response.data]
-            return embeddings
+            return [item.embedding for item in response.data]
 
         except Exception as e:
-            raise Exception(f"Embedding generation failed: {str(e)}") from e
+            raise RuntimeError(f"Embedding generation failed: {e!s}") from e
 
-    async def generate_embedding(self, text: str, model: str | None = None) -> List[float]:
+    async def generate_embedding(
+        self, text: str, model: str | None = None
+    ) -> list[float]:
         """Generate embedding for a single text.
 
         Args:

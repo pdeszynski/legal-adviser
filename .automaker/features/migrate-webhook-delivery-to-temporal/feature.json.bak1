@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Replace Bull-based webhook delivery queue with Temporal workflow. Create WebhookDeliveryWorkflow with activities for: 1) Prepare webhook payload, 2) Sign request with HMAC, 3) Deliver to endpoint, 4) Handle retry logic with exponential backoff, 5) Update delivery status, 6) Disable webhook after consecutive failures. Implement per-webhook rate limiting. Add workflow for replaying failed webhooks. Configure timeout for webhook endpoint response.",
+  "id": "migrate-webhook-delivery-to-temporal",
+  "title": "Migrate Webhook Delivery to Temporal Workflow",
+  "priority": 3,
+  "status": "in_progress",
+  "branchName": "feature/temporal",
+  "descriptionHistory": [
+    {
+      "description": "Replace Bull-based webhook delivery queue with Temporal workflow. Create WebhookDeliveryWorkflow with activities for: 1) Prepare webhook payload, 2) Sign request with HMAC, 3) Deliver to endpoint, 4) Handle retry logic with exponential backoff, 5) Update delivery status, 6) Disable webhook after consecutive failures. Implement per-webhook rate limiting. Add workflow for replaying failed webhooks. Configure timeout for webhook endpoint response.",
+      "timestamp": "2026-01-24T16:43:46.093Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T03:58:03.308Z"
+}

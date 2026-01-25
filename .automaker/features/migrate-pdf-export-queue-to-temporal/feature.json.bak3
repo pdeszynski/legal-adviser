@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Replace Bull-based PDF export queue with Temporal workflow. Create PdfExportWorkflow with activities for: 1) Retrieve document content, 2) Generate PDF using PDFKit/Puppeteer, 3) Upload to storage, 4) Update document with PDF URL, 5) Notify user on completion. Implement long-running workflow support (PDF generation can take minutes). Add cancellation support for abandoned exports. Configure heartbeat for long activities.",
+  "id": "migrate-pdf-export-queue-to-temporal",
+  "title": "Migrate PDF Export Queue to Temporal Workflow",
+  "dependencies": [
+    "temporal-infrastructure-setup"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "feature/temporal",
+  "descriptionHistory": [
+    {
+      "description": "Replace Bull-based PDF export queue with Temporal workflow. Create PdfExportWorkflow with activities for: 1) Retrieve document content, 2) Generate PDF using PDFKit/Puppeteer, 3) Upload to storage, 4) Update document with PDF URL, 5) Notify user on completion. Implement long-running workflow support (PDF generation can take minutes). Add cancellation support for abandoned exports. Configure heartbeat for long activities.",
+      "timestamp": "2026-01-24T16:43:46.092Z",
+      "source": "initial"
+    }
+  ]
+}

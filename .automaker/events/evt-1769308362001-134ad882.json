@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769308362001-134ad882",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T02:32:42.001Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "landing-page-cta-integration",
+  "featureName": "Landing Page Call-to-Action Integration",
+  "error": "Feature completed in 954s - auto-verified",
+  "passes": true
+}

@@ -1,0 +1,18 @@
+{
+  "category": "refactor",
+  "description": "Configure Ruff as the primary Python linter for the AI Engine, replacing or complementing existing linting tools. Set up ruff.toml or pyproject.toml configuration with project-specific rules. Configure Ruff to check code style, complexity, and potential bugs. Integrate Ruff into the development workflow and ensure it catches the same issues as previous linters.",
+  "id": "ruff-linter-configuration",
+  "title": "Configure Ruff for Python Linting",
+  "dependencies": [],
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Configure Ruff as the primary Python linter for the AI Engine, replacing or complementing existing linting tools. Set up ruff.toml or pyproject.toml configuration with project-specific rules. Configure Ruff to check code style, complexity, and potential bugs. Integrate Ruff into the development workflow and ensure it catches the same issues as previous linters.",
+      "timestamp": "2026-01-24T16:12:14.255Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T21:14:58.369Z"
+}

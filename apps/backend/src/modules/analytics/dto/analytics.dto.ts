@@ -642,3 +642,201 @@ export class TokenUsageExport {
   @Field(() => GraphQLISODateTime)
   periodEnd: Date;
 }
+
+/**
+ * Demo request metrics overview
+ */
+@ObjectType('DemoRequestMetrics')
+export class DemoRequestMetrics {
+  @Field(() => Int, { description: 'Total demo requests in period' })
+  totalRequests: number;
+
+  @Field(() => Int, { description: 'New requests (not yet contacted)' })
+  newRequests: number;
+
+  @Field(() => Int, { description: 'Requests that have been contacted' })
+  contactedRequests: number;
+
+  @Field(() => Int, { description: 'Requests with demos scheduled' })
+  scheduledRequests: number;
+
+  @Field(() => Int, { description: 'Requests qualified as leads' })
+  qualifiedRequests: number;
+
+  @Field(() => Int, { description: 'Requests closed (won or lost)' })
+  closedRequests: number;
+
+  @Field(() => Float, { description: 'New to contacted conversion rate %' })
+  newToContactedRate: number;
+
+  @Field(() => Float, {
+    description: 'Contacted to scheduled conversion rate %',
+  })
+  contactedToScheduledRate: number;
+
+  @Field(() => Float, { description: 'Overall funnel conversion rate %' })
+  overallConversionRate: number;
+
+  @Field(() => GraphQLISODateTime)
+  periodStart: Date;
+
+  @Field(() => GraphQLISODateTime)
+  periodEnd: Date;
+}
+
+/**
+ * Demo request status breakdown for funnel visualization
+ */
+@ObjectType('DemoRequestStatusBreakdown')
+export class DemoRequestStatusBreakdown {
+  @Field(() => String)
+  status: string;
+
+  @Field(() => Int)
+  count: number;
+
+  @Field(() => Float, { description: 'Percentage of total' })
+  percentage: number;
+}
+
+/**
+ * Demo request lead source distribution
+ */
+@ObjectType('DemoRequestLeadSource')
+export class DemoRequestLeadSource {
+  @Field(() => String, {
+    nullable: true,
+    description: 'UTM source or "direct"',
+  })
+  source: string | null;
+
+  @Field(() => String, { nullable: true, description: 'UTM medium' })
+  medium: string | null;
+
+  @Field(() => Int, { description: 'Number of requests from this source' })
+  count: number;
+
+  @Field(() => Float, { description: 'Percentage of total' })
+  percentage: number;
+}
+
+/**
+ * Demo request company size distribution
+ */
+@ObjectType('DemoRequestCompanySizeDistribution')
+export class DemoRequestCompanySizeDistribution {
+  @Field(() => String)
+  companySize: string;
+
+  @Field(() => Int)
+  count: number;
+
+  @Field(() => Float, { description: 'Percentage of total' })
+  percentage: number;
+}
+
+/**
+ * Demo request industry breakdown
+ */
+@ObjectType('DemoRequestIndustryBreakdown')
+export class DemoRequestIndustryBreakdown {
+  @Field(() => String)
+  industry: string;
+
+  @Field(() => Int)
+  count: number;
+
+  @Field(() => Float, { description: 'Percentage of total' })
+  percentage: number;
+}
+
+/**
+ * Demo request top use cases
+ */
+@ObjectType('DemoRequestTopUseCase')
+export class DemoRequestTopUseCase {
+  @Field(() => String, { description: 'Truncated use case text' })
+  useCase: string;
+
+  @Field(() => Int, { description: 'Number of similar requests' })
+  count: number;
+}
+
+/**
+ * Demo request time series data point
+ */
+@ObjectType('DemoRequestTimeSeriesPoint')
+export class DemoRequestTimeSeriesPoint {
+  @Field(() => GraphQLISODateTime)
+  timestamp: Date;
+
+  @Field(() => Int)
+  count: number;
+}
+
+/**
+ * Demo request average response time metrics
+ */
+@ObjectType('DemoRequestResponseTimeMetrics')
+export class DemoRequestResponseTimeMetrics {
+  @Field(() => Float, {
+    description: 'Average hours from submission to first contact',
+  })
+  avgHoursToContact: number;
+
+  @Field(() => Float, { description: 'Median hours to contact' })
+  medianHoursToContact: number;
+
+  @Field(() => Int, { description: 'Total contacted requests measured' })
+  totalContacted: number;
+
+  @Field(() => GraphQLISODateTime)
+  calculatedAt: Date;
+}
+
+/**
+ * Comprehensive demo request analytics
+ */
+@ObjectType('DemoRequestAnalytics')
+export class DemoRequestAnalytics {
+  @Field(() => DemoRequestMetrics)
+  metrics: DemoRequestMetrics;
+
+  @Field(() => [DemoRequestStatusBreakdown], {
+    description: 'Status distribution for funnel visualization',
+  })
+  statusBreakdown: DemoRequestStatusBreakdown[];
+
+  @Field(() => [DemoRequestLeadSource], {
+    description: 'Lead source distribution',
+  })
+  leadSources: DemoRequestLeadSource[];
+
+  @Field(() => [DemoRequestCompanySizeDistribution], {
+    description: 'Company size distribution',
+  })
+  companySizeDistribution: DemoRequestCompanySizeDistribution[];
+
+  @Field(() => [DemoRequestIndustryBreakdown], {
+    description: 'Industry breakdown',
+  })
+  industryBreakdown: DemoRequestIndustryBreakdown[];
+
+  @Field(() => [DemoRequestTopUseCase], {
+    description: 'Top mentioned use cases',
+  })
+  topUseCases: DemoRequestTopUseCase[];
+
+  @Field(() => [DemoRequestTimeSeriesPoint], {
+    description: 'Requests over time (by day)',
+  })
+  requestsOverTime: DemoRequestTimeSeriesPoint[];
+
+  @Field(() => DemoRequestResponseTimeMetrics, {
+    description: 'Average response time metrics',
+  })
+  responseTimeMetrics: DemoRequestResponseTimeMetrics;
+
+  @Field(() => GraphQLISODateTime)
+  generatedAt: Date;
+}

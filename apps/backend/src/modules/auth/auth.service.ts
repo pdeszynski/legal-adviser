@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
+import { TwoFactorService } from './two-factor.service';
 import {
   AuthPayload,
   RefreshTokenPayload,
@@ -35,15 +36,28 @@ interface JwtTokenPayload {
   username: string;
   email: string;
   roles: string[];
-  type: 'access' | 'refresh';
+  type: 'access' | 'refresh' | '2fa-temp';
+}
+
+/**
+ * Two-factor temporary token payload
+ */
+interface TwoFactorTempTokenPayload {
+  sub: string;
+  username: string;
+  email: string;
+  type: '2fa-temp';
 }
 
 @Injectable()
 export class AuthService {
   private readonly logger = new AppLogger({});
+  private readonly TWO_FACTOR_TEMP_TOKEN_EXPIRY = '5m'; // 5 minutes
+
   constructor(
     private jwtService: JwtService,
     private usersService: UsersService,
+    private twoFactorService: TwoFactorService,
   ) {
     this.logger.setContext('AuthService');
   }
@@ -162,10 +176,13 @@ export class AuthService {
   /**
    * Login with credentials and return GraphQL AuthPayload
    * Used by GraphQL login mutation
+   * Supports two-factor authentication flow
    */
   async loginWithCredentials(
     usernameOrEmail: string,
     password: string,
+    twoFactorToken?: string,
+    backupCode?: string,
   ): Promise<AuthPayload | null> {
     const user = await this.usersService.validateUserCredentials(
       usernameOrEmail,
@@ -176,12 +193,144 @@ export class AuthService {
       return null;
     }
 
+    // Check if user has 2FA enabled
+    if (user.twoFactorEnabled) {
+      // If no 2FA token or backup code provided, return requiresTwoFactor response
+      if (!twoFactorToken && !backupCode) {
+        const tempToken = this.generateTwoFactorTempToken(user);
+        return {
+          accessToken: null,
+          refreshToken: null,
+          user: null,
+          twoFactorTempToken: tempToken,
+          requiresTwoFactor: true,
+        };
+      }
+
+      // Validate TOTP token if provided
+      if (twoFactorToken) {
+        const isValid = await this.twoFactorService.verifyToken(
+          user.id,
+          twoFactorToken,
+        );
+        if (!isValid) {
+          throw new UnauthorizedException('Invalid two-factor token');
+        }
+      }
+
+      // Validate backup code if provided
+      if (backupCode) {
+        const isValid = await this.twoFactorService.verifyAndConsumeBackupCode(
+          user.id,
+          backupCode,
+        );
+        if (!isValid) {
+          throw new UnauthorizedException('Invalid backup code');
+        }
+      }
+    }
+
     const tokens = this.generateTokenPair(user);
 
     return {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
       user: this.mapUserToAuthPayload(user),
+      requiresTwoFactor: false,
+    };
+  }
+
+  /**
+   * Generate a temporary token for completing 2FA
+   * Valid for 5 minutes
+   */
+  private generateTwoFactorTempToken(user: User): string {
+    const payload: TwoFactorTempTokenPayload = {
+      sub: user.id,
+      username: user.username || user.email,
+      email: user.email,
+      type: '2fa-temp',
+    };
+    return this.jwtService.sign(payload, {
+      expiresIn: this.TWO_FACTOR_TEMP_TOKEN_EXPIRY,
+    });
+  }
+
+  /**
+   * Validate a temporary 2FA token and return user ID
+   * Used when completing 2FA login flow
+   */
+  async validateTwoFactorTempToken(tempToken: string): Promise<string | null> {
+    try {
+      const payload =
+        this.jwtService.verify<TwoFactorTempTokenPayload>(tempToken);
+
+      // Ensure it's a 2FA temp token
+      if (payload.type !== '2fa-temp') {
+        return null;
+      }
+
+      // Verify user still exists and 2FA is enabled
+      const user = await this.usersService.findById(payload.sub);
+      if (!user || !user.twoFactorEnabled) {
+        return null;
+      }
+
+      return payload.sub;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Complete 2FA login with temporary token and TOTP/backup code
+   * Called when user submits 2FA token after initial login
+   */
+  async completeTwoFactorLogin(
+    tempToken: string,
+    twoFactorToken?: string,
+    backupCode?: string,
+  ): Promise<AuthPayload> {
+    // Validate temp token and get user ID
+    const userId = await this.validateTwoFactorTempToken(tempToken);
+    if (!userId) {
+      throw new UnauthorizedException('Invalid or expired temporary token');
+    }
+
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // Validate TOTP token if provided
+    if (twoFactorToken) {
+      const isValid = await this.twoFactorService.verifyToken(
+        user.id,
+        twoFactorToken,
+      );
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid two-factor token');
+      }
+    }
+
+    // Validate backup code if provided
+    if (backupCode) {
+      const isValid = await this.twoFactorService.verifyAndConsumeBackupCode(
+        user.id,
+        backupCode,
+      );
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid backup code');
+      }
+    }
+
+    const tokens = this.generateTokenPair(user);
+
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: this.mapUserToAuthPayload(user),
+      requiresTwoFactor: false,
     };
   }
 
@@ -227,6 +376,7 @@ export class AuthService {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
       user: this.mapUserToAuthPayload(user),
+      requiresTwoFactor: false,
     };
   }
 

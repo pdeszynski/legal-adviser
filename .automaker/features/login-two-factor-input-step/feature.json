@@ -3,12 +3,8 @@
   "description": "Enhance login page to handle two-factor authentication step. When login returns requiresTwoFactor: true, show intermediate screen with: 1) Logo/title indicating 'Two-Factor Authentication', 2) Instruction text 'Enter the 6-digit code from your authenticator app', 3) 6-digit input field with auto-spacing (XXX XXX), 4) 'Verify' button to submit code, 5) 'Use backup code' link showing alternative input field, 6) 'Cancel' button returning to login. Implement countdown for token expiry. Store temporary credentials in memory during 2FA verification.",
   "id": "login-two-factor-input-step",
   "title": "Login Two-Factor Code Input Step",
-  "dependencies": [
-    "login-with-two-factor-mutation",
-    "login-loading-state"
-  ],
   "priority": 1,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -16,5 +12,6 @@
       "timestamp": "2026-01-24T15:49:40.773Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-24T21:40:53.544Z"
 }

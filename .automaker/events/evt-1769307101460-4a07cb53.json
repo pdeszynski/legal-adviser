@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769307101460-4a07cb53",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T02:11:41.460Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "migrate-email-queue-to-temporal",
+  "featureName": "Migrate Email Queue to Temporal Workflow",
+  "error": "Feature completed in 719s - auto-verified",
+  "passes": true
+}

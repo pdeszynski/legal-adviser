@@ -30,3 +30,39 @@ mutation AcceptDisclaimer {
     ...AuthUserFragment
   }
 }
+
+# Complete two-factor authentication login
+mutation CompleteTwoFactorLogin($input: CompleteTwoFactorLoginInput!) {
+  completeTwoFactorLogin(input: $input) {
+    ...AuthPayloadFragment
+  }
+}
+
+# Enable two-factor authentication - generates QR code and backup codes
+mutation EnableTwoFactorAuth {
+  enableTwoFactorAuth {
+    secret
+    qrCodeDataUrl
+    backupCodes
+  }
+}
+
+# Verify two-factor setup with TOTP token
+mutation VerifyTwoFactorSetup($input: VerifyTwoFactorSetupInput!) {
+  verifyTwoFactorSetup(input: $input) {
+    success
+    backupCodes
+  }
+}
+
+# Disable two-factor authentication with password confirmation
+mutation DisableTwoFactorAuth($input: DisableTwoFactorInput!) {
+  disableTwoFactorAuth(input: $input)
+}
+
+# Regenerate backup codes
+mutation RegenerateBackupCodes {
+  regenerateBackupCodes {
+    codes
+  }
+}

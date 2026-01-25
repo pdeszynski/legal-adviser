@@ -10,6 +10,7 @@ import { LegalRuling } from '../modules/documents/entities/legal-ruling.entity';
 import { LegalQuery } from '../modules/queries/entities/legal-query.entity';
 import { AuditLog } from '../modules/audit-log/entities/audit-log.entity';
 import { RoleEntity, UserRoleEntity } from '../modules/authorization/entities';
+import { UserPreferences } from '../modules/user-preferences/entities/user-preferences.entity';
 
 // Service
 import { SeedService } from './seed.service';
@@ -32,6 +33,7 @@ import { SeedService } from './seed.service';
       AuditLog,
       RoleEntity,
       UserRoleEntity,
+      UserPreferences,
     ]),
   ],
   providers: [SeedService],

@@ -1,6 +1,6 @@
 {
   "category": "UI",
-  "description": "Implement dynamic menu rendering that shows different navigation options based on user's role. Admin users see full admin menu (user management, system settings, audit logs, analytics). Regular users see simplified menu (documents, chat, settings). Create menu configuration registry mapping roles to menu items. Update Refine menu provider to check user permissions before rendering menu items.",
+  "description": "Update existing dynamic menu implementation to support: 1) Nested menu groups/collapsible sections for organizing related items, 2) Visual separators (dividers) between logical groupings, 3) Item priority/ordering configuration for usage-based sorting, 4) Role-based display of entire menu sections (not just individual items), 5) Admin panel link for ADMIN/SUPER_ADMIN roles. Refactor menu configuration registry to support groups and ordering metadata. Ensure menu state (collapsed/expanded groups) persists across navigation.",
   "id": "admin-menu-per-role",
   "title": "Dynamic Menu System Based on User Role",
   "priority": 2,
@@ -11,6 +11,11 @@
       "description": "Implement dynamic menu rendering that shows different navigation options based on user's role. Admin users see full admin menu (user management, system settings, audit logs, analytics). Regular users see simplified menu (documents, chat, settings). Create menu configuration registry mapping roles to menu items. Update Refine menu provider to check user permissions before rendering menu items.",
       "timestamp": "2026-01-24T08:41:43.828Z",
       "source": "initial"
+    },
+    {
+      "description": "Update existing dynamic menu implementation to support: 1) Nested menu groups/collapsible sections for organizing related items, 2) Visual separators (dividers) between logical groupings, 3) Item priority/ordering configuration for usage-based sorting, 4) Role-based display of entire menu sections (not just individual items), 5) Admin panel link for ADMIN/SUPER_ADMIN roles. Refactor menu configuration registry to support groups and ordering metadata. Ensure menu state (collapsed/expanded groups) persists across navigation.",
+      "timestamp": "2026-01-24T22:08:56.724Z",
+      "source": "edit"
     }
   ],
   "updatedAt": "2026-01-24T09:50:06.744Z"

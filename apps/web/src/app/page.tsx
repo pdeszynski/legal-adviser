@@ -1,22 +1,84 @@
 'use client';
 
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef, useState, useCallback } from 'react';
 import { useIsAuthenticated, useGo } from '@refinedev/core';
 import { useTranslations } from 'next-intl';
 import { PublicLayout } from '@components/layout/public-layout';
 import { Button } from '@legal/ui';
+import { DemoRequestForm } from '@components/demo-request';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Shield, Lock, Star } from 'lucide-react';
+import { ArrowRight, Shield, Lock, Star, Calendar, X } from 'lucide-react';
 
 const LandingContent = () => {
   const t = useTranslations('landing');
+  const [isDemoFormOpen, setIsDemoFormOpen] = useState(false);
+  const [showStickyCta, setShowStickyCta] = useState(false);
+  const [showExitModal, setShowExitModal] = useState(false);
+  const hasShownExitModal = useRef(false);
+
+  // Sticky CTA on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show sticky CTA after scrolling past hero section
+      const heroSection = document.getElementById('hero-section');
+      if (heroSection) {
+        const heroBottom = heroSection.getBoundingClientRect().bottom;
+        setShowStickyCta(heroBottom < 0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Exit intent detection
+  const handleMouseLeave = useCallback(
+    (e: MouseEvent) => {
+      // Only show if mouse leaves from the top of the viewport
+      if (e.clientY <= 0 && !hasShownExitModal.current && !isDemoFormOpen) {
+        hasShownExitModal.current = true;
+        setShowExitModal(true);
+      }
+    },
+    [isDemoFormOpen],
+  );
+
+  useEffect(() => {
+    document.addEventListener('mouseleave', handleMouseLeave);
+    return () => document.removeEventListener('mouseleave', handleMouseLeave);
+  }, [handleMouseLeave]);
+
+  // Track CTA clicks for analytics
+  const trackCtaClick = useCallback((ctaLocation: string) => {
+    // Placeholder for analytics tracking
+    if (typeof window !== 'undefined' && (window as unknown as { gtag?: unknown }).gtag) {
+      const gtagWindow = window as unknown as {
+        gtag?: (event: string, name: string, params: Record<string, unknown>) => void;
+      };
+      gtagWindow.gtag?.('event', 'cta_click', {
+        cta_location: ctaLocation,
+      });
+    }
+  }, []);
+
+  const handleDemoFormOpen = useCallback(
+    (location: string) => {
+      trackCtaClick(location);
+      setIsDemoFormOpen(true);
+      setShowExitModal(false);
+    },
+    [trackCtaClick],
+  );
 
   return (
     <PublicLayout>
       <div className="flex flex-col items-center bg-background text-foreground overflow-hidden">
         {/* Hero Section */}
-        <section className="relative w-full pt-20 pb-20 md:pt-32 md:pb-32 overflow-hidden">
+        <section
+          id="hero-section"
+          className="relative w-full pt-20 pb-20 md:pt-32 md:pb-32 overflow-hidden"
+        >
           {/* Background decoration */}
           <div className="absolute inset-0 z-0 bg-[url('/grid.svg')] opacity-[0.02] dark:opacity-[0.05]" />
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50/50 via-background to-background" />
@@ -41,14 +103,14 @@ const LandingContent = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                  <Link href="/login" className="w-full sm:w-auto">
-                    <Button
-                      size="lg"
-                      className="w-full sm:w-auto px-8 h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-105 rounded-full text-base"
-                    >
-                      {t('hero.cta.primary')} <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
+                  <Button
+                    size="lg"
+                    onClick={() => handleDemoFormOpen('hero')}
+                    className="w-full sm:w-auto px-8 h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-105 rounded-full text-base"
+                  >
+                    <Calendar className="mr-2 h-4 w-4" />
+                    Request Early Access
+                  </Button>
                   <Link href="/about" className="w-full sm:w-auto">
                     <Button
                       variant="outline"
@@ -112,9 +174,17 @@ const LandingContent = () => {
                   />
                 </div>
                 <h3 className="mb-3 text-2xl font-bold">{t('features.drafting.title')}</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed mb-6">
                   {t('features.drafting.description')}
                 </p>
+                <Button
+                  variant="outline"
+                  className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-900 dark:text-blue-400"
+                  onClick={() => handleDemoFormOpen('feature-drafting')}
+                >
+                  See It In Action
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
               </div>
 
               {/* Feature 2 */}
@@ -130,9 +200,17 @@ const LandingContent = () => {
                   />
                 </div>
                 <h3 className="mb-3 text-2xl font-bold">{t('features.analysis.title')}</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed mb-6">
                   {t('features.analysis.description')}
                 </p>
+                <Button
+                  variant="outline"
+                  className="w-full border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-900 dark:text-purple-400"
+                  onClick={() => handleDemoFormOpen('feature-analysis')}
+                >
+                  See It In Action
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
               </div>
 
               {/* Feature 3 */}
@@ -148,9 +226,17 @@ const LandingContent = () => {
                   />
                 </div>
                 <h3 className="mb-3 text-2xl font-bold">{t('features.qa.title')}</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed mb-6">
                   {t('features.qa.description')}
                 </p>
+                <Button
+                  variant="outline"
+                  className="w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-900 dark:text-emerald-400"
+                  onClick={() => handleDemoFormOpen('feature-qa')}
+                >
+                  See It In Action
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
               </div>
             </div>
           </div>
@@ -202,6 +288,18 @@ const LandingContent = () => {
                   <p className="text-muted-foreground">{t('howItWorks.step3.description')}</p>
                 </div>
               </div>
+            </div>
+
+            {/* How It Works CTA */}
+            <div className="mt-16 text-center">
+              <Button
+                size="lg"
+                onClick={() => handleDemoFormOpen('how-it-works')}
+                className="px-8 h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-105 rounded-full text-base"
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                Book Your Demo
+              </Button>
             </div>
           </div>
         </section>
@@ -293,21 +391,21 @@ const LandingContent = () => {
               <p className="text-xl text-blue-100">{t('cta.subtitle')}</p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Button
+                  size="lg"
+                  onClick={() => handleDemoFormOpen('bottom-cta')}
+                  className="px-8 h-12 bg-white text-blue-600 hover:bg-blue-50 font-bold rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all text-lg"
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Schedule Your Demo
+                </Button>
                 <Link href="/login">
-                  <Button
-                    size="lg"
-                    className="px-8 h-12 bg-white text-blue-600 hover:bg-blue-50 font-bold rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all text-lg"
-                  >
-                    {t('cta.primaryButton')}
-                  </Button>
-                </Link>
-                <Link href="/contact">
                   <Button
                     variant="outline"
                     size="lg"
                     className="px-8 h-12 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm rounded-full text-lg"
                   >
-                    {t('cta.secondaryButton')}
+                    {t('cta.primaryButton')}
                   </Button>
                 </Link>
               </div>
@@ -316,6 +414,97 @@ const LandingContent = () => {
           </div>
         </section>
       </div>
+
+      {/* Sticky CTA Bar (appears after scrolling past hero) */}
+      {showStickyCta && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 animate-slide-up">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-900 dark:to-blue-800 shadow-2xl border-t border-blue-400/20">
+            <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+              <div className="text-white">
+                <p className="font-semibold text-sm sm:text-base">
+                  Ready to transform your legal practice?
+                </p>
+                <p className="text-blue-100 text-xs hidden sm:inline">
+                  Get early access to our AI-powered platform
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button
+                  size="sm"
+                  onClick={() => handleDemoFormOpen('sticky-bar')}
+                  className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg rounded-full px-6"
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Book Demo
+                </Button>
+                <button
+                  onClick={() => setShowStickyCta(false)}
+                  className="text-white/70 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors"
+                  aria-label="Dismiss"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Exit Intent Modal */}
+      {showExitModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" />
+          <div className="relative bg-background border rounded-2xl shadow-2xl max-w-md w-full p-8 animate-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setShowExitModal(false)}
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="text-center space-y-4">
+              <div className="mx-auto w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center">
+                <Calendar className="h-8 w-8 text-blue-600" />
+              </div>
+
+              <h3 className="text-2xl font-bold">Wait! Don&apos;t miss out</h3>
+
+              <p className="text-muted-foreground">
+                Get exclusive early access to our AI-powered legal platform. Schedule a personalized
+                demo to see how we can transform your practice.
+              </p>
+
+              <div className="space-y-3 pt-2">
+                <Button
+                  size="lg"
+                  onClick={() => handleDemoFormOpen('exit-intent')}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Schedule My Free Demo
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  onClick={() => setShowExitModal(false)}
+                  className="w-full"
+                >
+                  No thanks, I&apos;ll explore more
+                </Button>
+              </div>
+
+              <p className="text-xs text-muted-foreground">
+                No commitment required. We&apos;ll show you how Legal AI can save you hours of work
+                every week.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Demo Request Form Modal */}
+      <DemoRequestForm isOpen={isDemoFormOpen} onClose={() => setIsDemoFormOpen(false)} />
     </PublicLayout>
   );
 };

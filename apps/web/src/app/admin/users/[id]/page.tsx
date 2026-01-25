@@ -41,6 +41,8 @@ interface User {
   disclaimerAccepted: boolean;
   disclaimerAcceptedAt?: string;
   stripeCustomerId?: string;
+  twoFactorEnabled: boolean;
+  twoFactorSecret?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -125,6 +127,9 @@ export default function AdminUserDetailPage() {
   // Suspension dialog
   const [suspendDialogOpen, setSuspendDialogOpen] = useState(false);
   const [suspendReason, setSuspendReason] = useState('');
+
+  // 2FA force-disable dialog
+  const [disable2faDialogOpen, setDisable2faDialogOpen] = useState(false);
 
   // Fetch user data
   const fetchUser = useCallback(async () => {
@@ -488,6 +493,44 @@ export default function AdminUserDetailPage() {
     [user, fetchUser],
   );
 
+  const handleForceDisable2fa = useCallback(async () => {
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      const dp = dataProvider;
+      if (!dp) throw new Error('Data provider not available');
+
+      const mutationConfig: GraphQLMutationConfig<{ userId: string }> = {
+        url: '',
+        method: 'post',
+        config: {
+          mutation: {
+            operation: 'adminForceDisableTwoFactor',
+            fields: ['id', 'twoFactorEnabled'],
+            variables: {
+              input: { userId: user.id },
+            },
+          },
+        },
+      };
+
+      await (dp as any).custom({
+        url: '',
+        method: 'post',
+        config: mutationConfig.config,
+      });
+      setDisable2faDialogOpen(false);
+      fetchUser();
+    } catch (err) {
+      setErrors({
+        submit: err instanceof Error ? err.message : 'Failed to disable 2FA',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  }, [user, fetchUser]);
+
   const getDisplayName = (user: User) => {
     if (user.firstName && user.lastName) {
       return `${user.firstName} ${user.lastName}`;
@@ -679,6 +722,89 @@ export default function AdminUserDetailPage() {
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">Stripe Customer:</span>
                   <span className="font-mono text-xs">{user.stripeCustomerId}</span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 2FA Status Card */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Key className="h-5 w-5" />
+                  Two-Factor Authentication
+                </CardTitle>
+                <CardDescription>User 2FA status and security settings</CardDescription>
+              </div>
+              <span
+                className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
+                  user.twoFactorEnabled
+                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+                }`}
+              >
+                {user.twoFactorEnabled ? (
+                  <>
+                    <Check className="h-3 w-3" />
+                    Enabled
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="h-3 w-3" />
+                    Disabled
+                  </>
+                )}
+              </span>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded">
+                <div className="flex items-center gap-3">
+                  {user.twoFactorEnabled ? (
+                    <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                      <Key className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                  ) : (
+                    <div className="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                      <XCircle className="h-5 w-5 text-gray-500" />
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-medium">
+                      {user.twoFactorEnabled ? '2FA is Active' : '2FA is Not Enabled'}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {user.twoFactorEnabled
+                        ? 'This user has two-factor authentication enabled on their account'
+                        : 'This user has not set up two-factor authentication'}
+                    </p>
+                  </div>
+                </div>
+                {user.twoFactorEnabled && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setDisable2faDialogOpen(true)}
+                    disabled={isSaving}
+                  >
+                    <Key className="mr-2 h-4 w-4" />
+                    Force Disable
+                  </Button>
+                )}
+              </div>
+              {user.twoFactorEnabled && user.twoFactorSecret && (
+                <div className="text-sm text-muted-foreground p-3 bg-blue-50 dark:bg-blue-950/20 rounded border border-blue-100 dark:border-blue-900/30">
+                  <p className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+                    Admin Override Available
+                  </p>
+                  <p className="text-blue-700 dark:text-blue-300">
+                    You can force-disable 2FA for this user if they are locked out of their
+                    authenticator app. This will remove their 2FA secret and backup codes.
+                  </p>
                 </div>
               )}
             </div>
@@ -1046,6 +1172,58 @@ export default function AdminUserDetailPage() {
                 disabled={isSaving}
               >
                 {isSaving ? 'Processing...' : user.isActive ? 'Suspend' : 'Activate'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Force-Disable 2FA Dialog */}
+      {disable2faDialogOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-background rounded-lg shadow-2xl max-w-md w-full mx-4">
+            <div className="px-6 py-4 border-b">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Key className="h-5 w-5 text-destructive" />
+                Force Disable 2FA
+              </h2>
+            </div>
+            <div className="px-6 py-4">
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Are you sure you want to force-disable two-factor authentication for this user?
+                </p>
+                <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded border border-yellow-200 dark:border-yellow-900/30">
+                  <p className="text-sm text-yellow-800 dark:text-yellow-200 font-medium">
+                    This action will:
+                  </p>
+                  <ul className="text-sm text-yellow-700 dark:text-yellow-300 mt-2 space-y-1 list-disc list-inside">
+                    <li>Remove the user's TOTP secret</li>
+                    <li>Delete all backup codes</li>
+                    <li>Disable 2FA requirement for login</li>
+                    <li>Invalidate all existing sessions</li>
+                  </ul>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  This should only be done if the user is locked out of their authenticator app and
+                  cannot use backup codes.
+                </p>
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t bg-muted/30 rounded-b-lg flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setDisable2faDialogOpen(false)}
+                disabled={isSaving}
+              >
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={handleForceDisable2fa} disabled={isSaving}>
+                {isSaving ? 'Processing...' : 'Force Disable 2FA'}
               </Button>
             </div>
           </div>

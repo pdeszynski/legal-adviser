@@ -21,6 +21,7 @@ import {
   TokenUsageByOperation,
   TokenUsageTrend,
   TokenUsageExport,
+  DemoRequestAnalytics,
 } from './dto/analytics.dto';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
@@ -287,6 +288,18 @@ export class AnalyticsResolver {
     @Args('input', { nullable: true }) input?: DashboardAnalyticsInput,
   ): Promise<TokenUsageExport> {
     return this.analyticsService.getTokenUsageExport(input || {});
+  }
+
+  /**
+   * Get demo request analytics
+   * Admin-only access
+   */
+  @Query(() => DemoRequestAnalytics, { name: 'demoRequestAnalytics' })
+  @UseGuards(GqlAuthGuard, AdminGuard)
+  async getDemoRequestAnalytics(
+    @Args('input', { nullable: true }) input?: DashboardAnalyticsInput,
+  ): Promise<DemoRequestAnalytics> {
+    return this.analyticsService.getDemoRequestAnalytics(input || {});
   }
 
   /**

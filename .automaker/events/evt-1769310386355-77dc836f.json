@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769310386355-77dc836f",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T03:06:26.355Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "demo-request-analytics",
+  "featureName": "Demo Request Analytics Dashboard",
+  "error": "Feature completed in 1040s - auto-verified",
+  "passes": true
+}

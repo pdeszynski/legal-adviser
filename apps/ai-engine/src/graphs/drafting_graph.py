@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, TypedDict
+from typing import Any, TypedDict
 
 from langgraph.graph import END, StateGraph
 
@@ -8,9 +8,9 @@ from ..agents.drafting_agent import DraftResult, drafting_agent
 class DraftingState(TypedDict):
     description: str
     document_type: str
-    context: Dict[str, Any]
-    draft_content: Optional[str]
-    error: Optional[str]
+    context: dict[str, Any]
+    draft_content: str | None
+    error: str | None
 
 
 async def generate_draft_node(state: DraftingState):

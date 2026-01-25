@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769290853561-f98703ca",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T21:40:53.561Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "login-two-factor-input-step",
+  "featureName": "Login Two-Factor Code Input Step",
+  "error": "Feature completed in 1016s - auto-verified",
+  "passes": true
+}

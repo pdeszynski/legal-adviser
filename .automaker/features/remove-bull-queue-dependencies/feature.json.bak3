@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "After all Temporal migrations are complete and verified, remove Bull queue dependencies from package.json. Delete queue processor files: document-generation-queue.processor.ts, email-queue.processor.ts, pdf-export-queue.processor.ts, ruling-indexing-job.processor.ts, webhook-delivery-queue.processor.ts. Remove Bull configuration from NestJS modules. Clean up queue-related DTOs and interfaces. Remove Redis dependency if no longer needed for caching. Update documentation to reflect Temporal as the only background job system.",
+  "id": "remove-bull-queue-dependencies",
+  "title": "Remove Bull Queue Dependencies and Clean Up Code",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "feature/temporal",
+  "descriptionHistory": [
+    {
+      "description": "After all Temporal migrations are complete and verified, remove Bull queue dependencies from package.json. Delete queue processor files: document-generation-queue.processor.ts, email-queue.processor.ts, pdf-export-queue.processor.ts, ruling-indexing-job.processor.ts, webhook-delivery-queue.processor.ts. Remove Bull configuration from NestJS modules. Clean up queue-related DTOs and interfaces. Remove Redis dependency if no longer needed for caching. Update documentation to reflect Temporal as the only background job system.",
+      "timestamp": "2026-01-24T16:43:46.096Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T06:56:48.663Z"
+}

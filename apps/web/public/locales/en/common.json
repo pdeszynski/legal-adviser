@@ -825,5 +825,115 @@
       "title": "Need help?",
       "text": "If you believe this is an error, please contact your administrator."
     }
+  },
+  "demo": {
+    "hero": {
+      "badge": "Limited Early Access",
+      "title": "Get Early Access to",
+      "highlight": "Legal AI",
+      "subtitle": "Join the waitlist and be among the first to experience AI-powered legal assistance. Transform how you handle legal documents and research."
+    },
+    "benefits": {
+      "earlyAccess": {
+        "title": "Early Access",
+        "description": "Be the first to try new features and shape the product with your feedback."
+      },
+      "priority": {
+        "title": "Priority Support",
+        "description": "Get dedicated support and faster response times as an early adopter."
+      },
+      "freeTrial": {
+        "title": "Extended Free Trial",
+        "description": "Enjoy an extended trial period with full access to all premium features."
+      }
+    },
+    "form": {
+      "title": "Join the Waitlist",
+      "subtitle": "Secure your spot and get early access when we launch.",
+      "submit": "Join Waitlist",
+      "submitting": "Joining...",
+      "privacyNotice": "By joining, you agree to receive updates about our launch. We respect your privacy.",
+      "fields": {
+        "name": "Full Name",
+        "email": "Email Address",
+        "company": "Company (Optional)",
+        "role": "I am a...",
+        "useCase": "What do you plan to use Legal AI for?"
+      },
+      "placeholders": {
+        "name": "e.g., John Doe",
+        "email": "john@example.com",
+        "company": "e.g., Acme Law Firm",
+        "role": "Select your role",
+        "useCase": "Tell us about your use case..."
+      },
+      "roles": {
+        "lawyer": "Lawyer / Attorney",
+        "paralegal": "Paralegal",
+        "inHouseCounsel": "In-House Counsel",
+        "legalStudent": "Law Student",
+        "businessOwner": "Business Owner",
+        "other": "Other"
+      },
+      "errors": {
+        "nameRequired": "Name is required",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "roleRequired": "Please select your role",
+        "useCaseRequired": "Please describe your use case"
+      },
+      "success": {
+        "title": "You're on the List!",
+        "message": "Thank you for joining our waitlist. We'll notify you as soon as we have updates or when your early access is ready.",
+        "backButton": "Back to Homepage"
+      }
+    },
+    "socialProof": {
+      "title": "Join Early Adopters",
+      "waitlistCount": "2,500+ people already on the waitlist",
+      "testimonial1": {
+        "quote": "The early access has been incredible. I've saved hours on document drafting.",
+        "author": "Sarah Mitchell",
+        "role": "Attorney at Law"
+      },
+      "testimonial2": {
+        "quote": "Finally, a legal AI tool that actually understands context. Very impressed so far.",
+        "author": "David Chen",
+        "role": "In-House Counsel"
+      },
+      "testimonial3": {
+        "quote": "The case analysis feature alone is worth the wait. Can't wait for the full release!",
+        "author": "Maria Rodriguez",
+        "role": "Paralegal"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "item1": {
+        "question": "When will Legal AI be available?",
+        "answer": "We're currently in closed beta with select users. We expect to open public access in Q1 2026. Joining the waitlist ensures you'll be among the first to know when we launch."
+      },
+      "item2": {
+        "question": "Will there be a free trial?",
+        "answer": "Yes! Early access users will receive an extended free trial period to explore all features. After that, we offer flexible pricing plans for individuals and teams."
+      },
+      "item3": {
+        "question": "Is my data secure?",
+        "answer": "Absolutely. We use bank-grade encryption and never share your data with third parties. Your documents and information are strictly confidential and used only to provide our services."
+      },
+      "item4": {
+        "question": "What types of legal documents can it handle?",
+        "answer": "Legal AI supports a wide range of document types including lawsuits, contracts, complaints, motions, and official letters. We're constantly expanding our template library based on user feedback."
+      },
+      "item5": {
+        "question": "Can I use Legal AI for client work?",
+        "answer": "Yes, Legal AI is designed for professional use. However, we always recommend having AI-generated documents reviewed by a qualified legal professional before use in official proceedings."
+      }
+    },
+    "bottomCta": {
+      "title": "Ready to Transform Your Legal Work?",
+      "subtitle": "Don't miss out on early access benefits. Join the waitlist today.",
+      "button": "Join Waitlist Now"
+    }
   }
 }

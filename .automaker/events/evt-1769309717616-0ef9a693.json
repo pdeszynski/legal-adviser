@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769309717616-0ef9a693",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T02:55:17.616Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "waitlist-confirmation-email",
+  "featureName": "Waitlist/Demo Request Confirmation Email",
+  "error": "Feature completed in 496s - auto-verified",
+  "passes": true
+}

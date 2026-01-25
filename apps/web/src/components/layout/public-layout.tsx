@@ -1,10 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { LocaleSwitcher } from '@components/locale-switcher';
+import { DemoRequestForm } from '@components/demo-request';
+import { Button } from '@legal/ui';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import type { SupportedLocale } from '@i18n/config';
+import { Calendar } from 'lucide-react';
 
 interface PublicLayoutProps {
   children?: React.ReactNode;
@@ -13,6 +16,7 @@ interface PublicLayoutProps {
 export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   const t = useTranslations('landing.footer');
   const locale = useLocale() as SupportedLocale;
+  const [isDemoFormOpen, setIsDemoFormOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -21,8 +25,17 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
           <Link href="/" className="font-bold text-xl hover:opacity-80 transition-opacity">
             Legal AI
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <LocaleSwitcher initialLocale={locale} />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsDemoFormOpen(true)}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 hidden sm:inline-flex"
+            >
+              <Calendar className="mr-2 h-4 w-4" />
+              Get Started
+            </Button>
             <Link
               href="/login"
               className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
@@ -118,6 +131,9 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
           </div>
         </div>
       </footer>
+
+      {/* Demo Request Form Modal */}
+      <DemoRequestForm isOpen={isDemoFormOpen} onClose={() => setIsDemoFormOpen(false)} />
     </div>
   );
 };

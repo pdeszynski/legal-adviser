@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Create admin interface for viewing and managing demo requests. Implement: 1) Demo request list page at /admin/demo-requests, 2) Table showing: name, email, company, submitted date, status (new, contacted, scheduled, closed), 3) Filtering by status, date range, company size, 4) Search by name or email, 5) Detail view showing full submission information, 6) Status update workflow (mark as contacted, schedule demo, close), 7) Integration with HubSpot to sync status updates back to CRM, 8) Export to CSV functionality for sales team. Use Refine useTable hook with GraphQL data provider. Apply admin role guard.",
+  "id": "demo-request-admin-view",
+  "title": "Admin Demo Request Management View",
+  "priority": 3,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create admin interface for viewing and managing demo requests. Implement: 1) Demo request list page at /admin/demo-requests, 2) Table showing: name, email, company, submitted date, status (new, contacted, scheduled, closed), 3) Filtering by status, date range, company size, 4) Search by name or email, 5) Detail view showing full submission information, 6) Status update workflow (mark as contacted, schedule demo, close), 7) Integration with HubSpot to sync status updates back to CRM, 8) Export to CSV functionality for sales team. Use Refine useTable hook with GraphQL data provider. Apply admin role guard.",
+      "timestamp": "2026-01-24T21:38:47.510Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T02:48:49.076Z"
+}

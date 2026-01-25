@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769307067805-0f3ed114",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T02:11:07.805Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "menu-ordering-by-usage-frequency",
+  "featureName": "Reorder Menu Items by Usage Frequency",
+  "error": "Feature completed in 226s - auto-verified",
+  "passes": true
+}

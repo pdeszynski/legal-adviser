@@ -826,5 +826,115 @@
       "title": "Benötigen Sie Hilfe?",
       "text": "Wenn Sie glauben, dass dies ein Fehler ist, wenden Sie sich bitte an Ihren Administrator."
     }
+  },
+  "demo": {
+    "hero": {
+      "badge": "Begrenzter früher Zugang",
+      "title": "Frühzeitiger Zugang zu",
+      "highlight": "Legal AI",
+      "subtitle": "Treten Sie der Warteliste bei und gehören Sie zu den Ersten, die KI-gestützte Rechtshilfe erleben. Verwandeln Sie die Art, wie Sie Rechtsdokumente und Recherchen bearbeiten."
+    },
+    "benefits": {
+      "earlyAccess": {
+        "title": "Frühzeitiger Zugang",
+        "description": "Seien Sie der Erste, der neue Funktionen ausprobiert und das Produkt mit Ihrem Feedback formt."
+      },
+      "priority": {
+        "title": "Prioritäts-Support",
+        "description": "Erhalten Sie als Early Adopter dedizierten Support und schnellere Reaktionszeiten."
+      },
+      "freeTrial": {
+        "title": "Verlängerte Testphase",
+        "description": "Genießen Sie eine verlängerte Testphase mit vollem Zugriff auf alle Premium-Funktionen."
+      }
+    },
+    "form": {
+      "title": "Der Warteliste beitreten",
+      "subtitle": "Sichern Sie sich Ihren Platz und erhalten Sie frühzeitigen Zugang beim Start.",
+      "submit": "Warteliste beitreten",
+      "submitting": "Beitreten...",
+      "privacyNotice": "Durch den Beitritt erklären Sie sich damit einverstanden, Updates über unseren Start zu erhalten. Wir respektieren Ihre Privatsphäre.",
+      "fields": {
+        "name": "Vollständiger Name",
+        "email": "E-Mail-Adresse",
+        "company": "Firma (Optional)",
+        "role": "Ich bin ein...",
+        "useCase": "Wofür möchten Sie Legal AI verwenden?"
+      },
+      "placeholders": {
+        "name": "z.B. Max Mustermann",
+        "email": "max@beispiel.de",
+        "company": "z.B. Anwalt GmbH",
+        "role": "Wählen Sie Ihre Rolle aus",
+        "useCase": "Erzählen Sie uns über Ihren Anwendungsfall..."
+      },
+      "roles": {
+        "lawyer": "Anwalt / Rechtsanwalt",
+        "paralegal": "Rechtsanwalt",
+        "inHouseCounsel": "Unternehmensjurist",
+        "legalStudent": "Jurastudent",
+        "businessOwner": "Unternehmensinhaber",
+        "other": "Sonstiges"
+      },
+      "errors": {
+        "nameRequired": "Name ist erforderlich",
+        "emailRequired": "E-Mail ist erforderlich",
+        "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "roleRequired": "Bitte wählen Sie Ihre Rolle aus",
+        "useCaseRequired": "Bitte beschreiben Sie Ihren Anwendungsfall"
+      },
+      "success": {
+        "title": "Sie sind auf der Liste!",
+        "message": "Danke, dass Sie unserer Warteliste beigetreten sind. Wir werden Sie benachrichtigen, sobald wir Updates haben oder wenn Ihr früher Zugang bereit ist.",
+        "backButton": "Zurück zur Startseite"
+      }
+    },
+    "socialProof": {
+      "title": "Early Adopters beitreten",
+      "waitlistCount": "Über 2.500 Personen bereits auf der Warteliste",
+      "testimonial1": {
+        "quote": "Der frühe Zugang war unglaublich. Ich habe Stunden beim Verfassen von Dokumenten gespart.",
+        "author": "Sarah Müller",
+        "role": "Anwältin"
+      },
+      "testimonial2": {
+        "quote": "Endlich ein KI-Rechtstool, das tatsächlich den Kontext versteht. Bisher sehr beeindruckt.",
+        "author": "David Schmidt",
+        "role": "Unternehmensjurist"
+      },
+      "testimonial3": {
+        "quote": "Allein die Fallanalyse-Funktion ist das Warten wert. Freue mich auf die Vollversion!",
+        "author": "Maria Wagner",
+        "role": "Rechtsanwältin"
+      }
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "item1": {
+        "question": "Wann wird Legal AI verfügbar sein?",
+        "answer": "Wir befinden uns derzeit in geschlossener Beta mit ausgewählten Benutzern. Wir erwarten, den öffentlichen Zugang im Q1 2026 zu öffnen. Der Beitritt zur Warteliste stellt sicher, dass Sie zu den Ersten gehören, die von unserem Start erfahren."
+      },
+      "item2": {
+        "question": "Gibt es eine kostenlose Testphase?",
+        "answer": "Ja! Early Access-Benutzer erhalten eine verlängerte Testphase, um alle Funktionen zu erkunden. Danach bieten wir flexible Preispläne für Einzelpersonen und Teams an."
+      },
+      "item3": {
+        "question": "Sind meine Daten sicher?",
+        "answer": "Absolut. Wir verwenden Verschlüsselung auf Bankniveau und geben Ihre Daten niemals an Dritte weiter. Ihre Dokumente und Informationen sind streng vertraulich und werden nur zur Bereitstellung unserer Dienste verwendet."
+      },
+      "item4": {
+        "question": "Welche Arten von Rechtsdokumenten werden unterstützt?",
+        "answer": "Legal AI unterstützt eine Vielzahl von Dokumenttypen, einschließlich Klagen, Verträge, Beschwerden, Anträge und offizielle Schreiben. Wir erweitern unsere Vorlagenbibliothek ständig basierend auf Benutzerfeedback."
+      },
+      "item5": {
+        "question": "Kann ich Legal AI für Kundenarbeiten verwenden?",
+        "answer": "Ja, Legal AI ist für die professionelle Nutzung konzipiert. Wir empfehlen jedoch immer, von KI generierte Dokumente von einem qualifizierten Rechtsprofessionellen überprüfen zu lassen, bevor sie in offiziellen Verfahren verwendet werden."
+      }
+    },
+    "bottomCta": {
+      "title": "Bereit, Ihre Rechtspraxis zu transformieren?",
+      "subtitle": "Verpassen Sie nicht die Vorteile des frühen Zugangs. Treten Sie noch heute der Warteliste bei.",
+      "button": "Jetzt Warteliste beitreten"
+    }
   }
 }

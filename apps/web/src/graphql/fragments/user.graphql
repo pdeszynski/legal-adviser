@@ -17,6 +17,7 @@ fragment UserDetailFragment on User {
   disclaimerAccepted
   disclaimerAcceptedAt
   stripeCustomerId
+  twoFactorEnabled
   createdAt
   updatedAt
 }
@@ -48,6 +49,8 @@ fragment UserMinimalFragment on User {
 fragment AuthPayloadFragment on AuthPayload {
   accessToken
   refreshToken
+  requiresTwoFactor
+  twoFactorTempToken
   user {
     ...AuthUserFragment
   }

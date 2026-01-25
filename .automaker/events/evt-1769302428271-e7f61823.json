@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769302428271-e7f61823",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T00:53:48.271Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "migrate-email-queue-to-temporal",
+  "featureName": "Migrate Email Queue to Temporal Workflow",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

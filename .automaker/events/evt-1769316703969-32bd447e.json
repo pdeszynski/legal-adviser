@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769316703969-32bd447e",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T04:51:43.969Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "remove-bull-queue-dependencies",
+  "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

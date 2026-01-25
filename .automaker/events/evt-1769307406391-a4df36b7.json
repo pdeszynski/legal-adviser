@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769307406391-a4df36b7",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T02:16:46.391Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "demo-request-form-component",
+  "featureName": "Demo Request Form Component",
+  "error": "Feature completed in 1037s - auto-verified",
+  "passes": true
+}

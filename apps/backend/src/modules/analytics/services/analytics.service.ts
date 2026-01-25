@@ -8,6 +8,7 @@ import {
 } from '../../documents/entities/legal-document.entity';
 import { LegalQuery } from '../../queries/entities/legal-query.entity';
 import { AiUsageRecord } from '../../usage-tracking/entities/ai-usage-record.entity';
+import { DemoRequestOrmEntity } from '../../../infrastructure/persistence/entities/demo-request.orm-entity';
 import {
   AnalyticsDashboard,
   UserGrowthMetrics,
@@ -32,6 +33,15 @@ import {
   TokenUsageTrend,
   UsageAnomaly,
   TokenUsageExport,
+  DemoRequestAnalytics,
+  DemoRequestMetrics,
+  DemoRequestStatusBreakdown,
+  DemoRequestLeadSource,
+  DemoRequestCompanySizeDistribution,
+  DemoRequestIndustryBreakdown,
+  DemoRequestTopUseCase,
+  DemoRequestTimeSeriesPoint,
+  DemoRequestResponseTimeMetrics,
 } from '../dto/analytics.dto';
 
 /**
@@ -72,6 +82,8 @@ export class AnalyticsService {
     private readonly queryRepository: Repository<LegalQuery>,
     @InjectRepository(AiUsageRecord)
     private readonly usageRepository: Repository<AiUsageRecord>,
+    @InjectRepository(DemoRequestOrmEntity)
+    private readonly demoRequestRepository: Repository<DemoRequestOrmEntity>,
   ) {}
 
   /**
@@ -1274,6 +1286,355 @@ export class AnalyticsService {
       exportedAt: new Date(),
       periodStart: startDate,
       periodEnd: endDate,
+    };
+  }
+
+  /**
+   * Get comprehensive demo request analytics
+   * Includes metrics, funnel breakdown, lead sources, and trends
+   */
+  async getDemoRequestAnalytics(
+    input: DashboardAnalyticsInput,
+  ): Promise<DemoRequestAnalytics> {
+    const { startDate, endDate } = this.getDateRange(input);
+
+    const cacheKey = this.getCacheKey('demoRequestAnalytics', {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+    });
+
+    const cached = this.getCached<DemoRequestAnalytics>(cacheKey);
+    if (cached) return cached;
+
+    const [
+      metrics,
+      statusBreakdown,
+      leadSources,
+      companySizeDistribution,
+      industryBreakdown,
+      topUseCases,
+      requestsOverTime,
+      responseTimeMetrics,
+    ] = await Promise.all([
+      this.getDemoRequestMetrics(startDate, endDate),
+      this.getDemoRequestStatusBreakdown(startDate, endDate),
+      this.getDemoRequestLeadSources(startDate, endDate),
+      this.getDemoRequestCompanySizeDistribution(startDate, endDate),
+      this.getDemoRequestIndustryBreakdown(startDate, endDate),
+      this.getDemoRequestTopUseCases(startDate, endDate),
+      this.getDemoRequestsOverTime(startDate, endDate),
+      this.getDemoRequestResponseTimeMetrics(startDate, endDate),
+    ]);
+
+    const result: DemoRequestAnalytics = {
+      metrics,
+      statusBreakdown,
+      leadSources,
+      companySizeDistribution,
+      industryBreakdown,
+      topUseCases,
+      requestsOverTime,
+      responseTimeMetrics,
+      generatedAt: new Date(),
+    };
+
+    this.setCached(cacheKey, result);
+    return result;
+  }
+
+  /**
+   * Get demo request metrics with conversion rates
+   */
+  async getDemoRequestMetrics(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<DemoRequestMetrics> {
+    const results = await this.demoRequestRepository
+      .createQueryBuilder('dr')
+      .select('dr.status', 'status')
+      .addSelect('COUNT(*)', 'count')
+      .where('dr.submittedAt BETWEEN :startDate AND :endDate', {
+        startDate,
+        endDate,
+      })
+      .groupBy('dr.status')
+      .getRawMany();
+
+    const statusCounts: Record<string, number> = {
+      NEW: 0,
+      CONTACTED: 0,
+      SCHEDULED: 0,
+      QUALIFIED: 0,
+      CLOSED: 0,
+    };
+
+    for (const row of results) {
+      statusCounts[row.status] = parseInt(row.count);
+    }
+
+    const totalRequests = Object.values(statusCounts).reduce(
+      (a, b) => a + b,
+      0,
+    );
+    const newRequests = statusCounts.NEW;
+    const contactedRequests = statusCounts.CONTACTED;
+    const scheduledRequests = statusCounts.SCHEDULED;
+    const qualifiedRequests = statusCounts.QUALIFIED;
+    const closedRequests = statusCounts.CLOSED;
+
+    // Calculate conversion rates
+    const newToContactedRate =
+      newRequests > 0 ? (contactedRequests / newRequests) * 100 : 0;
+    const contactedToScheduledRate =
+      contactedRequests > 0 ? (scheduledRequests / contactedRequests) * 100 : 0;
+    const overallConversionRate =
+      newRequests > 0 ? (closedRequests / newRequests) * 100 : 0;
+
+    return {
+      totalRequests,
+      newRequests,
+      contactedRequests,
+      scheduledRequests,
+      qualifiedRequests,
+      closedRequests,
+      newToContactedRate: Math.round(newToContactedRate * 100) / 100,
+      contactedToScheduledRate:
+        Math.round(contactedToScheduledRate * 100) / 100,
+      overallConversionRate: Math.round(overallConversionRate * 100) / 100,
+      periodStart: startDate,
+      periodEnd: endDate,
+    };
+  }
+
+  /**
+   * Get demo request status breakdown for funnel visualization
+   */
+  async getDemoRequestStatusBreakdown(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<DemoRequestStatusBreakdown[]> {
+    const results = await this.demoRequestRepository
+      .createQueryBuilder('dr')
+      .select('dr.status', 'status')
+      .addSelect('COUNT(*)', 'count')
+      .where('dr.submittedAt BETWEEN :startDate AND :endDate', {
+        startDate,
+        endDate,
+      })
+      .groupBy('dr.status')
+      .orderBy('count', 'DESC')
+      .getRawMany();
+
+    const total = results.reduce((sum, r) => sum + parseInt(r.count), 0);
+
+    return results.map((r) => ({
+      status: r.status,
+      count: parseInt(r.count),
+      percentage:
+        total > 0 ? Math.round((parseInt(r.count) / total) * 10000) / 100 : 0,
+    }));
+  }
+
+  /**
+   * Get demo request lead sources from UTM parameters
+   */
+  async getDemoRequestLeadSources(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<DemoRequestLeadSource[]> {
+    const results = await this.demoRequestRepository
+      .createQueryBuilder('dr')
+      .select("COALESCE(dr.metadata->>'utm_source', 'direct')", 'source')
+      .addSelect("COALESCE(dr.metadata->>'utm_medium', 'none')", 'medium')
+      .addSelect('COUNT(*)', 'count')
+      .where('dr.submittedAt BETWEEN :startDate AND :endDate', {
+        startDate,
+        endDate,
+      })
+      .groupBy('source, medium')
+      .orderBy('count', 'DESC')
+      .limit(10)
+      .getRawMany();
+
+    const total = results.reduce((sum, r) => sum + parseInt(r.count), 0);
+
+    return results.map((r) => ({
+      source: r.source === 'direct' ? null : r.source,
+      medium: r.medium === 'none' ? null : r.medium,
+      count: parseInt(r.count),
+      percentage:
+        total > 0 ? Math.round((parseInt(r.count) / total) * 10000) / 100 : 0,
+    }));
+  }
+
+  /**
+   * Get demo request company size distribution
+   */
+  async getDemoRequestCompanySizeDistribution(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<DemoRequestCompanySizeDistribution[]> {
+    const results = await this.demoRequestRepository
+      .createQueryBuilder('dr')
+      .select('dr.companySize', 'companySize')
+      .addSelect('COUNT(*)', 'count')
+      .where('dr.submittedAt BETWEEN :startDate AND :endDate', {
+        startDate,
+        endDate,
+      })
+      .andWhere('dr.companySize IS NOT NULL')
+      .groupBy('dr.companySize')
+      .orderBy('count', 'DESC')
+      .getRawMany();
+
+    const total = results.reduce((sum, r) => sum + parseInt(r.count), 0);
+
+    return results.map((r) => ({
+      companySize: r.companySize || 'Unknown',
+      count: parseInt(r.count),
+      percentage:
+        total > 0 ? Math.round((parseInt(r.count) / total) * 10000) / 100 : 0,
+    }));
+  }
+
+  /**
+   * Get demo request industry breakdown
+   */
+  async getDemoRequestIndustryBreakdown(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<DemoRequestIndustryBreakdown[]> {
+    const results = await this.demoRequestRepository
+      .createQueryBuilder('dr')
+      .select('dr.industry', 'industry')
+      .addSelect('COUNT(*)', 'count')
+      .where('dr.submittedAt BETWEEN :startDate AND :endDate', {
+        startDate,
+        endDate,
+      })
+      .andWhere('dr.industry IS NOT NULL')
+      .groupBy('dr.industry')
+      .orderBy('count', 'DESC')
+      .getRawMany();
+
+    const total = results.reduce((sum, r) => sum + parseInt(r.count), 0);
+
+    return results.map((r) => ({
+      industry: r.industry || 'Unknown',
+      count: parseInt(r.count),
+      percentage:
+        total > 0 ? Math.round((parseInt(r.count) / total) * 10000) / 100 : 0,
+    }));
+  }
+
+  /**
+   * Get top use cases mentioned in demo requests
+   * Groups similar use cases and returns top mentions
+   */
+  async getDemoRequestTopUseCases(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<DemoRequestTopUseCase[]> {
+    const results = await this.demoRequestRepository
+      .createQueryBuilder('dr')
+      .select('dr.useCase', 'useCase')
+      .addSelect('COUNT(*)', 'count')
+      .where('dr.submittedAt BETWEEN :startDate AND :endDate', {
+        startDate,
+        endDate,
+      })
+      .groupBy('dr.useCase')
+      .orderBy('count', 'DESC')
+      .limit(10)
+      .getRawMany();
+
+    return results.map((r) => ({
+      useCase:
+        r.useCase.length > 100
+          ? r.useCase.substring(0, 100) + '...'
+          : r.useCase,
+      count: parseInt(r.count),
+    }));
+  }
+
+  /**
+   * Get demo requests over time (daily)
+   */
+  async getDemoRequestsOverTime(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<DemoRequestTimeSeriesPoint[]> {
+    const results = await this.demoRequestRepository
+      .createQueryBuilder('dr')
+      .select("date_trunc('day', dr.submittedAt)", 'timestamp')
+      .addSelect('COUNT(*)', 'count')
+      .where('dr.submittedAt BETWEEN :startDate AND :endDate', {
+        startDate,
+        endDate,
+      })
+      .groupBy('timestamp')
+      .orderBy('timestamp', 'ASC')
+      .getRawMany();
+
+    return results.map((r) => ({
+      timestamp: new Date(r.timestamp),
+      count: parseInt(r.count),
+    }));
+  }
+
+  /**
+   * Get demo request response time metrics
+   * Calculates average time from submission to first contact
+   */
+  async getDemoRequestResponseTimeMetrics(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<DemoRequestResponseTimeMetrics> {
+    const results = await this.demoRequestRepository
+      .createQueryBuilder('dr')
+      .select(
+        'EXTRACT(EPOCH FROM (dr.contactedAt - dr.submittedAt)) / 3600',
+        'hoursToContact',
+      )
+      .where('dr.submittedAt BETWEEN :startDate AND :endDate', {
+        startDate,
+        endDate,
+      })
+      .andWhere('dr.contactedAt IS NOT NULL')
+      .getRawMany();
+
+    const hoursToContact = results
+      .map((r) => parseFloat(r.hoursToContact))
+      .filter((h) => h >= 0 && h < 720); // Filter outliers: max 30 days
+
+    const totalContacted = hoursToContact.length;
+
+    if (totalContacted === 0) {
+      return {
+        avgHoursToContact: 0,
+        medianHoursToContact: 0,
+        totalContacted: 0,
+        calculatedAt: new Date(),
+      };
+    }
+
+    // Calculate average
+    const avgHoursToContact =
+      hoursToContact.reduce((a, b) => a + b, 0) / totalContacted;
+
+    // Calculate median
+    const sorted = [...hoursToContact].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    const medianHoursToContact =
+      sorted.length % 2 !== 0
+        ? sorted[mid]
+        : (sorted[mid - 1] + sorted[mid]) / 2;
+
+    return {
+      avgHoursToContact: Math.round(avgHoursToContact * 100) / 100,
+      medianHoursToContact: Math.round(medianHoursToContact * 100) / 100,
+      totalContacted,
+      calculatedAt: new Date(),
     };
   }
 }

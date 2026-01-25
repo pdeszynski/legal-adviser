@@ -1,0 +1,18 @@
+{
+  "category": "enhancement",
+  "description": "Set up Temporal infrastructure for local development and production deployment. Configure docker-compose.yml with Temporal server, UI, and PostgreSQL dependencies. Create temporal-config.yml for workflow and activity registration. Implement Temporal client factory in NestJS backend for workflow execution. Set up development vs production Temporal server connection via environment variables (TEMPORAL_CLUSTER_URL, TEMPORAL_NAMESPACE). Configure worker pools for each workflow type. Add health check for Temporal connection.",
+  "id": "temporal-infrastructure-setup",
+  "title": "Temporal Infrastructure Setup for Development and Production",
+  "dependencies": [],
+  "priority": 1,
+  "status": "verified",
+  "branchName": "feature/temporal",
+  "descriptionHistory": [
+    {
+      "description": "Set up Temporal infrastructure for local development and production deployment. Configure docker-compose.yml with Temporal server, UI, and PostgreSQL dependencies. Create temporal-config.yml for workflow and activity registration. Implement Temporal client factory in NestJS backend for workflow execution. Set up development vs production Temporal server connection via environment variables (TEMPORAL_CLUSTER_URL, TEMPORAL_NAMESPACE). Configure worker pools for each workflow type. Add health check for Temporal connection.",
+      "timestamp": "2026-01-24T16:43:46.094Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T21:37:05.726Z"
+}

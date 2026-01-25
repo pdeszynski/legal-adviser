@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Verify that the frontend GraphQL client (Apollo Client or custom fetch wrapper) is correctly including Authorization headers in all requests. Check: 1) Apollo link chain includes auth link that adds Bearer token, 2) Authorization header format: 'Bearer <jwt_token>', 3) Token is retrieved from authProvider or token storage, 4) Headers are sent on both queries and mutations, 5) CSRF token is included if required (but doesn't conflict with auth), 6) Cookie credentials are included ('credentials: include' if using cookie-based auth). Test GraphQL requests in browser DevTools Network tab to verify headers. Fix any missing or misconfigured headers. Ensure headers persist across page navigation.",
+  "id": "frontend-graphql-client-headers-configuration",
+  "title": "Verify GraphQL Client Authorization Headers Configuration",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Verify that the frontend GraphQL client (Apollo Client or custom fetch wrapper) is correctly including Authorization headers in all requests. Check: 1) Apollo link chain includes auth link that adds Bearer token, 2) Authorization header format: 'Bearer <jwt_token>', 3) Token is retrieved from authProvider or token storage, 4) Headers are sent on both queries and mutations, 5) CSRF token is included if required (but doesn't conflict with auth), 6) Cookie credentials are included ('credentials: include' if using cookie-based auth). Test GraphQL requests in browser DevTools Network tab to verify headers. Fix any missing or misconfigured headers. Ensure headers persist across page navigation.",
+      "timestamp": "2026-01-25T13:44:04.758Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769300024036-814c47cf",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T00:13:44.036Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "demo-request-form-component",
+  "featureName": "Demo Request Form Component",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

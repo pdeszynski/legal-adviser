@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769289654295-cf82e0b7",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T21:20:54.295Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "ruff-linter-configuration",
+  "featureName": "Configure Ruff for Python Linting",
+  "error": "Feature completed in 356s - auto-verified",
+  "passes": true
+}

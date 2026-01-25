@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Replace Bull-based document generation queue with Temporal workflow. Create DocumentGenerationWorkflow with activities for: 1) Initialize document with DRAFT status, 2) Call AI Engine for content generation, 3) Poll for completion, 4) Update document to COMPLETED/FAILED status, 5) Send completion notification email. Implement retry policy with exponential backoff for AI failures. Add workflow ID generation based on document ID for idempotency. Migrate existing queued jobs to Temporal during deployment.",
+  "id": "migrate-document-generation-to-temporal",
+  "title": "Migrate Document Generation Queue to Temporal Workflow",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "feature/temporal",
+  "descriptionHistory": [
+    {
+      "description": "Replace Bull-based document generation queue with Temporal workflow. Create DocumentGenerationWorkflow with activities for: 1) Initialize document with DRAFT status, 2) Call AI Engine for content generation, 3) Poll for completion, 4) Update document to COMPLETED/FAILED status, 5) Send completion notification email. Implement retry policy with exponential backoff for AI failures. Add workflow ID generation based on document ID for idempotency. Migrate existing queued jobs to Temporal during deployment.",
+      "timestamp": "2026-01-24T16:43:46.090Z",
+      "source": "initial"
+    }
+  ]
+}

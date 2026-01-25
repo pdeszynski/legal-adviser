@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769312659555-1817311b",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T03:44:19.555Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-migration-deployment-guide",
+  "featureName": "Create Deployment Guide for Temporal Migration",
+  "error": "Feature completed in 482s - auto-verified",
+  "passes": true
+}

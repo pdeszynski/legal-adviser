@@ -14,6 +14,7 @@ import { AiClientModule } from './shared/ai-client/ai-client.module';
 import { StreamingModule } from './shared/streaming';
 import { QueueRegistry } from './shared/queues';
 import { CsrfModule } from './shared/csrf';
+import { EncryptionModule } from './shared/encryption/encryption.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DocumentsModule } from './modules/documents/documents.module';
@@ -33,6 +34,8 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
 import { SystemSettingsModule } from './modules/system-settings/system-settings.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { SystemHealthModule } from './modules/system-health/system-health.module';
+import { HubSpotModule } from './modules/integrations/hubspot/hubspot.module';
+import { DemoRequestModule } from './modules/demo-request/demo-request.module';
 // Authorization - Role-Based Access Control following DDD
 import { AuthorizationModule } from './modules/authorization/authorization.module';
 // Persisted Queries - Automatic Persisted Queries (APQ) support
@@ -62,6 +65,8 @@ import { PersistedQueriesService } from './modules/persisted-queries';
     }),
     // Persisted Queries Module - Must be imported before GraphQLModule
     PersistedQueriesModule,
+    // Encryption Module - Global module for TOTP secret encryption
+    EncryptionModule,
     // GraphQL Module - Code-First approach per constitution
     // Subscriptions enabled via graphql-ws for real-time document status updates
     // Includes Automatic Persisted Queries (APQ) support
@@ -163,6 +168,10 @@ import { PersistedQueriesService } from './modules/persisted-queries';
     SystemSettingsModule,
     WebhooksModule,
     SystemHealthModule,
+    // HubSpot Integration for lead management
+    HubSpotModule,
+    // Demo Request Module - Public demo request submissions
+    DemoRequestModule,
     // Authorization - Role-Based Access Control
     AuthorizationModule,
     // Domain Event System - Event dispatcher for reliable event delivery

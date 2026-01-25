@@ -1,0 +1,19 @@
+{
+  "category": "feature",
+  "description": "Send automated confirmation email to users who submit demo requests. Implement: 1) Email template with thank you message, 2) Information about what to expect next (timeline for demo scheduling, product updates), 3) Links to documentation, blog, or social media, 4) 'Add to calendar' link if demo time was scheduled, 5) Unsubscribe/opt-out link for marketing emails, 6) Use existing email-notification-service infrastructure, 7) Send via email queue (or Temporal workflow when migration complete). Ensure email is sent asynchronously after successful HubSpot sync.",
+  "id": "waitlist-confirmation-email",
+  "title": "Waitlist/Demo Request Confirmation Email",
+  "dependencies": [
+    "demo-request-graphql-api"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Send automated confirmation email to users who submit demo requests. Implement: 1) Email template with thank you message, 2) Information about what to expect next (timeline for demo scheduling, product updates), 3) Links to documentation, blog, or social media, 4) 'Add to calendar' link if demo time was scheduled, 5) Unsubscribe/opt-out link for marketing emails, 6) Use existing email-notification-service infrastructure, 7) Send via email queue (or Temporal workflow when migration complete). Ensure email is sent asynchronously after successful HubSpot sync.",
+      "timestamp": "2026-01-24T21:38:47.510Z",
+      "source": "initial"
+    }
+  ]
+}

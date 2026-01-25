@@ -1,0 +1,19 @@
+{
+  "category": "feature",
+  "description": "Create TOTP service in application layer for generating and validating Time-based One-Time Passwords. Use library like 'otplib' or 'speakeasy' for TOTP generation and verification. Implement methods: generateSecret() for creating new TOTP secrets, generateQRCode(secret, userEmail) returning QR code image data URL, verifyToken(secret, token) for validating 6-digit codes, and generateBackupCodes() creating 10 recovery codes. Integrate with existing AI Client Service patterns.",
+  "id": "totp-service-implementation",
+  "title": "TOTP Service Implementation",
+  "dependencies": [
+    "two-factor-auth-entity"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create TOTP service in application layer for generating and validating Time-based One-Time Passwords. Use library like 'otplib' or 'speakeasy' for TOTP generation and verification. Implement methods: generateSecret() for creating new TOTP secrets, generateQRCode(secret, userEmail) returning QR code image data URL, verifyToken(secret, token) for validating 6-digit codes, and generateBackupCodes() creating 10 recovery codes. Integrate with existing AI Client Service patterns.",
+      "timestamp": "2026-01-24T15:49:40.771Z",
+      "source": "initial"
+    }
+  ]
+}

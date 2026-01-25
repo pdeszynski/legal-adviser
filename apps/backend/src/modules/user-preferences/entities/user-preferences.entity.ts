@@ -182,7 +182,24 @@ export class UserPreferences {
         push: false,
       },
     };
-    return { ...defaults, ...this.notificationPreferences };
+    const stored = this.notificationPreferences || {};
+    const channelDefaults = defaults.channels as Record<string, boolean>;
+    const storedChannels = (stored.channels || {}) as Record<
+      string,
+      boolean | null | undefined
+    >;
+
+    return {
+      documentUpdates: stored.documentUpdates ?? defaults.documentUpdates,
+      queryResponses: stored.queryResponses ?? defaults.queryResponses,
+      systemAlerts: stored.systemAlerts ?? defaults.systemAlerts,
+      marketingEmails: stored.marketingEmails ?? defaults.marketingEmails,
+      channels: {
+        email: storedChannels.email ?? channelDefaults.email,
+        inApp: storedChannels.inApp ?? channelDefaults.inApp,
+        push: storedChannels.push ?? channelDefaults.push,
+      },
+    };
   }
 
   /**

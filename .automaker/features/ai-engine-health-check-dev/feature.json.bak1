@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Implement health check endpoint verification for AI Engine startup in dev mode. Add startup probe to ensure AI Engine is ready before other services attempt to connect. Configure readiness check in turbo pipeline to fail-fast if AI Engine doesn't start properly. Display clear error messages if AI Engine fails to start. Include health check in `pnpm dev` command output.",
+  "id": "ai-engine-health-check-dev",
+  "title": "Add AI Engine Health Check for Dev Mode",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Implement health check endpoint verification for AI Engine startup in dev mode. Add startup probe to ensure AI Engine is ready before other services attempt to connect. Configure readiness check in turbo pipeline to fail-fast if AI Engine doesn't start properly. Display clear error messages if AI Engine fails to start. Include health check in `pnpm dev` command output.",
+      "timestamp": "2026-01-24T16:07:41.298Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T21:56:13.905Z"
+}

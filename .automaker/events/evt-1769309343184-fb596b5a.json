@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769309343184-fb596b5a",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T02:49:03.184Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "two-factor-auth-preferences",
+  "featureName": "Two-Factor Settings in User Preferences",
+  "error": "Feature completed in 878s - auto-verified",
+  "passes": true
+}

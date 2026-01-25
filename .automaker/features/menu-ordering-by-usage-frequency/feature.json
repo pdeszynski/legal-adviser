@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Reorganize menu structure based on user workflow priority: 1) Dashboard (first - landing page after login), 2) Legal Q&A Chat (most frequent daily use), 3) Documents (high frequency), 4) Case Analysis (regular use), 5) Case Law Search (regular use), 6) Analytics/Admin (lower frequency), 7) Settings/Billing (infrequent access). Move Dashboard to top position. Ensure order matches typical user journey from login to daily tasks.",
+  "id": "menu-ordering-by-usage-frequency",
+  "title": "Reorder Menu Items by Usage Frequency",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Reorganize menu structure based on user workflow priority: 1) Dashboard (first - landing page after login), 2) Legal Q&A Chat (most frequent daily use), 3) Documents (high frequency), 4) Case Analysis (regular use), 5) Case Law Search (regular use), 6) Analytics/Admin (lower frequency), 7) Settings/Billing (infrequent access). Move Dashboard to top position. Ensure order matches typical user journey from login to daily tasks.",
+      "timestamp": "2026-01-24T22:08:56.721Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T02:11:07.796Z"
+}

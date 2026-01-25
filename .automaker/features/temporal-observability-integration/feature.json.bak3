@@ -1,0 +1,19 @@
+{
+  "category": "enhancement",
+  "description": "Integrate Temporal with existing monitoring infrastructure (Sentry for errors, custom metrics). Implement workflow execution logging to structured logger. Create custom metrics exporter for Prometheus: workflows_started_total, workflows_completed_total, workflows_failed_total, activity_latency. Add Sentry integration for workflow failures. Configure Temporal UI access for operations team. Create dashboards for workflow execution metrics. Set up alerts for failed workflows and stuck activities.",
+  "id": "temporal-observability-integration",
+  "title": "Temporal Observability and Monitoring Integration",
+  "dependencies": [
+    "temporal-infrastructure-setup"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "feature/temporal",
+  "descriptionHistory": [
+    {
+      "description": "Integrate Temporal with existing monitoring infrastructure (Sentry for errors, custom metrics). Implement workflow execution logging to structured logger. Create custom metrics exporter for Prometheus: workflows_started_total, workflows_completed_total, workflows_failed_total, activity_latency. Add Sentry integration for workflow failures. Configure Temporal UI access for operations team. Create dashboards for workflow execution metrics. Set up alerts for failed workflows and stuck activities.",
+      "timestamp": "2026-01-24T16:43:46.096Z",
+      "source": "initial"
+    }
+  ]
+}

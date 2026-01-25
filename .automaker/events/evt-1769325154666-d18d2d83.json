@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769325154666-d18d2d83",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T07:12:34.666Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "remove-bull-queue-dependencies",
+  "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+  "error": "Feature completed in 733s - auto-verified",
+  "passes": true
+}

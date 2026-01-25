@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769301899853-a0009a59",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T00:44:59.853Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "menu-admin-panel-link",
+  "featureName": "Add Admin Panel Link for Administrator Role",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

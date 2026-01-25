@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769314125143-9f4a6a62",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T04:08:45.143Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "migrate-webhook-delivery-to-temporal",
+  "featureName": "Migrate Webhook Delivery to Temporal Workflow",
+  "error": "Feature completed in 642s - auto-verified",
+  "passes": true
+}

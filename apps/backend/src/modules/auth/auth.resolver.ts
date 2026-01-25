@@ -18,6 +18,7 @@ import {
   AuthUserPayload,
   UpdateProfileInput,
   ChangePasswordInput,
+  CompleteTwoFactorLoginInput,
 } from './dto/auth.graphql-dto';
 
 /**
@@ -32,13 +33,17 @@ export class AuthResolver {
 
   /**
    * Mutation: User login
-   * Validates credentials and returns JWT tokens
+   * Validates credentials and returns JWT tokens or requires 2FA
+   * Supports two-factor authentication flow:
+   * - If user has 2FA enabled and no token provided, returns requiresTwoFactor: true
+   * - If 2FA token or backup code provided, validates them before issuing tokens
    * Note: CSRF skipped - user doesn't have token before authentication
    * Rate limited to prevent brute force attacks
    */
   @Mutation(() => AuthPayload, {
     name: 'login',
-    description: 'Authenticate user with username/email and password',
+    description:
+      'Authenticate user with username/email and password. Supports 2FA with twoFactorToken or backupCode.',
   })
   @SkipCsrf()
   @UseGuards(GqlThrottlerGuard)
@@ -47,6 +52,8 @@ export class AuthResolver {
     const result = await this.authService.loginWithCredentials(
       input.username,
       input.password,
+      input.twoFactorToken,
+      input.backupCode,
     );
 
     if (!result) {
@@ -54,6 +61,31 @@ export class AuthResolver {
     }
 
     return result;
+  }
+
+  /**
+   * Mutation: Complete two-factor authentication login
+   * Called when user submits 2FA token after receiving requiresTwoFactor response
+   * Validates temporary token and TOTP/backup code, then issues JWT tokens
+   * Note: CSRF skipped - user doesn't have token before completing authentication
+   * Rate limited to prevent brute force attacks
+   */
+  @Mutation(() => AuthPayload, {
+    name: 'completeTwoFactorLogin',
+    description:
+      'Complete login with 2FA token or backup code after receiving requiresTwoFactor response',
+  })
+  @SkipCsrf()
+  @UseGuards(GqlThrottlerGuard)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  async completeTwoFactorLogin(
+    @Args('input') input: CompleteTwoFactorLoginInput,
+  ): Promise<AuthPayload> {
+    return this.authService.completeTwoFactorLogin(
+      input.twoFactorTempToken,
+      input.twoFactorToken,
+      input.backupCode,
+    );
   }
 
   /**

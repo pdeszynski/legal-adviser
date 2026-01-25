@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Update CLAUDE.md with 2FA architecture documentation. Include: 1) Overview of TOTP implementation, 2) Entity relationships (User -> TwoFactorAuth), 3) Security measures (encryption, rate limiting), 4) GraphQL mutations and their usage, 5) Frontend components and flow diagrams, 6) Testing guide with test TOTP secrets, 7) Troubleshooting common issues (QR code not scanning, clock skew, backup codes lost). Add code examples for generating TOTP tokens in tests.",
+  "id": "two-factor-auth-documentation",
+  "title": "Two-Factor Authentication Documentation",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Update CLAUDE.md with 2FA architecture documentation. Include: 1) Overview of TOTP implementation, 2) Entity relationships (User -> TwoFactorAuth), 3) Security measures (encryption, rate limiting), 4) GraphQL mutations and their usage, 5) Frontend components and flow diagrams, 6) Testing guide with test TOTP secrets, 7) Troubleshooting common issues (QR code not scanning, clock skew, backup codes lost). Add code examples for generating TOTP tokens in tests.",
+      "timestamp": "2026-01-24T15:49:40.775Z",
+      "source": "initial"
+    }
+  ]
+}

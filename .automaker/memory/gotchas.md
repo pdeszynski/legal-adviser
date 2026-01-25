@@ -5,9 +5,9 @@ relevantTo: [error, bug, fix, issue, problem]
 importance: 0.9
 relatedFiles: []
 usageStats:
-  loaded: 623
-  referenced: 254
-  successfulFeatures: 254
+  loaded: 974
+  referenced: 298
+  successfulFeatures: 298
 ---
 # Gotchas
 
@@ -192,3 +192,75 @@ Mistakes and edge cases to avoid. These are lessons learned from past issues.
      - Seed data files (for reproducible tests)
      - Database migrations (for consistency)
      - Test fixtures (for predictable test data)
+
+#### [Gotcha] GraphQL @Field decorator requires explicit type function return type (2026-01-25)
+
+- **Situation:** `UndefinedTypeError: Make sure you are providing an explicit type for the "company" of the "DemoRequestOrmEntity" class`
+- **Root cause:** When using `@Field()` decorator in NestJS GraphQL, the type must be explicitly specified as a function that returns the type, not just `{ nullable: true }`. The decorator metadata system needs the explicit type function to properly generate GraphQL schema
+- **How to avoid:** Always use the explicit type function in `@Field()` decorators:
+  ```typescript
+  // WRONG - causes UndefinedTypeError
+  @Field({ nullable: true })
+  company: string | null;
+
+  // CORRECT - explicit type function
+  @Field(() => String, { nullable: true })
+  company: string | null;
+
+  // For enum fields
+  @Field(() => CompanySizeEnum, { nullable: true })
+  companySize: CompanySizeEnum | null;
+  ```
+
+#### [Gotcha] Direct fetch() calls bypass GraphQL authentication headers (2026-01-25)
+
+- **Situation:** `twoFactorSettings` query returns `{errors: [{message: "Authentication failed"}], data: {twoFactorSettings: null}}`
+- **Root cause:** Frontend components making direct `fetch()` calls to GraphQL endpoint without including the `Authorization` header. The data provider automatically adds authentication, but raw fetch calls don't
+- **How to avoid:** Use the data provider's `custom` method for all GraphQL queries/mutations in components:
+  ```typescript
+  // WRONG - direct fetch without auth
+  const response = await fetch(GRAPHQL_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },  // No Authorization!
+    credentials: 'include',
+    body: JSON.stringify({ query }),
+  });
+
+  // CORRECT - use data provider which adds auth headers
+  const dp = dataProvider();
+  if (!dp) throw new Error('Data provider not available');
+  const result = await (dp as any).custom({
+    method: 'post',
+    config: {
+      query: {
+        operation: 'twoFactorSettings',
+        fields: ['status', 'enabled', 'remainingBackupCodes', 'lastVerifiedAt'],
+      },
+    },
+  });
+  ```
+  The data provider's `executeGraphQL` function automatically includes JWT tokens from `getAccessToken()`.
+
+#### [Gotcha] Spread operator with null values overrides object defaults (2026-01-25)
+
+- **Situation:** `Cannot return null for non-nullable field NotificationPreferences.documentUpdates` error when database contains `null` values
+- **Root cause:** Using spread operator `{ ...defaults, ...this.notificationPreferences }` allows `null` values from the database to override default values. When `notificationPreferences` contains `{ documentUpdates: null }`, the spread operator propagates `null` instead of keeping the default value
+- **How to avoid:** Use nullish coalescing operator (`??`) for each field to handle `null`/`undefined` values:
+  ```typescript
+  // WRONG - null values override defaults
+  getNotificationPreferences(): NotificationPreferences {
+    const defaults = { documentUpdates: true, ... };
+    return { ...defaults, ...this.notificationPreferences };
+  }
+
+  // CORRECT - nullish coalescing preserves defaults
+  getNotificationPreferences(): NotificationPreferences {
+    const defaults = { documentUpdates: true, ... };
+    const stored = this.notificationPreferences || {};
+    return {
+      documentUpdates: stored.documentUpdates ?? defaults.documentUpdates,
+      queryResponses: stored.queryResponses ?? defaults.queryResponses,
+      // ... etc
+    };
+  }
+  ```

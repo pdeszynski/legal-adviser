@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769290625740-147d8eb6",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T21:37:05.740Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-infrastructure-setup",
+  "featureName": "Temporal Infrastructure Setup for Development and Production",
+  "error": "Feature completed in 1319s - auto-verified",
+  "passes": true
+}

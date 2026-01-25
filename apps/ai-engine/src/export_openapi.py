@@ -12,7 +12,7 @@ def main():
 
     # Save to file
     output_path = Path(__file__).parent.parent / "openapi.json"
-    with open(output_path, "w") as f:
+    with output_path.open("w") as f:
         json.dump(openapi_schema, f, indent=2)
 
     print(f"OpenAPI schema exported to: {output_path}")

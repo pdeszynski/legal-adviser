@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769301580412-9ed070ea",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T00:39:40.412Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "menu-grouping-lawyer-features",
+  "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

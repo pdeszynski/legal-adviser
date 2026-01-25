@@ -4,8 +4,8 @@
   "private": true,
   "description": "AI Engine for Legal Platform - Python/FastAPI Service",
   "scripts": {
-    "dev": "uv run uvicorn src.main:app --reload --port 8000 --log-level debug",
-    "start": "uv run uvicorn src.main:app --host 0.0.0.0 --port 8000",
+    "dev": "uv run python src/dev_server.py",
+    "start": "uv run python src/start_server.py",
     "build": "echo 'No build step for Python service'",
     "test": "uv run pytest",
     "lint": "uv run ruff check .",

@@ -13,6 +13,10 @@ import { LegalRuling } from '../modules/documents/entities/legal-ruling.entity';
 import { LegalQuery } from '../modules/queries/entities/legal-query.entity';
 import { AuditLog } from '../modules/audit-log/entities/audit-log.entity';
 import { RoleEntity, UserRoleEntity } from '../modules/authorization/entities';
+import { UserPreferences } from '../modules/user-preferences/entities/user-preferences.entity';
+
+// Modules
+import { EncryptionModule } from '../shared/encryption/encryption.module';
 
 import { SeedModule } from './seed.module';
 import { SeedService } from './seed.service';
@@ -45,11 +49,13 @@ import { SeedService } from './seed.service';
           AuditLog,
           RoleEntity,
           UserRoleEntity,
+          UserPreferences,
         ],
         synchronize: true, // Enable for dev seeding
       }),
       inject: [ConfigService],
     }),
+    EncryptionModule, // Required for encrypting TOTP secrets in seed data
     SeedModule,
   ],
 })

@@ -5,13 +5,13 @@ It should be imported and called at application startup.
 """
 
 import os
-from typing import Optional
 
 try:
     import sentry_sdk
     from sentry_sdk.integrations.fastapi import FastApiIntegration
     from sentry_sdk.integrations.starlette import StarletteIntegration
     from sentry_sdk.tracing import Span
+
     SENTRY_AVAILABLE = True
 except ImportError:
     SENTRY_AVAILABLE = False
@@ -68,7 +68,9 @@ def init_sentry() -> None:
         # Profiling (production only for performance insights)
         profiles_sample_rate=profiles_sample_rate,
         # Filter out development events
-        before_send_transaction=lambda event, hint: None if environment == "development" else event,
+        before_send_transaction=lambda event, _hint: None
+        if environment == "development"
+        else event,
         before_send=_filter_development_events,
         integrations=[
             FastApiIntegration(),
@@ -86,7 +88,7 @@ def init_sentry() -> None:
     print(f"Sentry initialized with APM features (environment: {environment})")
 
 
-def _filter_development_events(event, hint):
+def _filter_development_events(event, _hint):
     """Filter out events from development environment.
 
     Args:
@@ -104,25 +106,7 @@ def _filter_development_events(event, hint):
     return event
 
 
-def _filter_development_events(event, hint):
-    """Filter out events from development environment.
-
-    Args:
-        event: The event to be sent
-        hint: Event hint with additional information
-
-    Returns:
-        None if development, otherwise the event
-    """
-    environment = os.getenv("NODE_ENV", os.getenv("ENVIRONMENT", "development"))
-
-    if environment == "development":
-        return None
-
-    return event
-
-
-def capture_exception(error: Exception, context: Optional[dict] = None) -> None:
+def capture_exception(error: Exception, context: dict | None = None) -> None:
     """Capture an exception in Sentry.
 
     Args:
@@ -163,7 +147,7 @@ def capture_message(message: str, level: str = "info") -> None:
     sentry_sdk.capture_message(message, level=level)
 
 
-def set_user(user_id: str, email: Optional[str] = None, **kwargs) -> None:
+def set_user(user_id: str, email: str | None = None, **kwargs) -> None:
     """Set user context for Sentry events.
 
     Args:
@@ -194,7 +178,7 @@ def set_context(name: str, data: dict) -> None:
     sentry_sdk.set_context(name, data)
 
 
-def start_ai_span(operation: str, **kwargs) -> Optional[Span]:
+def start_ai_span(operation: str, **kwargs) -> Span | None:
     """Start a custom span for AI operations tracking.
 
     Use this to track specific AI operations like OpenAI API calls,
@@ -227,7 +211,7 @@ def start_ai_span(operation: str, **kwargs) -> Optional[Span]:
     return span
 
 
-def start_db_span(operation: str, table: Optional[str] = None, **kwargs) -> Optional[Span]:
+def start_db_span(operation: str, table: str | None = None, **kwargs) -> Span | None:
     """Start a custom span for database operations tracking.
 
     Args:
@@ -261,7 +245,7 @@ def start_db_span(operation: str, table: Optional[str] = None, **kwargs) -> Opti
     return span
 
 
-def start_http_span(method: str, url: str, **kwargs) -> Optional[Span]:
+def start_http_span(method: str, url: str, **kwargs) -> Span | None:
     """Start a custom span for HTTP client requests.
 
     Args:
@@ -284,10 +268,7 @@ def start_http_span(method: str, url: str, **kwargs) -> Optional[Span]:
     if not SENTRY_AVAILABLE:
         return None
 
-    span = sentry_sdk.start_span(
-        op="http.client",
-        description=f"{method} {url}"
-    )
+    span = sentry_sdk.start_span(op="http.client", description=f"{method} {url}")
 
     for key, value in kwargs.items():
         span.set_data(key, value)

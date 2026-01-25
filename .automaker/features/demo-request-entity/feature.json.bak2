@@ -1,0 +1,18 @@
+{
+  "category": "feature",
+  "description": "Create DemoRequest infrastructure entity to store form submissions locally. Include fields: id (UUID), fullName (string), email (string), company (string, optional), companySize (enum, optional), industry (string, optional), useCase (text), timeline (string, optional), budget (string, optional), preferredDemoTime (datetime, optional), status (enum: NEW, CONTACTED, SCHEDULED, QUALIFIED, CLOSED), hubspotContactId (string, optional), submittedAt (timestamp), contactedAt (timestamp optional), metadata (JSON for additional info). Add repository interface in domain layer. Implement using nestjs-query decorators for auto-generated resolvers. Add indexes for email and status fields.",
+  "id": "demo-request-entity",
+  "title": "Demo Request Entity for Database Storage",
+  "dependencies": [],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create DemoRequest infrastructure entity to store form submissions locally. Include fields: id (UUID), fullName (string), email (string), company (string, optional), companySize (enum, optional), industry (string, optional), useCase (text), timeline (string, optional), budget (string, optional), preferredDemoTime (datetime, optional), status (enum: NEW, CONTACTED, SCHEDULED, QUALIFIED, CLOSED), hubspotContactId (string, optional), submittedAt (timestamp), contactedAt (timestamp optional), metadata (JSON for additional info). Add repository interface in domain layer. Implement using nestjs-query decorators for auto-generated resolvers. Add indexes for email and status fields.",
+      "timestamp": "2026-01-24T21:38:47.510Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-24T22:15:04.825Z"
+}

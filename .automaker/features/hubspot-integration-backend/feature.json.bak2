@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Create HubSpot integration service in backend to sync leads. Implement: 1) HubSpot API client using @hubspot/api-client npm package, 2) Configuration for HubSpot API key from environment variable (HUBSPOT_API_KEY), 3) Contact creation in HubSpot with form submission data, 4) Custom properties mapping (company, use case, timeline, etc.), 5) Deal creation if lead qualifies (based on company size, timeline), 6) List assignment for 'Demo Requests' or 'Waitlist' segments, 7) Error handling for HubSpot API failures with retry logic. Create NestJS HubSpotService in modules/integrations/hubspot/. Add HubSpotModule to app.module.ts. Document HubSpot property setup requirements.",
+  "id": "hubspot-integration-backend",
+  "title": "HubSpot CRM Integration Backend Service",
+  "dependencies": [],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create HubSpot integration service in backend to sync leads. Implement: 1) HubSpot API client using @hubspot/api-client npm package, 2) Configuration for HubSpot API key from environment variable (HUBSPOT_API_KEY), 3) Contact creation in HubSpot with form submission data, 4) Custom properties mapping (company, use case, timeline, etc.), 5) Deal creation if lead qualifies (based on company size, timeline), 6) List assignment for 'Demo Requests' or 'Waitlist' segments, 7) Error handling for HubSpot API failures with retry logic. Create NestJS HubSpotService in modules/integrations/hubspot/. Add HubSpotModule to app.module.ts. Document HubSpot property setup requirements.",
+      "timestamp": "2026-01-24T21:38:47.508Z",
+      "source": "initial"
+    }
+  ]
+}

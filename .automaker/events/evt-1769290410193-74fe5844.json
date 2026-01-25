@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769290410193-74fe5844",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T21:33:30.193Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "two-factor-auth-graphql-mutations",
+  "featureName": "Two-Factor Authentication GraphQL Mutations",
+  "error": "Feature completed in 752s - auto-verified",
+  "passes": true
+}

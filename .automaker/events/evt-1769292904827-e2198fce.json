@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769292904827-e2198fce",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-24T22:15:04.827Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "demo-request-entity",
+  "featureName": "Demo Request Entity for Database Storage",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

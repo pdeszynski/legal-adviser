@@ -1,0 +1,21 @@
+{
+  "category": "enhancement",
+  "description": "Create a 'Account Settings' or 'My Account' menu group containing: Settings (profile, preferences, security), Usage/Billing, API Keys, and Notifications. This group should appear at the bottom of the menu or in a separate 'Account' section. Use visual separator (divider) to distinguish from main application features. For non-admin users, this consolidates all personal configuration in one location.",
+  "id": "menu-grouping-user-settings",
+  "title": "Group User Settings and Account Features",
+  "dependencies": [
+    "settings-page",
+    "billing-page",
+    "api-key-management-ui"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create a 'Account Settings' or 'My Account' menu group containing: Settings (profile, preferences, security), Usage/Billing, API Keys, and Notifications. This group should appear at the bottom of the menu or in a separate 'Account' section. Use visual separator (divider) to distinguish from main application features. For non-admin users, this consolidates all personal configuration in one location.",
+      "timestamp": "2026-01-24T22:08:56.723Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -824,5 +824,115 @@
       "title": "Potrzebujesz pomocy?",
       "text": "Jeśli uważasz, że to błąd, skontaktuj się z administratorem."
     }
+  },
+  "demo": {
+    "hero": {
+      "badge": "Ograniczony wczesny dostęp",
+      "title": "Uzyskaj wczesny dostęp do",
+      "highlight": "Legal AI",
+      "subtitle": "Dołącz do listy oczekujących i bądź wśród pierwszych, którzy doświadczą pomocy prawnej wspieranej przez AI. Zmień sposób, w jaki obsługujesz dokumenty prawne i badania."
+    },
+    "benefits": {
+      "earlyAccess": {
+        "title": "Wczesny dostęp",
+        "description": "Bądź pierwszym, który wypróbuje nowe funkcje i kształtuj produkt swoją opinią."
+      },
+      "priority": {
+        "title": "Priorytetowe wsparcie",
+        "description": "Otrzymaj dedykowane wsparcie i szybsze czasy reakcji jako wczesny użytkownik."
+      },
+      "freeTrial": {
+        "title": "Rozszerzony okres próbny",
+        "description": "Ciesz się rozszerzonym okresem próbnym z pełnym dostępem do wszystkich funkcji premium."
+      }
+    },
+    "form": {
+      "title": "Dołącz do listy oczekujących",
+      "subtitle": "Zabezpiecz swoje miejsce i otrzymaj wczesny dostęp po uruchomieniu.",
+      "submit": "Dołącz do listy",
+      "submitting": "Dołączanie...",
+      "privacyNotice": "Dołączając, zgadzasz się na otrzymywanie aktualizacji o naszym uruchomieniu. Szanujemy Twoją prywatność.",
+      "fields": {
+        "name": "Imię i nazwisko",
+        "email": "Adres e-mail",
+        "company": "Firma (opcjonalnie)",
+        "role": "Jestem...",
+        "useCase": "Do czego planujesz używać Legal AI?"
+      },
+      "placeholders": {
+        "name": "np. Jan Kowalski",
+        "email": "jan@przyklad.pl",
+        "company": "np. Kancelaria Prawna ABC",
+        "role": "Wybierz swoją rolę",
+        "useCase": "Opowiedz nam o swoim przypadku użycia..."
+      },
+      "roles": {
+        "lawyer": "Prawnik / Adwokat",
+        "paralegal": "Prawnik prokury",
+        "inHouseCounsel": "Radca prawny w firmie",
+        "legalStudent": "Student prawa",
+        "businessOwner": "Właściciel firmy",
+        "other": "Inne"
+      },
+      "errors": {
+        "nameRequired": "Imię i nazwisko jest wymagane",
+        "emailRequired": "E-mail jest wymagany",
+        "emailInvalid": "Wprowadź prawidłowy adres e-mail",
+        "roleRequired": "Wybierz swoją rolę",
+        "useCaseRequired": "Opisz przypadek użycia"
+      },
+      "success": {
+        "title": "Jesteś na liście!",
+        "message": "Dziękujemy za dołączenie do naszej listy oczekujących. Powiadomimy Cię, gdy tylko będziemy mieć aktualizacje lub gdy Twój wczesny dostęp będzie gotowy.",
+        "backButton": "Powrót do strony głównej"
+      }
+    },
+    "socialProof": {
+      "title": "Dołącz do wczesnych użytkowników",
+      "waitlistCount": "Ponad 2500 osób już na liście oczekujących",
+      "testimonial1": {
+        "quote": "Wczesny dostęp był niesamowity. Oszczędziłem godziny na sporządzaniu dokumentów.",
+        "author": "Anna Nowak",
+        "role": "Prawnik"
+      },
+      "testimonial2": {
+        "quote": "Wreszcie narzędzie prawne AI, które faktycznie rozumie kontekst. Bardzo podoba mi się do tej pory.",
+        "author": "Tomasz Wiśniewski",
+        "role": "Radca prawny"
+      },
+      "testimonial3": {
+        "quote": "Funkcja analizy spraw sama w sobie jest warta czekania. Nie mogę się doczekać pełnego wydania!",
+        "author": "Katarzyna Kowalczyk",
+        "role": "Prawnik prokury"
+      }
+    },
+    "faq": {
+      "title": "Często zadawane pytania",
+      "item1": {
+        "question": "Kiedy Legal AI będzie dostępny?",
+        "answer": "Obecnie jesteśmy w zamkniętej becie z wybranymi użytkownikami. Spodziewamy się otwarcia publicznego dostępu w I kwartale 2026 roku. Dołączenie do listy oczekujących zapewni, że będziesz wśród pierwszych, którzy dowiedzą się o uruchomieniu."
+      },
+      "item2": {
+        "question": "Czy będzie dostępny okres próbny?",
+        "answer": "Tak! Użytkownicy wczesnego dostępu otrzymają rozszerzony okres próbny, aby zapoznać się ze wszystkimi funkcjami. Po tym czasie oferujemy elastyczne plany cenowe dla osób i zespołów."
+      },
+      "item3": {
+        "question": "Czy moje dane są bezpieczne?",
+        "answer": "Absolutnie. Używamy szyfrowania na poziomie bankowym i nigdy nie udostępniamy Twoich danych stronom trzecim. Twoje dokumenty i informacje są ściśle poufne i używane tylko do świadczenia naszych usług."
+      },
+      "item4": {
+        "question": "Jakie typy dokumentów prawnych może obsługiwać?",
+        "answer": "Legal AI obsługuje szeroki zakres typów dokumentów, w tym pozwy, umowy, skargi, wnioski i oficjalne pisma. Nieustannie rozszerzamy naszą bibliotekę szablonów na podstawie opinii użytkowników."
+      },
+      "item5": {
+        "question": "Czy mogę używać Legal AI do pracy dla klientów?",
+        "answer": "Tak, Legal AI jest zaprojektowany do użytku profesjonalnego. Zalecamy jednak, aby dokumenty generowane przez AI były przejrzane przez wykwalifikowanego prawnika przed użyciem w oficjalnych postępowaniach."
+      }
+    },
+    "bottomCta": {
+      "title": "Gotowy, aby przekształcić swoją pracę prawną?",
+      "subtitle": "Nie przegap korzyści wczesnego dostępu. Dołącz do listy oczekujących już dziś.",
+      "button": "Dołącz do listy"
+    }
   }
 }

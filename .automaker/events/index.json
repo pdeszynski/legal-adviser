@@ -2,6 +2,2452 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769325156799-edc9c4bc",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-25T07:12:36.799Z"
+    },
+    {
+      "id": "evt-1769325154666-d18d2d83",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T07:12:34.666Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769324418832-a801ebe7",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T07:00:18.832Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769324207081-1893da76",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:56:47.081Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769323996049-f348dbc5",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:53:16.049Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769323792503-7fc8d789",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:49:52.503Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769323587294-fcdcac57",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:46:27.294Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769323375592-27c79425",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:42:55.592Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769323174675-62ac53c0",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:39:34.675Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769322966423-6215220e",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:36:06.423Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769322760075-854ceca1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:32:40.075Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769322549665-93769266",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:29:09.665Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769322334008-4ba9dae7",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:25:34.008Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769322119302-7d4cfd6b",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:21:59.302Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769321916664-f6481431",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:18:36.664Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769321699091-538f4cc3",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:14:59.091Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769321496629-ba5aa735",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:11:36.629Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769321291458-625bb127",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:08:11.458Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769321079293-beb7c9fe",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:04:39.293Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769320875757-380fc010",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T06:01:15.758Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769320675175-e19081e6",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:57:55.175Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769320468930-2893cff8",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:54:28.930Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769320263765-527a2eb6",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:51:03.765Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769320050370-f9a50966",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:47:30.370Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769319834057-af4650c1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:43:54.057Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769319626906-3421f71a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:40:26.906Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769319415573-179371ac",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:36:55.573Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769319212575-b809076c",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:33:32.575Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769319008628-6e85f7e7",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:30:08.628Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769318805250-e6ce468b",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:26:45.250Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769318588954-5a2d3ba8",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:23:08.954Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769318380269-8be2b3b7",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:19:40.269Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769318172624-134f6789",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:16:12.624Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769317967632-be38d941",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:12:47.632Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769317765247-88dcf02e",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:09:25.247Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769317550889-b769471e",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:05:50.889Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769317337895-938b8789",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T05:02:17.895Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769317122337-ebf6426f",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T04:58:42.337Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769316913181-220dec9b",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T04:55:13.181Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769316703969-32bd447e",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T04:51:43.969Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769316493181-e41f3a8e",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T04:48:13.181Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769316273837-24a3b3e2",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T04:44:33.837Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769316065374-1b48cdf6",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T04:41:05.374Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769315855222-083d59f9",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T04:37:35.222Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769315637709-b2f3d711",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T04:33:57.709Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769315424084-5ef3d525",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T04:30:24.084Z",
+      "featureName": "Remove Bull Queue Dependencies and Clean Up Code",
+      "featureId": "remove-bull-queue-dependencies"
+    },
+    {
+      "id": "evt-1769314125143-9f4a6a62",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T04:08:45.143Z",
+      "featureName": "Migrate Webhook Delivery to Temporal Workflow",
+      "featureId": "migrate-webhook-delivery-to-temporal"
+    },
+    {
+      "id": "evt-1769313481834-b0ca2f8b",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T03:58:01.834Z",
+      "featureName": "Temporal Observability and Monitoring Integration",
+      "featureId": "temporal-observability-integration"
+    },
+    {
+      "id": "evt-1769312659555-1817311b",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T03:44:19.555Z",
+      "featureName": "Create Deployment Guide for Temporal Migration",
+      "featureId": "temporal-migration-deployment-guide"
+    },
+    {
+      "id": "evt-1769312174926-f53f4c0c",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T03:36:14.926Z",
+      "featureName": "Migrate Ruling Indexing to Temporal Scheduled Workflow",
+      "featureId": "migrate-ruling-indexing-to-temporal"
+    },
+    {
+      "id": "evt-1769311254416-3ae45a10",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T03:20:54.416Z",
+      "featureName": "E2E Tests for Temporal Workflows",
+      "featureId": "temporal-workflow-e2e-tests"
+    },
+    {
+      "id": "evt-1769310393982-1e414555",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-25T03:06:33.982Z"
+    },
+    {
+      "id": "evt-1769310386355-77dc836f",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T03:06:26.355Z",
+      "featureName": "Demo Request Analytics Dashboard",
+      "featureId": "demo-request-analytics"
+    },
+    {
+      "id": "evt-1769310133067-616b2691",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T03:02:13.067Z",
+      "featureName": "Migrate PDF Export Queue to Temporal Workflow",
+      "featureId": "migrate-pdf-export-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769309975078-7da0e2a1",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:59:35.078Z",
+      "featureName": "Admin Demo Request Management View",
+      "featureId": "demo-request-admin-view"
+    },
+    {
+      "id": "evt-1769309717616-0ef9a693",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:55:17.616Z",
+      "featureName": "Waitlist/Demo Request Confirmation Email",
+      "featureId": "waitlist-confirmation-email"
+    },
+    {
+      "id": "evt-1769309417715-14cf38c0",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:50:17.715Z",
+      "featureName": "Configure Temporal for Production Deployment",
+      "featureId": "temporal-production-deployment"
+    },
+    {
+      "id": "evt-1769309343184-fb596b5a",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:49:03.184Z",
+      "featureName": "Two-Factor Settings in User Preferences",
+      "featureId": "two-factor-auth-preferences"
+    },
+    {
+      "id": "evt-1769309325042-d53ec31d",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:48:45.042Z",
+      "featureName": "Two-Factor Auth Seed Data Update",
+      "featureId": "two-factor-auth-seed-data"
+    },
+    {
+      "id": "evt-1769309218219-ef066dff",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:46:58.219Z",
+      "featureName": "Admin Two-Factor Authentication Status",
+      "featureId": "two-factor-auth-admin-view"
+    },
+    {
+      "id": "evt-1769308675847-d6bc479c",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:37:55.847Z",
+      "featureName": "Two-Factor Authentication Documentation",
+      "featureId": "two-factor-auth-documentation"
+    },
+    {
+      "id": "evt-1769308464575-e71f0535",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:34:24.575Z",
+      "featureName": "Group User Settings and Account Features",
+      "featureId": "menu-grouping-user-settings"
+    },
+    {
+      "id": "evt-1769308404208-2bcef6bb",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:33:24.208Z",
+      "featureName": "Temporal Client Integration with NestJS Backend",
+      "featureId": "temporal-nestjs-integration"
+    },
+    {
+      "id": "evt-1769308362001-134ad882",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:32:42.001Z",
+      "featureName": "Landing Page Call-to-Action Integration",
+      "featureId": "landing-page-cta-integration"
+    },
+    {
+      "id": "evt-1769307652184-750c0821",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T02:20:52.184Z",
+      "featureName": "Temporal Client Integration with NestJS Backend",
+      "featureId": "temporal-nestjs-integration"
+    },
+    {
+      "id": "evt-1769307435589-e59670b5",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:17:15.589Z",
+      "featureName": "HubSpot Webhook Handler for Lead Sync",
+      "featureId": "hubspot-webhook-handler"
+    },
+    {
+      "id": "evt-1769307406391-a4df36b7",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:16:46.391Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769307403932-cb8a0685",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:16:43.932Z",
+      "featureName": "Demo Request Form Frontend Integration",
+      "featureId": "demo-request-form-frontend-integration"
+    },
+    {
+      "id": "evt-1769307304984-f5244e5a",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:15:04.984Z",
+      "featureName": "Configure Temporal for Local Development with Docker Compose",
+      "featureId": "temporal-local-development-docker-compose"
+    },
+    {
+      "id": "evt-1769307204616-084a8bc3",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:13:24.616Z",
+      "featureName": "Demo Request Entity for Database Storage",
+      "featureId": "demo-request-entity"
+    },
+    {
+      "id": "evt-1769307173931-75d865f9",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:12:53.931Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769307101460-4a07cb53",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:11:41.460Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769307067805-0f3ed114",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:11:07.805Z",
+      "featureName": "Reorder Menu Items by Usage Frequency",
+      "featureId": "menu-ordering-by-usage-frequency"
+    },
+    {
+      "id": "evt-1769306841077-d2934199",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T02:07:21.077Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769306494713-8fa55fae",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T02:01:34.713Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769306448076-b5790b5d",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T02:00:48.076Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769306379247-5d39db47",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:59:39.247Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769306368680-92be1fe5",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:59:28.680Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769306285845-33dbff10",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:58:05.845Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769306235661-275e08fd",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:57:15.661Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769306161363-498338e7",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:56:01.363Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769306150935-792b1d5c",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:55:50.935Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769306075248-0d97edd8",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:54:35.248Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769306035195-82210741",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:53:55.195Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769305956854-7d6360d5",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:52:36.854Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769305949098-c0ffcc88",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:52:29.098Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769305866175-45f1d294",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:51:06.175Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769305833791-f37d4ffd",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:50:33.791Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769305752986-26bb09d3",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:49:12.986Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769305735501-16821685",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:48:55.502Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769305663357-52f82b66",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:47:43.357Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769305623133-5d23463b",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:47:03.133Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769305555678-9a32a3c4",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:45:55.678Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769305521125-b8fdddc0",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:45:21.125Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769305455131-c6b47835",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:44:15.131Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769305411135-2c95016c",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:43:31.135Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769305348926-bb31b63f",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:42:28.926Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769305322253-53b9da6d",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:42:02.253Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769305247681-0cc393c8",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:40:47.681Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769305197384-a3373a86",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:39:57.384Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769305137055-834f616a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:38:57.055Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769305110316-f74bc4a1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:38:30.316Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769305029627-0a1a69d7",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:37:09.627Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769304990973-a8619abe",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:36:30.973Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769304924089-2678d446",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:35:24.089Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769304899056-53e3da7a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:34:59.056Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769304820640-6d1e96e2",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:33:40.640Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769304776383-d29656a5",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:32:56.383Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769304705533-38221c80",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:31:45.533Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769304694096-9d64e693",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:31:34.096Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769304607367-99d681a3",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:30:07.367Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769304555557-390bb694",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:29:15.557Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769304510452-7ff989fa",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:28:30.452Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769304475958-d618024f",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:27:55.958Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769304406215-4e83cf96",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:26:46.215Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769304341460-dd01cbb8",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:25:41.460Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769304305250-f09d9f00",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:25:05.250Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769304267874-30f55831",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:24:27.874Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769304205134-a1ae3e6b",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:23:25.134Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769304128962-a3071cd2",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:22:08.962Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769304099087-410ad4ea",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:21:39.087Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769304057303-3ed74dd3",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:20:57.303Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769303997371-fe71b9bd",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:19:57.371Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769303922434-d6bf6971",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:18:42.434Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769303902918-69758509",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:18:22.918Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769303837238-96e9125f",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:17:17.238Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769303788144-935a7e9c",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:16:28.144Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769303710847-3c4eb518",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:15:10.847Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769303693547-932334a5",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:14:53.547Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769303631675-63fd30cf",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:13:51.675Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769303566969-e047f89a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:12:46.969Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769303493264-fe3e39c2",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:11:33.264Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769303481140-78b933ea",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:11:21.140Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769303414992-d9539e19",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:10:14.992Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769303357238-22d2bc31",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:09:17.238Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769303282784-dbbddef2",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:08:02.785Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769303269238-83e9ba56",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:07:49.238Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769303208023-6d48e670",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:06:48.023Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769303145561-35b62dc4",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:05:45.561Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769303061031-6b75c05b",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:04:21.031Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769303054453-d64cc910",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:04:14.453Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769302990765-8f4a8015",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:03:10.765Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769302931514-e4468454",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:02:11.514Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769302852898-aa21d333",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:00:52.898Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769302852100-14c3c0f8",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T01:00:52.100Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769302787817-b47e7140",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:59:47.817Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769302724840-943344d0",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:58:44.840Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769302643013-2d6e3141",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:57:23.013Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769302641946-ee8a2cc3",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:57:21.946Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769302573769-c4b0bee7",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:56:13.769Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769302519548-e60433ae",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:55:19.548Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769302428271-e7f61823",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:53:48.271Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769302419513-946a9f19",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:53:39.513Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769302370656-132347f1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:52:50.656Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769302319167-916d805c",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:51:59.167Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769302213708-043d3458",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:50:13.708Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769302200575-2c64cc34",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:50:00.575Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769302165362-4d0a811b",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:49:25.362Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769302109351-38651122",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:48:29.351Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769302006970-f1ab7a47",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:46:46.970Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769301998626-ef6b4198",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:46:38.626Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769301958641-eb45a180",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:45:58.641Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769301899853-a0009a59",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:44:59.853Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769301795975-bbd62eb4",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:43:15.976Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769301795688-dd8e48e7",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:43:15.688Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769301752687-e43abe5c",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:42:32.687Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769301694493-41403e23",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:41:34.493Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769301580412-9ed070ea",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:39:40.412Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769301576092-9c4e0535",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:39:36.092Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769301543358-57f00064",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:39:03.358Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769301482072-22f011ac",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:38:02.072Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769301378632-61d7fc04",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:36:18.632Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769301371284-3fb53cd6",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:36:11.284Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769301337053-62a6cf33",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:35:37.053Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769301269652-ab151f77",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:34:29.652Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769301168214-663da11c",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:32:48.214Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769301165538-9de20dc4",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:32:45.538Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769301115691-ac966596",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:31:55.691Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769301058217-9c75c4b9",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:30:58.217Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769300962234-6f3e2e4b",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:29:22.234Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769300952829-c1b90960",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:29:12.829Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769300886510-9b3d83a8",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:28:06.510Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769300848286-122e61a5",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:27:28.286Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769300750802-930bf561",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:25:50.802Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769300743365-0aff2023",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:25:43.365Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769300665006-2d21b5b9",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:24:25.006Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769300627352-d28cdd0c",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:23:47.352Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769300546502-945ecec8",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:22:26.502Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769300527081-2678c666",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:22:07.081Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769300453071-9d52f0e6",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:20:53.071Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769300419305-641a4923",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:20:19.305Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769300330270-aad9b2fe",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:18:50.270Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769300315387-f622f2b7",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:18:35.387Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769300238920-4a7e4592",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:17:18.920Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769300205091-473bfd25",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:16:45.091Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769300130075-8b56dea5",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:15:30.075Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769300100484-0b93629f",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:15:00.484Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769300024036-814c47cf",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:13:44.036Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769299983212-af2a34c0",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:13:03.212Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769299924948-14dec21f",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:12:04.948Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769299884509-ba3ae1a6",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:11:24.509Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769299820834-3d7cf151",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:10:20.834Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769299764972-3fc5548d",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:09:24.972Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769299719625-16bc3346",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:08:39.625Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769299674836-c2c295d6",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:07:54.836Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769299619373-ae0d3551",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:06:59.373Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769299567825-b3fb7383",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:06:07.825Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769299501085-80d2f0fa",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:05:01.085Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769299464753-2c439731",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:04:24.753Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769299402520-d020f839",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:03:22.520Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769299350499-501624c3",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:02:30.499Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769299284754-a07c5944",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:01:24.754Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769299249397-3bda2fbf",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-25T00:00:49.397Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769299189152-14fb497a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:59:49.152Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769299146120-78bfd22a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:59:06.120Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769299079277-7c514838",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:57:59.277Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769299039542-e5ccf3ea",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:57:19.542Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769298968681-8dc4712e",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:56:08.681Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769298927825-3c40a273",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:55:27.825Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769298874284-ba8b91d8",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:54:34.284Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769298828035-6cb4308d",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:53:48.035Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769298751019-a4e8da21",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:52:31.019Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769298722585-03389b78",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:52:02.585Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769298660917-551afa2b",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:51:00.917Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769298617241-005d72f3",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:50:17.241Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769298542285-0842c406",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:49:02.285Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769298512481-c3c18677",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:48:32.481Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769298450445-7c32c971",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:47:30.445Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769298414566-a8a03aaf",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:46:54.566Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769298334011-e47dd6c9",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:45:34.011Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769298304425-c5ddfa9c",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:45:04.425Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769298238955-19e2ef8f",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:43:58.955Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769298206704-c72fdbdd",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:43:26.704Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769298120953-5214bced",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:42:00.953Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769298096520-ad8fa81a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:41:36.520Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769298024160-3acab38a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:40:24.160Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769297990584-992a1e38",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:39:50.584Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769297907880-11c64539",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:38:27.880Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769297885147-2465f1ed",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:38:05.147Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769297810539-a489cdf5",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:36:50.539Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769297777799-042b661e",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:36:17.799Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769297685128-2191089f",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:34:45.128Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769297665932-ae3bd161",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:34:25.932Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769297588055-10569dcb",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:33:08.055Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769297553841-740cdc01",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:32:33.841Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769297475774-5f626a33",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:31:15.774Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769297442687-5a09b1ba",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:30:42.687Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769297372021-d62cc113",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:29:32.021Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769297345088-036ab52e",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:29:05.088Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769297257691-6ed06f29",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:27:37.691Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769297240493-73f3a236",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:27:20.493Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769297161246-b488b927",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:26:01.246Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769297127039-bdad0337",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:25:27.039Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769297034703-1ef7c4e2",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:23:54.703Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769297032109-ec2f0960",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:23:52.109Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769296947640-9fb562cc",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:22:27.640Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769296920165-65faaf57",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:22:00.165Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769296823266-6a70fb38",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:20:23.266Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769296821303-66581ad6",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:20:21.303Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769296727559-caf238f1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:18:47.559Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769296707483-863d2472",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:18:27.483Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769296611027-e27d6dc1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:16:51.027Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769296610141-7d869f8a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:16:50.141Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769296512907-ef466bed",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:15:12.907Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769296508182-181f0fff",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:15:08.182Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769296407416-c100c6e8",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:13:27.416Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769296404948-3a147beb",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:13:24.948Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769296302143-a3355940",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:11:42.143Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769296302021-e39432e6",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:11:42.021Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769296201272-958764e8",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:10:01.272Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769296197182-c27dde10",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:09:57.182Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769296091496-3f7cc4d3",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:08:11.496Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769296078647-d2cffabe",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:07:58.647Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769295988086-1b2dff55",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:06:28.086Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769295985309-20da8741",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:06:25.309Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769295867900-a4c59539",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:04:27.900Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769295863940-42e508a4",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:04:23.940Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769295783778-203b2781",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:03:03.778Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769295778639-b927cb0d",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:02:58.639Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769295663519-efb3ab10",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:01:03.519Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769295650210-21e34917",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T23:00:50.210Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769295575167-04c52cf1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:59:35.167Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769295565753-e58b70b3",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:59:25.753Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769295453435-25338086",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:57:33.436Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769295440368-357de2de",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:57:20.368Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769295360193-e2246d2d",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:56:00.193Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769295352425-295ee43b",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:55:52.425Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769295242128-5da3bb20",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:54:02.128Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769295219918-d997f345",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:53:39.918Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769295150080-36960b02",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:52:30.080Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769295132578-a2179b22",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:52:12.578Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769295016312-017c7e0a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:50:16.312Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769295011958-2a8ccfd1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:50:11.958Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769294939372-640fbe9a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:48:59.372Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769294922557-9b6890dc",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:48:42.557Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769294802930-01b12127",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:46:42.930Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769294797132-2e3d8794",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:46:37.132Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769294721923-4f9f8be5",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:45:21.923Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769294705406-efe32d67",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:45:05.406Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769294598478-e786ad0f",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:43:18.478Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769294585003-d41725b9",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:43:05.003Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769294510920-25e8b8a1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:41:50.920Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769294503338-6a4a25cd",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:41:43.338Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769294393477-4502ccf1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:39:53.477Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769294365403-00fe134a",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:39:25.403Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769294296689-81512cdf",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:38:16.689Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769294287155-73d280d3",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:38:07.155Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769294176569-993dd274",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:36:16.569Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769294160623-1de647cb",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:36:00.623Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769294074546-395e0f5d",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:34:34.546Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769294074516-7a3e2c90",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:34:34.516Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769293963795-ee435660",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:32:43.795Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769293943980-cc0ecee1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:32:23.980Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769293860107-dcee47d3",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:31:00.107Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769293854925-ddd590de",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:30:54.925Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769293751355-a3e3f3af",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:29:11.355Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769293738382-e6675f99",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:28:58.382Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769293642435-cabcb0bb",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:27:22.435Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769293640290-7b9a1ab1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:27:20.290Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769293535455-48f877e6",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:25:35.455Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769293531641-aa4270de",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:25:31.641Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769293425230-70559bda",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:23:45.230Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769293416984-eb69d12e",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:23:36.984Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769293330541-492908c9",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:22:10.541Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769293321006-67fe911c",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:22:01.006Z",
+      "featureName": "Group Lawyer-Specific Features in Navigation Menu",
+      "featureId": "menu-grouping-lawyer-features"
+    },
+    {
+      "id": "evt-1769293215879-f8a69110",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:20:15.879Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769293202687-5e98d4da",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:20:02.687Z",
+      "featureName": "Add Admin Panel Link for Administrator Role",
+      "featureId": "menu-admin-panel-link"
+    },
+    {
+      "id": "evt-1769293116262-ecfbf4b0",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:18:36.262Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769293102959-b5903d80",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:18:22.959Z",
+      "featureName": "HubSpot Webhook Handler for Lead Sync",
+      "featureId": "hubspot-webhook-handler"
+    },
+    {
+      "id": "evt-1769293000302-6b0c5769",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:16:40.302Z",
+      "featureName": "Demo Request Form Component",
+      "featureId": "demo-request-form-component"
+    },
+    {
+      "id": "evt-1769292997206-de9fb1a4",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:16:37.206Z",
+      "featureName": "Demo Request Form Frontend Integration",
+      "featureId": "demo-request-form-frontend-integration"
+    },
+    {
+      "id": "evt-1769292908428-32e8db52",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:15:08.428Z",
+      "featureName": "Migrate Email Queue to Temporal Workflow",
+      "featureId": "migrate-email-queue-to-temporal"
+    },
+    {
+      "id": "evt-1769292904827-e2198fce",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-24T22:15:04.827Z",
+      "featureName": "Demo Request Entity for Database Storage",
+      "featureId": "demo-request-entity"
+    },
+    {
+      "id": "evt-1769292257470-bdf92416",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T22:04:17.470Z",
+      "featureName": "Landing Page Waitlist/Demo Request Page",
+      "featureId": "landing-waitlist-page"
+    },
+    {
+      "id": "evt-1769292223257-0cf36077",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T22:03:43.257Z",
+      "featureName": "Add AI Engine Health Check for Dev Mode",
+      "featureId": "ai-engine-health-check-dev"
+    },
+    {
+      "id": "evt-1769291936236-a582b5a8",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:58:56.236Z",
+      "featureName": "Migrate Document Generation Queue to Temporal Workflow",
+      "featureId": "migrate-document-generation-to-temporal"
+    },
+    {
+      "id": "evt-1769291893695-b41af957",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:58:13.695Z",
+      "featureName": "Update Python Development Commands for UV",
+      "featureId": "update-python-commands-for-uv"
+    },
+    {
+      "id": "evt-1769291770268-cb603002",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:56:10.268Z",
+      "featureName": "HubSpot CRM Integration Backend Service",
+      "featureId": "hubspot-integration-backend"
+    },
+    {
+      "id": "evt-1769291735581-11ff7532",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:55:35.581Z",
+      "featureName": "Demo Request GraphQL Mutation",
+      "featureId": "demo-request-graphql-api"
+    },
+    {
+      "id": "evt-1769291478547-517a6534",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:51:18.547Z",
+      "featureName": "Two-Factor Security Enhancements",
+      "featureId": "two-factor-security-considerations"
+    },
+    {
+      "id": "evt-1769291094444-8917270a",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:44:54.444Z",
+      "featureName": "Two-Factor Authentication Setup Page",
+      "featureId": "two-factor-setup-page"
+    },
+    {
+      "id": "evt-1769291021802-f65ae103",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:43:41.802Z",
+      "featureName": "E2E Tests for Two-Factor Authentication",
+      "featureId": "two-factor-auth-e2e-tests"
+    },
+    {
+      "id": "evt-1769290853561-f98703ca",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:40:53.561Z",
+      "featureName": "Login Two-Factor Code Input Step",
+      "featureId": "login-two-factor-input-step"
+    },
+    {
+      "id": "evt-1769290625740-147d8eb6",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:37:05.740Z",
+      "featureName": "Temporal Infrastructure Setup for Development and Production",
+      "featureId": "temporal-infrastructure-setup"
+    },
+    {
+      "id": "evt-1769290568175-f0ece0eb",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:36:08.175Z",
+      "featureName": "Enhanced Login Mutation with Two-Factor Support",
+      "featureId": "login-with-two-factor-mutation"
+    },
+    {
+      "id": "evt-1769290557371-d1222390",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:35:57.371Z",
+      "featureName": "Two-Factor Authentication Entity",
+      "featureId": "two-factor-auth-entity"
+    },
+    {
+      "id": "evt-1769290410193-74fe5844",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:33:30.193Z",
+      "featureName": "Two-Factor Authentication GraphQL Mutations",
+      "featureId": "two-factor-auth-graphql-mutations"
+    },
+    {
+      "id": "evt-1769289835238-64d0270f",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:23:55.238Z",
+      "featureName": "TOTP Service Implementation",
+      "featureId": "totp-service-implementation"
+    },
+    {
+      "id": "evt-1769289829900-71469eba",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:23:49.900Z",
+      "featureName": "Pre-commit Hooks for Ruff and MyPy",
+      "featureId": "ruff-mypy-git-hooks"
+    },
+    {
+      "id": "evt-1769289654295-cf82e0b7",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-24T21:20:54.295Z",
+      "featureName": "Configure Ruff for Python Linting",
+      "featureId": "ruff-linter-configuration"
+    },
+    {
       "id": "evt-1769271496195-9dd2cb51",
       "trigger": "feature_success",
       "timestamp": "2026-01-24T16:18:16.195Z",

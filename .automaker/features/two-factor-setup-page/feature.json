@@ -3,12 +3,8 @@
   "description": "Create user-facing 2FA setup page at /settings/security/two-factor. Display step-by-step setup wizard: 1) Information modal explaining 2FA benefits, 2) QR code display using react-qr-code library, 3) Manual secret entry option as backup, 4) Input field for entering 6-digit verification code, 5) Success state displaying 10 backup codes for download/printing, 6) Warning that codes won't be shown again. Implement QR code rendering with proper sizing and error correction. Add 'Copy to clipboard' functionality for backup codes.",
   "id": "two-factor-setup-page",
   "title": "Two-Factor Authentication Setup Page",
-  "dependencies": [
-    "login-with-two-factor-mutation",
-    "settings-page"
-  ],
   "priority": 1,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -16,5 +12,6 @@
       "timestamp": "2026-01-24T15:49:40.772Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-24T21:44:54.427Z"
 }

@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Update existing login GraphQL mutation to support two-factor authentication flow. Modify login(email, password, twoFactorToken?) mutation to: 1) Validate credentials normally, 2) Check if user has 2FA enabled, 3) If 2FA enabled and no token provided, return requiresTwoFactor: true status, 4) If token provided, validate TOTP code before issuing JWT, 5) Allow backup code submission as alternative to TOTP token. Update auth provider to handle two-step login flow with intermediate state storage.",
+  "id": "login-with-two-factor-mutation",
+  "title": "Enhanced Login Mutation with Two-Factor Support",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Update existing login GraphQL mutation to support two-factor authentication flow. Modify login(email, password, twoFactorToken?) mutation to: 1) Validate credentials normally, 2) Check if user has 2FA enabled, 3) If 2FA enabled and no token provided, return requiresTwoFactor: true status, 4) If token provided, validate TOTP code before issuing JWT, 5) Allow backup code submission as alternative to TOTP token. Update auth provider to handle two-step login flow with intermediate state storage.",
+      "timestamp": "2026-01-24T15:49:40.772Z",
+      "source": "initial"
+    }
+  ]
+}

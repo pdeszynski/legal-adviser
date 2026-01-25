@@ -5,22 +5,21 @@ without making actual API calls to OpenAI.
 """
 
 import pytest
-from pydantic import BaseModel, Field
-from typing import List, Optional
+from pydantic import BaseModel
 
 
 def test_classifier_agent_structure():
     """Test that the classifier agent has proper structure."""
     from src.agents.classifier_agent import (
-        classifier_agent,
+        CLASSIFIER_SYSTEM_PROMPT,
         ClassificationResult,
         LegalGround,
-        CLASSIFIER_SYSTEM_PROMPT,
+        classifier_agent,
     )
 
     # Verify agent is instantiated
     assert classifier_agent is not None
-    assert hasattr(classifier_agent, 'name')
+    assert hasattr(classifier_agent, "name")
 
     # Verify system prompt exists and is not empty
     assert CLASSIFIER_SYSTEM_PROMPT

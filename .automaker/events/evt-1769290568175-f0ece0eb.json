@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769290568175-f0ece0eb",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T21:36:08.175Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "login-with-two-factor-mutation",
+  "featureName": "Enhanced Login Mutation with Two-Factor Support",
+  "error": "Feature completed in 738s - auto-verified",
+  "passes": true
+}

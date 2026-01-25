@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769291770268-cb603002",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T21:56:10.268Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "hubspot-integration-backend",
+  "featureName": "HubSpot CRM Integration Backend Service",
+  "error": "Feature completed in 915s - auto-verified",
+  "passes": true
+}

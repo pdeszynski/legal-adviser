@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769291021802-f65ae103",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T21:43:41.802Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "two-factor-auth-e2e-tests",
+  "featureName": "E2E Tests for Two-Factor Authentication",
+  "error": "Feature completed in 450s - auto-verified",
+  "passes": true
+}

@@ -69,11 +69,67 @@ export class User {
   role: 'user' | 'admin';
 
   /**
+   * Two-Factor Authentication enabled flag
+   * True when user has completed 2FA setup
+   */
+  @Column({ type: 'boolean', default: false })
+  @Field(() => Boolean, { defaultValue: false })
+  twoFactorEnabled: boolean;
+
+  /**
+   * Timestamp when 2FA was last verified/enabled
+   * Updated when user completes initial 2FA setup
+   */
+  @Column({ type: 'timestamp', nullable: true })
+  @Field(() => GraphQLISODateTime, { nullable: true })
+  twoFactorVerifiedAt: Date | null;
+
+  /**
+   * TOTP secret for two-factor authentication
+   * Base32 encoded secret, stored encrypted
+   * Not exposed via GraphQL for security reasons
+   */
+  @Column({ type: 'text', nullable: true, select: false })
+  twoFactorSecret: string | null;
+
+  /**
+   * Backup codes for 2FA recovery
+   * JSON string of backup code objects with used flag
+   * Not exposed via GraphQL for security reasons
+   */
+  @Column({ type: 'text', nullable: true, select: false })
+  twoFactorBackupCodes: string | null;
+
+  /**
    * Hashed password using bcrypt
    * This field is not exposed via GraphQL for security reasons
    */
   @Column({ type: 'varchar', length: 255, nullable: true, select: false })
   passwordHash: string | null;
+
+  /**
+   * Failed 2FA attempt count for rate limiting
+   * Resets after successful verification or admin reset
+   * Not exposed via GraphQL
+   */
+  @Column({ type: 'int', default: 0, select: false })
+  failed2faAttempts: number;
+
+  /**
+   * Account lockout timestamp due to failed 2FA attempts
+   * Null means account is not locked
+   * Not exposed via GraphQL
+   */
+  @Column({ type: 'timestamp', nullable: true, select: false })
+  lockedUntil: Date | null;
+
+  /**
+   * Token version for JWT invalidation
+   * Incremented when 2FA is disabled to invalidate existing tokens
+   * Not exposed via GraphQL
+   */
+  @Column({ type: 'int', default: 0, select: false })
+  tokenVersion: number;
 
   /**
    * Stripe customer ID for payment processing

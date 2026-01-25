@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769307204616-084a8bc3",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T02:13:24.616Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "demo-request-entity",
+  "featureName": "Demo Request Entity for Database Storage",
+  "error": "Feature completed in 134s - auto-verified",
+  "passes": true
+}

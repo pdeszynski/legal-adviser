@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769290557371-d1222390",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T21:35:57.371Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "two-factor-auth-entity",
+  "featureName": "Two-Factor Authentication Entity",
+  "error": "Feature completed in 1255s - auto-verified",
+  "passes": true
+}

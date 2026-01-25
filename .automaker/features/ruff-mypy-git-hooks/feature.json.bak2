@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Configure pre-commit hooks (via Husky and lint-staged) to run Ruff with --fix and MyPy type checker on staged Python files in apps/ai-engine. Ensure hooks run only on changed .py files. Configure Ruff to auto-fix linting issues where possible. Set MyPy to strict mode to enforce strong typing. Fail commits if type errors or unfixable linting issues are detected.",
+  "id": "ruff-mypy-git-hooks",
+  "title": "Pre-commit Hooks for Ruff and MyPy",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Configure pre-commit hooks (via Husky and lint-staged) to run Ruff with --fix and MyPy type checker on staged Python files in apps/ai-engine. Ensure hooks run only on changed .py files. Configure Ruff to auto-fix linting issues where possible. Set MyPy to strict mode to enforce strong typing. Fail commits if type errors or unfixable linting issues are detected.",
+      "timestamp": "2026-01-24T16:12:14.256Z",
+      "source": "initial"
+    }
+  ]
+}

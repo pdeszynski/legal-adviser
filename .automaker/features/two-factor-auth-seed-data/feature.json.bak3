@@ -1,0 +1,19 @@
+{
+  "category": "Database",
+  "description": "Update seed data files to include test scenarios for 2FA. Create test user with 2FA already enabled and known TOTP secret for E2E testing. Add seed data entry documenting TOTP secret used in tests (e.g., 'JBSWY3DPEHPK3PXP' for test code '123456'). Include user with backup codes pre-generated. Update users.seed.ts with 2FA-enabled test user. Document in CLAUDE.md how to use test secrets for local development.",
+  "id": "two-factor-auth-seed-data",
+  "title": "Two-Factor Auth Seed Data Update",
+  "dependencies": [
+    "two-factor-auth-entity"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Update seed data files to include test scenarios for 2FA. Create test user with 2FA already enabled and known TOTP secret for E2E testing. Add seed data entry documenting TOTP secret used in tests (e.g., 'JBSWY3DPEHPK3PXP' for test code '123456'). Include user with backup codes pre-generated. Update users.seed.ts with 2FA-enabled test user. Document in CLAUDE.md how to use test secrets for local development.",
+      "timestamp": "2026-01-24T15:49:40.775Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -7,7 +7,7 @@ This graph implements a RAG-based Q&A flow inspired by Flowise.ai patterns:
 - Citation Formatting: Extract and format legal citations
 """
 
-from typing import Any, Dict, List, Optional, TypedDict
+from typing import Any, TypedDict
 
 from langgraph.graph import END, StateGraph
 from openai import AsyncOpenAI
@@ -33,28 +33,28 @@ class QAState(TypedDict):
     mode: str  # "LAWYER" for detailed, "SIMPLE" for layperson
 
     # Query Analysis Node Output
-    query_type: Optional[str]  # e.g., "statute_interpretation", "case_law", "procedural"
-    key_terms: Optional[List[str]]  # Extracted legal terms
-    question_refined: Optional[str]  # Refined/expanded question
+    query_type: str | None  # e.g., "statute_interpretation", "case_law", "procedural"
+    key_terms: list[str] | None  # Extracted legal terms
+    question_refined: str | None  # Refined/expanded question
     needs_clarification: bool  # Whether the question needs more info
-    clarification_prompt: Optional[str]  # Prompt to ask user for clarification
+    clarification_prompt: str | None  # Prompt to ask user for clarification
 
     # Context Retrieval Node Output
-    query_embedding: Optional[List[float]]  # Embedding vector for semantic search
-    retrieved_contexts: Optional[List[Dict[str, Any]]]  # Retrieved chunks
-    context_summary: Optional[str]  # Summary of retrieved context
+    query_embedding: list[float] | None  # Embedding vector for semantic search
+    retrieved_contexts: list[dict[str, Any]] | None  # Retrieved chunks
+    context_summary: str | None  # Summary of retrieved context
 
     # Answer Generation Node Output
-    raw_answer: Optional[str]  # Generated answer before citation formatting
+    raw_answer: str | None  # Generated answer before citation formatting
     answer_complete: bool  # Whether the answer is complete
 
     # Citation Formatting Node Output
-    final_answer: Optional[str]  # Final formatted answer with citations
-    citations: Optional[List[Dict[str, Any]]]  # Extracted citations
+    final_answer: str | None  # Final formatted answer with citations
+    citations: list[dict[str, Any]] | None  # Extracted citations
     confidence: float  # Confidence score
 
     # Error handling
-    error: Optional[str]
+    error: str | None
 
 
 # -----------------------------------------------------------------------------
@@ -71,7 +71,7 @@ class QAGraphNodes:
         self.openai_client = AsyncOpenAI(api_key=self.settings.OPENAI_API_KEY)
         self.embedding_service = EmbeddingService()
 
-    async def query_analysis_node(self, state: QAState) -> Dict[str, Any]:
+    async def query_analysis_node(self, state: QAState) -> dict[str, Any]:
         """Analyze the user's question to extract key information.
 
         - Classify query type
@@ -96,12 +96,17 @@ class QAGraphNodes:
 
 Respond in JSON format.""",
                     },
-                    {"role": "user", "content": f"Analyze this legal question: {question}"},
+                    {
+                        "role": "user",
+                        "content": f"Analyze this legal question: {question}",
+                    },
                 ],
                 response_format={"type": "json_object"},
             )
 
-            result = eval(response.choices[0].message.content or "{}")
+            import json
+
+            result = json.loads(response.choices[0].message.content or "{}")
 
             return {
                 "query_type": result.get("query_type", "general_advice"),
@@ -119,10 +124,10 @@ Respond in JSON format.""",
                 "question_refined": question,
                 "needs_clarification": False,
                 "clarification_prompt": None,
-                "error": f"Query analysis failed: {str(e)}",
+                "error": f"Query analysis failed: {e!s}",
             }
 
-    async def context_retrieval_node(self, state: QAState) -> Dict[str, Any]:
+    async def context_retrieval_node(self, state: QAState) -> dict[str, Any]:
         """Retrieve relevant legal context from the vector store.
 
         - Generate embedding for the refined question
@@ -152,10 +157,12 @@ Respond in JSON format.""",
                 },
             ]
 
-            context_summary = "\n\n".join([
-                f"[{ctx['source']} - {ctx.get('article', 'N/A')}]: {ctx['content']}"
-                for ctx in mock_contexts
-            ])
+            context_summary = "\n\n".join(
+                [
+                    f"[{ctx['source']} - {ctx.get('article', 'N/A')}]: {ctx['content']}"
+                    for ctx in mock_contexts
+                ]
+            )
 
             return {
                 "query_embedding": embedding,
@@ -169,10 +176,10 @@ Respond in JSON format.""",
                 "query_embedding": None,
                 "retrieved_contexts": [],
                 "context_summary": "",
-                "error": f"Context retrieval failed: {str(e)}",
+                "error": f"Context retrieval failed: {e!s}",
             }
 
-    async def answer_generation_node(self, state: QAState) -> Dict[str, Any]:
+    async def answer_generation_node(self, state: QAState) -> dict[str, Any]:
         """Generate a comprehensive answer using retrieved context.
 
         - Uses the question and retrieved context
@@ -231,10 +238,10 @@ Please provide a comprehensive answer based on the above context.""",
             return {
                 "raw_answer": None,
                 "answer_complete": False,
-                "error": f"Answer generation failed: {str(e)}",
+                "error": f"Answer generation failed: {e!s}",
             }
 
-    async def citation_formatting_node(self, state: QAState) -> Dict[str, Any]:
+    async def citation_formatting_node(self, state: QAState) -> dict[str, Any]:
         """Extract and format legal citations from the answer.
 
         - Parse citations from the raw answer
@@ -243,18 +250,18 @@ Please provide a comprehensive answer based on the above context.""",
         """
         raw_answer = state.get("raw_answer", "")
         contexts = state.get("retrieved_contexts", [])
-        question = state["question"]
 
         try:
             # Extract citations from contexts
-            citations = []
-            for ctx in contexts:
-                if ctx.get("source") and ctx.get("article"):
-                    citations.append({
-                        "source": ctx["source"],
-                        "article": ctx["article"],
-                        "url": ctx.get("url"),
-                    })
+            citations = [
+                {
+                    "source": ctx["source"],
+                    "article": ctx["article"],
+                    "url": ctx.get("url"),
+                }
+                for ctx in contexts
+                if ctx.get("source") and ctx.get("article")
+            ]
 
             # Calculate confidence based on retrieval quality
             avg_similarity = (
@@ -266,10 +273,9 @@ Please provide a comprehensive answer based on the above context.""",
 
             # Format final answer with citations section
             if citations:
-                citations_section = "\n\n**Sources:**\n" + "\n".join([
-                    f"- {c['source']}, {c['article']}"
-                    for c in citations
-                ])
+                citations_section = "\n\n**Sources:**\n" + "\n".join(
+                    [f"- {c['source']}, {c['article']}" for c in citations]
+                )
                 final_answer = raw_answer + citations_section
             else:
                 final_answer = raw_answer
@@ -286,7 +292,7 @@ Please provide a comprehensive answer based on the above context.""",
                 "final_answer": raw_answer,
                 "citations": [],
                 "confidence": 0.0,
-                "error": f"Citation formatting failed: {str(e)}",
+                "error": f"Citation formatting failed: {e!s}",
             }
 
 
@@ -322,7 +328,7 @@ def should_format_citations(state: QAState) -> str:
 # -----------------------------------------------------------------------------
 
 
-async def generic_answer_node(state: QAState) -> Dict[str, Any]:
+async def generic_answer_node(_state: QAState) -> dict[str, Any]:
     """Generate a generic answer when context is insufficient."""
     return {
         "final_answer": """I apologize, but I don't have sufficient relevant legal context to provide a specific answer to your question.

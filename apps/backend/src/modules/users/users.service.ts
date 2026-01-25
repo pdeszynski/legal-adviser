@@ -185,6 +185,13 @@ export class UsersService {
       lastName: string;
       isActive: boolean;
       disclaimerAccepted: boolean;
+      twoFactorSecret: string | null;
+      twoFactorBackupCodes: string | null;
+      twoFactorEnabled: boolean;
+      twoFactorVerifiedAt: Date | null;
+      failed2faAttempts: number;
+      lockedUntil: Date | null;
+      tokenVersion: number;
     }>,
   ): Promise<User> {
     const user = await this.findById(id);
@@ -313,7 +320,9 @@ export class UsersService {
    */
   async suspendUser(
     userId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     reason: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     suspendedBy: string,
   ): Promise<User> {
     const user = await this.findById(userId);
@@ -337,7 +346,11 @@ export class UsersService {
    * Activate a user account (admin only)
    * Sets isActive to true
    */
-  async activateUser(userId: string, activatedBy: string): Promise<User> {
+  async activateUser(
+    userId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    activatedBy: string,
+  ): Promise<User> {
     const user = await this.findById(userId);
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found`);
@@ -362,6 +375,7 @@ export class UsersService {
   async changeUserRole(
     userId: string,
     newRole: 'user' | 'admin',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     changedBy: string,
   ): Promise<User> {
     const user = await this.findById(userId);
@@ -388,6 +402,7 @@ export class UsersService {
   async resetUserPassword(
     userId: string,
     newPassword: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     resetBy: string,
   ): Promise<User> {
     const user = await this.findById(userId);
@@ -506,6 +521,7 @@ export class UsersService {
    */
   async bulkDeleteUsers(
     userIds: string[],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     deletedBy: string,
   ): Promise<{
     success: string[];
@@ -532,5 +548,117 @@ export class UsersService {
     }
 
     return result;
+  }
+
+  /**
+   * Increment failed 2FA attempt counter
+   * After 10 failed attempts, lock the account for 30 minutes
+   */
+  async incrementFailed2faAttempts(userId: string): Promise<User> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.failed2faAttempts')
+      .addSelect('user.lockedUntil')
+      .where('user.id = :userId', { userId })
+      .getOne();
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    const MAX_FAILED_ATTEMPTS = 10;
+    const LOCKOUT_DURATION_MINUTES = 30;
+
+    user.failed2faAttempts = (user.failed2faAttempts || 0) + 1;
+
+    if (user.failed2faAttempts >= MAX_FAILED_ATTEMPTS) {
+      user.lockedUntil = new Date(
+        Date.now() + LOCKOUT_DURATION_MINUTES * 60 * 1000,
+      );
+    }
+
+    return this.userRepository.save(user);
+  }
+
+  /**
+   * Reset failed 2FA attempt counter
+   * Called after successful 2FA verification or admin reset
+   */
+  async resetFailed2faAttempts(userId: string): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    return this.updateUser(userId, {
+      failed2faAttempts: 0,
+      lockedUntil: null,
+    });
+  }
+
+  /**
+   * Check if user account is locked due to failed 2FA attempts
+   */
+  async is2faLocked(userId: string): Promise<boolean> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.lockedUntil')
+      .where('user.id = :userId', { userId })
+      .getOne();
+
+    if (!user || !user.lockedUntil) {
+      return false;
+    }
+
+    // Check if lockout has expired
+    if (user.lockedUntil < new Date()) {
+      // Reset if lockout has expired
+      await this.resetFailed2faAttempts(userId);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Increment token version to invalidate all existing JWT tokens
+   * Called when 2FA is disabled or security-sensitive changes occur
+   */
+  async incrementTokenVersion(userId: string): Promise<User> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.tokenVersion')
+      .where('user.id = :userId', { userId })
+      .getOne();
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    user.tokenVersion = (user.tokenVersion || 0) + 1;
+    return this.userRepository.save(user);
+  }
+
+  /**
+   * Hash a backup code using bcrypt
+   */
+  async hashBackupCode(code: string): Promise<string> {
+    return bcrypt.hash(
+      code.toUpperCase().replace(/-/g, ''),
+      BCRYPT_SALT_ROUNDS,
+    );
+  }
+
+  /**
+   * Verify a backup code against its hash
+   */
+  async verifyBackupCodeHash(
+    plainCode: string,
+    hashedCode: string,
+  ): Promise<boolean> {
+    return bcrypt.compare(
+      plainCode.toUpperCase().replace(/-/g, ''),
+      hashedCode,
+    );
   }
 }

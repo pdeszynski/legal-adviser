@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive Playwright E2E tests for 2FA functionality. Test scenarios: 1) Setup 2FA with QR code scanning simulation, 2) Verify successful 2FA setup with valid TOTP token, 3) Login with correct 2FA code, 4) Login with incorrect 2FA code (verify error handling), 5) Login using backup code, 6) Disable 2FA from settings, 7) Admin force-disables user 2FA, 8) Regenerate backup codes flow. Use time-based token generation in tests (e.g., authenticate with test secret). Verify JWT is only issued after successful 2FA validation.",
+  "id": "two-factor-auth-e2e-tests",
+  "title": "E2E Tests for Two-Factor Authentication",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive Playwright E2E tests for 2FA functionality. Test scenarios: 1) Setup 2FA with QR code scanning simulation, 2) Verify successful 2FA setup with valid TOTP token, 3) Login with correct 2FA code, 4) Login with incorrect 2FA code (verify error handling), 5) Login using backup code, 6) Disable 2FA from settings, 7) Admin force-disables user 2FA, 8) Regenerate backup codes flow. Use time-based token generation in tests (e.g., authenticate with test secret). Verify JWT is only issued after successful 2FA validation.",
+      "timestamp": "2026-01-24T15:49:40.774Z",
+      "source": "initial"
+    }
+  ]
+}

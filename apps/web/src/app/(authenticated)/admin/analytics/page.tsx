@@ -77,6 +77,75 @@ interface AnalyticsDashboard {
   generatedAt: string;
 }
 
+// Demo Request Analytics Types
+interface DemoRequestMetrics {
+  totalRequests: number;
+  newRequests: number;
+  contactedRequests: number;
+  scheduledRequests: number;
+  qualifiedRequests: number;
+  closedRequests: number;
+  newToContactedRate: number;
+  contactedToScheduledRate: number;
+  overallConversionRate: number;
+  periodStart: string;
+  periodEnd: string;
+}
+
+interface DemoRequestStatusBreakdown {
+  status: string;
+  count: number;
+  percentage: number;
+}
+
+interface DemoRequestLeadSource {
+  source: string | null;
+  medium: string | null;
+  count: number;
+  percentage: number;
+}
+
+interface DemoRequestCompanySizeDistribution {
+  companySize: string;
+  count: number;
+  percentage: number;
+}
+
+interface DemoRequestIndustryBreakdown {
+  industry: string;
+  count: number;
+  percentage: number;
+}
+
+interface DemoRequestTopUseCase {
+  useCase: string;
+  count: number;
+}
+
+interface DemoRequestTimeSeriesPoint {
+  timestamp: string;
+  count: number;
+}
+
+interface DemoRequestResponseTimeMetrics {
+  avgHoursToContact: number;
+  medianHoursToContact: number;
+  totalContacted: number;
+  calculatedAt: string;
+}
+
+interface DemoRequestAnalytics {
+  metrics: DemoRequestMetrics;
+  statusBreakdown: DemoRequestStatusBreakdown[];
+  leadSources: DemoRequestLeadSource[];
+  companySizeDistribution: DemoRequestCompanySizeDistribution[];
+  industryBreakdown: DemoRequestIndustryBreakdown[];
+  topUseCases: DemoRequestTopUseCase[];
+  requestsOverTime: DemoRequestTimeSeriesPoint[];
+  responseTimeMetrics: DemoRequestResponseTimeMetrics;
+  generatedAt: string;
+}
+
 export default function AnalyticsPage() {
   const translate = useTranslate();
 
@@ -87,6 +156,15 @@ export default function AnalyticsPage() {
 
   const { data, isLoading, isError } = query;
   const dashboard = result?.data;
+
+  // Fetch demo request analytics
+  const { query: demoQuery, result: demoResult } = useCustom<DemoRequestAnalytics>({
+    url: '/demoRequestAnalytics',
+    method: 'get',
+  });
+
+  const { data: demoData, isLoading: demoIsLoading, isError: demoIsError } = demoQuery;
+  const demoAnalytics = demoResult?.data;
 
   if (isLoading) {
     return <AnalyticsSkeleton />;
@@ -103,6 +181,7 @@ export default function AnalyticsPage() {
     );
   }
 
+  // Format numbers
   const formatNumber = (num: number): string => {
     return new Intl.NumberFormat('en-US').format(num);
   };
@@ -117,6 +196,25 @@ export default function AnalyticsPage() {
   const formatPercentage = (num: number): string => {
     return `${num.toFixed(1)}%`;
   };
+
+  // Funnel stages for demo request conversion
+  const funnelStages = demoAnalytics
+    ? [
+        { name: 'Submitted', count: demoAnalytics.metrics.totalRequests, color: 'bg-blue-500' },
+        {
+          name: 'Contacted',
+          count: demoAnalytics.metrics.contactedRequests,
+          color: 'bg-indigo-500',
+        },
+        {
+          name: 'Scheduled',
+          count: demoAnalytics.metrics.scheduledRequests,
+          color: 'bg-purple-500',
+        },
+        { name: 'Qualified', count: demoAnalytics.metrics.qualifiedRequests, color: 'bg-pink-500' },
+        { name: 'Closed', count: demoAnalytics.metrics.closedRequests, color: 'bg-green-500' },
+      ]
+    : [];
 
   return (
     <div className="space-y-6">
@@ -356,6 +454,217 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
+      {/* Demo Request Analytics */}
+      {demoAnalytics && (
+        <>
+          {/* Demo Request Metrics */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <MetricCard
+              title="Total Demo Requests"
+              value={formatNumber(demoAnalytics.metrics.totalRequests)}
+              icon="📊"
+            />
+            <MetricCard
+              title="New Requests"
+              value={formatNumber(demoAnalytics.metrics.newRequests)}
+              icon="🆕"
+            />
+            <MetricCard
+              title="Contacted"
+              value={formatNumber(demoAnalytics.metrics.contactedRequests)}
+              icon="📞"
+            />
+            <MetricCard
+              title="Closed Deals"
+              value={formatNumber(demoAnalytics.metrics.closedRequests)}
+              icon="💼"
+            />
+          </div>
+
+          {/* Demo Request Funnel */}
+          <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+            <div className="flex flex-col space-y-1.5 p-6">
+              <h3 className="font-semibold leading-none tracking-tight">Sales Funnel</h3>
+              <p className="text-sm text-muted-foreground">Demo request conversion pipeline</p>
+            </div>
+            <div className="p-6 pt-0 space-y-3">
+              {funnelStages.map((stage, index) => (
+                <div key={stage.name} className="space-y-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium">{stage.name}</span>
+                    <span>{formatNumber(stage.count)}</span>
+                  </div>
+                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${stage.color} transition-all`}
+                      style={{
+                        width: `${
+                          demoAnalytics.metrics.totalRequests > 0
+                            ? (stage.count / demoAnalytics.metrics.totalRequests) * 100
+                            : 0
+                        }%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="p-6 pt-0 border-t grid gap-4 md:grid-cols-3 text-sm">
+              <div>
+                <p className="text-muted-foreground">New → Contacted</p>
+                <p className="font-medium">
+                  {formatPercentage(demoAnalytics.metrics.newToContactedRate)}
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Contacted → Scheduled</p>
+                <p className="font-medium">
+                  {formatPercentage(demoAnalytics.metrics.contactedToScheduledRate)}
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Overall Conversion</p>
+                <p className="font-medium">
+                  {formatPercentage(demoAnalytics.metrics.overallConversionRate)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Response Time & Lead Sources */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+              <div className="flex flex-col space-y-1.5 p-6">
+                <h3 className="font-semibold leading-none tracking-tight">Response Time</h3>
+                <p className="text-sm text-muted-foreground">Average time to contact new leads</p>
+              </div>
+              <div className="p-6 pt-0 grid gap-4 md:grid-cols-2">
+                <div>
+                  <p className="text-sm text-muted-foreground">Average</p>
+                  <p className="text-2xl font-bold">
+                    {demoAnalytics.responseTimeMetrics.avgHoursToContact.toFixed(1)}h
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Median</p>
+                  <p className="text-2xl font-bold">
+                    {demoAnalytics.responseTimeMetrics.medianHoursToContact.toFixed(1)}h
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+              <div className="flex flex-col space-y-1.5 p-6">
+                <h3 className="font-semibold leading-none tracking-tight">Lead Sources</h3>
+                <p className="text-sm text-muted-foreground">Where demo requests come from</p>
+              </div>
+              {demoAnalytics.leadSources.length > 0 ? (
+                <div className="p-6 pt-0 space-y-2">
+                  {demoAnalytics.leadSources.slice(0, 5).map((source, index) => (
+                    <div key={index} className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        {source.source || source.medium || 'Direct'}
+                      </span>
+                      <div className="flex items-center gap-4">
+                        <span>{formatNumber(source.count)}</span>
+                        <span className="font-medium">{formatPercentage(source.percentage)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-6 pt-0 text-sm text-muted-foreground">
+                  No lead source data available yet.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Company Size & Industry Breakdown */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+              <div className="flex flex-col space-y-1.5 p-6">
+                <h3 className="font-semibold leading-none tracking-tight">Company Size</h3>
+                <p className="text-sm text-muted-foreground">Distribution by company size</p>
+              </div>
+              {demoAnalytics.companySizeDistribution.length > 0 ? (
+                <div className="p-6 pt-0 space-y-2">
+                  {demoAnalytics.companySizeDistribution.map((size) => (
+                    <div
+                      key={size.companySize}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="text-muted-foreground">{size.companySize}</span>
+                      <div className="flex items-center gap-4">
+                        <span>{formatNumber(size.count)}</span>
+                        <span className="font-medium">{formatPercentage(size.percentage)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-6 pt-0 text-sm text-muted-foreground">
+                  No company size data available yet.
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+              <div className="flex flex-col space-y-1.5 p-6">
+                <h3 className="font-semibold leading-none tracking-tight">Industries</h3>
+                <p className="text-sm text-muted-foreground">Distribution by industry</p>
+              </div>
+              {demoAnalytics.industryBreakdown.length > 0 ? (
+                <div className="p-6 pt-0 space-y-2">
+                  {demoAnalytics.industryBreakdown.map((industry) => (
+                    <div
+                      key={industry.industry}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="text-muted-foreground">
+                        {industry.industry
+                          .replace(/_/g, ' ')
+                          .replace(/\b\w/g, (l) => l.toUpperCase())}
+                      </span>
+                      <div className="flex items-center gap-4">
+                        <span>{formatNumber(industry.count)}</span>
+                        <span className="font-medium">{formatPercentage(industry.percentage)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-6 pt-0 text-sm text-muted-foreground">
+                  No industry data available yet.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Top Use Cases */}
+          {demoAnalytics.topUseCases.length > 0 && (
+            <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+              <div className="flex flex-col space-y-1.5 p-6">
+                <h3 className="font-semibold leading-none tracking-tight">Top Use Cases</h3>
+                <p className="text-sm text-muted-foreground">
+                  Most mentioned use cases in demo requests
+                </p>
+              </div>
+              <div className="p-6 pt-0 space-y-2">
+                {demoAnalytics.topUseCases.map((useCase, index) => (
+                  <div key={index} className="flex items-start justify-between text-sm gap-4">
+                    <span className="text-muted-foreground flex-1">{useCase.useCase}</span>
+                    <span className="font-medium whitespace-nowrap">
+                      {formatNumber(useCase.count)} mentions
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

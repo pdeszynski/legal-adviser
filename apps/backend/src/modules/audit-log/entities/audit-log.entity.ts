@@ -55,12 +55,14 @@ export enum AuditActionType {
  * - DOCUMENT: Legal document entity
  * - SESSION: User session entity
  * - SYSTEM: System-level operations
+ * - WEBHOOK: Webhook event processing
  */
 export enum AuditResourceType {
   USER = 'USER',
   DOCUMENT = 'DOCUMENT',
   SESSION = 'SESSION',
   SYSTEM = 'SYSTEM',
+  WEBHOOK = 'WEBHOOK',
 }
 
 // Register enums with GraphQL

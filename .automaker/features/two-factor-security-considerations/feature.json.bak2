@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Implement security measures for 2FA: 1) Rate limiting on TOTP verification endpoint (5 attempts per minute), 2) Account lockout after 10 failed 2FA attempts (requires admin reset), 3) Encrypt TOTP secrets using AES-256-GCM with key from environment variable, 4) Hash backup codes using bcrypt before storage, 5) Log all 2FA events (setup, verification, disable) in audit logs, 6) Invalidate JWT session immediately when 2FA is disabled, 7) Require password confirmation before disabling 2FA. Integrate with existing audit-logging-interceptor and rate-limiting-middleware.",
+  "id": "two-factor-security-considerations",
+  "title": "Two-Factor Security Enhancements",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "002-legal-ai-core",
+  "descriptionHistory": [
+    {
+      "description": "Implement security measures for 2FA: 1) Rate limiting on TOTP verification endpoint (5 attempts per minute), 2) Account lockout after 10 failed 2FA attempts (requires admin reset), 3) Encrypt TOTP secrets using AES-256-GCM with key from environment variable, 4) Hash backup codes using bcrypt before storage, 5) Log all 2FA events (setup, verification, disable) in audit logs, 6) Invalidate JWT session immediately when 2FA is disabled, 7) Require password confirmation before disabling 2FA. Integrate with existing audit-logging-interceptor and rate-limiting-middleware.",
+      "timestamp": "2026-01-24T15:49:40.775Z",
+      "source": "initial"
+    }
+  ]
+}

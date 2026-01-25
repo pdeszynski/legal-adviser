@@ -1,7 +1,5 @@
 """Response models for AI Engine API."""
 
-from typing import List, Optional
-
 from pydantic import BaseModel, Field
 
 
@@ -10,7 +8,7 @@ class Citation(BaseModel):
 
     source: str = Field(..., description="Source of the citation (e.g., Civil Code)")
     article: str = Field(..., description="Article or section number")
-    url: Optional[str] = Field(default=None, description="URL to the source")
+    url: str | None = Field(default=None, description="URL to the source")
 
 
 class GenerateDocumentResponse(BaseModel):
@@ -30,20 +28,20 @@ class DocumentGenerationStatus(BaseModel):
 
     task_id: str = Field(..., description="Task ID")
     status: str = Field(..., description="PROCESSING, COMPLETED, or FAILED")
-    content: Optional[str] = Field(
+    content: str | None = Field(
         default=None, description="Generated document content (markdown)"
     )
-    metadata: Optional[dict] = Field(
+    metadata: dict | None = Field(
         default=None, description="Additional metadata about the generation"
     )
-    error: Optional[str] = Field(default=None, description="Error message if failed")
+    error: str | None = Field(default=None, description="Error message if failed")
 
 
 class AnswerResponse(BaseModel):
     """Response to a legal question."""
 
     answer: str = Field(..., description="Answer to the question in markdown format")
-    citations: List[Citation] = Field(
+    citations: list[Citation] = Field(
         default_factory=list, description="Legal citations supporting the answer"
     )
     confidence: float = Field(
@@ -59,7 +57,7 @@ class Ruling(BaseModel):
     court: str = Field(..., description="Court that issued the ruling")
     date: str = Field(..., description="Date of the ruling (ISO format)")
     summary: str = Field(..., description="Brief summary of the ruling")
-    url: Optional[str] = Field(default=None, description="URL to full ruling")
+    url: str | None = Field(default=None, description="URL to full ruling")
     relevance_score: float = Field(
         default=0.0, ge=0.0, le=1.0, description="Relevance to search query"
     )
@@ -68,7 +66,7 @@ class Ruling(BaseModel):
 class SearchRulingsResponse(BaseModel):
     """Response from ruling search."""
 
-    results: List[Ruling] = Field(
+    results: list[Ruling] = Field(
         default_factory=list, description="List of matching rulings"
     )
     total: int = Field(..., description="Total number of results found")
@@ -83,16 +81,14 @@ class LegalGround(BaseModel):
     confidence_score: float = Field(
         ..., ge=0.0, le=1.0, description="Confidence score (0-1)"
     )
-    legal_basis: List[str] = Field(
-        ..., description="List of legal basis references"
-    )
-    notes: Optional[str] = Field(default=None, description="Additional notes")
+    legal_basis: list[str] = Field(..., description="List of legal basis references")
+    notes: str | None = Field(default=None, description="Additional notes")
 
 
 class ClassificationResponse(BaseModel):
     """Response from case classification."""
 
-    identified_grounds: List[LegalGround] = Field(
+    identified_grounds: list[LegalGround] = Field(
         ..., description="Identified legal grounds with confidence scores"
     )
     overall_confidence: float = Field(
@@ -109,7 +105,7 @@ class ClassificationResponse(BaseModel):
 class GenerateEmbeddingsResponse(BaseModel):
     """Response from embeddings generation."""
 
-    embeddings: List[List[float]] = Field(
+    embeddings: list[list[float]] = Field(
         ..., description="List of embedding vectors (one per input text)"
     )
     model: str = Field(..., description="Model used for generation")
@@ -124,7 +120,7 @@ class SemanticSearchResult(BaseModel):
     content_chunk: str = Field(..., description="Relevant text chunk")
     chunk_index: int = Field(..., description="Index of the chunk in the document")
     similarity: float = Field(..., ge=0.0, le=1.0, description="Similarity score")
-    metadata: Optional[dict] = Field(
+    metadata: dict | None = Field(
         default=None, description="Additional metadata about the chunk"
     )
 
@@ -132,7 +128,7 @@ class SemanticSearchResult(BaseModel):
 class SemanticSearchResponse(BaseModel):
     """Response from semantic vector search."""
 
-    results: List[SemanticSearchResult] = Field(
+    results: list[SemanticSearchResult] = Field(
         ..., description="List of relevant text chunks with similarity scores"
     )
     query: str = Field(..., description="Original search query")
@@ -143,6 +139,6 @@ class QAResponse(BaseModel):
     """Response from simple Q&A endpoint."""
 
     answer: str = Field(..., description="Answer to the question")
-    citations: List[Citation] = Field(
+    citations: list[Citation] = Field(
         default_factory=list, description="Legal citations supporting the answer"
     )

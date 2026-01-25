@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769307435589-e59670b5",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T02:17:15.589Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "hubspot-webhook-handler",
+  "featureName": "HubSpot Webhook Handler for Lead Sync",
+  "error": "Feature completed in 231s - auto-verified",
+  "passes": true
+}

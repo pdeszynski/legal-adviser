@@ -1,8 +1,12 @@
 export { Button, buttonVariants, type ButtonProps } from './Button';
 export { LoadingButton, type LoadingButtonProps } from './LoadingButton';
 export * from './Card';
+export * from './Dialog';
 export * from './Input';
 export * from './Label';
+export { Textarea, type TextareaProps } from './Textarea';
+export { Progress } from './Progress';
+export * from './Select';
 export { Skeleton, skeletonVariants, type SkeletonProps } from './Skeleton';
 export { TableSkeleton, type TableSkeletonProps } from './TableSkeleton';
 export { CardSkeleton, cardSkeletonVariants, type CardSkeletonProps } from './CardSkeleton';

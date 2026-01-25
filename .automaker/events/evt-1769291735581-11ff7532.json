@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769291735581-11ff7532",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-24T21:55:35.581Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "demo-request-graphql-api",
+  "featureName": "Demo Request GraphQL Mutation",
+  "error": "Feature completed in 713s - auto-verified",
+  "passes": true
+}
