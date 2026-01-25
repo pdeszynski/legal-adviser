@@ -2,6 +2,13 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769349147794-7a397af6",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-25T13:52:27.794Z",
+      "featureName": "Verify GraphQL Client Authorization Headers Configuration",
+      "featureId": "frontend-graphql-client-headers-configuration"
+    },
+    {
       "id": "evt-1769325156799-edc9c4bc",
       "trigger": "auto_mode_complete",
       "timestamp": "2026-01-25T07:12:36.799Z"

@@ -5,12 +5,11 @@
   "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
   "branchName": null,
   "runningFeatureIds": [
-    "email-unsubscribe-handler",
     "engagement-score-system",
     "prospect-health-score",
     "client-side-session-expiry-detection",
     "fix-graphql-mutation-authorization-context",
-    "frontend-graphql-client-headers-configuration"
+    "audit-graphql-auth-guards-consistency"
   ],
-  "savedAt": "2026-01-25T13:44:17.260Z"
+  "savedAt": "2026-01-25T13:52:31.751Z"
 }

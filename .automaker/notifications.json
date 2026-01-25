@@ -2793,6 +2793,17 @@
       "dismissed": false,
       "featureId": "remove-bull-queue-dependencies",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "32c691ad-ff33-45f6-a498-f500956bea52",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"frontend-graphql-client-headers-configuration\" has been verified and is complete.",
+      "createdAt": "2026-01-25T13:52:27.776Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "frontend-graphql-client-headers-configuration",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

@@ -3106,6 +3106,10 @@ path
       <name>Remove Bull Queue Dependencies and Clean Up Code</name>
       <description>After all Temporal migrations are complete and verified, remove Bull queue dependencies from package.json. Delete queue processor files: document-generation-queue.processor.ts, email-queue.processor.ts, pdf-export-queue.processor.ts, ruling-indexing-job.processor.ts, webhook-delivery-queue.processor.ts. Remove Bull configuration from NestJS modules. Clean up queue-related DTOs and interfaces. Remove Redis dependency if no longer needed for caching. Update documentation to reflect Temporal as the only background job system.</description>
     </feature>
+    <feature>
+      <name>Verify GraphQL Client Authorization Headers Configuration</name>
+      <description>Verify that the frontend GraphQL client (Apollo Client or custom fetch wrapper) is correctly including Authorization headers in all requests. Check: 1) Apollo link chain includes auth link that adds Bearer token, 2) Authorization header format: &apos;Bearer &lt;jwt_token&gt;&apos;, 3) Token is retrieved from authProvider or token storage, 4) Headers are sent on both queries and mutations, 5) CSRF token is included if required (but doesn&apos;t conflict with auth), 6) Cookie credentials are included (&apos;credentials: include&apos; if using cookie-based auth). Test GraphQL requests in browser DevTools Network tab to verify headers. Fix any missing or misconfigured headers. Ensure headers persist across page navigation.</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

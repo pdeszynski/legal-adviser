@@ -606,3 +606,24 @@ Input: {
   "old_string": "  @Query(() => AuthUserPayload, {\n    name: 'me',\n    description: 'Get current authenticated user information',\n    nullable: true,\n  })\n  @UseGuards(GqlAuthGuard)\n  async me(\n    @Context() context: { req: { user: { userId: string } } },\n  ): Promise<AuthUserPayload | null> {\n    const userId = context.req.user?.userId;\n    if (!userId) {\n      return null;\n    }",
   "new_string": "  @Query(() => AuthUserPayload, {\n    name: 'me',\n    description: 'Get current authenticated user information',\n    nullable: true,\n  })\n  @UseGuards(GqlAuthGuard)\n  async me(\n    @Context() context: { req: { user: ValidatedUser } },\n  ): Promise<AuthUserPayload | null> {\n    const userId = context.req.user?.id;\n    if (!userId) {\n      return null;\n    }"
 }
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/auth.resolver.ts",
+  "old_string": "  @Mutation(() => AuthUserPayload, {\n    name: 'acceptDisclaimer',\n    description: 'Accept the legal disclaimer for the current user',\n  })\n  @UseGuards(GqlAuthGuard)\n  async acceptDisclaimer(\n    @Context() context: { req: { user: { userId: string } } },\n  ): Promise<AuthUserPayload> {\n    const userId = context.req.user?.userId;\n    if (!userId) {\n      throw new UnauthorizedException('User not authenticated');\n    }",
+  "new_string": "  @Mutation(() => AuthUserPayload, {\n    name: 'acceptDisclaimer',\n    description: 'Accept the legal disclaimer for the current user',\n  })\n  @UseGuards(GqlAuthGuard)\n  async acceptDisclaimer(\n    @Context() context: { req: { user: ValidatedUser } },\n  ): Promise<AuthUserPayload> {\n    const userId = context.req.user?.id;\n    if (!userId) {\n      throw new UnauthorizedException('User not authenticated');\n    }"
+}
+
+🔧 Tool: Edit
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/auth.resolver.ts",
+  "old_string": "  @Mutation(() => AuthUserPayload, {\n    name: 'updateProfile',\n    description: 'Update profile information for the current user',\n  })\n  @UseGuards(GqlAuthGuard)\n  async updateProfile(\n    @Context() context: { req: { user: { userId: string } } },\n    @Args('input') input: UpdateProfileInput,\n  ): Promise<AuthUserPayload> {\n    const userId = context.req.user?.userId;\n    if (!userId) {\n      throw new UnauthorizedException('User not authenticated');\n    }",
+  "new_string": "  @Mutation(() => AuthUserPayload, {\n    name: 'updateProfile',\n    description: 'Update profile information for the current user',\n  })\n  @UseGuards(GqlAuthGuard)\n  async updateProfile(\n    @Context() context: { req: { user: ValidatedUser } },\n    @Args('input') input: UpdateProfileInput,\n  ): Promise<AuthUserPayload> {\n    const userId = context.req.user?.id;\n    if (!userId) {\n      throw new UnauthorizedException('User not authenticated');\n    }"
+}
+
+🔧 Tool: Read
+Input: {
+  "file_path": "/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/auth.resolver.ts",
+  "limit": 40,
+  "offset": 245
+}

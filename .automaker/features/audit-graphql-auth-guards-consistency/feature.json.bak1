@@ -3,9 +3,6 @@
   "description": "Perform comprehensive audit of all GraphQL resolvers to ensure consistent authorization guards. Verify: 1) All mutations require authentication (have @UseGuards(GqlAuthGuard) or equivalent), 2) All queries (except public ones) require authentication, 3) Admin-only mutations have additional @RequireRole or AdminGuard, 4) Guard execution order is correct (auth -> role -> permission), 5) Public resolvers are explicitly marked (e.g., @Public() decorator), 6) No authentication bypass exists via missing guards. Create checklist of all resolvers and their guard configuration. Fix any missing or inconsistent guards. Document authorization patterns in CLAUDE.md.",
   "id": "audit-graphql-auth-guards-consistency",
   "title": "Audit GraphQL Authorization Guards Consistency",
-  "dependencies": [
-    "graphql-auth-mutations"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "two-factor",

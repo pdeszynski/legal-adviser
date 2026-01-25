@@ -188,9 +188,9 @@ export class AuthResolver {
   })
   @UseGuards(GqlAuthGuard)
   async acceptDisclaimer(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: ValidatedUser } },
   ): Promise<AuthUserPayload> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -220,10 +220,10 @@ export class AuthResolver {
   })
   @UseGuards(GqlAuthGuard)
   async updateProfile(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: ValidatedUser } },
     @Args('input') input: UpdateProfileInput,
   ): Promise<AuthUserPayload> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
