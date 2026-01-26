@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769368379839-100e068d",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T19:12:59.839Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "demo-request-hubspot-lead-routing",
+  "featureName": "Configure HubSpot Lead Routing and Workflows",
+  "error": "Feature completed in 317s - auto-verified",
+  "passes": true
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769372695642-cf541857",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T20:24:55.642Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "features-page-e2e-tests",
+  "featureName": "Create E2E Tests for Features Page",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

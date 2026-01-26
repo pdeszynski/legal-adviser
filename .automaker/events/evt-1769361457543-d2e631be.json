@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769361457543-d2e631be",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T17:17:37.543Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-schedule-resume-implementation",
+  "featureName": "Implement Temporal Schedule Resume Method",
+  "error": "Feature completed in 591s - auto-verified",
+  "passes": true
+}

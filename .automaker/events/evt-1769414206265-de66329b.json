@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769414206265-de66329b",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T07:56:46.265Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "interest-page-navigation-integration",
+  "featureName": "Add Interest Page to Site Navigation",
+  "error": "Feature completed in 266s - auto-verified",
+  "passes": true
+}

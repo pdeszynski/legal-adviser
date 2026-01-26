@@ -1,0 +1,19 @@
+{
+  "category": "bug",
+  "description": "Fix the enable two-factor authentication functionality in /settings -> Security tab based on investigation findings. Potential fixes may include: 1) Correcting GraphQL mutation configuration if misconfigured, 2) Adding proper error handling and user feedback, 3) Fixing authentication headers for the mutation request, 4) Ensuring TwoFactorSettings component properly calls the mutation, 5) Adding loading state during mutation execution, 6) Redirecting to two-factor setup page on success, 7) Displaying success/error toast notifications. Test with admin@refine.dev user enabling 2FA.",
+  "id": "fix-two-factor-enable-settings-mutation",
+  "title": "Fix Two-Factor Enable Mutation in Settings",
+  "dependencies": [
+    "investigate-two-factor-settings-ui-integration"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Fix the enable two-factor authentication functionality in /settings -> Security tab based on investigation findings. Potential fixes may include: 1) Correcting GraphQL mutation configuration if misconfigured, 2) Adding proper error handling and user feedback, 3) Fixing authentication headers for the mutation request, 4) Ensuring TwoFactorSettings component properly calls the mutation, 5) Adding loading state during mutation execution, 6) Redirecting to two-factor setup page on success, 7) Displaying success/error toast notifications. Test with admin@refine.dev user enabling 2FA.",
+      "timestamp": "2026-01-25T18:25:36.731Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -24,6 +24,8 @@ import {
   EyeOff,
 } from 'lucide-react';
 import QRCode from 'react-qr-code';
+import Cookies from 'js-cookie';
+import { getCsrfHeaders } from '@/lib/csrf';
 
 type SetupStep = 'info' | 'scan' | 'verify' | 'success' | 'disable' | 'manage' | 'regenerate';
 
@@ -92,7 +94,6 @@ export function TwoFactorSetup({
 
   const getAuthHeaders = (): Record<string, string> => {
     if (typeof window === 'undefined') return {};
-    const Cookies = require('js-cookie');
     const token = Cookies.get('access_token');
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
@@ -104,6 +105,7 @@ export function TwoFactorSetup({
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...getAuthHeaders(),
+      ...getCsrfHeaders(),
     };
 
     const response = await fetch(GRAPHQL_URL, {
@@ -306,7 +308,7 @@ export function TwoFactorSetup({
               </p>
             </div>
           </div>
-          <Button onClick={handleOpenDialog} variant={isEnabled ? 'outline' : 'default'}>
+          <Button type="button" onClick={handleOpenDialog} variant={isEnabled ? 'outline' : 'default'}>
             {isEnabled ? 'Manage' : 'Enable'}
           </Button>
         </div>
@@ -375,10 +377,10 @@ export function TwoFactorSetup({
               </div>
 
               <DialogFooter>
-                <Button variant="outline" onClick={handleCloseDialog}>
+                <Button type="button" variant="outline" onClick={handleCloseDialog}>
                   Cancel
                 </Button>
-                <Button onClick={handleEnable} disabled={isLoading}>
+                <Button type="button" onClick={handleEnable} disabled={isLoading}>
                   {isLoading ? 'Loading...' : 'Get Started'}
                 </Button>
               </DialogFooter>
@@ -462,10 +464,11 @@ export function TwoFactorSetup({
               </div>
 
               <DialogFooter>
-                <Button variant="outline" onClick={handleCloseDialog} disabled={isLoading}>
+                <Button type="button" variant="outline" onClick={handleCloseDialog} disabled={isLoading}>
                   Cancel
                 </Button>
                 <Button
+                  type="button"
                   onClick={handleVerify}
                   disabled={isLoading || verificationCode.replace(/\s/g, '').length !== 6}
                 >
@@ -509,6 +512,7 @@ export function TwoFactorSetup({
 
                 <div className="flex gap-2">
                   <Button
+                    type="button"
                     variant="outline"
                     size="sm"
                     className="flex-1"
@@ -517,7 +521,7 @@ export function TwoFactorSetup({
                     <Copy className="h-4 w-4 mr-2" />
                     Copy All
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1" onClick={downloadCodes}>
+                  <Button type="button" variant="outline" size="sm" className="flex-1" onClick={downloadCodes}>
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -532,7 +536,7 @@ export function TwoFactorSetup({
               </div>
 
               <DialogFooter>
-                <Button onClick={handleCloseDialog}>Done</Button>
+                <Button type="button" onClick={handleCloseDialog}>Done</Button>
               </DialogFooter>
             </>
           )}
@@ -585,10 +589,11 @@ export function TwoFactorSetup({
               </div>
 
               <DialogFooter>
-                <Button variant="outline" onClick={handleCloseDialog} disabled={isLoading}>
+                <Button type="button" variant="outline" onClick={handleCloseDialog} disabled={isLoading}>
                   Cancel
                 </Button>
                 <Button
+                  type="button"
                   variant="destructive"
                   onClick={handleDisable}
                   disabled={isLoading || !disablePassword}
@@ -637,6 +642,7 @@ export function TwoFactorSetup({
                       </p>
                     </div>
                     <Button
+                      type="button"
                       variant="outline"
                       size="sm"
                       onClick={handleRegenerateBackupCodes}
@@ -667,10 +673,10 @@ export function TwoFactorSetup({
               </div>
 
               <DialogFooter>
-                <Button variant="outline" onClick={handleCloseDialog}>
+                <Button type="button" variant="outline" onClick={handleCloseDialog}>
                   Close
                 </Button>
-                <Button variant="destructive" onClick={() => setStep('disable')}>
+                <Button type="button" variant="destructive" onClick={() => setStep('disable')}>
                   Disable 2FA
                 </Button>
               </DialogFooter>
@@ -711,6 +717,7 @@ export function TwoFactorSetup({
 
                 <div className="flex gap-2">
                   <Button
+                    type="button"
                     variant="outline"
                     size="sm"
                     className="flex-1"
@@ -719,7 +726,7 @@ export function TwoFactorSetup({
                     <Copy className="h-4 w-4 mr-2" />
                     Copy All
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1" onClick={downloadCodes}>
+                  <Button type="button" variant="outline" size="sm" className="flex-1" onClick={downloadCodes}>
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -727,7 +734,7 @@ export function TwoFactorSetup({
               </div>
 
               <DialogFooter>
-                <Button onClick={handleCloseDialog}>Done</Button>
+                <Button type="button" onClick={handleCloseDialog}>Done</Button>
               </DialogFooter>
             </>
           )}

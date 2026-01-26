@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769360845500-99c4ee16",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T17:07:25.500Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "e2e-tests-authorization-mutations",
+  "featureName": "E2E Tests for Authorization on Mutations",
+  "error": "Feature completed in 375s - auto-verified",
+  "passes": true
+}

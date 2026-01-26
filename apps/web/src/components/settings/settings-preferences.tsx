@@ -4,18 +4,15 @@ import { useState } from 'react';
 import { useTranslate } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
-import { Globe, Moon, Cpu, Clock, Calendar } from 'lucide-react';
+import { Globe, Moon, Clock, Calendar } from 'lucide-react';
 import {
   useUpdateMyPreferencesMutation,
-  type UpdateUserPreferencesInput,
   type ThemePreference,
-  type AiModelType,
 } from '@/generated/graphql';
 
 interface PreferencesFormData {
   locale?: string;
   theme?: ThemePreference;
-  aiModel?: AiModelType;
   timezone?: string;
   dateFormat?: string;
 }
@@ -24,7 +21,6 @@ interface UserPreferencesData {
   id: string;
   locale: string;
   theme: ThemePreference;
-  aiModel: AiModelType;
   timezone?: string | null;
   dateFormat?: string | null;
 }
@@ -50,7 +46,6 @@ export function SettingsPreferences({ preferences, onUpdateSuccess }: SettingsPr
     defaultValues: {
       locale: preferences.locale,
       theme: preferences.theme,
-      aiModel: preferences.aiModel,
       timezone: preferences.timezone || '',
       dateFormat: preferences.dateFormat || '',
     },
@@ -66,7 +61,6 @@ export function SettingsPreferences({ preferences, onUpdateSuccess }: SettingsPr
         input: {
           locale: data.locale,
           theme: data.theme,
-          aiModel: data.aiModel,
           timezone: data.timezone || null,
           dateFormat: data.dateFormat || null,
         },
@@ -144,30 +138,6 @@ export function SettingsPreferences({ preferences, onUpdateSuccess }: SettingsPr
             </select>
           </div>
           {errors.theme && <p className="text-sm text-red-500">{errors.theme.message}</p>}
-        </div>
-
-        {/* AI Model */}
-        <div className="space-y-2">
-          <label htmlFor="aiModel" className="block text-sm font-medium">
-            {translate('settings.preferences.fields.aiModel')}
-          </label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-              <Cpu className="h-4 w-4" />
-            </div>
-            <select
-              id="aiModel"
-              {...register('aiModel', { required: translate('validation.required') })}
-              className="w-full pl-10 pr-3 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none"
-            >
-              <option value="GPT_4_TURBO">GPT-4 Turbo (Recommended)</option>
-              <option value="GPT_4">GPT-4</option>
-              <option value="GPT_3_5_TURBO">GPT-3.5 Turbo</option>
-              <option value="CLAUDE_3_OPUS">Claude 3 Opus</option>
-              <option value="CLAUDE_3_SONNET">Claude 3 Sonnet</option>
-            </select>
-          </div>
-          {errors.aiModel && <p className="text-sm text-red-500">{errors.aiModel.message}</p>}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

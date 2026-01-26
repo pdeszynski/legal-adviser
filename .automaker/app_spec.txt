@@ -3126,6 +3126,232 @@ path
       <name>Client-Side Session Expiry Detection and Redirect</name>
       <description>Implement client-side session expiry detection that works without full page reload. Currently, session expiry only triggers on server-side navigation. Create: 1) Apollo GraphQL link or interceptor to catch 401/403 responses, 2) Client-side authProvider logout method that clears tokens and redirects, 3) useAuth hook or context that provides auth state to components, 4) Automatic redirect to /login on 401/403, 5) User-friendly toast notification &apos;Your session has expired. Please log in again.&apos;, 6) Session refresh logic before token expiry (optional). Ensure redirect works on SPA navigation, not just full page reload. Test expiry on various pages (settings, documents, chat).</description>
     </feature>
+    <feature>
+      <name>Implement Temporal Schedule Description Method</name>
+      <description>Implement the describeSchedule method to retrieve schedule details from Temporal. Use Temporal SDK client.schedule.describe() to fetch current schedule state, next run times, action details, and recent execution history. Return typed ScheduleDescription object instead of unknown. Handle non-existent schedules gracefully.</description>
+    </feature>
+    <feature>
+      <name>Implement Temporal Schedule Creation Method</name>
+      <description>Implement the createSchedule method in TemporalService to create Temporal schedules with workflow actions, cron expressions, and overlap policies. Replace stub implementation with actual Temporal SDK client.schedule.create() call. Handle schedule ID generation, workflow type registration, and cron spec validation. Return actual schedule ID from Temporal.</description>
+    </feature>
+    <feature>
+      <name>Implement Client-Side Auth State Persistence</name>
+      <description>Ensure authentication state (JWT token, user info) is properly persisted and accessible client-side. Implement: 1) Token storage strategy (localStorage, sessionStorage, or cookies with HttpOnly), 2) AuthProvider in Refine that stores/retrieves tokens, 3) useAuth hook or React context for accessing auth state globally, 4) Automatic token inclusion in GraphQL requests (via Apollo link or fetch wrapper), 5) Token refresh mechanism if using refresh tokens, 6) Logout method that clears all auth state. Verify that tokens persist across page reloads and navigation. Ensure cookies (if used) have correct SameSite, Secure, and HttpOnly flags. Test auth state on browser back/forward navigation.</description>
+    </feature>
+    <feature>
+      <name>Define TypeScript Types for Temporal Schedules</name>
+      <description>Create proper TypeScript interfaces and types for Temporal schedule operations. Define ScheduleOptions, ScheduleAction, ScheduleSpec, SchedulePolicies, and ScheduleDescription types. Replace &apos;unknown&apos; types in method signatures. Ensure type safety matches Temporal SDK types. Export types for use in other modules.</description>
+    </feature>
+    <feature>
+      <name>E2E Tests for Authorization on Mutations</name>
+      <description>Create Playwright E2E tests to verify authorization works correctly on all mutations. Test scenarios: 1) Authenticated user can perform updateProfile mutation, 2) Authenticated user can update preferences via updateUserPreferences, 3) Authenticated user can create documents, 4) Unauthenticated request (no token) returns 401, 5) Expired token returns 401 and triggers logout, 6) Non-admin user cannot perform admin mutations (403), 7) Admin user can perform admin mutations. Test with various user roles (admin@refine.dev, user@example.com, lawyer@example.com). Include tests for session expiry during active session. Verify authorization headers are sent correctly.</description>
+    </feature>
+    <feature>
+      <name>Document GraphQL Authentication Context and Guards</name>
+      <description>Update CLAUDE.md with comprehensive GraphQL authentication documentation. Include: 1) How JWT is passed from frontend to GraphQL (Authorization header vs cookies), 2) GraphQL context setup including user authentication, 3) Guard hierarchy: GqlAuthGuard -&gt; RoleGuard -&gt; PermissionGuard, 4) How to add authenticated user to resolver context, 5) Decorator usage: @UseGuards, @RequireRole, @Public, 6) Frontend authProvider integration with GraphQL client, 7) Common authorization pitfalls and how to avoid them, 8) Testing authentication in unit and E2E tests. Add code examples showing proper guard configuration on resolvers. Document why updateProfile and other mutations were failing and how to prevent similar issues.</description>
+    </feature>
+    <feature>
+      <name>Implement Temporal Schedule Deletion Method</name>
+      <description>Implement the deleteSchedule method to permanently remove Temporal schedules. Use Temporal SDK client.schedule.delete() with proper error handling. Confirm deletion intent (maybe require confirmation parameter). Log deletion to audit logs with schedule details for history. Clean up any related schedule metadata.</description>
+    </feature>
+    <feature>
+      <name>Implement Temporal Schedule Pause Method</name>
+      <description>Implement the pauseSchedule method to pause active Temporal schedules. Use Temporal SDK client.schedule.pause() with proper error handling. Log pause actions to audit logs. Validate schedule exists before pausing. Update schedule metadata to reflect paused state.</description>
+    </feature>
+    <feature>
+      <name>Implement Temporal Schedule Resume Method</name>
+      <description>Implement the resumeSchedule method to resume paused Temporal schedules. Use Temporal SDK client.schedule.unpause() with proper error handling. Validate schedule is paused before resuming. Log resume actions to audit logs. Calculate next run time after resume.</description>
+    </feature>
+    <feature>
+      <name>Document Temporal Schedule Implementation and Usage</name>
+      <description>Update CLAUDE.md with comprehensive schedule management documentation. Include: 1) Overview of Temporal schedules vs workflows, 2) Schedule creation API with examples, 3) Cron expression format and validation, 4) Overlap policies explanation, 5) Schedule lifecycle operations (pause/resume/delete), 6) GraphQL mutations for schedule management, 7) Common use cases (ruling indexing, periodic cleanup), 8) Testing guide for schedule operations, 9) Troubleshooting common issues. Add code examples for creating and managing schedules.</description>
+    </feature>
+    <feature>
+      <name>Add Comprehensive Error Handling for Schedule Operations</name>
+      <description>Implement error handling for all schedule operations (create, describe, pause, resume, delete). Handle specific Temporal errors: ScheduleNotFound, ScheduleAlreadyExists, InvalidCronExpression, WorkflowNotFound. Create custom error classes extending TemporalError. Log errors with context. Return user-friendly error messages for API responses.</description>
+    </feature>
+    <feature>
+      <name>Add GraphQL Mutations and Queries for Schedule Management</name>
+      <description>Create GraphQL resolvers for schedule management operations. Add mutations: createTemporalSchedule, pauseTemporalSchedule, resumeTemporalSchedule, deleteTemporalSchedule. Add queries: temporalSchedule (by ID), temporalSchedules (list with pagination). Apply @RequireRole(ADMIN) decorator for admin-only access. Integrate with TemporalService methods. Return typed responses with schedule details.</description>
+    </feature>
+    <feature>
+      <name>Create E2E Tests for Temporal Schedule Operations</name>
+      <description>Write comprehensive E2E tests for all schedule methods using Temporal test environment. Test scenarios: 1) Create schedule with valid cron expression, 2) Create schedule with invalid cron (verify error handling), 3) Describe existing schedule (verify details), 4) Describe non-existent schedule (verify graceful handling), 5) Pause and resume schedule (verify state changes), 6) Delete schedule (verify removal), 7) Create schedule with overlap policies. Validate schedules trigger workflows at expected times.</description>
+    </feature>
+    <feature>
+      <name>Create Admin UI for Temporal Schedule Management</name>
+      <description>Build admin interface for managing Temporal schedules at /admin/temporal/schedules. Display list of all schedules with: schedule ID, workflow type, cron expression, next run time, last run status, current state (active/paused). Add actions: pause/resume, delete, view details. Create schedule creation modal with workflow selection, cron input, and overlap policy options. Integrate with GraphQL mutations. Show schedule execution history.</description>
+    </feature>
+    <feature>
+      <name>E2E Test for Two-Factor Settings Enable Flow</name>
+      <description>Create Playwright E2E test for enabling two-factor authentication from settings page. Test flow: 1) Login as user without 2FA enabled, 2) Navigate to /settings -&gt; Security tab, 3) Click &apos;Enable two-factor authentication&apos; button, 4) Verify redirect to two-factor setup page or modal appears, 5) Verify QR code is displayed, 6) Complete setup with valid TOTP token, 7) Verify backup codes are shown, 8) Confirm 2FA is enabled in settings. Test with admin@refine.dev credentials. Verify mutation is called in network trace.</description>
+    </feature>
+    <feature>
+      <name>Fix Two-Factor Enable Mutation in Settings</name>
+      <description>Fix the enable two-factor authentication functionality in /settings -&gt; Security tab based on investigation findings. Potential fixes may include: 1) Correcting GraphQL mutation configuration if misconfigured, 2) Adding proper error handling and user feedback, 3) Fixing authentication headers for the mutation request, 4) Ensuring TwoFactorSettings component properly calls the mutation, 5) Adding loading state during mutation execution, 6) Redirecting to two-factor setup page on success, 7) Displaying success/error toast notifications. Test with admin@refine.dev user enabling 2FA.</description>
+    </feature>
+    <feature>
+      <name>Investigate Two-Factor Auth Settings UI Integration</name>
+      <description>Investigate why enabling two-factor authentication from /settings -&gt; Security tab does nothing. Debug: 1) Verify enableTwoFactorAuth GraphQL mutation is being called when button is clicked, 2) Check browser network tab for GraphQL request/response, 3) Verify frontend has proper mutation hook configured, 4) Check if error is being swallowed or not displayed to user, 5) Verify user is authenticated when making request, 6) Check if TwoFactorSettings component is properly rendered and interactive, 7) Verify GraphQL schema has enableTwoFactorAuth mutation defined. Identify root cause and document findings.</description>
+    </feature>
+    <feature>
+      <name>Create &apos;How It Works&apos; About Page</name>
+      <description>Create a comprehensive &apos;How It Works&apos; page at /about/how-it-work or /how-it-work to replace the 404 error currently shown when clicking the &apos;How It Works&apos; button on the landing page. The page should explain the platform&apos;s workflow in clear steps: 1) Case Analysis (AI identifies legal grounds from descriptions), 2) Legal Q&amp;A (ask questions and get AI-powered answers with citations), 3) Document Generation (AI creates legal documents based on templates), 4) Case Law Research (search through Polish court rulings and legal acts), 5) Collaboration Tools (share documents, add comments, track changes). Include visual elements like icons, diagrams, or short video clips for each step. Add testimonials or success stories. Provide clear CTAs: &apos;Get Started Free&apos; or &apos;Request Demo&apos;. Ensure the page matches the landing page design language and is mobile-responsive. Use shadcn/ui components for consistent styling.</description>
+    </feature>
+    <feature>
+      <name>Fix Landing Page &apos;How It Works&apos; Button Navigation</name>
+      <description>Update the &apos;How It Works&apos; button on the landing page to point to the correct route once the about/how-it-works page is implemented. Verify that all other CTA buttons on the landing page have valid destinations (Request Early Access, Get Started, etc.). Add error handling or fallback routes if pages don&apos;t exist. Test all navigation links to ensure no 404 errors occur.</description>
+    </feature>
+    <feature>
+      <name>Fix unresponsive early access and get started buttons</name>
+      <description>Request eraly access button or get started button on main page does nothing. please analyze that and fix these pages.</description>
+    </feature>
+    <feature>
+      <name>Design Features Page UI Components</name>
+      <description>Create reusable UI components for the features landing page. Implement FeatureCard component with: icon/illustration slot, title and description props, optional status badge (beta/new/coming soon), CTA button with configurable action (link, demo, documentation), hover effects for interactivity. Create FeatureCategorySection component for grouping related features with category header and description. Implement filter/search controls for navigating feature categories. Use shadcn/ui Card, Badge, Button components for consistent styling. Ensure responsive grid layout (1 column mobile, 2 tablet, 3 desktop). Add animations for card entrance and hover states. Design should match landing page visual identity.</description>
+    </feature>
+    <feature>
+      <name>Define About Page Content Structure</name>
+      <description>Plan and create content structure for the About section including: 1) How It Works (step-by-step platform explanation), 2) About Us (company story, mission, team), 3) Features (detailed feature breakdown), 4) Pricing (plans and comparison), 5) FAQ (common questions). Create content hierarchy and navigation structure. Ensure consistent tone and messaging across all about pages. Include Polish and German translations for international audiences.</description>
+    </feature>
+    <feature>
+      <name>Create Features Landing Page</name>
+      <description>Create a comprehensive features showcase page at /features to highlight all platform capabilities. The page should display feature cards organized by category: AI-Powered Tools (Case Analysis, Legal Q&amp;A, Document Generation), Research &amp; Search (Case Law Search, Advanced Search, SAOS/ISAP Integration), Collaboration (Document Sharing, Comments, Version Control), and Administration (User Management, Analytics, System Health). Each feature card should include: icon/illustration, feature title, brief description, and &apos;Learn More&apos; or &apos;Try Now&apos; CTA. Implement filtering by category, search functionality for features, and smooth scrolling navigation. Ensure mobile-responsive grid layout with consistent card styling using shadcn/ui components. Link to detailed feature documentation or demo pages where available. The page should match the landing page design language and be accessible without authentication for marketing purposes.</description>
+    </feature>
+    <feature>
+      <name>Fix Landing Page CTA Button Links</name>
+      <description>Fix the &apos;Request Early Access&apos; and &apos;Get Started&apos; buttons on the main landing page that currently do nothing when clicked. Investigate the button components to identify why clicks are not triggering navigation. Verify button onClick handlers are properly configured. Ensure buttons are not missing href links or click event handlers. Test that buttons navigate to appropriate destinations (demo request page, waitlist page, or authentication flow). Add proper error handling and console logging for debugging navigation issues.</description>
+    </feature>
+    <feature>
+      <name>Add Analytics Tracking to Landing Page CTA Buttons</name>
+      <description>Implement analytics event tracking on all CTA buttons across the landing page. Add tracking for: 1) &apos;Request Early Access&apos; button clicks, 2) &apos;Get Started&apos; button clicks, 3) &apos;Book a Demo&apos; button clicks, 4) Any other CTAs on the landing page. Use Google Analytics 4, Mixpanel, or similar analytics platform. Track: click events, button location (hero section vs feature cards), user session data, conversion funnel from landing page to demo request form. Add UTM parameter capture to track marketing campaign effectiveness. Create dashboard for monitoring CTA performance.</description>
+    </feature>
+    <feature>
+      <name>Configure HubSpot Lead Routing and Workflows</name>
+      <description>Configure HubSpot CRM workflows to handle incoming leads from demo request form. Set up: 1) Automatic lead assignment to sales team based on company size or geography, 2) Lead scoring rules (e.g., hot leads if timeline is &apos;immediate&apos; or company size is &apos;50+&apos;), 3) Automated email sequences for different lead segments, 4) Task creation for sales reps to follow up within 24 hours, 5) Lead nurturing workflows for &apos;not ready yet&apos; prospects, 6) Integration with calendar booking tool (Calendly/HubSpot Meetings) for demo scheduling. Document HubSpot configuration in CLAUDE.md.</description>
+    </feature>
+    <feature>
+      <name>Integrate HubSpot Form on Demo Request Page</name>
+      <description>Replace or augment the existing demo request form with HubSpot embedded form functionality. Implement: 1) HubSpot form embed script on /demo or /waitlist page, 2) Form fields mapped to HubSpot contact properties (email, company, use case, timeline), 3) Form submission handler that syncs data to HubSpot CRM, 4) Success confirmation with thank you message, 5) Error handling for form submission failures, 6) Fallback to local GraphQL mutation (demo-request-graphql-api) if HubSpot is unavailable. Ensure GDPR compliance with proper consent checkboxes. Use HubSpot form API or embed codes. Track form submissions for analytics.</description>
+    </feature>
+    <feature>
+      <name>Integrate Features Page into Site Navigation</name>
+      <description>Add &apos;Features&apos; link to main site navigation menu. Position prominently in header navigation alongside other top-level pages (About, Pricing, etc.). Ensure link is accessible from both landing page and authenticated sections. Update sitemap if one exists. Add breadcrumb navigation on the features page itself. Consider adding Features link to footer navigation as well. Ensure the navigation route /features is properly configured in Next.js App Router. Test navigation flow from various entry points (landing page, login redirect, direct URL access).</description>
+    </feature>
+    <feature>
+      <name>Define Features Page Content Strategy</name>
+      <description>Plan and organize content structure for the /features landing page. Categorize existing features into logical groups: AI Tools (classifier-agent, qa-agent-implementation, document-templates), Research (ruling-search-page, advanced-search-page, saos-integration, isap-integration), Collaboration (document-sharing, comment-system-ui, document-versioning-logic), and Platform (analytics-dashboard, admin-user-management, billing-page). Define messaging hierarchy: start with high-value features, group related functionality together, create clear value propositions for each feature category. Ensure content aligns with About page content strategy (about-page-content-strategy) for consistent messaging across the site. Identify which features need copywriting versus existing descriptions that can be reused.</description>
+    </feature>
+    <feature>
+      <name>Add Skeleton Loading to Features Page</name>
+      <description>Implement skeleton placeholder components for the features landing page to ensure smooth loading experience. Create skeleton cards matching the FeatureCard layout with placeholder icon rectangles, title bars (2-3 lines), description lines (3-4 lines), and CTA button placeholder. Show category section skeleton headers. Ensure skeleton appears immediately on page load with shimmer animation effect. Handle both initial page load and category filter loading states. Transition smoothly from skeleton to actual feature cards once content loads. Match the existing skeleton loading patterns used throughout the app (loading-skeleton-components, dashboard-skeleton-loading, document-list-skeleton-loading, etc.).</description>
+    </feature>
+    <feature>
+      <name>Create E2E Tests for Features Page</name>
+      <description>Write comprehensive Playwright E2E tests for the /features landing page. Test scenarios: 1) Page loads successfully without authentication, 2) All feature categories are displayed, 3) Feature cards render correctly with proper content, 4) Category filtering works (clicking categories filters the visible cards), 5) Search functionality finds features by name/description, 6) CTA buttons navigate to correct destinations (demo pages, docs, or authenticated routes), 7) Page is responsive on mobile/tablet/desktop viewports, 8) Navigation menu &apos;Features&apos; link routes to /features, 9) Breadcrumb navigation works correctly, 10) Skeleton loading appears before content loads. Use Playwright testing patterns consistent with existing E2E tests (e2e-test-two-factor-settings-enable-flow, e2e-tests-authorization-mutations, loading-skeleton-e2e-tests).</description>
+    </feature>
+    <feature>
+      <name>Investigate Landing Page CTA Button Performance Issues</name>
+      <description>Investigate why the &apos;Get Started&apos; and &apos;Request Early Access&apos; buttons on the landing page take 3-4 seconds to open a modal. Profile the button click handler, modal component rendering, and any async operations (authentication checks, route navigation, form loading). Identify bottlenecks: lazy-loaded components, heavy computations, unnecessary network requests, or authentication state checks. Check if modal is being dynamically imported without proper preload. Verify event handlers are properly attached and not debounced/throttled excessively. Use browser DevTools Performance tab to measure component mount time, state updates, and rendering cycles.</description>
+    </feature>
+    <feature>
+      <name>Fix demo modal disappearing on first click request</name>
+      <description>Fix demo modal not showing. If a request eraly button on landing page is clicked, then backround is immediately greyed out with a layer, but nothing is shown. on first click it does try to show a modal for a moment with loading state, but it very fast dissapears.</description>
+    </feature>
+    <feature>
+      <name>Validate HubSpot Backend Integration for Interest Signups</name>
+      <description>Verify and test the existing HubSpot backend integration (hubspot-integration-backend) is properly configured for early access interest signups. Validation tasks: 1) Check HUBSPOT_API_KEY environment variable is set and valid, 2) Verify HubSpotService.createContact() method maps form fields correctly (fullName, email, company, role, useCase, source), 3) Test HubSpot API connectivity by creating a test contact, 4) Verify contact is added to correct HubSpot list (e.g., &apos;Early Access Interest&apos; not &apos;Demo Requests&apos;), 5) Check that HubSpot contact properties exist: first_name, last_name, email, company, job_title, use_case, lead_source, 6) Ensure GDPR consent field is captured in HubSpot, 7) Add proper error handling and logging for HubSpot API failures, 8) Implement retry logic for transient API failures. Create unit tests for HubSpotService methods. If backend doesn&apos;t exist yet, implement it following the hubspot-integration-backend specification.</description>
+    </feature>
+    <feature>
+      <name>Fix modal not displaying on landing page buttons</name>
+      <description>Ther&apos;es still aproblem with the request demo /rearly access buttons on anding page, none changes fixed these. After clicking these buttons no modal is being shown, only darkened background.</description>
+    </feature>
+    <feature>
+      <name>Send Confirmation Email for Interest Registration</name>
+      <description>Implement automated confirmation email sent when users successfully submit interest request. Email should: 1) Use existing email-notification-service infrastructure, 2) Send asynchronously via email queue/Temporal workflow, 3) Include personalized greeting with user&apos;s name, 4) Thank them for their interest in early access, 5) Explain what to expect next (timeline for access, product updates, invitation process), 6) Provide links to documentation, blog, or social media for staying updated, 7) Include unsubscribe/opt-out link for future marketing emails, 8) Be sent to the email address submitted in the form, 9) Have professional branding matching the platform design. Ensure email is only sent after successful HubSpot sync. Configure email template in SendGrid or email provider. Add simple plain text version as fallback.</description>
+    </feature>
+    <feature>
+      <name>Define Interest Page Content and Messaging Strategy</name>
+      <description>Plan and create content structure for the &apos;Request Early Access&apos; page (e.g., /early-access or /interest). Define clear messaging that this is an interest signup, NOT a demo request. Content should include: 1) Compelling headline about getting early access to the platform, 2) Value proposition for early adopters (exclusive features, pricing benefits, priority support), 3) Brief explanation of what to expect (timeline for access, product updates, invitation process), 4) Social proof if available (waitlist count, testimonials from beta users), 5) FAQ section addressing common questions (when will I get access, is it free, what features are included). Ensure tone is exciting and creates urgency while being transparent about development status. Align with About page content strategy (about-page-content-strategy) for consistent brand voice.</description>
+    </feature>
+    <feature>
+      <name>Create GraphQL API for Interest Registration</name>
+      <description>Implement GraphQL mutation for submitting early access interest requests. Create: 1) submitInterestRequest(input: InterestRequestInput!) mutation, 2) InterestRequestInput type with fields: fullName (required, string), email (required, string with validation), company (optional, string), role (optional, string), useCase (optional, text), leadSource (optional, string - how they heard about us), consent (required, boolean - GDPR consent), 3) Validation using class-validator decorators (email format, required fields, string length limits), 4) Integration with HubSpotService to create contact and add to &apos;Early Access Interest&apos; list in HubSpot, 5) Return InterestRequestResponse with success status and confirmation message, 6) Apply rate limiting to prevent abuse (e.g., 3 submissions per email per hour), 7) Allow public access (no authentication required) since this is for potential customers, 8) Add to public GraphQL resolver with @Public() decorator. Ensure data is NOT stored in local database - only synced to HubSpot.</description>
+    </feature>
+    <feature>
+      <name>Create Interest Registration Form Component</name>
+      <description>Update/create the interest registration form component to integrate with GraphQL API and HubSpot. Component should: 1) Support both standalone form (GraphQL mutation to submitInterestRequest) and HubSpot embedded form mode, 2) Include form fields: full name (required), email (required with validation), company (optional), role/title (optional), use case/interest (optional textarea), how did you hear about us (dropdown: Social Media, Search, Friend/Colleague, Event, Other), 3) Implement GDPR consent checkbox (required) explaining data is sent to HubSpot CRM, 4) Validate form inputs using zod schemas matching backend validation, 5) On submit: sync to HubSpot via GraphQL mutation (submitInterestRequest), 6) Show success confirmation view with thank you message and &apos;We&apos;ll be in touch soon&apos; text, 7) Handle errors gracefully with retry option and user-friendly error messages, 8) Implement loading state during submission with disabled submit button, 9) Add analytics tracking events: form_view, form_submit_start, form_submit_success, form_submit_error, 10) Store submitted email in localStorage to show &apos;already requested&apos; state if user returns. Do NOT show any demo-related language.</description>
+    </feature>
+    <feature>
+      <name>Create Early Access Interest Registration Page</name>
+      <description>Create a dedicated early access registration page at /early-access (or /interest) with modern, conversion-focused design. The page should: 1) Display hero section with compelling headline about joining early access waitlist, 2) Show embedded HubSpot form OR custom form that syncs directly to HubSpot CRM (do NOT store in local database), 3) Include form fields: full name, email, company (optional), role/title (optional), use case/interest (textarea), and how did you hear about us (dropdown), 4) Add GDPR/privacy consent checkbox explaining data goes to HubSpot, 5) Display success confirmation after submission with thank you message and next steps, 6) Handle form submission errors gracefully with retry option, 7) Implement analytics tracking (page view, form view, submission start, submission complete) using Google Analytics 4 or similar, 8) Ensure mobile-responsive design with shadcn/ui components, 9) Add loading states during form submission to prevent double-submit. The form should clearly state this is for &apos;Requesting Early Access&apos; not &apos;Requesting a Demo&apos;.</description>
+    </feature>
+    <feature>
+      <name>Implement Analytics Tracking for Interest Page</name>
+      <description>Add comprehensive analytics tracking to measure interest page performance and conversion funnel. Implementation: 1) Track page view event when user lands on /early-access (with UTM parameters preserved), 2) Track form impression event when form component renders, 3) Track form interaction events: field focus, validation errors, 4) Track submission start when submit button is clicked, 5) Track submission success with conversion event (send email, company, leadSource, UTM params), 6) Track submission failure with error type, 7) Create funnel in analytics: Page View → Form View → Form Start → Submit → Success, 8) Set up goal/conversion tracking in Google Analytics 4, 9) Add custom dimensions for traffic source (utm_source, utm_medium, utm_campaign), 10) Track user engagement: time on page, scroll depth, form field completion rate, 11) Create simple dashboard/view in GA4 showing: total visits, conversion rate, top traffic sources, form abandonment rate. Do NOT create any backend dashboards - rely on HubSpot and GA4.</description>
+    </feature>
+    <feature>
+      <name>Update All Landing Page CTAs to Point to Interest Page</name>
+      <description>Update all landing page CTA buttons to point to the new early access interest page (/early-access). This should be the MAIN CTA for the site until the service is fully launched. Tasks: 1) Update hero section &apos;Get Started&apos; CTA button to navigate to /early-access, 2) Update &apos;Request Early Access&apos; button to navigate to /early-access (or scroll to form if on same page), 3) Add additional CTAs in strategic locations: after feature sections, in sticky header on scroll, and as exit-intent modal, 4) Ensure all buttons use Next.js Link component for proper client-side routing, 5) Add loading states on button click with instant feedback (within 100ms), 6) Prevent double-clicks during navigation with button disabled state, 7) Make sure NO CTAs mention &apos;demo&apos; - use language like &apos;Get Early Access&apos;, &apos;Join Waitlist&apos;, &apos;Request Access&apos;. Update landing-page-cta-integration feature to point to interest page instead of demo page.</description>
+    </feature>
+    <feature>
+      <name>Create E2E Tests for Interest Page</name>
+      <description>Write comprehensive Playwright E2E tests for the early access interest page to ensure functionality works correctly. Test scenarios: 1) Page loads successfully without authentication, 2) All form fields are present and interactive, 3) Form validation works (required fields, email format, consent checkbox), 4) Successful form submission redirects to confirmation view, 5) Failed submission (API error, network error) shows error message, 6) Analytics events are fired (page view, form view, submit start, success), 7) Returning users see &apos;already requested&apos; state if previously submitted, 8) Form is responsive on mobile/tablet/desktop viewports, 9) Submit button is disabled during submission to prevent double-submit, 10) GDPR consent checkbox is required and cannot be bypassed. Use Playwright patterns consistent with existing E2E tests. Validate that data is sent to HubSpot (mock or test environment).</description>
+    </feature>
+    <feature>
+      <name>Add Interest Page to Site Navigation</name>
+      <description>Add &apos;Early Access&apos; or &apos;Get Started&apos; link to main site navigation menu. Position prominently in header navigation alongside &apos;About&apos;, &apos;Features&apos;, etc. Ensure link: 1) Is visible from both landing page and authenticated sections (or only landing/public pages), 2) Uses clear, action-oriented text (&apos;Get Early Access&apos;, &apos;Join Waitlist&apos;), 3) Navigates to /early-access route, 4) Is properly configured in Next.js App Router, 5) May include a subtle badge or indicator to draw attention (e.g., &apos;Limited&apos;, &apos;New&apos;), 6) Optionally add to footer navigation as well. Update sitemap if one exists. Test navigation flow from various entry points. Consider adding keyboard shortcut (Ctrl/Cmd + K) for quick access.</description>
+    </feature>
+    <feature>
+      <name>Optimize Interest Page for Mobile Devices</name>
+      <description>Ensure the early access interest page is fully optimized for mobile users since many visitors will be on mobile devices. Optimization tasks: 1) Test and fix responsive design on mobile (320px-768px), tablet (768px-1024px), and desktop viewports, 2) Ensure form fields are appropriately sized (minimum 44px height for touch targets per WCAG), 3) Implement proper mobile keyboard handling (email/phone keyboards, next/prev navigation), 4) Add input auto-complete attributes (email, name, organization) for better mobile UX, 5) Test form submission on slow 3G connections, 6) Ensure loading states and skeleton loading work smoothly on mobile, 7) Fix any horizontal scrolling issues, 8) Verify analytics tracking works on mobile browsers, 9) Test touch interactions for checkboxes, dropdowns, and buttons. Use Playwright mobile viewport testing in E2E tests.</description>
+    </feature>
+    <feature>
+      <name>Fix two-factor authentication token validation error</name>
+      <description>Fix adding two factor auth on settings page, there&apos;a an error:
+
+{
+    &quot;errors&quot;: [
+        {
+            &quot;message&quot;: &quot;property token should not exist&quot;,
+            &quot;locations&quot;: [
+                {
+                    &quot;line&quot;: 3,
+                    &quot;column&quot;: 11
+                }
+            ],
+            &quot;path&quot;: [
+                &quot;verifyTwoFactorSetup&quot;
+            ],
+            &quot;extensions&quot;: {
+                &quot;code&quot;: &quot;BAD_REQUEST&quot;,
+                &quot;httpStatus&quot;: 400,
+                &quot;exception&quot;: {
+                    &quot;message&quot;: &quot;property token should not exist&quot;,
+                    &quot;status&quot;: 400
+                },
+                &quot;stacktrace&quot;: [
+                    &quot;GraphQLError: property token should not exist&quot;,
+                    &quot;    at GqlAuthExceptionFilter.catch (/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/exceptions/graphql-auth-exception.filter.ts:130:12)&quot;,
+                    &quot;    at ExternalExceptionsHandler.invokeCustomFilters (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/exceptions/external-exceptions-handler.js:31:32)&quot;,
+                    &quot;    at ExternalExceptionsHandler.next (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/exceptions/external-exceptions-handler.js:14:29)&quot;,
+                    &quot;    at Object.verifyTwoFactorSetup (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-proxy.js:14:42)&quot;,
+                    &quot;    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)&quot;
+                ]
+            }
+        }
+    ],
+    &quot;data&quot;: null
+}</description>
+    </feature>
+    <feature>
+      <name>Add Skeleton Loading to Interest Page</name>
+      <description>Implement skeleton loading state for the early access interest page to ensure smooth user experience. Create skeleton placeholders matching the form layout: 1) Skeleton hero section with title and subtitle bars, 2) Skeleton form fields matching the actual form (name field, email field, company field, use case textarea, checkbox, submit button), 3) Apply shimmer animation effect for visual feedback, 4) Show skeleton immediately on page load before content/Form renders, 5) Transition smoothly from skeleton to actual form once page loads. Ensure skeleton matches the exact layout and spacing of the real form to prevent layout shift. Use existing skeleton loading patterns (loading-skeleton-components).</description>
+    </feature>
+    <feature>
+      <name>Remove model selection from settings page</name>
+      <description>On settings page, remove possibility for users to choose the model, it will not be allowd</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

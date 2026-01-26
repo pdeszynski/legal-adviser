@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769415916504-dfc1981e",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T08:25:16.504Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769415439699-vbbc444ve",
+  "featureName": "Remove model selection from settings page",
+  "error": "Feature completed in 472s - auto-verified",
+  "passes": true
+}

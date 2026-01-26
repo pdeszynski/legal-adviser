@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "Ther'es still aproblem with the request demo /rearly access buttons on anding page, none changes fixed these. After clicking these buttons no modal is being shown, only darkened background.",
+  "title": "Fix modal not displaying on landing page buttons",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "high",
+  "reasoningEffort": "none",
+  "branchName": "two-factor",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769407664057-3a56ac9q5",
+  "descriptionHistory": [
+    {
+      "description": "Ther'es still aproblem with the request demo /rearly access buttons on anding page, none changes fixed these. After clicking these buttons no modal is being shown, only darkened background.",
+      "timestamp": "2026-01-26T06:07:44.163Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-26T07:04:51.084Z",
+  "updatedAt": "2026-01-26T07:09:08.468Z"
+}

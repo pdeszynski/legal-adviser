@@ -76,7 +76,7 @@ services:
     ports:
       - '7233:7233'
     environment:
-      - DB=postgresql
+      - DB=postgres12
       - DB_PORT=5432
       - POSTGRES_USER=postgres
       - POSTGRES_PWD=password
@@ -182,7 +182,13 @@ services:
       - ./apps/ai-engine/src:/app/src:ro
       - ai_engine_venv:/app/.venv
     healthcheck:
-      test: ['CMD', 'python', '-c', 'import urllib.request; urllib.request.urlopen("http://localhost:8000/health").read()']
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          'import urllib.request; urllib.request.urlopen("http://localhost:8000/health").read()',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5

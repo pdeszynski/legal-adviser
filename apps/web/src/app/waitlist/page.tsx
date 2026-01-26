@@ -1,16 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, FileText, Shield, Zap } from 'lucide-react';
 import { Button } from '@legal/ui';
 import { DemoRequestForm } from '@components/demo-request';
 import { PublicLayout } from '@components/layout/public-layout';
+import { useAnalytics } from '@/hooks/use-analytics';
+import { initAnalytics } from '@/lib/analytics';
 
 const WaitlistContent = () => {
+  const analytics = useAnalytics();
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const handleOpenForm = () => setIsFormOpen(true);
+  // Initialize analytics on mount
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+
+  const handleOpenForm = useCallback(
+    (location: string) => {
+      analytics.trackCtaClick(location, 'Schedule a Demo', 'demo-form');
+      analytics.trackDemoFormOpen(location);
+      setIsFormOpen(true);
+    },
+    [analytics],
+  );
+
   const handleCloseForm = () => setIsFormOpen(false);
 
   return (
@@ -49,7 +65,7 @@ const WaitlistContent = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button
                 size="lg"
-                onClick={handleOpenForm}
+                onClick={() => handleOpenForm('waitlist-hero')}
                 className="px-8 h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-105 rounded-full text-lg"
               >
                 <Calendar className="mr-2 h-5 w-5" />
@@ -191,7 +207,7 @@ const WaitlistContent = () => {
             </p>
             <Button
               size="lg"
-              onClick={handleOpenForm}
+              onClick={() => handleOpenForm('waitlist-bottom-cta')}
               className="px-8 h-12 bg-white text-blue-600 hover:bg-blue-50 font-bold rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all text-lg"
             >
               Schedule Your Demo Now

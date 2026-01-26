@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Implement GraphQL mutation for submitting early access interest requests. Create: 1) submitInterestRequest(input: InterestRequestInput!) mutation, 2) InterestRequestInput type with fields: fullName (required, string), email (required, string with validation), company (optional, string), role (optional, string), useCase (optional, text), leadSource (optional, string - how they heard about us), consent (required, boolean - GDPR consent), 3) Validation using class-validator decorators (email format, required fields, string length limits), 4) Integration with HubSpotService to create contact and add to 'Early Access Interest' list in HubSpot, 5) Return InterestRequestResponse with success status and confirmation message, 6) Apply rate limiting to prevent abuse (e.g., 3 submissions per email per hour), 7) Allow public access (no authentication required) since this is for potential customers, 8) Add to public GraphQL resolver with @Public() decorator. Ensure data is NOT stored in local database - only synced to HubSpot.",
+  "id": "hubspot-interest-graphql-api",
+  "title": "Create GraphQL API for Interest Registration",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Implement GraphQL mutation for submitting early access interest requests. Create: 1) submitInterestRequest(input: InterestRequestInput!) mutation, 2) InterestRequestInput type with fields: fullName (required, string), email (required, string with validation), company (optional, string), role (optional, string), useCase (optional, text), leadSource (optional, string - how they heard about us), consent (required, boolean - GDPR consent), 3) Validation using class-validator decorators (email format, required fields, string length limits), 4) Integration with HubSpotService to create contact and add to 'Early Access Interest' list in HubSpot, 5) Return InterestRequestResponse with success status and confirmation message, 6) Apply rate limiting to prevent abuse (e.g., 3 submissions per email per hour), 7) Allow public access (no authentication required) since this is for potential customers, 8) Add to public GraphQL resolver with @Public() decorator. Ensure data is NOT stored in local database - only synced to HubSpot.",
+      "timestamp": "2026-01-26T05:45:27.228Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-26T07:11:44.551Z"
+}

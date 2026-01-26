@@ -209,9 +209,11 @@ test.describe('Settings Page', () => {
       // Check for dropdown fields
       await expect(page.locator('select[id="locale"]')).toBeVisible();
       await expect(page.locator('select[id="theme"]')).toBeVisible();
-      await expect(page.locator('select[id="aiModel"]')).toBeVisible();
       await expect(page.locator('select[id="timezone"]')).toBeVisible();
       await expect(page.locator('select[id="dateFormat"]')).toBeVisible();
+
+      // Verify AI Model selector is NOT present (removed from settings)
+      await expect(page.locator('select[id="aiModel"]')).not.toBeVisible();
 
       // Check for save button
       await expect(page.getByRole('button', { name: /save/i })).toBeVisible();

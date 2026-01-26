@@ -1,8 +1,8 @@
 {
   "category": "enhancement",
-  "description": "Add demo request metrics to admin analytics dashboard. Track: 1) Total demo requests over time (line chart), 2) Conversion rate (submitted → contacted → scheduled → closed), 3) Lead sources (how they found the page - add UTM tracking), 4) Company size distribution (pie chart), 5) Industry breakdown, 6) Average response time to new leads, 7) Top use cases mentioned, 8) Geography breakdown (if location data collected). Create GraphQL queries aggregating DemoRequest data. Display on existing admin-system-overview-dashboard or dedicated marketing analytics section.",
+  "description": "Add interest request metrics to admin analytics dashboard. Track: 1) Total interest requests over time (line chart), 2) Conversion rate (page views → submitted), 3) Lead sources (how they found the page - from UTM tracking), 4) Industry breakdown (if company/role collected), 5) Top use cases mentioned, 6) Geography breakdown (if location data from HubSpot), 7) Average response time to new leads. Create GraphQL queries aggregating data from HubSpot API (NOT local database). Display on existing admin-system-overview-dashboard or dedicated marketing analytics section. Rely on HubSpot for detailed analytics, this is just a high-level overview.",
   "id": "demo-request-analytics",
-  "title": "Demo Request Analytics Dashboard",
+  "title": "Interest Request Analytics Dashboard",
   "priority": 3,
   "status": "verified",
   "branchName": "002-legal-ai-core",
@@ -11,7 +11,15 @@
       "description": "Add demo request metrics to admin analytics dashboard. Track: 1) Total demo requests over time (line chart), 2) Conversion rate (submitted → contacted → scheduled → closed), 3) Lead sources (how they found the page - add UTM tracking), 4) Company size distribution (pie chart), 5) Industry breakdown, 6) Average response time to new leads, 7) Top use cases mentioned, 8) Geography breakdown (if location data collected). Create GraphQL queries aggregating DemoRequest data. Display on existing admin-system-overview-dashboard or dedicated marketing analytics section.",
       "timestamp": "2026-01-24T21:38:47.511Z",
       "source": "initial"
+    },
+    {
+      "description": "Add interest request metrics to admin analytics dashboard. Track: 1) Total interest requests over time (line chart), 2) Conversion rate (page views → submitted), 3) Lead sources (how they found the page - from UTM tracking), 4) Industry breakdown (if company/role collected), 5) Top use cases mentioned, 6) Geography breakdown (if location data from HubSpot), 7) Average response time to new leads. Create GraphQL queries aggregating data from HubSpot API (NOT local database). Display on existing admin-system-overview-dashboard or dedicated marketing analytics section. Rely on HubSpot for detailed analytics, this is just a high-level overview.",
+      "timestamp": "2026-01-26T05:45:27.242Z",
+      "source": "edit"
     }
   ],
-  "updatedAt": "2026-01-25T03:06:26.340Z"
+  "updatedAt": "2026-01-25T03:06:26.340Z",
+  "dependencies": [
+    "cta-button-analytics-tracking"
+  ]
 }

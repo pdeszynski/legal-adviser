@@ -38,9 +38,9 @@ export class DocumentSharingResolver {
   @UseGuards(GqlAuthGuard)
   async shareDocument(
     @Args('input') input: ShareDocumentInput,
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<DocumentShare> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -59,9 +59,9 @@ export class DocumentSharingResolver {
   @UseGuards(GqlAuthGuard)
   async revokeDocumentShare(
     @Args('shareId', { type: () => ID }) shareId: string,
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<boolean> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -81,9 +81,9 @@ export class DocumentSharingResolver {
   @UseGuards(GqlAuthGuard)
   async updateDocumentSharePermission(
     @Args('input') input: UpdateSharePermissionInput,
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<DocumentShare> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -102,9 +102,9 @@ export class DocumentSharingResolver {
   @UseGuards(GqlAuthGuard)
   async documentShares(
     @Args('documentId', { type: () => ID }) documentId: string,
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<DocumentShare[]> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -135,9 +135,9 @@ export class DocumentSharingResolver {
   async documentsSharedWithMe(
     @Args('permission', { type: () => SharePermission, nullable: true })
     permission: SharePermission | undefined,
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<DocumentShare[]> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }

@@ -376,7 +376,9 @@ enum AuditActionType {
   EXPORT
   LOGIN
   LOGOUT
+  PAUSE
   READ
+  RESUME
   UPDATE
 }
 
@@ -529,6 +531,7 @@ enum AuditLogSortFields {
 """Type of resource affected"""
 enum AuditResourceType {
   DOCUMENT
+  SCHEDULE
   SESSION
   SYSTEM
   USER
@@ -995,6 +998,12 @@ input CreateHubSpotContactInput {
   """First name"""
   firstName: String
 
+  """GDPR consent for data processing"""
+  gdprConsent: Boolean
+
+  """Job title"""
+  jobTitle: String
+
   """Last name"""
   lastName: String
 
@@ -1178,6 +1187,34 @@ input CreateRulingMetadataInput {
   legalArea: String
   relatedCases: [String!]
   sourceReference: String
+}
+
+input CreateScheduleInput {
+  """Action the schedule performs"""
+  action: ScheduleActionInput!
+
+  """Initial paused state"""
+  paused: Boolean = false
+
+  """Schedule behavior policies"""
+  policies: SchedulePoliciesInput
+
+  """Unique identifier for the schedule"""
+  scheduleId: String!
+
+  """Schedule specification (when it runs)"""
+  spec: ScheduleSpecInput!
+}
+
+type CreateScheduleResult {
+  """Message describing the creation result"""
+  message: String
+
+  """The ID of the created schedule"""
+  scheduleId: ID!
+
+  """Whether the creation was successful"""
+  success: Boolean!
 }
 
 input CreateSubscriptionPlanInput {
@@ -1381,6 +1418,17 @@ input DeleteOneUserPreferencesInput {
 input DeleteOneUserSessionInput {
   """The id of the record to delete."""
   id: ID!
+}
+
+input DeleteScheduleInput {
+  """Confirmation that the user intends to delete the schedule"""
+  confirm: Boolean! = false
+
+  """Optional reason for deletion (logged to audit trail)"""
+  reason: String
+
+  """The ID of the schedule to delete"""
+  scheduleId: String!
 }
 
 """Webhook delivery status"""
@@ -2321,6 +2369,7 @@ enum EmailTemplateType {
   DEMO_REQUEST_CONFIRMATION
   DOCUMENT_COMPLETED
   DOCUMENT_FAILED
+  INTEREST_CONFIRMATION
   SYSTEM_NOTIFICATION
   WELCOME
 }
@@ -2641,6 +2690,40 @@ enum Industry {
   OTHER
   REAL_ESTATE
   TECHNOLOGY
+}
+
+input InterestRequestInput {
+  """Company name"""
+  company: String
+
+  """GDPR consent checkbox"""
+  consent: Boolean!
+
+  """Email address"""
+  email: String!
+
+  """Full name of the requester"""
+  fullName: String!
+
+  """How they heard about us (lead source)"""
+  leadSource: String
+
+  """Job role or position"""
+  role: String
+
+  """Specific use case or requirements"""
+  useCase: String
+}
+
+type InterestRequestResponse {
+  """Confirmation message with next steps"""
+  message: String!
+
+  """Unique reference ID for the request"""
+  referenceId: String
+
+  """Whether the request was submitted successfully"""
+  success: Boolean!
 }
 
 """
@@ -3480,6 +3563,9 @@ type Mutation {
   """Create a new custom role"""
   createRole(input: CreateRoleInput!): Role!
 
+  """Create a new Temporal schedule for recurring workflow execution"""
+  createSchedule(input: CreateScheduleInput!): CreateScheduleResult!
+
   """Create a new subscription plan (admin only)"""
   createSubscriptionPlan(input: CreateSubscriptionPlanInput!): SubscriptionPlan!
   createUsageRecord(input: CreateAiUsageRecordInput!): AiUsageRecord!
@@ -3513,6 +3599,9 @@ type Mutation {
 
   """Delete a custom role (system roles cannot be deleted)"""
   deleteRole(id: String!): Boolean!
+
+  """Permanently delete a Temporal schedule (requires confirmation)"""
+  deleteSchedule(input: DeleteScheduleInput!): ScheduleDeletionResult!
 
   """Delete a subscription plan (admin only)"""
   deleteSubscriptionPlan(id: String!): Boolean!
@@ -3551,6 +3640,9 @@ type Mutation {
 
   """Mark a notification as read"""
   markNotificationAsRead(notificationId: String!, userId: String!): String!
+
+  """Pause a running Temporal schedule"""
+  pauseSchedule(input: PauseScheduleInput!): Boolean!
   publishDocumentV2(input: PublishDocumentInputV2!): LegalDocumentV2!
 
   """Check if a lead qualifies for deal creation"""
@@ -3586,6 +3678,9 @@ type Mutation {
   """Resume a subscription that was scheduled for cancellation"""
   resumeMySubscription: UserSubscription!
 
+  """Resume a paused Temporal schedule"""
+  resumeSchedule(input: ResumeScheduleInput!): Boolean!
+
   """Revoke an API key. This action cannot be undone."""
   revokeApiKey(id: String!): ApiKey!
 
@@ -3617,6 +3712,11 @@ type Mutation {
   Submit a demo request. No authentication required. The request will be synced to HubSpot and the sales team will be notified via email.
   """
   submitDemoRequest(input: DemoRequestInput!): DemoRequestResponse!
+
+  """
+  Submit an early access interest request. No authentication required. The request will be synced to HubSpot Early Access list. GDPR consent is required.
+  """
+  submitInterestRequest(input: InterestRequestInput!): InterestRequestResponse!
 
   """Submit a new legal query for AI processing"""
   submitLegalQuery(input: SubmitLegalQueryInput!): LegalQuery!
@@ -3988,6 +4088,14 @@ type PageInfo {
   startCursor: ConnectionCursor
 }
 
+input PauseScheduleInput {
+  """Optional reason for pausing (logged to audit trail)"""
+  reason: String
+
+  """The ID of the schedule to pause"""
+  scheduleId: String!
+}
+
 type PaymentHistoryItem {
   amount: String!
   createdAt: String!
@@ -4215,6 +4323,9 @@ type Query {
     """Specify to sort results."""
     sorting: [DemoRequestSort!]! = []
   ): DemoRequestConnection!
+
+  """Get detailed information about a Temporal schedule"""
+  describeSchedule(scheduleId: String!): ScheduleDetails
   documentComment(
     """The id of the record to find."""
     id: ID!
@@ -4502,6 +4613,12 @@ type Query {
   systemSetting(key: String!): SystemSetting
   systemSettings: [SystemSetting!]!
   systemSettingsByCategory(category: SettingCategory!): [SystemSetting!]!
+
+  """Get detailed information about a Temporal schedule by ID"""
+  temporalSchedule(scheduleId: String!): ScheduleDetails
+
+  """List all Temporal schedules with pagination"""
+  temporalSchedules(input: ScheduleListInput): ScheduleListResult!
   tokenUsageAnalytics(input: DashboardAnalyticsInput): TokenUsageAnalytics!
   tokenUsageByOperation(input: DashboardAnalyticsInput): [TokenUsageByOperation!]!
   tokenUsageExport(input: DashboardAnalyticsInput): TokenUsageExport!
@@ -4680,6 +4797,14 @@ input RestoreBackupInput {
   targetDatabase: String
 }
 
+input ResumeScheduleInput {
+  """Optional reason for resuming (logged to audit trail)"""
+  reason: String
+
+  """The ID of the schedule to resume"""
+  scheduleId: String!
+}
+
 type Role {
   createdAt: DateTime!
   description: String
@@ -4699,9 +4824,179 @@ type RulingMetadata {
   sourceReference: String
 }
 
+type ScheduleActionDetails {
+  """JSON string of arguments passed to workflow"""
+  args: String
+
+  """Task queue for executions"""
+  taskQueue: String!
+
+  """Workflow ID template"""
+  workflowId: String!
+
+  """Workflow type being executed"""
+  workflowType: String!
+}
+
+input ScheduleActionInput {
+  """JSON string of arguments to pass to the workflow"""
+  args: String
+
+  """Task queue to dispatch workflows to"""
+  taskQueue: String!
+
+  """Type of action (currently only startWorkflow is supported)"""
+  type: String!
+
+  """Workflow ID template for each execution"""
+  workflowId: String!
+
+  """Workflow type to execute"""
+  workflowType: String!
+}
+
+type ScheduleDeletionResult {
+  """Message describing the deletion result"""
+  message: String
+
+  """The ID of the deleted schedule"""
+  scheduleId: ID!
+
+  """Whether the deletion was successful"""
+  success: Boolean!
+}
+
 input ScheduleDemoInput {
   demoRequestId: ID!
   scheduledTime: DateTime!
+}
+
+type ScheduleDetails {
+  """Action the schedule performs"""
+  action: ScheduleActionDetails
+
+  """Whether the schedule exists"""
+  exists: Boolean!
+
+  """Number of failed actions"""
+  failedActions: String
+
+  """ISO datetime of last run"""
+  lastRunAt: String
+
+  """Number of missed actions"""
+  missedActions: String
+
+  """ISO datetime of next run"""
+  nextRunAt: String
+
+  """Overlap policy"""
+  overlap: ScheduleOverlapPolicy
+
+  """Whether the schedule is currently paused"""
+  paused: Boolean
+
+  """Schedule ID"""
+  scheduleId: ID!
+
+  """Schedule specification"""
+  spec: ScheduleSpecDetails
+
+  """Schedule state information"""
+  state: ScheduleStateInfo
+
+  """Number of successful actions"""
+  successfulActions: String
+
+  """Total number of actions taken"""
+  totalActions: String
+}
+
+input ScheduleListInput {
+  """Maximum number of results to return"""
+  pageSize: Int = 100
+
+  """Continuation token from previous page"""
+  pageToken: String
+}
+
+type ScheduleListResult {
+  """Continuation token for pagination"""
+  nextPageToken: String
+
+  """List of schedule IDs"""
+  scheduleIds: [String!]!
+
+  """Total number of schedules"""
+  totalCount: Int!
+}
+
+"""How to handle overlapping schedule executions"""
+enum ScheduleOverlapPolicy {
+  ALLOW_ALL
+  BUFFER_ONE
+  SKIP
+}
+
+input SchedulePoliciesInput {
+  """Catchup window for missed runs (duration string, e.g., "1 day")"""
+  catchupWindow: String
+
+  """How to handle overlapping executions"""
+  overlap: ScheduleOverlapPolicy
+
+  """Whether to pause on failure"""
+  pauseOnFailure: Boolean
+}
+
+type ScheduleSpecDetails {
+  """Cron expression (if calendar-based)"""
+  cronExpression: String
+
+  """End time"""
+  endTime: String
+
+  """Interval in seconds (if interval-based)"""
+  intervalSeconds: Float
+
+  """Start time"""
+  startTime: String
+
+  """Timezone"""
+  timezone: String
+}
+
+input ScheduleSpecInput {
+  """
+  Cron expression for execution schedule (e.g., "0 2 * * *" for daily at 2 AM)
+  """
+  cronExpression: String
+
+  """End time (ISO 8601 string)"""
+  endTime: String
+
+  """Start time (ISO 8601 string)"""
+  startTime: String
+
+  """Timezone identifier (IANA tz database)"""
+  timezone: String
+}
+
+type ScheduleStateInfo {
+  """Number of failed actions"""
+  failedActions: Float
+
+  """Number of missed actions"""
+  missedActions: Float
+
+  """Number of currently running actions"""
+  runningActions: Float
+
+  """Number of successful actions"""
+  successfulActions: Float
+
+  """Total number of actions"""
+  totalActions: Float
 }
 
 """Specific fields to search in"""
@@ -5748,7 +6043,6 @@ type UserPreferencesDeleteResponse {
   createdAt: DateTime
   dateFormat: String
   emailNotifications: Boolean
-  getNotificationPreferences: NotificationPreferences
   id: ID
   inAppNotifications: Boolean
   locale: String

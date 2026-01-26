@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769355003299-91831e78",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T15:30:03.299Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "client-side-auth-state-persistence",
+  "featureName": "Implement Client-Side Auth State Persistence",
+  "error": "Feature completed in 416s - auto-verified",
+  "passes": true
+}

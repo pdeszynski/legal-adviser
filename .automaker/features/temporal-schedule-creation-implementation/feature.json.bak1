@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Implement the createSchedule method in TemporalService to create Temporal schedules with workflow actions, cron expressions, and overlap policies. Replace stub implementation with actual Temporal SDK client.schedule.create() call. Handle schedule ID generation, workflow type registration, and cron spec validation. Return actual schedule ID from Temporal.",
+  "id": "temporal-schedule-creation-implementation",
+  "title": "Implement Temporal Schedule Creation Method",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Implement the createSchedule method in TemporalService to create Temporal schedules with workflow actions, cron expressions, and overlap policies. Replace stub implementation with actual Temporal SDK client.schedule.create() call. Handle schedule ID generation, workflow type registration, and cron spec validation. Return actual schedule ID from Temporal.",
+      "timestamp": "2026-01-25T15:05:01.022Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T15:16:07.676Z"
+}

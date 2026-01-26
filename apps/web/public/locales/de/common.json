@@ -936,5 +936,793 @@
       "subtitle": "Verpassen Sie nicht die Vorteile des frühen Zugangs. Treten Sie noch heute der Warteliste bei.",
       "button": "Jetzt Warteliste beitreten"
     }
+  },
+  "howItWorksPage": {
+    "step": "Schritt",
+    "hero": {
+      "badge": "Plattform-Übersicht",
+      "title": "Wie Legal AI",
+      "titleHighlight": "Funktioniert",
+      "subtitle": "Entdecken Sie, wie unsere KI-gestützte Plattform die Rechtsarbeit in einen optimierten, effizienten Prozess verwandelt. Von Fallanalyse bis Dokumentenerstellung - sehen Sie, wie wir Juristen helfen, Zeit zu sparen und bessere Ergebnisse zu erzielen."
+    },
+    "steps": {
+      "caseAnalysis": {
+        "title": "Fallanalyse",
+        "description": "Beschreiben Sie Ihre Rechtssituation in einfacher Sprache und lassen Sie unsere KI die relevanten Rechtsgrundlagen identifizieren.",
+        "details": "Unsere fortschrittliche KI analysiert Ihre Fallbeschreibung und identifiziert anwendbare Gesetze, Vorschriften und Präzedenzfälle, die die Grundlage Ihres rechtlichen Arguments bilden.",
+        "feature1": "Eingabe in natürlicher Sprache - keine juristische Fachsprache erforderlich",
+        "feature2": "KI identifiziert relevante Rechtsgrundlagen und Artikel",
+        "feature3": "Sofortige vorläufige Fallbewertung"
+      },
+      "legalQa": {
+        "title": "Rechtliche Q&A",
+        "description": "Stellen Sie Fragen und erhalten Sie KI-gestützte Antworten mit echten Rechtszitaten.",
+        "details": "Interagieren Sie mit unserem KI-Assistenten, um Antworten auf komplexe Rechtsfragen zu erhalten. Jede Antwort enthält Verweise auf relevante Gesetze, Vorschriften und Gerichtsentscheidungen.",
+        "feature1": "Fragen Sie in natürlicher Sprache",
+        "feature2": "Erhalten Sie Antworten mit ordnungsgemäßen Rechtszitaten",
+        "feature3": "Quellenverifizierung mit direkten Links zu Rechtstexten"
+      },
+      "documentGeneration": {
+        "title": "Dokumentenerstellung",
+        "description": "KI erstellt professionelle Rechtsdokumente basierend auf Vorlagen, die auf Ihren Fall zugeschnitten sind.",
+        "details": "Wählen Sie aus unserer Bibliothek professionell gestalteter Vorlagen. Unsere KI füllt die Details basierend auf Ihren Fallinformationen aus und erstellt gebrauchsfertige Dokumente.",
+        "feature1": "Umfangreiche Vorlagenbibliothek für verschiedene Dokumenttypen",
+        "feature2": "KI füllt automatisch basierend auf Ihren Falldaten aus",
+        "feature3": "Bearbeiten und anpassen vor der Finalisierung"
+      },
+      "caseLawResearch": {
+        "title": "Rechtsprechungsforschung",
+        "description": "Durchsuchen Sie tausende polnische Gerichtsentscheidungen und Rechtsakte sofort.",
+        "details": "Zugang zu einer umfassenden Datenbank von Gerichtsentscheidungen, Rechtsakten und Vorschriften. Unsere leistungsstarke Suchmaschine hilft Ihnen, relevante Präzedenzfälle und Interpretationen zu finden.",
+        "feature1": "Suche über mehrere Rechtsdatenbanken",
+        "feature2": "Filtern nach Gerichtstyp, Datum und Relevanz",
+        "feature3": "Direkter Zugriff auf den Volltext der Entscheidungen"
+      },
+      "collaboration": {
+        "title": "Zusammenarbeitstools",
+        "description": "Teilen Sie Dokumente, fügen Sie Kommentare hinzu und verfolgen Sie Änderungen mit Ihrem Team.",
+        "details": "Arbeiten Sie nahtlos mit Kollegen und Kunden zusammen. Teilen Sie Dokumente zur Überprüfung, fügen Sie Kontextkommentare hinzu und verfolgen Sie jede Änderung in Echtzeit.",
+        "feature1": "Sicheres Dokumenten-Sharing mit Zugriffskontrolle",
+        "feature2": "Inline-Kommentare und Anmerkungen",
+        "feature3": "Versionsverlauf und Änderungsverfolgung"
+      }
+    },
+    "benefits": {
+      "title": "Warum Legal AI?",
+      "subtitle": "Erleben Sie die Zukunft der Rechtsarbeit mit Tools, die entwickelt wurden, um Produktivität und Genauigkeit zu steigern.",
+      "time": {
+        "title": "Stunden täglich sparen",
+        "description": "Reduzieren Sie die Dokumentenerstellungszeit von Stunden auf Minuten. Automatisieren Sie wiederkehrende Aufgaben und konzentrieren Sie sich auf das Wesentliche - hervorragende Rechtsberatung."
+      },
+      "accuracy": {
+        "title": "KI-gestützte Genauigkeit",
+        "description": "Unsere KI ist auf polnische Rechtstexte und Gerichtsentscheidungen trainiert und sorgt für genaue und relevante Ergebnisse, die durch verifizierbare Quellen gestützt werden."
+      },
+      "security": {
+        "title": "Bank-Level-Sicherheit",
+        "description": "Ihre Daten werden Ende-zu-Ende verschlüsselt und niemals an Dritte weitergegeben. Wir beachten die höchsten Standards für Datenschutz und Vertraulichkeit."
+      }
+    },
+    "testimonials": {
+      "title": "Erfolgsgeschichten",
+      "subtitle": "Sehen Sie, wie Juristen ihre Praxis mit Legal AI transformieren.",
+      "t1": {
+        "quote": "Legal AI hat die Art und Weise, wie ich Fallanalysen durchführe, völlig verändert. Was früher Stunden der Recherche dauerte, dauert jetzt Minuten. Die Fähigkeit der KI, relevante Rechtsgrundlagen zu identifizieren, ist bemerkenswert.",
+        "author": "Anna Kowalski",
+        "role": "Anwältin, Warschau Kanzlei"
+      },
+      "t2": {
+        "quote": "Allein die Dokumentenerstellungsfunktion ist es wert. Ich habe meine Dokumentenerstellungszeit um 70% verkürzt und meine Kunden sind beeindruckt, wie schnell ich professionelle Dokumente liefern kann.",
+        "author": "Michal Nowak",
+        "role": "Unternehmensjurist, Tech Corp"
+      },
+      "t3": {
+        "quote": "Als Solo-Praktiker gibt mir Legal AI Fähigkeiten, die nur großen Firmen zur Verfügung standen. die Rechtssprechungssuche ist unglaublich mächtig und einfach zu bedienen.",
+        "author": "Ewa Wiśniewska",
+        "role": "Rechtsanwältin"
+      }
+    },
+    "cta": {
+      "title": "Bereit, Ihre Rechtspraxis zu transformieren?",
+      "subtitle": "Schließen Sie sich Tausenden von Juristen an, die bereits mit Legal AI Zeit sparen und bessere Ergebnisse erzielen.",
+      "primaryButton": "Kostenlos starten",
+      "secondaryButton": "Demo anfordern",
+      "disclaimer": "Keine Kreditkarte erforderlich. Starten Sie noch heute Ihre kostenlose Testphase."
+    }
+  },
+  "aboutUs": {
+    "navigation": {
+      "howItWorks": "Wie es funktioniert",
+      "howItWorksDescription": "Erfahren Sie, wie Legal AI die Juristische Arbeit Schritt für Schritt transformiert",
+      "aboutUs": "Über Uns",
+      "aboutUsDescription": "Unsere Mission, Geschichte und das Team hinter Legal AI",
+      "features": "Funktionen",
+      "featuresDescription": "Entdecken Sie die leistungsstarken Tools und Möglichkeiten unserer Plattform",
+      "pricing": "Preise",
+      "pricingDescription": "Einfache, transparente Preispläne für jeden Bedarf",
+      "faq": "FAQ",
+      "faqDescription": "Antworten auf häufig gestellte Fragen zu Legal AI",
+      "learnMore": "Mehr erfahren",
+      "backToAbout": "Zurück zu Über Uns"
+    },
+    "hero": {
+      "badge": "Über Uns",
+      "title": "Alles über",
+      "titleHighlight": "Legal AI",
+      "subtitle": "Entdecken Sie unsere Mission, Geschichte und das Team hinter Legal AI."
+    },
+    "mission": {
+      "title": "Unsere Mission",
+      "subtitle": "Juristische Exzellenz für jeden zugänglich machen",
+      "description": "Legal AI wurde mit einem einfachen, aber mächtigen Glauben gegründet: Dass jeder Rechtsprofi und jeder Mensch Zugang zu hochwertigen Rechtstools und -informationen verdient. Wir kombinieren modernste KI-Technologie mit tiefem juristischen Fachwissen, um eine Plattform zu schaffen, die Zeit spart, Kosten senkt und Ergebnisse verbessert.",
+      "values": {
+        "title": "Unsere Grundwerte",
+        "excellence": {
+          "title": "Exzellenz",
+          "description": "Wir streben nach der höchsten Qualität in allem, was wir tun, von KI-Genauigkeit bis Benutzererfahrung."
+        },
+        "integrity": {
+          "title": "Integrität",
+          "description": "Wir glauben an Transparenz, Ehrlichkeit und stellen unsere Benutzer immer an erster Stelle."
+        },
+        "innovation": {
+          "title": "Innovation",
+          "description": "Wir erweitern kontinuierlich die Grenzen dessen, was mit KI im juristischen Bereich möglich ist."
+        },
+        "accessibility": {
+          "title": "Zugänglichkeit",
+          "description": "Wir sind verpflichtet, professionelle Rechtstools für jeden zugänglich zu machen, der sie benötigt."
+        }
+      }
+    },
+    "story": {
+      "title": "Unsere Geschichte",
+      "subtitle": "Von Herausforderung zu Möglichkeit",
+      "founded": "Gegründet 2024",
+      "description": "Legal AI entstand aus einer persönlichen Frustration über die Ineffizienzen und hohen Kosten der traditionellen Juristischen Arbeit. Unsere Gründer mit Hintergründen sowohl im Recht als auch in der Technologie sahen eine Möglichkeit, jüngste Fortschritte in der KI zu nutzen, um die Art und Weise zu transformieren, wie Juristen arbeiten.",
+      "journey": {
+        "title": "Unsere Reise",
+        "step1": {
+          "year": "2024",
+          "title": "Gründung",
+          "description": "Gegründet mit der Vision, Rechtstools zu demokratisieren"
+        },
+        "step2": {
+          "year": "2025",
+          "title": "Beta-Launch",
+          "description": "Geschlossene Beta mit ausgewählten Juristen gestartet"
+        },
+        "step3": {
+          "year": "2026",
+          "title": "Öffentlicher Start",
+          "description": "Plattform für alle Juristen und Einzelpersonen geöffnet"
+        }
+      }
+    },
+    "team": {
+      "title": "Unser Team",
+      "subtitle": "Lernen Sie die Menschen kennen, die die Zukunft des Legal Tech bauen",
+      "description": "Unser Team vereint Expertise aus Recht, Technologie und Wirtschaft, um ein Produkt zu schaffen, das der Juristischen Gemeinschaft wirklich dient.",
+      "members": {
+        "founders": {
+          "title": "Gründer",
+          "description": "Ein vielfältiges Team aus Juristen und KI-Forschern"
+        },
+        "advisors": {
+          "title": "Berater",
+          "description": "Erfahrene Anwälte und Rechtswissenschaftler, die unsere Vision leiten"
+        },
+        "engineers": {
+          "title": "Engineering-Team",
+          "description": "Weltklasse-Entwickler, die robuste KI-gestützte Lösungen entwickeln"
+        }
+      }
+    },
+    "contact": {
+      "title": "Kontaktieren Sie uns",
+      "subtitle": "Wir würden gerne von Ihnen hören",
+      "email": "contact@legalai.example.com",
+      "address": "Warschau, Polen",
+      "socials": {
+        "title": "Folgen Sie uns",
+        "linkedin": "LinkedIn",
+        "twitter": "Twitter",
+        "github": "GitHub"
+      }
+    },
+    "cta": {
+      "title": "Bereit zum Loslegen?",
+      "description": "Schließen Sie sich Tausenden von Juristen an, die ihre Praxis bereits mit Legal AI transformieren.",
+      "getStarted": "Loslegen",
+      "contactUs": "Kontaktieren"
+    }
+  },
+  "features": {
+    "hero": {
+      "badge": "Funktionen",
+      "title": "Leistungsstarke Tools für",
+      "titleHighlight": "Juristen",
+      "subtitle": "Entdecken Sie die umfassende Suite von Funktionen, die entwickelt wurde, um Ihre Juristische Praxis zu transformieren."
+    },
+    "noFeatures": "Keine Funktionen in dieser Kategorie gefunden.",
+    "categories": {
+      "all": "Alle",
+      "core": {
+        "title": "Kernfunktionen",
+        "description": "Wesentliche Tools, die das Fundament unserer Plattform bilden"
+      },
+      "advanced": {
+        "title": "Erweiterte Funktionen",
+        "description": "Leistungsstarke Fähigkeiten für anspruchsvolle Juristische Arbeit"
+      },
+      "collaboration": {
+        "title": "Zusammenarbeit",
+        "description": "Arbeiten Sie nahtlos mit Ihrem Team und Kunden zusammen"
+      },
+      "security": {
+        "title": "Sicherheit & Compliance",
+        "description": "Unternehmenstüchtiger Schutz für Ihre sensiblen Daten"
+      }
+    },
+    "cta": {
+      "title": "Bereit zum Loslegen?",
+      "description": "Erkunden Sie unsere leistungsstarken Funktionen und transformieren Sie Ihre Juristische Praxis noch heute.",
+      "getStarted": "Kostenlos starten"
+    },
+    "navigation": {
+      "backToAbout": "Zurück zu Über Uns"
+    },
+    "features": {
+      "caseAnalysis": {
+        "title": "KI-gestützte Fallanalyse",
+        "description": "Beschreiben Sie Ihre Juristische Situation in einfacher Sprache und erhalten Sie eine umfassende Analyse, die relevante Rechtsgrundlagen, Präzedenzfälle und potenzielle Strategien identifiziert.",
+        "icon": "analysis",
+        "benefits": [
+          "Eingabe in natürlicher Sprache - keine juristische Fachsprache erforderlich",
+          "Identifiziert relevanter Gesetze und Präzedenzfälle",
+          "Vorläufige Fallbewertung",
+          "Schlägt potenzielle Strategien vor"
+        ]
+      },
+      "documentGeneration": {
+        "title": "Intelligente Dokumentenerstellung",
+        "description": "Erstellen Sie professionelle Juristische Dokumente in Minuten mit unserem KI-gestützten Entwurfsmodul. Von Klagen bis Verträgen - machen Sie es gleich richtig.",
+        "icon": "document",
+        "benefits": [
+          "Umfangreiche Vorlagenbibliothek",
+          "KI füllt automatisch basierend auf Falldaten aus",
+          "Vollständig anpassbare Ausgabe",
+          "Unterstützung für mehrere Dokumenttypen"
+        ]
+      },
+      "legalQA": {
+        "title": "Rechtliches Q&A-Assistent",
+        "description": "Stellen Sie komplexe Juristische Fragen und erhalten Sie genaue, zitierte Antworten, die von echten Rechtsquellen gestützt werden. Unsere KI verweist auf aktuelle Vorschriften und Gerichtsentscheidungen.",
+        "icon": "chat",
+        "benefits": [
+          "Abfragen in natürlicher Sprache",
+          "Verifizierte Rechtszitate",
+          "Quellenverifizierung mit direkten Links",
+          "Kontextbewusste Antworten"
+        ]
+      },
+      "caseLawSearch": {
+        "title": "Rechtsprechungsforschung",
+        "description": "Durchsuchen Sie tausende polnische Gerichtsentscheidungen und Rechtsakte sofort. Filtern Sie nach Gerichtstyp, Datum, Relevanz und mehr.",
+        "icon": "search",
+        "benefits": [
+          "Suche über mehrere Rechtsdatenbanken",
+          "Erweiterte Filteroptionen",
+          "Direkter Zugriff auf Volltexte",
+          "Relevanz-gerechte Ergebnisse"
+        ]
+      },
+      "documentSharing": {
+        "title": "Sicheres Dokumenten-Sharing",
+        "description": "Teilen Sie Dokumente sicher mit Kollegen und Kunden. Kontrollieren Sie Zugriffsberechtigungen und verfolgen Sie, wer was und wann angesehen hat.",
+        "icon": "share",
+        "benefits": [
+          "Granulare Zugriffskontrolle",
+          "Aktivitätsverfolgung und Audit-Logs",
+          "Sicheres verschlüsseltes Teilen",
+          "Ablaufoptionen"
+        ]
+      },
+      "comments": {
+        "title": "Zusammenarbeitskommentare",
+        "description": "Fügen Sie kontextbewusste Kommentare direkt in Dokumenten hinzu. Arbeiten Sie in Echtzeit mit Ihrem Team an Fallstrategien und Dokumentenrevisionen zusammen.",
+        "icon": "comment",
+        "benefits": [
+          "Inline-Textkommentare",
+          "Gegliederte Diskussionen",
+          "Auflösungsverfolgung",
+          "Echtzeit-Zusammenarbeit"
+        ]
+      },
+      "versionHistory": {
+        "title": "Versionshistorie",
+        "description": "Verfolgen Sie jede Änderung an Ihren Dokumenten. Vergleichen Sie Versionen, kehren Sie zu früheren Zuständen zurück und führen Sie ein vollständiges Audit-Trail.",
+        "icon": "history",
+        "benefits": [
+          "Vollständige Änderungsverfolgung",
+          "Versionsvergleich",
+          "Ein-Klick-Zurücksetzen",
+          "Vollständiger Audit-Trail"
+        ]
+      },
+      "templates": {
+        "title": "Dokumentvorlagen",
+        "description": "Zugang zu unserer umfangreichen Bibliothek professionell erstellter Juristischer Dokumentvorlagen. Passen Sie sie für Ihre spezifischen Bedürfnisse an.",
+        "icon": "template",
+        "benefits": [
+          "Hunderte von Vorlagen",
+          "Mehrere Dokumentkategorien",
+          "Anpassbare Variablen",
+          "Regelmäßig aktualisiert"
+        ]
+      },
+      "encryption": {
+        "title": "Ende-zu-Ende-Verschlüsselung",
+        "description": "Ihre Daten werden im Ruhezustand und während der Übertragung mit branchenüblichen Verschlüsselungsprotokollen verschlüsselt.",
+        "icon": "lock",
+        "benefits": [
+          "AES-256-Verschlüsselung im Ruhezustand",
+          "TLS 1.3 während der Übertragung",
+          "Null-Kenntnis-Architektur",
+          "Regelmäßige Sicherheitsaudits"
+        ]
+      },
+      "compliance": {
+        "title": "DSGVO-konform",
+        "description": "Wir sind vollständig konform mit der DSGVO und anderen Datenschutzvorschriften. Ihre Daten werden mit größter Sorgfalt behandelt.",
+        "icon": "shield",
+        "benefits": [
+          "Volle DSGVO-Konformität",
+          "Datenverarbeitungsvereinbarungen",
+          "Recht auf Exportieren/Löschen von Daten",
+          "Transparente Datenschutzrichtlinie"
+        ]
+      }
+    }
+  },
+  "pricing": {
+    "hero": {
+      "badge": "Preise",
+      "title": "Einfache, transparente",
+      "titleHighlight": "Preise",
+      "subtitle": "Wählen Sie den Plan, der zu Ihren Bedürfnissen passt. Upgrade oder Downgrade jederzeit."
+    },
+    "popular": "Beliebt",
+    "month": "Monat",
+    "included": "Enthalten",
+    "excluded": "Nicht enthalten",
+    "forever": "für immer",
+    "customPricing": "Individuell",
+    "toggle": {
+      "monthly": "Monatlich",
+      "yearly": "Jährlich",
+      "save": "20% sparen"
+    },
+    "plans": {
+      "free": {
+        "name": "Kostenlos",
+        "description": "Perfekt für den Start",
+        "price": "0",
+        "period": "für immer",
+        "cta": "Loslegen",
+        "features": {
+          "included": [
+            "5 Dokumente pro Monat",
+            "Grundlegende Fallanalyse",
+            "Eingeschränkte juristische Q&A-Abfragen",
+            "Community-Support",
+            "Standardvorlagen"
+          ],
+          "excluded": [
+            "Erweiterte Suchfilter",
+            "Dokumenten-Sharing",
+            "Versionshistorie",
+            "Prioritäts-Support",
+            "Benutzerdefinierte Vorlagen"
+          ]
+        }
+      },
+      "professional": {
+        "name": "Professionell",
+        "description": "Für Juristen",
+        "price": "49",
+        "period": "pro Monat",
+        "cta": "Kostenlose Testversion starten",
+        "popular": true,
+        "features": {
+          "included": [
+            "Unbegrenzte Dokumente",
+            "Erweiterte Fallanalyse",
+            "Unbegrenztes juristisches Q&A",
+            "Prioritäts-E-Mail-Support",
+            "Alle Vorlagen enthalten",
+            "Dokumenten-Sharing",
+            "Versionshistorie",
+            "Erweiterte Suchfilter"
+          ],
+          "excluded": [
+            "API-Zugang",
+            "White-Label-Optionen",
+            "Dedicated Account Manager"
+          ]
+        }
+      },
+      "team": {
+        "name": "Team",
+        "description": "Für Kanzleien und Teams",
+        "price": "149",
+        "period": "pro Benutzer/Monat",
+        "cta": "Vertrieb kontaktieren",
+        "features": {
+          "included": [
+            "Alles in Professionell",
+            "Zentralisierte Teamverwaltung",
+            "Geteilte Dokumentenbibliothek",
+            "Team-Analytics-Dashboard",
+            "Zusammenarbeitstools",
+            "API-Zugang",
+            "Benutzerdefinierte Branding-Optionen"
+          ],
+          "excluded": [
+            "On-Premise-Bereitstellung",
+            "Benutzerdefiniertes SLA"
+          ]
+        }
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "description": "Für große Organisationen",
+        "price": "Individuell",
+        "period": "",
+        "cta": "Vertrieb kontaktieren",
+        "features": {
+          "included": [
+            "Alles in Team",
+            "Unbegrenzte Teammitglieder",
+            "SSO/SAML-Authentifizierung",
+            "Erweiterte Sicherheitskontrollen",
+            "Dedicated Account Manager",
+            "Benutzerdefiniertes SLA",
+            "On-Premise-Option"
+          ],
+          "excluded": []
+        }
+      }
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "items": [
+        {
+          "question": "Kann ich Pläne jederzeit ändern?",
+          "answer": "Ja, Sie können Ihren Plan jederzeit upgraden oder downgraden. Änderungen werden sofort wirksam, und wir verhältnismäßig alle Gebühren."
+        },
+        {
+          "question": "Welche Zahlungsmethoden akzeptieren Sie?",
+          "answer": "Wir akzeptieren alle gängigen Kreditkarten, einschließlich Visa, Mastercard und American Express. Für Enterprise-Pläne unterstützen wir auch Banküberweisungen."
+        },
+        {
+          "question": "Gibt es eine kostenlose Testversion für kostenpflichtige Pläne?",
+          "answer": "Ja! Wir bieten eine 14-tägige kostenlose Testversion für die Pläne Professionell und Team an. Keine Kreditkarte erforderlich, um zu starten."
+        },
+        {
+          "question": "Bieten Sie Rabatte für Non-Profits oder Akademiker an?",
+          "answer": "Ja, wir bieten spezielle Preise für qualifizierte gemeinnützige Organisationen, akademische Institutionen und Rechtshilfeorganisationen. Kontaktieren Sie uns für Details."
+        },
+        {
+          "question": "Was passiert mit meinen Daten, wenn ich kündige?",
+          "answer": "Sie können alle Ihre Daten vor der Kündigung exportieren. Wir behalten Ihre Daten 30 Tage nach der Kündigung, danach werden sie dauerhaft gelöscht."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Bereit zum Loslegen?",
+      "description": "Wählen Sie den Plan, der am besten zu Ihnen passt, und beginnen Sie noch heute, Ihre Juristische Praxis zu transformieren.",
+      "getStarted": "Kostenlos starten"
+    },
+    "navigation": {
+      "backToAbout": "Zurück zu Über Uns"
+    }
+  },
+  "faqPage": {
+    "hero": {
+      "badge": "FAQ",
+      "title": "Häufig gestellte",
+      "titleHighlight": "Fragen",
+      "subtitle": "Finden Sie Antworten auf häufige Fragen zu Legal AI. Können Sie nicht finden, was Sie suchen? Kontaktieren Sie unser Support-Team."
+    },
+    "categories": {
+      "general": "Allgemein",
+      "pricing": "Preise & Abrechnung",
+      "features": "Funktionen & Möglichkeiten",
+      "security": "Sicherheit & Privatsphäre",
+      "technical": "Technischer Support"
+    },
+    "questions": {
+      "general": {
+        "title": "Allgemeine Fragen",
+        "items": [
+          {
+            "question": "Was ist Legal AI?",
+            "answer": "Legal AI ist eine KI-gestützte Rechtsplattform, die Juristen und Einzelpersonen hilft, Dokumente zu erstellen, Fälle zu analysieren, Rechtsprechung zu recherchieren und Antworten auf Juristische Fragen zu erhalten. Unsere Plattform verwendet fortschrittliche KI, die auf polnischen Rechtstexten und Gerichtsentscheidungen trainiert wurde."
+          },
+          {
+            "question": "Für wen ist Legal AI?",
+            "answer": "Legal AI ist für Juristen (Anwälte, Unternehmensjuristen, Paralegals), Jurastudenten und Einzelpersonen konzipiert, die Hilfe bei Juristischen Angelegenheiten benötigen. Unsere Tools sind professionell, aber für jeden zugänglich."
+          },
+          {
+            "question": "Ist Legal AI ein Ersatz für einen Anwalt?",
+            "answer": "Nein. Legal AI ist ein Tool, das Juristen hilft, effizienter zu arbeiten, und Einzelpersonen Informationen liefert. Es ist kein Ersatz für professionelle Rechtsberatung. Wir empfehlen immer, einen qualifizierten Anwalt für Juristische Angelegenheiten zu konsultieren."
+          },
+          {
+            "question": "Sind meine Daten sicher?",
+            "answer": "Absolut. Wir verwenden Verschlüsselung auf Bankniveau (AES-256) und sind vollständige DSGVO-konform. Ihre Daten werden niemals an Dritte weitergegeben, und wir erhalten die höchsten Standards für Datenschutz und Vertraulichkeit."
+          },
+          {
+            "question": "Wie genau ist die KI?",
+            "answer": "Unsere KI wird auf Tausenden von polnischen Rechtstexten und Gerichtsentscheidungen trainiert und bietet hohe Genauigkeit. KI-generierte Inhalte sollten jedoch immer von einem qualifizierten Juristen vor der Verwendung in offiziellen Verfahren überprüft werden."
+          }
+        ]
+      },
+      "pricing": {
+        "title": "Preise & Abrechnung",
+        "items": [
+          {
+            "question": "Was ist im Kostenlos-Plan enthalten?",
+            "answer": "Der Kostenlos-Plan enthält 5 Dokumente pro Monat, grundlegende Fallanalyse, eingeschränkte juristische Q&A-Abfragen, Zugang zu Standardvorlagen und Community-Support."
+          },
+          {
+            "question": "Kann ich mein Abonnement jederzeit kündigen?",
+            "answer": "Ja, Sie können Ihr Abonnement jederzeit kündigen. Ihr Zugriff dauert bis zum Ende Ihres Abrechnungszeitraums, danach werden Sie nicht mehr belastet."
+          },
+          {
+            "question": "Bieten Sie Rückerstattungen an?",
+            "answer": "Wir bieten eine 14-tägige Geld-zurück-Garantie für alle kostenpflichtigen Pläne. Wenn Sie nicht zufrieden sind, kontaktieren Sie unser Support-Team innerhalb von 14 Tagen für eine vollständige Rückerstattung."
+          },
+          {
+            "question": "Gibt es versteckte Gebühren?",
+            "answer": "Nein. Alle Preise sind transparent und vorne angezeigt. Es gibt keine Einrichtungsgebühren, Kündigungsgebühren oder versteckten Kosten."
+          }
+        ]
+      },
+      "features": {
+        "title": "Funktionen & Möglichkeiten",
+        "items": [
+          {
+            "question": "Welche Arten von Dokumenten kann ich erstellen?",
+            "answer": "Legal AI unterstützt eine Vielzahl von Dokumenttypen, einschließlich Klagen, Beschwerden, Verträge, Anträge und offizielle Briefe. Unsere Vorlagenbibliothek wird ständig erweitert."
+          },
+          {
+            "question": "Kann ich die erstellten Dokumente anpassen?",
+            "answer": "Ja, alle erstellten Dokumente sind vollständig bearbeitbar. Sie können jeden Teil des Dokuments ändern, Abschnitte hinzufügen oder entfernen und die Formatierung an Ihre spezifischen Bedürfnisse anpassen."
+          },
+          {
+            "question": "Wie funktioniert die Fallanalyse-Funktion?",
+            "answer": "Beschreiben Sie einfach Ihre Juristische Situation in einfacher Sprache. Unsere KI analysiert Ihre Beschreibung und identifiziert relevante Rechtsgrundlagen, anwendbare Gesetze, potenzielle Präzedenzfälle und schlägt Strategien vor, basierend auf polnischen Rechtstexten und Gerichtsentscheidungen."
+          },
+          {
+            "question": "Kann ich Dokumente mit meinem Team teilen?",
+            "answer": "Ja, in den Team- und Enterprise-Plänen können Sie Dokumente mit Teammitgliedern teilen, Zugriffsberechtigungen festlegen und in Echtzeit mit Kommentaren und Versionshistorie zusammenarbeiten."
+          }
+        ]
+      },
+      "security": {
+        "title": "Sicherheit & Privatsphäre",
+        "items": [
+          {
+            "question": "Ist Legal AI DSGVO-konform?",
+            "answer": "Ja, Legal AI ist vollständige DSGVO-konform. Wir haben umfassende Datenschutzmaßnahmen implementiert, stellen Datenverarbeitungsvereinbarungen bereit und respektieren alle Benutzerrechte unter der DSGVO."
+          },
+          {
+            "question": "Verwenden Sie meine Daten, um Ihre KI zu trainieren?",
+            "answer": "Wir können anonymisierte, aggregierte Daten verwenden, um unsere KI-Modelle zu verbessern. Wir verwenden niemals Ihre spezifischen Dokumente oder persönlichen Informationen ohne ausdrückliche Zustimmung. Details finden Sie in unserer Datenschutzrichtlinie."
+          },
+          {
+            "question": "Wo werden meine Daten gespeichert?",
+            "answer": "Daten werden in sicheren Rechenzentren innerhalb der Europäischen Union gespeichert, um die Einhaltung der EU-Datenschutzvorschriften zu gewährleisten."
+          },
+          {
+            "question": "Kann ich meine Daten exportieren?",
+            "answer": "Ja, Sie können alle Ihre Dokumente und Daten jederzeit über Ihre Kontoeinstellungen exportieren."
+          }
+        ]
+      },
+      "technical": {
+        "title": "Technischer Support",
+        "items": [
+          {
+            "question": "Muss ich etwas installieren?",
+            "answer": "Nein. Legal AI ist eine webbasierte Plattform, die in jedem modernen Browser funktioniert. Es gibt nichts zu installieren oder zu aktualisieren."
+          },
+          {
+            "question": "Gibt es eine API?",
+            "answer": "Ja, Team- und Enterprise-Pläne enthalten API-Zugang für programmatische Integration mit Ihren bestehenden Systemen."
+          },
+          {
+            "question": "Welche Browser werden unterstützt?",
+            "answer": "Legal AI unterstützt alle modernen Browser einschließlich Chrome, Firefox, Safari und Edge. Wir empfehlen die neueste Version für die beste Erfahrung."
+          },
+          {
+            "question": "Wie erhalte ich technischen Support?",
+            "answer": "Benutzer des Kostenlos-Plans können auf unsere Community-Foren und Wissensdatenbank zugreifen. Benutzer der Professional- und Team-Pläne erhalten Prioritäts-E-Mail-Support. Enterprise-Benutzer erhalten dedizierten Support mit garantierten Reaktionszeiten."
+          }
+        ]
+      }
+    },
+    "contact": {
+      "title": "Haben Sie noch Fragen?",
+      "description": "Unser Support-Team ist da, um zu helfen",
+      "email": "support@legalai.example.com",
+      "cta": "Support kontaktieren"
+    },
+    "navigation": {
+      "backToAbout": "Zurück zu Über Uns"
+    },
+    "questions": "Fragen"
+  },
+  "interest": {
+    "hero": {
+      "badge": "Frühzugang-Interesse",
+      "title": "Frühzugang anfordern zu",
+      "highlight": "Legal AI",
+      "subtitle": "Schließen Sie sich unserem exklusiven Frühzugangsprogramm an und gehören Sie zu den Ersten, die die Zukunft der Rechtstechnologie erleben. Keine Verpflichtung—nur echtes Interesse.",
+      "trustBadge": "Bereits vertraut von über 2.500 Rechtsprofis"
+    },
+    "valueProp": {
+      "title": "Warum Frühzugang beitreten?",
+      "subtitle": "Erhalten Sie exklusive Vorteile als früher Adopter und helfen Sie, die Zukunft der KI im Rechtswesen zu gestalten.",
+      "benefits": {
+        "exclusiveFeatures": {
+          "title": "Exklusive Funktionen",
+          "description": "Erhalten Sie als Erster Zugang zu modernsten KI-Funktionen vor der öffentlichen Veröffentlichung. Ihr Feedback beeinflusst direkt die Produktentwicklung.",
+          "features": [
+            "Frühzugang zu neuen KI-Modellen",
+            "Beta-Funktionen vor dem öffentlichen Launch",
+            "Direkte Einflussnahme auf die Produkt-Roadmap"
+          ]
+        },
+        "pricingBenefits": {
+          "title": "Sonderkonditionen",
+          "description": "Frühe Adopter genießen gesperrte Werbepreise, die nach dem Launch nicht mehr verfügbar sein werden.",
+          "features": [
+            "Lebenslanger Rabatt für frühe Mitglieder",
+            "Flexible Zahlungsbedingungen",
+            "Keine Kreditkarte erforderlich für den Beitritt"
+          ]
+        },
+        "prioritySupport": {
+          "title": "Prioritäts-Support",
+          "description": "Erhalten Sie dedizierte Hilfe von unserem Team, wann immer Sie Unterstützung benötigen.",
+          "features": [
+            "Direkter Zugang zum Produktteam",
+            "Prioritätsantwortzeiten",
+            "Persönliche Onboarding-Sitzung"
+          ]
+        }
+      }
+    },
+    "whatToExpect": {
+      "title": "Was als Nächstes passiert",
+      "subtitle": "Transparenz ist der Schlüssel. Hier erfahren Sie genau, was nach der Anmeldung erwartet.",
+      "steps": {
+        "confirmation": {
+          "title": "Sofortige Bestätigung",
+          "description": "Erhalten Sie sofortige Bestätigung mit Details zum Programm und was als Nächstes kommt."
+        },
+        "updates": {
+          "title": "Regelmäßige Produkt-Updates",
+          "description": "Erhalten Sie monatliche Newsletter mit Feature-Vorschauen, Entwicklungsfortschritten und Einblicke hinter die Kulissen."
+        },
+        "invitation": {
+          "title": "Personalisierte Einladung",
+          "description": "Wenn Ihr Platz frei wird, senden wir eine persönliche Einladung mit Einrichtungsanweisungen und einem herzlichen Willkommen."
+        },
+        "timeline": {
+          "title": "Faire Zugangszeitschiene",
+          "description": "Wir gewähren Zugang in Chargen, um Qualität zu gewährleisten. Aktuelle Schätzung: 2-8 Wochen basierend auf Ihrem Profil und Anwendungsfall."
+        }
+      }
+    },
+    "socialProof": {
+      "title": "Was frühe Nutzer sagen",
+      "waitlist": "Schließen Sie sich über 2.500 Profis auf der Frühzugangs-Liste an",
+      "testimonial1": {
+        "quote": "Das Frühzugangsprogramm war unglaublich. Das Team hört wirklich auf Feedback und implementiert Änderungen schnell.",
+        "author": "Sarah Müller",
+        "role": "Anwältin, Müller & Partner"
+      },
+      "testimonial2": {
+        "quote": "Ich war anfangs skeptisch, aber die KI-gestützte Dokumentenerstellung hat mir bereits jede Woche Stunden gespart.",
+        "author": "Thomas Weber",
+        "role": "Unternehmensjurist, TechCorp"
+      },
+      "testimonial3": {
+        "quote": "Das personalisierte Onboarding hat den Unterschied gemacht. Ich fühlte mich ab Tag eins unterstützt.",
+        "author": "Maria Schmidt",
+        "role": "Freiberufliche Anwältin"
+      }
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "item1": {
+        "question": "Ist das anders als eine Demo-Anfrage?",
+        "answer": "Ja! Eine Demo zeigt das Produkt wie es heute existiert. Frühzugangs-Interesse bedeutet, dass Sie benachrichtigt werden möchten, wenn neue Funktionen verfügbar sind, und möglicherweise Beta-Zugang vor der Öffentlichkeit erhalten. Es gibt kein Verkaufsgespräch—nur echtes Interesse an zukünftigen Fähigkeiten."
+      },
+      "item2": {
+        "question": "Wann erhalte ich Zugang?",
+        "answer": "Wir gewähren Frühzugang in Phasen über die nächsten Monate. Die Zeitschiene hängt von Ihrem Anwendungsfall und der aktuellen Kapazität ab. Die meisten Benutzer erhalten innerhalb von 2-8 Wochen Zugang. Wir halten Sie den ganzen Prozess über auf dem Laufenden."
+      },
+      "item3": {
+        "question": "Ist der Frühzugang kostenlos?",
+        "answer": "Ja! Der Frühzugang enthält eine kostenlose Testphase mit vollem Funktionszugang. Nach der Testphase erhalten frühe Adopter exklusive Rabattpreise. Es besteht keine Verpflichtung zur Fortsetzung, wenn es nicht richtig für Sie ist."
+      },
+      "item4": {
+        "question": "Welche Funktionen sind im Frühzugang enthalten?",
+        "answer": "Der Frühzugang enthält unseren vollständigen Funktionsumfang: KI-gestützte Dokumentenerstellung, Fallanalyse, Rechts-Q&A, Rechtsprechungssuche und Kollaborationstools. Sie erhalten auch Vorschau-Zugang zu Funktionen, die noch in Entwicklung sind."
+      },
+      "item5": {
+        "question": "Kann ich den Frühzugang für Kundenarbeit verwenden?",
+        "answer": "Ja, aber wir empfehlen, KI-generierte Inhalte zu überprüfen wie bei jedem Rechts-tool. Der Frühzugang ist produktionsbereit und viele unserer Nutzer verwenden ihn bereits für Kundenangelegenheiten. Üben Sie immer professionelles Urteilsvermögen."
+      },
+      "item6": {
+        "question": "Was passiert, wenn ich meine Meinung ändere?",
+        "answer": "Kein Problem! Sie können jederzeit mit einem Klick abmelden. Es gibt keine Verpflichtung und wir werden Sie nicht unter Druck setzen. Ihr Interesse hilft uns bei der Planung, aber Sie können jederzeit gehen."
+      }
+    },
+    "form": {
+      "title": "Frühzugang beitreten",
+      "subtitle": "Füllen Sie dieses Formular aus, um Ihr Interesse zu bekunden. Keine Verkaufsgespräche, nur Informationen.",
+      "submit": "Frühzugang anfordern",
+      "submitting": "Wird gesendet...",
+      "privacyNotice": "Durch Absendung stimmen Sie zu, Produkt-Updates zu erhalten. Ihre Daten sind sicher und werden niemals geteilt.",
+      "fields": {
+        "name": "Vollständiger Name",
+        "email": "E-Mail-Adresse",
+        "company": "Unternehmen oder Kanzlei (Optional)",
+        "role": "Position oder Titel",
+        "useCase": "Was interessiert Sie am meisten an Legal AI?",
+        "source": "Wie sind Sie auf uns aufmerksam geworden?"
+      },
+      "placeholders": {
+        "name": "z.B. Sarah Müller",
+        "email": "sarah@beispiel.de",
+        "company": "z.B. Müller & Partner GbR",
+        "role": "z.B. Anwalt, Rechtsanwalt, Unternehmensjurist",
+        "useCase": "Erzählen Sie uns, welche Funktionen Sie am meisten interessieren...",
+        "source": "Wählen Sie eine Option"
+      },
+      "sources": {
+        "searchEngine": "Suchmaschine (Google usw.)",
+        "socialMedia": "Soziale Medien (LinkedIn, Twitter)",
+        "referral": "Empfehlung eines Kollegen",
+        "event": "Konferenz oder Veranstaltung",
+        "article": "Artikel oder Publikation",
+        "other": "Andere"
+      },
+      "errors": {
+        "nameRequired": "Name ist erforderlich",
+        "emailRequired": "E-Mail ist erforderlich",
+        "emailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "useCaseRequired": "Bitte teilen Sie mit, was Sie interessiert"
+      },
+      "success": {
+        "title": "Sie sind auf der Liste!",
+        "message": "Danke für Ihr Interesse am Frühzugang zu Legal AI. Wir werden uns bald mit Updates und Ihrer persönlichen Einladung melden. Überprüfen Sie in der Zwischenzeit Ihre E-Mails für eine Willkommensnachricht mit weiteren Details.",
+        "nextSteps": "Was als Nächstes:",
+        "step1": "Überprüfen Sie Ihren Posteingang auf eine Bestätigungs-E-Mail",
+        "step2": "Achten Sie auf monatliche Produkt-Updates",
+        "step3": "Erhalten Sie Ihre persönliche Einladung, wenn Sie bereit sind",
+        "backButton": "Zurück zur Startseite"
+      }
+    },
+    "bottomCta": {
+      "title": "Bereit, die Zukunft der Rechtstechnologie zu gestalten?",
+      "subtitle": "Schließen Sie Sie sich unserer Community früher Adopter an und erhalten Sie exklusiven Zugang zu den Tools, die die Rechtspraxis verändern werden.",
+      "button": "Jetzt Frühzugang anfordern"
+    }
   }
 }

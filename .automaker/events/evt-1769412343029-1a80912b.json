@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769412343029-1a80912b",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T07:25:43.029Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "interest-confirmation-email",
+  "featureName": "Send Confirmation Email for Interest Registration",
+  "error": "Feature completed in 836s - auto-verified",
+  "passes": true
+}

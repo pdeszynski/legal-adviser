@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769366212886-ddecc1ef",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T18:36:52.886Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "investigate-two-factor-settings-ui-integration",
+  "featureName": "Investigate Two-Factor Auth Settings UI Integration",
+  "error": "Feature completed in 674s - auto-verified",
+  "passes": true
+}

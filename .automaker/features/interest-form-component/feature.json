@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Update/create the interest registration form component to integrate with GraphQL API and HubSpot. Component should: 1) Support both standalone form (GraphQL mutation to submitInterestRequest) and HubSpot embedded form mode, 2) Include form fields: full name (required), email (required with validation), company (optional), role/title (optional), use case/interest (optional textarea), how did you hear about us (dropdown: Social Media, Search, Friend/Colleague, Event, Other), 3) Implement GDPR consent checkbox (required) explaining data is sent to HubSpot CRM, 4) Validate form inputs using zod schemas matching backend validation, 5) On submit: sync to HubSpot via GraphQL mutation (submitInterestRequest), 6) Show success confirmation view with thank you message and 'We'll be in touch soon' text, 7) Handle errors gracefully with retry option and user-friendly error messages, 8) Implement loading state during submission with disabled submit button, 9) Add analytics tracking events: form_view, form_submit_start, form_submit_success, form_submit_error, 10) Store submitted email in localStorage to show 'already requested' state if user returns. Do NOT show any demo-related language.",
+  "id": "interest-form-component",
+  "title": "Create Interest Registration Form Component",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Update/create the interest registration form component to integrate with GraphQL API and HubSpot. Component should: 1) Support both standalone form (GraphQL mutation to submitInterestRequest) and HubSpot embedded form mode, 2) Include form fields: full name (required), email (required with validation), company (optional), role/title (optional), use case/interest (optional textarea), how did you hear about us (dropdown: Social Media, Search, Friend/Colleague, Event, Other), 3) Implement GDPR consent checkbox (required) explaining data is sent to HubSpot CRM, 4) Validate form inputs using zod schemas matching backend validation, 5) On submit: sync to HubSpot via GraphQL mutation (submitInterestRequest), 6) Show success confirmation view with thank you message and 'We'll be in touch soon' text, 7) Handle errors gracefully with retry option and user-friendly error messages, 8) Implement loading state during submission with disabled submit button, 9) Add analytics tracking events: form_view, form_submit_start, form_submit_success, form_submit_error, 10) Store submitted email in localStorage to show 'already requested' state if user returns. Do NOT show any demo-related language.",
+      "timestamp": "2026-01-26T05:45:27.229Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-26T07:41:45.858Z"
+}

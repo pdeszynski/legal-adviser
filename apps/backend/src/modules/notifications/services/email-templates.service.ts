@@ -25,6 +25,8 @@ export class EmailTemplatesService {
         return this.renderSystemNotificationEmail(data);
       case EmailTemplateType.DEMO_REQUEST_CONFIRMATION:
         return this.renderDemoRequestConfirmationEmail(data);
+      case EmailTemplateType.INTEREST_CONFIRMATION:
+        return this.renderInterestConfirmationEmail(data);
       default:
         throw new Error(`Unknown email template: ${template}`);
     }
@@ -475,5 +477,152 @@ This is an automated message, please do not reply to this email.
     };
 
     return timelineMessages[timeline] || timelineMessages.EXPLORING;
+  }
+
+  /**
+   * Interest confirmation email template
+   * Sent to users who submit interest registration for early access
+   */
+  private renderInterestConfirmationEmail(data: Record<string, any>): {
+    subject: string;
+    html: string;
+    text: string;
+  } {
+    const { firstName, email, referenceId } = data;
+    const displayName = firstName || email?.split('@')[0] || 'there';
+    const frontendUrl = data.frontendUrl || 'http://localhost:3000';
+
+    return {
+      subject: 'Welcome to the Early Access Waitlist - Legal AI Platform',
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; padding: 30px 20px; text-align: center; border-radius: 5px 5px 0 0; }
+              .content { background-color: #f9fafb; padding: 30px; border-radius: 0 0 5px 5px; }
+              .button { display: inline-block; padding: 14px 28px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+              .info-box { background-color: white; padding: 20px; border-left: 4px solid #2563eb; margin: 20px 0; border-radius: 4px; }
+              .section-title { color: #1e40af; font-size: 18px; font-weight: bold; margin-top: 25px; margin-bottom: 10px; }
+              .link-list { list-style: none; padding: 0; }
+              .link-list li { padding: 8px 0; border-bottom: 1px solid #e5e7eb; }
+              .link-list li:last-child { border-bottom: none; }
+              .link-list a { color: #2563eb; text-decoration: none; font-weight: 500; }
+              .link-list a:hover { text-decoration: underline; }
+              .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; border-top: 1px solid #e5e7eb; margin-top: 20px; }
+              .social-links { margin-top: 15px; }
+              .social-links a { margin: 0 10px; color: #6b7280; text-decoration: none; }
+              .reference-box { background-color: #eff6ff; padding: 12px; border-radius: 4px; font-size: 13px; color: #1e40af; margin-top: 20px; }
+              .highlight { background-color: #dbeafe; padding: 2px 6px; border-radius: 3px; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>You're on the List! 🎉</h1>
+              </div>
+              <div class="content">
+                <h2>Hi ${displayName},</h2>
+                <p>Thank you for your interest in <span class="highlight">Legal AI Platform</span>! We're excited to have you join our early access waitlist.</p>
+
+                <div class="info-box">
+                  <p><strong>Your Reference ID:</strong> ${referenceId}</p>
+                  <p><strong>Email:</strong> ${email}</p>
+                </div>
+
+                <div class="section-title">What Happens Next?</div>
+                <p>Here's what you can expect as we prepare for launch:</p>
+                <ul style="line-height: 1.8;">
+                  <li><strong>Early Access:</strong> We'll send invitations on a rolling basis as spots become available</li>
+                  <li><strong>Product Updates:</strong> You'll receive exclusive updates on our progress and new features</li>
+                  <li><strong>Beta Opportunities:</strong> Selected waitlist members will get early access to test new features</li>
+                  <li><strong>Launch Notification:</strong> Be among the first to know when we officially launch</li>
+                </ul>
+
+                <div class="section-title">Stay Connected</div>
+                <p>While you wait, explore our resources and stay updated:</p>
+                <ul class="link-list">
+                  <li><a href="${frontendUrl}/docs">📚 Documentation</a> - Learn about our platform's capabilities</li>
+                  <li><a href="${frontendUrl}/about/features">✨ Features</a> - Discover what makes us different</li>
+                  <li><a href="${frontendUrl}/about/how-it-works">🔧 How It Works</a> - See our AI in action</li>
+                  <li><a href="${frontendUrl}/about/pricing">💰 Pricing</a> - Transparent plans for every team size</li>
+                </ul>
+
+                <div class="section-title">Join Our Community</div>
+                <p>Follow us for product updates, legal tech insights, and early access opportunities:</p>
+                <p class="social-links">
+                  <a href="https://twitter.com/legalai">Twitter</a> •
+                  <a href="https://linkedin.com/company/legalai">LinkedIn</a> •
+                  <a href="https://github.com/legalai">GitHub</a>
+                </p>
+
+                <div class="reference-box">
+                  <strong>Reference ID:</strong> ${referenceId}<br>
+                  Save this for your records. If you have questions, mention this ID when contacting us.
+                </div>
+
+                <p style="margin-top: 20px; color: #6b7280; font-size: 13px;">
+                  Questions? Just reply to this email or contact us at <a href="mailto:support@legal-ai.com" style="color: #2563eb;">support@legal-ai.com</a>
+                </p>
+              </div>
+              <div class="footer">
+                <p>Legal AI Platform - Your AI-Powered Legal Assistant</p>
+                <p>This is an automated message, please do not reply to this email.</p>
+                <p style="margin-top: 10px;">
+                  <a href="${frontendUrl}/unsubscribe?email=${encodeURIComponent(email)}" style="color: #6b7280;">Unsubscribe from marketing emails</a>
+                </p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
+      text: `
+Welcome to the Early Access Waitlist!
+
+Hi ${displayName},
+
+Thank you for your interest in Legal AI Platform! We're excited to have you join our early access waitlist.
+
+YOUR REFERENCE ID: ${referenceId}
+Email: ${email}
+
+WHAT HAPPENS NEXT?
+
+Here's what you can expect as we prepare for launch:
+
+- Early Access: We'll send invitations on a rolling basis as spots become available
+- Product Updates: You'll receive exclusive updates on our progress and new features
+- Beta Opportunities: Selected waitlist members will get early access to test new features
+- Launch Notification: Be among the first to know when we officially launch
+
+STAY CONNECTED
+
+While you wait, explore our resources:
+
+- Documentation: ${frontendUrl}/docs
+- Features: ${frontendUrl}/about/features
+- How It Works: ${frontendUrl}/about/how-it-works
+- Pricing: ${frontendUrl}/about/pricing
+
+JOIN OUR COMMUNITY
+
+Follow us for product updates and legal tech insights:
+- Twitter: https://twitter.com/legalai
+- LinkedIn: https://linkedin.com/company/legalai
+- GitHub: https://github.com/legalai
+
+REFERENCE ID: ${referenceId}
+Save this for your records. If you have questions, mention this ID when contacting us.
+
+Questions? Contact us at support@legal-ai.com
+
+To unsubscribe from marketing emails: ${frontendUrl}/unsubscribe?email=${encodeURIComponent(email)}
+
+Legal AI Platform - Your AI-Powered Legal Assistant
+This is an automated message, please do not reply to this email.
+      `,
+    };
   }
 }

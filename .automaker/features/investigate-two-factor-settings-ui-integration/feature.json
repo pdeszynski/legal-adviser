@@ -1,0 +1,18 @@
+{
+  "category": "bug",
+  "description": "Investigate why enabling two-factor authentication from /settings -> Security tab does nothing. Debug: 1) Verify enableTwoFactorAuth GraphQL mutation is being called when button is clicked, 2) Check browser network tab for GraphQL request/response, 3) Verify frontend has proper mutation hook configured, 4) Check if error is being swallowed or not displayed to user, 5) Verify user is authenticated when making request, 6) Check if TwoFactorSettings component is properly rendered and interactive, 7) Verify GraphQL schema has enableTwoFactorAuth mutation defined. Identify root cause and document findings.",
+  "id": "investigate-two-factor-settings-ui-integration",
+  "title": "Investigate Two-Factor Auth Settings UI Integration",
+  "dependencies": [],
+  "priority": 1,
+  "status": "verified",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Investigate why enabling two-factor authentication from /settings -> Security tab does nothing. Debug: 1) Verify enableTwoFactorAuth GraphQL mutation is being called when button is clicked, 2) Check browser network tab for GraphQL request/response, 3) Verify frontend has proper mutation hook configured, 4) Check if error is being swallowed or not displayed to user, 5) Verify user is authenticated when making request, 6) Check if TwoFactorSettings component is properly rendered and interactive, 7) Verify GraphQL schema has enableTwoFactorAuth mutation defined. Identify root cause and document findings.",
+      "timestamp": "2026-01-25T18:25:36.730Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T18:36:52.871Z"
+}

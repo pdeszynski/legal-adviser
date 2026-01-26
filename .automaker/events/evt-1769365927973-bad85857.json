@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769365927973-bad85857",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T18:32:07.973Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "e2e-test-two-factor-settings-enable-flow",
+  "featureName": "E2E Test for Two-Factor Settings Enable Flow",
+  "error": "Feature completed in 385s - auto-verified",
+  "passes": true
+}

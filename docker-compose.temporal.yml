@@ -42,7 +42,11 @@ services:
       - ./apps/backend/src/modules/temporal/schema/temporal-postgres-init.sql:/docker-entrypoint-initdb.d/01-temporal.sql
     restart: always
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${TEMPORAL_POSTGRES_USER:-temporal} -d ${TEMPORAL_POSTGRES_DB:-temporal}']
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${TEMPORAL_POSTGRES_USER:-temporal} -d ${TEMPORAL_POSTGRES_DB:-temporal}',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -88,7 +92,7 @@ services:
     environment:
       - SERVICES=frontend
       - TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS:-0.0.0.0:7233}
-      - DB=postgresql
+      - DB=postgres12
       - DB_PORT=5432
       - POSTGRES_USER=${TEMPORAL_POSTGRES_USER:-temporal}
       - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD:-change-me-in-production}
@@ -148,7 +152,7 @@ services:
     container_name: temporal-history
     environment:
       - SERVICES=history
-      - DB=postgresql
+      - DB=postgres12
       - DB_PORT=5432
       - POSTGRES_USER=${TEMPORAL_POSTGRES_USER:-temporal}
       - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD:-change-me-in-production}
@@ -197,7 +201,7 @@ services:
     container_name: temporal-matching
     environment:
       - SERVICES=matching
-      - DB=postgresql
+      - DB=postgres12
       - DB_PORT=5432
       - POSTGRES_USER=${TEMPORAL_POSTGRES_USER:-temporal}
       - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD:-change-me-in-production}
@@ -244,7 +248,7 @@ services:
     container_name: temporal-worker
     environment:
       - SERVICES=worker
-      - DB=postgresql
+      - DB=postgres12
       - DB_PORT=5432
       - POSTGRES_USER=${TEMPORAL_POSTGRES_USER:-temporal}
       - POSTGRES_PWD=${TEMPORAL_POSTGRES_PASSWORD:-change-me-in-production}
@@ -330,7 +334,11 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
     restart: always
     healthcheck:
-      test: ['CMD-SHELL', 'wget --no-verbose --tries=1 --spider http://localhost:9090/-/healthy || exit 1']
+      test:
+        [
+          'CMD-SHELL',
+          'wget --no-verbose --tries=1 --spider http://localhost:9090/-/healthy || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 3

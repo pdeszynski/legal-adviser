@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Create a comprehensive 'How It Works' page at /about/how-it-work or /how-it-work to replace the 404 error currently shown when clicking the 'How It Works' button on the landing page. The page should explain the platform's workflow in clear steps: 1) Case Analysis (AI identifies legal grounds from descriptions), 2) Legal Q&A (ask questions and get AI-powered answers with citations), 3) Document Generation (AI creates legal documents based on templates), 4) Case Law Research (search through Polish court rulings and legal acts), 5) Collaboration Tools (share documents, add comments, track changes). Include visual elements like icons, diagrams, or short video clips for each step. Add testimonials or success stories. Provide clear CTAs: 'Get Started Free' or 'Request Demo'. Ensure the page matches the landing page design language and is mobile-responsive. Use shadcn/ui components for consistent styling.",
+  "id": "about-how-it-works-page",
+  "title": "Create 'How It Works' About Page",
+  "dependencies": [],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Create a comprehensive 'How It Works' page at /about/how-it-work or /how-it-work to replace the 404 error currently shown when clicking the 'How It Works' button on the landing page. The page should explain the platform's workflow in clear steps: 1) Case Analysis (AI identifies legal grounds from descriptions), 2) Legal Q&A (ask questions and get AI-powered answers with citations), 3) Document Generation (AI creates legal documents based on templates), 4) Case Law Research (search through Polish court rulings and legal acts), 5) Collaboration Tools (share documents, add comments, track changes). Include visual elements like icons, diagrams, or short video clips for each step. Add testimonials or success stories. Provide clear CTAs: 'Get Started Free' or 'Request Demo'. Ensure the page matches the landing page design language and is mobile-responsive. Use shadcn/ui components for consistent styling.",
+      "timestamp": "2026-01-25T18:35:30.517Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "category": "bug",
+  "description": "Verify and test the existing HubSpot backend integration (hubspot-integration-backend) is properly configured for early access interest signups. Validation tasks: 1) Check HUBSPOT_API_KEY environment variable is set and valid, 2) Verify HubSpotService.createContact() method maps form fields correctly (fullName, email, company, role, useCase, source), 3) Test HubSpot API connectivity by creating a test contact, 4) Verify contact is added to correct HubSpot list (e.g., 'Early Access Interest' not 'Demo Requests'), 5) Check that HubSpot contact properties exist: first_name, last_name, email, company, job_title, use_case, lead_source, 6) Ensure GDPR consent field is captured in HubSpot, 7) Add proper error handling and logging for HubSpot API failures, 8) Implement retry logic for transient API failures. Create unit tests for HubSpotService methods. If backend doesn't exist yet, implement it following the hubspot-integration-backend specification.",
+  "id": "hubspot-interest-backend-validation",
+  "title": "Validate HubSpot Backend Integration for Interest Signups",
+  "dependencies": [],
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Verify and test the existing HubSpot backend integration (hubspot-integration-backend) is properly configured for early access interest signups. Validation tasks: 1) Check HUBSPOT_API_KEY environment variable is set and valid, 2) Verify HubSpotService.createContact() method maps form fields correctly (fullName, email, company, role, useCase, source), 3) Test HubSpot API connectivity by creating a test contact, 4) Verify contact is added to correct HubSpot list (e.g., 'Early Access Interest' not 'Demo Requests'), 5) Check that HubSpot contact properties exist: first_name, last_name, email, company, job_title, use_case, lead_source, 6) Ensure GDPR consent field is captured in HubSpot, 7) Add proper error handling and logging for HubSpot API failures, 8) Implement retry logic for transient API failures. Create unit tests for HubSpotService methods. If backend doesn't exist yet, implement it following the hubspot-integration-backend specification.",
+      "timestamp": "2026-01-26T05:45:27.228Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-26T05:46:46.514Z"
+}

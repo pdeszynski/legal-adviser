@@ -6,6 +6,7 @@ import {
   registerEnumType,
 } from '@nestjs/graphql';
 import { GraphQLISODateTime } from '@nestjs/graphql';
+import { IsString, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
 
 /**
  * Two-Factor Authentication Status
@@ -69,6 +70,10 @@ export class VerifyTwoFactorSetupInput {
   @Field(() => String, {
     description: 'The 6-digit TOTP token from authenticator app',
   })
+  @IsString()
+  @IsNotEmpty({ message: 'TOTP token is required' })
+  @MinLength(6, { message: 'TOTP token must be 6 digits' })
+  @MaxLength(6, { message: 'TOTP token must be 6 digits' })
   token!: string;
 }
 
@@ -80,6 +85,8 @@ export class DisableTwoFactorInput {
   @Field(() => String, {
     description: 'User password for confirmation',
   })
+  @IsString()
+  @IsNotEmpty({ message: 'Password is required' })
   password!: string;
 }
 
@@ -130,6 +137,10 @@ export class VerifyTwoFactorTokenInput {
   @Field(() => String, {
     description: 'The 6-digit TOTP token from authenticator app',
   })
+  @IsString()
+  @IsNotEmpty({ message: 'TOTP token is required' })
+  @MinLength(6, { message: 'TOTP token must be 6 digits' })
+  @MaxLength(6, { message: 'TOTP token must be 6 digits' })
   token!: string;
 }
 
@@ -141,6 +152,8 @@ export class VerifyBackupCodeInput {
   @Field(() => String, {
     description: 'The backup code for account recovery',
   })
+  @IsString()
+  @IsNotEmpty({ message: 'Backup code is required' })
   backupCode!: string;
 }
 
@@ -152,6 +165,8 @@ export class AdminForceDisableTwoFactorInput {
   @Field(() => String, {
     description: 'The ID of the user to disable 2FA for',
   })
+  @IsString()
+  @IsNotEmpty({ message: 'User ID is required' })
   userId!: string;
 }
 

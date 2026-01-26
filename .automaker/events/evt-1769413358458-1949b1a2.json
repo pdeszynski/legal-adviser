@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769413358458-1949b1a2",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T07:42:38.458Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "interest-registration-page",
+  "featureName": "Create Early Access Interest Registration Page",
+  "error": "Feature completed in 1007s - auto-verified",
+  "passes": true
+}

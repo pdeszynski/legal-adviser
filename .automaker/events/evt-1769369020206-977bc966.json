@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769369020206-977bc966",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T19:23:40.206Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "features-page-content-strategy",
+  "featureName": "Define Features Page Content Strategy",
+  "error": "Feature completed in 855s - auto-verified",
+  "passes": true
+}

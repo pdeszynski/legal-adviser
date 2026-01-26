@@ -1,6 +1,7 @@
 export { Button, buttonVariants, type ButtonProps } from './Button';
 export { LoadingButton, type LoadingButtonProps } from './LoadingButton';
 export * from './Card';
+export { Badge, badgeVariants, type BadgeProps } from './Badge';
 export * from './Dialog';
 export * from './Input';
 export * from './Label';

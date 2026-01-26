@@ -47,6 +47,9 @@ export class HubSpotService {
       waitlistListId: this.configService.get<string>(
         'HUBSPOT_WAITLIST_LIST_ID',
       ),
+      earlyAccessListId: this.configService.get<string>(
+        'HUBSPOT_EARLY_ACCESS_LIST_ID',
+      ),
       dealPipeline: this.configService.get<string>('HUBSPOT_DEAL_PIPELINE'),
       dealStage: this.configService.get<string>('HUBSPOT_DEAL_STAGE'),
     };
@@ -156,12 +159,12 @@ export class HubSpotService {
    * 4. Assignes to appropriate list based on type
    *
    * @param request Contact creation request
-   * @param listType 'demo' or 'waitlist'
+   * @param listType 'demo', 'waitlist', or 'earlyAccess'
    * @returns Contact ID and qualification result
    */
   async syncLead(
     request: CreateContactRequest,
-    listType: 'demo' | 'waitlist' = 'demo',
+    listType: 'demo' | 'waitlist' | 'earlyAccess' = 'demo',
   ): Promise<{ contactId: string | null; qualification: QualificationResult }> {
     if (!this.isEnabled()) {
       this.logger.debug('HubSpot integration disabled, skipping lead sync');
@@ -206,7 +209,9 @@ export class HubSpotService {
       const listId =
         listType === 'demo'
           ? this.config.demoRequestsListId
-          : this.config.waitlistListId;
+          : listType === 'waitlist'
+            ? this.config.waitlistListId
+            : this.config.earlyAccessListId;
       if (listId) {
         await this.addToList({ contactId: contact.id, listId });
       }

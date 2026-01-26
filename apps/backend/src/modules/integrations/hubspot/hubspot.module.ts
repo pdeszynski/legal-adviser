@@ -5,6 +5,7 @@ import { HubSpotResolver } from './hubspot.resolver';
 import { HubSpotWebhookService } from './hubspot-webhook.service';
 import { HubSpotWebhookController } from './hubspot-webhook.controller';
 import { AuditLogModule } from '../../audit-log/audit-log.module';
+import { NotificationsModule } from '../../notifications/notifications.module';
 
 /**
  * HubSpot Integration Module
@@ -18,6 +19,7 @@ import { AuditLogModule } from '../../audit-log/audit-log.module';
  * - Automatic retry with exponential backoff
  * - Webhook receiver for HubSpot event notifications
  * - Two-way sync between local DemoRequest and HubSpot CRM
+ * - Confirmation email sending for early access signups
  *
  * Environment Variables:
  * - HUBSPOT_API_KEY: HubSpot API key for authentication
@@ -33,7 +35,7 @@ import { AuditLogModule } from '../../audit-log/audit-log.module';
  * - POST /api/webhooks/hubspot/health - Webhook health check
  */
 @Module({
-  imports: [ConfigModule, AuditLogModule],
+  imports: [ConfigModule, AuditLogModule, NotificationsModule],
   providers: [HubSpotService, HubSpotResolver, HubSpotWebhookService],
   controllers: [HubSpotWebhookController],
   exports: [HubSpotService, HubSpotWebhookService],

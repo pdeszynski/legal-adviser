@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769368058147-61469aed",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T19:07:38.147Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-landing-page-cta-links",
+  "featureName": "Fix Landing Page CTA Button Links",
+  "error": "Feature completed in 443s - auto-verified",
+  "passes": true
+}

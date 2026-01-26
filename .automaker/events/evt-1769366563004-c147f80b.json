@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769366563004-c147f80b",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T18:42:43.004Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "landing-page-navigation-fix",
+  "featureName": "Fix Landing Page 'How It Works' Button Navigation",
+  "error": "Feature completed in 347s - auto-verified",
+  "passes": true
+}

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "autoLoopWasRunning": false,
+  "maxConcurrency": 1,
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "branchName": null,
+  "runningFeatureIds": [
+    "interest-page-mobile-optimization",
+    "cold-lead-ai-reengagement",
+    "interest-page-navigation-integration",
+    "interest-page-skeleton-loading"
+  ],
+  "savedAt": "2026-01-26T07:56:08.110Z"
+}

@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Create Playwright E2E test for enabling two-factor authentication from settings page. Test flow: 1) Login as user without 2FA enabled, 2) Navigate to /settings -> Security tab, 3) Click 'Enable two-factor authentication' button, 4) Verify redirect to two-factor setup page or modal appears, 5) Verify QR code is displayed, 6) Complete setup with valid TOTP token, 7) Verify backup codes are shown, 8) Confirm 2FA is enabled in settings. Test with admin@refine.dev credentials. Verify mutation is called in network trace.",
+  "id": "e2e-test-two-factor-settings-enable-flow",
+  "title": "E2E Test for Two-Factor Settings Enable Flow",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Create Playwright E2E test for enabling two-factor authentication from settings page. Test flow: 1) Login as user without 2FA enabled, 2) Navigate to /settings -> Security tab, 3) Click 'Enable two-factor authentication' button, 4) Verify redirect to two-factor setup page or modal appears, 5) Verify QR code is displayed, 6) Complete setup with valid TOTP token, 7) Verify backup codes are shown, 8) Confirm 2FA is enabled in settings. Test with admin@refine.dev credentials. Verify mutation is called in network trace.",
+      "timestamp": "2026-01-25T18:25:36.731Z",
+      "source": "initial"
+    }
+  ]
+}

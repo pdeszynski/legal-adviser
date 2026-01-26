@@ -1,0 +1,21 @@
+{
+  "category": "bug",
+  "description": "Update the 'How It Works' button on the landing page to point to the correct route once the about/how-it-works page is implemented. Verify that all other CTA buttons on the landing page have valid destinations (Request Early Access, Get Started, etc.). Add error handling or fallback routes if pages don't exist. Test all navigation links to ensure no 404 errors occur.",
+  "id": "landing-page-navigation-fix",
+  "title": "Fix Landing Page 'How It Works' Button Navigation",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Update the 'How It Works' button on the landing page to point to the correct route once the about/how-it-works page is implemented. Verify that all other CTA buttons on the landing page have valid destinations (Request Early Access, Get Started, etc.). Add error handling or fallback routes if pages don't exist. Test all navigation links to ensure no 404 errors occur.",
+      "timestamp": "2026-01-25T18:35:30.518Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T18:42:42.995Z",
+  "dependencies": [
+    "fix-landing-page-cta-links",
+    "landing-waitlist-page"
+  ]
+}

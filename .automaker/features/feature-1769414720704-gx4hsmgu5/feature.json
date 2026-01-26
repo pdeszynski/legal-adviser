@@ -1,0 +1,30 @@
+{
+  "category": "bug",
+  "description": "Fix adding two factor auth on settings page, there'a an error:\n\n{\n    \"errors\": [\n        {\n            \"message\": \"property token should not exist\",\n            \"locations\": [\n                {\n                    \"line\": 3,\n                    \"column\": 11\n                }\n            ],\n            \"path\": [\n                \"verifyTwoFactorSetup\"\n            ],\n            \"extensions\": {\n                \"code\": \"BAD_REQUEST\",\n                \"httpStatus\": 400,\n                \"exception\": {\n                    \"message\": \"property token should not exist\",\n                    \"status\": 400\n                },\n                \"stacktrace\": [\n                    \"GraphQLError: property token should not exist\",\n                    \"    at GqlAuthExceptionFilter.catch (/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/exceptions/graphql-auth-exception.filter.ts:130:12)\",\n                    \"    at ExternalExceptionsHandler.invokeCustomFilters (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/exceptions/external-exceptions-handler.js:31:32)\",\n                    \"    at ExternalExceptionsHandler.next (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/exceptions/external-exceptions-handler.js:14:29)\",\n                    \"    at Object.verifyTwoFactorSetup (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-proxy.js:14:42)\",\n                    \"    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\"\n                ]\n            }\n        }\n    ],\n    \"data\": null\n}",
+  "title": "Fix two-factor authentication token validation error",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "two-factor",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769414720704-gx4hsmgu5",
+  "descriptionHistory": [
+    {
+      "description": "Fix adding two factor auth on settings page, there'a an error:\n\n{\n    \"errors\": [\n        {\n            \"message\": \"property token should not exist\",\n            \"locations\": [\n                {\n                    \"line\": 3,\n                    \"column\": 11\n                }\n            ],\n            \"path\": [\n                \"verifyTwoFactorSetup\"\n            ],\n            \"extensions\": {\n                \"code\": \"BAD_REQUEST\",\n                \"httpStatus\": 400,\n                \"exception\": {\n                    \"message\": \"property token should not exist\",\n                    \"status\": 400\n                },\n                \"stacktrace\": [\n                    \"GraphQLError: property token should not exist\",\n                    \"    at GqlAuthExceptionFilter.catch (/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/exceptions/graphql-auth-exception.filter.ts:130:12)\",\n                    \"    at ExternalExceptionsHandler.invokeCustomFilters (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/exceptions/external-exceptions-handler.js:31:32)\",\n                    \"    at ExternalExceptionsHandler.next (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/exceptions/external-exceptions-handler.js:14:29)\",\n                    \"    at Object.verifyTwoFactorSetup (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-proxy.js:14:42)\",\n                    \"    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\"\n                ]\n            }\n        }\n    ],\n    \"data\": null\n}",
+      "timestamp": "2026-01-26T08:05:20.810Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-26T08:05:20.864Z",
+  "updatedAt": "2026-01-26T08:11:26.575Z"
+}

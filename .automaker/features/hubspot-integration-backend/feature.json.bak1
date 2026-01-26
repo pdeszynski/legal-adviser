@@ -1,18 +1,23 @@
 {
   "category": "feature",
-  "description": "Create HubSpot integration service in backend to sync leads. Implement: 1) HubSpot API client using @hubspot/api-client npm package, 2) Configuration for HubSpot API key from environment variable (HUBSPOT_API_KEY), 3) Contact creation in HubSpot with form submission data, 4) Custom properties mapping (company, use case, timeline, etc.), 5) Deal creation if lead qualifies (based on company size, timeline), 6) List assignment for 'Demo Requests' or 'Waitlist' segments, 7) Error handling for HubSpot API failures with retry logic. Create NestJS HubSpotService in modules/integrations/hubspot/. Add HubSpotModule to app.module.ts. Document HubSpot property setup requirements.",
+  "description": "Enhance HubSpot backend integration to support demo request form submissions. Service should: 1) Create HubSpot API client using @hubspot/api-client with HUBSPOT_API_KEY from env, 2) Implement createContact() method with form data mapping, 3) Create or update HubSpot Deal for qualified leads based on company size/timeline, 4) Assign lead to 'Demo Requests' list in HubSpot, 5) Handle contact property updates (company, useCase, timeline, budget), 6) Implement retry logic for HubSpot API failures, 7) Log all HubSpot sync operations for audit trail, 8) Return success/failure status to frontend for proper user feedback.",
   "id": "hubspot-integration-backend",
   "title": "HubSpot CRM Integration Backend Service",
   "dependencies": [],
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
       "description": "Create HubSpot integration service in backend to sync leads. Implement: 1) HubSpot API client using @hubspot/api-client npm package, 2) Configuration for HubSpot API key from environment variable (HUBSPOT_API_KEY), 3) Contact creation in HubSpot with form submission data, 4) Custom properties mapping (company, use case, timeline, etc.), 5) Deal creation if lead qualifies (based on company size, timeline), 6) List assignment for 'Demo Requests' or 'Waitlist' segments, 7) Error handling for HubSpot API failures with retry logic. Create NestJS HubSpotService in modules/integrations/hubspot/. Add HubSpotModule to app.module.ts. Document HubSpot property setup requirements.",
       "timestamp": "2026-01-24T21:38:47.508Z",
       "source": "initial"
+    },
+    {
+      "description": "Enhance HubSpot backend integration to support demo request form submissions. Service should: 1) Create HubSpot API client using @hubspot/api-client with HUBSPOT_API_KEY from env, 2) Implement createContact() method with form data mapping, 3) Create or update HubSpot Deal for qualified leads based on company size/timeline, 4) Assign lead to 'Demo Requests' list in HubSpot, 5) Handle contact property updates (company, useCase, timeline, budget), 6) Implement retry logic for HubSpot API failures, 7) Log all HubSpot sync operations for audit trail, 8) Return success/failure status to frontend for proper user feedback.",
+      "timestamp": "2026-01-25T18:47:38.417Z",
+      "source": "edit"
     }
   ],
-  "updatedAt": "2026-01-24T21:40:54.962Z"
+  "updatedAt": "2026-01-24T21:56:10.252Z"
 }

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769413936613-c593c9f2",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T07:52:16.613Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "interest-page-cta-integration",
+  "featureName": "Update All Landing Page CTAs to Point to Interest Page",
+  "error": "Feature completed in 625s - auto-verified",
+  "passes": true
+}
