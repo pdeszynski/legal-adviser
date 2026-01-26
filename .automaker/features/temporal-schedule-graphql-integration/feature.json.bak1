@@ -4,6 +4,7 @@
   "id": "temporal-schedule-graphql-integration",
   "title": "Add GraphQL Mutations and Queries for Schedule Management",
   "dependencies": [
+    "temporal-schedule-creation-implementation",
     "temporal-schedule-description-implementation",
     "temporal-schedule-pause-implementation",
     "temporal-schedule-resume-implementation",

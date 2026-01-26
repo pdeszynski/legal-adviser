@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "autoLoopWasRunning": false,
+  "maxConcurrency": 1,
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "branchName": null,
+  "runningFeatureIds": [
+    "feature-1769415351724-r4s51bneq",
+    "comment-ui",
+    "temporal-schedule-creation-implementation",
+    "temporal-schedule-description-implementation"
+  ],
+  "savedAt": "2026-01-26T08:32:51.224Z"
+}

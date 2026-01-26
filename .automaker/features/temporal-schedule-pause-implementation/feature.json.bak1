@@ -3,6 +3,9 @@
   "description": "Implement the pauseSchedule method to pause active Temporal schedules. Use Temporal SDK client.schedule.pause() with proper error handling. Log pause actions to audit logs. Validate schedule exists before pausing. Update schedule metadata to reflect paused state.",
   "id": "temporal-schedule-pause-implementation",
   "title": "Implement Temporal Schedule Pause Method",
+  "dependencies": [
+    "temporal-nestjs-integration"
+  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "two-factor",

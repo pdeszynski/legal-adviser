@@ -21,6 +21,7 @@ import type {
   TemporalModuleOptions,
   WorkflowStartOptions,
   TemporalHealthResult,
+  ScheduleDescription,
 } from './temporal.interfaces';
 import { TemporalMetricsService } from './temporal-metrics.service';
 import { TemporalObservabilityService } from './temporal-observability.service';
@@ -624,15 +625,18 @@ export class TemporalService {
   }
 
   /**
-   * Create a schedule (stub implementation - not yet implemented)
+   * Create a schedule
    *
-   * TODO: Implement Temporal schedule creation
+   * Creates a Temporal schedule with the specified configuration.
+   *
+   * @param options - Schedule creation options
+   * @returns The created schedule ID
    */
-  async createSchedule(_options: {
+  async createSchedule(options: {
     scheduleId: string;
     action: {
       workflowType: string;
-      workflowId: string;
+      workflowId?: string;
       taskQueue: string;
       args: unknown[];
     };
@@ -640,21 +644,188 @@ export class TemporalService {
       cronExpression: string;
     };
     policies?: {
-      overlap?: 'SKIP' | 'ALLOW_ALL' | 'BUFFER_ONE';
+      overlap?: 'SKIP' | 'ALLOW_ALL' | 'BUFFER_ONE' | 'BUFFER_ALL' | 'CANCEL_OTHER' | 'TERMINATE_OTHER';
     };
+    initialState?: {
+      paused?: boolean;
+      note?: string;
+      triggerImmediately?: boolean;
+    };
+    memo?: Record<string, unknown>;
   }): Promise<string> {
-    this.logger.warn('Temporal schedule creation not yet implemented');
-    return 'stub-schedule-id';
+    const {
+      scheduleId,
+      action,
+      spec,
+      policies,
+      initialState,
+      memo,
+    } = options;
+
+    this.logger.log(
+      `Creating schedule ${scheduleId} with cron: ${spec.cronExpression}`,
+    );
+
+    try {
+      const client = (await this.getClient()) as {
+        schedule: {
+          create: (opts: {
+            scheduleId: string;
+            action: {
+              type: string;
+              workflowType: string;
+              workflowId?: string;
+              taskQueue: string;
+              args: unknown[];
+            };
+            spec: {
+              cronExpressions: string[];
+            };
+            policies?: {
+              overlap?: ScheduleOverlapPolicy;
+            };
+            state?: {
+              paused?: boolean;
+              note?: string;
+              triggerImmediately?: boolean;
+            };
+            memo?: Record<string, unknown>;
+          }) => Promise<{ scheduleId: string }>;
+        },
+      };
+
+      // Map overlap policy string to Temporal enum
+      let overlapPolicy: ScheduleOverlapPolicy = ScheduleOverlapPolicy.SKIP;
+      if (policies?.overlap) {
+        switch (policies.overlap) {
+          case 'SKIP':
+            overlapPolicy = ScheduleOverlapPolicy.SKIP;
+            break;
+          case 'ALLOW_ALL':
+            overlapPolicy = ScheduleOverlapPolicy.ALLOW_ALL;
+            break;
+          case 'BUFFER_ONE':
+            overlapPolicy = ScheduleOverlapPolicy.BUFFER_ONE;
+            break;
+          case 'BUFFER_ALL':
+            overlapPolicy = ScheduleOverlapPolicy.BUFFER_ALL;
+            break;
+          case 'CANCEL_OTHER':
+            overlapPolicy = ScheduleOverlapPolicy.CANCEL_OTHER;
+            break;
+          case 'TERMINATE_OTHER':
+            overlapPolicy = ScheduleOverlapPolicy.TERMINATE_OTHER;
+            break;
+        }
+      }
+
+      // Validate cron expression
+      if (!spec.cronExpression || spec.cronExpression.trim().length === 0) {
+        throw new BadRequestException('Cron expression is required');
+      }
+
+      // Create the schedule using Temporal SDK
+      const handle = await client.schedule.create({
+        scheduleId,
+        action: {
+          type: 'startWorkflow',
+          workflowType: action.workflowType,
+          workflowId: action.workflowId || `${scheduleId}-workflow`,
+          taskQueue: action.taskQueue,
+          args: action.args,
+        },
+        spec: {
+          cronExpressions: [spec.cronExpression],
+        },
+        policies: {
+          overlap: overlapPolicy,
+        },
+        state: initialState,
+        memo,
+      });
+
+      this.logger.log(`Schedule ${scheduleId} created successfully`);
+
+      // Record schedule creation in metrics
+      this.metricsService?.recordWorkflowStarted({
+        workflowType: action.workflowType,
+        taskQueue: action.taskQueue,
+        namespace: this.options.namespace,
+      });
+
+      return scheduleId;
+    } catch (error) {
+      this.logger.error(
+        `Failed to create schedule ${scheduleId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+
+      // Record failed schedule creation
+      this.metricsService?.recordWorkflowFailed({
+        workflowType: action.workflowType,
+        taskQueue: action.taskQueue,
+        durationMs: 0,
+        failureReason: error instanceof Error ? error.message : 'Unknown error',
+      });
+
+      throw error;
+    }
   }
 
   /**
-   * Describe a schedule (stub implementation - not yet implemented)
+   * Describe a schedule
    *
-   * TODO: Implement Temporal schedule description
+   * Fetches the schedule's description from Temporal Server including
+   * current state, next run times, action details, and recent execution history.
+   *
+   * @param scheduleId - The schedule ID to describe
+   * @returns Schedule description with full details
+   * @throws NotFoundException if schedule does not exist
    */
-  async describeSchedule(_scheduleId: string): Promise<unknown> {
-    this.logger.warn('Temporal schedule description not yet implemented');
-    return { scheduleId: _scheduleId, exists: false };
+  async describeSchedule(scheduleId: string): Promise<ScheduleDescription> {
+    this.logger.debug(`Describing schedule ${scheduleId}`);
+
+    const client = (await this.getClient()) as {
+      schedule: {
+        getHandle: (id: string) => {
+          describe: () => Promise<ScheduleDescription>;
+        };
+      };
+    };
+
+    try {
+      const handle = client.schedule.getHandle(scheduleId);
+      const description = await handle.describe();
+
+      this.logger.debug(
+        `Successfully described schedule ${scheduleId}, paused: ${description.state.paused}, next actions: ${description.info.nextActionTimes.length}`,
+      );
+
+      return description;
+    } catch (error) {
+      // Check if this is a "schedule not found" error
+      if (error instanceof Error) {
+        const errorMessage = error.message.toLowerCase();
+        if (
+          errorMessage.includes('not found') ||
+          errorMessage.includes('unknown') ||
+          errorMessage.includes('schedule')
+        ) {
+          this.logger.warn(`Schedule ${scheduleId} not found`);
+          throw new NotFoundException(
+            `Schedule ${scheduleId} not found. It may have been deleted or never existed.`,
+          );
+        }
+      }
+
+      this.logger.error(
+        `Failed to describe schedule ${scheduleId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error,
+      );
+
+      throw new BadRequestException(
+        `Failed to describe schedule ${scheduleId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
   }
 
   /**

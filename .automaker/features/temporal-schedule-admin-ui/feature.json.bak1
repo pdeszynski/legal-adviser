@@ -4,7 +4,8 @@
   "id": "temporal-schedule-admin-ui",
   "title": "Create Admin UI for Temporal Schedule Management",
   "dependencies": [
-    "temporal-schedule-graphql-integration"
+    "temporal-schedule-graphql-integration",
+    "admin-layout-route"
   ],
   "priority": 3,
   "status": "backlog",

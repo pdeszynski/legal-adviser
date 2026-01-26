@@ -3,6 +3,9 @@
   "description": "Implement the resumeSchedule method to resume paused Temporal schedules. Use Temporal SDK client.schedule.unpause() with proper error handling. Validate schedule is paused before resuming. Log resume actions to audit logs. Calculate next run time after resume.",
   "id": "temporal-schedule-resume-implementation",
   "title": "Implement Temporal Schedule Resume Method",
+  "dependencies": [
+    "temporal-nestjs-integration"
+  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "two-factor",
