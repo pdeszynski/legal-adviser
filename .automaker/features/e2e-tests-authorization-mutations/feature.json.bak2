@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Create Playwright E2E tests to verify authorization works correctly on all mutations. Test scenarios: 1) Authenticated user can perform updateProfile mutation, 2) Authenticated user can update preferences via updateUserPreferences, 3) Authenticated user can create documents, 4) Unauthenticated request (no token) returns 401, 5) Expired token returns 401 and triggers logout, 6) Non-admin user cannot perform admin mutations (403), 7) Admin user can perform admin mutations. Test with various user roles (admin@refine.dev, user@example.com, lawyer@example.com). Include tests for session expiry during active session. Verify authorization headers are sent correctly.",
+  "id": "e2e-tests-authorization-mutations",
+  "title": "E2E Tests for Authorization on Mutations",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Create Playwright E2E tests to verify authorization works correctly on all mutations. Test scenarios: 1) Authenticated user can perform updateProfile mutation, 2) Authenticated user can update preferences via updateUserPreferences, 3) Authenticated user can create documents, 4) Unauthenticated request (no token) returns 401, 5) Expired token returns 401 and triggers logout, 6) Non-admin user cannot perform admin mutations (403), 7) Admin user can perform admin mutations. Test with various user roles (admin@refine.dev, user@example.com, lawyer@example.com). Include tests for session expiry during active session. Verify authorization headers are sent correctly.",
+      "timestamp": "2026-01-25T13:44:04.757Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T17:01:09.989Z"
+}

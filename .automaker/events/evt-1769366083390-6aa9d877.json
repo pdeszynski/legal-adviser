@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769366083390-6aa9d877",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T18:34:43.390Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-two-factor-enable-settings-mutation",
+  "featureName": "Fix Two-Factor Enable Mutation in Settings",
+  "error": "Feature completed in 542s - auto-verified",
+  "passes": true
+}

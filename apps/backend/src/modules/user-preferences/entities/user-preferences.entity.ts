@@ -169,7 +169,7 @@ export class UserPreferences {
   @Column({ type: 'jsonb', default: {} })
   notificationPreferences: Record<string, any>;
 
-  @Field(() => NotificationPreferences)
+  // GraphQL field resolved in resolver via @ResolveField
   getNotificationPreferences(): NotificationPreferences {
     const defaults = {
       documentUpdates: true,

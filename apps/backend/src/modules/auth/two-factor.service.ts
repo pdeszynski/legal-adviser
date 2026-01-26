@@ -86,7 +86,7 @@ export class TwoFactorService {
     ipAddress?: string | null,
     userAgent?: string | null,
   ): Promise<EnableTwoFactorResponse> {
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findByIdWith2FA(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -167,7 +167,7 @@ export class TwoFactorService {
     ipAddress?: string | null,
     userAgent?: string | null,
   ): Promise<VerifyTwoFactorSetupResponse> {
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findByIdWith2FA(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -293,7 +293,7 @@ export class TwoFactorService {
     ipAddress?: string | null,
     userAgent?: string | null,
   ): Promise<void> {
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findByIdWith2FA(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -369,7 +369,7 @@ export class TwoFactorService {
     ipAddress?: string | null,
     userAgent?: string | null,
   ): Promise<{ codes: string[] }> {
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findByIdWith2FA(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -428,7 +428,7 @@ export class TwoFactorService {
     ipAddress?: string | null,
     userAgent?: string | null,
   ): Promise<boolean> {
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findByIdWith2FA(userId);
     if (!user || !user.twoFactorSecret || !user.twoFactorEnabled) {
       return false;
     }
@@ -523,7 +523,7 @@ export class TwoFactorService {
     ipAddress?: string | null,
     userAgent?: string | null,
   ): Promise<boolean> {
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findByIdWith2FA(userId);
     if (!user || !user.twoFactorBackupCodes || !user.twoFactorEnabled) {
       return false;
     }
@@ -752,7 +752,7 @@ export class TwoFactorService {
     ipAddress?: string | null,
     userAgent?: string | null,
   ): Promise<{ id: string; twoFactorEnabled: boolean }> {
-    const user = await this.usersService.findById(targetUserId);
+    const user = await this.usersService.findByIdWith2FA(targetUserId);
     if (!user) {
       throw new NotFoundException('User not found');
     }

@@ -160,9 +160,9 @@ export class SeedService {
     this.logger.log('Seeding roles...');
 
     for (const roleData of rolesSeedData) {
-      // Check if role already exists
+      // Check if role already exists by ID or name (name has unique constraint)
       const existingRole = await this.roleRepository.findOne({
-        where: { id: roleData.id },
+        where: [{ id: roleData.id }, { name: roleData.name }],
       });
 
       if (existingRole) {

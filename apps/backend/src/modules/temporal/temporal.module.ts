@@ -17,6 +17,7 @@ import { TemporalWorkerService } from './temporal.worker';
 import { TemporalMetricsService } from './temporal-metrics.service';
 import { TemporalObservabilityService } from './temporal-observability.service';
 import { TemporalMetricsController } from './temporal-metrics.controller';
+import { TemporalResolver } from './temporal.resolver';
 import { DocumentGenerationStarter } from './workflows/document/document-generation.starter';
 import { PdfExportStarter } from './workflows/document/pdf-export.starter';
 import { EmailSendingStarter } from './workflows/notification/email-sending.starter';
@@ -25,6 +26,7 @@ import { RulingBackfillStarter } from './workflows/billing/ruling-backfill.start
 import { RulingIndexingSchedulerService } from './workflows/billing/ruling-scheduler.service';
 import { WebhookDeliveryStarter } from './workflows/webhook/webhook-delivery.starter';
 import { WebhookReplayStarter } from './workflows/webhook/webhook-replay.starter';
+import { AuditLogModule } from '../audit-log/audit-log.module';
 import type {
   TemporalModuleAsyncOptions,
   TemporalModuleOptions,
@@ -131,7 +133,7 @@ export class TemporalModule {
 
     return {
       module: TemporalModule,
-      imports: [ConfigModule],
+      imports: [ConfigModule, AuditLogModule],
       controllers: [TemporalMetricsController],
       providers: [
         optionsProvider,
@@ -139,6 +141,7 @@ export class TemporalModule {
         TemporalObservabilityService,
         TemporalService,
         TemporalWorkerService,
+        TemporalResolver,
         DocumentGenerationStarter,
         PdfExportStarter,
         EmailSendingStarter,
@@ -153,6 +156,7 @@ export class TemporalModule {
         TemporalWorkerService,
         TemporalMetricsService,
         TemporalObservabilityService,
+        TemporalResolver,
         DocumentGenerationStarter,
         PdfExportStarter,
         EmailSendingStarter,
@@ -177,7 +181,7 @@ export class TemporalModule {
 
     return {
       module: TemporalModule,
-      imports: [ConfigModule, ...(options.imports || [])],
+      imports: [ConfigModule, AuditLogModule, ...(options.imports || [])],
       controllers: [TemporalMetricsController],
       providers: [
         ...asyncProviders,
@@ -185,6 +189,7 @@ export class TemporalModule {
         TemporalObservabilityService,
         TemporalService,
         TemporalWorkerService,
+        TemporalResolver,
         DocumentGenerationStarter,
         PdfExportStarter,
         EmailSendingStarter,
@@ -199,6 +204,7 @@ export class TemporalModule {
         TemporalWorkerService,
         TemporalMetricsService,
         TemporalObservabilityService,
+        TemporalResolver,
         DocumentGenerationStarter,
         PdfExportStarter,
         EmailSendingStarter,
@@ -220,7 +226,7 @@ export class TemporalModule {
   static forRootWithDefaults(): DynamicModule {
     return {
       module: TemporalModule,
-      imports: [ConfigModule],
+      imports: [ConfigModule, AuditLogModule],
       controllers: [TemporalMetricsController],
       providers: [
         temporalOptionsProvider,
@@ -228,6 +234,7 @@ export class TemporalModule {
         TemporalObservabilityService,
         TemporalService,
         TemporalWorkerService,
+        TemporalResolver,
         DocumentGenerationStarter,
         PdfExportStarter,
         EmailSendingStarter,
@@ -242,6 +249,7 @@ export class TemporalModule {
         TemporalWorkerService,
         TemporalMetricsService,
         TemporalObservabilityService,
+        TemporalResolver,
         DocumentGenerationStarter,
         PdfExportStarter,
         EmailSendingStarter,

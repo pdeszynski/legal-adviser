@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Write comprehensive E2E tests for all schedule methods using Temporal test environment. Test scenarios: 1) Create schedule with valid cron expression, 2) Create schedule with invalid cron (verify error handling), 3) Describe existing schedule (verify details), 4) Describe non-existent schedule (verify graceful handling), 5) Pause and resume schedule (verify state changes), 6) Delete schedule (verify removal), 7) Create schedule with overlap policies. Validate schedules trigger workflows at expected times.",
+  "id": "temporal-schedule-e2e-tests",
+  "title": "Create E2E Tests for Temporal Schedule Operations",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Write comprehensive E2E tests for all schedule methods using Temporal test environment. Test scenarios: 1) Create schedule with valid cron expression, 2) Create schedule with invalid cron (verify error handling), 3) Describe existing schedule (verify details), 4) Describe non-existent schedule (verify graceful handling), 5) Pause and resume schedule (verify state changes), 6) Delete schedule (verify removal), 7) Create schedule with overlap policies. Validate schedules trigger workflows at expected times.",
+      "timestamp": "2026-01-25T15:05:01.026Z",
+      "source": "initial"
+    }
+  ]
+}

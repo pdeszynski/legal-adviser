@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769412531362-9cce8a46",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T07:28:51.362Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "hubspot-interest-graphql-api",
+  "featureName": "Create GraphQL API for Interest Registration",
+  "error": "Feature completed in 1027s - auto-verified",
+  "passes": true
+}

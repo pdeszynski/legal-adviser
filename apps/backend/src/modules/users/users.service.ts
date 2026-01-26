@@ -90,6 +90,23 @@ export class UsersService {
   }
 
   /**
+   * Find a user by ID with 2FA fields included
+   * Includes twoFactorSecret and twoFactorBackupCodes which are normally excluded
+   */
+  async findByIdWith2FA(id: string): Promise<User | null> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.twoFactorSecret')
+      .addSelect('user.twoFactorBackupCodes')
+      .addSelect('user.twoFactorEnabled')
+      .addSelect('user.twoFactorVerifiedAt')
+      .addSelect('user.failed2faAttempts')
+      .addSelect('user.lockedUntil')
+      .where('user.id = :id', { id })
+      .getOne();
+  }
+
+  /**
    * Find a user by email
    */
   async findByEmail(email: string): Promise<User | null> {

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769355116451-cc9deb7b",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T15:31:56.451Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-schedule-type-definitions",
+  "featureName": "Define TypeScript Types for Temporal Schedules",
+  "error": "Feature completed in 536s - auto-verified",
+  "passes": true
+}

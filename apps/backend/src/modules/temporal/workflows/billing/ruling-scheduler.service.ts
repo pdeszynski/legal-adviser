@@ -11,7 +11,7 @@
  * - Backoff for missed schedules
  */
 
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { TemporalService } from '../../temporal.service';
 import { RulingIndexingStarter } from './ruling-indexing.starter';
 import { RulingBackfillStarter } from './ruling-backfill.starter';
@@ -108,61 +108,103 @@ export const DEFAULT_CRON_EXPRESSIONS = {
  * - Get schedule status
  */
 @Injectable()
-export class RulingIndexingSchedulerService {
+export class RulingIndexingSchedulerService implements OnModuleInit {
   private readonly logger = new Logger(RulingIndexingSchedulerService.name);
   private readonly schedules: Map<string, RulingIndexingSchedule> = new Map();
+  private readonly initPromise: Promise<void>;
 
   constructor(
     private readonly temporalService: TemporalService,
     private readonly rulingIndexingStarter: RulingIndexingStarter,
     private readonly rulingBackfillStarter: RulingBackfillStarter,
   ) {
-    // Initialize default schedules
-    this.initializeDefaultSchedules();
+    // Store initialization promise for potential await
+    this.initPromise = this.onModuleInit();
   }
 
   /**
-   * Initialize default schedules
+   * NestJS lifecycle hook - called when the module is initialized
    *
    * Creates default schedules for nightly sync.
+   * Skips schedules that already exist to avoid conflicts.
    */
-  private initializeDefaultSchedules(): void {
-    // SAOS nightly sync at 2 AM
-    this.createSchedule({
-      source: RulingSource.SAOS,
-      cronExpression: DEFAULT_CRON_EXPRESSIONS.NIGHTLY_2AM,
-      daysBack: 1,
-      description: 'Nightly sync of SAOS rulings (last 1 day)',
-    });
+  async onModuleInit(): Promise<void> {
+    this.logger.log('Initializing default ruling indexing schedules...');
 
-    // ISAP nightly sync at 2 AM
-    this.createSchedule({
-      source: RulingSource.ISAP,
-      cronExpression: DEFAULT_CRON_EXPRESSIONS.NIGHTLY_2AM,
-      daysBack: 1,
-      description: 'Nightly sync of ISAP rulings (last 1 day)',
-    });
+    const defaultSchedules: CreateScheduleOptions[] = [
+      {
+        source: RulingSource.SAOS,
+        cronExpression: DEFAULT_CRON_EXPRESSIONS.NIGHTLY_2AM,
+        daysBack: 1,
+        description: 'Nightly sync of SAOS rulings (last 1 day)',
+      },
+      {
+        source: RulingSource.ISAP,
+        cronExpression: DEFAULT_CRON_EXPRESSIONS.NIGHTLY_2AM,
+        daysBack: 1,
+        description: 'Nightly sync of ISAP rulings (last 1 day)',
+      },
+      {
+        source: RulingSource.SAOS,
+        cronExpression: DEFAULT_CRON_EXPRESSIONS.WEEKLY_SUNDAY_3AM,
+        daysBack: 7,
+        description: 'Weekly deep sync of SAOS rulings (last 7 days)',
+      },
+      {
+        source: RulingSource.ISAP,
+        cronExpression: DEFAULT_CRON_EXPRESSIONS.WEEKLY_SUNDAY_3AM,
+        daysBack: 7,
+        description: 'Weekly deep sync of ISAP rulings (last 7 days)',
+      },
+    ];
 
-    // Weekly deep sync at 3 AM on Sunday
-    this.createSchedule({
-      source: RulingSource.SAOS,
-      cronExpression: DEFAULT_CRON_EXPRESSIONS.WEEKLY_SUNDAY_3AM,
-      daysBack: 7,
-      description: 'Weekly deep sync of SAOS rulings (last 7 days)',
-    });
+    for (const options of defaultSchedules) {
+      try {
+        const scheduleId = this.generateScheduleId(
+          options.source,
+          options.cronExpression || DEFAULT_CRON_EXPRESSIONS.NIGHTLY_2AM,
+        );
 
-    this.createSchedule({
-      source: RulingSource.ISAP,
-      cronExpression: DEFAULT_CRON_EXPRESSIONS.WEEKLY_SUNDAY_3AM,
-      daysBack: 7,
-      description: 'Weekly deep sync of ISAP rulings (last 7 days)',
-    });
+        // Check if schedule already exists before trying to create it
+        const existing = await this.temporalService.describeSchedule(scheduleId);
+
+        if (existing.exists) {
+          this.logger.log(
+            `Schedule ${scheduleId} already exists, skipping creation`,
+          );
+          // Add to local cache
+          this.schedules.set(scheduleId, {
+            scheduleId,
+            source: options.source,
+            cronExpression:
+              options.cronExpression || DEFAULT_CRON_EXPRESSIONS.NIGHTLY_2AM,
+            daysBack: options.daysBack || 1,
+            paused: existing.paused ?? false,
+            description: options.description,
+          });
+        } else {
+          // Create new schedule
+          await this.createSchedule(options);
+        }
+      } catch (error) {
+        // Log error but don't crash the application
+        this.logger.error(
+          `Failed to initialize schedule for ${options.source}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          error,
+        );
+      }
+    }
+
+    this.logger.log(
+      `Initialized ${this.schedules.size} ruling indexing schedules`,
+    );
   }
 
   /**
    * Create a new schedule
    *
    * Creates a Temporal schedule for ruling indexing.
+   * If the schedule already exists in Temporal, it will be loaded into the local cache.
    *
    * @param options - Schedule creation options
    * @returns Schedule ID
@@ -177,9 +219,9 @@ export class RulingIndexingSchedulerService {
 
     const scheduleId = this.generateScheduleId(source, cronExpression);
 
-    // Check if schedule already exists
+    // Check if schedule already exists in local cache
     if (this.schedules.has(scheduleId)) {
-      this.logger.warn(`Schedule ${scheduleId} already exists`);
+      this.logger.warn(`Schedule ${scheduleId} already exists in cache`);
       return scheduleId;
     }
 
@@ -192,6 +234,7 @@ export class RulingIndexingSchedulerService {
       await this.temporalService.createSchedule({
         scheduleId,
         action: {
+          type: 'startWorkflow',
           workflowType: 'rulingIndexing',
           workflowId: `scheduled-${source.toLowerCase()}-${Date.now()}`,
           taskQueue: 'legal-ai-task-queue',
@@ -207,7 +250,7 @@ export class RulingIndexingSchedulerService {
           ],
         },
         spec: {
-          cronExpression,
+          cronExpressions: [{ expression: cronExpression }],
         },
         policies: {
           overlap: 'SKIP',
@@ -229,8 +272,35 @@ export class RulingIndexingSchedulerService {
 
       return scheduleId;
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      // If schedule already exists in Temporal, just log and add to cache
+      if (errorMessage.includes('already exists')) {
+        this.logger.log(
+          `Schedule ${scheduleId} already exists in Temporal, adding to cache`,
+        );
+
+        // Check if it's paused
+        const existing = await this.temporalService.describeSchedule(scheduleId);
+
+        const schedule: RulingIndexingSchedule = {
+          scheduleId,
+          source,
+          cronExpression,
+          daysBack,
+          paused: existing.paused ?? false,
+          description,
+        };
+
+        this.schedules.set(scheduleId, schedule);
+
+        return scheduleId;
+      }
+
+      // For other errors, log and rethrow
       this.logger.error(
-        `Failed to create schedule ${scheduleId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to create schedule ${scheduleId}: ${errorMessage}`,
+        error,
       );
       throw error;
     }
@@ -443,6 +513,7 @@ export class RulingIndexingSchedulerService {
       await this.temporalService.createSchedule({
         scheduleId,
         action: {
+          type: 'startWorkflow',
           workflowType: 'rulingBackfill',
           workflowId: scheduleId,
           taskQueue: 'legal-ai-task-queue',
@@ -460,7 +531,7 @@ export class RulingIndexingSchedulerService {
         },
         spec: {
           // Run once immediately
-          cronExpression: '0 * * * * *', // Run immediately
+          cronExpressions: [{ expression: '0 * * * * *', comment: 'Run immediately' }],
         },
         policies: {
           overlap: 'SKIP',

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769360469990-032e14f5",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T17:01:09.990Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "e2e-tests-authorization-mutations",
+  "featureName": "E2E Tests for Authorization on Mutations",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

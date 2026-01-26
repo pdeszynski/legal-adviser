@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Implement the describeSchedule method to retrieve schedule details from Temporal. Use Temporal SDK client.schedule.describe() to fetch current schedule state, next run times, action details, and recent execution history. Return typed ScheduleDescription object instead of unknown. Handle non-existent schedules gracefully.",
+  "id": "temporal-schedule-description-implementation",
+  "title": "Implement Temporal Schedule Description Method",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Implement the describeSchedule method to retrieve schedule details from Temporal. Use Temporal SDK client.schedule.describe() to fetch current schedule state, next run times, action details, and recent execution history. Return typed ScheduleDescription object instead of unknown. Handle non-existent schedules gracefully.",
+      "timestamp": "2026-01-25T15:05:01.023Z",
+      "source": "initial"
+    }
+  ]
+}

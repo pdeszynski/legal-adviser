@@ -17,6 +17,7 @@ import {
   Search,
   Gavel,
   Phone,
+  Clock,
 } from 'lucide-react';
 
 /**
@@ -71,6 +72,7 @@ const MENU_ICONS: Record<string, MenuItemIcon> = {
   admin_system_health: <Activity className="h-4 w-4" />,
   admin_token_analytics: <Coins className="h-4 w-4" />,
   admin_demo_requests: <Phone className="h-4 w-4" />,
+  admin_schedules: <Clock className="h-4 w-4" />,
   case_analysis: <Gavel className="h-4 w-4" />,
   case_law_search: <Scale className="h-4 w-4" />,
   advanced_search: <Search className="h-4 w-4" />,
@@ -344,6 +346,13 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     label: 'Demo Requests',
     route: '/admin/demo-requests',
     icon: MENU_ICONS.admin_demo_requests,
+    allowedRoles: ['admin', 'super_admin'],
+  },
+  {
+    key: 'admin_schedules',
+    label: 'Schedules',
+    route: '/admin/schedules',
+    icon: MENU_ICONS.admin_schedules,
     allowedRoles: ['admin', 'super_admin'],
   },
 ];

@@ -1,0 +1,28 @@
+{
+  "category": "bug",
+  "description": "Fix demo modal not showing. If a request eraly button on landing page is clicked, then backround is immediately greyed out with a layer, but nothing is shown. on first click it does try to show a modal for a moment with loading state, but it very fast dissapears.",
+  "title": "Fix demo modal disappearing on first click request",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "two-factor",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "backlog",
+  "id": "feature-1769406524753-tuqgag765",
+  "descriptionHistory": [
+    {
+      "description": "Fix demo modal not showing. If a request eraly button on landing page is clicked, then backround is immediately greyed out with a layer, but nothing is shown. on first click it does try to show a modal for a moment with loading state, but it very fast dissapears.",
+      "timestamp": "2026-01-26T05:48:44.859Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Implement the resumeSchedule method to resume paused Temporal schedules. Use Temporal SDK client.schedule.unpause() with proper error handling. Validate schedule is paused before resuming. Log resume actions to audit logs. Calculate next run time after resume.",
+  "id": "temporal-schedule-resume-implementation",
+  "title": "Implement Temporal Schedule Resume Method",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Implement the resumeSchedule method to resume paused Temporal schedules. Use Temporal SDK client.schedule.unpause() with proper error handling. Validate schedule is paused before resuming. Log resume actions to audit logs. Calculate next run time after resume.",
+      "timestamp": "2026-01-25T15:05:01.024Z",
+      "source": "initial"
+    }
+  ]
+}

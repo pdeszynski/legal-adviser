@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769354579639-42d1d95b",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T15:22:59.639Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-schedule-type-definitions",
+  "featureName": "Define TypeScript Types for Temporal Schedules",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

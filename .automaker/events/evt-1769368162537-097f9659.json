@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769368162537-097f9659",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T19:09:22.537Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "cta-button-analytics-tracking",
+  "featureName": "Add Analytics Tracking to Landing Page CTA Buttons",
+  "error": "Feature completed in 438s - auto-verified",
+  "passes": true
+}

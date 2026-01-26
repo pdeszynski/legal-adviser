@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { LocaleSwitcher } from '@components/locale-switcher';
-import { DemoRequestForm } from '@components/demo-request';
 import { Button } from '@legal/ui';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import type { SupportedLocale } from '@i18n/config';
-import { Calendar } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 interface PublicLayoutProps {
   children?: React.ReactNode;
@@ -16,7 +15,6 @@ interface PublicLayoutProps {
 export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
   const t = useTranslations('landing.footer');
   const locale = useLocale() as SupportedLocale;
-  const [isDemoFormOpen, setIsDemoFormOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -25,17 +23,47 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
           <Link href="/" className="font-bold text-xl hover:opacity-80 transition-opacity">
             Legal AI
           </Link>
+          <nav className="hidden md:flex items-center gap-6">
+            <Link
+              href="/features"
+              className="text-sm font-medium text-foreground hover:text-blue-600 transition-colors"
+            >
+              Features
+            </Link>
+            <Link
+              href="/about/pricing"
+              className="text-sm font-medium text-foreground hover:text-blue-600 transition-colors"
+            >
+              Pricing
+            </Link>
+            <Link
+              href="/about"
+              className="text-sm font-medium text-foreground hover:text-blue-600 transition-colors"
+            >
+              About
+            </Link>
+            <Link
+              href="/early-access"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              Get Early Access
+              <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700">
+                New
+              </span>
+            </Link>
+          </nav>
           <div className="flex items-center gap-3">
             <LocaleSwitcher initialLocale={locale} />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsDemoFormOpen(true)}
-              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 hidden sm:inline-flex"
-            >
-              <Calendar className="mr-2 h-4 w-4" />
-              Get Started
-            </Button>
+            <Link href="/early-access">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 hidden sm:inline-flex"
+              >
+                Get Early Access
+                <ArrowUpRight className="ml-2 h-3 w-3" />
+              </Button>
+            </Link>
             <Link
               href="/login"
               className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
@@ -57,13 +85,18 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
               <h4 className="font-semibold mb-4">{t('product.title')}</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <Link href="#" className="hover:text-foreground transition-colors">
+                  <Link href="/features" className="hover:text-foreground transition-colors">
                     {t('product.features')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-foreground transition-colors">
+                  <Link href="/about/pricing" className="hover:text-foreground transition-colors">
                     {t('product.pricing')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/early-access" className="hover:text-foreground transition-colors">
+                    Get Early Access
                   </Link>
                 </li>
                 <li>
@@ -77,7 +110,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
               <h4 className="font-semibold mb-4">{t('company.title')}</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <Link href="#" className="hover:text-foreground transition-colors">
+                  <Link href="/about" className="hover:text-foreground transition-colors">
                     {t('company.about')}
                   </Link>
                 </li>
@@ -131,9 +164,6 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
           </div>
         </div>
       </footer>
-
-      {/* Demo Request Form Modal */}
-      <DemoRequestForm isOpen={isDemoFormOpen} onClose={() => setIsDemoFormOpen(false)} />
     </div>
   );
 };

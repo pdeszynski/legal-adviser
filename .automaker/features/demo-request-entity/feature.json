@@ -1,17 +1,22 @@
 {
   "category": "feature",
-  "description": "Create DemoRequest infrastructure entity to store form submissions locally. Include fields: id (UUID), fullName (string), email (string), company (string, optional), companySize (enum, optional), industry (string, optional), useCase (text), timeline (string, optional), budget (string, optional), preferredDemoTime (datetime, optional), status (enum: NEW, CONTACTED, SCHEDULED, QUALIFIED, CLOSED), hubspotContactId (string, optional), submittedAt (timestamp), contactedAt (timestamp optional), metadata (JSON for additional info). Add repository interface in domain layer. Implement using nestjs-query decorators for auto-generated resolvers. Add indexes for email and status fields.",
+  "description": "NOT IMPLEMENTED: Per user requirements, we do NOT store lead/interest data locally. All data is synced directly to HubSpot CRM. Remove any DemoRequest entity from the database schema. If it exists, drop the table and remove related repository code. All form submissions go directly to HubSpot via the GraphQL API (submitInterestRequest mutation) and are not persisted in the local database. Admin views should fetch data directly from HubSpot API.",
   "id": "demo-request-entity",
-  "title": "Demo Request Entity for Database Storage",
+  "title": "No Local Entity - HubSpot Only",
   "dependencies": [],
-  "priority": 2,
-  "status": "verified",
+  "priority": 1,
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
       "description": "Create DemoRequest infrastructure entity to store form submissions locally. Include fields: id (UUID), fullName (string), email (string), company (string, optional), companySize (enum, optional), industry (string, optional), useCase (text), timeline (string, optional), budget (string, optional), preferredDemoTime (datetime, optional), status (enum: NEW, CONTACTED, SCHEDULED, QUALIFIED, CLOSED), hubspotContactId (string, optional), submittedAt (timestamp), contactedAt (timestamp optional), metadata (JSON for additional info). Add repository interface in domain layer. Implement using nestjs-query decorators for auto-generated resolvers. Add indexes for email and status fields.",
       "timestamp": "2026-01-24T21:38:47.510Z",
       "source": "initial"
+    },
+    {
+      "description": "NOT IMPLEMENTED: Per user requirements, we do NOT store lead/interest data locally. All data is synced directly to HubSpot CRM. Remove any DemoRequest entity from the database schema. If it exists, drop the table and remove related repository code. All form submissions go directly to HubSpot via the GraphQL API (submitInterestRequest mutation) and are not persisted in the local database. Admin views should fetch data directly from HubSpot API.",
+      "timestamp": "2026-01-26T05:45:27.235Z",
+      "source": "edit"
     }
   ],
   "updatedAt": "2026-01-25T02:13:24.606Z"

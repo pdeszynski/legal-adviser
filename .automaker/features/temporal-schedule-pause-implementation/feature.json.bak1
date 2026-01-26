@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Implement the pauseSchedule method to pause active Temporal schedules. Use Temporal SDK client.schedule.pause() with proper error handling. Log pause actions to audit logs. Validate schedule exists before pausing. Update schedule metadata to reflect paused state.",
+  "id": "temporal-schedule-pause-implementation",
+  "title": "Implement Temporal Schedule Pause Method",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Implement the pauseSchedule method to pause active Temporal schedules. Use Temporal SDK client.schedule.pause() with proper error handling. Log pause actions to audit logs. Validate schedule exists before pausing. Update schedule metadata to reflect paused state.",
+      "timestamp": "2026-01-25T15:05:01.023Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T17:07:29.380Z"
+}

@@ -65,7 +65,7 @@ export class QuotaGuard {
     // Get GraphQL context
     const ctx = GqlExecutionContext.create(context);
     const { req } = ctx.getContext();
-    const userId = req.user?.userId;
+    const userId = req.user?.id;
 
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');

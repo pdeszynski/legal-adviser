@@ -3,11 +3,8 @@
   "description": "Ensure authentication state (JWT token, user info) is properly persisted and accessible client-side. Implement: 1) Token storage strategy (localStorage, sessionStorage, or cookies with HttpOnly), 2) AuthProvider in Refine that stores/retrieves tokens, 3) useAuth hook or React context for accessing auth state globally, 4) Automatic token inclusion in GraphQL requests (via Apollo link or fetch wrapper), 5) Token refresh mechanism if using refresh tokens, 6) Logout method that clears all auth state. Verify that tokens persist across page reloads and navigation. Ensure cookies (if used) have correct SameSite, Secure, and HttpOnly flags. Test auth state on browser back/forward navigation.",
   "id": "client-side-auth-state-persistence",
   "title": "Implement Client-Side Auth State Persistence",
-  "dependencies": [
-    "auth-provider-graphql"
-  ],
   "priority": 2,
-  "status": "backlog",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -15,5 +12,6 @@
       "timestamp": "2026-01-25T13:44:04.757Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T15:23:07.805Z"
 }

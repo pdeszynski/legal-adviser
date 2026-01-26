@@ -1,9 +1,18 @@
-import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  Context,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { UserPreferences } from './entities/user-preferences.entity';
 import { UserPreferencesService } from './services/user-preferences.service';
 import { UpdateUserPreferencesInput } from './dto/user-preferences.dto';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
+import { NotificationPreferences } from './entities/user-preferences.entity';
 
 /**
  * UserPreferences Resolver
@@ -84,5 +93,20 @@ export class UserPreferencesResolver {
   ): Promise<UserPreferences> {
     const userId = context.req.user.id;
     return this.preferencesService.resetToDefaults(userId);
+  }
+
+  /**
+   * Resolve Field: Get notification preferences
+   *
+   * Resolves the nested notification preferences object.
+   * This is called whenever getNotificationPreferences is queried.
+   */
+  @ResolveField(() => NotificationPreferences, {
+    name: 'getNotificationPreferences',
+  })
+  getNotificationPreferences(
+    @Parent() preferences: UserPreferences,
+  ): NotificationPreferences {
+    return preferences.getNotificationPreferences();
   }
 }

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769368543917-e3df79d0",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T19:15:43.917Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "integrate-hubspot-form-on-demo-request-page",
+  "featureName": "Integrate HubSpot Form on Demo Request Page",
+  "error": "Feature completed in 897s - auto-verified",
+  "passes": true
+}

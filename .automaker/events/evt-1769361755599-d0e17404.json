@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769361755599-d0e17404",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T17:22:35.599Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-schedule-documentation",
+  "featureName": "Document Temporal Schedule Implementation and Usage",
+  "error": "Feature completed in 296s - auto-verified",
+  "passes": true
+}

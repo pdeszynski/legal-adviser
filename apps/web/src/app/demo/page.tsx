@@ -26,6 +26,7 @@ interface WaitlistFormData {
   company: string;
   role: string;
   useCase: string;
+  gdprConsent: boolean;
 }
 
 interface FAQItem {
@@ -41,6 +42,7 @@ const DemoPage = () => {
     company: '',
     role: '',
     useCase: '',
+    gdprConsent: false,
   });
   const [errors, setErrors] = useState<Partial<Record<keyof WaitlistFormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,6 +70,10 @@ const DemoPage = () => {
       newErrors.useCase = t('form.errors.useCaseRequired');
     }
 
+    if (!formData.gdprConsent) {
+      newErrors.gdprConsent = 'You must agree to the privacy policy to continue';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -89,12 +95,12 @@ const DemoPage = () => {
 
     // Reset form after successful submission
     setTimeout(() => {
-      setFormData({ name: '', email: '', company: '', role: '', useCase: '' });
+      setFormData({ name: '', email: '', company: '', role: '', useCase: '', gdprConsent: false });
       setIsSuccess(false);
     }, 5000);
   };
 
-  const handleInputChange = (field: keyof WaitlistFormData, value: string) => {
+  const handleInputChange = (field: keyof WaitlistFormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error for this field when user starts typing
     if (errors[field]) {
@@ -300,6 +306,35 @@ const DemoPage = () => {
                         />
                       </div>
                       {errors.useCase && <p className="text-sm text-red-500">{errors.useCase}</p>}
+                    </div>
+
+                    {/* GDPR Consent */}
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-3">
+                        <input
+                          id="gdprConsent"
+                          type="checkbox"
+                          checked={formData.gdprConsent}
+                          onChange={(e) => handleInputChange('gdprConsent', e.target.checked)}
+                          className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+                        />
+                        <div className="flex-1">
+                          <label htmlFor="gdprConsent" className="text-sm font-normal cursor-pointer">
+                            I agree to the processing of my personal data in accordance with the{' '}
+                            <a
+                              href="/privacy"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              Privacy Policy
+                            </a>
+                            . I understand that my data will be used to process my demo request and may
+                            be stored in HubSpot CRM for follow-up communications. *
+                          </label>
+                          {errors.gdprConsent && <p className="text-sm text-red-500 mt-1">{errors.gdprConsent}</p>}
+                        </div>
+                      </div>
                     </div>
 
                     {/* Submit Button */}

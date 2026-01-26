@@ -6,7 +6,6 @@ fragment UserPreferencesFragment on UserPreferences {
   userId
   locale
   theme
-  aiModel
   getNotificationPreferences {
     documentUpdates
     queryResponses

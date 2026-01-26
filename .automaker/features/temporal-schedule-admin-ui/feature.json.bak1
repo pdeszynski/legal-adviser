@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Build admin interface for managing Temporal schedules at /admin/temporal/schedules. Display list of all schedules with: schedule ID, workflow type, cron expression, next run time, last run status, current state (active/paused). Add actions: pause/resume, delete, view details. Create schedule creation modal with workflow selection, cron input, and overlap policy options. Integrate with GraphQL mutations. Show schedule execution history.",
+  "id": "temporal-schedule-admin-ui",
+  "title": "Create Admin UI for Temporal Schedule Management",
+  "priority": 3,
+  "status": "in_progress",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Build admin interface for managing Temporal schedules at /admin/temporal/schedules. Display list of all schedules with: schedule ID, workflow type, cron expression, next run time, last run status, current state (active/paused). Add actions: pause/resume, delete, view details. Create schedule creation modal with workflow selection, cron input, and overlap policy options. Integrate with GraphQL mutations. Show schedule execution history.",
+      "timestamp": "2026-01-25T15:05:01.027Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T17:26:56.322Z"
+}

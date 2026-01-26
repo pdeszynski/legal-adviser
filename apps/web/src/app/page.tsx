@@ -5,17 +5,26 @@ import { useIsAuthenticated, useGo } from '@refinedev/core';
 import { useTranslations } from 'next-intl';
 import { PublicLayout } from '@components/layout/public-layout';
 import { Button } from '@legal/ui';
-import { DemoRequestForm } from '@components/demo-request';
+import { useAnalytics } from '@/hooks/use-analytics';
+import { initAnalytics } from '@/lib/analytics';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Shield, Lock, Star, Calendar, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Shield, Lock, Star, X, Loader2, ArrowUpRight } from 'lucide-react';
 
 const LandingContent = () => {
   const t = useTranslations('landing');
-  const [isDemoFormOpen, setIsDemoFormOpen] = useState(false);
+  const analytics = useAnalytics();
+  const router = useRouter();
   const [showStickyCta, setShowStickyCta] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const hasShownExitModal = useRef(false);
+  const [navigatingFrom, setNavigatingFrom] = useState<string | null>(null);
+
+  // Initialize analytics on mount
+  useEffect(() => {
+    initAnalytics();
+  }, []);
 
   // Sticky CTA on scroll
   useEffect(() => {
@@ -36,12 +45,12 @@ const LandingContent = () => {
   const handleMouseLeave = useCallback(
     (e: MouseEvent) => {
       // Only show if mouse leaves from the top of the viewport
-      if (e.clientY <= 0 && !hasShownExitModal.current && !isDemoFormOpen) {
+      if (e.clientY <= 0 && !hasShownExitModal.current) {
         hasShownExitModal.current = true;
         setShowExitModal(true);
       }
     },
-    [isDemoFormOpen],
+    [],
   );
 
   useEffect(() => {
@@ -49,26 +58,21 @@ const LandingContent = () => {
     return () => document.removeEventListener('mouseleave', handleMouseLeave);
   }, [handleMouseLeave]);
 
-  // Track CTA clicks for analytics
-  const trackCtaClick = useCallback((ctaLocation: string) => {
-    // Placeholder for analytics tracking
-    if (typeof window !== 'undefined' && (window as unknown as { gtag?: unknown }).gtag) {
-      const gtagWindow = window as unknown as {
-        gtag?: (event: string, name: string, params: Record<string, unknown>) => void;
-      };
-      gtagWindow.gtag?.('event', 'cta_click', {
-        cta_location: ctaLocation,
-      });
-    }
-  }, []);
-
-  const handleDemoFormOpen = useCallback(
+  // Track CTA clicks and navigate to early-access page
+  // Analytics tracking is non-blocking - navigation happens immediately
+  const handleEarlyAccessNavigation = useCallback(
     (location: string) => {
-      trackCtaClick(location);
-      setIsDemoFormOpen(true);
-      setShowExitModal(false);
+      if (navigatingFrom) return; // Prevent double-clicks
+
+      // Non-blocking analytics - don't await
+      Promise.resolve().then(() => {
+        analytics.trackCtaClick(location, 'Get Early Access', 'early-access-page');
+      });
+
+      setNavigatingFrom(location);
+      router.push('/early-access');
     },
-    [trackCtaClick],
+    [analytics, router, navigatingFrom],
   );
 
   return (
@@ -80,8 +84,8 @@ const LandingContent = () => {
           className="relative w-full pt-20 pb-20 md:pt-32 md:pb-32 overflow-hidden"
         >
           {/* Background decoration */}
-          <div className="absolute inset-0 z-0 bg-[url('/grid.svg')] opacity-[0.02] dark:opacity-[0.05]" />
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50/50 via-background to-background" />
+          <div className="absolute inset-0 z-0 bg-[url('/grid.svg')] opacity-[0.02] dark:opacity-[0.05] pointer-events-none" />
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50/50 via-background to-background pointer-events-none" />
 
           <div className="container mx-auto px-4 md:px-6 relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
@@ -103,23 +107,34 @@ const LandingContent = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                  <Button
-                    size="lg"
-                    onClick={() => handleDemoFormOpen('hero')}
-                    className="w-full sm:w-auto px-8 h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-105 rounded-full text-base"
-                  >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    Request Early Access
-                  </Button>
-                  <Link href="/about" className="w-full sm:w-auto">
+                  <Link href="/early-access" className="w-full sm:w-auto">
                     <Button
-                      variant="outline"
                       size="lg"
-                      className="w-full sm:w-auto px-8 h-12 border-muted-foreground/20 hover:bg-muted/50 backdrop-blur-sm rounded-full text-base"
+                      onClick={() => handleEarlyAccessNavigation('hero')}
+                      disabled={!!navigatingFrom}
+                      className="w-full px-8 h-14 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-105 rounded-full text-base font-semibold"
                     >
-                      {t('hero.cta.secondary')}
+                      {navigatingFrom === 'hero' ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Loading...
+                        </>
+                      ) : (
+                        <>
+                          Get Early Access
+                          <ArrowUpRight className="ml-2 h-4 w-4" />
+                        </>
+                      )}
                     </Button>
                   </Link>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="w-full sm:w-auto px-8 h-14 border-muted-foreground/20 hover:bg-muted/50 backdrop-blur-sm rounded-full text-base"
+                  >
+                    {t('hero.cta.secondary')}
+                  </Button>
                 </div>
 
                 <div className="flex items-center gap-6 text-sm text-muted-foreground pt-4">
@@ -136,8 +151,8 @@ const LandingContent = () => {
 
               <div className="relative flex justify-center lg:justify-end items-center">
                 <div className="relative w-[350px] h-[350px] sm:w-[500px] sm:h-[500px]">
-                  <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full mix-blend-multiply opacity-30 animate-blob"></div>
-                  <div className="absolute top-0 right-0 bg-cyan-500/20 blur-3xl rounded-full mix-blend-multiply opacity-30 animate-blob animation-delay-2000"></div>
+                  <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full mix-blend-multiply opacity-30 animate-blob pointer-events-none"></div>
+                  <div className="absolute top-0 right-0 bg-cyan-500/20 blur-3xl rounded-full mix-blend-multiply opacity-30 animate-blob animation-delay-2000 pointer-events-none"></div>
                   <Image
                     src="/hero-illustration.png"
                     alt="Legal AI Illustration"
@@ -163,9 +178,9 @@ const LandingContent = () => {
             <div className="grid gap-10 md:grid-cols-3">
               {/* Feature 1 */}
               <div className="group relative overflow-hidden rounded-3xl border border-white/20 bg-white/60 dark:bg-black/20 backdrop-blur-xl p-8 transition-all hover:shadow-2xl hover:-translate-y-2">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                 <div className="mb-6 relative h-48 w-full flex items-center justify-center">
-                  <div className="absolute inset-0 bg-blue-500/10 rounded-2xl blur-xl group-hover:bg-blue-500/20 transition-all"></div>
+                  <div className="absolute inset-0 bg-blue-500/10 rounded-2xl blur-xl group-hover:bg-blue-500/20 transition-all pointer-events-none"></div>
                   <Image
                     src="/feature-drafting.png"
                     alt={t('features.drafting.title')}
@@ -177,21 +192,33 @@ const LandingContent = () => {
                 <p className="text-muted-foreground leading-relaxed mb-6">
                   {t('features.drafting.description')}
                 </p>
-                <Button
-                  variant="outline"
-                  className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-900 dark:text-blue-400"
-                  onClick={() => handleDemoFormOpen('feature-drafting')}
-                >
-                  See It In Action
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+                <Link href="/early-access" className="w-full">
+                  <Button
+                    variant="outline"
+                    className="w-full border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-900 dark:text-blue-400"
+                    onClick={() => handleEarlyAccessNavigation('feature-drafting')}
+                    disabled={!!navigatingFrom}
+                  >
+                    {navigatingFrom === 'feature-drafting' ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        Get Early Access
+                        <ArrowUpRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                </Link>
               </div>
 
               {/* Feature 2 */}
               <div className="group relative overflow-hidden rounded-3xl border border-white/20 bg-white/60 dark:bg-black/20 backdrop-blur-xl p-8 transition-all hover:shadow-2xl hover:-translate-y-2">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                 <div className="mb-6 relative h-48 w-full flex items-center justify-center">
-                  <div className="absolute inset-0 bg-purple-500/10 rounded-2xl blur-xl group-hover:bg-purple-500/20 transition-all"></div>
+                  <div className="absolute inset-0 bg-purple-500/10 rounded-2xl blur-xl group-hover:bg-purple-500/20 transition-all pointer-events-none"></div>
                   <Image
                     src="/feature-analysis.png"
                     alt={t('features.analysis.title')}
@@ -203,21 +230,33 @@ const LandingContent = () => {
                 <p className="text-muted-foreground leading-relaxed mb-6">
                   {t('features.analysis.description')}
                 </p>
-                <Button
-                  variant="outline"
-                  className="w-full border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-900 dark:text-purple-400"
-                  onClick={() => handleDemoFormOpen('feature-analysis')}
-                >
-                  See It In Action
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+                <Link href="/early-access" className="w-full">
+                  <Button
+                    variant="outline"
+                    className="w-full border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-900 dark:text-purple-400"
+                    onClick={() => handleEarlyAccessNavigation('feature-analysis')}
+                    disabled={!!navigatingFrom}
+                  >
+                    {navigatingFrom === 'feature-analysis' ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        Get Early Access
+                        <ArrowUpRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                </Link>
               </div>
 
               {/* Feature 3 */}
               <div className="group relative overflow-hidden rounded-3xl border border-white/20 bg-white/60 dark:bg-black/20 backdrop-blur-xl p-8 transition-all hover:shadow-2xl hover:-translate-y-2">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                 <div className="mb-6 relative h-48 w-full flex items-center justify-center">
-                  <div className="absolute inset-0 bg-emerald-500/10 rounded-2xl blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
+                  <div className="absolute inset-0 bg-emerald-500/10 rounded-2xl blur-xl group-hover:bg-emerald-500/20 transition-all pointer-events-none"></div>
                   <Image
                     src="/feature-qa.png"
                     alt={t('features.qa.title')}
@@ -229,21 +268,33 @@ const LandingContent = () => {
                 <p className="text-muted-foreground leading-relaxed mb-6">
                   {t('features.qa.description')}
                 </p>
-                <Button
-                  variant="outline"
-                  className="w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-900 dark:text-emerald-400"
-                  onClick={() => handleDemoFormOpen('feature-qa')}
-                >
-                  See It In Action
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+                <Link href="/early-access" className="w-full">
+                  <Button
+                    variant="outline"
+                    className="w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-900 dark:text-emerald-400"
+                    onClick={() => handleEarlyAccessNavigation('feature-qa')}
+                    disabled={!!navigatingFrom}
+                  >
+                    {navigatingFrom === 'feature-qa' ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        Get Early Access
+                        <ArrowUpRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
         </section>
 
         {/* How it Works Section */}
-        <section className="w-full py-24 bg-background">
+        <section id="how-it-works" className="w-full py-24 bg-background">
           <div className="container mx-auto px-4 md:px-6">
             <div className="text-center mb-16 space-y-4">
               <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
@@ -292,14 +343,26 @@ const LandingContent = () => {
 
             {/* How It Works CTA */}
             <div className="mt-16 text-center">
-              <Button
-                size="lg"
-                onClick={() => handleDemoFormOpen('how-it-works')}
-                className="px-8 h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-105 rounded-full text-base"
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                Book Your Demo
-              </Button>
+              <Link href="/early-access">
+                <Button
+                  size="lg"
+                  onClick={() => handleEarlyAccessNavigation('how-it-works')}
+                  disabled={!!navigatingFrom}
+                  className="px-8 h-12 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-105 rounded-full text-base"
+                >
+                  {navigatingFrom === 'how-it-works' ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      Join Waitlist
+                      <ArrowUpRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -391,23 +454,34 @@ const LandingContent = () => {
               <p className="text-xl text-blue-100">{t('cta.subtitle')}</p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Button
-                  size="lg"
-                  onClick={() => handleDemoFormOpen('bottom-cta')}
-                  className="px-8 h-12 bg-white text-blue-600 hover:bg-blue-50 font-bold rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all text-lg"
-                >
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Schedule Your Demo
-                </Button>
-                <Link href="/login">
+                <Link href="/early-access">
                   <Button
-                    variant="outline"
                     size="lg"
-                    className="px-8 h-12 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm rounded-full text-lg"
+                    onClick={() => handleEarlyAccessNavigation('bottom-cta')}
+                    disabled={!!navigatingFrom}
+                    className="px-8 h-12 bg-white text-blue-600 hover:bg-blue-50 font-bold rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all text-lg"
                   >
-                    {t('cta.primaryButton')}
+                    {navigatingFrom === 'bottom-cta' ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        Get Early Access
+                        <ArrowUpRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
                   </Button>
                 </Link>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="px-8 h-12 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm rounded-full text-lg"
+                >
+                  <Link href="/login">{t('cta.primaryButton')}</Link>
+                </Button>
               </div>
               <p className="text-sm text-blue-200 mt-4">{t('cta.disclaimer')}</p>
             </div>
@@ -429,14 +503,26 @@ const LandingContent = () => {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <Button
-                  size="sm"
-                  onClick={() => handleDemoFormOpen('sticky-bar')}
-                  className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg rounded-full px-6"
-                >
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Book Demo
-                </Button>
+                <Link href="/early-access">
+                  <Button
+                    size="sm"
+                    onClick={() => handleEarlyAccessNavigation('sticky-bar')}
+                    disabled={!!navigatingFrom}
+                    className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg rounded-full px-6"
+                  >
+                    {navigatingFrom === 'sticky-bar' ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        Join Waitlist
+                        <ArrowUpRight className="ml-2 h-3 w-3" />
+                      </>
+                    )}
+                  </Button>
+                </Link>
                 <button
                   onClick={() => setShowStickyCta(false)}
                   className="text-white/70 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors"
@@ -465,25 +551,37 @@ const LandingContent = () => {
 
             <div className="text-center space-y-4">
               <div className="mx-auto w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <Calendar className="h-8 w-8 text-blue-600" />
+                <ArrowUpRight className="h-8 w-8 text-blue-600" />
               </div>
 
               <h3 className="text-2xl font-bold">Wait! Don&apos;t miss out</h3>
 
               <p className="text-muted-foreground">
-                Get exclusive early access to our AI-powered legal platform. Schedule a personalized
-                demo to see how we can transform your practice.
+                Get exclusive early access to our AI-powered legal platform. Join our waitlist
+                to be among the first to transform your practice.
               </p>
 
               <div className="space-y-3 pt-2">
-                <Button
-                  size="lg"
-                  onClick={() => handleDemoFormOpen('exit-intent')}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Schedule My Free Demo
-                </Button>
+                <Link href="/early-access" className="w-full">
+                  <Button
+                    size="lg"
+                    onClick={() => handleEarlyAccessNavigation('exit-intent')}
+                    disabled={!!navigatingFrom}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    {navigatingFrom === 'exit-intent' ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        Get Early Access
+                        <ArrowUpRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                </Link>
                 <Button
                   variant="ghost"
                   size="lg"
@@ -495,16 +593,13 @@ const LandingContent = () => {
               </div>
 
               <p className="text-xs text-muted-foreground">
-                No commitment required. We&apos;ll show you how Legal AI can save you hours of work
-                every week.
+                No commitment required. Join thousands of legal professionals waiting for early access.
               </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Demo Request Form Modal */}
-      <DemoRequestForm isOpen={isDemoFormOpen} onClose={() => setIsDemoFormOpen(false)} />
     </PublicLayout>
   );
 };

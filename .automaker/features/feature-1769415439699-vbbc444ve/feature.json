@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "On settings page, remove possibility for users to choose the model, it will not be allowd",
+  "title": "Remove model selection from settings page",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "two-factor",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769415439699-vbbc444ve",
+  "descriptionHistory": [
+    {
+      "description": "On settings page, remove possibility for users to choose the model, it will not be allowd",
+      "timestamp": "2026-01-26T08:17:19.789Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-26T08:17:19.828Z",
+  "updatedAt": "2026-01-26T08:25:16.492Z"
+}

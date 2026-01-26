@@ -34,11 +34,13 @@ export interface CreateContactRequest {
   company?: string;
   website?: string;
   phone?: string;
+  jobTitle?: string;
   useCase?: string;
   timeline?: LeadTimeline;
   companySize?: string;
   message?: string;
   source?: string;
+  gdprConsent?: boolean;
 }
 
 /**
@@ -88,6 +90,7 @@ export interface HubSpotConfig {
   enabled: boolean;
   demoRequestsListId?: string;
   waitlistListId?: string;
+  earlyAccessListId?: string;
   dealPipeline?: string;
   dealStage?: string;
 }

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769361255340-57f89ca4",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T17:14:15.340Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-schedule-pause-implementation",
+  "featureName": "Implement Temporal Schedule Pause Method",
+  "error": "Feature completed in 406s - auto-verified",
+  "passes": true
+}

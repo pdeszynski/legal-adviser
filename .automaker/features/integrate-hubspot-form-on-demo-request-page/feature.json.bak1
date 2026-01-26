@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Replace or augment the existing demo request form with HubSpot embedded form functionality. Implement: 1) HubSpot form embed script on /demo or /waitlist page, 2) Form fields mapped to HubSpot contact properties (email, company, use case, timeline), 3) Form submission handler that syncs data to HubSpot CRM, 4) Success confirmation with thank you message, 5) Error handling for form submission failures, 6) Fallback to local GraphQL mutation (demo-request-graphql-api) if HubSpot is unavailable. Ensure GDPR compliance with proper consent checkboxes. Use HubSpot form API or embed codes. Track form submissions for analytics.",
+  "id": "integrate-hubspot-form-on-demo-request-page",
+  "title": "Integrate HubSpot Form on Demo Request Page",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Replace or augment the existing demo request form with HubSpot embedded form functionality. Implement: 1) HubSpot form embed script on /demo or /waitlist page, 2) Form fields mapped to HubSpot contact properties (email, company, use case, timeline), 3) Form submission handler that syncs data to HubSpot CRM, 4) Success confirmation with thank you message, 5) Error handling for form submission failures, 6) Fallback to local GraphQL mutation (demo-request-graphql-api) if HubSpot is unavailable. Ensure GDPR compliance with proper consent checkboxes. Use HubSpot form API or embed codes. Track form submissions for analytics.",
+      "timestamp": "2026-01-25T18:47:38.410Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T19:15:43.901Z"
+}

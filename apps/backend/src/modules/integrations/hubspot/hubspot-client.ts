@@ -54,6 +54,7 @@ export class HubSpotClient {
       if (request.company) properties.company = request.company;
       if (request.website) properties.website = request.website;
       if (request.phone) properties.phone = request.phone;
+      if (request.jobTitle) properties.jobtitle = request.jobTitle;
 
       // Custom properties for lead tracking
       if (request.useCase) properties.use_case = request.useCase;
@@ -61,6 +62,9 @@ export class HubSpotClient {
       if (request.companySize) properties.company_size = request.companySize;
       if (request.message) properties.message = request.message;
       if (request.source) properties.hs_lead_source = request.source;
+      if (request.gdprConsent !== undefined) {
+        properties.gdpr_consent = request.gdprConsent ? 'true' : 'false';
+      }
 
       // Create the contact
       const response = await this.client.crm.contacts.basicApi.create({
@@ -148,11 +152,15 @@ export class HubSpotClient {
     if (request.company) properties.company = request.company;
     if (request.website) properties.website = request.website;
     if (request.phone) properties.phone = request.phone;
+    if (request.jobTitle) properties.jobtitle = request.jobTitle;
     if (request.useCase) properties.use_case = request.useCase;
     if (request.timeline) properties.timeline = request.timeline;
     if (request.companySize) properties.company_size = request.companySize;
     if (request.message) properties.message = request.message;
     if (request.source) properties.hs_lead_source = request.source;
+    if (request.gdprConsent !== undefined) {
+      properties.gdpr_consent = request.gdprConsent ? 'true' : 'false';
+    }
 
     const response = await this.client.crm.contacts.basicApi.create({
       properties,

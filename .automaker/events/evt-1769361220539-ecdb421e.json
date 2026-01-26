@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769361220539-ecdb421e",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T17:13:40.539Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-schedule-deletion-implementation",
+  "featureName": "Implement Temporal Schedule Deletion Method",
+  "error": "Feature completed in 757s - auto-verified",
+  "passes": true
+}

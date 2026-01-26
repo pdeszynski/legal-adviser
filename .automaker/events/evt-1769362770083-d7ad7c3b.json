@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769362770083-d7ad7c3b",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T17:39:30.083Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-schedule-admin-ui",
+  "featureName": "Create Admin UI for Temporal Schedule Management",
+  "error": "Feature completed in 754s - auto-verified",
+  "passes": true
+}
