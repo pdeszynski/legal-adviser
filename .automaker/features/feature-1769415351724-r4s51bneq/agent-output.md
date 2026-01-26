@@ -680,3 +680,36 @@ Input: {
   "limit": 10,
   "offset": 84
 }
+<summary>
+## Summary: When trying to save two factor auth, it returns an error
+
+### Changes Implemented
+
+**Root Cause:** The `twoFactorSecret` column in the `User` entity has `select: false` which means TypeORM does not include it in queries by default. When `verifyTwoFactorSetup` was called after `enableTwoFactorAuth`, it couldn't read the `twoFactorSecret` from the database because `findById()` doesn't explicitly select it.
+
+**Fix Applied:**
+
+1. **Added new method `findByIdWith2FA` in `UsersService`** (`apps/backend/src/modules/users/users.service.ts:92-107`):
+   - Uses query builder with `addSelect()` to explicitly select all 2FA-related fields
+   - Includes: `twoFactorSecret`, `twoFactorBackupCodes`, `twoFactorEnabled`, `twoFactorVerifiedAt`, `failed2faAttempts`, `lockedUntil`
+
+2. **Updated `TwoFactorService` to use `findByIdWith2FA`** (`apps/backend/src/modules/auth/two-factor.service.ts`):
+   - `enableTwoFactorAuth` - line 89
+   - `verifyTwoFactorSetup` - line 170
+   - `disableTwoFactorAuth` - line 296
+   - `regenerateBackupCodes` - line 372
+   - `verifyToken` - line 431
+   - `verifyAndConsumeBackupCode` - line 526
+   - `adminForceDisableTwoFactor` - line 755
+
+### Files Modified
+
+- `apps/backend/src/modules/users/users.service.ts` - Added `findByIdWith2FA` method
+- `apps/backend/src/modules/auth/two-factor.service.ts` - Updated all 2FA operations to use the new method
+
+### Notes for Developer
+
+The fix ensures that when `enableTwoFactorAuth` stores the encrypted TOTP secret in the database, the subsequent `verifyTwoFactorSetup` call can properly retrieve and validate it. Without this fix, the `verifyTwoFactorSetup` mutation would fail with "Two-factor authentication has not been initiated. Call enableTwoFactorAuth first." because `user.twoFactorSecret` would be `null` even though it existed in the database.
+
+**Testing Note:** The verification test could not be run due to an unrelated database schema issue ("tables can have at most 1600 columns"). The code fix is sound and follows the existing pattern used in `findByUsernameOrEmailForAuth` for handling `select: false` fields. Manual testing or fixing the database schema issue is recommended to verify the fix works end-to-end.
+</summary>

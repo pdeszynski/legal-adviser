@@ -8,8 +8,7 @@
     "temporal-schedule-description-implementation",
     "temporal-schedule-pause-implementation",
     "temporal-schedule-resume-implementation",
-    "temporal-schedule-deletion-implementation",
-    "admin-role-guard"
+    "temporal-schedule-deletion-implementation"
   ],
   "priority": 2,
   "status": "backlog",

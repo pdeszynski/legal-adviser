@@ -4,6 +4,7 @@
   "id": "temporal-schedule-e2e-tests",
   "title": "Create E2E Tests for Temporal Schedule Operations",
   "dependencies": [
+    "temporal-schedule-creation-implementation",
     "temporal-schedule-description-implementation",
     "temporal-schedule-pause-implementation",
     "temporal-schedule-resume-implementation",

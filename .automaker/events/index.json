@@ -2,6 +2,13 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769416759012-c8f176ee",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T08:39:19.012Z",
+      "featureName": "",
+      "featureId": "feature-1769415351724-r4s51bneq"
+    },
+    {
       "id": "evt-1769350295420-e077520f",
       "trigger": "feature_success",
       "timestamp": "2026-01-25T14:11:35.420Z",

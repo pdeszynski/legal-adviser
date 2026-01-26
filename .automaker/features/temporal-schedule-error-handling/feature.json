@@ -4,7 +4,6 @@
   "id": "temporal-schedule-error-handling",
   "title": "Add Comprehensive Error Handling for Schedule Operations",
   "dependencies": [
-    "temporal-schedule-description-implementation",
     "temporal-schedule-pause-implementation",
     "temporal-schedule-resume-implementation",
     "temporal-schedule-deletion-implementation"

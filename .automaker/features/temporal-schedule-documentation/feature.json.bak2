@@ -4,6 +4,7 @@
   "id": "temporal-schedule-documentation",
   "title": "Document Temporal Schedule Implementation and Usage",
   "dependencies": [
+    "temporal-schedule-creation-implementation",
     "temporal-schedule-description-implementation",
     "temporal-schedule-pause-implementation",
     "temporal-schedule-resume-implementation",

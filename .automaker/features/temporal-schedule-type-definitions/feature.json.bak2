@@ -3,8 +3,11 @@
   "description": "Create proper TypeScript interfaces and types for Temporal schedule operations. Define ScheduleOptions, ScheduleAction, ScheduleSpec, SchedulePolicies, and ScheduleDescription types. Replace 'unknown' types in method signatures. Ensure type safety matches Temporal SDK types. Export types for use in other modules.",
   "id": "temporal-schedule-type-definitions",
   "title": "Define TypeScript Types for Temporal Schedules",
+  "dependencies": [
+    "temporal-nestjs-integration"
+  ],
   "priority": 1,
-  "status": "in_progress",
+  "status": "backlog",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,6 +15,5 @@
       "timestamp": "2026-01-25T15:05:01.025Z",
       "source": "initial"
     }
-  ],
-  "updatedAt": "2026-01-26T08:39:19.869Z"
+  ]
 }

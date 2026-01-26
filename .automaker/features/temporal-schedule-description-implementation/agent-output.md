@@ -282,3 +282,15 @@ Input: {
   "command": "pnpm dlx tsc --noEmit 2>&1 | head -100",
   "description": "Run TypeScript type checking from backend"
 }
+
+🔧 Tool: Bash
+Input: {
+  "command": "pnpm dlx tsc --noEmit 2>&1 | head -100",
+  "description": "Run TypeScript type checking from backend"
+}
+
+🔧 Tool: Bash
+Input: {
+  "command": "npx tsc --noEmit 2>&1 | head -100",
+  "description": "Run TypeScript type checking from backend"
+}
