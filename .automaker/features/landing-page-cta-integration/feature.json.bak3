@@ -3,11 +3,8 @@
   "description": "Add prominent CTAs across the landing page directing users to the demo request page. Implement: 1) Hero section CTA button 'Request Early Access' or 'Book a Demo', 2) Sticky header CTA on scroll, 3) Feature section CTAs after each major feature description, 4) 'Get Started' button in navigation linking to demo request, 5) Exit-intent modal offering demo request when user tries to leave site, 6) Pricing page CTA if pricing page exists. Ensure consistent button styling using shadcn/ui Button components. Track CTA click-through rates with analytics.",
   "id": "landing-page-cta-integration",
   "title": "Landing Page Call-to-Action Integration",
-  "dependencies": [
-    "landing-waitlist-page"
-  ],
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -15,5 +12,6 @@
       "timestamp": "2026-01-24T21:38:47.511Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T02:16:47.612Z"
 }

@@ -2,925 +2,296 @@
 
 ## Core Principles
 
-- **Domain-Driven Design (DDD)**: Software model must reflect the legal business domain.
-- **Modular Monolith**: Strict boundaries between modules in `apps/backend/src/modules`. No direct imports across modules. Communication via asynchronous events.
-- **English-First**: All code, comments, and commit messages in English.
-- **Strong Typing**: No `any` (TS) or untyped `Dict`/`Any` (Python).
-- **Simplicity**: YAGNI. Concise code. Avoid over-engineering.
+- **DDD**: Software model must reflect the legal business domain
+- **Modular Monolith**: Strict boundaries between modules in `apps/backend/src/modules`. No direct imports across modules. Use events for cross-module communication
+- **English-First**: All code, comments, and commit messages in English
+- **Strong Typing**: No `any` (TS) or untyped `Dict`/`Any` (Python)
+- **Simplicity**: YAGNI. Avoid over-engineering
 
 ## Tech Stack
 
-- **Web**: Next.js, refine.dev, Tailwind CSS, shadcn/ui.
-- **Backend**: Nest.js, `@ptc-org/nestjs-query`, GraphQL (Code-First), PostgreSQL.
-- **AI Service**: Python, FastAPI, PydanticAI, LangGraph.
-- **Package Managers**: `pnpm` (Node), `uv` (Python).
+- **Web**: Next.js, refine.dev, Tailwind CSS, shadcn/ui
+- **Backend**: Nest.js, `@ptc-org/nestjs-query`, GraphQL (Code-First), PostgreSQL
+- **AI**: Python, FastAPI, PydanticAI, LangGraph
+- **Package Managers**: `pnpm` (Node), `uv` (Python)
 
-## Build & Development Commands
+## Commands
 
-- **Full Project**:
-  - Dev: `pnpm dev`
-  - Build: `pnpm build`
-  - Lint: `pnpm lint`
-  - Format: `pnpm format`
-- **Frontend (@legal/web)**: `pnpm dev:web`
-- **Backend (@legal/backend)**: `pnpm dev:backend`
-- **AI Engine (Python)**:
-  - Dev: `uv run dev` (inside `apps/ai-engine`)
-  - Test: `uv run pytest`
-  - Export OpenAPI: `uv run export-openapi`
+```bash
+# Full project
+pnpm dev | build | lint | format
+
+# Individual apps
+pnpm dev:web | dev:backend
+cd apps/ai-engine && uv run dev | uv run pytest
+
+# Tests
+pnpm test | test:e2e | test:integration
+cd apps/backend && jest
+cd apps/web && npm test | playwright test
+```
 
 ## Testing
 
-### Test Commands
+**Locations:**
+- Backend Unit: `apps/backend/src/modules/**/*.spec.ts`
+- Backend E2E: `apps/backend/tests/e2e/*.e2e-spec.ts`
+- Frontend Unit: `apps/web/src/**/*.spec.tsx` or `src/**/__tests__/**/*.spec.tsx`
+- Frontend E2E: `apps/web/tests/*.spec.ts`
+- AI Engine: `apps/ai-engine/tests/unit/*.py`
 
-- **Monorepo-wide**: `pnpm test`
-- **E2E**: `pnpm test:e2e`
-- **Integration**: `pnpm test:integration`
-- **AI Engine**: `uv run pytest` (inside `apps/ai-engine`)
-- **Backend Unit**: `cd apps/backend && jest`
-- **Frontend Unit**: `cd apps/web && npm test`
-- **Frontend E2E**: `cd apps/web && playwright test`
+**Post-Feature Checklist:**
+1. Lint: `eslint .`
+2. Type check: `tsc --noEmit`
+3. Unit tests: `jest` / `npm test` / `uv run pytest`
+4. E2E tests: `npm run test:e2e` / `playwright test`
 
-### Test Structure & Locations
+## Coding Guidelines
 
-- **Backend Unit Tests**: `apps/backend/src/modules/**/*.spec.ts` - Co-located with source files
-- **Backend E2E Tests**: `apps/backend/tests/e2e/*.e2e-spec.ts` - Jest-based API tests
-- **Backend Playwright Tests**: `apps/backend/tests/*.spec.ts` - GraphQL API tests
-- **Frontend Unit Tests**: `apps/web/src/**/*.spec.tsx` or `apps/web/src/**/__tests__/**/*.spec.tsx` - Jest + React Testing Library
-- **Frontend E2E Tests**: `apps/web/tests/*.spec.ts` - Playwright UI tests
-- **AI Engine Tests**: `apps/ai-engine/tests/unit/*.py` - Python unit tests
+- **Commits**: Follow [Conventional Commits](https://www.conventionalcommits.org/)
+- **API**: Service-to-Service = REST (OpenAPI), Frontend-Backend = GraphQL only
+- **NestJS Query**: Auto-generated resolvers for CRUD, custom resolvers for business logic
+- **SSOT**: Environment variables only for secrets/config
 
-### Frontend Jest Setup (Next.js)
+### refine.dev Custom Mutations
 
-- **Config**: `apps/web/jest.config.ts` (follows [Next.js Jest guide](https://nextjs.org/docs/app/guides/testing/jest))
-- **Setup**: `apps/web/jest.setup.ts` - Custom matchers from `@testing-library/jest-dom`
-- **Commands**:
-  - `cd apps/web && npm test` - Run all tests
-  - `cd apps/web && npm run test:watch` - Watch mode
-  - `cd apps/web && npm run test:cov` - With coverage
-- **Framework**: Jest + React Testing Library
-- **Test Patterns**:
-  - `src/**/*.spec.tsx` - Test files alongside components
-  - `src/**/__tests__/**/*.spec.tsx` - Test files in `__tests__` directories
-
-### Post-Feature Validation Checklist
-
-After completing any feature, ALWAYS run the following validation:
-
-1. **Linting** (via lint-staged on commit, or manually):
-   - Backend: `cd apps/backend && pnpm dlx eslint .`
-   - Frontend: `cd apps/web && pnpm dlx eslint .`
-   - AI Engine: `cd apps/ai-engine && uv run ruff check .`
-
-2. **Type Checking**:
-   - Backend: `cd apps/backend && pnpm dlx tsc --noEmit`
-   - Frontend: `cd apps/web && pnpm dlx tsc --noEmit`
-
-3. **Run Unit Tests**:
-   - Backend: `cd apps/backend && jest`
-   - Frontend: `cd apps/web && npm test`
-   - AI Engine: `cd apps/ai-engine && uv run pytest`
-
-4. **Run E2E Tests**:
-   - Backend: `cd apps/backend && npm run test:e2e`
-   - Frontend: `cd apps/web && playwright test`
-
-5. **Run Integration Tests**:
-   - Backend: `cd apps/backend && npm run test:integration`
-
-### E2E Test Persistence for Regression Testing
-
-- All Playwright tests (both frontend and backend) should be preserved in `tests/` directories
-- Tests serve as regression protection - run full E2E suite before any major release
-- Use descriptive test names: `*.spec.ts` files should clearly indicate what feature they validate
-- Store test artifacts (screenshots, traces) for CI/CD debugging
-
-### Test Creation Guidelines
-
-- **Backend**: Write `.spec.ts` files alongside entities, services, resolvers
-- **Frontend**:
-  - **Unit/Component tests**: Create `*.spec.tsx` files in `src/**/__tests__/` or alongside components
-  - **E2E tests**: Create Playwright tests in `apps/web/tests/` for UI workflows
-  - Use React Testing Library for component testing (Jest)
-- **E2E**: Add integration tests in `apps/backend/tests/e2e/` for API endpoints
-- **AI Engine**: Write pytest tests in `apps/ai-engine/tests/unit/`
-
-## Coding & Architecture Guidelines
-
-- **Commits**: Follow [Conventional Commits](https://www.conventionalcommits.org/).
-- **API Strategy**:
-  - Service-to-Service: REST (OpenAPI autogenerated clients).
-  - Frontend-Backend: GraphQL exclusively (autogenerated clients). NO REST for frontend.
-- **NestJS Query**: Use auto-generated resolvers for standard CRUD. Use custom resolvers ONLY for business logic (AI triggers, etc.).
-- **Async Communication**: Use events for cross-module interaction in the backend.
-- **SSOT**: Environment variables are the only source for secrets/config.
-
-### refine.dev Custom Mutations (2026-01-24)
-
-When implementing custom GraphQL mutations (settings updates, profile changes), use the data provider's `custom` method directly. The `useCustom` hook is for queries only.
-
-**Pattern:**
+Use data provider's `custom` method directly (not `useCustom` hook):
 
 ```tsx
-import { useDataProvider } from '@refinedev/core';
-import type { GraphQLMutationConfig } from '@providers/data-provider';
-
-// Get data provider (returns a function)
 const dp = dataProvider();
 if (!dp) throw new Error('Data provider not available');
-
-// Define mutation config
-const mutationConfig: GraphQLMutationConfig<UpdateInputType> = {
+await (dp as any).custom<GraphQLMutationConfig<UpdateInputType>>({
   url: '',
   method: 'post',
   config: {
-    mutation: {
-      operation: 'mutationName',
-      fields: ['id', 'field1', 'field2'],
-      variables: {
-        input: {
-          /* data */
-        },
-      },
-    },
-  },
-};
-
-// Execute mutation (requires type assertion due to refine types)
-await (dp as any).custom(mutationConfig);
+    mutation: { operation: 'mutationName', fields: ['id', 'field1'], variables: { input: {...} } }
+  }
+});
 ```
-
-**Key Points:**
-
-- `useDataProvider()` returns a function - must call it: `const dp = dataProvider()`
-- `useCustom` hook is for queries (GET) only - returns `{ query, result }`, not `mutate`
-- `GraphQLMutationConfig<TInput>` type defined in `apps/web/src/providers/data-provider/index.ts`
-- Enum fields (`theme`, `aiModel`, `role`) are not quoted in GraphQL mutation
-- Empty string values are filtered out automatically
 
 ## Database Seeding
 
-### Seed File Location
-
-Seed data files are located in `apps/backend/src/seeds/data/`:
-
-- `users.seed.ts` - Default users for authentication and testing
-- `documents.seed.ts` - Sample legal documents
-- `audit-logs.seed.ts` - Sample audit log entries
-- `queries.seed.ts` - Sample legal queries
-- `rulings.seed.ts` - Sample court rulings
-- `sessions.seed.ts` - Sample user sessions
-- `analyses.seed.ts` - Sample legal analyses
-
-### Running Seeds
-
-To populate the database with seed data:
+**Location:** `apps/backend/src/seeds/data/`
 
 ```bash
-cd apps/backend
-pnpm seed
+cd apps/backend && pnpm seed
 ```
 
-### Default Login Credentials
+**Test Users:**
+| Email | Password | Role |
+|-------|----------|------|
+| `admin@refine.dev` | `password` | Super Admin |
+| `lawyer@example.com` | `password123` | Lawyer |
+| `user@example.com` | `password123` | Client |
 
-| Email                  | Password      | Role        | Notes                      |
-| ---------------------- | ------------- | ----------- | -------------------------- |
-| `admin@refine.dev`     | `password`    | Super Admin | Primary admin user         |
-| `lawyer@example.com`   | `password123` | Lawyer      | Sample lawyer user         |
-| `user@example.com`     | `password123` | Client      | Sample regular user        |
-| `inactive@example.com` | `password123` | Inactive    | For testing inactive state |
-| `minimal@example.com`  | `password123` | Client      | User without username/name |
+**2FA Test Users:**
+| Email | Secret | Notes |
+|-------|--------|-------|
+| `user2fa@example.com` | `JBSWY3DPEHPK3PXP` | 2FA enabled |
+| `admin2fa@example.com` | `KRSXG5DSQZKYQPZM` | Admin with 2FA |
 
-**Note:** These are development credentials only. Ensure they are not used in production.
-
-### Two-Factor Authentication (2FA) Test Users
-
-For testing 2FA functionality, the following pre-configured users are available:
-
-| Email                         | Password      | TOTP Secret        | Backup Codes (first 3)                            | Notes                    |
-| ----------------------------- | ------------- | ------------------ | ------------------------------------------------- | ------------------------ |
-| `user2fa@example.com`         | `password123` | `JBSWY3DPEHPK3PXP` | `A1B2-C3D4-E5F6-A7B8`, `C3D4-E5F6-A7B8-C9D0`, ... | 2FA enabled              |
-| `admin2fa@example.com`        | `password123` | `KRSXG5DSQZKYQPZM` | `A1B2-C3D4-E5F6-A7B8`, `C3D4-E5F6-A7B8-C9D0`, ... | Admin with 2FA enabled   |
-| `user2fa-pending@example.com` | `password123` | `JBSWY3DPEHPK3PXP` | N/A                                               | Secret set, not verified |
-
-#### Using Test TOTP Secrets
-
-For local development and testing, you can generate valid TOTP tokens using the known secrets:
-
-**Option 1: Node.js script**
-
-```javascript
-import otplib from 'otplib';
-
-// Configure TOTP
-otplib.authenticator.options = {
-  digits: 6,
-  period: 30,
-  algorithm: 'sha1',
-};
-
-// Generate current valid token
-const secret = 'JBSWY3DPEHPK3PXP'; // user2fa@example.com
-const token = otplib.authenticator.generate(secret);
-console.log(`Current TOTP token: ${token}`);
-```
-
-**Option 2: Python script**
-
-```python
-import pyotp
-
-# Generate current valid token
-secret = 'JBSWY3DPEHPK3PXP'  # user2fa@example.com
-totp = pyotp.TOTP(secret)
-token = totp.now()
-print(f"Current TOTP token: {token}")
-```
-
-**Option 3: Using the backend test helper**
-
+**Generate TOTP Token:**
 ```bash
-cd apps/backend
-npm run test:totp JBSWY3DPEHPK3PXP
+cd apps/backend && npm run test:totp JBSWY3DPEHPK3PXP
 ```
 
-#### Backup Codes for Testing
+## RBAC
 
-The seed users have the following pre-generated backup codes (all can be used exactly once):
+**Hierarchy:** `SUPER_ADMIN(5) > ADMIN(4) > LAWYER(3) > PARALEGAL(2) > CLIENT(1) > GUEST(0)`
 
-```
-A1B2-C3D4-E5F6-A7B8
-C3D4-E5F6-A7B8-C9D0
-E5F6-A7B8-C9D0-E1F2
-A7B8-C9D0-E1F2-A3B4
-C9D0-E1F2-A3B4-C5D6
-E1F2-A3B4-C5D6-E7F8
-A3B4-C5D6-E7F8-A9B0
-C5D6-E7F8-A9B0-C1D2
-E7F8-A9B0-C1D2-E3F4
-A9B0-C1D2-E3F4-A5B6
-```
-
-**Important:** These backup codes are stored hashed in the database. Use the exact codes above during testing.
-
-## Role-Based Access Control (RBAC)
-
-### Role Hierarchy
-
-The platform implements a hierarchical role system with the following levels (highest to lowest):
-
-```
-SUPER_ADMIN (5) > ADMIN (4) > LAWYER (3) > PARALEGAL (2) > CLIENT (1) > GUEST (0)
-```
-
-### Role Definitions
-
-| Role        | Level | Description                               | Permissions                                                                  |
-| ----------- | ----- | ----------------------------------------- | ---------------------------------------------------------------------------- |
-| SUPER_ADMIN | 5     | Platform owner with full system access    | All permissions, user management, system configuration, billing management   |
-| ADMIN       | 4     | Platform administrator                    | User management, content moderation, analytics, system health monitoring     |
-| LAWYER      | 3     | Legal professional                        | Full document and analysis access, AI query generation, client collaboration |
-| PARALEGAL   | 2     | Legal support staff                       | Limited document and analysis access, draft creation, research assistance    |
-| CLIENT      | 1     | Regular user (basic access)               | Own documents only, basic AI queries                                         |
-| GUEST       | 0     | Limited access for demonstration purposes | Read-only access to public documents                                         |
-
-### Backend Authorization
-
-#### RoleGuard
-
-Location: `apps/backend/src/modules/auth/guards/role.guard.ts`
-
-Guards GraphQL resolvers based on user roles. Supports role hierarchy (higher roles can access lower role resources).
-
+**Backend Guards:**
 ```typescript
-// Require specific role
+@UseGuards(GqlAuthGuard, RoleGuard)
 @RequireRole(UserRole.ADMIN)
-@Query(() => [User])
-async adminOnlyQuery(): Promise<User[]> { ... }
+async adminQuery() { ... }
 
-// Require any of multiple roles
-@RequireRole(UserRole.LAWYER, UserRole.PARALEGAL)
-@Query(() => [LegalDocument])
-async legalProfessionalsQuery(): Promise<LegalDocument[]> { ... }
-
-// Require admin access (convenience decorator)
-@RequireAdmin()
-@Mutation(() => User)
-async createUser(): Promise<User> { ... }
+@UseGuards(GqlAuthGuard, AdminGuard)
+async adminOnly() { ... }
 ```
 
-#### AdminGuard
+**Frontend Hook:**
+```tsx
+const { hasRole, hasRoleLevel, isAdmin } = useUserRole();
+```
 
-Location: `apps/backend/src/modules/auth/guards/admin.guard.ts`
+## GraphQL Authorization
 
-Simple guard for admin-only routes. Checks if user has ADMIN or SUPER_ADMIN role.
+**Guard Order:** `GqlAuthGuard` → `RoleGuard` → `DocumentPermissionGuard`
+
+**Patterns:**
 
 ```typescript
-@UseGuards(AdminGuard)
-@Query(() => String)
-async adminDashboard(): Promise<string> { ... }
-```
-
-### Frontend Authorization
-
-#### Admin Route Protection
-
-Location: `apps/web/src/app/admin/layout.tsx`
-
-Admin routes are protected at the layout level. Non-admin users are redirected to the dashboard.
-
-```tsx
-// Admin layout checks authentication and permissions
-const permissions = await getPermissions();
-const isAdmin = permissions?.some((p) => ['ADMIN', 'SUPER_ADMIN'].includes(p));
-if (!isAdmin) redirect('/dashboard');
-```
-
-#### Role-Based Menu System
-
-Location: `apps/web/src/config/menu.config.tsx`
-
-Menu items can be filtered based on user roles:
-
-```tsx
-{
-  name: 'Admin Panel',
-  to: '/admin',
-  minRole: UserRole.ADMIN, // Only visible to ADMIN and above
-}
-```
-
-#### useUserRole Hook
-
-Location: `apps/web/src/hooks/use-user-role.tsx`
-
-Provides role checking utilities:
-
-```tsx
-const { hasRole, hasRoleLevel, isAdmin, isLegalProfessional, isClient } = useUserRole();
-
-// Check specific role
-if (hasRole(UserRole.ADMIN)) { ... }
-
-// Check minimum role level
-if (hasRoleLevel(UserRole.LAWYER)) { ... } // LAWYER, ADMIN, SUPER_ADMIN pass
-
-// Convenience checks
-if (isAdmin) { ... }
-if (isLegalProfessional) { ... } // LAWYER or PARALEGAL
-if (isClient) { ... } // CLIENT or higher
-```
-
-### RBAC Testing
-
-#### E2E Tests
-
-Location: `apps/web/tests/rbac-e2e.spec.ts`
-
-Comprehensive E2E tests validate:
-
-- Role assignment and persistence
-- Admin route access control
-- Menu filtering based on roles
-- Permission-based UI rendering
-
-```bash
-# Run RBAC E2E tests
-cd apps/web && playwright test rbac-e2e.spec.ts
-```
-
-#### Backend Guard Tests
-
-Location: `apps/backend/src/modules/auth/guards/role.guard.spec.ts`
-
-Unit tests for role guard behavior including hierarchy and multiple role support.
-
-```bash
-# Run backend guard tests
-cd apps/backend && jest role.guard.spec.ts
-```
-
-### DDD Authorization Structure
-
-The authorization module follows Domain-Driven Design principles:
-
-- **Aggregates**: `RoleAggregate` in `apps/backend/src/domain/authorization/aggregates/`
-- **Value Objects**: `RoleType`, `Permission` in `apps/backend/src/domain/authorization/value-objects/`
-- **Events**: Role-related events (role-created, role-assigned, etc.)
-- **Repositories**: Interface and implementation for role persistence
-
-### Permission Matrix
-
-| Resource            | SUPER_ADMIN | ADMIN | LAWYER | PARALEGAL | CLIENT | GUEST |
-| ------------------- | :---------: | :---: | :----: | :-------: | :----: | :---: |
-| Admin Panel         |      ✓      |   ✓   |        |           |        |       |
-| User Management     |      ✓      |   ✓   |        |           |        |       |
-| Create Documents    |      ✓      |   ✓   |   ✓    |     ✓     |   ✓    |       |
-| Edit Any Document   |      ✓      |   ✓   |   ✓    |     ✓     |        |       |
-| Edit Own Documents  |      ✓      |   ✓   |   ✓    |     ✓     |   ✓    |       |
-| Delete Documents    |      ✓      |   ✓   |   ✓    |           |        |       |
-| AI Query Generation |      ✓      |   ✓   |   ✓    |     ✓     |   ✓    |       |
-| View Analytics      |      ✓      |   ✓   |        |           |        |       |
-| System Settings     |      ✓      |       |        |           |        |       |
-
-## GraphQL Authorization Patterns
-
-### Overview
-
-All GraphQL resolvers MUST have proper authorization guards. The platform uses a layered guard system with the following execution order:
-
-1. **Authentication** (`GqlAuthGuard`) - Verifies user identity via JWT
-2. **Public bypass** (`@Public()`) - Marks intentionally public endpoints
-3. **Role** (`RoleGuard`/`AdminGuard`) - Checks user permissions
-4. **Resource** (`DocumentPermissionGuard`) - Validates access to specific resources
-
-### Available Guards
-
-| Guard                     | Location                                           | Purpose                                   |
-| ------------------------- | -------------------------------------------------- | ----------------------------------------- |
-| `GqlAuthGuard`            | `modules/auth/guards/gql-auth.guard.ts`            | Requires valid JWT authentication         |
-| `GqlHybridAuthGuard`      | `modules/auth/guards/gql-hybrid-auth.guard.ts`     | Optional auth - allows anonymous access   |
-| `RoleGuard`               | `modules/auth/guards/role.guard.ts`                | Role-based access control with hierarchy  |
-| `AdminGuard`              | `modules/auth/guards/admin.guard.ts`               | Simple admin check (ADMIN or SUPER_ADMIN) |
-| `DocumentPermissionGuard` | `modules/auth/guards/document-permission.guard.ts` | Document-specific permissions             |
-| `QuotaGuard`              | `modules/shared/`                                  | Usage quota validation                    |
-
-### Available Decorators
-
-| Decorator           | Location                                      | Purpose                               |
-| ------------------- | --------------------------------------------- | ------------------------------------- |
-| `@Public()`         | `modules/auth/decorators/public.decorator.ts` | Marks endpoint as publicly accessible |
-| `@RequireAdmin()`   | `modules/auth/guards/role.guard.ts`           | Requires admin role                   |
-| `@RequireRole(...)` | `modules/auth/guards/role.guard.ts`           | Requires specific role(s)             |
-
-### Standard Authorization Patterns
-
-#### Pattern 1: Authenticated Users Only
-
-Most operations require authenticated users:
-
-```typescript
-import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from '../auth/guards';
-
+// Authenticated only
 @Resolver(() => MyEntity)
 @UseGuards(GqlAuthGuard)
-export class MyResolver {
-  @Query(() => MyEntity)
-  async getMyData() { ... }
-}
-```
+export class MyResolver { ... }
 
-#### Pattern 2: Admin-Only Operations
-
-Admin operations require both auth and admin role:
-
-```typescript
-import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from '../auth/guards';
-import { AdminGuard } from '../auth/guards/admin.guard';
-
-@Resolver(() => SensitiveEntity)
+// Admin only
 @UseGuards(GqlAuthGuard, AdminGuard)
-export class AdminResolver {
-  @Query(() => [SensitiveEntity])
-  async getAllData() { ... }
-}
-```
+export class AdminResolver { ... }
 
-#### Pattern 3: Role-Based Access with Hierarchy
-
-For fine-grained role control with hierarchy support:
-
-```typescript
-import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard, RoleGuard } from '../auth/guards';
-import { RequireRole } from '../auth/guards/role.guard';
-import { UserRole } from '../auth/enums';
-
-@Resolver(() => ResourceEntity)
+// Role-based with hierarchy
 @UseGuards(GqlAuthGuard, RoleGuard)
 @RequireRole(UserRole.LAWYER)
-export class ResourceResolver {
-  @Query(() => [ResourceEntity])
-  async getResources() { ... }
-}
-```
+export class ResourceResolver { ... }
 
-#### Pattern 4: Public Endpoints
+// Public endpoint
+@Public()
+@Mutation(() => AuthResponse)
+async login() { ... }
 
-For intentionally public operations (e.g., login, subscription catalog):
-
-```typescript
-import { Public } from '../auth/decorators/public.decorator';
-
+// Mixed public/protected (method-level guards)
 @Resolver()
-export class PublicResolver {
-  @Public()
-  @Mutation(() => AuthResponse)
-  async login() { ... }
-}
-```
-
-#### Pattern 5: Mixed Public and Protected
-
-Resolvers can have both public and protected operations:
-
-```typescript
-@Resolver(() => CatalogEntity)
-@UseGuards(GqlAuthGuard)
 export class CatalogResolver {
-  // Public catalog view
   @Public()
   @Query(() => [CatalogEntity])
   async getCatalog() { ... }
 
-  // User-specific actions
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => CatalogEntity)
   async purchaseItem() { ... }
 }
 ```
 
-### Guard Execution Order
+**Public Endpoints:** `auth` (login, register), `demo-request`, `hubspot`, `subscriptions` (catalog), `system-settings` (public), `documents` (legalRulingBySignature), `api-keys` (validate)
 
-The correct order for guard application is:
+## Authentication Context
 
+**Token:** Bearer in Authorization header (`Authorization: Bearer <token>`)
+
+**Context Access:**
 ```typescript
-@Resolver(() => MyEntity)
-@UseGuards(GqlAuthGuard, RoleGuard, DocumentPermissionGuard)
-@RequireRole(UserRole.LAWYER)
-export class MyResolver {
-  // Guards execute left-to-right:
-  // 1. GqlAuthGuard - validates JWT
-  // 2. RoleGuard - checks role hierarchy
-  // 3. DocumentPermissionGuard - validates resource access
-}
+@Context() context: { req: { user: { id: string; username: string; email: string; roles: string[] } } }
+
+const userId = context.req.user?.id;
+if (!userId) throw new UnauthorizedException('User not authenticated');
 ```
 
-### Public Endpoints List
+**Common Pitfalls:**
+1. Missing `GqlAuthGuard` before `RoleGuard`
+2. Wrong context type: use `{ req: { user } }` not `{ user }`
+3. Forgetting null check: `context.req.user?.id`
+4. Missing `@Public()` on login/register
+5. Class-level guards don't work with `@Public()` - use method-level
 
-The following endpoints are intentionally public (marked with `@Public()`):
+## Two-Factor Authentication
 
-| Module            | Operations                                                | Purpose                                  |
-| ----------------- | --------------------------------------------------------- | ---------------------------------------- |
-| `auth`            | login, register, resetPassword, etc.                      | Authentication flow                      |
-| `demo-request`    | submitDemoRequest                                         | Public demo request form                 |
-| `hubspot`         | createHubSpotContact, syncHubSpotLead, qualifyHubSpotLead | Public form submissions                  |
-| `subscriptions`   | subscriptionPlans, subscriptionPlan                       | Public catalog viewing                   |
-| `system-settings` | publicSystemSettings                                      | Feature flags for frontend               |
-| `documents`       | legalRulingBySignature                                    | Public ruling lookup                     |
-| `api-keys`        | validateApiKey                                            | API key validation for external services |
+**Features:** TOTP (RFC 6238), QR codes, 10 backup codes, admin override
 
-### Security Rules
-
-1. **Default to Secure**: All endpoints require authentication by default
-2. **Explicit Public**: Use `@Public()` decorator for intentionally public endpoints
-3. **No Manual Auth Checks**: Use guards instead of manual `if (!user) throw new Error()`
-4. **Guard Order**: Always apply guards before other decorators
-5. **Class-Level Guards**: Use class-level guards when all operations need auth
-6. **Method-Level Guards**: Use method-level for mixed public/protected resolvers
-
-### Resolver Audit
-
-A comprehensive audit of all resolvers and their guard configurations is maintained at:
-`.automaker/features/audit-graphql-auth-guards-consistency/resolver-audit-checklist.md`
-
-When adding new resolvers, update this checklist to maintain security visibility.
-
-## Two-Factor Authentication (2FA)
-
-### Overview
-
-The platform implements TOTP-based (Time-based One-Time Password) two-factor authentication using RFC 6238. Users can enable 2FA through their settings, which provides:
-
-- TOTP secret generation for authenticator apps (Google Authenticator, Authy, etc.)
-- QR code scanning for easy setup
-- 10 one-time backup codes for account recovery
-- Admin override for locked-out users
-
-### Entity Relationships
-
-The 2FA system integrates with the existing `User` entity:
-
-```
-User
-├── id: string
-├── email: string
-├── twoFactorEnabled: boolean       // Is 2FA active?
-├── twoFactorSecret: string         // Encrypted TOTP secret (not exposed via GraphQL)
-└── twoFactorBackupCodes: JSON      // Array of {code: hash, used: boolean}
-```
-
-**Key Design Points:**
-
-- TOTP secrets are encrypted using AES-256-GCM before storage
-- Backup codes are hashed using bcrypt before storage
-- `twoFactorEnabled` is only `true` after successful verification
-- The secret is stored during setup but 2FA is not enabled until verified
-
-### Security Measures
-
-#### Encryption
-
-- **TOTP Secrets**: AES-256-GCM encryption via `EncryptionService`
-  - Key derived from `ENCRYPTION_KEY` environment variable using scrypt
-  - Random nonce (16 bytes) per encryption
-  - Authentication tag for integrity verification
-- **Backup Codes**: Hashed using bcrypt via `UsersService`
-  - One-way hashing prevents code recovery if database is compromised
-  - Each code is tracked with a `used` flag
-
-#### Rate Limiting & Account Lockout
-
-| Endpoint                     | Limit    | Lockout              |
-| ---------------------------- | -------- | -------------------- |
-| `verifyTwoFactorSetup`       | 5/minute | 10 failures = 30 min |
-| `completeTwoFactorLogin`     | 5/minute | 10 failures = 30 min |
-| `verifyAndConsumeBackupCode` | 5/minute | 10 failures = 30 min |
-
-- Failed attempts are tracked per-user in the database
-- Locked accounts require admin intervention via `adminForceDisableTwoFactor`
-- Successful verification resets the failed attempt counter
-
-#### Audit Logging
-
-All 2FA events are logged to `AuditLog` with:
-
-- IP address (supports proxy headers: `X-Forwarded-For`, `X-Real-IP`)
-- User agent
-- Success/failure status
-- Action type (`2FA_ENABLED`, `2FA_DISABLED`, `2FA_VERIFICATION_FAILED`, etc.)
-
-#### Session Management
-
-- JWT tokens are invalidated immediately when 2FA is disabled (via `tokenVersion` increment)
-- Two-step login flow: first call returns `twoFactorTempToken`, second call issues session after 2FA verification
-- Sessions are only issued after successful 2FA completion
-
-### GraphQL Mutations
-
-#### User Mutations
-
-**Enable 2FA Setup**
-
+**Mutations:**
 ```graphql
-mutation EnableTwoFactorAuth {
-  enableTwoFactorAuth {
-    secret # TOTP secret (base32)
-    qrCodeDataUrl # QR code as data URL
-    backupCodes # Array of 10 backup codes
-  }
-}
+mutation EnableTwoFactorAuth { enableTwoFactorAuth { secret, qrCodeDataUrl, backupCodes } }
+mutation VerifyTwoFactorSetup($input: VerifyTwoFactorSetupInput!) { verifyTwoFactorSetup(input: $input) { success } }
+mutation DisableTwoFactorAuth($input: DisableTwoFactorInput!) { disableTwoFactorAuth(input: { password: "..." }) }
+mutation RegenerateBackupCodes { regenerateBackupCodes { codes } }
+query TwoFactorSettings { twoFactorSettings { status, enabled, remainingBackupCodes } }
 ```
 
-**Verify 2FA Setup**
-
-```graphql
-mutation VerifyTwoFactorSetup($input: VerifyTwoFactorSetupInput!) {
-  verifyTwoFactorSetup(input: $input) {
-    success
-    backupCodes # Empty array (codes shown during enable)
-  }
-}
-```
-
-**Disable 2FA**
-
-```graphql
-mutation DisableTwoFactorAuth($input: DisableTwoFactorInput!) {
-  disableTwoFactorAuth(input: { password: "user-password" })
-}
-```
-
-**Regenerate Backup Codes**
-
-```graphql
-mutation RegenerateBackupCodes {
-  regenerateBackupCodes {
-    codes # New array of 10 codes (invalidates old ones)
-  }
-}
-```
-
-**Get 2FA Settings**
-
-```graphql
-query TwoFactorSettings {
-  twoFactorSettings {
-    status # ENABLED | DISABLED
-    enabled # boolean
-    remainingBackupCodes # count or null
-  }
-}
-```
-
-#### Admin Mutations
-
-**Admin Force-Disable 2FA**
-
+**Admin:**
 ```graphql
 mutation AdminForceDisableTwoFactor($input: AdminForceDisableTwoFactorInput!) {
-  adminForceDisableTwoFactor(input: { userId: "user-id" }) {
-    id
-    twoFactorEnabled
-  }
+  adminForceDisableTwoFactor(input: { userId: "..." }) { id, twoFactorEnabled }
 }
 ```
 
-### Frontend Components
+**Rate Limit:** 5/minute, 10 failures = 30 min lockout
 
-#### TwoFactorSetup Component
+**Frontend:** `apps/web/src/components/settings/two-factor-setup.tsx`
 
-Location: `apps/web/src/components/settings/two-factor-setup.tsx`
+## HubSpot Integration
 
-Multi-step wizard flow:
+**Module:** `apps/backend/src/modules/integrations/hubspot/`
 
-1. **Info**: Explains 2FA benefits and process
-2. **Scan**: Displays QR code with manual secret entry fallback
-3. **Verify**: Input for 6-digit TOTP code (auto-formatted as `XXX XXX`)
-4. **Success**: Shows 10 backup codes with copy/download options
-5. **Disable**: Password confirmation to disable 2FA
+**Purpose:** Sync demo request leads to HubSpot CRM with automatic qualification scoring.
 
-**Features:**
-
-- Real-time code formatting (6 digits with space separator)
-- QR code with fallback to manual secret entry
-- Backup codes can be copied to clipboard or downloaded as `.txt`
-- Password visibility toggle for disable confirmation
-
-#### Login Integration
-
-Location: `apps/web/src/app/login/two-factor-input.tsx`
-
-- Displays when `login.requiresTwoFactor` is `true`
-- Accepts 6-digit TOTP code or backup code
-- Uses `twoFactorTempToken` from initial login response
-
-### Testing Guide
-
-#### Test TOTP Secrets
-
-For testing, use known TOTP secrets to generate valid tokens:
-
-```javascript
-// Using the TotpService's test helper
-const token = totpService.generateCurrentToken('JBSWY3DPEHPK3PXP'); // test secret
-
-// Or in Playwright tests, use the secret returned from enableTwoFactorAuth
-const { secret } = await enableTwoFactorAuth(request, accessToken);
-const validToken = generateTOTPToken(secret); // Your implementation
+**Environment Variables:**
+```bash
+HUBSPOT_ENABLED=true
+HUBSPOT_API_KEY=your-api-key
+HUBSPOT_DEMO_REQUESTS_LIST_ID=123
+HUBSPOT_WAITLIST_LIST_ID=456
+HUBSPOT_DEAL_PIPELINE=default
+HUBSPOT_DEAL_STAGE=appointmentscheduled
+HUBSPOT_WEBHOOK_SECRET=your-webhook-secret
 ```
 
-#### Test Helper Functions
+**Lead Qualification Scoring:**
+| Criteria | Points |
+|----------|--------|
+| Immediate timeline | +50 |
+| Within 1 month | +40 |
+| Within 3 months | +20 |
+| Enterprise (500+) | +30 |
+| Mid-size (50-500) | +20 |
+| Small/startup | +10 |
+| Detailed use case | +15 |
+| Company provided | +10 |
+| Website provided | +5 |
 
-```javascript
-/**
- * Generate a TOTP token for testing (Node.js)
- * Requires: npm install otplib
- */
-import otplib from 'otplib';
+**Qualified:** 50+ points → creates Deal in HubSpot
 
-function generateTOTPToken(secret: string): string {
-  otplib.authenticator.options = { digits: 6, period: 30, algorithm: 'sha1' };
-  return otplib.authenticator.generate(secret);
-}
+**Custom Contact Properties Required:**
+- `use_case` (Single-line text)
+- `timeline` (Dropdown: immediate, within_month, within_quarter, exploring)
+- `company_size` (Single-line text)
+- `message` (Multi-line text)
 
-/**
- * Verify a TOTP token for testing
- */
-function verifyTOTPToken(secret: string, token: string): boolean {
-  return otplib.authenticator.check(token, secret);
-}
-
-/**
- * Generate backup code format for testing
- * Format: XXXX-XXXX-XXXX-XXXX (hex, uppercase)
- */
-function generateTestBackupCode(): string {
-  const bytes = require('crypto').randomBytes(16);
-  const hex = bytes.toString('hex').toUpperCase();
-  return `${hex.slice(0,4)}-${hex.slice(4,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}`;
+**GraphQL API:**
+```graphql
+mutation SubmitDemoRequest($input: DemoRequestInput!) {
+  submitDemoRequest(input: $input) { success, message }
 }
 ```
 
-#### E2E Test Example
+**Workflow Configuration:** See `apps/backend/src/modules/integrations/hubspot/HUBSPOT_WORKFLOWS.md` for detailed HubSpot CRM workflow setup including:
+- Automatic lead assignment by company size/geography
+- Lead scoring rules and hot lead alerts
+- Automated email sequences by segment
+- Task creation for sales follow-up
+- Lead nurturing workflows
+- Calendly/HubSpot Meetings integration
+
+## Temporal Schedules
+
+**Schedules vs Workflows:** Schedules = recurring/time-based, Workflows = one-time/event-driven
+
+**GraphQL API:**
+```graphql
+query DescribeSchedule($scheduleId: String!) {
+  describeSchedule(scheduleId: $scheduleId) { scheduleId, exists, paused, spec { cronExpression }, nextRunAt }
+}
+mutation PauseSchedule($input: PauseScheduleInput!) { pauseSchedule(input: { scheduleId: "...", reason: "..." }) }
+mutation ResumeSchedule($input: ResumeScheduleInput!) { resumeSchedule(input: { scheduleId: "...", reason: "..." }) }
+mutation DeleteSchedule($input: DeleteScheduleInput!) { deleteSchedule(input: { scheduleId: "...", confirm: true }) }
+```
+
+**Backend Service:** `apps/backend/src/modules/temporal/temporal.service.ts`
 
 ```typescript
-import { test, expect } from '@playwright/test';
-
-test('2FA setup and login flow', async ({ request }) => {
-  // 1. Login to get access token
-  const loginResult = await loginUser(request, 'user@example.com', 'password');
-  const accessToken = loginResult.data.login.accessToken;
-
-  // 2. Enable 2FA
-  const enableResult = await enableTwoFactorAuth(request, accessToken);
-  const { secret, backupCodes } = enableResult.data.enableTwoFactorAuth;
-
-  // 3. Generate valid TOTP token for verification
-  const token = generateTOTPToken(secret);
-
-  // 4. Verify setup
-  const verifyResult = await verifyTwoFactorSetup(request, accessToken, token);
-  expect(verifyResult.data.verifyTwoFactorSetup.success).toBe(true);
-
-  // 5. Test login with 2FA
-  const loginWith2FA = await loginUser(request, 'user@example.com', 'password');
-  expect(loginWith2FA.data.login.requiresTwoFactor).toBe(true);
-
-  const tempToken = loginWith2FA.data.login.twoFactorTempToken;
-  const loginToken = generateTOTPToken(secret);
-
-  const completeResult = await completeTwoFactorLogin(request, tempToken, loginToken);
-  expect(completeResult.data.completeTwoFactorLogin.accessToken).toBeDefined();
-
-  // 6. Test backup code
-  const backupCode = backupCodes[0];
-  const backupResult = await completeTwoFactorLogin(request, tempToken, undefined, backupCode);
-  expect(backupResult.data.completeTwoFactorLogin.accessToken).toBeDefined();
+await temporalService.createSchedule({
+  scheduleId: 'data-sync-nightly',
+  action: {
+    type: 'startWorkflow',
+    workflowType: 'dataSyncWorkflow',
+    workflowId: 'data-sync-${Date.now()}',
+    taskQueue: 'legal-ai-task-queue',
+    args: [{ source: 'external-api', batchSize: 100 }],
+  },
+  spec: {
+    cronExpressions: [{ expression: '0 2 * * *' }],  // Daily at 2 AM
+    timezone: 'Europe/Warsaw',
+  },
+  policies: {
+    overlap: 'SKIP',  // Skip if previous run hasn't finished
+    catchupWindow: '1 day',
+  },
 });
 ```
 
-#### Running 2FA Tests
+**Cron Format:** `minute hour day month weekday` (e.g., `0 2 * * *` = daily 2 AM, `0 3 * * 0` = Sunday 3 AM)
 
-```bash
-# Frontend E2E tests
-cd apps/web && playwright test two-factor-e2e.spec.ts
+**Overlap Policies:** `SKIP` (default), `ALLOW_ALL`, `BUFFER_ONE`
 
-# Backend unit tests
-cd apps/backend && jest two-factor.service.spec.ts
-cd apps/backend && jest totp.service.spec.ts
-```
+**Env Vars:** `TEMPORAL_CLUSTER_URL`, `TEMPORAL_NAMESPACE`, `TEMPORAL_TASK_QUEUE`
 
-### Troubleshooting
-
-#### QR Code Not Scanning
-
-1. **Check app compatibility**: Ensure authenticator app supports TOTP (Google Authenticator, Authy, 1Password, etc.)
-2. **Manual entry**: Use the "Can't scan?" option to enter the secret manually
-3. **Check secret format**: Secret should be base32 (16+ characters, A-Z, 2-7, =)
-4. **QR code size**: Ensure QR code is generated at minimum 200x200px
-
-#### Clock Skew Issues
-
-TOTP tokens are time-sensitive. Symptoms include "Invalid token" even when code is correct:
-
-**For Users:**
-
-- Ensure device time is set to automatic (network time)
-- Check time zone matches the authenticator app setting
-- Try a new code (wait for next 30-second window)
-
-**For Servers:**
-
-- Ensure NTP is configured and running
-- Check `TOTP_WINDOW` environment variable (default: 1 = ±30 seconds tolerance)
-
-#### Backup Codes Lost
-
-If a user loses all backup codes:
-
-1. **User option**: Use remaining backup codes to regenerate new ones
-2. **Admin option**: Use `adminForceDisableTwoFactor` mutation to reset 2FA
-3. **After reset**: User must go through full setup again
-
-```graphql
-# Admin force-disable example
-mutation AdminReset {
-  adminForceDisableTwoFactor(input: { userId: "user-id" }) {
-    id
-    twoFactorEnabled
-  }
-}
-```
-
-#### Account Locked Out
-
-After 10 failed 2FA attempts, account is locked for 30 minutes:
-
-1. **Wait**: Lockout expires after 30 minutes
-2. **Admin intervention**: Use `adminForceDisableTwoFactor` to immediately unlock
-3. **Check logs**: Review audit logs for suspicious activity patterns
-
-#### Common Error Messages
-
-| Error                        | Cause                                   | Solution                          |
-| ---------------------------- | --------------------------------------- | --------------------------------- |
-| "Invalid token"              | Wrong TOTP code or clock skew           | Check time, try next code window  |
-| "Account is locked"          | 10 failed attempts                      | Wait 30 min or contact admin      |
-| "2FA already enabled"        | User called `enableTwoFactorAuth` twice | Use `disableTwoFactorAuth` first  |
-| "Password is incorrect"      | Wrong password on disable               | User must reset password          |
-| "Invalid backup code format" | Backup code malformed                   | Format: XXXX-XXXX-XXXX-XXXX (hex) |
-| "Backup code already used"   | Reusing a one-time code                 | Use a different backup code       |
-
-### Environment Variables
-
-| Variable          | Default               | Description                              |
-| ----------------- | --------------------- | ---------------------------------------- |
-| `ENCRYPTION_KEY`  | (required, 32+ chars) | Key for AES-256-GCM encryption           |
-| `ENCRYPTION_SALT` | `legal-ai-salt`       | Salt for key derivation                  |
-| `TOTP_APP_NAME`   | `Legal AI Platform`   | App name shown in authenticator          |
-| `TOTP_ALGORITHM`  | `sha1`                | Hash algorithm (sha1, sha256, sha512)    |
-| `TOTP_DIGITS`     | `6`                   | Token length                             |
-| `TOTP_PERIOD`     | `30`                  | Token validity in seconds                |
-| `TOTP_WINDOW`     | `1`                   | Time window tolerance (±period × window) |
+**Scheduler Example:** `apps/backend/src/modules/temporal/workflows/billing/ruling-scheduler.service.ts`

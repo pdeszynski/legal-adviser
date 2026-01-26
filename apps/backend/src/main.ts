@@ -13,6 +13,7 @@ import {
 } from './shared/startup';
 
 async function bootstrap() {
+  
   const logger = new Logger('Bootstrap');
 
   // Validate external dependencies before starting NestJS

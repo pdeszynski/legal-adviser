@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769362061250-f99163c7",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T17:27:41.250Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-schedule-graphql-integration",
+  "featureName": "Add GraphQL Mutations and Queries for Schedule Management",
+  "error": "Feature completed in 303s - auto-verified",
+  "passes": true
+}

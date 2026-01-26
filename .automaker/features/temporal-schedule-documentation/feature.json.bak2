@@ -3,13 +3,6 @@
   "description": "Update CLAUDE.md with comprehensive schedule management documentation. Include: 1) Overview of Temporal schedules vs workflows, 2) Schedule creation API with examples, 3) Cron expression format and validation, 4) Overlap policies explanation, 5) Schedule lifecycle operations (pause/resume/delete), 6) GraphQL mutations for schedule management, 7) Common use cases (ruling indexing, periodic cleanup), 8) Testing guide for schedule operations, 9) Troubleshooting common issues. Add code examples for creating and managing schedules.",
   "id": "temporal-schedule-documentation",
   "title": "Document Temporal Schedule Implementation and Usage",
-  "dependencies": [
-    "temporal-schedule-creation-implementation",
-    "temporal-schedule-description-implementation",
-    "temporal-schedule-pause-implementation",
-    "temporal-schedule-resume-implementation",
-    "temporal-schedule-deletion-implementation"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "two-factor",

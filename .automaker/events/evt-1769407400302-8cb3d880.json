@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769407400302-8cb3d880",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T06:03:20.302Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "hubspot-interest-backend-validation",
+  "featureName": "Validate HubSpot Backend Integration for Interest Signups",
+  "error": "Feature completed in 994s - auto-verified",
+  "passes": true
+}

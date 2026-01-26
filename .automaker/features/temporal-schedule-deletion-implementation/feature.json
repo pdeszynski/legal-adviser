@@ -4,7 +4,7 @@
   "id": "temporal-schedule-deletion-implementation",
   "title": "Implement Temporal Schedule Deletion Method",
   "priority": 2,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-25T15:05:01.024Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T17:13:40.524Z"
 }

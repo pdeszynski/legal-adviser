@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Add 'Early Access' or 'Get Started' link to main site navigation menu. Position prominently in header navigation alongside 'About', 'Features', etc. Ensure link: 1) Is visible from both landing page and authenticated sections (or only landing/public pages), 2) Uses clear, action-oriented text ('Get Early Access', 'Join Waitlist'), 3) Navigates to /early-access route, 4) Is properly configured in Next.js App Router, 5) May include a subtle badge or indicator to draw attention (e.g., 'Limited', 'New'), 6) Optionally add to footer navigation as well. Update sitemap if one exists. Test navigation flow from various entry points. Consider adding keyboard shortcut (Ctrl/Cmd + K) for quick access.",
+  "id": "interest-page-navigation-integration",
+  "title": "Add Interest Page to Site Navigation",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Add 'Early Access' or 'Get Started' link to main site navigation menu. Position prominently in header navigation alongside 'About', 'Features', etc. Ensure link: 1) Is visible from both landing page and authenticated sections (or only landing/public pages), 2) Uses clear, action-oriented text ('Get Early Access', 'Join Waitlist'), 3) Navigates to /early-access route, 4) Is properly configured in Next.js App Router, 5) May include a subtle badge or indicator to draw attention (e.g., 'Limited', 'New'), 6) Optionally add to footer navigation as well. Update sitemap if one exists. Test navigation flow from various entry points. Consider adding keyboard shortcut (Ctrl/Cmd + K) for quick access.",
+      "timestamp": "2026-01-26T05:45:27.231Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-26T07:56:46.256Z"
+}

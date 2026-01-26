@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769358540436-d5c6202c",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T16:29:00.436Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "graphql-auth-context-documentation",
+  "featureName": "Document GraphQL Authentication Context and Guards",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

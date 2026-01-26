@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Plan and create content structure for the About section including: 1) How It Works (step-by-step platform explanation), 2) About Us (company story, mission, team), 3) Features (detailed feature breakdown), 4) Pricing (plans and comparison), 5) FAQ (common questions). Create content hierarchy and navigation structure. Ensure consistent tone and messaging across all about pages. Include Polish and German translations for international audiences.",
+  "id": "about-page-content-strategy",
+  "title": "Define About Page Content Structure",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Plan and create content structure for the About section including: 1) How It Works (step-by-step platform explanation), 2) About Us (company story, mission, team), 3) Features (detailed feature breakdown), 4) Pricing (plans and comparison), 5) FAQ (common questions). Create content hierarchy and navigation structure. Ensure consistent tone and messaging across all about pages. Include Polish and German translations for international audiences.",
+      "timestamp": "2026-01-25T18:35:30.518Z",
+      "source": "initial"
+    }
+  ]
+}

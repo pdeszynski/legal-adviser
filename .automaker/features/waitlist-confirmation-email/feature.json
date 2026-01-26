@@ -1,8 +1,8 @@
 {
   "category": "feature",
-  "description": "Send automated confirmation email to users who submit demo requests. Implement: 1) Email template with thank you message, 2) Information about what to expect next (timeline for demo scheduling, product updates), 3) Links to documentation, blog, or social media, 4) 'Add to calendar' link if demo time was scheduled, 5) Unsubscribe/opt-out link for marketing emails, 6) Use existing email-notification-service infrastructure, 7) Send via email queue (or Temporal workflow when migration complete). Ensure email is sent asynchronously after successful HubSpot sync.",
+  "description": "This task is superseded by interest-confirmation-email. Send automated confirmation email to users who submit early access interest (NOT demo request). Email should: 1) Use existing email-notification-service, 2) Send asynchronously via email queue/Temporal, 3) Include personalized greeting, 4) Thank them for interest in early access (NOT demo), 5) Explain next steps (timeline, updates, invitation), 6) Provide links to docs/blog/social, 7) Include unsubscribe link, 8) Be sent after successful HubSpot sync. Ensure NO demo language in the email.",
   "id": "waitlist-confirmation-email",
-  "title": "Waitlist/Demo Request Confirmation Email",
+  "title": "Interest Registration Confirmation Email",
   "priority": 2,
   "status": "verified",
   "branchName": "002-legal-ai-core",
@@ -11,6 +11,11 @@
       "description": "Send automated confirmation email to users who submit demo requests. Implement: 1) Email template with thank you message, 2) Information about what to expect next (timeline for demo scheduling, product updates), 3) Links to documentation, blog, or social media, 4) 'Add to calendar' link if demo time was scheduled, 5) Unsubscribe/opt-out link for marketing emails, 6) Use existing email-notification-service infrastructure, 7) Send via email queue (or Temporal workflow when migration complete). Ensure email is sent asynchronously after successful HubSpot sync.",
       "timestamp": "2026-01-24T21:38:47.510Z",
       "source": "initial"
+    },
+    {
+      "description": "This task is superseded by interest-confirmation-email. Send automated confirmation email to users who submit early access interest (NOT demo request). Email should: 1) Use existing email-notification-service, 2) Send asynchronously via email queue/Temporal, 3) Include personalized greeting, 4) Thank them for interest in early access (NOT demo), 5) Explain next steps (timeline, updates, invitation), 6) Provide links to docs/blog/social, 7) Include unsubscribe link, 8) Be sent after successful HubSpot sync. Ensure NO demo language in the email.",
+      "timestamp": "2026-01-26T05:45:27.243Z",
+      "source": "edit"
     }
   ],
   "updatedAt": "2026-01-25T02:55:17.599Z"

@@ -5,7 +5,7 @@
   "title": "Landing Page Waitlist/Demo Request Page",
   "dependencies": [],
   "priority": 1,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,6 @@
       "timestamp": "2026-01-24T21:38:47.507Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-24T22:04:17.452Z"
 }

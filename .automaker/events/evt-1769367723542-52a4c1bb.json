@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769367723542-52a4c1bb",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T19:02:03.542Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "features-landing-page",
+  "featureName": "Create Features Landing Page",
+  "error": "Feature completed in 1006s - auto-verified",
+  "passes": true
+}

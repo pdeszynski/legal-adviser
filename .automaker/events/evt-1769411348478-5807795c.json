@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769411348478-5807795c",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T07:09:08.478Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769407664057-3a56ac9q5",
+  "featureName": "Fix modal not displaying on landing page buttons",
+  "error": "Feature completed in 257s - auto-verified",
+  "passes": true
+}

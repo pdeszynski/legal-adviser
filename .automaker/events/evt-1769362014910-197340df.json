@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769362014910-197340df",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T17:26:54.910Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-schedule-error-handling",
+  "featureName": "Add Comprehensive Error Handling for Schedule Operations",
+  "error": "Feature completed in 758s - auto-verified",
+  "passes": true
+}

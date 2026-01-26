@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769406122130-00ed1794",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T05:42:02.130Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "investigate-landing-cta-button-performance",
+  "featureName": "Investigate Landing Page CTA Button Performance Issues",
+  "error": "Feature completed in 462s - auto-verified",
+  "passes": true
+}

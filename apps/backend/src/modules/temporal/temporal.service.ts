@@ -22,10 +22,33 @@ import type {
   WorkflowStartOptions,
   TemporalHealthResult,
   ScheduleDescription,
+  ScheduleOptions,
+  ScheduleUpdateOptions,
+  ScheduleBackfillOptions,
+  ScheduleTriggerOptions,
+  ScheduleOverlapPolicy,
+  ScheduleListResult,
+  ScheduleListOptions,
 } from './temporal.interfaces';
 import { TemporalMetricsService } from './temporal-metrics.service';
 import { TemporalObservabilityService } from './temporal-observability.service';
-import type { WorkflowContext } from './temporal-observability.service';
+import { AuditLogService } from '../audit-log/audit-log.service';
+import {
+  AuditActionType,
+  AuditResourceType,
+} from '../audit-log/entities/audit-log.entity';
+import {
+  ScheduleNotFoundError,
+  ScheduleAlreadyExistsError,
+  InvalidCronExpressionError,
+  WorkflowNotFoundError,
+  ScheduleOperationError,
+  ScheduleAlreadyPausedError,
+  ScheduleNotPausedError,
+  InvalidScheduleSpecError,
+  TemporalServiceUnavailableError,
+  TemporalError,
+} from './exceptions';
 
 /**
  * Workflow Execution Result
@@ -58,6 +81,84 @@ export interface WorkflowQueryResult<T = unknown> {
 }
 
 /**
+ * Raw Temporal Schedule Description
+ *
+ * Type definition for the raw schedule description returned by Temporal SDK.
+ * This mirrors the structure of client.schedule.handle.describe() response.
+ */
+interface ScheduleDescriptionRaw {
+  /** Schedule ID */
+  scheduleId?: string;
+  /** Current state of the schedule */
+  state?: {
+    /** Whether the schedule is paused */
+    paused: boolean;
+    /** Number of missed actions */
+    numMissedActions?: number;
+  };
+  /** Action specification */
+  action?: {
+    /** Start workflow action */
+    startWorkflow?: {
+      /** Workflow type name */
+      workflowType?: string;
+      /** Workflow function */
+      workflow?: string;
+      /** Workflow ID template */
+      workflowId?: string;
+      /** Task queue for the workflow */
+      taskQueue?: string;
+      /** Arguments to pass to workflow */
+      args?: unknown[];
+    };
+  };
+  /** Schedule specification */
+  spec?: {
+    /** Cron expressions */
+    cronExpressions?: Array<{ expression: string; comment?: string }>;
+    /** Interval specification */
+    interval?: { seconds: number };
+    /** Start time */
+    startTime?: string;
+    /** End time */
+    endTime?: string;
+    /** Timezone */
+    timezone?: string;
+  };
+  /** Schedule policies */
+  policies?: {
+    /** Overlap policy */
+    overlap?: 'SKIP' | 'ALLOW_ALL' | 'BUFFER_ONE';
+    /** Catchup window */
+    catchupWindow?: string;
+  };
+  /** Schedule information */
+  info?: {
+    /** Number of missed actions */
+    missedActions?: number;
+    /** Total actions */
+    totalActions?: number;
+    /** Successful actions */
+    successfulActions?: number;
+    /** Failed actions */
+    failedActions?: number;
+  };
+  /** Recent action executions */
+  recentActions?: Array<{
+    /** Workflow ID */
+    workflowId?: string;
+    /** Run ID */
+    runId?: string;
+    /** When the action started */
+    startedAt?: string;
+    /** Action status */
+    status?: 'RUNNING' | 'COMPLETED' | 'FAILED' | 'CANCELED';
+  }>;
+  /** Future scheduled action times */
+  futureActionTimes?: string[];
+}
+
+/**
  * Temporal Service
  *
  * Main service for interacting with Temporal workflows.
@@ -83,6 +184,8 @@ export class TemporalService {
     private readonly metricsService?: TemporalMetricsService,
     @Optional()
     private readonly observabilityService?: TemporalObservabilityService,
+    @Optional()
+    private readonly auditLogService?: AuditLogService,
   ) {}
 
   /**
@@ -212,7 +315,7 @@ export class TemporalService {
         workflowType: workflowTypeStr,
         taskQueue,
         namespace: this.options.namespace,
-        metadata: options.metadata as Record<string, unknown> | undefined,
+        metadata: options.metadata,
       });
 
       return {
@@ -625,123 +728,97 @@ export class TemporalService {
   }
 
   /**
-   * Create a schedule
+   * Create a Temporal schedule
    *
-   * Creates a Temporal schedule with the specified configuration.
+   * Creates a new schedule for recurring workflow execution using cron expressions.
    *
    * @param options - Schedule creation options
    * @returns The created schedule ID
    */
-  async createSchedule(options: {
-    scheduleId: string;
-    action: {
-      workflowType: string;
-      workflowId?: string;
-      taskQueue: string;
-      args: unknown[];
+  async createSchedule(options: ScheduleOptions): Promise<string> {
+    const client = (await this.getClient()) as {
+      schedule: {
+        create: (
+          opts: Record<string, unknown>,
+        ) => Promise<{ scheduleId: string }>;
+      };
     };
-    spec: {
-      cronExpression: string;
-    };
-    policies?: {
-      overlap?: 'SKIP' | 'ALLOW_ALL' | 'BUFFER_ONE' | 'BUFFER_ALL' | 'CANCEL_OTHER' | 'TERMINATE_OTHER';
-    };
-    initialState?: {
-      paused?: boolean;
-      note?: string;
-      triggerImmediately?: boolean;
-    };
-    memo?: Record<string, unknown>;
-  }): Promise<string> {
-    const {
-      scheduleId,
-      action,
-      spec,
-      policies,
-      initialState,
-      memo,
-    } = options;
 
-    this.logger.log(
-      `Creating schedule ${scheduleId} with cron: ${spec.cronExpression}`,
-    );
+    const { scheduleId, action, spec, policies } = options;
+
+    // Get cron expression from spec (support both direct cron and calendar specs)
+    const cronExpression =
+      spec.cronExpressions?.[0]?.expression || (spec as any).cronExpression;
+
+    if (!cronExpression && !spec.calendars && !spec.interval) {
+      throw new InvalidScheduleSpecError(
+        'Schedule spec must include cronExpressions, calendars, or interval',
+        { scheduleId },
+      );
+    }
+
+    // Validate and parse cron expression if provided
+    let calendarSpec: Record<string, unknown> | undefined;
+    if (cronExpression) {
+      try {
+        this.validateCronExpression(cronExpression);
+        calendarSpec = this.parseCronToCalendarSpec(cronExpression);
+      } catch (error) {
+        if (error instanceof InvalidCronExpressionError) {
+          throw error;
+        }
+        throw new InvalidCronExpressionError(
+          cronExpression,
+          error instanceof Error ? error.message : 'Unknown validation error',
+        );
+      }
+    }
+
+    // Map overlap policy string to SDK enum
+    const overlapPolicyMap: Record<ScheduleOverlapPolicy, string> = {
+      SKIP: 'SKIP',
+      ALLOW_ALL: 'ALLOW_ALL',
+      BUFFER_ONE: 'BUFFER_ONE',
+    };
+
+    const overlapPolicy = policies?.overlap
+      ? overlapPolicyMap[policies.overlap]
+      : 'SKIP';
 
     try {
-      const client = (await this.getClient()) as {
-        schedule: {
-          create: (opts: {
-            scheduleId: string;
-            action: {
-              type: string;
-              workflowType: string;
-              workflowId?: string;
-              taskQueue: string;
-              args: unknown[];
-            };
-            spec: {
-              cronExpressions: string[];
-            };
-            policies?: {
-              overlap?: ScheduleOverlapPolicy;
-            };
-            state?: {
-              paused?: boolean;
-              note?: string;
-              triggerImmediately?: boolean;
-            };
-            memo?: Record<string, unknown>;
-          }) => Promise<{ scheduleId: string }>;
-        },
-      };
-
-      // Map overlap policy string to Temporal enum
-      let overlapPolicy: ScheduleOverlapPolicy = ScheduleOverlapPolicy.SKIP;
-      if (policies?.overlap) {
-        switch (policies.overlap) {
-          case 'SKIP':
-            overlapPolicy = ScheduleOverlapPolicy.SKIP;
-            break;
-          case 'ALLOW_ALL':
-            overlapPolicy = ScheduleOverlapPolicy.ALLOW_ALL;
-            break;
-          case 'BUFFER_ONE':
-            overlapPolicy = ScheduleOverlapPolicy.BUFFER_ONE;
-            break;
-          case 'BUFFER_ALL':
-            overlapPolicy = ScheduleOverlapPolicy.BUFFER_ALL;
-            break;
-          case 'CANCEL_OTHER':
-            overlapPolicy = ScheduleOverlapPolicy.CANCEL_OTHER;
-            break;
-          case 'TERMINATE_OTHER':
-            overlapPolicy = ScheduleOverlapPolicy.TERMINATE_OTHER;
-            break;
-        }
-      }
-
-      // Validate cron expression
-      if (!spec.cronExpression || spec.cronExpression.trim().length === 0) {
-        throw new BadRequestException('Cron expression is required');
-      }
-
-      // Create the schedule using Temporal SDK
-      const handle = await client.schedule.create({
+      const result = await client.schedule.create({
         scheduleId,
         action: {
-          type: 'startWorkflow',
+          type: action.type,
           workflowType: action.workflowType,
-          workflowId: action.workflowId || `${scheduleId}-workflow`,
-          taskQueue: action.taskQueue,
-          args: action.args,
+          args: action.args || [],
+          taskQueue: action.taskQueue || this.options.taskQueue,
+          // Generate a unique workflow ID for each scheduled execution
+          workflowId: `${action.workflowId}-${Date.now()}`,
+          memo: action.memo,
+          searchAttributes: action.searchAttributes,
         },
-        spec: {
-          cronExpressions: [spec.cronExpression],
-        },
+        spec: calendarSpec
+          ? {
+              calendars: [calendarSpec],
+            }
+          : spec.calendars
+            ? {
+                calendars: spec.calendars,
+              }
+            : spec.interval
+              ? {
+                  interval: spec.interval,
+                }
+              : undefined,
         policies: {
           overlap: overlapPolicy,
+          catchupWindow: policies?.catchupWindow || '1 day',
+          pauseOnFailure: policies?.pauseOnFailure,
         },
-        state: initialState,
-        memo,
+        memo: options.memo,
+        searchAttributes: options.searchAttributes,
+        initialPaused: options.paused,
       });
 
       this.logger.log(`Schedule ${scheduleId} created successfully`);
@@ -749,109 +826,983 @@ export class TemporalService {
       // Record schedule creation in metrics
       this.metricsService?.recordWorkflowStarted({
         workflowType: action.workflowType,
-        taskQueue: action.taskQueue,
+        taskQueue: action.taskQueue || this.options.taskQueue,
         namespace: this.options.namespace,
       });
 
-      return scheduleId;
+      return result.scheduleId;
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
       this.logger.error(
-        `Failed to create schedule ${scheduleId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to create schedule ${scheduleId}: ${errorMessage}`,
+        error,
       );
 
       // Record failed schedule creation
       this.metricsService?.recordWorkflowFailed({
         workflowType: action.workflowType,
-        taskQueue: action.taskQueue,
+        taskQueue: action.taskQueue || this.options.taskQueue,
         durationMs: 0,
-        failureReason: error instanceof Error ? error.message : 'Unknown error',
+        failureReason: errorMessage,
       });
 
-      throw error;
+      // Map to specific error type
+      if (errorMessage.includes('already exists')) {
+        throw new ScheduleAlreadyExistsError(scheduleId);
+      }
+
+      if (
+        errorMessage.includes('not found') &&
+        errorMessage.includes('workflow')
+      ) {
+        throw new WorkflowNotFoundError(
+          action.workflowType,
+          action.taskQueue || this.options.taskQueue,
+        );
+      }
+
+      if (errorMessage.includes('cron') || errorMessage.includes('calendar')) {
+        throw new InvalidCronExpressionError(
+          cronExpression || 'unknown',
+          errorMessage,
+        );
+      }
+
+      throw new ScheduleOperationError('create', scheduleId, errorMessage);
     }
+  }
+
+  /**
+   * Validate cron expression format
+   *
+   * Validates standard 5-field cron expression: minute hour day month weekday
+   *
+   * @param cronExpression - Cron expression to validate
+   * @throws InvalidCronExpressionError if invalid
+   */
+  private validateCronExpression(cronExpression: string): void {
+    const parts = cronExpression.trim().split(/\s+/);
+
+    if (parts.length !== 5) {
+      throw new InvalidCronExpressionError(
+        cronExpression,
+        `Expected 5 fields (minute hour day month weekday), got ${parts.length}`,
+      );
+    }
+
+    // Basic validation - each field should contain valid cron characters
+    const validChars = /^[\d*,\-/?LW]+$/;
+    const [minute, hour, day, month, weekday] = parts;
+
+    for (const [field, value] of [
+      ['minute', minute],
+      ['hour', hour],
+      ['day', day],
+      ['month', month],
+      ['weekday', weekday],
+    ]) {
+      if (!value || !validChars.test(value)) {
+        throw new InvalidCronExpressionError(
+          cronExpression,
+          `${field} field contains invalid characters: "${value}"`,
+        );
+      }
+    }
+
+    // Validate ranges
+    this.validateCronField('minute', minute, 0, 59, cronExpression);
+    this.validateCronField('hour', hour, 0, 23, cronExpression);
+    this.validateCronField('day', day, 1, 31, cronExpression);
+    this.validateCronField('month', month, 1, 12, cronExpression);
+    this.validateCronField('weekday', weekday, 0, 7, cronExpression);
+  }
+
+  /**
+   * Validate a single cron field value range
+   *
+   * @param fieldName - Name of the field being validated
+   * @param value - Field value to validate
+   * @param min - Minimum valid value
+   * @param max - Maximum valid value
+   * @param cronExpression - The full cron expression for error reporting
+   * @throws InvalidCronExpressionError if any value is out of range
+   */
+  private validateCronField(
+    fieldName: string,
+    value: string,
+    min: number,
+    max: number,
+    cronExpression: string,
+  ): void {
+    // Skip validation for wildcards, ranges, and lists
+    if (
+      value === '*' ||
+      value.includes(',') ||
+      value.includes('-') ||
+      value.includes('/')
+    ) {
+      return;
+    }
+
+    const numValue = parseInt(value, 10);
+    if (!isNaN(numValue) && (numValue < min || numValue > max)) {
+      throw new InvalidCronExpressionError(
+        cronExpression,
+        `${fieldName} value ${numValue} is out of range [${min}, ${max}]`,
+      );
+    }
+  }
+
+  /**
+   * Parse cron expression to Temporal calendar spec
+   *
+   * Converts a standard 5-field cron expression (minute hour day month weekday)
+   * to Temporal's calendar spec format.
+   *
+   * @param cronExpression - Standard cron expression
+   * @returns Temporal calendar spec
+   */
+  private parseCronToCalendarSpec(
+    cronExpression: string,
+  ): Record<string, unknown> {
+    const parts = cronExpression.trim().split(/\s+/);
+    const [minute, hour, day, month, weekday] = parts;
+
+    const spec: Record<string, unknown> = {
+      comment: `Cron: ${cronExpression}`,
+    };
+
+    // Parse minute field
+    if (minute !== '*') {
+      spec.minute = this.parseCronField(minute);
+    }
+
+    // Parse hour field
+    if (hour !== '*') {
+      spec.hour = this.parseCronField(hour);
+    }
+
+    // Parse day of month field
+    if (day !== '*') {
+      spec.dayOfMonth = this.parseCronField(day);
+    }
+
+    // Parse month field
+    if (month !== '*') {
+      spec.month = this.parseCronField(month);
+    }
+
+    // Parse day of week field
+    // Note: cron uses 0=Sunday, but Temporal expects 7=Sunday (1=Monday, ..., 7=Sunday)
+    if (weekday !== '*') {
+      spec.dayOfWeek = this.parseCronField(weekday, true);
+    }
+
+    return spec;
+  }
+
+  /**
+   * Parse a single cron field to Temporal format
+   *
+   * Handles:
+   * - Single value: "5" -> 5
+   * - Wildcard: "*" -> undefined (not set)
+   * - Range: "1-5" -> [1, 2, 3, 4, 5]
+   * - List: "1,3,5" -> [1, 3, 5]
+   * - Step: "* /5" or "1-10/2" -> generates appropriate values
+   *
+   * @param field - Cron field value
+   * @param isDayOfWeek - Whether this is a dayOfWeek field (special handling)
+   * @returns Parsed value (number, array, string, or undefined for wildcard)
+   */
+  private parseCronField(
+    field: string,
+    isDayOfWeek = false,
+  ): number | number[] | string | string[] | Array<number | string> {
+    // Handle step notation (e.g., */5, 1-10/2)
+    if (field.includes('/')) {
+      const [base, step] = field.split('/');
+      const stepNum = parseInt(step, 10);
+
+      if (base === '*') {
+        // Return step notation as string for Temporal
+        return `*/${step}`;
+      }
+
+      // Handle range with step (e.g., 1-10/2)
+      if (base.includes('-')) {
+        const [start, end] = base.split('-').map(Number);
+        const values: (number | string)[] = [];
+        for (let i = start; i <= end; i += stepNum) {
+          values.push(this.convertDayOfWeekForTemporal(i, isDayOfWeek));
+        }
+        return values;
+      }
+
+      return `*/${step}`;
+    }
+
+    // Handle range (e.g., 1-5)
+    if (field.includes('-')) {
+      const [start, end] = field.split('-').map(Number);
+      const values: (number | string)[] = [];
+      for (let i = start; i <= end; i++) {
+        values.push(this.convertDayOfWeekForTemporal(i, isDayOfWeek));
+      }
+      return values;
+    }
+
+    // Handle list (e.g., 1,3,5)
+    if (field.includes(',')) {
+      return field.split(',').map((v) =>
+        this.convertDayOfWeekForTemporal(parseInt(v, 10), isDayOfWeek),
+      );
+    }
+
+    // Handle single value
+    const num = parseInt(field, 10);
+    if (isNaN(num)) {
+      return field;
+    }
+    return this.convertDayOfWeekForTemporal(num, isDayOfWeek);
+  }
+
+  /**
+   * Day of week name mapping for Temporal CalendarSpec
+   * Maps cron values (0=Sun, 1=Mon, ..., 6=Sat) to Temporal day names
+   */
+  private readonly DAY_NAMES = [
+    'SUNDAY', // 0
+    'MONDAY', // 1
+    'TUESDAY', // 2
+    'WEDNESDAY', // 3
+    'THURSDAY', // 4
+    'FRIDAY', // 5
+    'SATURDAY', // 6
+  ] as const;
+
+  /**
+   * Convert cron dayOfWeek value to Temporal CalendarSpec format
+   *
+   * Standard cron: 0=Sunday, 1=Monday, ..., 6=Saturday
+   * Temporal: Expects day name strings like "SUNDAY", "MONDAY", etc.
+   *
+   * @param value - Day of week number from cron
+   * @param isDayOfWeek - Whether this is a dayOfWeek field
+   * @returns Converted value for Temporal (number for other fields, string for dayOfWeek)
+   */
+  private convertDayOfWeekForTemporal(value: number, isDayOfWeek: boolean): number | string {
+    if (!isDayOfWeek) {
+      return value;
+    }
+    // Convert cron weekday (0=Sun, 1=Mon, ..., 6=Sat) to Temporal day names
+    // Temporal CalendarSpec expects: "SUNDAY", "MONDAY", "TUESDAY", etc.
+    if (value >= 0 && value <= 6) {
+      return this.DAY_NAMES[value];
+    }
+    // Also handle 7 which some cron systems use for Sunday
+    if (value === 7) {
+      return 'SUNDAY';
+    }
+    return value; // Fallback for unexpected values
   }
 
   /**
    * Describe a schedule
    *
-   * Fetches the schedule's description from Temporal Server including
+   * Retrieves detailed information about a Temporal schedule including
    * current state, next run times, action details, and recent execution history.
    *
    * @param scheduleId - The schedule ID to describe
-   * @returns Schedule description with full details
-   * @throws NotFoundException if schedule does not exist
+   * @returns Schedule description with details or exists: false if not found
    */
   async describeSchedule(scheduleId: string): Promise<ScheduleDescription> {
-    this.logger.debug(`Describing schedule ${scheduleId}`);
-
-    const client = (await this.getClient()) as {
-      schedule: {
-        getHandle: (id: string) => {
-          describe: () => Promise<ScheduleDescription>;
+    try {
+      const client = (await this.getClient()) as {
+        schedule?: {
+          getHandle: (id: string) => {
+            describe: () => Promise<ScheduleDescriptionRaw>;
+          };
         };
       };
-    };
 
-    try {
-      const handle = client.schedule.getHandle(scheduleId);
-      const description = await handle.describe();
+      if (!client.schedule) {
+        this.logger.warn(
+          'Schedule functionality not available in Temporal client',
+        );
+        return { scheduleId, exists: false };
+      }
 
-      this.logger.debug(
-        `Successfully described schedule ${scheduleId}, paused: ${description.state.paused}, next actions: ${description.info.nextActionTimes.length}`,
-      );
+      const scheduleHandle = client.schedule.getHandle(scheduleId);
+      const rawDescription = await scheduleHandle.describe();
 
-      return description;
+      // Transform Temporal SDK's raw description to our typed interface
+      return this.transformScheduleDescription(scheduleId, rawDescription);
     } catch (error) {
-      // Check if this is a "schedule not found" error
-      if (error instanceof Error) {
-        const errorMessage = error.message.toLowerCase();
-        if (
-          errorMessage.includes('not found') ||
-          errorMessage.includes('unknown') ||
-          errorMessage.includes('schedule')
-        ) {
-          this.logger.warn(`Schedule ${scheduleId} not found`);
-          throw new NotFoundException(
-            `Schedule ${scheduleId} not found. It may have been deleted or never existed.`,
-          );
-        }
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      // Handle non-existent schedules gracefully
+      if (
+        errorMessage.includes('not found') ||
+        errorMessage.includes('does not exist') ||
+        errorMessage.includes('resource not found')
+      ) {
+        this.logger.debug(`Schedule ${scheduleId} does not exist`);
+        return { scheduleId, exists: false };
       }
 
       this.logger.error(
-        `Failed to describe schedule ${scheduleId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to describe schedule ${scheduleId}: ${errorMessage}`,
         error,
       );
 
-      throw new BadRequestException(
-        `Failed to describe schedule ${scheduleId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
+      // Throw specific error for other failures
+      throw new ScheduleOperationError('describe', scheduleId, errorMessage);
     }
   }
 
   /**
-   * Pause a schedule (stub implementation - not yet implemented)
+   * List all schedules
    *
-   * TODO: Implement Temporal schedule pause
+   * Returns a paginated list of schedule IDs.
+   *
+   * @param options - List options with pagination
+   * @returns List of schedule IDs with pagination token
    */
-  async pauseSchedule(_scheduleId: string): Promise<void> {
-    this.logger.warn('Temporal schedule pause not yet implemented');
+  async listSchedules(
+    options?: ScheduleListOptions,
+  ): Promise<ScheduleListResult> {
+    try {
+      const client = (await this.getClient()) as {
+        schedule?: {
+          list: () => {
+            [Symbol.asyncIterator]: () => AsyncIterator<{ id: string }, void>;
+          };
+        };
+      };
+
+      if (!client.schedule) {
+        this.logger.warn(
+          'Schedule functionality not available in Temporal client',
+        );
+        return { scheduleIds: [] };
+      }
+
+      const scheduleIds: string[] = [];
+      const iterator = client.schedule.list()[Symbol.asyncIterator]();
+
+      // Collect schedule IDs up to the page size limit
+      const pageSize = options?.pageSize ?? 100;
+      let count = 0;
+
+      while (count < pageSize) {
+        const { value, done } = await iterator.next();
+        if (done) break;
+
+        if (value?.id) {
+          scheduleIds.push(value.id);
+          count++;
+        }
+      }
+
+      this.logger.log(`Listed ${scheduleIds.length} schedules`);
+
+      return {
+        scheduleIds,
+        nextPageToken: undefined, // Temporal SDK iterator doesn't expose pagination tokens
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      this.logger.error(`Failed to list schedules: ${errorMessage}`, error);
+
+      throw new ScheduleOperationError('list', 'all', errorMessage);
+    }
   }
 
   /**
-   * Resume a schedule (stub implementation - not yet implemented)
+   * Transform raw Temporal schedule description to our typed interface
    *
-   * TODO: Implement Temporal schedule resume
+   * @param scheduleId - The schedule ID
+   * @param raw - Raw schedule description from Temporal SDK
+   * @returns Transformed schedule description
    */
-  async resumeSchedule(_scheduleId: string): Promise<void> {
-    this.logger.warn('Temporal schedule resume not yet implemented');
+  private transformScheduleDescription(
+    scheduleId: string,
+    raw: ScheduleDescriptionRaw,
+  ): ScheduleDescription {
+    const result: ScheduleDescription = {
+      scheduleId,
+      exists: true,
+      paused: raw.state?.paused ?? false,
+      nextRunTimes: raw.futureActionTimes?.map((t) => new Date(t)),
+      missedActions: raw.info?.missedActions,
+      totalActions: raw.info?.totalActions,
+      successfulActions: raw.info?.successfulActions,
+      failedActions: raw.info?.failedActions,
+    };
+
+    // Extract action details
+    if (raw.action?.startWorkflow) {
+      const action = raw.action.startWorkflow;
+      result.action = {
+        workflowType: action.workflowType || action.workflow || '',
+        workflowId: action.workflowId || '',
+        taskQueue: action.taskQueue || '',
+        args: action.args || [],
+      };
+    }
+
+    // Extract spec details
+    if (raw.spec?.cronExpressions?.length) {
+      result.spec = {
+        cronExpression: raw.spec.cronExpressions[0].expression,
+        startTime: raw.spec.startTime,
+        endTime: raw.spec.endTime,
+        timezone: raw.spec.timezone,
+      };
+    } else if (raw.spec?.interval) {
+      // Handle interval-based schedules
+      result.spec = {
+        cronExpression: `interval:${raw.spec.interval.seconds}s`,
+        startTime: raw.spec.startTime,
+        endTime: raw.spec.endTime,
+        timezone: raw.spec.timezone,
+      };
+    }
+
+    // Extract policy details
+    if (raw.policies) {
+      result.policies = {
+        overlap: raw.policies.overlap,
+        catchupWindow: raw.policies.catchupWindow,
+      };
+    }
+
+    // Extract recent action executions
+    if (raw.recentActions?.length) {
+      result.recentActions = raw.recentActions.map((action) => ({
+        workflowId: action.workflowId || '',
+        runId: action.runId || '',
+        startedAt: action.startedAt ? new Date(action.startedAt) : undefined,
+        status: action.status,
+      }));
+    }
+
+    // Set convenience fields
+    const lastAction = raw.recentActions?.[0];
+    if (lastAction?.startedAt) {
+      result.lastRunAt = new Date(lastAction.startedAt);
+    }
+    const nextRun = raw.futureActionTimes?.[0];
+    if (nextRun) {
+      result.nextRunAt = new Date(nextRun);
+    }
+
+    return result;
   }
 
   /**
-   * Delete a schedule (stub implementation - not yet implemented)
+   * Pause a schedule
    *
-   * TODO: Implement Temporal schedule deletion
+   * Pauses a schedule so it won't trigger new workflow executions.
+   * Validates the schedule exists before pausing and logs the action to audit logs.
+   *
+   * @param scheduleId - The schedule ID to pause
+   * @param userId - Optional user ID for audit logging
+   * @param ipAddress - Optional IP address for audit logging
+   * @param userAgent - Optional user agent for audit logging
    */
-  async deleteSchedule(_scheduleId: string): Promise<void> {
-    this.logger.warn('Temporal schedule deletion not yet implemented');
+  async pauseSchedule(
+    scheduleId: string,
+    userId?: string | null,
+    ipAddress?: string | null,
+    userAgent?: string | null,
+  ): Promise<void> {
+    // Validate schedule exists before pausing
+    const description = await this.describeSchedule(scheduleId);
+    if (!description.exists) {
+      this.logger.warn(`Schedule ${scheduleId} does not exist`);
+      throw new ScheduleNotFoundError(scheduleId);
+    }
+
+    // Check if already paused
+    if (description.paused) {
+      this.logger.debug(`Schedule ${scheduleId} is already paused`);
+      throw new ScheduleAlreadyPausedError(scheduleId);
+    }
+
+    try {
+      const client = (await this.getClient()) as {
+        schedule?: {
+          getHandle: (id: string) => {
+            pause: () => Promise<void>;
+          };
+        };
+      };
+
+      if (!client.schedule) {
+        throw new TemporalServiceUnavailableError(
+          'Schedule functionality not available',
+        );
+      }
+
+      const scheduleHandle = client.schedule.getHandle(scheduleId);
+      await scheduleHandle.pause();
+
+      this.logger.log(`Schedule ${scheduleId} paused successfully`);
+
+      // Log to audit
+      await this.auditLogService?.logAction(
+        AuditActionType.PAUSE,
+        AuditResourceType.SCHEDULE,
+        {
+          resourceId: scheduleId,
+          userId: userId ?? undefined,
+          ipAddress: ipAddress ?? undefined,
+          userAgent: userAgent ?? undefined,
+          statusCode: 200,
+          changeDetails: {
+            before: { paused: false },
+            after: { paused: true },
+            context: { scheduleId },
+          },
+        },
+      );
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      this.logger.error(
+        `Failed to pause schedule ${scheduleId}: ${errorMessage}`,
+        error,
+      );
+
+      // Log failed attempt to audit
+      await this.auditLogService?.logAction(
+        AuditActionType.PAUSE,
+        AuditResourceType.SCHEDULE,
+        {
+          resourceId: scheduleId,
+          userId: userId ?? undefined,
+          ipAddress: ipAddress ?? undefined,
+          userAgent: userAgent ?? undefined,
+          statusCode: 400,
+          errorMessage,
+        },
+      );
+
+      // Re-throw our custom errors
+      if (
+        error instanceof ScheduleNotFoundError ||
+        error instanceof ScheduleAlreadyPausedError ||
+        error instanceof TemporalServiceUnavailableError
+      ) {
+        throw error;
+      }
+
+      throw new ScheduleOperationError('pause', scheduleId, errorMessage);
+    }
+  }
+
+  /**
+   * Resume a schedule
+   *
+   * Resumes a paused schedule.
+   * Validates the schedule exists before resuming and logs the action to audit logs.
+   *
+   * @param scheduleId - The schedule ID to resume
+   * @param userId - Optional user ID for audit logging
+   * @param ipAddress - Optional IP address for audit logging
+   * @param userAgent - Optional user agent for audit logging
+   */
+  async resumeSchedule(
+    scheduleId: string,
+    userId?: string | null,
+    ipAddress?: string | null,
+    userAgent?: string | null,
+  ): Promise<void> {
+    // Validate schedule exists before resuming
+    const description = await this.describeSchedule(scheduleId);
+    if (!description.exists) {
+      this.logger.warn(`Schedule ${scheduleId} does not exist`);
+      throw new ScheduleNotFoundError(scheduleId);
+    }
+
+    // Check if already running
+    if (!description.paused) {
+      this.logger.debug(`Schedule ${scheduleId} is not paused`);
+      throw new ScheduleNotPausedError(scheduleId);
+    }
+
+    try {
+      const client = (await this.getClient()) as {
+        schedule?: {
+          getHandle: (id: string) => {
+            unpause: () => Promise<void>;
+          };
+        };
+      };
+
+      if (!client.schedule) {
+        throw new TemporalServiceUnavailableError(
+          'Schedule functionality not available',
+        );
+      }
+
+      const scheduleHandle = client.schedule.getHandle(scheduleId);
+      await scheduleHandle.unpause();
+
+      this.logger.log(`Schedule ${scheduleId} resumed successfully`);
+
+      // Log to audit
+      await this.auditLogService?.logAction(
+        AuditActionType.RESUME,
+        AuditResourceType.SCHEDULE,
+        {
+          resourceId: scheduleId,
+          userId: userId ?? undefined,
+          ipAddress: ipAddress ?? undefined,
+          userAgent: userAgent ?? undefined,
+          statusCode: 200,
+          changeDetails: {
+            before: { paused: true },
+            after: { paused: false },
+            context: { scheduleId },
+          },
+        },
+      );
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      this.logger.error(
+        `Failed to resume schedule ${scheduleId}: ${errorMessage}`,
+        error,
+      );
+
+      // Log failed attempt to audit
+      await this.auditLogService?.logAction(
+        AuditActionType.RESUME,
+        AuditResourceType.SCHEDULE,
+        {
+          resourceId: scheduleId,
+          userId: userId ?? undefined,
+          ipAddress: ipAddress ?? undefined,
+          userAgent: userAgent ?? undefined,
+          statusCode: 400,
+          errorMessage,
+        },
+      );
+
+      // Re-throw our custom errors
+      if (
+        error instanceof ScheduleNotFoundError ||
+        error instanceof ScheduleNotPausedError ||
+        error instanceof TemporalServiceUnavailableError
+      ) {
+        throw error;
+      }
+
+      throw new ScheduleOperationError('resume', scheduleId, errorMessage);
+    }
+  }
+
+  /**
+   * Delete a schedule
+   *
+   * Permanently deletes a schedule from Temporal.
+   *
+   * @param scheduleId - The schedule ID to delete
+   */
+  async deleteSchedule(scheduleId: string): Promise<void> {
+    try {
+      const client = (await this.getClient()) as {
+        schedule?: {
+          getHandle: (id: string) => {
+            delete: () => Promise<void>;
+          };
+        };
+      };
+
+      if (!client.schedule) {
+        throw new TemporalServiceUnavailableError(
+          'Schedule functionality not available',
+        );
+      }
+
+      const scheduleHandle = client.schedule.getHandle(scheduleId);
+      await scheduleHandle.delete();
+
+      this.logger.log(`Schedule ${scheduleId} deleted successfully`);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      this.logger.error(
+        `Failed to delete schedule ${scheduleId}: ${errorMessage}`,
+        error,
+      );
+
+      // Re-throw our custom errors
+      if (error instanceof TemporalServiceUnavailableError) {
+        throw error;
+      }
+
+      // Check for not found error
+      if (
+        errorMessage.includes('not found') ||
+        errorMessage.includes('does not exist')
+      ) {
+        throw new ScheduleNotFoundError(scheduleId);
+      }
+
+      throw new ScheduleOperationError('delete', scheduleId, errorMessage);
+    }
+  }
+
+  /**
+   * Update a schedule
+   *
+   * Updates an existing schedule with new configuration.
+   *
+   * @param scheduleId - The schedule ID to update
+   * @param options - Update options
+   */
+  async updateSchedule(
+    scheduleId: string,
+    options: ScheduleUpdateOptions,
+  ): Promise<void> {
+    try {
+      const client = (await this.getClient()) as {
+        schedule?: {
+          getHandle: (id: string) => {
+            update: (opts: Record<string, unknown>) => Promise<void>;
+          };
+        };
+      };
+
+      if (!client.schedule) {
+        throw new TemporalServiceUnavailableError(
+          'Schedule functionality not available',
+        );
+      }
+
+      const scheduleHandle = client.schedule.getHandle(scheduleId);
+
+      const updateData: Record<string, unknown> = {};
+
+      if (options.action) {
+        updateData.action = {
+          type: options.action.type,
+          workflowType: options.action.workflowType,
+          args: options.action.args || [],
+          taskQueue: options.action.taskQueue || this.options.taskQueue,
+          workflowId: options.action.workflowId,
+          memo: options.action.memo,
+          searchAttributes: options.action.searchAttributes,
+        };
+      }
+
+      if (options.spec) {
+        if (options.spec.calendars) {
+          updateData.spec = { calendars: options.spec.calendars };
+        } else if (options.spec.interval) {
+          updateData.spec = { interval: options.spec.interval };
+        } else if (options.spec.cronExpressions?.length) {
+          const cronExpr = options.spec.cronExpressions[0].expression;
+          const calendarSpec = this.parseCronToCalendarSpec(cronExpr);
+          updateData.spec = { calendars: [calendarSpec] };
+        }
+      }
+
+      if (options.policies) {
+        updateData.policies = options.policies;
+      }
+
+      await scheduleHandle.update(updateData);
+
+      this.logger.log(`Schedule ${scheduleId} updated successfully`);
+
+      // Handle paused state change
+      if (options.paused === true) {
+        await this.pauseSchedule(scheduleId);
+      } else if (options.paused === false) {
+        await this.resumeSchedule(scheduleId);
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      this.logger.error(
+        `Failed to update schedule ${scheduleId}: ${errorMessage}`,
+        error,
+      );
+
+      // Re-throw our custom errors
+      if (
+        error instanceof TemporalServiceUnavailableError ||
+        error instanceof ScheduleNotFoundError ||
+        error instanceof ScheduleAlreadyPausedError ||
+        error instanceof ScheduleNotPausedError
+      ) {
+        throw error;
+      }
+
+      throw new ScheduleOperationError('update', scheduleId, errorMessage);
+    }
+  }
+
+  /**
+   * Trigger a schedule immediately
+   *
+   * Immediately triggers a workflow execution from a schedule.
+   *
+   * @param scheduleId - The schedule ID to trigger
+   * @param options - Optional trigger options
+   * @returns The workflow execution result
+   */
+  async triggerSchedule(
+    scheduleId: string,
+    options?: ScheduleTriggerOptions,
+  ): Promise<{ workflowId: string; runId: string }> {
+    try {
+      const client = (await this.getClient()) as {
+        schedule?: {
+          getHandle: (id: string) => {
+            trigger: (opts?: Record<string, unknown>) => Promise<{
+              workflowId: string;
+              firstExecutionRunId: string;
+            }>;
+          };
+        };
+      };
+
+      if (!client.schedule) {
+        throw new TemporalServiceUnavailableError(
+          'Schedule functionality not available',
+        );
+      }
+
+      const scheduleHandle = client.schedule.getHandle(scheduleId);
+
+      const triggerOptions: Record<string, unknown> = {};
+      if (options?.overlap) {
+        triggerOptions.overlap = options.overlap;
+      }
+
+      const result = await scheduleHandle.trigger(triggerOptions);
+
+      this.logger.log(
+        `Schedule ${scheduleId} triggered successfully: workflow ${result.workflowId}`,
+      );
+
+      return {
+        workflowId: result.workflowId,
+        runId: result.firstExecutionRunId,
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      this.logger.error(
+        `Failed to trigger schedule ${scheduleId}: ${errorMessage}`,
+        error,
+      );
+
+      // Re-throw our custom errors
+      if (error instanceof TemporalServiceUnavailableError) {
+        throw error;
+      }
+
+      // Check for not found error
+      if (
+        errorMessage.includes('not found') ||
+        errorMessage.includes('does not exist')
+      ) {
+        throw new ScheduleNotFoundError(scheduleId);
+      }
+
+      throw new ScheduleOperationError('trigger', scheduleId, errorMessage);
+    }
+  }
+
+  /**
+   * Backfill a schedule
+   *
+   * Backfills missed schedule executions within a time range.
+   *
+   * @param scheduleId - The schedule ID to backfill
+   * @param options - Backfill options
+   */
+  async backfillSchedule(
+    scheduleId: string,
+    options: ScheduleBackfillOptions,
+  ): Promise<void> {
+    try {
+      const client = (await this.getClient()) as {
+        schedule?: {
+          getHandle: (id: string) => {
+            backfill: (opts: ScheduleBackfillOptions) => Promise<void>;
+          };
+        };
+      };
+
+      if (!client.schedule) {
+        throw new TemporalServiceUnavailableError(
+          'Schedule functionality not available',
+        );
+      }
+
+      const scheduleHandle = client.schedule.getHandle(scheduleId);
+      await scheduleHandle.backfill(options);
+
+      this.logger.log(
+        `Schedule ${scheduleId} backfill initiated from ${options.startAt} to ${options.endAt}`,
+      );
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      this.logger.error(
+        `Failed to backfill schedule ${scheduleId}: ${errorMessage}`,
+        error,
+      );
+
+      // Re-throw our custom errors
+      if (error instanceof TemporalServiceUnavailableError) {
+        throw error;
+      }
+
+      // Check for not found error
+      if (
+        errorMessage.includes('not found') ||
+        errorMessage.includes('does not exist')
+      ) {
+        throw new ScheduleNotFoundError(scheduleId);
+      }
+
+      throw new ScheduleOperationError('backfill', scheduleId, errorMessage);
+    }
+  }
+
+  /**
+   * Extract error code from error object
+   *
+   * @param error - Error object
+   * @returns Error code or undefined
+   */
+  private extractErrorCode(error: unknown): string | undefined {
+    if (error instanceof TemporalError) {
+      return error.code;
+    }
+    if (error instanceof Error && 'code' in error) {
+      return String((error as Record<string, unknown>).code);
+    }
+    return undefined;
   }
 }

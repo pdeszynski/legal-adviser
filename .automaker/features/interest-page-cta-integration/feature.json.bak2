@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Update all landing page CTA buttons to point to the new early access interest page (/early-access). This should be the MAIN CTA for the site until the service is fully launched. Tasks: 1) Update hero section 'Get Started' CTA button to navigate to /early-access, 2) Update 'Request Early Access' button to navigate to /early-access (or scroll to form if on same page), 3) Add additional CTAs in strategic locations: after feature sections, in sticky header on scroll, and as exit-intent modal, 4) Ensure all buttons use Next.js Link component for proper client-side routing, 5) Add loading states on button click with instant feedback (within 100ms), 6) Prevent double-clicks during navigation with button disabled state, 7) Make sure NO CTAs mention 'demo' - use language like 'Get Early Access', 'Join Waitlist', 'Request Access'. Update landing-page-cta-integration feature to point to interest page instead of demo page.",
+  "id": "interest-page-cta-integration",
+  "title": "Update All Landing Page CTAs to Point to Interest Page",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Update all landing page CTA buttons to point to the new early access interest page (/early-access). This should be the MAIN CTA for the site until the service is fully launched. Tasks: 1) Update hero section 'Get Started' CTA button to navigate to /early-access, 2) Update 'Request Early Access' button to navigate to /early-access (or scroll to form if on same page), 3) Add additional CTAs in strategic locations: after feature sections, in sticky header on scroll, and as exit-intent modal, 4) Ensure all buttons use Next.js Link component for proper client-side routing, 5) Add loading states on button click with instant feedback (within 100ms), 6) Prevent double-clicks during navigation with button disabled state, 7) Make sure NO CTAs mention 'demo' - use language like 'Get Early Access', 'Join Waitlist', 'Request Access'. Update landing-page-cta-integration feature to point to interest page instead of demo page.",
+      "timestamp": "2026-01-26T05:45:27.229Z",
+      "source": "initial"
+    }
+  ]
+}

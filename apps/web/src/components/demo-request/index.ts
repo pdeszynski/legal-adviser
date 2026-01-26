@@ -1,1 +1,1 @@
-export { DemoRequestForm } from './demo-request-form';
+export { DemoRequestForm, MemoizedDemoRequestForm } from './demo-request-form';

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines -- Multi-step form component with multiple states and validations */
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, memo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import {
@@ -31,69 +31,36 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useDataProvider } from '@refinedev/core';
+import { useAnalytics } from '@/hooks/use-analytics';
 import type { GraphQLMutationConfig } from '@/providers/data-provider';
 
-// Local storage key for tracking demo requests
-const DEMO_REQUEST_STORAGE_KEY = 'demo-request-submitted';
+// Local storage key for tracking last shown timestamp (for analytics/cooldown, not for blocking)
+const DEMO_REQUEST_LAST_SHOWN_KEY = 'demo-request-last-shown';
 
-// Check if user has already submitted a demo request
-function hasAlreadyRequested(): boolean {
-  if (typeof window === 'undefined') return false;
+// Get the last time the demo form was shown (for analytics purposes)
+function getLastShownTime(): number {
+  if (typeof window === 'undefined') return 0;
   try {
-    const stored = localStorage.getItem(DEMO_REQUEST_STORAGE_KEY);
-    if (!stored) return false;
-
-    const data = JSON.parse(stored);
-    // Check if the request was made within the last 30 days
-    const submissionDate = new Date(data.submittedAt);
-    const daysSinceSubmission = (Date.now() - submissionDate.getTime()) / (1000 * 60 * 60 * 24);
-    return daysSinceSubmission < 30;
+    const stored = localStorage.getItem(DEMO_REQUEST_LAST_SHOWN_KEY);
+    return stored ? parseInt(stored, 10) : 0;
   } catch {
-    return false;
+    return 0;
   }
 }
 
-// Mark that user has submitted a demo request
-function markDemoRequestSubmitted(email: string): void {
+// Record when the form was shown (for analytics)
+function recordFormShown(): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(
-      DEMO_REQUEST_STORAGE_KEY,
-      JSON.stringify({
-        email,
-        submittedAt: new Date().toISOString(),
-      }),
-    );
+    localStorage.setItem(DEMO_REQUEST_LAST_SHOWN_KEY, Date.now().toString());
   } catch {
     // Ignore localStorage errors
   }
 }
 
-// Clear demo request record (for testing purposes)
-export function clearDemoRequestRecord(): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.removeItem(DEMO_REQUEST_STORAGE_KEY);
-  } catch {
-    // Ignore localStorage errors
-  }
-}
-
-// Track analytics event (placeholder for Google Analytics or similar)
-function trackDemoRequestSubmitted(data: Record<string, unknown>): void {
-  // Placeholder for Google Analytics or similar analytics
-  // Example: gtag('event', 'demo_request_submitted', { ... });
-  if (typeof window !== 'undefined' && (window as unknown as { gtag?: unknown }).gtag) {
-    const gtagWindow = window as unknown as {
-      gtag?: (event: string, name: string, params: Record<string, unknown>) => void;
-    };
-    gtagWindow.gtag?.('event', 'demo_request_submitted', {
-      company_size: data.companySize,
-      industry: data.industry,
-      timeline: data.timeline,
-    });
-  }
-}
+// Note: We no longer use localStorage to block the form from showing.
+// Submission cooldown is enforced on the backend to prevent spam.
+// This allows users to open and view the form multiple times.
 
 // Step 1: Contact Information Schema with enhanced email validation
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Used for type inference
@@ -153,21 +120,21 @@ const _demoTimeStepSchema = z.object({
   additionalNotes: z.string().optional(),
 });
 
+// GDPR Consent Schema
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Used for type inference
+const _gdprConsentSchema = z.boolean().refine(
+  (val) => val === true,
+  'You must agree to the privacy policy and data processing consent to continue',
+);
+
 // Form type combining all step schemas
 type DemoRequestForm = z.infer<typeof _contactStepSchema> &
   z.infer<typeof _companyStepSchema> &
   z.infer<typeof _useCaseStepSchema> &
   z.infer<typeof _timelineStepSchema> &
-  z.infer<typeof _demoTimeStepSchema>;
+  z.infer<typeof _demoTimeStepSchema> & { gdprConsent: boolean };
 
-type FormStep =
-  | 'contact'
-  | 'company'
-  | 'useCase'
-  | 'timeline'
-  | 'demoTime'
-  | 'success'
-  | 'alreadyRequested';
+type FormStep = 'contact' | 'company' | 'useCase' | 'timeline' | 'demoTime' | 'success';
 
 const steps: FormStep[] = ['contact', 'company', 'useCase', 'timeline', 'demoTime'];
 const totalSteps = steps.length;
@@ -201,11 +168,6 @@ const stepInfo = {
   success: {
     title: 'Success',
     description: 'Your demo request has been submitted',
-    icon: CheckCircle2,
-  },
-  alreadyRequested: {
-    title: 'Already Requested',
-    description: 'You have already submitted a demo request',
     icon: CheckCircle2,
   },
 } as const;
@@ -315,10 +277,8 @@ interface DemoRequestResponse {
 }
 
 export function DemoRequestForm({ isOpen, onClose }: DemoRequestFormProps) {
-  const [currentStep, setCurrentStep] = useState<FormStep>(() => {
-    // Check if user already requested on mount
-    return hasAlreadyRequested() ? 'alreadyRequested' : 'contact';
-  });
+  const analytics = useAnalytics();
+  const [currentStep, setCurrentStep] = useState<FormStep>('contact');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successData, setSuccessData] = useState<{
@@ -342,6 +302,9 @@ export function DemoRequestForm({ isOpen, onClose }: DemoRequestFormProps) {
     reset,
   } = useForm<DemoRequestForm>({
     mode: 'onChange',
+    defaultValues: {
+      gdprConsent: false,
+    },
   });
 
   const watchedFields = watch();
@@ -349,13 +312,12 @@ export function DemoRequestForm({ isOpen, onClose }: DemoRequestFormProps) {
   // Reset form when dialog opens
   useEffect(() => {
     if (isOpen) {
-      const alreadyRequested = hasAlreadyRequested();
-      setCurrentStep(alreadyRequested ? 'alreadyRequested' : 'contact');
+      // Record when form was shown for analytics
+      recordFormShown();
+      setCurrentStep('contact');
       setSubmitError(null);
       setSuccessData(null);
-      if (!alreadyRequested) {
-        reset();
-      }
+      reset();
     }
   }, [isOpen, reset]);
 
@@ -376,7 +338,7 @@ export function DemoRequestForm({ isOpen, onClose }: DemoRequestFormProps) {
         fieldsToValidate = ['implementationTimeline', 'budgetRange'];
         break;
       case 'demoTime':
-        fieldsToValidate = ['preferredDate', 'preferredTimeSlot'];
+        fieldsToValidate = ['preferredDate', 'preferredTimeSlot', 'gdprConsent'];
         break;
     }
 
@@ -452,11 +414,8 @@ export function DemoRequestForm({ isOpen, onClose }: DemoRequestFormProps) {
       ).custom<DemoRequestResponse>(mutationConfig);
 
       if (result?.submitDemoRequest?.success) {
-        // Store submission in localStorage
-        markDemoRequestSubmitted(data.workEmail);
-
-        // Track analytics
-        trackDemoRequestSubmitted({
+        // Track analytics with the useAnalytics hook
+        analytics.trackDemoSubmit({
           email: data.workEmail,
           companySize: data.companySize,
           industry: data.industry,
@@ -498,61 +457,29 @@ export function DemoRequestForm({ isOpen, onClose }: DemoRequestFormProps) {
   };
 
   const handleClose = () => {
-    setCurrentStep(hasAlreadyRequested() ? 'alreadyRequested' : 'contact');
+    // Close the dialog and reset form state
+    setCurrentStep('contact');
     setSubmitError(null);
     setSuccessData(null);
     reset();
     onClose();
   };
 
+  // Handle Radix UI's onOpenChange callback
+  // This is called when the user clicks outside, presses ESC, etc.
+  const handleDialogOpenChange = (open: boolean) => {
+    // Only close if Radix UI is requesting to close (open === false)
+    // and the dialog is currently open
+    if (open === false && isOpen) {
+      handleClose();
+    }
+  };
+
   const StepIcon = stepInfo[currentStep].icon;
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        {currentStep === 'alreadyRequested' && (
-          <>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-xl">
-                <CheckCircle2 className="h-6 w-6 text-blue-600" />
-                {stepInfo.alreadyRequested.title}
-              </DialogTitle>
-              <DialogDescription>
-                You have already submitted a demo request recently.
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="py-8 text-center space-y-4">
-              <div className="mx-auto w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <CheckCircle2 className="h-10 w-10 text-blue-600" />
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Request Already Submitted</h3>
-                <p className="text-muted-foreground">
-                  Thank you for your interest! Our team has already received your demo request and
-                  will be in touch soon. You can submit another request in 30 days.
-                </p>
-              </div>
-
-              <div className="bg-muted/50 rounded-lg p-4 text-sm text-left space-y-2">
-                <p className="font-medium">What you can do now:</p>
-                <ul className="space-y-1 text-muted-foreground">
-                  <li>• Check your email for a calendar invite</li>
-                  <li>• Review our documentation for more information</li>
-                  <li>• Contact us directly at support@example.com</li>
-                </ul>
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button onClick={handleClose} className="w-full">
-                Close
-              </Button>
-            </DialogFooter>
-          </>
-        )}
-
         {currentStep === 'success' && successData && (
           <>
             <DialogHeader>
@@ -612,7 +539,7 @@ export function DemoRequestForm({ isOpen, onClose }: DemoRequestFormProps) {
           </>
         )}
 
-        {currentStep !== 'success' && currentStep !== 'alreadyRequested' && (
+        {currentStep !== 'success' && (
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-xl">
@@ -890,6 +817,39 @@ export function DemoRequestForm({ isOpen, onClose }: DemoRequestFormProps) {
                       {...register('additionalNotes')}
                     />
                   </div>
+
+                  {/* GDPR Consent */}
+                  <div className="space-y-2 pt-2 border-t">
+                    <div className="flex items-start gap-3">
+                      <input
+                        id="gdprConsent"
+                        type="checkbox"
+                        {...register('gdprConsent', {
+                          required: 'You must agree to the privacy policy to continue',
+                        })}
+                        disabled={isSubmitting}
+                        className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor="gdprConsent" className="text-sm font-normal cursor-pointer">
+                          I agree to the processing of my personal data in accordance with the{' '}
+                          <a
+                            href="/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            Privacy Policy
+                          </a>
+                          . I understand that my data will be used to process my demo request and may
+                          be stored in HubSpot CRM for follow-up communications. *
+                        </Label>
+                        {errors.gdprConsent && (
+                          <p className="text-sm text-destructive mt-1">{errors.gdprConsent.message}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -959,3 +919,11 @@ export function DemoRequestForm({ isOpen, onClose }: DemoRequestFormProps) {
     </Dialog>
   );
 }
+
+// Memoize component to prevent unnecessary re-renders when parent state changes
+// Only re-render when isOpen or onClose props change
+export const MemoizedDemoRequestForm = memo(DemoRequestForm, (prevProps, nextProps) => {
+  return prevProps.isOpen === nextProps.isOpen && prevProps.onClose === nextProps.onClose;
+});
+
+MemoizedDemoRequestForm.displayName = 'MemoizedDemoRequestForm';

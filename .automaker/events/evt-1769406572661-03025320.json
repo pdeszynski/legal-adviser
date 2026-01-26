@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769406572661-03025320",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T05:49:32.661Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769366026191-0u1t0ha7a",
+  "featureName": "Fix unresponsive early access and get started buttons",
+  "error": "Feature completed in 178s - auto-verified",
+  "passes": true
+}

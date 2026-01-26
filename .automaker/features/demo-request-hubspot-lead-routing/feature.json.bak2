@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Configure HubSpot CRM workflows to handle incoming leads from demo request form. Set up: 1) Automatic lead assignment to sales team based on company size or geography, 2) Lead scoring rules (e.g., hot leads if timeline is 'immediate' or company size is '50+'), 3) Automated email sequences for different lead segments, 4) Task creation for sales reps to follow up within 24 hours, 5) Lead nurturing workflows for 'not ready yet' prospects, 6) Integration with calendar booking tool (Calendly/HubSpot Meetings) for demo scheduling. Document HubSpot configuration in CLAUDE.md.",
+  "id": "demo-request-hubspot-lead-routing",
+  "title": "Configure HubSpot Lead Routing and Workflows",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Configure HubSpot CRM workflows to handle incoming leads from demo request form. Set up: 1) Automatic lead assignment to sales team based on company size or geography, 2) Lead scoring rules (e.g., hot leads if timeline is 'immediate' or company size is '50+'), 3) Automated email sequences for different lead segments, 4) Task creation for sales reps to follow up within 24 hours, 5) Lead nurturing workflows for 'not ready yet' prospects, 6) Integration with calendar booking tool (Calendly/HubSpot Meetings) for demo scheduling. Document HubSpot configuration in CLAUDE.md.",
+      "timestamp": "2026-01-25T18:47:38.411Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-25T19:07:43.098Z"
+}

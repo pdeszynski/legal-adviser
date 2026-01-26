@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769360022898-af79dd41",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-25T16:53:42.898Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "temporal-schedule-deletion-implementation",
+  "featureName": "Implement Temporal Schedule Deletion Method",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

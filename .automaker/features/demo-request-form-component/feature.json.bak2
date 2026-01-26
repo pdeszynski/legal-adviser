@@ -4,7 +4,7 @@
   "id": "demo-request-form-component",
   "title": "Demo Request Form Component",
   "priority": 1,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T01:59:28.678Z"
+  "updatedAt": "2026-01-25T02:16:46.380Z"
 }

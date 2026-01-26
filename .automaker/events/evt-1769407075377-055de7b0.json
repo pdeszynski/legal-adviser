@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769407075377-055de7b0",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T05:57:55.377Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769406524753-tuqgag765",
+  "featureName": "Fix demo modal disappearing on first click request",
+  "error": "Feature completed in 472s - auto-verified",
+  "passes": true
+}

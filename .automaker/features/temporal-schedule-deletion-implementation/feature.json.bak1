@@ -3,11 +3,8 @@
   "description": "Implement the deleteSchedule method to permanently remove Temporal schedules. Use Temporal SDK client.schedule.delete() with proper error handling. Confirm deletion intent (maybe require confirmation parameter). Log deletion to audit logs with schedule details for history. Clean up any related schedule metadata.",
   "id": "temporal-schedule-deletion-implementation",
   "title": "Implement Temporal Schedule Deletion Method",
-  "dependencies": [
-    "temporal-nestjs-integration"
-  ],
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -15,5 +12,6 @@
       "timestamp": "2026-01-25T15:05:01.024Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T17:01:03.761Z"
 }

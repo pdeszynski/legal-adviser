@@ -48,6 +48,11 @@ export class CreateHubSpotContactDto {
   @IsString()
   phone?: string;
 
+  @Field(() => String, { nullable: true, description: 'Job title' })
+  @IsOptional()
+  @IsString()
+  jobTitle?: string;
+
   @Field(() => String, { nullable: true, description: 'Use case description' })
   @IsOptional()
   @IsString()
@@ -75,6 +80,13 @@ export class CreateHubSpotContactDto {
   @IsOptional()
   @IsString()
   source?: string;
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description: 'GDPR consent for data processing',
+  })
+  @IsOptional()
+  gdprConsent?: boolean;
 }
 
 /**

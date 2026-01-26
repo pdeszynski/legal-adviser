@@ -5,7 +5,7 @@
   "title": "Demo Request Entity for Database Storage",
   "dependencies": [],
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -14,5 +14,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T02:11:10.158Z"
+  "updatedAt": "2026-01-25T02:13:24.606Z"
 }

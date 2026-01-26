@@ -36,6 +36,8 @@ import { User } from '../../users/entities/user.entity';
  * - EXPORT: Resource was exported
  * - LOGIN: User logged in
  * - LOGOUT: User logged out
+ * - PAUSE: Schedule was paused
+ * - RESUME: Schedule was resumed
  */
 export enum AuditActionType {
   CREATE = 'CREATE',
@@ -45,6 +47,8 @@ export enum AuditActionType {
   EXPORT = 'EXPORT',
   LOGIN = 'LOGIN',
   LOGOUT = 'LOGOUT',
+  PAUSE = 'PAUSE',
+  RESUME = 'RESUME',
 }
 
 /**
@@ -56,6 +60,7 @@ export enum AuditActionType {
  * - SESSION: User session entity
  * - SYSTEM: System-level operations
  * - WEBHOOK: Webhook event processing
+ * - SCHEDULE: Temporal schedule management
  */
 export enum AuditResourceType {
   USER = 'USER',
@@ -63,6 +68,7 @@ export enum AuditResourceType {
   SESSION = 'SESSION',
   SYSTEM = 'SYSTEM',
   WEBHOOK = 'WEBHOOK',
+  SCHEDULE = 'SCHEDULE',
 }
 
 // Register enums with GraphQL

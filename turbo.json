@@ -92,6 +92,21 @@
     "dev:infra": {
       "cache": false,
       "persistent": true
+    },
+    "db:seed": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "env": ["DATABASE_URL", "NODE_ENV"]
+    },
+    "db:seed:clean": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "env": ["DATABASE_URL", "NODE_ENV"]
+    },
+    "db:seed:status": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "env": ["DATABASE_URL", "NODE_ENV"]
     }
   }
 }

@@ -2,10 +2,343 @@
  * Temporal Interfaces
  *
  * Defines TypeScript interfaces for Temporal configuration,
- * workflow options, and worker settings.
+ * workflow options, worker settings, and schedule operations.
  */
 
 import type { ModuleMetadata } from '@nestjs/common';
+
+/**
+ * Temporal SDK Types
+ *
+ * Re-exports of key Temporal SDK types for type-safe schedule operations.
+ * These types are dynamically imported at runtime due to ESM-only exports.
+ */
+
+/**
+ * Overlap policy for schedule executions.
+ * Determines how to handle overlapping workflow executions.
+ */
+export type ScheduleOverlapPolicy = 'SKIP' | 'ALLOW_ALL' | 'BUFFER_ONE';
+
+/**
+ * Calendar specification for schedule execution times.
+ * Based on Temporal SDK's CalendarSpec.
+ */
+export interface ScheduleCalendarSpec {
+  /** Comment describing this calendar spec */
+  comment?: string;
+  /** Specific minutes (0-59) */
+  minute?: number | number[] | string;
+  /** Specific hours (0-23) */
+  hour?: number | number[] | string;
+  /** Specific days of month (1-31) */
+  dayOfMonth?: number | number[] | string;
+  /** Specific months (1-12) */
+  month?: number | number[] | string;
+  /** Specific days of week (0-6, 0=Sunday) */
+  dayOfWeek?: number | number[] | string;
+  /** Specific years */
+  year?: number | number[];
+  /** Hour of day specification */
+  hourOfDay?: number | number[] | string;
+  /** Day of month specification */
+  dayOfYear?: number | number[];
+}
+
+/**
+ * Interval specification for schedule execution times.
+ * Based on Temporal SDK's IntervalSpec.
+ */
+export interface ScheduleIntervalSpec {
+  /** Interval in seconds */
+  seconds: number;
+  /** Phase offset in seconds */
+  phase?: number;
+}
+
+/**
+ * Schedule specification (when to run).
+ * Based on Temporal SDK's ScheduleSpec.
+ */
+export interface ScheduleSpecInput {
+  /** Calendar-based specifications */
+  calendars?: ScheduleCalendarSpec[];
+  /** Interval-based specification */
+  interval?: ScheduleIntervalSpec;
+  /** Cron expressions (parsed to calendar spec) */
+  cronExpressions?: Array<{ expression: string; comment?: string }>;
+  /** Start time for the schedule (ISO 8601 string) */
+  startTime?: string;
+  /** End time for the schedule (ISO 8601 string) */
+  endTime?: string;
+  /** Timezone identifier (IANA tz database) */
+  timezone?: string;
+  /** Jitter duration to add to scheduled times */
+  jitter?: string | number;
+}
+
+/**
+ * Schedule action input (what to run).
+ * Based on Temporal SDK's ScheduleAction.
+ */
+export interface ScheduleActionInput {
+  /** Type of action (currently only startWorkflow is supported) */
+  type: 'startWorkflow';
+  /** Workflow type to execute */
+  workflowType: string;
+  /** Workflow ID template for each execution */
+  workflowId: string;
+  /** Task queue to dispatch workflows to */
+  taskQueue: string;
+  /** Arguments to pass to the workflow */
+  args?: unknown[];
+  /** Workflow execution timeout */
+  executionTimeout?: string | number;
+  /** Workflow task timeout */
+  taskTimeout?: string | number;
+  /** Memo for the workflow execution */
+  memo?: Record<string, unknown>;
+  /** Search attributes for the workflow execution */
+  searchAttributes?: Record<string, unknown>;
+}
+
+/**
+ * Schedule policies.
+ * Based on Temporal SDK's SchedulePolicies.
+ */
+export interface SchedulePoliciesInput {
+  /** How to handle overlapping executions */
+  overlap?: ScheduleOverlapPolicy;
+  /** Catchup window for missed runs (duration string or number) */
+  catchupWindow?: string | number;
+  /** Whether to pause on failure */
+  pauseOnFailure?: boolean;
+}
+
+/**
+ * Schedule creation options.
+ * Complete options for creating a new Temporal schedule.
+ */
+export interface ScheduleOptions {
+  /** Unique identifier for the schedule */
+  scheduleId: string;
+  /** Action the schedule performs */
+  action: ScheduleActionInput;
+  /** Schedule specification (when it runs) */
+  spec: ScheduleSpecInput;
+  /** Schedule policies */
+  policies?: SchedulePoliciesInput;
+  /** Initial paused state */
+  paused?: boolean;
+  /** Memo for the schedule */
+  memo?: Record<string, unknown>;
+  /** Search attributes for the schedule */
+  searchAttributes?: Record<string, unknown>;
+}
+
+/**
+ * Schedule update options.
+ * Options for updating an existing schedule.
+ */
+export interface ScheduleUpdateOptions {
+  /** New action (optional) */
+  action?: ScheduleActionInput;
+  /** New spec (optional) */
+  spec?: ScheduleSpecInput;
+  /** New policies (optional) */
+  policies?: SchedulePoliciesInput;
+  /** New paused state (optional) */
+  paused?: boolean;
+}
+
+/**
+ * Schedule execution info.
+ * Information about a specific schedule execution.
+ */
+export interface ScheduleExecutionInfo {
+  /** Workflow ID for this execution */
+  workflowId: string;
+  /** Run ID for this execution */
+  runId: string;
+  /** When the execution started */
+  startedAt?: Date;
+  /** Current status of the execution */
+  status?: 'RUNNING' | 'COMPLETED' | 'FAILED' | 'CANCELED';
+  /** Execution time in milliseconds */
+  durationMs?: number;
+}
+
+/**
+ * Schedule action details.
+ * Extracted action information from a schedule.
+ */
+export interface ScheduleActionDetails {
+  /** Workflow type being executed */
+  workflowType: string;
+  /** Workflow ID template */
+  workflowId: string;
+  /** Task queue for executions */
+  taskQueue: string;
+  /** Arguments passed to workflow */
+  args: unknown[];
+}
+
+/**
+ * Schedule spec details.
+ * Extracted specification information from a schedule.
+ */
+export interface ScheduleSpecDetails {
+  /** Cron expression (if calendar-based) */
+  cronExpression?: string;
+  /** Interval in seconds (if interval-based) */
+  intervalSeconds?: number;
+  /** Start time */
+  startTime?: string;
+  /** End time */
+  endTime?: string;
+  /** Timezone */
+  timezone?: string;
+}
+
+/**
+ * Schedule state information.
+ */
+export interface ScheduleStateInfo {
+  /** Number of missed actions */
+  missedActions?: number;
+  /** Total number of actions */
+  totalActions?: number;
+  /** Number of successful actions */
+  successfulActions?: number;
+  /** Number of failed actions */
+  failedActions?: number;
+  /** Number of currently running actions */
+  runningActions?: number;
+}
+
+/**
+ * Schedule description.
+ * Complete information about a Temporal schedule.
+ */
+export interface ScheduleDescription {
+  /** Schedule ID */
+  scheduleId: string;
+  /** Whether the schedule exists */
+  exists: boolean;
+  /** Action the schedule performs */
+  action?: ScheduleActionDetails;
+  /** Schedule specification (when it runs) */
+  spec?: ScheduleSpecDetails;
+  /** Schedule policies */
+  policies?: SchedulePoliciesInput;
+  /** Whether the schedule is currently paused */
+  paused?: boolean;
+  /** Recent successful action executions */
+  recentActions?: ScheduleExecutionInfo[];
+  /** Next scheduled run times */
+  nextRunTimes?: Date[];
+  /** Number of missed actions */
+  missedActions?: number;
+  /** Total number of actions taken */
+  totalActions?: number;
+  /** Number of successful actions */
+  successfulActions?: number;
+  /** Number of failed actions */
+  failedActions?: number;
+  /** Last run time */
+  lastRunAt?: Date;
+  /** Next run time */
+  nextRunAt?: Date;
+  /** Schedule state information */
+  state?: ScheduleStateInfo;
+  /** Memo associated with the schedule */
+  memo?: Record<string, unknown>;
+  /** Search attributes associated with the schedule */
+  searchAttributes?: Record<string, unknown>;
+}
+
+/**
+ * Schedule list result.
+ */
+export interface ScheduleListResult {
+  /** List of schedule IDs */
+  scheduleIds: string[];
+  /** Continuation token for pagination */
+  nextPageToken?: string;
+}
+
+/**
+ * Schedule list options.
+ */
+export interface ScheduleListOptions {
+  /** Maximum number of results to return */
+  pageSize?: number;
+  /** Continuation token from previous page */
+  pageToken?: string;
+}
+
+/**
+ * Schedule backfill options.
+ * Options for backfilling missed schedule executions.
+ */
+export interface ScheduleBackfillOptions {
+  /** Start of backfill period (ISO 8601 string) */
+  startAt: string;
+  /** End of backfill period (ISO 8601 string) */
+  endAt: string;
+  /** Override overlap policy for backfill */
+  overlap?: ScheduleOverlapPolicy;
+}
+
+/**
+ * Schedule trigger options.
+ * Options for immediately triggering a schedule action.
+ */
+export interface ScheduleTriggerOptions {
+  /** Override overlap policy for this trigger */
+  overlap?: ScheduleOverlapPolicy;
+}
+
+/**
+ * Cron expression parts.
+ * Standard 5-field cron expression components.
+ */
+export interface CronExpressionParts {
+  /** Minute field (0-59) */
+  minute: string;
+  /** Hour field (0-23) */
+  hour: string;
+  /** Day of month field (1-31) */
+  day: string;
+  /** Month field (1-12) */
+  month: string;
+  /** Day of week field (0-7, 0 and 7 are Sunday) */
+  weekday: string;
+}
+
+/**
+ * Parsed cron expression result.
+ */
+export interface ParsedCronExpression {
+  /** Original expression */
+  expression: string;
+  /** Parsed parts */
+  parts: CronExpressionParts;
+  /** Comment/description */
+  comment?: string;
+}
+
+/**
+ * Schedule validation result.
+ */
+export interface ScheduleValidationResult {
+  /** Whether the schedule is valid */
+  valid: boolean;
+  /** Validation errors (if any) */
+  errors?: string[];
+  /** Validation warnings (if any) */
+  warnings?: string[];
+}
 
 /**
  * Temporal Module Configuration
@@ -175,132 +508,4 @@ export interface TemporalHealthResult {
   error?: string;
   /** Connected namespace */
   namespace?: string;
-}
-
-/**
- * Schedule Execution Result
- *
- * Result of a scheduled action execution.
- */
-export interface ScheduleExecutionResult {
-  /** Time that the Action was scheduled for */
-  scheduledAt: Date;
-  /** Time that the Action was actually taken */
-  takenAt: Date;
-  /** The workflow that was started */
-  workflow?: {
-    workflowId: string;
-    firstExecutionRunId: string;
-  };
-}
-
-/**
- * Schedule Action Description
- *
- * Description of the action a schedule takes.
- */
-export interface ScheduleActionDescription {
-  /** Action type (currently only 'startWorkflow' is supported) */
-  type: 'startWorkflow';
-  /** Workflow type name */
-  workflowType: string;
-  /** Workflow ID to use when starting */
-  workflowId?: string;
-  /** Task queue for the workflow */
-  taskQueue?: string;
-  /** Arguments to pass to the workflow */
-  args?: unknown[];
-}
-
-/**
- * Schedule Spec Description
- *
- * Description of when a schedule triggers.
- */
-export interface ScheduleSpecDescription {
-  /** Cron expressions for the schedule */
-  cronExpressions?: string[];
-  /** Calendar-based specifications of times */
-  calendars?: unknown[];
-  /** Interval-based specifications of times */
-  intervals?: unknown[];
-  /** Any matching times will be skipped */
-  skip?: unknown[];
-  /** Jitter in milliseconds */
-  jitter?: number;
-  /** Start time for the schedule */
-  startAt?: Date;
-  /** End time for the schedule */
-  endAt?: Date;
-  /** IANA timezone name */
-  timezone?: string;
-}
-
-/**
- * Schedule State
- *
- * Current state of a schedule.
- */
-export interface ScheduleState {
-  /** Whether Schedule is currently paused */
-  paused: boolean;
-  /** Informative human-readable message with contextual notes */
-  note?: string;
-  /** The Actions remaining in this Schedule */
-  remainingActions?: number;
-}
-
-/**
- * Schedule Info
- *
- * Runtime information about a schedule.
- */
-export interface ScheduleInfo {
-  /** Most recent actions started */
-  recentActions: ScheduleExecutionResult[];
-  /** Next upcoming scheduled times */
-  nextActionTimes: Date[];
-  /** Number of Actions taken so far */
-  numActionsTaken: number;
-  /** Number of times a scheduled Action was skipped due to missing catchup window */
-  numActionsMissedCatchupWindow: number;
-  /** Number of Actions skipped due to overlap */
-  numActionsSkippedOverlap: number;
-  /** When the schedule was created */
-  createdAt: Date;
-  /** When the schedule was last updated */
-  lastUpdatedAt?: Date;
-  /** Currently-running workflows started by this schedule */
-  runningActions: Array<{ type: string; workflow?: { workflowId: string } }>;
-}
-
-/**
- * Schedule Description
- *
- * Detailed description of a Temporal schedule as returned by describeSchedule.
- */
-export interface ScheduleDescription {
-  /** The Schedule ID */
-  scheduleId: string;
-  /** When will Actions be taken */
-  spec: ScheduleSpecDescription;
-  /** The Action that will be taken */
-  action: ScheduleActionDescription;
-  /** Schedule policies */
-  policies: {
-    /** Overlap policy for concurrent actions */
-    overlap: string;
-    /** Catchup window in milliseconds */
-    catchupWindow: number;
-    /** Whether to pause on failure */
-    pauseOnFailure: boolean;
-  };
-  /** Additional non-indexed information */
-  memo?: Record<string, unknown>;
-  /** Additional indexed information */
-  searchAttributes?: Record<string, unknown>;
-  /** Current state of the schedule */
-  state: ScheduleState;
-  /** Runtime information */
-  info: ScheduleInfo;
 }

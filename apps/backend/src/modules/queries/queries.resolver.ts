@@ -166,9 +166,9 @@ export class QueriesResolver {
   })
   async submitQuery(
     @Args('input') input: SubmitLegalQueryInput,
-    @Context() context: { req: { user?: { userId?: string } } },
+    @Context() context: { req: { user?: { id?: string } } },
   ): Promise<LegalQuery> {
-    const userId = context.req?.user?.userId;
+    const userId = context.req?.user?.id;
     return this.queriesService.submitQuery(
       {
         sessionId: input.sessionId,
@@ -219,9 +219,9 @@ export class QueriesResolver {
   })
   async askQuestion(
     @Args('input') input: AskLegalQuestionInput,
-    @Context() context: { req: { user?: { userId?: string } } },
+    @Context() context: { req: { user?: { id?: string } } },
   ): Promise<LegalQuery> {
-    const userId = context.req?.user?.userId;
+    const userId = context.req?.user?.id;
     return this.queriesService.askQuestion(
       {
         sessionId: input.sessionId,
@@ -229,11 +229,14 @@ export class QueriesResolver {
         mode: input.mode,
       },
       async (question, sessionId, mode) => {
-        return this.aiClientService.askQuestion({
-          question,
-          session_id: sessionId ?? '',
-          mode,
-        });
+        return this.aiClientService.askQuestion(
+          {
+            question,
+            session_id: sessionId ?? '',
+            mode,
+          },
+          userId,
+        );
       },
       userId,
     );

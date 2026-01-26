@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769368812116-7dbd9d18",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-25T19:20:12.116Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "features-page-navigation-integration",
+  "featureName": "Integrate Features Page into Site Navigation",
+  "error": "Feature completed in 429s - auto-verified",
+  "passes": true
+}

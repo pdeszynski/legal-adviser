@@ -935,5 +935,793 @@
       "subtitle": "Don't miss out on early access benefits. Join the waitlist today.",
       "button": "Join Waitlist Now"
     }
+  },
+  "howItWorksPage": {
+    "step": "Step",
+    "hero": {
+      "badge": "Platform Overview",
+      "title": "How Legal AI",
+      "titleHighlight": "Works",
+      "subtitle": "Discover how our AI-powered platform transforms legal work into a streamlined, efficient process. From case analysis to document generation, see how we help legal professionals save time and deliver better outcomes."
+    },
+    "steps": {
+      "caseAnalysis": {
+        "title": "Case Analysis",
+        "description": "Describe your legal situation in plain language and let our AI identify the relevant legal grounds.",
+        "details": "Our advanced AI analyzes your case description and identifies applicable laws, regulations, and legal precedents that form the foundation of your legal argument.",
+        "feature1": "Natural language input - no legal jargon required",
+        "feature2": "AI identifies relevant legal grounds and articles",
+        "feature3": "Instant preliminary case assessment"
+      },
+      "legalQa": {
+        "title": "Legal Q&A",
+        "description": "Ask questions and get AI-powered answers backed by real legal citations.",
+        "details": "Interact with our AI assistant to get answers to complex legal questions. Every response includes references to relevant laws, regulations, and court rulings.",
+        "feature1": "Ask questions in natural language",
+        "feature2": "Get answers with proper legal citations",
+        "feature3": "Source verification with direct links to legal texts"
+      },
+      "documentGeneration": {
+        "title": "Document Generation",
+        "description": "AI creates professional legal documents based on templates customized to your case.",
+        "details": "Select from our library of professionally crafted templates. Our AI fills in the details based on your case information, generating ready-to-use documents.",
+        "feature1": "Extensive template library for various document types",
+        "feature2": "AI auto-fills based on your case data",
+        "feature3": "Edit and customize before finalizing"
+      },
+      "caseLawResearch": {
+        "title": "Case Law Research",
+        "description": "Search through thousands of Polish court rulings and legal acts instantly.",
+        "details": "Access a comprehensive database of court rulings, legal acts, and regulations. Our powerful search engine helps you find relevant precedents and interpretations.",
+        "feature1": "Search across multiple legal databases",
+        "feature2": "Filter by court type, date, and relevance",
+        "feature3": "Direct access to full text of rulings"
+      },
+      "collaboration": {
+        "title": "Collaboration Tools",
+        "description": "Share documents, add comments, and track changes with your team.",
+        "details": "Work together seamlessly with colleagues and clients. Share documents for review, add contextual comments, and track every change in real-time.",
+        "feature1": "Secure document sharing with access controls",
+        "feature2": "In-line comments and annotations",
+        "feature3": "Version history and change tracking"
+      }
+    },
+    "benefits": {
+      "title": "Why Choose Legal AI?",
+      "subtitle": "Experience the future of legal work with tools designed to enhance productivity and accuracy.",
+      "time": {
+        "title": "Save Hours Every Day",
+        "description": "Reduce document drafting time from hours to minutes. Automate repetitive tasks and focus on what matters - providing excellent legal counsel."
+      },
+      "accuracy": {
+        "title": "AI-Powered Accuracy",
+        "description": "Our AI is trained on Polish legal texts and court rulings, ensuring accurate and relevant results backed by verifiable sources."
+      },
+      "security": {
+        "title": "Bank-Grade Security",
+        "description": "Your data is encrypted end-to-end and never shared with third parties. We maintain the highest standards of data protection and confidentiality."
+      }
+    },
+    "testimonials": {
+      "title": "Success Stories",
+      "subtitle": "See how legal professionals are transforming their practice with Legal AI.",
+      "t1": {
+        "quote": "Legal AI has transformed how I handle case analysis. What used to take hours of research now takes minutes. The AI's ability to identify relevant legal grounds is remarkable.",
+        "author": "Anna Kowalski",
+        "role": "Attorney, Warsaw Law Firm"
+      },
+      "t2": {
+        "quote": "The document generation feature alone is worth it. I've cut my drafting time by 70% and my clients are impressed by how quickly I can deliver professional documents.",
+        "author": "Michał Nowak",
+        "role": "In-House Counsel, Tech Corp"
+      },
+      "t3": {
+        "quote": "As a solo practitioner, Legal AI gives me capabilities that were only available to large firms. The case law search is incredibly powerful and easy to use.",
+        "author": "Ewa Wiśniewska",
+        "role": "Solo Practitioner"
+      }
+    },
+    "cta": {
+      "title": "Ready to Transform Your Legal Practice?",
+      "subtitle": "Join thousands of legal professionals who are already saving time and delivering better outcomes with Legal AI.",
+      "primaryButton": "Get Started Free",
+      "secondaryButton": "Request Demo",
+      "disclaimer": "No credit card required. Start your free trial today."
+    }
+  },
+  "aboutUs": {
+    "navigation": {
+      "howItWorks": "How It Works",
+      "howItWorksDescription": "Learn how Legal AI transforms legal work step by step",
+      "aboutUs": "About Us",
+      "aboutUsDescription": "Our mission, story, and the team behind Legal AI",
+      "features": "Features",
+      "featuresDescription": "Explore the powerful tools and capabilities of our platform",
+      "pricing": "Pricing",
+      "pricingDescription": "Simple, transparent pricing plans for every need",
+      "faq": "FAQ",
+      "faqDescription": "Answers to frequently asked questions about Legal AI",
+      "learnMore": "Learn more",
+      "backToAbout": "Back to About"
+    },
+    "hero": {
+      "badge": "About Us",
+      "title": "Empowering Legal",
+      "titleHighlight": "Professionals",
+      "subtitle": "We're on a mission to democratize access to professional legal tools through the power of artificial intelligence."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "subtitle": "Making legal excellence accessible to everyone",
+      "description": "Legal AI was founded with a simple but powerful belief: that every legal professional and individual deserves access to high-quality legal tools and information. We're combining cutting-edge AI technology with deep legal expertise to create a platform that saves time, reduces costs, and improves outcomes.",
+      "values": {
+        "title": "Our Core Values",
+        "excellence": {
+          "title": "Excellence",
+          "description": "We strive for the highest quality in everything we do, from AI accuracy to user experience."
+        },
+        "integrity": {
+          "title": "Integrity",
+          "description": "We believe in transparency, honesty, and always putting our users first."
+        },
+        "innovation": {
+          "title": "Innovation",
+          "description": "We continuously push the boundaries of what's possible with AI in the legal domain."
+        },
+        "accessibility": {
+          "title": "Accessibility",
+          "description": "We're committed to making professional legal tools available to everyone who needs them."
+        }
+      }
+    },
+    "story": {
+      "title": "Our Story",
+      "subtitle": "From challenge to opportunity",
+      "founded": "Founded in 2024",
+      "description": "Legal AI was born from a personal frustration with the inefficiencies and high costs of traditional legal work. Our founders, with backgrounds in both law and technology, saw an opportunity to leverage recent advances in AI to transform how legal professionals work.",
+      "journey": {
+        "title": "Our Journey",
+        "step1": {
+          "year": "2024",
+          "title": "Inception",
+          "description": "Founded with a vision to democratize legal tools"
+        },
+        "step2": {
+          "year": "2025",
+          "title": "Beta Launch",
+          "description": "Launched closed beta with select legal professionals"
+        },
+        "step3": {
+          "year": "2026",
+          "title": "Public Launch",
+          "description": "Opened platform to all legal professionals and individuals"
+        }
+      }
+    },
+    "team": {
+      "title": "Our Team",
+      "subtitle": "Meet the people building the future of legal tech",
+      "description": "Our team brings together expertise from law, technology, and business to create a product that truly serves the legal community.",
+      "members": {
+        "founders": {
+          "title": "Founders",
+          "description": "A diverse team of legal professionals and AI researchers"
+        },
+        "advisors": {
+          "title": "Advisors",
+          "description": "Experienced attorneys and legal scholars guiding our vision"
+        },
+        "engineers": {
+          "title": "Engineering Team",
+          "description": "World-class developers building robust AI-powered solutions"
+        }
+      }
+    },
+    "contact": {
+      "title": "Get in Touch",
+      "subtitle": "We'd love to hear from you",
+      "email": "contact@legalai.example.com",
+      "address": "Warsaw, Poland",
+      "socials": {
+        "title": "Follow Us",
+        "linkedin": "LinkedIn",
+        "twitter": "Twitter",
+        "github": "GitHub"
+      }
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "description": "Join thousands of legal professionals who are already transforming their practice with Legal AI.",
+      "getStarted": "Get Started",
+      "contactUs": "Contact Us"
+    }
+  },
+  "features": {
+    "hero": {
+      "badge": "Features",
+      "title": "Powerful Tools for",
+      "titleHighlight": "Legal Professionals",
+      "subtitle": "Discover the comprehensive suite of features designed to transform your legal practice."
+    },
+    "noFeatures": "No features found in this category.",
+    "categories": {
+      "all": "All",
+      "core": {
+        "title": "Core Features",
+        "description": "Essential tools that form the foundation of our platform"
+      },
+      "advanced": {
+        "title": "Advanced Features",
+        "description": "Powerful capabilities for demanding legal work"
+      },
+      "collaboration": {
+        "title": "Collaboration",
+        "description": "Work together seamlessly with your team and clients"
+      },
+      "security": {
+        "title": "Security & Compliance",
+        "description": "Enterprise-grade protection for your sensitive data"
+      }
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "description": "Explore our powerful features and transform your legal practice today.",
+      "getStarted": "Get Started Free"
+    },
+    "navigation": {
+      "backToAbout": "Back to About"
+    },
+    "features": {
+      "caseAnalysis": {
+        "title": "AI-Powered Case Analysis",
+        "description": "Describe your legal situation in plain language and receive comprehensive analysis identifying relevant legal grounds, precedents, and potential strategies.",
+        "icon": "analysis",
+        "benefits": [
+          "Natural language input - no legal jargon required",
+          "Identifies relevant laws and precedents",
+          "Provides preliminary case assessment",
+          "Suggests potential legal strategies"
+        ]
+      },
+      "documentGeneration": {
+        "title": "Smart Document Generation",
+        "description": "Generate professional legal documents in minutes using our AI-powered drafting engine. From lawsuits to contracts, get it right the first time.",
+        "icon": "document",
+        "benefits": [
+          "Extensive template library",
+          "AI auto-fills based on case data",
+          "Fully customizable output",
+          "Support for multiple document types"
+        ]
+      },
+      "legalQA": {
+        "title": "Legal Q&A Assistant",
+        "description": "Ask complex legal questions and receive accurate, cited answers backed by real legal sources. Our AI references current regulations and court rulings.",
+        "icon": "chat",
+        "benefits": [
+          "Natural language queries",
+          "Verified legal citations",
+          "Source verification with direct links",
+          "Context-aware responses"
+        ]
+      },
+      "caseLawSearch": {
+        "title": "Case Law Research",
+        "description": "Search through thousands of Polish court rulings and legal acts instantly. Filter by court type, date, relevance, and more.",
+        "icon": "search",
+        "benefits": [
+          "Multiple legal database search",
+          "Advanced filtering options",
+          "Direct access to full texts",
+          "Relevance-ranked results"
+        ]
+      },
+      "documentSharing": {
+        "title": "Secure Document Sharing",
+        "description": "Share documents securely with colleagues and clients. Control access permissions and track who viewed what and when.",
+        "icon": "share",
+        "benefits": [
+          "Granular access controls",
+          "Activity tracking and audit logs",
+          "Secure encrypted sharing",
+          "Expiration options"
+        ]
+      },
+      "comments": {
+        "title": "Collaborative Comments",
+        "description": "Add context-aware comments directly within documents. Collaborate in real-time with your team on case strategy and document revisions.",
+        "icon": "comment",
+        "benefits": [
+          "Inline text commenting",
+          "Threaded discussions",
+          "Resolution tracking",
+          "Real-time collaboration"
+        ]
+      },
+      "versionHistory": {
+        "title": "Version History",
+        "description": "Track every change made to your documents. Compare versions, revert to previous states, and maintain a complete audit trail.",
+        "icon": "history",
+        "benefits": [
+          "Complete change tracking",
+          "Version comparison",
+          "One-click revert",
+          "Full audit trail"
+        ]
+      },
+      "templates": {
+        "title": "Document Templates",
+        "description": "Access our extensive library of professionally crafted legal document templates. Customize them for your specific needs.",
+        "icon": "template",
+        "benefits": [
+          "Hundreds of templates",
+          "Multiple document categories",
+          "Customizable variables",
+          "Regularly updated"
+        ]
+      },
+      "encryption": {
+        "title": "End-to-End Encryption",
+        "description": "Your data is encrypted at rest and in transit using industry-standard encryption protocols.",
+        "icon": "lock",
+        "benefits": [
+          "AES-256 encryption at rest",
+          "TLS 1.3 in transit",
+          "Zero-knowledge architecture",
+          "Regular security audits"
+        ]
+      },
+      "compliance": {
+        "title": "GDPR Compliant",
+        "description": "We're fully compliant with GDPR and other data protection regulations. Your data is handled with the utmost care.",
+        "icon": "shield",
+        "benefits": [
+          "Full GDPR compliance",
+          "Data processing agreements",
+          "Right to export/delete data",
+          "Transparent privacy policy"
+        ]
+      }
+    }
+  },
+  "pricing": {
+    "hero": {
+      "badge": "Pricing",
+      "title": "Simple, Transparent",
+      "titleHighlight": "Pricing",
+      "subtitle": "Choose the plan that fits your needs. Upgrade or downgrade at any time."
+    },
+    "popular": "Popular",
+    "month": "mo",
+    "included": "Included",
+    "excluded": "Not included",
+    "forever": "forever",
+    "customPricing": "Custom",
+    "toggle": {
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "save": "Save 20%"
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Perfect for getting started",
+        "price": "0",
+        "period": "forever",
+        "cta": "Get Started",
+        "features": {
+          "included": [
+            "5 documents per month",
+            "Basic case analysis",
+            "Limited legal Q&A queries",
+            "Community support",
+            "Standard templates"
+          ],
+          "excluded": [
+            "Advanced search filters",
+            "Document sharing",
+            "Version history",
+            "Priority support",
+            "Custom templates"
+          ]
+        }
+      },
+      "professional": {
+        "name": "Professional",
+        "description": "For legal professionals",
+        "price": "49",
+        "period": "per month",
+        "cta": "Start Free Trial",
+        "popular": true,
+        "features": {
+          "included": [
+            "Unlimited documents",
+            "Advanced case analysis",
+            "Unlimited legal Q&A",
+            "Priority email support",
+            "All templates included",
+            "Document sharing",
+            "Version history",
+            "Advanced search filters"
+          ],
+          "excluded": [
+            "API access",
+            "White-label options",
+            "Dedicated account manager"
+          ]
+        }
+      },
+      "team": {
+        "name": "Team",
+        "description": "For law firms and teams",
+        "price": "149",
+        "period": "per user/month",
+        "cta": "Contact Sales",
+        "features": {
+          "included": [
+            "Everything in Professional",
+            "Centralized team management",
+            "Shared document library",
+            "Team analytics dashboard",
+            "Collaboration tools",
+            "API access",
+            "Custom branding options"
+          ],
+          "excluded": [
+            "On-premise deployment",
+            "Custom SLA"
+          ]
+        }
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "description": "For large organizations",
+        "price": "Custom",
+        "period": "",
+        "cta": "Contact Sales",
+        "features": {
+          "included": [
+            "Everything in Team",
+            "Unlimited team members",
+            "SSO/SAML authentication",
+            "Advanced security controls",
+            "Dedicated account manager",
+            "Custom SLA",
+            "On-premise option"
+          ],
+          "excluded": []
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "items": [
+        {
+          "question": "Can I change plans at any time?",
+          "answer": "Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate any charges."
+        },
+        {
+          "question": "What payment methods do you accept?",
+          "answer": "We accept all major credit cards, including Visa, Mastercard, and American Express. For Enterprise plans, we also support bank transfers."
+        },
+        {
+          "question": "Is there a free trial for paid plans?",
+          "answer": "Yes! We offer a 14-day free trial for the Professional and Team plans. No credit card required to start."
+        },
+        {
+          "question": "Do you offer discounts for nonprofits or academics?",
+          "answer": "Yes, we offer special pricing for qualified nonprofits, academic institutions, and legal aid organizations. Contact us for details."
+        },
+        {
+          "question": "What happens to my data if I cancel?",
+          "answer": "You can export all your data before canceling. We retain your data for 30 days after cancellation, after which it's permanently deleted."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "description": "Choose the plan that works best for you and start transforming your legal practice today.",
+      "getStarted": "Get Started Free"
+    },
+    "navigation": {
+      "backToAbout": "Back to About"
+    }
+  },
+  "faqPage": {
+    "hero": {
+      "badge": "FAQ",
+      "title": "Frequently Asked",
+      "titleHighlight": "Questions",
+      "subtitle": "Find answers to common questions about Legal AI. Can't find what you're looking for? Contact our support team."
+    },
+    "categories": {
+      "general": "General",
+      "pricing": "Pricing & Billing",
+      "features": "Features & Functionality",
+      "security": "Security & Privacy",
+      "technical": "Technical Support"
+    },
+    "questions": {
+      "general": {
+        "title": "General Questions",
+        "items": [
+          {
+            "question": "What is Legal AI?",
+            "answer": "Legal AI is an AI-powered legal platform that helps legal professionals and individuals draft documents, analyze cases, research case law, and get answers to legal questions. Our platform uses advanced AI trained on Polish legal texts and court rulings."
+          },
+          {
+            "question": "Who is Legal AI for?",
+            "answer": "Legal AI is designed for legal professionals (attorneys, in-house counsel, paralegals), law students, and individuals who need help with legal matters. Our tools are professional-grade but accessible to everyone."
+          },
+          {
+            "question": "Is Legal AI a substitute for a lawyer?",
+            "answer": "No. Legal AI is a tool that helps legal professionals work more efficiently and provides information to individuals. It is not a substitute for professional legal advice. We always recommend consulting with a qualified attorney for legal matters."
+          },
+          {
+            "question": "Is my data secure?",
+            "answer": "Absolutely. We use bank-grade encryption (AES-256) and are fully GDPR compliant. Your data is never shared with third parties, and we maintain the highest standards of data protection and confidentiality."
+          },
+          {
+            "question": "How accurate is the AI?",
+            "answer": "Our AI is trained on thousands of Polish legal texts and court rulings, providing high accuracy. However, AI-generated content should always be reviewed by a qualified legal professional before use in official proceedings."
+          }
+        ]
+      },
+      "pricing": {
+        "title": "Pricing & Billing",
+        "items": [
+          {
+            "question": "What is included in the Free plan?",
+            "answer": "The Free plan includes 5 documents per month, basic case analysis, limited legal Q&A queries, access to standard templates, and community support."
+          },
+          {
+            "question": "Can I cancel my subscription at any time?",
+            "answer": "Yes, you can cancel your subscription at any time. Your access continues until the end of your billing period, after which you won't be charged again."
+          },
+          {
+            "question": "Do you offer refunds?",
+            "answer": "We offer a 14-day money-back guarantee for all paid plans. If you're not satisfied, contact our support team within 14 days for a full refund."
+          },
+          {
+            "question": "Are there any hidden fees?",
+            "answer": "No. All pricing is transparent and displayed upfront. There are no setup fees, cancellation fees, or hidden charges."
+          }
+        ]
+      },
+      "features": {
+        "title": "Features & Functionality",
+        "items": [
+          {
+            "question": "What types of documents can I generate?",
+            "answer": "Legal AI supports a wide range of document types including lawsuits (pozew), complaints (skarga), contracts (umowa), motions (wniosek), and official letters. Our template library is constantly expanding."
+          },
+          {
+            "question": "Can I customize the generated documents?",
+            "answer": "Yes, all generated documents are fully editable. You can modify any part of the document, add or remove sections, and customize formatting to meet your specific needs."
+          },
+          {
+            "question": "How does the case analysis feature work?",
+            "answer": "Simply describe your legal situation in plain language. Our AI analyzes your description and identifies relevant legal grounds, applicable laws, potential precedents, and suggests strategies based on Polish legal texts and court rulings."
+          },
+          {
+            "question": "Can I share documents with my team?",
+            "answer": "Yes, on Team and Enterprise plans, you can share documents with team members, set access permissions, and collaborate in real-time with comments and version history."
+          }
+        ]
+      },
+      "security": {
+        "title": "Security & Privacy",
+        "items": [
+          {
+            "question": "Is Legal AI GDPR compliant?",
+            "answer": "Yes, Legal AI is fully GDPR compliant. We have implemented comprehensive data protection measures, provide data processing agreements, and respect all user rights under GDPR."
+          },
+          {
+            "question": "Do you use my data to train your AI?",
+            "answer": "We may use anonymized, aggregated data to improve our AI models. We never use your specific documents or personal information without explicit consent. See our Privacy Policy for details."
+          },
+          {
+            "question": "Where is my data stored?",
+            "answer": "Data is stored in secure data centers located within the European Union, ensuring compliance with EU data protection regulations."
+          },
+          {
+            "question": "Can I export my data?",
+            "answer": "Yes, you can export all your documents and data at any time from your account settings."
+          }
+        ]
+      },
+      "technical": {
+        "title": "Technical Support",
+        "items": [
+          {
+            "question": "Do I need to install anything?",
+            "answer": "No. Legal AI is a web-based platform that works in any modern browser. There's nothing to install or update."
+          },
+          {
+            "question": "Is there an API?",
+            "answer": "Yes, Team and Enterprise plans include API access for programmatic integration with your existing systems."
+          },
+          {
+            "question": "What browsers are supported?",
+            "answer": "Legal AI supports all modern browsers including Chrome, Firefox, Safari, and Edge. We recommend using the latest version for the best experience."
+          },
+          {
+            "question": "How do I get technical support?",
+            "answer": "Free plan users can access our community forums and knowledge base. Professional and Team plan users get priority email support. Enterprise users get dedicated support with guaranteed response times."
+          }
+        ]
+      }
+    },
+    "contact": {
+      "title": "Still have questions?",
+      "description": "Our support team is here to help",
+      "email": "support@legalai.example.com",
+      "cta": "Contact Support"
+    },
+    "navigation": {
+      "backToAbout": "Back to About"
+    }
+  },
+  "interest": {
+    "hero": {
+      "badge": "Early Access Interest",
+      "title": "Request Early Access to",
+      "highlight": "Legal AI",
+      "subtitle": "Join our exclusive early access program and be among the first to experience the future of legal technology. No commitment required—just genuine interest.",
+      "trustBadge": "Already trusted by 2,500+ legal professionals"
+    },
+    "valueProp": {
+      "title": "Why Join Early Access?",
+      "subtitle": "Get exclusive benefits as an early adopter and help shape the future of legal AI.",
+      "benefits": {
+        "exclusiveFeatures": {
+          "title": "Exclusive Features",
+          "description": "Be the first to access cutting-edge AI capabilities before public release. Your feedback directly influences product development.",
+          "features": [
+            "Early access to new AI models",
+            "Beta features before public launch",
+            "Direct input on product roadmap"
+          ]
+        },
+        "pricingBenefits": {
+          "title": "Special Pricing",
+          "description": "Early adopters enjoy locked-in promotional pricing that won't be available after launch.",
+          "features": [
+            "Lifetime discount for early members",
+            "Flexible payment terms",
+            "No credit card required to join"
+          ]
+        },
+        "prioritySupport": {
+          "title": "Priority Support",
+          "description": "Get dedicated assistance from our team whenever you need help.",
+          "features": [
+            "Direct access to product team",
+            "Priority response times",
+            "Personal onboarding session"
+          ]
+        }
+      }
+    },
+    "whatToExpect": {
+      "title": "What Happens Next",
+      "subtitle": "Transparency is key. Here's exactly what to expect after you sign up.",
+      "steps": {
+        "confirmation": {
+          "title": "Instant Confirmation",
+          "description": "Receive immediate confirmation with details about the program and what's coming next."
+        },
+        "updates": {
+          "title": "Regular Product Updates",
+          "description": "Get monthly newsletters with feature previews, development progress, and behind-the-scenes insights."
+        },
+        "invitation": {
+          "title": "Personalized Invitation",
+          "description": "When your spot opens up, we'll send a personal invitation with setup instructions and a warm welcome."
+        },
+        "timeline": {
+          "title": "Fair Access Timeline",
+          "description": "We're rolling out access in batches to ensure quality. Current estimate: 2-8 weeks based on your profile and use case."
+        }
+      }
+    },
+    "socialProof": {
+      "title": "What Early Users Say",
+      "waitlist": "Join 2,500+ professionals on the early access list",
+      "testimonial1": {
+        "quote": "The early access program has been incredible. The team actually listens to feedback and implements changes quickly.",
+        "author": "Sarah Mitchell",
+        "role": "Attorney, Mitchell & Partners"
+      },
+      "testimonial2": {
+        "quote": "I was skeptical at first, but the AI-powered document drafting has already saved me hours every week.",
+        "author": "David Chen",
+        "role": "In-House Counsel, TechCorp"
+      },
+      "testimonial3": {
+        "quote": "The personalized onboarding made all the difference. I felt supported from day one.",
+        "author": "Maria Rodriguez",
+        "role": "Solo Practitioner"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "item1": {
+        "question": "Is this different from requesting a demo?",
+        "answer": "Yes! A demo shows you the product as it exists today. Early access interest means you want to be notified when new features become available and may get beta access before the general public. There's no sales call—just genuine interest in future capabilities."
+      },
+      "item2": {
+        "question": "When will I get access?",
+        "answer": "We're rolling out early access in phases over the next few months. Timeline depends on your use case and current capacity. Most users receive access within 2-8 weeks. We'll keep you updated throughout the process."
+      },
+      "item3": {
+        "question": "Is early access free?",
+        "answer": "Yes! Early access includes a free trial period with full feature access. After the trial, early adopters receive exclusive discounted pricing. There's no obligation to continue if it's not right for you."
+      },
+      "item4": {
+        "question": "What features are included in early access?",
+        "answer": "Early access includes our complete feature set: AI-powered document drafting, case analysis, legal Q&A, case law search, and collaboration tools. You'll also get preview access to features still in development."
+      },
+      "item5": {
+        "question": "Can I use early access for client work?",
+        "answer": "Yes, but we recommend reviewing AI-generated content as you would with any legal tool. Early access is production-ready, and many of our users already use it for client matters. Always exercise professional judgment."
+      },
+      "item6": {
+        "question": "What if I change my mind?",
+        "answer": "No problem! You can opt out at any time with a single click. There's no commitment and we won't pressure you. Your interest helps us plan, but you're free to walk away anytime."
+      }
+    },
+    "form": {
+      "title": "Join Early Access",
+      "subtitle": "Fill out this form to express your interest. No sales calls, just information.",
+      "submit": "Request Early Access",
+      "submitting": "Submitting...",
+      "privacyNotice": "By submitting, you agree to receive product updates. Your data is secure and never shared.",
+      "fields": {
+        "name": "Full Name",
+        "email": "Email Address",
+        "company": "Company or Firm (Optional)",
+        "role": "Role or Title",
+        "useCase": "What interests you most about Legal AI?",
+        "source": "How did you hear about us?"
+      },
+      "placeholders": {
+        "name": "e.g., Sarah Mitchell",
+        "email": "sarah@example.com",
+        "company": "e.g., Mitchell & Partners LLP",
+        "role": "e.g., Attorney, Paralegal, In-House Counsel",
+        "useCase": "Tell us which features you're most interested in...",
+        "source": "Select an option"
+      },
+      "sources": {
+        "searchEngine": "Search Engine (Google, etc.)",
+        "socialMedia": "Social Media (LinkedIn, Twitter)",
+        "referral": "Referral from a colleague",
+        "event": "Conference or Event",
+        "article": "Article or Publication",
+        "other": "Other"
+      },
+      "errors": {
+        "nameRequired": "Name is required",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "useCaseRequired": "Please tell us what interests you"
+      },
+      "success": {
+        "title": "You're on the List!",
+        "message": "Thank you for your interest in Legal AI early access. We'll be in touch soon with updates and your personalized invitation. In the meantime, check your email for a welcome message with more details.",
+        "nextSteps": "What's Next:",
+        "step1": "Check your inbox for a confirmation email",
+        "step2": "Look out for monthly product updates",
+        "step3": "Receive your personal invitation when ready",
+        "backButton": "Return to Homepage"
+      }
+    },
+    "bottomCta": {
+      "title": "Ready to Shape the Future of Legal Tech?",
+      "subtitle": "Join our community of early adopters and get exclusive access to the tools that will transform legal practice.",
+      "button": "Request Early Access Now"
+    }
   }
 }
+

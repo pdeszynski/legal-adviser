@@ -67,9 +67,9 @@ export class SubscriptionsResolver {
   })
   @UseGuards(GqlAuthGuard)
   async getMySubscription(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<UserSubscription | null> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       return null;
     }
@@ -85,10 +85,10 @@ export class SubscriptionsResolver {
   })
   @UseGuards(GqlAuthGuard)
   async canAccessFeature(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
     @Args('featureKey') featureKey: string,
   ): Promise<boolean> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       return false;
     }
@@ -104,10 +104,10 @@ export class SubscriptionsResolver {
   })
   @UseGuards(GqlAuthGuard)
   async checkQuota(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
     @Args('input') input: CheckQuotaInput,
   ): Promise<CheckQuotaResponse> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       return {
         allowed: false,
@@ -129,9 +129,9 @@ export class SubscriptionsResolver {
   })
   @UseGuards(GqlAuthGuard)
   async getMyUsageStats(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<SubscriptionUsageStats | null> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       return null;
     }
@@ -147,10 +147,10 @@ export class SubscriptionsResolver {
   })
   @UseGuards(GqlAuthGuard)
   async createUserSubscription(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
     @Args('input') input: CreateUserSubscriptionInput,
   ): Promise<UserSubscription> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -166,10 +166,10 @@ export class SubscriptionsResolver {
   })
   @UseGuards(GqlAuthGuard)
   async changePlan(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
     @Args('newPlanId') newPlanId: string,
   ): Promise<UserSubscription> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -185,10 +185,10 @@ export class SubscriptionsResolver {
   })
   @UseGuards(GqlAuthGuard)
   async cancelSubscription(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
     @Args('input') input: CancelSubscriptionInput,
   ): Promise<UserSubscription> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -204,9 +204,9 @@ export class SubscriptionsResolver {
   })
   @UseGuards(GqlAuthGuard)
   async resumeSubscription(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<UserSubscription> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -223,11 +223,11 @@ export class SubscriptionsResolver {
   })
   @UseGuards(GqlAuthGuard)
   async recordUsage(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
     @Args('quotaKey') quotaKey: string,
     @Args('amount', { nullable: true }) amount?: number,
   ): Promise<boolean> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new Error('User not authenticated');
     }
@@ -246,9 +246,9 @@ export class SubscriptionsResolver {
   })
   @UseGuards(GqlAuthGuard)
   async getMyBillingInfo(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<BillingInfo | null> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       return null;
     }
@@ -264,9 +264,9 @@ export class SubscriptionsResolver {
   })
   @UseGuards(GqlAuthGuard)
   async getMyPaymentHistory(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<PaymentHistoryItem[]> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       return [];
     }

@@ -28,6 +28,11 @@ const REFRESH_TOKEN_COOKIE = 'refresh_token';
 const ACCESS_TOKEN_EXPIRY = 1 / 24; // 1 hour (60 minutes)
 const REFRESH_TOKEN_EXPIRY = 7; // 7 days
 
+// Cookie security options
+// Use Secure flag in production (HTTPS) for additional security
+const isProduction = process.env.NODE_ENV === 'production';
+const COOKIE_SECURE = isProduction;
+
 /**
  * GraphQL response wrapper type
  */
@@ -85,12 +90,14 @@ function storeAuthData(payload: LoginMutation['login'] | RegisterMutation['regis
     expires: ACCESS_TOKEN_EXPIRY,
     path: '/',
     sameSite: 'lax',
+    secure: COOKIE_SECURE,
   });
 
   Cookies.set(REFRESH_TOKEN_COOKIE, payload.refreshToken, {
     expires: REFRESH_TOKEN_EXPIRY,
     path: '/',
     sameSite: 'lax',
+    secure: COOKIE_SECURE,
   });
 
   // Store user data and metadata
@@ -104,6 +111,7 @@ function storeAuthData(payload: LoginMutation['login'] | RegisterMutation['regis
       expires: REFRESH_TOKEN_EXPIRY,
       path: '/',
       sameSite: 'lax',
+      secure: COOKIE_SECURE,
     },
   );
 }
@@ -116,12 +124,14 @@ function updateTokens(payload: RefreshTokenMutation['refreshToken']): void {
     expires: ACCESS_TOKEN_EXPIRY,
     path: '/',
     sameSite: 'lax',
+    secure: COOKIE_SECURE,
   });
 
   Cookies.set(REFRESH_TOKEN_COOKIE, payload.refreshToken, {
     expires: REFRESH_TOKEN_EXPIRY,
     path: '/',
     sameSite: 'lax',
+    secure: COOKIE_SECURE,
   });
 }
 

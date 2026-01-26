@@ -55,13 +55,13 @@ export class TwoFactorResolver {
     @Context()
     context: {
       req: {
-        user: { userId: string };
+        user: { id: string };
         ip?: string;
         headers?: Record<string, string>;
       };
     },
   ): Promise<EnableTwoFactorResponse> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -100,14 +100,14 @@ export class TwoFactorResolver {
     @Context()
     context: {
       req: {
-        user: { userId: string };
+        user: { id: string };
         ip?: string;
         headers?: Record<string, string>;
       };
     },
     @Args('input') input: VerifyTwoFactorSetupInput,
   ): Promise<VerifyTwoFactorSetupResponse> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -143,14 +143,14 @@ export class TwoFactorResolver {
     @Context()
     context: {
       req: {
-        user: { userId: string };
+        user: { id: string };
         ip?: string;
         headers?: Record<string, string>;
       };
     },
     @Args('input') input: DisableTwoFactorInput,
   ): Promise<boolean> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -182,13 +182,13 @@ export class TwoFactorResolver {
     @Context()
     context: {
       req: {
-        user: { userId: string };
+        user: { id: string };
         ip?: string;
         headers?: Record<string, string>;
       };
     },
   ): Promise<RegenerateBackupCodesResponse> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -217,9 +217,9 @@ export class TwoFactorResolver {
   @UseGuards(GqlAuthGuard, RoleGuard)
   @RequireRole(UserRole.USER)
   async twoFactorSettings(
-    @Context() context: { req: { user: { userId: string } } },
+    @Context() context: { req: { user: { id: string } } },
   ): Promise<TwoFactorSettings | null> {
-    const userId = context.req.user?.userId;
+    const userId = context.req.user?.id;
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
@@ -258,14 +258,14 @@ export class TwoFactorResolver {
     @Context()
     context: {
       req: {
-        user: { userId: string };
+        user: { id: string };
         ip?: string;
         headers?: Record<string, string>;
       };
     },
     @Args('input') input: AdminForceDisableTwoFactorInput,
   ): Promise<AdminForceDisableTwoFactorResponse> {
-    const adminUserId = context.req.user?.userId;
+    const adminUserId = context.req.user?.id;
     if (!adminUserId) {
       throw new UnauthorizedException('Admin user not authenticated');
     }

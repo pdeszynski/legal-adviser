@@ -5,9 +5,9 @@ relevantTo: [auth]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 47
-  referenced: 42
-  successfulFeatures: 42
+  loaded: 94
+  referenced: 52
+  successfulFeatures: 52
 ---
 # auth
 

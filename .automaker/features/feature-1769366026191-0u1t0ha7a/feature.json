@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "Request eraly access button or get started button on main page does nothing. please analyze that and fix these pages.",
+  "title": "Fix unresponsive early access and get started buttons",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "two-factor",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769366026191-0u1t0ha7a",
+  "descriptionHistory": [
+    {
+      "description": "Request eraly access button or get started button on main page does nothing. please analyze that and fix these pages.",
+      "timestamp": "2026-01-25T18:33:46.314Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-25T18:33:48.057Z",
+  "updatedAt": "2026-01-26T05:49:32.642Z"
+}
