@@ -2,6 +2,18 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769500727072-a7fcb6a1",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-27T07:58:47.072Z"
+    },
+    {
+      "id": "evt-1769500721548-0611d9e4",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-27T07:58:41.548Z",
+      "featureName": "Update Docker Compose volumes for local development",
+      "featureId": "feature-1769151063866-n6s5466d9"
+    },
+    {
       "id": "evt-1769434247050-80b3cddc",
       "trigger": "feature_success",
       "timestamp": "2026-01-26T13:30:47.050Z",
