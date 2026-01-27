@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769423115173-3d489e0d",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T10:25:15.173Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "ai-engine-remove-langchain-direct-access",
+  "featureName": "Remove Direct LangChain Usage",
+  "error": "Feature completed in 73s - auto-verified",
+  "passes": true
+}

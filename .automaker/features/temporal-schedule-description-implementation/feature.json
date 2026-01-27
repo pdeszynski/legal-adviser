@@ -4,7 +4,7 @@
   "id": "temporal-schedule-description-implementation",
   "title": "Implement Temporal Schedule Description Method",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

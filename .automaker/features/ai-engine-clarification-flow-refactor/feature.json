@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Refactor the AI Engine's response logic to ask clarifying questions to users instead of suggesting lawyer consultations. When the classifier or Q&A agent detects insufficient information: 1) Generate specific follow-up questions based on case context (e.g., 'What court made this ruling?', 'When did this incident occur?', 'Do you have any supporting documents?'), 2) Display questions in chat interface as interactive buttons or text inputs, 3) Maintain conversation state across multiple clarification rounds, 4) Only suggest lawyer consultation as last resort for clearly out-of-scope queries. Implement clarification state management in LangGraph workflow. Update frontend chat UI to support multi-turn clarification interactions. Use PydanticAI agent for question generation based on context.",
+  "id": "ai-engine-clarification-flow-refactor",
+  "title": "Replace Lawyer Referral with User Clarification Questions",
+  "priority": 1,
+  "status": "completed",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Refactor the AI Engine's response logic to ask clarifying questions to users instead of suggesting lawyer consultations. When the classifier or Q&A agent detects insufficient information: 1) Generate specific follow-up questions based on case context (e.g., 'What court made this ruling?', 'When did this incident occur?', 'Do you have any supporting documents?'), 2) Display questions in chat interface as interactive buttons or text inputs, 3) Maintain conversation state across multiple clarification rounds, 4) Only suggest lawyer consultation as last resort for clearly out-of-scope queries. Implement clarification state management in LangGraph workflow. Update frontend chat UI to support multi-turn clarification interactions. Use PydanticAI agent for question generation based on context.",
+      "timestamp": "2026-01-26T09:49:24.177Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-26T10:12:00.550Z"
+}

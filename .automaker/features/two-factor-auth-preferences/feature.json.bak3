@@ -3,9 +3,6 @@
   "description": "Add two-factor authentication section to settings page. Display current 2FA status (enabled/disabled). When enabled, show: 1) Last verified date, 2) 'Regenerate backup codes' button, 3) 'Disable two-factor authentication' button with password confirmation, 4) Warning text about security implications. When disabled, show 'Enable two-factor authentication' button linking to setup page. Integrate with existing UserPreferences entity for storing 2FA preference metadata.",
   "id": "two-factor-auth-preferences",
   "title": "Two-Factor Settings in User Preferences",
-  "dependencies": [
-    "two-factor-setup-page"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

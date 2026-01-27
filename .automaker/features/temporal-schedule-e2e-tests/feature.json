@@ -4,7 +4,7 @@
   "id": "temporal-schedule-e2e-tests",
   "title": "Create E2E Tests for Temporal Schedule Operations",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

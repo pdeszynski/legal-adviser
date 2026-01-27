@@ -3352,6 +3352,140 @@ path
       <name>Remove model selection from settings page</name>
       <description>On settings page, remove possibility for users to choose the model, it will not be allowd</description>
     </feature>
+    <feature>
+      <name>Fix two-factor authentication initialization validation</name>
+      <description>When trying to save two factor auth, it returns an error:
+
+Two-factor authentication has not been initiated. Call enableTwoFactorAuth first.
+
+{
+    &quot;errors&quot;: [
+        {
+            &quot;message&quot;: &quot;Two-factor authentication has not been initiated. Call enableTwoFactorAuth first.&quot;,
+            &quot;locations&quot;: [
+                {
+                    &quot;line&quot;: 3,
+                    &quot;column&quot;: 11
+                }
+            ],
+            &quot;path&quot;: [
+                &quot;verifyTwoFactorSetup&quot;
+            ],
+            &quot;extensions&quot;: {
+                &quot;code&quot;: &quot;BAD_REQUEST&quot;,
+                &quot;httpStatus&quot;: 400,
+                &quot;exception&quot;: {
+                    &quot;message&quot;: &quot;Two-factor authentication has not been initiated. Call enableTwoFactorAuth first.&quot;,
+                    &quot;status&quot;: 400
+                },
+                &quot;stacktrace&quot;: [
+                    &quot;GraphQLError: Two-factor authentication has not been initiated. Call enableTwoFactorAuth first.&quot;,
+                    &quot;    at GqlAuthExceptionFilter.catch (/Users/piteer/workspace/radca-prawny/legal/apps/backend/src/modules/auth/exceptions/graphql-auth-exception.filter.ts:130:12)&quot;,
+                    &quot;    at ExternalExceptionsHandler.invokeCustomFilters (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/exceptions/external-exceptions-handler.js:31:32)&quot;,
+                    &quot;    at ExternalExceptionsHandler.next (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/exceptions/external-exceptions-handler.js:14:29)&quot;,
+                    &quot;    at Object.verifyTwoFactorSetup (/Users/piteer/workspace/radca-prawny/legal/node_modules/.pnpm/@nestjs+core@11.1.11_@nestjs+common@11.1.11_class-transformer@0.5.1_class-validator@0.14.3_re_dbqbm4zvibvqpchgjldjj4kszy/node_modules/@nestjs/core/helpers/external-proxy.js:14:42)&quot;,
+                    &quot;    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)&quot;
+                ]
+            }
+        }
+    ],
+    &quot;data&quot;: null
+}
+
+Please fix that error</description>
+    </feature>
+    <feature>
+      <name>Implement Multi-Persona Orchestration with LangGraph</name>
+      <description>Design and implement LangGraph workflows for complex multi-agent scenarios where multiple legal expert personas collaborate. Create StateGraph with nodes for different personas: 1) Legal Analyst (case review), 2) Researcher (precedent search), 3) Document Drafter (document generation), 4) Quality Reviewer (validation). Implement LangGraph state management for passing context between personas. Use LangGraph only for orchestration/persona interactions - all actual LLM calls go through PydanticAI agents within each node. Create example workflows like: case analysis requiring analyst + researcher collaboration, document generation requiring drafter + reviewer coordination.</description>
+    </feature>
+    <feature>
+      <name>Migrate AI Engine to PydanticAI Architecture</name>
+      <description>Refactor AI Engine to use PydanticAI (https://ai.pydantic.dev/) as the primary abstraction layer. Remove all direct OpenAI API calls and LangChain direct usage. Implement PydanticAI agents for: 1) Classifier agent (legal grounds identification), 2) Q&amp;A agent (legal question answering), 3) Document generation agent. Use PydanticAI&apos;s dependency injection system for managing LLM models and tools. Ensure all agent logic flows through PydanticAI&apos;s structured agent patterns. This is the foundation for the entire AI Engine refactor.</description>
+    </feature>
+    <feature>
+      <name>Replace Lawyer Referral with User Clarification Questions</name>
+      <description>Refactor the AI Engine&apos;s response logic to ask clarifying questions to users instead of suggesting lawyer consultations. When the classifier or Q&amp;A agent detects insufficient information: 1) Generate specific follow-up questions based on case context (e.g., &apos;What court made this ruling?&apos;, &apos;When did this incident occur?&apos;, &apos;Do you have any supporting documents?&apos;), 2) Display questions in chat interface as interactive buttons or text inputs, 3) Maintain conversation state across multiple clarification rounds, 4) Only suggest lawyer consultation as last resort for clearly out-of-scope queries. Implement clarification state management in LangGraph workflow. Update frontend chat UI to support multi-turn clarification interactions. Use PydanticAI agent for question generation based on context.</description>
+    </feature>
+    <feature>
+      <name>Integrate Langfuse for Observability and Tracing</name>
+      <description>Add comprehensive observability using Langfuse (https://langfuse.com/) across all AI Engine operations. Configure Langfuse SDK with public/private keys from environment. Instrument: 1) All PydanticAI agent calls with tracing, 2) LangGraph workflow executions, 3) Tool usage (RAG retrieval, SAOS/ISAP API calls), 4) Token consumption and costs, 5) Latency measurements. Implement trace linking from frontend requests through backend to AI Engine. Create dashboards for monitoring: agent performance, workflow success rates, token usage trends, error rates. Add Langfuse middleware for automatic span creation. Ensure PII redaction in traces.</description>
+    </feature>
+    <feature>
+      <name>Implement LangGraph Workflows for Complex Scenarios</name>
+      <description>Design LangGraph StateGraph workflows for multi-step AI scenarios: 1) Case Analysis Workflow - Combine classifier agent + research agent + clarification agent, 2) Document Generation Workflow - Combine drafter agent + reviewer agent + revision loop, 3) Complex Q&amp;A Workflow - Researcher + Q&amp;A agent + citation formatter. Define state schemas for each workflow (case data, research results, user responses). Implement conditional edges for decision logic (e.g., &apos;needs more info&apos; -&gt; clarification branch). Use LangGraph only for orchestration between PydanticAI agents, not for direct LLM calls.</description>
+    </feature>
+    <feature>
+      <name>Refactor Existing Agents to PydanticAI Pattern</name>
+      <description>Rewrite existing AI Engine agents using PydanticAI patterns: 1) Classifier Agent - Use PydanticAI&apos;s structured output for legal grounds classification with confidence scores, 2) Q&amp;A Agent - Implement as PydanticAI agent with RAG tool integration for citation-based responses, 3) Document Generation Agent - Use PydanticAI with template-based generation patterns. Define proper result models (Pydantic models) for each agent. Use PydanticAI&apos;s dependency injection for LLM model configuration, vector store access, and tool dependencies. Ensure agents are testable and composable.</description>
+    </feature>
+    <feature>
+      <name>Implement Clarification State Management</name>
+      <description>Design and implement state management for multi-turn clarification flows. Create ClarificationSession entity in backend to track: 1) Original user query, 2) Clarification questions asked, 3) User responses received, 4) Current clarification state (pending, answered, complete), 5) Accumulated context for final agent call. Implement GraphQL mutations for submitting clarification answers. Store clarification sessions linked to user and legal query. Design state machine for clarification flow transitions. Ensure cleanup of stale clarification sessions.</description>
+    </feature>
+    <feature>
+      <name>Add Analytics Tracking to CTA Buttons for Interest Page</name>
+      <description>Implement analytics event tracking on all CTA buttons leading to the early access interest page. Track: 1) &apos;Request Early Access&apos; button clicks, 2) &apos;Get Started&apos; button clicks, 3) &apos;Join Waitlist&apos; button clicks, 4) Any other CTAs pointing to /early-access, 5) Track button location (hero section, feature cards, sticky header), 6) Capture user session data and UTM parameters, 7) Track conversion funnel from CTA click → page view → form submission, 8) Create GA4 dashboard for monitoring CTA performance. Use Google Analytics 4. Ensure tracking works across marketing campaigns with UTM parameters. All CTAs lead to interest signup (NOT demo request).</description>
+    </feature>
+    <feature>
+      <name>Interest Registration Form Component</name>
+      <description>This task is superseded by interest-form-component. Create interest registration form (NOT demo request form). Component should: 1) Support GraphQL mutation to submitInterestRequest, 2) Include fields: full name, email, company (optional), role (optional), use case (optional), how did you hear about us, GDPR consent, 3) Validate form inputs using zod schemas, 4) On submit: sync to HubSpot via GraphQL mutation WITHOUT storing locally, 5) Show success confirmation with next steps, 6) Handle errors with retry, 7) Track analytics events (form view, submit start, success), 8) No demo-related language anywhere.</description>
+    </feature>
+    <feature>
+      <name>Configure HubSpot Lead Routing for Interest Signups</name>
+      <description>Configure HubSpot CRM workflows to handle incoming interest signups (NOT demo requests). Set up: 1) Automatic lead assignment to sales team based on company size or geography, 2) Lead scoring rules (e.g., hot leads if use case is detailed or company is enterprise), 3) Automated email sequences for different lead segments, 4) Task creation for sales reps to follow up, 5) Lead nurturing workflows for &apos;not ready yet&apos; prospects, 6) Integration with calendar booking for follow-up calls, 7) Ensure contacts go to &apos;Early Access Interest&apos; list not &apos;Demo Requests&apos;. Document HubSpot configuration. Use different lists/workflows from demo requests.</description>
+    </feature>
+    <feature>
+      <name>Integrate HubSpot Form on Interest Page</name>
+      <description>This task is superseded by interest-registration-page and interest-form-component. Replace/augment the interest form with HubSpot functionality: 1) HubSpot form embed script on /early-access page, 2) Form fields mapped to HubSpot contact properties, 3) Form submission handler that syncs to HubSpot CRM, 4) Success confirmation, 5) Error handling with fallback to GraphQL mutation (submitInterestRequest) if HubSpot fails, 6) GDPR compliance with consent checkboxes, 7) Analytics tracking for submissions. Use HubSpot form API or embed codes. All data goes to HubSpot, NOT stored locally. This is for interest signups, NOT demo requests.</description>
+    </feature>
+    <feature>
+      <name>Landing Page Early Access Interest Page</name>
+      <description>This task is now superseded by interest-registration-page. The /early-access page should: 1) Display hero section with clear value proposition for early access (NOT demo), 2) Show form that syncs directly to HubSpot CRM without storing locally, 3) Include social proof (waitlist count if available), 4) Display FAQ section about early access process, 5) Ensure GDPR compliance with HubSpot consent checkbox, 6) Handle form submission with success/error states, 7) Track analytics (page views, form submissions, conversions). All messaging should be about &apos;joining early access&apos; NOT &apos;requesting a demo&apos;.</description>
+    </feature>
+    <feature>
+      <name>Interest Registration Confirmation Email</name>
+      <description>This task is superseded by interest-confirmation-email. Send automated confirmation email to users who submit early access interest (NOT demo request). Email should: 1) Use existing email-notification-service, 2) Send asynchronously via email queue/Temporal, 3) Include personalized greeting, 4) Thank them for interest in early access (NOT demo), 5) Explain next steps (timeline, updates, invitation), 6) Provide links to docs/blog/social, 7) Include unsubscribe link, 8) Be sent after successful HubSpot sync. Ensure NO demo language in the email.</description>
+    </feature>
+    <feature>
+      <name>Remove Direct LangChain Usage</name>
+      <description>Audit and remove all direct LangChain imports and usage from AI Engine. Search for imports of &apos;langchain&apos;, &apos;langchain.chain&apos;, &apos;langchain.schema&apos;, &apos;langchain.tools&apos;, etc. Replace LangChain patterns with PydanticAI equivalents: 1) Replace LangChain Chains with PydanticAI agents, 2) Replace LangChain Tools with PydanticAI tools, 3) Replace LangChain Prompts with PydanticAI system message patterns, 4) Replace LangChain Memory with LangGraph state management. Ensure RAG implementation uses vector store directly or through PydanticAI tools, not LangChain retrievers.</description>
+    </feature>
+    <feature>
+      <name>Remove All Direct OpenAI API Calls</name>
+      <description>Audit and remove all direct OpenAI API usage from AI Engine codebase. Replace with PydanticAI agent patterns. Search for imports of &apos;openai&apos;, &apos;openai.AsyncOpenAI&apos;, direct client calls like &apos;client.chat.completions.create()&apos;. Migrate classifier agent (classifier_agent.py), Q&amp;A agent (qa_agent.py), and any document generation code to use PydanticAI&apos;s structured agent patterns with proper dependency injection for model configuration. Ensure environment variables (OPENAI_API_KEY) are passed through PydanticAI configuration, not direct OpenAI clients.</description>
+    </feature>
+    <feature>
+      <name>Update AI Engine Documentation</name>
+      <description>Update CLAUDE.md and AI Engine documentation to reflect new architecture. Document: 1) PydanticAI agent patterns and how to create new agents, 2) LangGraph workflow patterns for multi-agent scenarios, 3) Langfuse observability setup and trace interpretation, 4) Clarification flow design and UX patterns, 5) Migration guide from old OpenAI/LangChain patterns, 6) Environment variables required (LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY), 7) Testing strategies for AI components. Include code examples and diagrams showing the new architecture layers.</description>
+    </feature>
+    <feature>
+      <name>Update E2E Tests for Refactored AI Engine</name>
+      <description>Update existing E2E tests to work with refactored AI Engine. Test scenarios: 1) Clarification flow - verify agent asks questions instead of lawyer referral, 2) Multi-turn Q&amp;A - verify conversation state maintained, 3) LangGraph workflows - verify multi-agent orchestration works, 4) PydanticAI agents - verify structured outputs are correct, 5) Langfuse traces - verify observability data is captured. Mock PydanticAI agents and LangGraph workflows where appropriate. Update test data to match new response formats.</description>
+    </feature>
+    <feature>
+      <name>Update Frontend Chat UI for Clarification Flows</name>
+      <description>Enhance the legal chat frontend to support multi-turn clarification interactions. Implement: 1) Display agent questions as interactive components (not just text), 2) Quick reply buttons for common clarification options, 3) Context preservation across clarification rounds, 4) Visual indication of clarification state vs. normal Q&amp;A, 5) Progress indicator showing how many clarifications remain. Update the askLegalQuestion GraphQL mutation to support clarification state tracking. Ensure smooth UX transition from initial query -&gt; clarification -&gt; final answer.</description>
+    </feature>
+    <feature>
+      <name>Refactor RAG as PydanticAI Tool</name>
+      <description>Refactor existing RAG implementation (currently using LangChain retrievers) into a PydanticAI tool pattern. Create RAG tool that: 1) Takes user query as input, 2) Performs vector search over legal documents/rulings, 3) Returns formatted context with citations, 4) Integrates cleanly with PydanticAI agents. Use direct vector store client (pgvector/Pinecone/Weaviate) instead of LangChain vector stores. Ensure tool is properly typed and traceable via Langfuse. Make RAG tool reusable across multiple agents (Q&amp;A, classifier, document drafter).</description>
+    </feature>
+    <feature>
+      <name>Optimize AI Engine Performance</name>
+      <description>Optimize refactored AI Engine for performance and cost. Implement: 1) Response caching for repeated queries (use Redis), 2) Token usage optimization via prompt engineering, 3) Batch processing for document generation, 4) Parallel agent execution where appropriate in LangGraph, 5) Model selection logic (GPT-3.5 for simple tasks, GPT-4 for complex reasoning), 6) Streaming responses for better UX. Use Langfuse metrics to identify bottlenecks. Implement cost monitoring alerts.</description>
+    </feature>
+    <feature>
+      <name>Enhance AI Error Handling with Langfuse Context</name>
+      <description>Improve error handling in AI Engine with Langfuse-integrated error tracking. Implement: 1) Structured error types for different failure modes (LLM API errors, tool failures, validation errors), 2) Automatic Langfuse span annotation on errors with error context, 3) Retry logic with exponential backoff for transient failures, 4) Fallback agent behaviors when primary agent fails, 5) User-friendly error messages masking technical details, 6) Error aggregation in admin dashboard via Langfuse. Ensure all errors are traceable back to specific agents/workflows.</description>
+    </feature>
+    <feature>
+      <name>Create Langfuse Trace Visualization Dashboard</name>
+      <description>Build admin dashboard for viewing AI Engine execution traces via Langfuse. Create page at /admin/ai/traces showing: 1) List of recent AI requests with trace IDs, 2) Detailed trace view showing agent execution, LangGraph workflow steps, tool calls, 3) Token usage breakdown per agent/operation, 4) Latency metrics per component, 5) Error traces with stack traces, 6) Cost attribution per user/session. Integrate with Langfuse API for fetching trace data. Add filtering by user, date range, agent type. Enable drill-down from user activity to specific AI request traces.</description>
+    </feature>
+    <feature>
+      <name>Fix Langfuse integration to follow official guidelines</name>
+      <description>Langfuse integration is done bad, too manully, please follow the official instruction https://langfuse.com/integrations/frameworks/pydantic-ai</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>
@@ -3420,6 +3554,9 @@ path
       <name>Phase 7: Polish &amp; Cross-Cutting Concerns</name>
       <status>pending</status>
       <description>Legal disclaimers (modal + footer), Polish AI prompts verification, security hardening (input validation, rate limiting), documentation updates, audit logging with Refine AuditLogProvider.</description>
+    </phase>
+  </implementation_roadmap>
+</project_specification> documentation updates, audit logging with Refine AuditLogProvider.</description>
     </phase>
   </implementation_roadmap>
 </project_specification>

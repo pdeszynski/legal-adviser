@@ -5,7 +5,7 @@
   "title": "Validate HubSpot Backend Integration for Interest Signups",
   "dependencies": [],
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

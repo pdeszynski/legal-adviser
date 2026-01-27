@@ -1,8 +1,8 @@
 {
   "category": "feature",
-  "description": "Configure HubSpot CRM workflows to handle incoming leads from demo request form. Set up: 1) Automatic lead assignment to sales team based on company size or geography, 2) Lead scoring rules (e.g., hot leads if timeline is 'immediate' or company size is '50+'), 3) Automated email sequences for different lead segments, 4) Task creation for sales reps to follow up within 24 hours, 5) Lead nurturing workflows for 'not ready yet' prospects, 6) Integration with calendar booking tool (Calendly/HubSpot Meetings) for demo scheduling. Document HubSpot configuration in CLAUDE.md.",
+  "description": "Configure HubSpot CRM workflows to handle incoming interest signups (NOT demo requests). Set up: 1) Automatic lead assignment to sales team based on company size or geography, 2) Lead scoring rules (e.g., hot leads if use case is detailed or company is enterprise), 3) Automated email sequences for different lead segments, 4) Task creation for sales reps to follow up, 5) Lead nurturing workflows for 'not ready yet' prospects, 6) Integration with calendar booking for follow-up calls, 7) Ensure contacts go to 'Early Access Interest' list not 'Demo Requests'. Document HubSpot configuration. Use different lists/workflows from demo requests.",
   "id": "demo-request-hubspot-lead-routing",
-  "title": "Configure HubSpot Lead Routing and Workflows",
+  "title": "Configure HubSpot Lead Routing for Interest Signups",
   "priority": 2,
   "status": "verified",
   "branchName": "two-factor",
@@ -11,6 +11,11 @@
       "description": "Configure HubSpot CRM workflows to handle incoming leads from demo request form. Set up: 1) Automatic lead assignment to sales team based on company size or geography, 2) Lead scoring rules (e.g., hot leads if timeline is 'immediate' or company size is '50+'), 3) Automated email sequences for different lead segments, 4) Task creation for sales reps to follow up within 24 hours, 5) Lead nurturing workflows for 'not ready yet' prospects, 6) Integration with calendar booking tool (Calendly/HubSpot Meetings) for demo scheduling. Document HubSpot configuration in CLAUDE.md.",
       "timestamp": "2026-01-25T18:47:38.411Z",
       "source": "initial"
+    },
+    {
+      "description": "Configure HubSpot CRM workflows to handle incoming interest signups (NOT demo requests). Set up: 1) Automatic lead assignment to sales team based on company size or geography, 2) Lead scoring rules (e.g., hot leads if use case is detailed or company is enterprise), 3) Automated email sequences for different lead segments, 4) Task creation for sales reps to follow up, 5) Lead nurturing workflows for 'not ready yet' prospects, 6) Integration with calendar booking for follow-up calls, 7) Ensure contacts go to 'Early Access Interest' list not 'Demo Requests'. Document HubSpot configuration. Use different lists/workflows from demo requests.",
+      "timestamp": "2026-01-26T05:45:27.244Z",
+      "source": "edit"
     }
   ],
   "updatedAt": "2026-01-25T19:12:59.829Z"

@@ -4,7 +4,7 @@
   "id": "demo-request-hubspot-lead-routing",
   "title": "Configure HubSpot Lead Routing for Interest Signups",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

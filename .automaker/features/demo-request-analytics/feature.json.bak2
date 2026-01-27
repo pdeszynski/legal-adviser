@@ -13,5 +13,8 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T03:06:26.340Z"
+  "updatedAt": "2026-01-25T03:06:26.340Z",
+  "dependencies": [
+    "cta-button-analytics-tracking"
+  ]
 }

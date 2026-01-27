@@ -5,7 +5,7 @@
   "title": "Create 'How It Works' About Page",
   "dependencies": [],
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -13,5 +13,6 @@
       "timestamp": "2026-01-25T18:35:30.517Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T18:35:38.283Z"
 }

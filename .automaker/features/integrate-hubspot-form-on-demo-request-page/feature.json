@@ -4,7 +4,7 @@
   "id": "integrate-hubspot-form-on-demo-request-page",
   "title": "Integrate HubSpot Form on Interest Page",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

@@ -5,7 +5,7 @@
   "title": "Migrate Ruling Indexing to Temporal Scheduled Workflow",
   "priority": 2,
   "status": "verified",
-  "branchName": "feature/temporal",
+  "branchName": null,
   "descriptionHistory": [
     {
       "description": "Replace Bull-based ruling indexing job with Temporal scheduled workflow. Create RulingIndexingWorkflow with activities for: 1) Fetch new rulings from SAOS/ISAP APIs, 2) Process and parse ruling data, 3) Index in vector store for RAG, 4) Store in database, 5) Handle API rate limiting. Implement cron schedule for nightly execution. Add backfill workflow for historical data. Configure idempotency keys to prevent duplicate indexing.",

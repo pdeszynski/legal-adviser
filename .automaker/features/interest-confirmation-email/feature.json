@@ -4,7 +4,7 @@
   "id": "interest-confirmation-email",
   "title": "Send Confirmation Email for Interest Registration",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

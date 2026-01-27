@@ -4,7 +4,7 @@
   "id": "cta-button-analytics-tracking",
   "title": "Add Analytics Tracking to Landing Page CTA Buttons",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T19:02:04.711Z"
+  "updatedAt": "2026-01-25T19:09:22.522Z"
 }

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769420822315-7452618d",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T09:47:02.315Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769415351724-r4s51bneq",
+  "featureName": "Fix two-factor authentication initialization validation",
+  "error": "Feature completed in 293s - auto-verified",
+  "passes": true
+}

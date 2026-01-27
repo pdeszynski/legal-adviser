@@ -1,7 +1,7 @@
 {
   "category": "Uncategorized",
   "description": "On settings page, remove possibility for users to choose the model, it will not be allowd",
-  "title": "",
+  "title": "Remove model selection from settings page",
   "images": [],
   "imagePaths": [],
   "textFilePaths": [],
@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "dependencies": [],
   "workMode": "current",
-  "titleGenerating": "On settings page, remove possibility for users to choose the model, it will not be allowd",
+  "titleGenerating": false,
   "status": "in_progress",
   "id": "feature-1769415439699-vbbc444ve",
   "descriptionHistory": [

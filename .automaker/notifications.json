@@ -3387,6 +3387,204 @@
       "dismissed": false,
       "featureId": "feature-1769415439699-vbbc444ve",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "40959f5d-5bca-44dc-abf9-8aed9483c93d",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769415351724-r4s51bneq\" has been verified and is complete.",
+      "createdAt": "2026-01-26T09:47:02.296Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769415351724-r4s51bneq",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "d21b1e4d-0886-44dd-b945-d433433d1ad5",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-langgraph-persona-orchestration\" has been verified and is complete.",
+      "createdAt": "2026-01-26T09:57:17.422Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-langgraph-persona-orchestration",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "dd602558-63d6-4fd8-b9c2-1199da9edcb4",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-pydantic-ai-migration\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:09:12.535Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-pydantic-ai-migration",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "168f1f0e-09d4-45a2-861b-373c3dcab599",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-clarification-flow-refactor\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:12:00.552Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-clarification-flow-refactor",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "dc9a654b-b89e-49ff-a6f1-835b32651128",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-langfuse-observability-integration\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:17:34.371Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-langfuse-observability-integration",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "111c1d95-415a-426f-8612-20b08d46b941",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-langgraph-workflows-implementation\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:22:27.393Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-langgraph-workflows-implementation",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "92e5f14f-ec76-42a0-ada4-5b09caad3539",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-pydantic-ai-agents-refactor\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:22:51.202Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-pydantic-ai-agents-refactor",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "99f071b4-7131-4efb-8788-91145c081693",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-clarification-state-management\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:23:59.339Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-clarification-state-management",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "6b09e25e-d371-4c28-9fd0-12adb875850f",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-remove-langchain-direct-access\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:25:15.160Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-remove-langchain-direct-access",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "28fe1148-aa5b-406b-aa89-e4e580ba2456",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-remove-direct-openai-calls\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:32:46.752Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-remove-direct-openai-calls",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "4d6a8175-54e3-4e83-9073-eae02eae913c",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-documentation-update\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:33:22.988Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-documentation-update",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "15d09e2f-02c4-4b87-a166-c2c54a884978",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-e2e-tests-refactor\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:42:46.264Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-e2e-tests-refactor",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "02f2c423-05d7-49f5-a311-0400ba746969",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-frontend-clarification-ui\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:45:19.990Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-frontend-clarification-ui",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "d695dcea-c2cb-4ffb-8641-e902fc8d2f3e",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-rag-pydantic-ai-tool\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:51:11.161Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-rag-pydantic-ai-tool",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "a8390ecd-6bde-4057-801e-8e9bfe25f702",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-performance-optimization\" has been verified and is complete.",
+      "createdAt": "2026-01-26T10:59:12.319Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-performance-optimization",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "2d2d9825-c944-429f-908e-300cc1c52f9f",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-error-handling-with-langfuse\" has been verified and is complete.",
+      "createdAt": "2026-01-26T11:01:35.067Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-error-handling-with-langfuse",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "e243b9b0-b1c1-474e-8bb5-e803c2904899",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-langfuse-trace-visualization\" has been verified and is complete.",
+      "createdAt": "2026-01-26T11:02:26.566Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-langfuse-trace-visualization",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "cc57ad69-6c2f-4783-a0ef-8de7b4ad0854",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769433556946-stcyssvod\" has been verified and is complete.",
+      "createdAt": "2026-01-26T13:30:47.036Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769433556946-stcyssvod",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

@@ -4,7 +4,7 @@
   "id": "features-page-content-strategy",
   "title": "Define Features Page Content Strategy",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-25T18:45:09.644Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T19:09:25.547Z"
 }

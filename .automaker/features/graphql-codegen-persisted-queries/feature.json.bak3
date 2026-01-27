@@ -3,9 +3,6 @@
   "description": "Configure GraphQL Codegen to generate persisted query documents and manifest. Set up automatic query hashing and persisted query support in backend. Replace runtime query parsing with pre-registered query IDs. Improves performance and security by eliminating ad-hoc queries.",
   "id": "graphql-codegen-persisted-queries",
   "title": "Implement Persisted Queries with GraphQL Codegen",
-  "dependencies": [
-    "graphql-codegen-migration-setup"
-  ],
   "priority": 3,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

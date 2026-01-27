@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Audit and remove all direct LangChain imports and usage from AI Engine. Search for imports of 'langchain', 'langchain.chain', 'langchain.schema', 'langchain.tools', etc. Replace LangChain patterns with PydanticAI equivalents: 1) Replace LangChain Chains with PydanticAI agents, 2) Replace LangChain Tools with PydanticAI tools, 3) Replace LangChain Prompts with PydanticAI system message patterns, 4) Replace LangChain Memory with LangGraph state management. Ensure RAG implementation uses vector store directly or through PydanticAI tools, not LangChain retrievers.",
+  "id": "ai-engine-remove-langchain-direct-access",
+  "title": "Remove Direct LangChain Usage",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Audit and remove all direct LangChain imports and usage from AI Engine. Search for imports of 'langchain', 'langchain.chain', 'langchain.schema', 'langchain.tools', etc. Replace LangChain patterns with PydanticAI equivalents: 1) Replace LangChain Chains with PydanticAI agents, 2) Replace LangChain Tools with PydanticAI tools, 3) Replace LangChain Prompts with PydanticAI system message patterns, 4) Replace LangChain Memory with LangGraph state management. Ensure RAG implementation uses vector store directly or through PydanticAI tools, not LangChain retrievers.",
+      "timestamp": "2026-01-26T09:49:24.178Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -3,9 +3,6 @@
   "description": "Create a dedicated early access registration page at /early-access (or /interest) with modern, conversion-focused design. The page should: 1) Display hero section with compelling headline about joining early access waitlist, 2) Show embedded HubSpot form OR custom form that syncs directly to HubSpot CRM (do NOT store in local database), 3) Include form fields: full name, email, company (optional), role/title (optional), use case/interest (textarea), and how did you hear about us (dropdown), 4) Add GDPR/privacy consent checkbox explaining data goes to HubSpot, 5) Display success confirmation after submission with thank you message and next steps, 6) Handle form submission errors gracefully with retry option, 7) Implement analytics tracking (page view, form view, submission start, submission complete) using Google Analytics 4 or similar, 8) Ensure mobile-responsive design with shadcn/ui components, 9) Add loading states during form submission to prevent double-submit. The form should clearly state this is for 'Requesting Early Access' not 'Requesting a Demo'.",
   "id": "interest-registration-page",
   "title": "Create Early Access Interest Registration Page",
-  "dependencies": [
-    "interest-page-content-strategy"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "two-factor",

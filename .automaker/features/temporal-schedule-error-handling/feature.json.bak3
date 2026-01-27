@@ -3,9 +3,6 @@
   "description": "Implement error handling for all schedule operations (create, describe, pause, resume, delete). Handle specific Temporal errors: ScheduleNotFound, ScheduleAlreadyExists, InvalidCronExpression, WorkflowNotFound. Create custom error classes extending TemporalError. Log errors with context. Return user-friendly error messages for API responses.",
   "id": "temporal-schedule-error-handling",
   "title": "Add Comprehensive Error Handling for Schedule Operations",
-  "dependencies": [
-    "temporal-schedule-resume-implementation"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "two-factor",

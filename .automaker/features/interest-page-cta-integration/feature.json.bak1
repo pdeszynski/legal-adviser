@@ -4,7 +4,7 @@
   "id": "interest-page-cta-integration",
   "title": "Update All Landing Page CTAs to Point to Interest Page",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-26T07:41:51.266Z"
+  "updatedAt": "2026-01-26T07:52:16.603Z"
 }

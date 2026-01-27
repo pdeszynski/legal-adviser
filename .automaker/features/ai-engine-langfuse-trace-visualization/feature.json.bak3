@@ -1,0 +1,19 @@
+{
+  "category": "feature",
+  "description": "Build admin dashboard for viewing AI Engine execution traces via Langfuse. Create page at /admin/ai/traces showing: 1) List of recent AI requests with trace IDs, 2) Detailed trace view showing agent execution, LangGraph workflow steps, tool calls, 3) Token usage breakdown per agent/operation, 4) Latency metrics per component, 5) Error traces with stack traces, 6) Cost attribution per user/session. Integrate with Langfuse API for fetching trace data. Add filtering by user, date range, agent type. Enable drill-down from user activity to specific AI request traces.",
+  "id": "ai-engine-langfuse-trace-visualization",
+  "title": "Create Langfuse Trace Visualization Dashboard",
+  "dependencies": [
+    "ai-engine-langfuse-observability-integration"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Build admin dashboard for viewing AI Engine execution traces via Langfuse. Create page at /admin/ai/traces showing: 1) List of recent AI requests with trace IDs, 2) Detailed trace view showing agent execution, LangGraph workflow steps, tool calls, 3) Token usage breakdown per agent/operation, 4) Latency metrics per component, 5) Error traces with stack traces, 6) Cost attribution per user/session. Integrate with Langfuse API for fetching trace data. Add filtering by user, date range, agent type. Enable drill-down from user activity to specific AI request traces.",
+      "timestamp": "2026-01-26T09:49:24.180Z",
+      "source": "initial"
+    }
+  ]
+}

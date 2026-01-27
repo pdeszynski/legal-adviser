@@ -4,7 +4,7 @@
   "id": "menu-grouping-user-settings",
   "title": "Group User Settings and Account Features",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T02:16:49.674Z"
+  "updatedAt": "2026-01-25T02:34:24.562Z"
 }

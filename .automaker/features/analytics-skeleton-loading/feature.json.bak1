@@ -4,7 +4,7 @@
   "id": "analytics-skeleton-loading",
   "title": "Add Skeleton Loading to Analytics Dashboard",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-23T20:24:14.999Z"
+  "updatedAt": "2026-01-23T20:31:20.661Z"
 }

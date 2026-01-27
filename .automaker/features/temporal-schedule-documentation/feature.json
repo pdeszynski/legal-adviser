@@ -4,7 +4,7 @@
   "id": "temporal-schedule-documentation",
   "title": "Document Temporal Schedule Implementation and Usage",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

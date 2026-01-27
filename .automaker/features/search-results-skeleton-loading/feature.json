@@ -4,7 +4,7 @@
   "id": "search-results-skeleton-loading",
   "title": "Add Skeleton Loading to Search Results",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

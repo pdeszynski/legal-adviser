@@ -4,7 +4,7 @@
   "id": "interest-form-component",
   "title": "Create Interest Registration Form Component",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-26T05:45:27.229Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-26T07:25:44.604Z"
 }

@@ -5,7 +5,7 @@
   "title": "GraphQL Code Generator Setup and Configuration",
   "dependencies": [],
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -14,5 +14,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T09:19:57.717Z"
+  "updatedAt": "2026-01-24T09:29:26.618Z"
 }

@@ -4,7 +4,7 @@
   "id": "hubspot-interest-graphql-api",
   "title": "Create GraphQL API for Interest Registration",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

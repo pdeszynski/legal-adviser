@@ -39,6 +39,27 @@ export interface AskQuestionRequest {
   question: string;
   session_id: string;
   mode?: string;
+  conversation_history?: ConversationMessage[];
+}
+
+export interface ConversationMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp?: string;
+}
+
+export interface ClarificationQuestion {
+  question: string;
+  question_type: string;
+  options?: string[];
+  hint?: string;
+}
+
+export interface ClarificationInfo {
+  needs_clarification: boolean;
+  questions: ClarificationQuestion[];
+  context_summary: string;
+  next_steps: string;
 }
 
 export interface Citation {
@@ -53,6 +74,10 @@ export interface AnswerResponse {
   confidence: number;
   tokens_used?: number;
   request_id?: string;
+  clarification?: ClarificationInfo;
+  query_type?: string;
+  key_terms?: string[];
+  needs_clarification?: boolean;
 }
 
 export interface SearchRulingsRequest {
@@ -133,4 +158,27 @@ export interface SemanticSearchResponse {
   results: SemanticSearchResult[];
   query: string;
   total: number;
+}
+
+// Vector Search types for RAG
+export interface VectorSearchRequest {
+  query_embedding: number[];
+  limit?: number;
+  threshold?: number;
+  document_id?: string;
+}
+
+export interface VectorSearchResult {
+  id: string;
+  document_id: string;
+  content_chunk: string;
+  chunk_index: number;
+  similarity: number;
+  metadata?: Record<string, any>;
+}
+
+export interface VectorSearchResponse {
+  results: VectorSearchResult[];
+  total: number;
+  query: string;
 }

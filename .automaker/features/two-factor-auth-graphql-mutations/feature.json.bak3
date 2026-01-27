@@ -3,9 +3,6 @@
   "description": "Implement GraphQL mutations for 2FA setup and management: 1) enableTwoFactorAuth() - generates TOTP secret and QR code URL, 2) verifyTwoFactorSetup(secret, token) - confirms setup by validating first TOTP token, 3) disableTwoFactorAuth() - removes 2FA with password confirmation, 4) regenerateBackupCodes() - creates new recovery codes. All mutations require authentication. Use nestjs-query patterns for consistency. Add @RequireRole decorator for proper authorization.",
   "id": "two-factor-auth-graphql-mutations",
   "title": "Two-Factor Authentication GraphQL Mutations",
-  "dependencies": [
-    "totp-service-implementation"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

@@ -4,7 +4,7 @@
   "id": "migrate-webhook-delivery-to-temporal",
   "title": "Migrate Webhook Delivery to Temporal Workflow",
   "priority": 3,
-  "status": "verified",
+  "status": "completed",
   "branchName": null,
   "descriptionHistory": [
     {

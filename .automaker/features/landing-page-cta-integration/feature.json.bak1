@@ -1,8 +1,8 @@
 {
   "category": "enhancement",
-  "description": "Expand CTA integration to ensure all landing page CTAs properly navigate to demo request page and HubSpot form. Implement: 1) Hero section 'Request Early Access' CTA button linking to /demo, 2) 'Get Started' CTA in navigation linking to /demo, 3) Feature section CTAs after each major feature, 4) Sticky header CTA on scroll, 5) Exit-intent modal offering demo request when user tries to leave site, 6) Ensure buttons use Next.js Link component for proper routing, 7) Add loading states and prevent double-submission. All CTAs should ultimately lead users to HubSpot form for lead capture.",
+  "description": "Expand CTA integration to ensure all landing page CTAs properly navigate to the early access interest page (/early-access) instead of demo page. Implement: 1) Hero section 'Get Early Access' CTA button linking to /early-access, 2) 'Request Early Access' CTA in navigation linking to /early-access, 3) Feature section CTAs after each major feature pointing to /early-access, 4) Sticky header CTA on scroll, 5) Exit-intent modal offering early access signup when user tries to leave site, 6) Ensure buttons use Next.js Link component for proper routing, 7) Add loading states and prevent double-submission. All CTAs should lead users to the interest registration form that syncs to HubSpot. Do NOT mention 'demo' anywhere.",
   "id": "landing-page-cta-integration",
-  "title": "Landing Page Call-to-Action Integration",
+  "title": "Landing Page CTA Integration to Early Access Interest Page",
   "priority": 2,
   "status": "verified",
   "branchName": "002-legal-ai-core",
@@ -15,6 +15,11 @@
     {
       "description": "Expand CTA integration to ensure all landing page CTAs properly navigate to demo request page and HubSpot form. Implement: 1) Hero section 'Request Early Access' CTA button linking to /demo, 2) 'Get Started' CTA in navigation linking to /demo, 3) Feature section CTAs after each major feature, 4) Sticky header CTA on scroll, 5) Exit-intent modal offering demo request when user tries to leave site, 6) Ensure buttons use Next.js Link component for proper routing, 7) Add loading states and prevent double-submission. All CTAs should ultimately lead users to HubSpot form for lead capture.",
       "timestamp": "2026-01-25T18:47:38.416Z",
+      "source": "edit"
+    },
+    {
+      "description": "Expand CTA integration to ensure all landing page CTAs properly navigate to the early access interest page (/early-access) instead of demo page. Implement: 1) Hero section 'Get Early Access' CTA button linking to /early-access, 2) 'Request Early Access' CTA in navigation linking to /early-access, 3) Feature section CTAs after each major feature pointing to /early-access, 4) Sticky header CTA on scroll, 5) Exit-intent modal offering early access signup when user tries to leave site, 6) Ensure buttons use Next.js Link component for proper routing, 7) Add loading states and prevent double-submission. All CTAs should lead users to the interest registration form that syncs to HubSpot. Do NOT mention 'demo' anywhere.",
+      "timestamp": "2026-01-26T05:45:27.232Z",
       "source": "edit"
     }
   ],

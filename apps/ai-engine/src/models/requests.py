@@ -73,7 +73,7 @@ class GenerateEmbeddingsRequest(BaseModel):
     """Request to generate embeddings for text chunks."""
 
     texts: list[str] = Field(
-        ..., description="List of text chunks to generate embeddings for", min_items=1
+        ..., description="List of text chunks to generate embeddings for", min_length=1
     )
     model: str = Field(
         default="text-embedding-3-small",

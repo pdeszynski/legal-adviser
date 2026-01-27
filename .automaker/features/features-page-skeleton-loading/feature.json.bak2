@@ -4,7 +4,7 @@
   "id": "features-page-skeleton-loading",
   "title": "Add Skeleton Loading to Features Page",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-25T18:45:09.648Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T19:15:46.134Z"
 }

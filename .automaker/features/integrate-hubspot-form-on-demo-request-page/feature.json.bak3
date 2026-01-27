@@ -4,7 +4,7 @@
   "id": "integrate-hubspot-form-on-demo-request-page",
   "title": "Integrate HubSpot Form on Demo Request Page",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-25T18:47:38.410Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T19:00:47.357Z"
 }

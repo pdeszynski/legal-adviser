@@ -4,7 +4,7 @@
   "id": "temporal-workflow-e2e-tests",
   "title": "E2E Tests for Temporal Workflows",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": null,
   "descriptionHistory": [
     {

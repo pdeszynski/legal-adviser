@@ -1,0 +1,19 @@
+{
+  "category": "bug",
+  "description": "Update existing E2E tests to work with refactored AI Engine. Test scenarios: 1) Clarification flow - verify agent asks questions instead of lawyer referral, 2) Multi-turn Q&A - verify conversation state maintained, 3) LangGraph workflows - verify multi-agent orchestration works, 4) PydanticAI agents - verify structured outputs are correct, 5) Langfuse traces - verify observability data is captured. Mock PydanticAI agents and LangGraph workflows where appropriate. Update test data to match new response formats.",
+  "id": "ai-engine-e2e-tests-refactor",
+  "title": "Update E2E Tests for Refactored AI Engine",
+  "dependencies": [
+    "ai-engine-langgraph-workflows-implementation"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Update existing E2E tests to work with refactored AI Engine. Test scenarios: 1) Clarification flow - verify agent asks questions instead of lawyer referral, 2) Multi-turn Q&A - verify conversation state maintained, 3) LangGraph workflows - verify multi-agent orchestration works, 4) PydanticAI agents - verify structured outputs are correct, 5) Langfuse traces - verify observability data is captured. Mock PydanticAI agents and LangGraph workflows where appropriate. Update test data to match new response formats.",
+      "timestamp": "2026-01-26T09:49:24.180Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -84,7 +84,7 @@ export class CreateLegalQueryInput {
   @Field(() => String)
   @IsString()
   @IsNotEmpty({ message: 'Question is required' })
-  @MinLength(3, { message: 'Question must be at least 3 characters long' })
+  @MinLength(5, { message: 'Question must be at least 5 characters long' })
   @MaxLength(10000, {
     message: 'Question must be at most 10000 characters long',
   })
@@ -113,7 +113,7 @@ export class UpdateLegalQueryInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
-  @MinLength(3, { message: 'Question must be at least 3 characters long' })
+  @MinLength(5, { message: 'Question must be at least 5 characters long' })
   @MaxLength(10000, {
     message: 'Question must be at most 10000 characters long',
   })
@@ -170,7 +170,7 @@ export class SubmitLegalQueryInput {
   })
   @IsString()
   @IsNotEmpty({ message: 'Question is required' })
-  @MinLength(3, { message: 'Question must be at least 3 characters long' })
+  @MinLength(5, { message: 'Question must be at least 5 characters long' })
   @MaxLength(10000, {
     message: 'Question must be at most 10000 characters long',
   })
@@ -241,7 +241,7 @@ export class AskLegalQuestionInput {
   })
   @IsString()
   @IsNotEmpty({ message: 'Question is required' })
-  @MinLength(3, { message: 'Question must be at least 3 characters long' })
+  @MinLength(5, { message: 'Question must be at least 5 characters long' })
   @MaxLength(10000, {
     message: 'Question must be at most 10000 characters long',
   })

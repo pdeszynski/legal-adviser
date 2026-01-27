@@ -4,7 +4,7 @@
   "id": "e2e-tests-authorization-mutations",
   "title": "E2E Tests for Authorization on Mutations",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T17:01:09.989Z"
+  "updatedAt": "2026-01-25T17:01:10.829Z"
 }

@@ -3,9 +3,6 @@
   "description": "Create NestJS guard decorated with @UseGuards that checks user roles before allowing access to admin routes. Implement RoleGuard that reads user roles from JWT/context and validates against required roles using metadata from @Roles decorator. Support role hierarchy (ADMIN can access USER routes). Apply to all admin resolvers and routes.",
   "id": "admin-role-guard",
   "title": "Admin Role Guard Implementation",
-  "dependencies": [
-    "user-role-relationship"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

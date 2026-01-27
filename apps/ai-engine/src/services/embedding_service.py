@@ -1,21 +1,43 @@
 """Embedding generation service for vector store.
 
-This service handles text embedding generation using OpenAI's API.
+This service handles text embedding generation using a centralized OpenAI client.
+All embedding operations go through this service to provide a single point of control
+and make it easy to swap implementations when PydanticAI adds native embedding support.
+
+Note: PydanticAI v1.31 doesn't have native embedding support, so we use OpenAI's API
+directly through the centralized client in dependencies.py. This abstraction allows
+easy migration when PydanticAI adds embedder support.
 """
 
-from openai import AsyncOpenAI
-
+from ..agents.dependencies import get_openai_client
 from ..config import get_settings
 
 
 class EmbeddingService:
-    """Service for generating text embeddings using OpenAI."""
+    """Service for generating text embeddings.
+
+    This service abstracts the embedding implementation, currently using
+    OpenAI's API through the centralized client. When PydanticAI adds
+    native embedder support, this class can be updated to use it.
+    """
 
     def __init__(self):
-        """Initialize the embedding service with OpenAI client."""
+        """Initialize the embedding service."""
+        self._client = None
+        self._default_model = "text-embedding-3-small"
+
+    @property
+    def client(self):
+        """Lazy-load the OpenAI client."""
+        if self._client is None:
+            self._client = get_openai_client()
+        return self._client
+
+    @property
+    def default_model(self) -> str:
+        """Get the default embedding model from settings."""
         settings = get_settings()
-        self.client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-        self.default_model = "text-embedding-3-small"  # 1536 dimensions, cost-effective
+        return getattr(settings, "OPENAI_EMBEDDING_MODEL", self._default_model)
 
     async def generate_embeddings(
         self, texts: list[str], model: str | None = None
@@ -24,7 +46,7 @@ class EmbeddingService:
 
         Args:
             texts: List of text strings to embed
-            model: OpenAI embedding model to use (defaults to text-embedding-3-small)
+            model: Embedding model to use (defaults to text-embedding-3-small)
 
         Returns:
             List of embedding vectors (one per input text)
@@ -54,7 +76,7 @@ class EmbeddingService:
 
         Args:
             text: Text string to embed
-            model: OpenAI embedding model to use
+            model: Embedding model to use
 
         Returns:
             Single embedding vector

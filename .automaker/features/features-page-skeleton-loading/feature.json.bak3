@@ -3,9 +3,6 @@
   "description": "Implement skeleton placeholder components for the features landing page to ensure smooth loading experience. Create skeleton cards matching the FeatureCard layout with placeholder icon rectangles, title bars (2-3 lines), description lines (3-4 lines), and CTA button placeholder. Show category section skeleton headers. Ensure skeleton appears immediately on page load with shimmer animation effect. Handle both initial page load and category filter loading states. Transition smoothly from skeleton to actual feature cards once content loads. Match the existing skeleton loading patterns used throughout the app (loading-skeleton-components, dashboard-skeleton-loading, document-list-skeleton-loading, etc.).",
   "id": "features-page-skeleton-loading",
   "title": "Add Skeleton Loading to Features Page",
-  "dependencies": [
-    "features-landing-page"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "two-factor",

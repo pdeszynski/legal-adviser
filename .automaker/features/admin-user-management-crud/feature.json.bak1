@@ -4,7 +4,7 @@
   "id": "admin-user-management-crud",
   "title": "Admin User Management CRUD Operations",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T09:11:09.478Z"
+  "updatedAt": "2026-01-24T09:25:59.783Z"
 }

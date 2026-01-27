@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769425295090-e4a1fcde",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T11:01:35.090Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "ai-error-handling-with-langfuse",
+  "featureName": "Enhance AI Error Handling with Langfuse Context",
+  "error": "Feature completed in 623s - auto-verified",
+  "passes": true
+}

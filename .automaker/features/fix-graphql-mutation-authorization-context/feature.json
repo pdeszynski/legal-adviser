@@ -4,7 +4,7 @@
   "id": "fix-graphql-mutation-authorization-context",
   "title": "Fix GraphQL Mutation Authorization Context Loss",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

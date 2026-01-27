@@ -142,6 +142,16 @@ export const EVENT_PATTERNS = {
     SESSION_ENDED: 'chat.session.ended',
   },
 
+  // Clarification events (Multi-turn clarification flows)
+  CLARIFICATION: {
+    CREATED: 'clarification.created',
+    ANSWERED: 'clarification.answered',
+    COMPLETED: 'clarification.completed',
+    EXPIRED: 'clarification.expired',
+    CANCELLED: 'clarification.cancelled',
+    STATE_TRANSITION: 'clarification.state.transition',
+  },
+
   // Legal Ruling events (Case Law Context)
   RULING: {
     INDEXED: 'ruling.indexed',

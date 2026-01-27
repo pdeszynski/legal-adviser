@@ -3,9 +3,6 @@
   "description": "Move authentication GraphQL operations (login, register, refreshToken, logout) from inline strings to .graphql files in apps/web/src/graphql/queries/auth.graphql and apps/web/src/graphql/mutations/auth.graphql. Generate TypeScript types using codegen. Update auth provider to use generated types (AuthLoginMutation, AuthRegisterMutation, etc.). Replace manual type definitions with codegen-generated types.",
   "id": "graphql-codegen-auth-queries",
   "title": "Migrate Auth Queries to GraphQL Codegen",
-  "dependencies": [
-    "graphql-codegen-fragments-extraction"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

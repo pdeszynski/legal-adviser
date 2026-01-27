@@ -3,9 +3,6 @@
   "description": "Implement automated confirmation email sent when users successfully submit interest request. Email should: 1) Use existing email-notification-service infrastructure, 2) Send asynchronously via email queue/Temporal workflow, 3) Include personalized greeting with user's name, 4) Thank them for their interest in early access, 5) Explain what to expect next (timeline for access, product updates, invitation process), 6) Provide links to documentation, blog, or social media for staying updated, 7) Include unsubscribe/opt-out link for future marketing emails, 8) Be sent to the email address submitted in the form, 9) Have professional branding matching the platform design. Ensure email is only sent after successful HubSpot sync. Configure email template in SendGrid or email provider. Add simple plain text version as fallback.",
   "id": "interest-confirmation-email",
   "title": "Send Confirmation Email for Interest Registration",
-  "dependencies": [
-    "hubspot-interest-graphql-api"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "two-factor",

@@ -4,7 +4,7 @@
   "id": "menu-ordering-by-usage-frequency",
   "title": "Reorder Menu Items by Usage Frequency",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

@@ -3,9 +3,6 @@
   "description": "Implement full CRUD operations for user management in admin section using nestjs-query auto-generated resolvers. Add mutations for creating users, updating user roles, suspending accounts, and resetting passwords. Apply RoleGuard to ensure only admins can access. Create admin UI page at /admin/users with table view, search, filters, and bulk actions.",
   "id": "admin-user-management-crud",
   "title": "Admin User Management CRUD Operations",
-  "dependencies": [
-    "admin-role-guard"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

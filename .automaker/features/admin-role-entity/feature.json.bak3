@@ -3,10 +3,6 @@
   "description": "Design Role entity following DDD principles with bounded context for Authorization. Define Role aggregate with enum-based roles (ADMIN, LAWYER, USER) and permission system. Create value objects for Permission with granular access control (READ, WRITE, DELETE, MANAGE) per resource type. Establish domain events for role changes. Implement role hierarchy and permission inheritance in domain layer.",
   "id": "admin-role-entity",
   "title": "Admin Role and RBAC Entity Design",
-  "dependencies": [
-    "feature-1768302423819-msn9l7lmu",
-    "user-entity-nestjs-query"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

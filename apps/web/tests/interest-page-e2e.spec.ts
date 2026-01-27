@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, beforeEach } from '@playwright/test';
 
 /**
  * Interest Page (Early Access) E2E Tests
@@ -90,7 +90,9 @@ test.describe('Interest Page - Basic Loading', () => {
     await expect(page.locator('h2').filter({ hasText: /Request Early Access/i })).toBeVisible();
 
     // Verify FAQ section
-    await expect(page.locator('h2').filter({ hasText: /Frequently Asked Questions/i })).toBeVisible();
+    await expect(
+      page.locator('h2').filter({ hasText: /Frequently Asked Questions/i }),
+    ).toBeVisible();
   });
 });
 
@@ -181,19 +183,27 @@ test.describe('Interest Page - Form Fields', () => {
     await page.waitForTimeout(500);
 
     // Verify labels with required indicator
-    await expect(page.locator('label[for="fullName"]').filter({ hasText: /Full Name/i })).toBeVisible();
+    await expect(
+      page.locator('label[for="fullName"]').filter({ hasText: /Full Name/i }),
+    ).toBeVisible();
     await expect(page.locator('label[for="fullName"]').locator('span.text-red-500')).toBeVisible();
 
     await expect(page.locator('label[for="email"]').filter({ hasText: /Email/i })).toBeVisible();
     await expect(page.locator('label[for="email"]').locator('span.text-red-500')).toBeVisible();
 
-    await expect(page.locator('label[for="useCase"]').filter({ hasText: /Use Case/i })).toBeVisible();
+    await expect(
+      page.locator('label[for="useCase"]').filter({ hasText: /Use Case/i }),
+    ).toBeVisible();
     await expect(page.locator('label[for="useCase"]').locator('span.text-red-500')).toBeVisible();
 
     // Verify optional field labels
-    await expect(page.locator('label[for="company"]').filter({ hasText: /Company/i })).toBeVisible();
+    await expect(
+      page.locator('label[for="company"]').filter({ hasText: /Company/i }),
+    ).toBeVisible();
     await expect(page.locator('label[for="role"]').filter({ hasText: /Role/i })).toBeVisible();
-    await expect(page.locator('label[for="leadSource"]').filter({ hasText: /How did you hear/i })).toBeVisible();
+    await expect(
+      page.locator('label[for="leadSource"]').filter({ hasText: /How did you hear/i }),
+    ).toBeVisible();
 
     // Verify placeholders
     expect(await page.locator('input[id="fullName"]').getAttribute('placeholder')).toBeTruthy();
@@ -232,7 +242,9 @@ test.describe('Interest Page - Form Validation', () => {
     await page.waitForTimeout(500);
 
     // Verify error message appears
-    const nameError = page.locator('p.text-red-500').filter({ hasText: /Full Name is required|name required/i });
+    const nameError = page
+      .locator('p.text-red-500')
+      .filter({ hasText: /Full Name is required|name required/i });
     await expect(nameError).toBeVisible();
   });
 
@@ -249,7 +261,9 @@ test.describe('Interest Page - Form Validation', () => {
     await page.waitForTimeout(500);
 
     // Verify error message appears
-    const emailError = page.locator('p.text-red-500').filter({ hasText: /Email is required|email required/i });
+    const emailError = page
+      .locator('p.text-red-500')
+      .filter({ hasText: /Email is required|email required/i });
     await expect(emailError).toBeVisible();
   });
 
@@ -267,7 +281,9 @@ test.describe('Interest Page - Form Validation', () => {
     await page.waitForTimeout(500);
 
     // Verify error message appears
-    const emailError = page.locator('p.text-red-500').filter({ hasText: /valid email|email invalid/i });
+    const emailError = page
+      .locator('p.text-red-500')
+      .filter({ hasText: /valid email|email invalid/i });
     await expect(emailError).toBeVisible();
   });
 
@@ -304,7 +320,9 @@ test.describe('Interest Page - Form Validation', () => {
     await page.waitForTimeout(500);
 
     // Verify error message appears - consent is required
-    const consentError = page.locator('p.text-red-500').filter({ hasText: /agree|privacy policy/i });
+    const consentError = page
+      .locator('p.text-red-500')
+      .filter({ hasText: /agree|privacy policy/i });
     await expect(consentError).toBeVisible();
 
     // Verify form did not submit (no success message)
@@ -351,7 +369,9 @@ test.describe('Interest Page - Form Validation', () => {
     await page.waitForTimeout(100);
 
     // Check that name error is cleared (may still have other errors)
-    const remainingNameErrors = page.locator('p.text-red-500').filter({ hasText: /Full Name|name required/i });
+    const remainingNameErrors = page
+      .locator('p.text-red-500')
+      .filter({ hasText: /Full Name|name required/i });
     const nameErrorCount = await remainingNameErrors.count();
 
     // Error should be cleared or different
@@ -435,9 +455,10 @@ test.describe('Interest Page - Form Submission', () => {
     await page.waitForTimeout(2000);
 
     // Verify success message is shown - check for various possible success texts
-    const successText = page.locator('text=Thank You for Your Interest').or(
-      page.locator('text=/Thank you/i')
-    ).or(page.locator('text=Request received'));
+    const successText = page
+      .locator('text=Thank You for Your Interest')
+      .or(page.locator('text=/Thank you/i'))
+      .or(page.locator('text=Request received'));
 
     const isSuccessVisible = await successText.isVisible().catch(() => false);
 
@@ -448,8 +469,10 @@ test.describe('Interest Page - Form Submission', () => {
       await expect(successText).toBeVisible();
     } else {
       // At minimum, verify no validation errors occurred
-      const validationErrors = page.locator('p.text-red-500').filter({ hasText: /required|invalid/i });
-      const hasValidationErrors = await validationErrors.count() > 0;
+      const validationErrors = page
+        .locator('p.text-red-500')
+        .filter({ hasText: /required|invalid/i });
+      const hasValidationErrors = (await validationErrors.count()) > 0;
       expect(hasValidationErrors).toBe(false);
     }
   });
@@ -506,9 +529,9 @@ test.describe('Interest Page - Form Submission', () => {
     await page.waitForTimeout(2000);
 
     // Verify error message is shown
-    const errorMessage = page.locator('text=Network error').or(
-      page.locator('text=check your connection')
-    );
+    const errorMessage = page
+      .locator('text=Network error')
+      .or(page.locator('text=check your connection'));
     await expect(errorMessage).toBeVisible();
   });
 
@@ -537,9 +560,10 @@ test.describe('Interest Page - Form Submission', () => {
     await page.waitForTimeout(2000);
 
     // Verify retry button/link is present
-    const retryButton = page.locator('button').filter({ hasText: /Retry/i }).or(
-      page.locator('a').filter({ hasText: /Retry/i })
-    );
+    const retryButton = page
+      .locator('button')
+      .filter({ hasText: /Retry/i })
+      .or(page.locator('a').filter({ hasText: /Retry/i }));
     expect(await retryButton.count()).toBeGreaterThan(0);
   });
 
@@ -626,8 +650,12 @@ test.describe('Interest Page - Analytics Tracking', () => {
 
     // Check if analytics was called (may be via gtag or custom analytics)
     // This is a basic check - the actual implementation may vary
-    const hasAnalyticsCall = consoleMessages.some((msg) =>
-      msg.includes('interest') || msg.includes('track') || msg.includes('analytics') || msg.includes('gtag')
+    const hasAnalyticsCall = consoleMessages.some(
+      (msg) =>
+        msg.includes('interest') ||
+        msg.includes('track') ||
+        msg.includes('analytics') ||
+        msg.includes('gtag'),
     );
 
     // Analytics should be initialized
@@ -654,8 +682,10 @@ test.describe('Interest Page - Analytics Tracking', () => {
     await page.waitForTimeout(1000);
 
     // Check for form impression tracking
-    const hasFormViewEvent = consoleMessages.some((msg) =>
-      msg.toLowerCase().includes('form') && (msg.toLowerCase().includes('view') || msg.toLowerCase().includes('impression'))
+    const hasFormViewEvent = consoleMessages.some(
+      (msg) =>
+        msg.toLowerCase().includes('form') &&
+        (msg.toLowerCase().includes('view') || msg.toLowerCase().includes('impression')),
     );
 
     // Note: Actual tracking may be done differently
@@ -687,8 +717,8 @@ test.describe('Interest Page - Analytics Tracking', () => {
     await page.focus('textarea[id="useCase"]');
 
     // Field focus events should be tracked
-    const messagesAfter = consoleMessages.filter((msg) =>
-      msg.includes('focus') || msg.includes('field')
+    const messagesAfter = consoleMessages.filter(
+      (msg) => msg.includes('focus') || msg.includes('field'),
     );
 
     // At minimum, focus events should not cause errors
@@ -706,7 +736,7 @@ test.describe('Interest Page - Already Requested State', () => {
         JSON.stringify({
           email: 'test@example.com',
           submittedAt: new Date().toISOString(),
-        })
+        }),
       );
     });
 
@@ -717,9 +747,9 @@ test.describe('Interest Page - Already Requested State', () => {
 
     // Check if already requested state is shown
     // This may be in the standalone component or the page form
-    const alreadyRequestedText = page.locator('text=Already Submitted').or(
-      page.locator('text=already submitted')
-    );
+    const alreadyRequestedText = page
+      .locator('text=Already Submitted')
+      .or(page.locator('text=already submitted'));
 
     const isAlreadyRequestedVisible = await alreadyRequestedText.isVisible().catch(() => false);
 
@@ -737,7 +767,7 @@ test.describe('Interest Page - Already Requested State', () => {
         JSON.stringify({
           email: 'test@example.com',
           submittedAt: thirtyOneDaysAgo.toISOString(),
-        })
+        }),
       );
     });
 
@@ -851,17 +881,19 @@ test.describe('Interest Page - FAQ Section', () => {
     // Scroll to FAQ section
     await page.evaluate(() => {
       const faqSection = Array.from(document.querySelectorAll('h2')).find((h2) =>
-        h2.textContent?.includes('Frequently Asked Questions')
+        h2.textContent?.includes('Frequently Asked Questions'),
       );
       faqSection?.scrollIntoView({ behavior: 'smooth' });
     });
     await page.waitForTimeout(500);
 
     // Verify FAQ heading
-    await expect(page.locator('h2').filter({ hasText: /Frequently Asked Questions/i })).toBeVisible();
+    await expect(
+      page.locator('h2').filter({ hasText: /Frequently Asked Questions/i }),
+    ).toBeVisible();
 
     // Verify FAQ items are present (should be at least 3)
-    const faqButtons = page.locator('button').filter({ hasText: /\w/ }).filter({ hasText: not /^\s*$/ });
+    const faqButtons = page.locator('button').filter({ hasText: /\w/ });
     const faqCount = await faqButtons.count();
     expect(faqCount).toBeGreaterThan(0);
   });
@@ -870,7 +902,7 @@ test.describe('Interest Page - FAQ Section', () => {
     // Scroll to FAQ section
     await page.evaluate(() => {
       const faqSection = Array.from(document.querySelectorAll('h2')).find((h2) =>
-        h2.textContent?.includes('Frequently Asked Questions')
+        h2.textContent?.includes('Frequently Asked Questions'),
       );
       faqSection?.scrollIntoView({ behavior: 'smooth' });
     });
@@ -906,7 +938,10 @@ test.describe('Interest Page - Navigation', () => {
     await page.waitForTimeout(1000);
 
     // Look for early access link on home page
-    const earlyAccessLink = page.locator('a').filter({ hasText: /early access/i }).first();
+    const earlyAccessLink = page
+      .locator('a')
+      .filter({ hasText: /early access/i })
+      .first();
 
     if (await earlyAccessLink.isVisible()) {
       await earlyAccessLink.click();
@@ -930,11 +965,15 @@ test.describe('Interest Page - Bottom CTA', () => {
     await page.waitForTimeout(500);
 
     // Verify bottom CTA section
-    const bottomCtaHeading = page.locator('h2').filter({ hasText: /Ready to join|Join early access/i });
+    const bottomCtaHeading = page
+      .locator('h2')
+      .filter({ hasText: /Ready to join|Join early access/i });
     await expect(bottomCtaHeading).toBeVisible();
 
     // Verify CTA button
-    const ctaButton = page.locator('button').filter({ hasText: /Get Started|Request Access|Join/i });
+    const ctaButton = page
+      .locator('button')
+      .filter({ hasText: /Get Started|Request Access|Join/i });
     expect(await ctaButton.count()).toBeGreaterThan(0);
   });
 });
@@ -1059,7 +1098,9 @@ test.describe('Interest Page - Edge Cases', () => {
 
     // Should not have length validation errors (max is 2000 chars)
     await page.waitForTimeout(1000);
-    const lengthError = page.locator('p.text-red-500').filter({ hasText: /too long|maximum|characters/i });
+    const lengthError = page
+      .locator('p.text-red-500')
+      .filter({ hasText: /too long|maximum|characters/i });
     const hasLengthError = await lengthError.isVisible().catch(() => false);
     expect(hasLengthError).toBe(false);
   });

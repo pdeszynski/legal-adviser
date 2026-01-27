@@ -661,7 +661,7 @@ export class TwoFactorService {
    * @returns Number of remaining backup codes
    */
   async getRemainingBackupCodesCount(userId: string): Promise<number> {
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findByIdWith2FA(userId);
     if (!user || !user.twoFactorBackupCodes) {
       return 0;
     }

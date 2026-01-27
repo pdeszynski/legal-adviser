@@ -4,7 +4,7 @@
   "id": "graphql-codegen-documentation",
   "title": "Document GraphQL Codegen Usage Patterns",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

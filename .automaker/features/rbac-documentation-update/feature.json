@@ -4,7 +4,7 @@
   "id": "rbac-documentation-update",
   "title": "Update Project Documentation for RBAC and Seed Users",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

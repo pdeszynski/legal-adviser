@@ -4,7 +4,7 @@
   "id": "auth-state-sync-redirect-middleware",
   "title": "Auth State Sync on Navigation and Redirects",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

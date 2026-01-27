@@ -4,7 +4,7 @@
   "id": "frontend-graphql-client-headers-configuration",
   "title": "Verify GraphQL Client Authorization Headers Configuration",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

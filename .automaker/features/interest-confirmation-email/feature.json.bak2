@@ -4,7 +4,7 @@
   "id": "interest-confirmation-email",
   "title": "Send Confirmation Email for Interest Registration",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-26T05:45:27.231Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-26T07:11:46.618Z"
 }

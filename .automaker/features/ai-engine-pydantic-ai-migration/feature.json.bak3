@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Refactor AI Engine to use PydanticAI (https://ai.pydantic.dev/) as the primary abstraction layer. Remove all direct OpenAI API calls and LangChain direct usage. Implement PydanticAI agents for: 1) Classifier agent (legal grounds identification), 2) Q&A agent (legal question answering), 3) Document generation agent. Use PydanticAI's dependency injection system for managing LLM models and tools. Ensure all agent logic flows through PydanticAI's structured agent patterns. This is the foundation for the entire AI Engine refactor.",
+  "id": "ai-engine-pydantic-ai-migration",
+  "title": "Migrate AI Engine to PydanticAI Architecture",
+  "dependencies": [],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Refactor AI Engine to use PydanticAI (https://ai.pydantic.dev/) as the primary abstraction layer. Remove all direct OpenAI API calls and LangChain direct usage. Implement PydanticAI agents for: 1) Classifier agent (legal grounds identification), 2) Q&A agent (legal question answering), 3) Document generation agent. Use PydanticAI's dependency injection system for managing LLM models and tools. Ensure all agent logic flows through PydanticAI's structured agent patterns. This is the foundation for the entire AI Engine refactor.",
+      "timestamp": "2026-01-26T09:49:24.174Z",
+      "source": "initial"
+    }
+  ]
+}

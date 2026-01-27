@@ -4,7 +4,7 @@
   "id": "features-page-skeleton-loading",
   "title": "Add Skeleton Loading to Features Page",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

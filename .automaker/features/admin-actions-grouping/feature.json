@@ -4,7 +4,7 @@
   "id": "admin-actions-grouping",
   "title": "Group Admin Actions in Dedicated Resolvers",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

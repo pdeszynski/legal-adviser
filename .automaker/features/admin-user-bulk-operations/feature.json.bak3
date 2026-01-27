@@ -3,9 +3,6 @@
   "description": "Implement bulk operations on admin user management page. Add checkboxes for selecting multiple users. Support bulk actions: suspend accounts (with reason), activate accounts, assign roles (add/remove), export selected users (CSV), delete users (with confirmation and warning). Implement BulkUserMutation GraphQL resolver with proper authorization. Show confirmation dialogs before executing bulk operations. Display progress indicators for operations. Audit log all bulk actions with admin user ID and affected users.",
   "id": "admin-user-bulk-operations",
   "title": "Admin User Bulk Operations",
-  "dependencies": [
-    "admin-user-management-crud-page"
-  ],
   "priority": 3,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

@@ -4,8 +4,8 @@
   "private": true,
   "description": "AI Engine for Legal Platform - Python/FastAPI Service",
   "scripts": {
-    "dev": "uv run python src/dev_server.py",
-    "start": "uv run python src/start_server.py",
+    "dev": "uv run fastapi dev src/main.py --host 0.0.0.0 --port 8000",
+    "start": "uv run fastapi run src/main.py --host 0.0.0.0 --port 8000",
     "build": "echo 'No build step for Python service'",
     "test": "uv run pytest",
     "lint": "uv run ruff check .",

@@ -4,7 +4,7 @@
   "id": "admin-role-entity",
   "title": "Admin Role and RBAC Entity Design",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T08:41:45.318Z"
+  "updatedAt": "2026-01-24T09:11:08.146Z"
 }

@@ -4,7 +4,7 @@
   "id": "migrate-email-queue-to-temporal",
   "title": "Migrate Email Queue to Temporal Workflow",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "feature/temporal",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T01:59:39.245Z"
+  "updatedAt": "2026-01-25T01:59:42.847Z"
 }

@@ -27,6 +27,7 @@ import { PdfUrlResolver } from './pdf-url.resolver';
 import { DocumentModerationResolver } from './document-moderation.resolver';
 import { DocumentsController } from './documents.controller';
 import { DocumentStreamController } from './controllers/document-stream.controller';
+import { VectorSearchController } from './controllers/vector-search.controller';
 import {
   CreateLegalDocumentInput,
   UpdateLegalDocumentInput,
@@ -336,7 +337,11 @@ import { DocumentGenerationStarter } from '../temporal/workflows/document/docume
     // Temporal Workflow Starters
     DocumentGenerationStarter,
   ],
-  controllers: [DocumentsController, DocumentStreamController],
+  controllers: [
+    DocumentsController,
+    DocumentStreamController,
+    VectorSearchController,
+  ],
   exports: [
     DocumentsService,
     LegalRulingService,

@@ -4,7 +4,7 @@
   "id": "landing-page-cta-integration",
   "title": "Landing Page Call-to-Action Integration",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T02:16:47.612Z"
+  "updatedAt": "2026-01-25T02:32:41.982Z"
 }

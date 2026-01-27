@@ -1,0 +1,29 @@
+{
+  "category": "Uncategorized",
+  "description": "Langfuse integration is done bad, too manully, please follow the official instruction https://langfuse.com/integrations/frameworks/pydantic-ai",
+  "title": "",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "two-factor",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": "Langfuse integration is done bad, too manully, please follow the official instruction https://langfuse.com/integrations/frameworks/pydantic-ai",
+  "status": "in_progress",
+  "id": "feature-1769433556946-stcyssvod",
+  "descriptionHistory": [
+    {
+      "description": "Langfuse integration is done bad, too manully, please follow the official instruction https://langfuse.com/integrations/frameworks/pydantic-ai",
+      "timestamp": "2026-01-26T13:19:16.983Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-26T13:19:17.082Z"
+}

@@ -4,7 +4,7 @@
   "id": "audit-graphql-auth-guards-consistency",
   "title": "Audit GraphQL Authorization Guards Consistency",
   "priority": 2,
-  "status": "in_progress",
+  "status": "backlog",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T13:52:31.800Z"
+  "updatedAt": "2026-01-25T13:56:49.360Z"
 }

@@ -1,6 +1,6 @@
 {
   "category": "feature",
-  "description": "Create a dedicated page on the landing site for users to join a waitlist or request demo access. Build a public-accessible route at /demo or /get-early-access with: 1) Hero section highlighting benefits of early access, 2) Waitlist signup form (name, email, company, role, use case), 3) Social proof section (number of people on waitlist, testimonials if available), 4) FAQ section addressing common questions about pricing, availability, and features. Ensure page is accessible without authentication. Make it visually appealing with clear call-to-action. Integrate with existing Next.js App Router structure.",
+  "description": "Update landing waitlist/demo request page description to emphasize HubSpot CRM integration. The page at /demo or /get-early-access should: 1) Display hero section with clear value proposition for early access, 2) Show embedded HubSpot form OR custom form that syncs to HubSpot, 3) Include social proof (waitlist count, testimonials), 4) Display FAQ section, 5) Ensure GDPR compliance with consent checkboxes, 6) Handle form submission with success/error states. Integrate with hubspot-integration-backend for lead sync.",
   "id": "landing-waitlist-page",
   "title": "Landing Page Waitlist/Demo Request Page",
   "dependencies": [],
@@ -12,6 +12,11 @@
       "description": "Create a dedicated page on the landing site for users to join a waitlist or request demo access. Build a public-accessible route at /demo or /get-early-access with: 1) Hero section highlighting benefits of early access, 2) Waitlist signup form (name, email, company, role, use case), 3) Social proof section (number of people on waitlist, testimonials if available), 4) FAQ section addressing common questions about pricing, availability, and features. Ensure page is accessible without authentication. Make it visually appealing with clear call-to-action. Integrate with existing Next.js App Router structure.",
       "timestamp": "2026-01-24T21:38:47.507Z",
       "source": "initial"
+    },
+    {
+      "description": "Update landing waitlist/demo request page description to emphasize HubSpot CRM integration. The page at /demo or /get-early-access should: 1) Display hero section with clear value proposition for early access, 2) Show embedded HubSpot form OR custom form that syncs to HubSpot, 3) Include social proof (waitlist count, testimonials), 4) Display FAQ section, 5) Ensure GDPR compliance with consent checkboxes, 6) Handle form submission with success/error states. Integrate with hubspot-integration-backend for lead sync.",
+      "timestamp": "2026-01-25T18:47:38.413Z",
+      "source": "edit"
     }
   ],
   "updatedAt": "2026-01-24T22:04:17.452Z"

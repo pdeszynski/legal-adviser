@@ -13,5 +13,8 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T02:16:43.921Z"
+  "updatedAt": "2026-01-25T02:16:43.921Z",
+  "dependencies": [
+    "integrate-hubspot-form-on-demo-request-page"
+  ]
 }

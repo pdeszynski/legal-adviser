@@ -1,8 +1,8 @@
 {
   "category": "feature",
-  "description": "Replace or augment the existing demo request form with HubSpot embedded form functionality. Implement: 1) HubSpot form embed script on /demo or /waitlist page, 2) Form fields mapped to HubSpot contact properties (email, company, use case, timeline), 3) Form submission handler that syncs data to HubSpot CRM, 4) Success confirmation with thank you message, 5) Error handling for form submission failures, 6) Fallback to local GraphQL mutation (demo-request-graphql-api) if HubSpot is unavailable. Ensure GDPR compliance with proper consent checkboxes. Use HubSpot form API or embed codes. Track form submissions for analytics.",
+  "description": "This task is superseded by interest-registration-page and interest-form-component. Replace/augment the interest form with HubSpot functionality: 1) HubSpot form embed script on /early-access page, 2) Form fields mapped to HubSpot contact properties, 3) Form submission handler that syncs to HubSpot CRM, 4) Success confirmation, 5) Error handling with fallback to GraphQL mutation (submitInterestRequest) if HubSpot fails, 6) GDPR compliance with consent checkboxes, 7) Analytics tracking for submissions. Use HubSpot form API or embed codes. All data goes to HubSpot, NOT stored locally. This is for interest signups, NOT demo requests.",
   "id": "integrate-hubspot-form-on-demo-request-page",
-  "title": "Integrate HubSpot Form on Demo Request Page",
+  "title": "Integrate HubSpot Form on Interest Page",
   "priority": 1,
   "status": "verified",
   "branchName": "two-factor",
@@ -11,6 +11,11 @@
       "description": "Replace or augment the existing demo request form with HubSpot embedded form functionality. Implement: 1) HubSpot form embed script on /demo or /waitlist page, 2) Form fields mapped to HubSpot contact properties (email, company, use case, timeline), 3) Form submission handler that syncs data to HubSpot CRM, 4) Success confirmation with thank you message, 5) Error handling for form submission failures, 6) Fallback to local GraphQL mutation (demo-request-graphql-api) if HubSpot is unavailable. Ensure GDPR compliance with proper consent checkboxes. Use HubSpot form API or embed codes. Track form submissions for analytics.",
       "timestamp": "2026-01-25T18:47:38.410Z",
       "source": "initial"
+    },
+    {
+      "description": "This task is superseded by interest-registration-page and interest-form-component. Replace/augment the interest form with HubSpot functionality: 1) HubSpot form embed script on /early-access page, 2) Form fields mapped to HubSpot contact properties, 3) Form submission handler that syncs to HubSpot CRM, 4) Success confirmation, 5) Error handling with fallback to GraphQL mutation (submitInterestRequest) if HubSpot fails, 6) GDPR compliance with consent checkboxes, 7) Analytics tracking for submissions. Use HubSpot form API or embed codes. All data goes to HubSpot, NOT stored locally. This is for interest signups, NOT demo requests.",
+      "timestamp": "2026-01-26T05:45:27.239Z",
+      "source": "edit"
     }
   ],
   "updatedAt": "2026-01-25T19:15:43.901Z"

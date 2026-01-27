@@ -4,7 +4,7 @@
   "id": "temporal-schedule-admin-ui",
   "title": "Create Admin UI for Temporal Schedule Management",
   "priority": 3,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-25T15:05:01.027Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T17:26:56.322Z"
 }

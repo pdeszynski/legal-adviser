@@ -3,9 +3,6 @@
   "description": "Extract search operations (globalSearch, rulingSearch, advancedSearch) from inline strings to apps/web/src/graphql/search.graphql. Create fragments for search results. Generate types with proper search filter and result typing. Update search components and global search bar to use generated types.",
   "id": "graphql-codegen-search-queries",
   "title": "Migrate Search Queries to GraphQL Codegen",
-  "dependencies": [
-    "graphql-codegen-fragments-extraction"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

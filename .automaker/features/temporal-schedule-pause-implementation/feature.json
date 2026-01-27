@@ -4,7 +4,7 @@
   "id": "temporal-schedule-pause-implementation",
   "title": "Implement Temporal Schedule Pause Method",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

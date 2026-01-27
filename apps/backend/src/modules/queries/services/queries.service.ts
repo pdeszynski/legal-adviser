@@ -352,21 +352,45 @@ export class QueriesService {
    *
    * If sessionId is not provided or invalid, creates a new session for the user.
    *
-   * @param dto - Question data with optional mode
+   * @param dto - Question data with optional mode and conversation history
    * @param askQuestionFn - Function to call the AI engine (injected for testability)
    * @param userId - Optional user ID for session auto-creation
-   * @returns The query with the AI-generated answer and citations
+   * @returns The query with the AI-generated answer, citations, or clarification info
    */
   async askQuestion(
-    dto: SubmitQueryDto & { mode?: string },
+    dto: SubmitQueryDto & {
+      mode?: string;
+      conversationHistory?: Array<{
+        role: 'user' | 'assistant';
+        content: string;
+      }>;
+    },
     askQuestionFn: (
       question: string,
       sessionId?: string,
       mode?: string,
+      conversationHistory?: Array<{
+        role: 'user' | 'assistant';
+        content: string;
+      }>,
     ) => Promise<{
       answer: string;
       citations: Array<{ source: string; article: string; url?: string }>;
       confidence: number;
+      clarification?: {
+        needs_clarification: boolean;
+        questions: Array<{
+          question: string;
+          question_type: string;
+          options?: string[];
+          hint?: string;
+        }>;
+        context_summary: string;
+        next_steps: string;
+      };
+      query_type?: string;
+      key_terms?: string[];
+      needs_clarification?: boolean;
     }>,
     userId?: string,
   ): Promise<LegalQuery> {
@@ -383,11 +407,12 @@ export class QueriesService {
     const savedQuery = await this.queryRepository.save(query);
 
     try {
-      // Call AI engine synchronously
+      // Call AI engine synchronously with conversation history for multi-turn clarification
       const aiResponse = await askQuestionFn(
         dto.question,
         sessionId ?? undefined,
         dto.mode || 'SIMPLE',
+        dto.conversationHistory,
       );
 
       // Convert AI citations to entity format
@@ -398,8 +423,33 @@ export class QueriesService {
         excerpt: undefined,
       }));
 
-      // Update query with AI response
-      savedQuery.setAnswer(aiResponse.answer, entityCitations);
+      // Handle clarification response
+      if (
+        aiResponse.clarification?.needs_clarification ||
+        aiResponse.needs_clarification
+      ) {
+        savedQuery.clarificationInfo = aiResponse.clarification || {
+          needs_clarification: true,
+          questions: [],
+          context_summary: 'I need more information to help you.',
+          next_steps: 'Please answer the questions above.',
+        };
+        savedQuery.queryType = aiResponse.query_type || null;
+        savedQuery.keyTerms = aiResponse.key_terms || null;
+        savedQuery.confidence = 0.0;
+        // For clarification, we set a placeholder answer that indicates clarification is needed
+        savedQuery.answerMarkdown =
+          aiResponse.clarification?.context_summary ||
+          'I need some more details to provide you with accurate legal guidance.';
+      } else {
+        // Normal answer response
+        savedQuery.setAnswer(aiResponse.answer, entityCitations);
+        savedQuery.confidence = aiResponse.confidence;
+        savedQuery.queryType = aiResponse.query_type || null;
+        savedQuery.keyTerms = aiResponse.key_terms || null;
+        savedQuery.clarificationInfo = null;
+      }
+
       const updatedQuery = await this.queryRepository.save(savedQuery);
 
       // Emit domain event

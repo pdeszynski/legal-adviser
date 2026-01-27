@@ -4,7 +4,7 @@
   "id": "demo-request-admin-view",
   "title": "Admin Demo Request Management View",
   "priority": 3,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T02:48:49.076Z"
+  "updatedAt": "2026-01-25T02:59:35.064Z"
 }

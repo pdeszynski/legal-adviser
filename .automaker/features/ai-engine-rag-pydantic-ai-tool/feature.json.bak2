@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Refactor existing RAG implementation (currently using LangChain retrievers) into a PydanticAI tool pattern. Create RAG tool that: 1) Takes user query as input, 2) Performs vector search over legal documents/rulings, 3) Returns formatted context with citations, 4) Integrates cleanly with PydanticAI agents. Use direct vector store client (pgvector/Pinecone/Weaviate) instead of LangChain vector stores. Ensure tool is properly typed and traceable via Langfuse. Make RAG tool reusable across multiple agents (Q&A, classifier, document drafter).",
+  "id": "ai-engine-rag-pydantic-ai-tool",
+  "title": "Refactor RAG as PydanticAI Tool",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Refactor existing RAG implementation (currently using LangChain retrievers) into a PydanticAI tool pattern. Create RAG tool that: 1) Takes user query as input, 2) Performs vector search over legal documents/rulings, 3) Returns formatted context with citations, 4) Integrates cleanly with PydanticAI agents. Use direct vector store client (pgvector/Pinecone/Weaviate) instead of LangChain vector stores. Ensure tool is properly typed and traceable via Langfuse. Make RAG tool reusable across multiple agents (Q&A, classifier, document drafter).",
+      "timestamp": "2026-01-26T09:49:24.182Z",
+      "source": "initial"
+    }
+  ]
+}

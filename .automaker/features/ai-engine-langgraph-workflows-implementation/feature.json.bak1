@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Design LangGraph StateGraph workflows for multi-step AI scenarios: 1) Case Analysis Workflow - Combine classifier agent + research agent + clarification agent, 2) Document Generation Workflow - Combine drafter agent + reviewer agent + revision loop, 3) Complex Q&A Workflow - Researcher + Q&A agent + citation formatter. Define state schemas for each workflow (case data, research results, user responses). Implement conditional edges for decision logic (e.g., 'needs more info' -> clarification branch). Use LangGraph only for orchestration between PydanticAI agents, not for direct LLM calls.",
+  "id": "ai-engine-langgraph-workflows-implementation",
+  "title": "Implement LangGraph Workflows for Complex Scenarios",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Design LangGraph StateGraph workflows for multi-step AI scenarios: 1) Case Analysis Workflow - Combine classifier agent + research agent + clarification agent, 2) Document Generation Workflow - Combine drafter agent + reviewer agent + revision loop, 3) Complex Q&A Workflow - Researcher + Q&A agent + citation formatter. Define state schemas for each workflow (case data, research results, user responses). Implement conditional edges for decision logic (e.g., 'needs more info' -> clarification branch). Use LangGraph only for orchestration between PydanticAI agents, not for direct LLM calls.",
+      "timestamp": "2026-01-26T09:49:24.179Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-26T10:22:27.390Z"
+}

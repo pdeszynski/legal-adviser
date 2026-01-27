@@ -1,6 +1,76 @@
 """Response models for AI Engine API."""
 
+from typing import Any
 from pydantic import BaseModel, Field
+
+
+# -----------------------------------------------------------------------------
+# Error Response Models
+# -----------------------------------------------------------------------------
+
+
+class ErrorDetail(BaseModel):
+    """Detailed error information."""
+
+    field: str | None = Field(default=None, description="Field that caused the error")
+    message: str = Field(..., description="Error message")
+    code: str | None = Field(default=None, description="Error code for the field")
+
+
+class ErrorResponse(BaseModel):
+    """Standardized error response for API errors."""
+
+    error: bool = Field(default=True, description="Error flag")
+    error_code: str = Field(..., description="Unique error code for programmatic handling")
+    message: str = Field(..., description="User-friendly error message")
+    suggestion: str | None = Field(default=None, description="Actionable suggestion for the user")
+    details: dict[str, Any] | None = Field(default=None, description="Additional technical details")
+    retryable: bool | None = Field(default=None, description="Whether the request can be retried")
+    request_id: str | None = Field(default=None, description="Request ID for support reference")
+
+
+class ValidationErrorResponse(BaseModel):
+    """Response for input validation errors."""
+
+    error: bool = Field(default=True, description="Error flag")
+    error_code: str = Field(default="VALIDATION_ERROR", description="Error code")
+    message: str = Field(default="Request validation failed", description="Error message")
+    errors: list[ErrorDetail] = Field(
+        default_factory=list, description="List of validation errors"
+    )
+
+
+class RateLimitErrorResponse(BaseModel):
+    """Response for rate limit errors."""
+
+    error: bool = Field(default=True, description="Error flag")
+    error_code: str = Field(default="RATE_LIMIT_EXCEEDED", description="Error code")
+    message: str = Field(..., description="Error message")
+    retry_after: int | None = Field(
+        default=None, description="Seconds until retry is allowed"
+    )
+    limit: int | None = Field(default=None, description="Rate limit that was exceeded")
+    reset_time: str | None = Field(default=None, description="Time when limit resets")
+
+
+class ServiceUnavailableErrorResponse(BaseModel):
+    """Response for service unavailable errors."""
+
+    error: bool = Field(default=True, description="Error flag")
+    error_code: str = Field(default="SERVICE_UNAVAILABLE", description="Error code")
+    message: str = Field(
+        default="Service temporarily unavailable. Please try again later.",
+        description="Error message"
+    )
+    service: str | None = Field(default=None, description="Name of unavailable service")
+    estimated_recovery: str | None = Field(
+        default=None, description="Estimated time for service recovery"
+    )
+
+
+# -----------------------------------------------------------------------------
+# Standard Response Models
+# -----------------------------------------------------------------------------
 
 
 class Citation(BaseModel):
@@ -37,6 +107,32 @@ class DocumentGenerationStatus(BaseModel):
     error: str | None = Field(default=None, description="Error message if failed")
 
 
+class ClarificationQuestion(BaseModel):
+    """A single clarification question."""
+
+    question: str = Field(..., description="The specific question to ask the user")
+    question_type: str = Field(
+        ..., description="Type of information needed (e.g., 'timeline', 'documents', 'parties')"
+    )
+    options: list[str] | None = Field(
+        default=None, description="Optional predefined options for the user to choose from"
+    )
+    hint: str | None = Field(default=None, description="Optional hint or example to help the user answer")
+
+
+class ClarificationInfo(BaseModel):
+    """Clarification information when more details are needed."""
+
+    needs_clarification: bool = Field(..., description="Whether clarification is needed")
+    questions: list[ClarificationQuestion] = Field(
+        default_factory=list, description="List of specific follow-up questions"
+    )
+    context_summary: str = Field(
+        ..., description="Summary of what we understand so far"
+    )
+    next_steps: str = Field(..., description="Explanation of what happens after clarification")
+
+
 class AnswerResponse(BaseModel):
     """Response to a legal question."""
 
@@ -46,6 +142,15 @@ class AnswerResponse(BaseModel):
     )
     confidence: float = Field(
         default=0.0, ge=0.0, le=1.0, description="Confidence score of the answer"
+    )
+    clarification: ClarificationInfo | None = Field(
+        default=None, description="Clarification information if more details are needed"
+    )
+    query_type: str | None = Field(
+        default=None, description="Type of query (e.g., 'case_law', 'statute_interpretation')"
+    )
+    key_terms: list[str] | None = Field(
+        default=None, description="Key legal terms extracted from the query"
     )
 
 

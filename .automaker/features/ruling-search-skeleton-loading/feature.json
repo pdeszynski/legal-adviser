@@ -4,7 +4,7 @@
   "id": "ruling-search-skeleton-loading",
   "title": "Add Skeleton Loading to Case Law Search",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

@@ -4,7 +4,7 @@
   "id": "cta-button-analytics-tracking",
   "title": "Add Analytics Tracking to CTA Buttons for Interest Page",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

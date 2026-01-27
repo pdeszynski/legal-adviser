@@ -4,7 +4,7 @@
   "id": "landing-page-navigation-fix",
   "title": "Fix Landing Page 'How It Works' Button Navigation",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T18:36:55.621Z"
+  "updatedAt": "2026-01-25T18:42:42.995Z"
 }

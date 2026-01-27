@@ -4,7 +4,7 @@
   "id": "form-loading-skeleton-wrapper",
   "title": "Create Generic Form Loading Skeleton Wrapper",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-23T18:46:41.078Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-23T20:31:21.813Z"
 }

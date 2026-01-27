@@ -1,6 +1,6 @@
 {
   "category": "feature",
-  "description": "Enhance HubSpot backend integration to support demo request form submissions. Service should: 1) Create HubSpot API client using @hubspot/api-client with HUBSPOT_API_KEY from env, 2) Implement createContact() method with form data mapping, 3) Create or update HubSpot Deal for qualified leads based on company size/timeline, 4) Assign lead to 'Demo Requests' list in HubSpot, 5) Handle contact property updates (company, useCase, timeline, budget), 6) Implement retry logic for HubSpot API failures, 7) Log all HubSpot sync operations for audit trail, 8) Return success/failure status to frontend for proper user feedback.",
+  "description": "Enhance HubSpot backend integration for early access interest signups (NOT demo requests). Service should: 1) Create HubSpot API client using @hubspot/api-client with HUBSPOT_API_KEY, 2) Implement createContact() method with form field mapping (fullName, email, company, role, useCase, leadSource, consent), 3) Add contact to 'Early Access Interest' list in HubSpot (not 'Demo Requests'), 4) Handle contact property updates, 5) Implement retry logic for HubSpot API failures, 6) Log all HubSpot sync operations, 7) Return success/failure status, 8) Ensure data is NOT stored locally. Validate via hubspot-interest-backend-validation task.",
   "id": "hubspot-integration-backend",
   "title": "HubSpot CRM Integration Backend Service",
   "dependencies": [],
@@ -16,6 +16,11 @@
     {
       "description": "Enhance HubSpot backend integration to support demo request form submissions. Service should: 1) Create HubSpot API client using @hubspot/api-client with HUBSPOT_API_KEY from env, 2) Implement createContact() method with form data mapping, 3) Create or update HubSpot Deal for qualified leads based on company size/timeline, 4) Assign lead to 'Demo Requests' list in HubSpot, 5) Handle contact property updates (company, useCase, timeline, budget), 6) Implement retry logic for HubSpot API failures, 7) Log all HubSpot sync operations for audit trail, 8) Return success/failure status to frontend for proper user feedback.",
       "timestamp": "2026-01-25T18:47:38.417Z",
+      "source": "edit"
+    },
+    {
+      "description": "Enhance HubSpot backend integration for early access interest signups (NOT demo requests). Service should: 1) Create HubSpot API client using @hubspot/api-client with HUBSPOT_API_KEY, 2) Implement createContact() method with form field mapping (fullName, email, company, role, useCase, leadSource, consent), 3) Add contact to 'Early Access Interest' list in HubSpot (not 'Demo Requests'), 4) Handle contact property updates, 5) Implement retry logic for HubSpot API failures, 6) Log all HubSpot sync operations, 7) Return success/failure status, 8) Ensure data is NOT stored locally. Validate via hubspot-interest-backend-validation task.",
+      "timestamp": "2026-01-26T05:45:27.240Z",
       "source": "edit"
     }
   ],

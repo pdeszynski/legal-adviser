@@ -4,7 +4,7 @@
   "id": "admin-layout-route",
   "title": "Admin Layout and Routing Structure",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-24T08:41:43.828Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-24T08:47:58.846Z"
 }

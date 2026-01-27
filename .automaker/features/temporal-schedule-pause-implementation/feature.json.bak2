@@ -4,7 +4,7 @@
   "id": "temporal-schedule-pause-implementation",
   "title": "Implement Temporal Schedule Pause Method",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-25T15:05:01.023Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T17:07:29.380Z"
 }

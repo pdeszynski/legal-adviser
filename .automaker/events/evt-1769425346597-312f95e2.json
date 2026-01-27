@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769425346597-312f95e2",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-26T11:02:26.597Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "ai-engine-langfuse-trace-visualization",
+  "featureName": "Create Langfuse Trace Visualization Dashboard",
+  "error": "Feature completed in 1176s - auto-verified",
+  "passes": true
+}

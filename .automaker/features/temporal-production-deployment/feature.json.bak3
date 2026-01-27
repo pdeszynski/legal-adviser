@@ -4,7 +4,7 @@
   "id": "temporal-production-deployment",
   "title": "Configure Temporal for Production Deployment",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "feature/temporal",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-24T16:43:46.095Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T02:33:28.737Z"
 }

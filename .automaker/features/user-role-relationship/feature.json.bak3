@@ -3,9 +3,6 @@
   "description": "Create many-to-many relationship between User and Role entities in infrastructure layer. Implement UserRole entity with timestamps and audit trail. Add repository interface in domain layer and concrete implementation using nestjs-query. Support multiple roles per user with role priority ordering.",
   "id": "user-role-relationship",
   "title": "User-Role Relationship Entity",
-  "dependencies": [
-    "admin-role-entity"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

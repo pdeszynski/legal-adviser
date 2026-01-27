@@ -3,9 +3,6 @@
   "description": "Write comprehensive Playwright E2E tests for the early access interest page to ensure functionality works correctly. Test scenarios: 1) Page loads successfully without authentication, 2) All form fields are present and interactive, 3) Form validation works (required fields, email format, consent checkbox), 4) Successful form submission redirects to confirmation view, 5) Failed submission (API error, network error) shows error message, 6) Analytics events are fired (page view, form view, submit start, success), 7) Returning users see 'already requested' state if previously submitted, 8) Form is responsive on mobile/tablet/desktop viewports, 9) Submit button is disabled during submission to prevent double-submit, 10) GDPR consent checkbox is required and cannot be bypassed. Use Playwright patterns consistent with existing E2E tests. Validate that data is sent to HubSpot (mock or test environment).",
   "id": "interest-page-e2e-tests",
   "title": "Create E2E Tests for Interest Page",
-  "dependencies": [
-    "interest-page-analytics-tracking"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "two-factor",

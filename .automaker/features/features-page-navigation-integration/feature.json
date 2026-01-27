@@ -4,7 +4,7 @@
   "id": "features-page-navigation-integration",
   "title": "Integrate Features Page into Site Navigation",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

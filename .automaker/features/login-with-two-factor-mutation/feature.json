@@ -4,7 +4,7 @@
   "id": "login-with-two-factor-mutation",
   "title": "Enhanced Login Mutation with Two-Factor Support",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

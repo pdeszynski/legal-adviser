@@ -3,9 +3,6 @@
   "description": "Create Playwright E2E tests verifying skeleton components appear correctly during data loading. Test that: 1) Skeletons show immediately on page load, 2) Skeletons smoothly transition to real data, 3) No layout shift occurs, 4) Skeletons disappear when data loads, 5) Error states handle properly. Test all major pages: dashboard, documents, audit logs, settings, chat.",
   "id": "loading-skeleton-e2e-tests",
   "title": "Add E2E Tests for Loading Skeleton States",
-  "dependencies": [
-    "settings-skeleton-loading"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

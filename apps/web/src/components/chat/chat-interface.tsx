@@ -3,8 +3,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageList } from './message-list';
 import { MessageInput } from './message-input';
-import { useChat, type ChatCitation } from '@/hooks/use-chat';
-import { Bot, Plus, Scale, Sparkles, MessageSquareText, ShieldQuestion } from 'lucide-react';
+import { ClarificationPrompt } from './clarification-prompt';
+import { useChat, type ChatCitation, type ClarificationInfo } from '@/hooks/use-chat';
+import {
+  Bot,
+  Plus,
+  Scale,
+  Sparkles,
+  MessageSquareText,
+  ShieldQuestion,
+  HelpCircle,
+} from 'lucide-react';
 import { cn } from '@legal/ui';
 
 export interface ChatMessage {
@@ -12,6 +21,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   citations?: ChatCitation[];
+  clarification?: ClarificationInfo;
   timestamp: Date;
   isStreaming?: boolean;
 }
@@ -39,7 +49,7 @@ const STARTER_PROMPTS = [
  *
  * Main chat container for Q&A functionality.
  * Displays conversation history and handles user input.
- * Supports real-time streaming of AI responses.
+ * Supports real-time streaming of AI responses and multi-turn clarification.
  */
 export function ChatInterface() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -56,7 +66,15 @@ export function ChatInterface() {
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { sendMessage, isLoading, mode, setMode } = useChat();
+  const {
+    sendMessage,
+    sendClarificationResponse,
+    isLoading,
+    mode,
+    setMode,
+    clarificationState,
+    isInClarificationMode,
+  } = useChat();
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -113,6 +131,7 @@ export function ChatInterface() {
         role: 'assistant',
         content: response.answerMarkdown || '',
         citations: response.citations,
+        clarification: response.clarification || undefined,
         timestamp: new Date(),
         isStreaming: false,
       };
@@ -135,19 +154,118 @@ export function ChatInterface() {
     }
   };
 
+  const handleClarificationSubmit = async (answers: Record<string, string>) => {
+    // Add user's clarification answers as a message
+    const answerText = Object.entries(answers)
+      .filter(([_, value]) => value.trim())
+      .map(([question, answer]) => `${question}: ${answer}`)
+      .join('\n');
+
+    const userMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: answerText,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setIsStreaming(true);
+
+    try {
+      const response = await sendClarificationResponse(answers);
+
+      // Add assistant message to chat
+      const assistantMessage: ChatMessage = {
+        id: `assistant-${Date.now()}`,
+        role: 'assistant',
+        content: response.answerMarkdown || '',
+        citations: response.citations,
+        clarification: response.clarification || undefined,
+        timestamp: new Date(),
+        isStreaming: false,
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (err) {
+      const errorMessage: ChatMessage = {
+        id: `error-${Date.now()}`,
+        role: 'assistant',
+        content:
+          err instanceof Error ? err.message : 'An error occurred while processing your request.',
+        timestamp: new Date(),
+        isStreaming: false,
+      };
+
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsStreaming(false);
+    }
+  };
+
+  const handleClarificationCancel = () => {
+    // User chose to skip clarification - send a generic follow-up
+    handleSendMessage('Please provide a general answer based on the information available.');
+  };
+
+  // Check if the last message has a pending clarification
+  const lastMessage = messages[messages.length - 1];
+  const pendingClarification =
+    lastMessage?.role === 'assistant' && lastMessage.clarification?.needs_clarification
+      ? lastMessage.clarification
+      : null;
+
   return (
     <div className="flex flex-col h-full bg-background rounded-2xl border border-border overflow-hidden shadow-sm">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between sticky top-0 z-10">
+      <div
+        className={cn(
+          'px-6 py-4 border-b backdrop-blur-sm flex items-center justify-between sticky top-0 z-10 transition-colors',
+          isInClarificationMode
+            ? 'bg-amber-50/80 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900'
+            : 'bg-card/50 border-border',
+        )}
+      >
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-            <Bot className="h-6 w-6" />
+          <div
+            className={cn(
+              'h-10 w-10 rounded-xl flex items-center justify-center transition-colors',
+              isInClarificationMode
+                ? 'bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400'
+                : 'bg-primary/10 text-primary',
+            )}
+          >
+            {isInClarificationMode ? (
+              <HelpCircle className="h-6 w-6" />
+            ) : (
+              <Bot className="h-6 w-6" />
+            )}
           </div>
           <div>
-            <h1 className="text-lg font-bold">Legal AI Assistant</h1>
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-green-500 inline-block animate-pulse"></span>
-              Online & Ready
+            <h1
+              className={cn(
+                'text-lg font-bold transition-colors',
+                isInClarificationMode ? 'text-amber-900 dark:text-amber-100' : '',
+              )}
+            >
+              {isInClarificationMode ? 'Clarification Mode' : 'Legal AI Assistant'}
+            </h1>
+            <p
+              className={cn(
+                'text-xs flex items-center gap-1 transition-colors',
+                isInClarificationMode
+                  ? 'text-amber-700 dark:text-amber-300'
+                  : 'text-muted-foreground',
+              )}
+            >
+              <span
+                className={cn(
+                  'w-2 h-2 rounded-full inline-block',
+                  isInClarificationMode
+                    ? 'bg-amber-500 animate-pulse'
+                    : 'bg-green-500 animate-pulse',
+                )}
+              ></span>
+              {isInClarificationMode ? 'Waiting for your answers' : 'Online & Ready'}
             </p>
           </div>
         </div>
@@ -221,8 +339,18 @@ export function ChatInterface() {
             </div>
           </div>
         ) : (
-          <div className="py-4">
+          <div className="py-4 space-y-4">
             <MessageList messages={messages} isLoading={isStreaming || isLoading} />
+
+            {/* Render clarification prompt if pending */}
+            {pendingClarification && (
+              <ClarificationPrompt
+                clarification={pendingClarification}
+                onSubmit={handleClarificationSubmit}
+                onCancel={handleClarificationCancel}
+                isSubmitting={isLoading}
+              />
+            )}
           </div>
         )}
         <div ref={messagesEndRef} className="h-4" />
@@ -232,7 +360,7 @@ export function ChatInterface() {
       <div className="px-4 md:px-8 py-6 bg-gradient-to-t from-background to-background/50 backdrop-blur-sm z-10">
         <MessageInput
           onSend={handleSendMessage}
-          disabled={isStreaming || isLoading}
+          disabled={isStreaming || isLoading || !!pendingClarification}
           placeholder={
             mode === 'LAWYER' ? 'Ask a complex legal question...' : 'Ask for legal help...'
           }

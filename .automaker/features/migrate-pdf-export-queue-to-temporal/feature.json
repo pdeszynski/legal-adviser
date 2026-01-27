@@ -4,7 +4,7 @@
   "id": "migrate-pdf-export-queue-to-temporal",
   "title": "Migrate PDF Export Queue to Temporal Workflow",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": null,
   "descriptionHistory": [
     {

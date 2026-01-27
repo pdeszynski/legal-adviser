@@ -3,9 +3,6 @@
   "description": "Implement skeleton placeholders for analytics dashboard charts and metrics. Show chart-shaped skeletons for graphs and counter skeletons for statistics. Ensure smooth transition when analytics data loads.",
   "id": "analytics-skeleton-loading",
   "title": "Add Skeleton Loading to Analytics Dashboard",
-  "dependencies": [
-    "loading-skeleton-components"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

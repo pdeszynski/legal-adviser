@@ -15,7 +15,6 @@
   ],
   "updatedAt": "2026-01-25T18:42:42.995Z",
   "dependencies": [
-    "fix-landing-page-cta-links",
     "landing-waitlist-page"
   ]
 }

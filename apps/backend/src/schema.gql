@@ -107,6 +107,39 @@ input AdvancedSearchTermInput {
   term: String!
 }
 
+type AgentLatencyMetrics {
+  """Agent type"""
+  agentType: AgentType!
+
+  """Average latency in milliseconds"""
+  avgLatency: Float!
+
+  """Maximum latency in milliseconds"""
+  maxLatency: Float!
+
+  """Median latency in milliseconds"""
+  medianLatency: Float!
+
+  """Minimum latency in milliseconds"""
+  minLatency: Float!
+
+  """P95 latency in milliseconds"""
+  p95Latency: Int!
+
+  """Total request count"""
+  requestCount: Int!
+}
+
+"""Type of AI agent or workflow"""
+enum AgentType {
+  CLARIFICATION_AGENT
+  CLASSIFIER_AGENT
+  DRAFTING_AGENT
+  QA_AGENT
+  UNKNOWN
+  WORKFLOW
+}
+
 type AggregatedLegalRulingSearchResponse {
   """Number of results returned"""
   count: Int!
@@ -737,6 +770,11 @@ type BulkUsersResult {
   success: [User!]!
 }
 
+input CancelClarificationSessionInput {
+  """ID of the clarification session to cancel"""
+  sessionId: String!
+}
+
 input CancelSubscriptionInput {
   immediately: Boolean! = false
 }
@@ -783,6 +821,80 @@ type Citation {
   excerpt: String
   source: String!
   url: String
+}
+
+type ClarificationAnswer {
+  answer: String!
+  answered_at: DateTime
+  question: String!
+  question_type: String!
+}
+
+input ClarificationAnswerInput {
+  """The user's answer to the question"""
+  answer: String!
+
+  """The question that was asked"""
+  question: String!
+
+  """The type of question (e.g., timeline, documents, parties)"""
+  question_type: String!
+}
+
+type ClarificationInfo {
+  context_summary: String!
+  needs_clarification: Boolean!
+  next_steps: String!
+  questions: [ClarificationQuestion!]!
+}
+
+type ClarificationQuestion {
+  hint: String
+  options: [String!]
+  question: String!
+  question_type: String!
+}
+
+type ClarificationSession {
+  """Accumulated context for AI processing"""
+  accumulatedContext: [String!]
+
+  """User answers to clarification questions"""
+  answersReceived: [ClarificationAnswer!]!
+
+  """Session completion timestamp"""
+  completedAt: DateTime
+  createdAt: DateTime!
+
+  """Error message if session failed"""
+  errorMessage: String
+
+  """Session expiration timestamp"""
+  expiresAt: DateTime!
+
+  """Final query ID with complete answer"""
+  finalQueryId: ID
+  id: ID!
+  originalQuery: String!
+  queryId: ID!
+
+  """Array of clarification question texts"""
+  questionsAsked: [String!]!
+
+  """Number of clarification rounds"""
+  rounds: Float!
+  sessionId: ID
+  state: ClarificationState!
+  updatedAt: DateTime!
+}
+
+"""The current state of a clarification session"""
+enum ClarificationState {
+  ANSWERED
+  CANCELLED
+  COMPLETE
+  EXPIRED
+  PENDING
 }
 
 input ClassifyCaseInput {
@@ -942,6 +1054,20 @@ input CreateCitationInput {
   excerpt: String
   source: String!
   url: String
+}
+
+input CreateClarificationSessionInput {
+  """Initial context for the clarification session"""
+  initialContext: [String!]
+
+  """ID of the legal query that triggered clarification"""
+  queryId: String!
+
+  """Clarification questions to ask the user"""
+  questions: [String!]!
+
+  """Session ID for the user (optional)"""
+  sessionId: String
 }
 
 input CreateCommentPositionInput {
@@ -2731,6 +2857,112 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
+type LangfuseTrace {
+  """Type of agent or workflow"""
+  agentType: AgentType!
+
+  """Duration in milliseconds"""
+  duration: Float
+
+  """Timestamp when trace ended"""
+  endTime: Timestamp
+
+  """Unique trace ID"""
+  id: ID!
+
+  """Trace level"""
+  level: TraceLevel
+
+  """Metadata associated with the trace"""
+  metadata: JSON
+
+  """Model used for the trace"""
+  model: String!
+
+  """Trace name (operation name)"""
+  name: String!
+
+  """Number of observations (spans/generations) in the trace"""
+  observationCount: Int!
+
+  """Session ID associated with the trace"""
+  sessionId: String!
+
+  """Timestamp when trace started"""
+  startTime: Timestamp
+
+  """Trace status"""
+  status: TraceStatus!
+
+  """Timestamp when trace was created"""
+  timestamp: Timestamp!
+
+  """Token usage details"""
+  usage: TokenUsage
+
+  """User ID associated with the trace"""
+  userId: String!
+}
+
+type LangfuseTraceDetail {
+  """Type of agent or workflow"""
+  agentType: AgentType!
+
+  """Duration in milliseconds"""
+  duration: Float
+
+  """Timestamp when trace ended"""
+  endTime: Timestamp
+
+  """Error message if trace failed"""
+  errorMessage: String!
+
+  """When this data was fetched"""
+  fetchedAt: Timestamp!
+
+  """Unique trace ID"""
+  id: ID!
+
+  """Trace level"""
+  level: TraceLevel
+
+  """Metadata associated with the trace"""
+  metadata: JSON
+
+  """Model used for the trace"""
+  model: String!
+
+  """Trace name (operation name)"""
+  name: String!
+
+  """All observations within the trace"""
+  observations: [TraceObservation!]!
+
+  """Session ID associated with the trace"""
+  sessionId: String!
+
+  """Stack trace if trace failed"""
+  stackTrace: String!
+
+  """Timestamp when trace started"""
+  startTime: Timestamp
+
+  """Trace status"""
+  status: TraceStatus!
+
+  """Timestamp when trace was created"""
+  timestamp: Timestamp!
+
+  """Aggregated token usage"""
+  usage: TokenUsage
+
+  """User email if available"""
+  userEmail: String!
+
+  """User ID associated with the trace"""
+  userId: String!
+}
+
 type LeadQualificationResponse {
   """Whether the lead is qualified"""
   qualified: Boolean!
@@ -3116,8 +3348,12 @@ input LegalGroundInput {
 type LegalQuery {
   answerMarkdown: String
   citations: [Citation!]
+  clarificationInfo: ClarificationInfo
+  confidence: Float
   createdAt: DateTime!
   id: ID!
+  keyTerms: [String!]
+  queryType: String
   question: String!
   session: UserSession!
   sessionId: ID
@@ -3171,8 +3407,12 @@ type LegalQueryCountAggregate {
 type LegalQueryDeleteResponse {
   answerMarkdown: String
   citations: [Citation!]
+  clarificationInfo: ClarificationInfo
+  confidence: Float
   createdAt: DateTime
   id: ID
+  keyTerms: [String!]
+  queryType: String
   question: String
   sessionId: ID
   updatedAt: DateTime
@@ -3514,6 +3754,9 @@ type Mutation {
   bulkSuspendUsers(input: BulkSuspendUsersInput!): BulkUsersResult!
   bulkUpsertSystemSettings(input: BulkUpdateSettingsInput!): [SystemSetting!]!
 
+  """Cancel an active clarification session"""
+  cancelClarificationSession(input: CancelClarificationSessionInput!): ClarificationSession!
+
   """Cancel the current user subscription"""
   cancelMySubscription(input: CancelSubscriptionInput!): UserSubscription!
 
@@ -3531,6 +3774,9 @@ type Mutation {
   """
   classifyCase(input: ClassifyCaseInput!): LegalAnalysis!
 
+  """Complete a clarification session with final answer reference"""
+  completeClarificationSession(finalQueryId: String!, sessionId: String!): ClarificationSession!
+
   """
   Complete login with 2FA token or backup code after receiving requiresTwoFactor response
   """
@@ -3538,6 +3784,9 @@ type Mutation {
 
   """Create a new API key. The raw key is only shown once."""
   createApiKey(input: CreateApiKeyInput!): CreateApiKeyResponse!
+
+  """Create a new clarification session for a query"""
+  createClarificationSession(input: CreateClarificationSessionInput!): ClarificationSession!
   createDocumentTemplate(input: CreateTemplateInput!): DocumentTemplate!
   createDocumentV2(input: CreateLegalDocumentInputV2!): LegalDocumentV2!
 
@@ -3707,6 +3956,9 @@ type Mutation {
 
   """Share a document with a user"""
   shareDocument(input: ShareDocumentInput!): DocumentShare!
+
+  """Submit answers to clarification questions"""
+  submitClarificationAnswers(input: SubmitClarificationAnswersInput!): ClarificationSession!
 
   """
   Submit a demo request. No authentication required. The request will be synced to HubSpot and the sales team will be notified via email.
@@ -4067,6 +4319,13 @@ input NumberFieldComparisonBetween {
   upper: Float!
 }
 
+"""Type of observation within a trace"""
+enum ObservationType {
+  EVENT
+  GENERATION
+  SPAN
+}
+
 type OperationBreakdown {
   cost: Float!
   operationType: AiOperationType!
@@ -4302,6 +4561,15 @@ type Query {
   """Check the current user quota for a specific resource"""
   checkQuota(input: CheckQuotaInput!): CheckQuotaResponse!
 
+  """Get the active clarification session for a specific query"""
+  clarificationSessionByQuery(queryId: String!): ClarificationSession
+
+  """Get all clarification sessions in a specific state"""
+  clarificationSessionsByState(state: ClarificationState!): [ClarificationSession!]!
+
+  """Get all clarification sessions for a user session"""
+  clarificationSessionsByUserSession(sessionId: String!): [ClarificationSession!]!
+
   """Count legal rulings matching filter criteria"""
   countLegalRulings(input: FilterLegalRulingsInput): Int!
   demoRequest(
@@ -4407,6 +4675,9 @@ type Query {
   """Filter legal rulings by multiple criteria"""
   filterLegalRulings(input: FilterLegalRulingsInput!): [LegalRuling!]!
   getActiveUsersCount: ActiveUsersCount!
+
+  """Get formatted context for AI processing from a clarification session"""
+  getClarificationContext(sessionId: String!): String
   getDocumentGenerationMetrics(input: DashboardAnalyticsInput): DocumentGenerationMetrics!
   getQueryVolume(input: DashboardAnalyticsInput): [AnalyticsTimeSeriesPoint!]!
   getTotalDocumentCount(input: DashboardAnalyticsInput): DocumentMetrics!
@@ -4433,6 +4704,11 @@ type Query {
     """Specify to sort results."""
     sorting: [InAppNotificationSort!]! = []
   ): InAppNotificationConnection!
+  langfuseLatencyMetrics(endDate: String, startDate: String): [AgentLatencyMetrics!]
+  langfuseTokenUsageByAgent(endDate: String, startDate: String): [TokenUsageByAgent!]
+  langfuseTraceDetail(traceId: String!): LangfuseTraceDetail
+  langfuseTraces(input: TracesListInput): TracesListResponse
+  langfuseUserAttribution(endDate: String, limit: Float = 20, startDate: String): [UserTraceAttribution!]
   legalAnalyses(
     """Specify to filter the records returned."""
     filter: LegalAnalysisFilter! = {}
@@ -5239,6 +5515,17 @@ input StringFilter {
   in: [String!]
 }
 
+input SubmitClarificationAnswersInput {
+  """Additional context to add to the session"""
+  additionalContext: [String!]
+
+  """Answers to the clarification questions"""
+  answers: [ClarificationAnswerInput!]!
+
+  """ID of the clarification session"""
+  sessionId: String!
+}
+
 input SubmitLegalQueryInput {
   """The legal question to be answered by the AI"""
   question: String!
@@ -5453,6 +5740,20 @@ input ThemePreferenceFilterComparison {
 """
 scalar Timestamp
 
+type TokenUsage {
+  """Completion tokens used"""
+  completionTokens: Int!
+
+  """Prompt tokens used"""
+  promptTokens: Int!
+
+  """Estimated cost in USD"""
+  totalCost: Float!
+
+  """Total tokens used"""
+  totalTokens: Int!
+}
+
 type TokenUsageAnalytics {
   """All-time total cost"""
   allTimeCost: Float!
@@ -5505,6 +5806,26 @@ type TokenUsageBreakdown {
   totalTokens: Int!
 }
 
+type TokenUsageByAgent {
+  """Agent type"""
+  agentType: AgentType!
+
+  """Average tokens per request"""
+  avgTokensPerRequest: Int!
+
+  """Total request count"""
+  requestCount: Int!
+
+  """Percentage of total tokens"""
+  tokenPercentage: Float!
+
+  """Total cost in USD"""
+  totalCost: Float!
+
+  """Total tokens used"""
+  totalTokens: Int!
+}
+
 type TokenUsageByOperation {
   """Average tokens per request"""
   avgTokensPerRequest: Int!
@@ -5536,6 +5857,127 @@ type TokenUsageTrend {
   requests: Int!
   timestamp: DateTime!
   tokens: Int!
+}
+
+"""Level of a Langfuse trace"""
+enum TraceLevel {
+  DEBUG
+  DEFAULT
+  ERROR
+  INFO
+  WARNING
+}
+
+type TraceObservation {
+  """Duration in milliseconds"""
+  duration: Float
+
+  """Timestamp when observation ended"""
+  endTime: Timestamp
+
+  """Error message if failed"""
+  errorMessage: String
+
+  """Unique observation ID"""
+  id: ID!
+
+  """Input prompt(s)"""
+  input: [String!]
+
+  """Observation level"""
+  level: TraceLevel
+
+  """Metadata associated with the observation"""
+  metadata: JSON
+
+  """Model used (for generations)"""
+  model: String
+
+  """Observation name"""
+  name: String!
+
+  """Output completion(s)"""
+  output: [String!]
+
+  """Parent observation ID if nested"""
+  parentObservationId: String
+
+  """Stack trace if failed"""
+  stackTrace: String
+
+  """Timestamp when observation started"""
+  startTime: Timestamp!
+
+  """Observation status"""
+  status: TraceStatus
+
+  """Type of observation"""
+  type: ObservationType!
+
+  """Token usage (for generations)"""
+  usage: TokenUsage
+}
+
+"""Status of a Langfuse trace"""
+enum TraceStatus {
+  ERROR
+  SUCCESS
+  UNKNOWN
+}
+
+input TracesListInput {
+  """Filter by agent type"""
+  agentType: AgentType
+
+  """End date for filtering (ISO 8601)"""
+  endDate: String
+
+  """Number of items per page"""
+  limit: Int = 20
+
+  """Page number (1-indexed)"""
+  page: Int = 1
+
+  """Search term for filtering"""
+  searchTerm: String
+
+  """Filter by session ID"""
+  sessionId: String
+
+  """Sort field"""
+  sortBy: String = "createdAt"
+
+  """Sort order (ASC or DESC)"""
+  sortOrder: String = "DESC"
+
+  """Start date for filtering (ISO 8601)"""
+  startDate: String
+
+  """Filter by trace status"""
+  status: TraceStatus
+
+  """Filter by user ID"""
+  userId: String
+}
+
+type TracesListResponse {
+  """When this data was fetched"""
+  fetchedAt: Timestamp!
+
+  """Number of items per page"""
+  limit: Int!
+
+  """Current page number (1-indexed)"""
+  page: Int!
+
+  """Total number of traces matching the filter"""
+  totalCount: Int!
+
+  """Total number of pages"""
+  totalPages: Int!
+
+  """List of traces"""
+  traces: [LangfuseTrace!]!
 }
 
 type TwoFactorSettings {
@@ -6267,6 +6709,29 @@ type UserTokenUsage {
   userEmail: String
   userId: ID!
   userName: String
+}
+
+type UserTraceAttribution {
+  """First trace timestamp"""
+  firstTraceAt: Timestamp!
+
+  """Last trace timestamp"""
+  lastTraceAt: Timestamp!
+
+  """Total cost in USD"""
+  totalCost: Float!
+
+  """Total tokens used"""
+  totalTokens: Int!
+
+  """Total trace count"""
+  traceCount: Int!
+
+  """User email"""
+  userEmail: String
+
+  """User ID"""
+  userId: String!
 }
 
 input ValidateApiKeyInput {

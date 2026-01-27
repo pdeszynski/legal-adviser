@@ -16,7 +16,13 @@ import {
   QueryOptions,
   Relation,
 } from '@ptc-org/nestjs-query-graphql';
-import { ObjectType, ID, Field, GraphQLISODateTime } from '@nestjs/graphql';
+import {
+  ObjectType,
+  ID,
+  Field,
+  GraphQLISODateTime,
+  Float,
+} from '@nestjs/graphql';
 import { UserSession } from '../../users/entities/user-session.entity';
 
 /**
@@ -53,6 +59,75 @@ export class CitationType {
 
   @Field(() => String, { nullable: true })
   excerpt?: string;
+}
+
+/**
+ * Clarification Question Interface
+ *
+ * Represents a single clarification question asked by the AI
+ * when more information is needed from the user.
+ */
+export interface ClarificationQuestion {
+  /** The question text */
+  question: string;
+  /** Type of information needed (e.g., 'timeline', 'documents', 'parties') */
+  question_type: string;
+  /** Optional predefined options for the user to choose from */
+  options?: string[];
+  /** Optional hint or example to help the user answer */
+  hint?: string;
+}
+
+/**
+ * GraphQL Object Type for Clarification Question
+ */
+@ObjectType('ClarificationQuestion')
+export class ClarificationQuestionType {
+  @Field(() => String)
+  question: string;
+
+  @Field(() => String)
+  question_type: string;
+
+  @Field(() => [String], { nullable: true })
+  options?: string[];
+
+  @Field(() => String, { nullable: true })
+  hint?: string;
+}
+
+/**
+ * Clarification Info Interface
+ *
+ * Contains information about needed clarifications
+ */
+export interface ClarificationInfo {
+  /** Whether clarification is needed */
+  needs_clarification: boolean;
+  /** List of clarification questions */
+  questions: ClarificationQuestion[];
+  /** Summary of what we understand so far */
+  context_summary: string;
+  /** Explanation of what happens after clarification */
+  next_steps: string;
+}
+
+/**
+ * GraphQL Object Type for Clarification Info
+ */
+@ObjectType('ClarificationInfo')
+export class ClarificationInfoType {
+  @Field(() => Boolean)
+  needs_clarification: boolean;
+
+  @Field(() => [ClarificationQuestionType])
+  questions: ClarificationQuestion[];
+
+  @Field(() => String)
+  context_summary: string;
+
+  @Field(() => String)
+  next_steps: string;
 }
 
 /**
@@ -116,6 +191,35 @@ export class LegalQuery {
   @Column({ type: 'jsonb', nullable: true, default: [] })
   @Field(() => [CitationType], { nullable: true })
   citations: Citation[] | null;
+
+  /**
+   * Clarification information when more details are needed
+   * Stored as JSONB for structured clarification questions
+   */
+  @Column({ type: 'jsonb', nullable: true })
+  @Field(() => ClarificationInfoType, { nullable: true })
+  clarificationInfo: ClarificationInfo | null;
+
+  /**
+   * Confidence score of the AI answer (0-1)
+   */
+  @Column({ type: 'float', nullable: true })
+  @Field(() => Float, { nullable: true })
+  confidence: number | null;
+
+  /**
+   * Query type classification (e.g., 'case_law', 'statute_interpretation')
+   */
+  @Column({ type: 'varchar', nullable: true })
+  @Field(() => String, { nullable: true })
+  queryType: string | null;
+
+  /**
+   * Key legal terms extracted from the query
+   */
+  @Column({ type: 'jsonb', nullable: true })
+  @Field(() => [String], { nullable: true })
+  keyTerms: string[] | null;
 
   /**
    * Timestamp when the query was created

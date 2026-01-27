@@ -4,7 +4,7 @@
   "id": "temporal-nestjs-integration",
   "title": "Temporal Client Integration with NestJS Backend",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": null,
   "descriptionHistory": [
     {

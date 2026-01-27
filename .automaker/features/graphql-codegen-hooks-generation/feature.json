@@ -4,7 +4,7 @@
   "id": "graphql-codegen-hooks-generation",
   "title": "Generate React Query Hooks with GraphQL Codegen",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

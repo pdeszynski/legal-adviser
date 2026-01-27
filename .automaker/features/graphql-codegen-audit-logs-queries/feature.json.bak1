@@ -4,7 +4,7 @@
   "id": "graphql-codegen-audit-logs-queries",
   "title": "Migrate Audit Logs Queries to GraphQL Codegen",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T09:28:13.772Z"
+  "updatedAt": "2026-01-24T09:34:09.736Z"
 }

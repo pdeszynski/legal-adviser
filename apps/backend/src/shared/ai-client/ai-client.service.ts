@@ -27,6 +27,7 @@ import { AiOperationType } from '../../modules/usage-tracking/entities/ai-usage-
  *
  * Features:
  * - Distributed tracing via sentry-trace header propagation
+ * - Langfuse trace ID propagation for AI observability
  * - Performance monitoring for all AI operations
  * - Error tracking with context
  */
@@ -48,10 +49,11 @@ export class AiClientService {
   }
 
   /**
-   * Get headers for distributed tracing
-   * Propagates sentry-trace header for cross-service tracing
+   * Get headers for distributed tracing and observability
+   * Propagates sentry-trace and x-langfuse-trace-id headers for cross-service tracing
+   * Also propagates user ID for Langfuse user-level analytics
    */
-  private getTracingHeaders(): Record<string, string> {
+  private getTracingHeaders(userId?: string): Record<string, string> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
@@ -60,6 +62,19 @@ export class AiClientService {
     const traceHeader = Sentry.getTraceData();
     if (traceHeader) {
       headers['sentry-trace'] = traceHeader['sentry-trace'] || '';
+    }
+
+    // Propagate Langfuse trace ID for AI observability
+    const langfuseTraceId = Sentry.getTraceData()?.['baggage']?.match(
+      /langfuse_trace_id=([^,]+)/,
+    );
+    if (langfuseTraceId) {
+      headers['x-langfuse-trace-id'] = langfuseTraceId[1];
+    }
+
+    // Propagate user ID for Langfuse user-level analytics
+    if (userId) {
+      headers['x-user-id'] = userId;
     }
 
     return headers;
@@ -142,7 +157,7 @@ export class AiClientService {
         this.httpService.post<AnswerResponse>(
           `${this.aiEngineUrl}/api/v1/qa/ask`,
           request,
-          { headers: this.getTracingHeaders() },
+          { headers: this.getTracingHeaders(userId) },
         ),
       );
 

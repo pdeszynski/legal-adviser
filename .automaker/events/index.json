@@ -2,6 +2,143 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769434247050-80b3cddc",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T13:30:47.050Z",
+      "featureName": "",
+      "featureId": "feature-1769433556946-stcyssvod"
+    },
+    {
+      "id": "evt-1769433556984-188921d5",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-26T13:19:16.984Z",
+      "featureId": "feature-1769433556946-stcyssvod"
+    },
+    {
+      "id": "evt-1769425348133-f44a9744",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-26T11:02:28.133Z"
+    },
+    {
+      "id": "evt-1769425346597-312f95e2",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T11:02:26.597Z",
+      "featureName": "Create Langfuse Trace Visualization Dashboard",
+      "featureId": "ai-engine-langfuse-trace-visualization"
+    },
+    {
+      "id": "evt-1769425295090-e4a1fcde",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T11:01:35.090Z",
+      "featureName": "Enhance AI Error Handling with Langfuse Context",
+      "featureId": "ai-error-handling-with-langfuse"
+    },
+    {
+      "id": "evt-1769425152418-c875bf08",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:59:12.418Z",
+      "featureName": "Optimize AI Engine Performance",
+      "featureId": "ai-engine-performance-optimization"
+    },
+    {
+      "id": "evt-1769424671193-c4dfed24",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:51:11.193Z",
+      "featureName": "Refactor RAG as PydanticAI Tool",
+      "featureId": "ai-engine-rag-pydantic-ai-tool"
+    },
+    {
+      "id": "evt-1769424320004-da56ba18",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:45:20.004Z",
+      "featureName": "Update Frontend Chat UI for Clarification Flows",
+      "featureId": "ai-engine-frontend-clarification-ui"
+    },
+    {
+      "id": "evt-1769424166277-127f770f",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:42:46.277Z",
+      "featureName": "Update E2E Tests for Refactored AI Engine",
+      "featureId": "ai-engine-e2e-tests-refactor"
+    },
+    {
+      "id": "evt-1769423603016-e07b2132",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:33:23.016Z",
+      "featureName": "Update AI Engine Documentation",
+      "featureId": "ai-engine-documentation-update"
+    },
+    {
+      "id": "evt-1769423566778-cd32fd12",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:32:46.778Z",
+      "featureName": "Remove All Direct OpenAI API Calls",
+      "featureId": "ai-engine-remove-direct-openai-calls"
+    },
+    {
+      "id": "evt-1769423115173-3d489e0d",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:25:15.173Z",
+      "featureName": "Remove Direct LangChain Usage",
+      "featureId": "ai-engine-remove-langchain-direct-access"
+    },
+    {
+      "id": "evt-1769423039350-c131dbb1",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:23:59.350Z",
+      "featureName": "Implement Clarification State Management",
+      "featureId": "ai-engine-clarification-state-management"
+    },
+    {
+      "id": "evt-1769422971222-17467cd7",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:22:51.222Z",
+      "featureName": "Refactor Existing Agents to PydanticAI Pattern",
+      "featureId": "ai-engine-pydantic-ai-agents-refactor"
+    },
+    {
+      "id": "evt-1769422947406-832afdf6",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:22:27.406Z",
+      "featureName": "Implement LangGraph Workflows for Complex Scenarios",
+      "featureId": "ai-engine-langgraph-workflows-implementation"
+    },
+    {
+      "id": "evt-1769422654398-d715d47e",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:17:34.398Z",
+      "featureName": "Integrate Langfuse for Observability and Tracing",
+      "featureId": "ai-engine-langfuse-observability-integration"
+    },
+    {
+      "id": "evt-1769422320563-78c5ffdb",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:12:00.563Z",
+      "featureName": "Replace Lawyer Referral with User Clarification Questions",
+      "featureId": "ai-engine-clarification-flow-refactor"
+    },
+    {
+      "id": "evt-1769422152575-3056deee",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T10:09:12.575Z",
+      "featureName": "Migrate AI Engine to PydanticAI Architecture",
+      "featureId": "ai-engine-pydantic-ai-migration"
+    },
+    {
+      "id": "evt-1769421437434-f256efd3",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T09:57:17.434Z",
+      "featureName": "Implement Multi-Persona Orchestration with LangGraph",
+      "featureId": "ai-engine-langgraph-persona-orchestration"
+    },
+    {
+      "id": "evt-1769420822315-7452618d",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-26T09:47:02.315Z",
+      "featureName": "Fix two-factor authentication initialization validation",
+      "featureId": "feature-1769415351724-r4s51bneq"
+    },
+    {
       "id": "evt-1769415916504-dfc1981e",
       "trigger": "feature_success",
       "timestamp": "2026-01-26T08:25:16.504Z",

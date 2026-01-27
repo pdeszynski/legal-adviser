@@ -222,18 +222,39 @@ export class QueriesResolver {
     @Context() context: { req: { user?: { id?: string } } },
   ): Promise<LegalQuery> {
     const userId = context.req?.user?.id;
+
+    // If sessionId is provided, fetch conversation history for multi-turn clarification
+    let conversationHistory:
+      | Array<{ role: 'user' | 'assistant'; content: string }>
+      | undefined;
+    if (input.sessionId) {
+      const previousQueries = await this.queriesService.findBySessionId(
+        input.sessionId,
+      );
+      conversationHistory = previousQueries
+        .filter((q) => q.answerMarkdown) // Only include answered queries
+        .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()) // Sort by creation date
+        .slice(-10) // Only include last 10 exchanges to avoid token bloat
+        .flatMap((q) => [
+          { role: 'user' as const, content: q.question },
+          { role: 'assistant' as const, content: q.answerMarkdown || '' },
+        ]);
+    }
+
     return this.queriesService.askQuestion(
       {
         sessionId: input.sessionId,
         question: input.question,
         mode: input.mode,
+        conversationHistory,
       },
-      async (question, sessionId, mode) => {
+      async (question, sessionId, mode, history) => {
         return this.aiClientService.askQuestion(
           {
             question,
-            session_id: sessionId ?? '',
+            session_id: sessionId ?? crypto.randomUUID(),
             mode,
+            conversation_history: history,
           },
           userId,
         );

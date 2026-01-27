@@ -4,7 +4,7 @@
   "id": "two-factor-auth-seed-data",
   "title": "Two-Factor Auth Seed Data Update",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

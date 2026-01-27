@@ -3,9 +3,6 @@
   "description": "Audit all pages to identify GIF-based loading animations and replace them with skeleton components. Search for spinning loaders, GIF images, and old loading indicators. Replace with appropriate skeleton components from the new library. Ensure consistent loading experience across entire application.",
   "id": "remove-inconsistent-gif-loaders",
   "title": "Remove Inconsistent GIF Loading Animations",
-  "dependencies": [
-    "loading-skeleton-components"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

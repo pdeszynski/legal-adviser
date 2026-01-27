@@ -4,7 +4,7 @@
   "id": "frontend-role-check",
   "title": "Frontend Role-Based Route Protection",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T09:19:35.579Z"
+  "updatedAt": "2026-01-24T09:30:22.347Z"
 }

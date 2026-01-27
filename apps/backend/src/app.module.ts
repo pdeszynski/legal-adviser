@@ -39,6 +39,8 @@ import { DemoRequestModule } from './modules/demo-request/demo-request.module';
 import { InterestRequestModule } from './modules/interest-request/interest-request.module';
 // Authorization - Role-Based Access Control following DDD
 import { AuthorizationModule } from './modules/authorization/authorization.module';
+// Langfuse - AI trace visualization
+import { LangfuseModule } from './modules/langfuse/langfuse.module';
 // Persisted Queries - Automatic Persisted Queries (APQ) support
 import {
   PersistedQueriesModule,
@@ -171,6 +173,8 @@ import { PersistedQueriesService } from './modules/persisted-queries';
     InterestRequestModule,
     // Authorization - Role-Based Access Control
     AuthorizationModule,
+    // Langfuse - AI trace visualization
+    LangfuseModule,
     // Domain Event System - Event dispatcher for reliable event delivery
     EventDispatcherModule,
     // Error tracking with Sentry

@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Update CLAUDE.md and AI Engine documentation to reflect new architecture. Document: 1) PydanticAI agent patterns and how to create new agents, 2) LangGraph workflow patterns for multi-agent scenarios, 3) Langfuse observability setup and trace interpretation, 4) Clarification flow design and UX patterns, 5) Migration guide from old OpenAI/LangChain patterns, 6) Environment variables required (LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY), 7) Testing strategies for AI components. Include code examples and diagrams showing the new architecture layers.",
+  "id": "ai-engine-documentation-update",
+  "title": "Update AI Engine Documentation",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Update CLAUDE.md and AI Engine documentation to reflect new architecture. Document: 1) PydanticAI agent patterns and how to create new agents, 2) LangGraph workflow patterns for multi-agent scenarios, 3) Langfuse observability setup and trace interpretation, 4) Clarification flow design and UX patterns, 5) Migration guide from old OpenAI/LangChain patterns, 6) Environment variables required (LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY), 7) Testing strategies for AI components. Include code examples and diagrams showing the new architecture layers.",
+      "timestamp": "2026-01-26T09:49:24.181Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-26T10:33:22.985Z"
+}

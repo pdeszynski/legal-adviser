@@ -4,7 +4,7 @@
   "id": "graphql-codegen-search-queries",
   "title": "Migrate Search Queries to GraphQL Codegen",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T10:18:19.138Z"
+  "updatedAt": "2026-01-24T10:33:01.643Z"
 }

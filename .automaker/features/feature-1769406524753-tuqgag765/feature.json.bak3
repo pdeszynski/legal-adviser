@@ -16,7 +16,7 @@
   "dependencies": [],
   "workMode": "current",
   "titleGenerating": false,
-  "status": "backlog",
+  "status": "in_progress",
   "id": "feature-1769406524753-tuqgag765",
   "descriptionHistory": [
     {
@@ -24,5 +24,6 @@
       "timestamp": "2026-01-26T05:48:44.859Z",
       "source": "initial"
     }
-  ]
+  ],
+  "startedAt": "2026-01-26T05:50:00.011Z"
 }

@@ -4,7 +4,7 @@
   "id": "graphql-codegen-ci-integration",
   "title": "Integrate GraphQL Codegen into CI/CD Pipeline",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T10:09:43.957Z"
+  "updatedAt": "2026-01-24T10:15:02.705Z"
 }

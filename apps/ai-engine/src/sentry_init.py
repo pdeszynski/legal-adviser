@@ -181,11 +181,11 @@ def set_context(name: str, data: dict) -> None:
 def start_ai_span(operation: str, **kwargs) -> Span | None:
     """Start a custom span for AI operations tracking.
 
-    Use this to track specific AI operations like OpenAI API calls,
+    Use this to track specific AI operations like PydanticAI agent runs,
     embedding generation, or LangGraph node execution.
 
     Args:
-        operation: Operation name (e.g., "openai.chat.completion")
+        operation: Operation name (e.g., "agent.run", "embedding.generate")
         **kwargs: Additional metadata to attach to the span
 
     Returns:
@@ -193,9 +193,9 @@ def start_ai_span(operation: str, **kwargs) -> Span | None:
 
     Example:
         ```python
-        span = start_ai_span("openai.chat.completion", model="gpt-4", prompt_tokens=100)
-        result = await openai.chat.completions.create(...)
-        span?.set_data("completion_tokens", result.usage.completion_tokens)
+        span = start_ai_span("agent.run", agent="classifier", model="gpt-4")
+        result = await agent.run(user_input)
+        span?.set_data("result_length", len(result.output))
         span?.finish()
         ```
     """

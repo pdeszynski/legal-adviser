@@ -5,7 +5,7 @@
   "title": "Create Features Landing Page",
   "dependencies": [],
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -14,5 +14,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T18:45:17.382Z"
+  "updatedAt": "2026-01-25T19:02:03.530Z"
 }

@@ -4,7 +4,7 @@
   "id": "e2e-test-two-factor-settings-enable-flow",
   "title": "E2E Test for Two-Factor Settings Enable Flow",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-25T18:25:36.731Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T18:25:43.447Z"
 }

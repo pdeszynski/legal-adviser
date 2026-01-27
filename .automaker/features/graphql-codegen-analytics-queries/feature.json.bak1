@@ -4,7 +4,7 @@
   "id": "graphql-codegen-analytics-queries",
   "title": "Migrate Analytics Dashboard Queries to GraphQL Codegen",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T10:05:18.873Z"
+  "updatedAt": "2026-01-24T10:13:11.665Z"
 }

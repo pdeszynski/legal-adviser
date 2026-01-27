@@ -5,7 +5,7 @@
   "title": "Integrate AI Engine into Turbo Dev Command",
   "dependencies": [],
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

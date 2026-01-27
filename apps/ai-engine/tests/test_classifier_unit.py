@@ -14,12 +14,12 @@ def test_classifier_agent_structure():
         CLASSIFIER_SYSTEM_PROMPT,
         ClassificationResult,
         LegalGround,
-        classifier_agent,
+        get_classifier_agent,
     )
 
-    # Verify agent is instantiated
-    assert classifier_agent is not None
-    assert hasattr(classifier_agent, "name")
+    # Verify agent function is callable
+    assert get_classifier_agent is not None
+    assert callable(get_classifier_agent)
 
     # Verify system prompt exists and is not empty
     assert CLASSIFIER_SYSTEM_PROMPT

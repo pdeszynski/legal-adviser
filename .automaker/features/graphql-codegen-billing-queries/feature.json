@@ -4,7 +4,7 @@
   "id": "graphql-codegen-billing-queries",
   "title": "Migrate Billing/Subscription Queries to GraphQL Codegen",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

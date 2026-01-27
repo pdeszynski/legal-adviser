@@ -1,8 +1,8 @@
 {
   "category": "feature",
-  "description": "Update demo request form component to support HubSpot integration mode. Component should: 1) Support both standalone form (GraphQL mutation to demo-request-graphql-api) and HubSpot embedded form mode, 2) Include fields: full name, work email, company, company size, industry, use case, timeline, budget, preferred demo time, 3) Implement multi-step form wizard with progress indicator, 4) Validate form inputs using zod schemas, 5) On submit: sync to HubSpot via hubspot-integration-backend AND store locally via GraphQL mutation, 6) Show success confirmation with next steps, 7) Handle errors gracefully with retry option.",
+  "description": "This task is superseded by interest-form-component. Create interest registration form (NOT demo request form). Component should: 1) Support GraphQL mutation to submitInterestRequest, 2) Include fields: full name, email, company (optional), role (optional), use case (optional), how did you hear about us, GDPR consent, 3) Validate form inputs using zod schemas, 4) On submit: sync to HubSpot via GraphQL mutation WITHOUT storing locally, 5) Show success confirmation with next steps, 6) Handle errors with retry, 7) Track analytics events (form view, submit start, success), 8) No demo-related language anywhere.",
   "id": "demo-request-form-component",
-  "title": "Demo Request Form Component",
+  "title": "Interest Registration Form Component",
   "priority": 1,
   "status": "verified",
   "branchName": "002-legal-ai-core",
@@ -15,6 +15,11 @@
     {
       "description": "Update demo request form component to support HubSpot integration mode. Component should: 1) Support both standalone form (GraphQL mutation to demo-request-graphql-api) and HubSpot embedded form mode, 2) Include fields: full name, work email, company, company size, industry, use case, timeline, budget, preferred demo time, 3) Implement multi-step form wizard with progress indicator, 4) Validate form inputs using zod schemas, 5) On submit: sync to HubSpot via hubspot-integration-backend AND store locally via GraphQL mutation, 6) Show success confirmation with next steps, 7) Handle errors gracefully with retry option.",
       "timestamp": "2026-01-25T18:47:38.414Z",
+      "source": "edit"
+    },
+    {
+      "description": "This task is superseded by interest-form-component. Create interest registration form (NOT demo request form). Component should: 1) Support GraphQL mutation to submitInterestRequest, 2) Include fields: full name, email, company (optional), role (optional), use case (optional), how did you hear about us, GDPR consent, 3) Validate form inputs using zod schemas, 4) On submit: sync to HubSpot via GraphQL mutation WITHOUT storing locally, 5) Show success confirmation with next steps, 6) Handle errors with retry, 7) Track analytics events (form view, submit start, success), 8) No demo-related language anywhere.",
+      "timestamp": "2026-01-26T05:45:27.236Z",
       "source": "edit"
     }
   ],

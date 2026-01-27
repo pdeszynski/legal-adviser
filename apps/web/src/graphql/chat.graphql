@@ -45,3 +45,44 @@ query GetPendingQueries {
     ...LegalQueryFragment
   }
 }
+
+# Clarification Session Fragment
+fragment ClarificationSessionFragment on ClarificationSession {
+  id
+  state
+  originalQuery
+  questionsAsked
+  answersReceived {
+    question
+    answer
+    question_type
+  }
+  rounds
+  accumulatedContext
+  finalQueryId
+  completedAt
+  expiresAt
+  createdAt
+  updatedAt
+}
+
+# Mutation: Submit answers to clarification questions
+mutation SubmitClarificationAnswers($input: SubmitClarificationAnswersInput!) {
+  submitClarificationAnswers(input: $input) {
+    ...ClarificationSessionFragment
+  }
+}
+
+# Mutation: Cancel an active clarification session
+mutation CancelClarificationSession($input: CancelClarificationSessionInput!) {
+  cancelClarificationSession(input: $input) {
+    ...ClarificationSessionFragment
+  }
+}
+
+# Query: Get active clarification session for a query
+query GetClarificationSessionByQuery($queryId: ID!) {
+  clarificationSessionByQuery(queryId: $queryId) {
+    ...ClarificationSessionFragment
+  }
+}

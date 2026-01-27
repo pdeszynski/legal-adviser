@@ -4,7 +4,7 @@
   "id": "temporal-migration-deployment-guide",
   "title": "Create Deployment Guide for Temporal Migration",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "feature/temporal",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T03:36:18.055Z"
+  "updatedAt": "2026-01-25T03:44:19.536Z"
 }

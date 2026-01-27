@@ -4,7 +4,7 @@
   "id": "graphql-codegen-persisted-queries",
   "title": "Implement Persisted Queries with GraphQL Codegen",
   "priority": 3,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T10:26:37.816Z"
+  "updatedAt": "2026-01-24T10:36:29.977Z"
 }

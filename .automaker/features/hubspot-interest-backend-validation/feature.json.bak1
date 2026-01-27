@@ -5,7 +5,7 @@
   "title": "Validate HubSpot Backend Integration for Interest Signups",
   "dependencies": [],
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -14,5 +14,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-26T05:46:46.514Z"
+  "updatedAt": "2026-01-26T06:03:20.283Z"
 }

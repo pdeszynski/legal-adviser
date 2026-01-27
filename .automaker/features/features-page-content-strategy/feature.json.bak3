@@ -3,9 +3,6 @@
   "description": "Plan and organize content structure for the /features landing page. Categorize existing features into logical groups: AI Tools (classifier-agent, qa-agent-implementation, document-templates), Research (ruling-search-page, advanced-search-page, saos-integration, isap-integration), Collaboration (document-sharing, comment-system-ui, document-versioning-logic), and Platform (analytics-dashboard, admin-user-management, billing-page). Define messaging hierarchy: start with high-value features, group related functionality together, create clear value propositions for each feature category. Ensure content aligns with About page content strategy (about-page-content-strategy) for consistent messaging across the site. Identify which features need copywriting versus existing descriptions that can be reused.",
   "id": "features-page-content-strategy",
   "title": "Define Features Page Content Strategy",
-  "dependencies": [
-    "about-page-content-strategy"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "two-factor",

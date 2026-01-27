@@ -4,7 +4,7 @@
   "id": "temporal-schedule-resume-implementation",
   "title": "Implement Temporal Schedule Resume Method",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

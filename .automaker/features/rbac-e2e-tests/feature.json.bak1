@@ -4,7 +4,7 @@
   "id": "rbac-e2e-tests",
   "title": "E2E Tests for Role-Based Access Control",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T09:35:05.546Z"
+  "updatedAt": "2026-01-24T09:47:39.974Z"
 }

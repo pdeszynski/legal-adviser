@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Add comprehensive observability using Langfuse (https://langfuse.com/) across all AI Engine operations. Configure Langfuse SDK with public/private keys from environment. Instrument: 1) All PydanticAI agent calls with tracing, 2) LangGraph workflow executions, 3) Tool usage (RAG retrieval, SAOS/ISAP API calls), 4) Token consumption and costs, 5) Latency measurements. Implement trace linking from frontend requests through backend to AI Engine. Create dashboards for monitoring: agent performance, workflow success rates, token usage trends, error rates. Add Langfuse middleware for automatic span creation. Ensure PII redaction in traces.",
+  "id": "ai-engine-langfuse-observability-integration",
+  "title": "Integrate Langfuse for Observability and Tracing",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Add comprehensive observability using Langfuse (https://langfuse.com/) across all AI Engine operations. Configure Langfuse SDK with public/private keys from environment. Instrument: 1) All PydanticAI agent calls with tracing, 2) LangGraph workflow executions, 3) Tool usage (RAG retrieval, SAOS/ISAP API calls), 4) Token consumption and costs, 5) Latency measurements. Implement trace linking from frontend requests through backend to AI Engine. Create dashboards for monitoring: agent performance, workflow success rates, token usage trends, error rates. Add Langfuse middleware for automatic span creation. Ensure PII redaction in traces.",
+      "timestamp": "2026-01-26T09:49:24.176Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-26T10:17:34.369Z"
+}

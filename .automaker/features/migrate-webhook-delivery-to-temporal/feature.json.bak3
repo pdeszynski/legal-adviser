@@ -4,7 +4,7 @@
   "id": "migrate-webhook-delivery-to-temporal",
   "title": "Migrate Webhook Delivery to Temporal Workflow",
   "priority": 3,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "feature/temporal",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-24T16:43:46.093Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T03:58:03.308Z"
 }

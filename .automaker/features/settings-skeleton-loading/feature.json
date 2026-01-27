@@ -4,7 +4,7 @@
   "id": "settings-skeleton-loading",
   "title": "Add Skeleton Loading to Settings Page",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

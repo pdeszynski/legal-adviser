@@ -5,7 +5,7 @@
   "title": "HubSpot CRM Integration Backend Service",
   "dependencies": [],
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -14,5 +14,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T21:40:54.962Z"
+  "updatedAt": "2026-01-24T21:56:10.252Z"
 }

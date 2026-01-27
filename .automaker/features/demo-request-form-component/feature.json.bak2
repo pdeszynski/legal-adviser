@@ -1,6 +1,6 @@
 {
   "category": "feature",
-  "description": "Create a multi-step demo request form similar to 11x.ai's approach. Implement form with: 1) Contact information step (full name, work email, phone optional), 2) Company information step (company name, size, industry), 3) Use case step (what legal problems they want to solve, current challenges), 4) Timeline step (when they're looking to implement, budget range), 5) Preferred demo time (calendar integration or time slot selection). Use shadcn/ui form components with validation. Implement step progress indicator. Show form in modal or as embedded component on the waitlist page. Store form state in React Hook Form with proper validation using zod schemas.",
+  "description": "Update demo request form component to support HubSpot integration mode. Component should: 1) Support both standalone form (GraphQL mutation to demo-request-graphql-api) and HubSpot embedded form mode, 2) Include fields: full name, work email, company, company size, industry, use case, timeline, budget, preferred demo time, 3) Implement multi-step form wizard with progress indicator, 4) Validate form inputs using zod schemas, 5) On submit: sync to HubSpot via hubspot-integration-backend AND store locally via GraphQL mutation, 6) Show success confirmation with next steps, 7) Handle errors gracefully with retry option.",
   "id": "demo-request-form-component",
   "title": "Demo Request Form Component",
   "priority": 1,
@@ -11,6 +11,11 @@
       "description": "Create a multi-step demo request form similar to 11x.ai's approach. Implement form with: 1) Contact information step (full name, work email, phone optional), 2) Company information step (company name, size, industry), 3) Use case step (what legal problems they want to solve, current challenges), 4) Timeline step (when they're looking to implement, budget range), 5) Preferred demo time (calendar integration or time slot selection). Use shadcn/ui form components with validation. Implement step progress indicator. Show form in modal or as embedded component on the waitlist page. Store form state in React Hook Form with proper validation using zod schemas.",
       "timestamp": "2026-01-24T21:38:47.508Z",
       "source": "initial"
+    },
+    {
+      "description": "Update demo request form component to support HubSpot integration mode. Component should: 1) Support both standalone form (GraphQL mutation to demo-request-graphql-api) and HubSpot embedded form mode, 2) Include fields: full name, work email, company, company size, industry, use case, timeline, budget, preferred demo time, 3) Implement multi-step form wizard with progress indicator, 4) Validate form inputs using zod schemas, 5) On submit: sync to HubSpot via hubspot-integration-backend AND store locally via GraphQL mutation, 6) Show success confirmation with next steps, 7) Handle errors gracefully with retry option.",
+      "timestamp": "2026-01-25T18:47:38.414Z",
+      "source": "edit"
     }
   ],
   "updatedAt": "2026-01-25T02:16:46.380Z"

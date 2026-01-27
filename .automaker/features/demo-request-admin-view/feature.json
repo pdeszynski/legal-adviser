@@ -4,7 +4,7 @@
   "id": "demo-request-admin-view",
   "title": "Admin Interest Request Management View",
   "priority": 3,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

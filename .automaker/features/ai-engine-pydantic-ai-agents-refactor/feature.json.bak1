@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Rewrite existing AI Engine agents using PydanticAI patterns: 1) Classifier Agent - Use PydanticAI's structured output for legal grounds classification with confidence scores, 2) Q&A Agent - Implement as PydanticAI agent with RAG tool integration for citation-based responses, 3) Document Generation Agent - Use PydanticAI with template-based generation patterns. Define proper result models (Pydantic models) for each agent. Use PydanticAI's dependency injection for LLM model configuration, vector store access, and tool dependencies. Ensure agents are testable and composable.",
+  "id": "ai-engine-pydantic-ai-agents-refactor",
+  "title": "Refactor Existing Agents to PydanticAI Pattern",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "two-factor",
+  "descriptionHistory": [
+    {
+      "description": "Rewrite existing AI Engine agents using PydanticAI patterns: 1) Classifier Agent - Use PydanticAI's structured output for legal grounds classification with confidence scores, 2) Q&A Agent - Implement as PydanticAI agent with RAG tool integration for citation-based responses, 3) Document Generation Agent - Use PydanticAI with template-based generation patterns. Define proper result models (Pydantic models) for each agent. Use PydanticAI's dependency injection for LLM model configuration, vector store access, and tool dependencies. Ensure agents are testable and composable.",
+      "timestamp": "2026-01-26T09:49:24.178Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-26T10:22:51.199Z"
+}

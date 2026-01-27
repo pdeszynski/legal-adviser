@@ -4,7 +4,7 @@
   "id": "fix-two-factor-enable-settings-mutation",
   "title": "Fix Two-Factor Enable Mutation in Settings",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T18:25:41.380Z"
+  "updatedAt": "2026-01-25T18:34:43.377Z"
 }

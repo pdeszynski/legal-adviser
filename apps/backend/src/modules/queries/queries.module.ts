@@ -3,14 +3,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NestjsQueryGraphQLModule } from '@ptc-org/nestjs-query-graphql';
 import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
 import { LegalQuery } from './entities/legal-query.entity';
+import { ClarificationSession } from './entities/clarification-session.entity';
 import {
   CreateLegalQueryInput,
   UpdateLegalQueryInput,
 } from './dto/legal-query.dto';
 import { QueriesService } from './services/queries.service';
+import { ClarificationSessionsService } from './services/clarification-sessions.service';
 import { QueriesResolver } from './queries.resolver';
+import { ClarificationSessionsResolver } from './clarification-sessions.resolver';
 import { AiClientModule } from '../../shared/ai-client/ai-client.module';
 import { UsersModule } from '../users/users.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 /**
  * Queries Module
@@ -27,20 +31,27 @@ import { UsersModule } from '../users/users.module';
  * - updateOneLegalQuery: Update a query (add answer, citations)
  * - deleteOneLegalQuery: Delete a query
  *
- * This module stores Q&A conversation history including:
- * - User questions
- * - AI-generated answers (in Markdown)
- * - Citations with source references
+ * - clarificationSessions: Query all clarification sessions with filtering, sorting, paging
+ * - clarificationSession: Query single session by ID
+ * - createOneClarificationSession: Create a new session
+ * - updateOneClarificationSession: Update a session
+ * - deleteOneClarificationSession: Delete a session
+ *
+ * This module stores:
+ * - Q&A conversation history (questions, answers, citations)
+ * - Multi-turn clarification flow state and context
  */
 @Module({
   imports: [
-    // TypeORM repository for custom service
-    TypeOrmModule.forFeature([LegalQuery]),
+    // TypeORM repositories for custom services
+    TypeOrmModule.forFeature([LegalQuery, ClarificationSession]),
     // Users Module for session auto-creation
     UsersModule,
     // AI Client Service for synchronous Q&A
     AiClientModule,
-    // nestjs-query auto-generated CRUD resolvers
+    // Scheduler for cleanup tasks
+    ScheduleModule.forRoot(),
+    // nestjs-query auto-generated CRUD resolvers for LegalQuery
     NestjsQueryGraphQLModule.forFeature({
       imports: [NestjsQueryTypeOrmModule.forFeature([LegalQuery])],
       resolvers: [
@@ -76,11 +87,13 @@ import { UsersModule } from '../users/users.module';
     }),
   ],
   providers: [
-    // Custom service for business logic
+    // Custom services for business logic
     QueriesService,
-    // Custom resolver with submitLegalQuery mutation
+    ClarificationSessionsService,
+    // Custom resolvers with additional mutations
     QueriesResolver,
+    ClarificationSessionsResolver,
   ],
-  exports: [QueriesService],
+  exports: [QueriesService, ClarificationSessionsService],
 })
 export class QueriesModule {}

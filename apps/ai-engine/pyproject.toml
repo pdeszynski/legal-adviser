@@ -4,25 +4,25 @@ version = "0.1.0"
 description = "AI Engine for Legal Platform"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 dependencies = [
-    "fastapi",
-    "uvicorn",
+    "fastapi[standard]",
     "pydantic",
     "pydantic-ai",
     "langgraph",
-    "langchain",
     "openai",
     "python-dotenv",
     "pydantic-settings",
     "sentry-sdk>=2.50.0",
     "psutil",
+    "langfuse>=2.50.0",
+    "httpx",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
 license = { text = "MIT" }
 
 [project.scripts]
-dev = "python src/dev_server.py"
-start = "python src/start_server.py"
+dev = "fastapi dev src/main.py --host 0.0.0.0 --port 8000"
+start = "fastapi run src/main.py --host 0.0.0.0 --port 8000"
 export-openapi = "python src/export_openapi.py"
 lint = "ruff check ."
 lint-fix = "ruff check --fix ."

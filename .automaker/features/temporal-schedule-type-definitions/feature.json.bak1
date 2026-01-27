@@ -4,7 +4,7 @@
   "id": "temporal-schedule-type-definitions",
   "title": "Define TypeScript Types for Temporal Schedules",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T15:23:00.709Z"
+  "updatedAt": "2026-01-25T15:31:56.436Z"
 }

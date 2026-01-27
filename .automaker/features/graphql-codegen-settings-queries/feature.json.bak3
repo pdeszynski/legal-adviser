@@ -3,9 +3,6 @@
   "description": "Extract settings operations (userPreferences query, updateUserPreferences mutation) from inline strings to apps/web/src/graphql/settings.graphql. Create UserPreferencesFragment. Generate types resolving enum validation issues (ThemePreference, AiModelType enums should use enum values not strings). Update settings page to use generated types with proper enum handling.",
   "id": "graphql-codegen-settings-queries",
   "title": "Migrate Settings/Preferences Queries to GraphQL Codegen",
-  "dependencies": [
-    "graphql-codegen-fragments-extraction"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "002-legal-ai-core",

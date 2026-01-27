@@ -4,7 +4,7 @@
   "id": "ruff-mypy-git-hooks",
   "title": "Pre-commit Hooks for Ruff and MyPy",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T21:15:00.431Z"
+  "updatedAt": "2026-01-24T21:23:49.886Z"
 }

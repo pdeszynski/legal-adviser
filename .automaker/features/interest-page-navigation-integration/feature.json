@@ -4,7 +4,7 @@
   "id": "interest-page-navigation-integration",
   "title": "Add Interest Page to Site Navigation",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

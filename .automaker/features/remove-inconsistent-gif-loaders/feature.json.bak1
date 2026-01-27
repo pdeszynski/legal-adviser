@@ -4,7 +4,7 @@
   "id": "remove-inconsistent-gif-loaders",
   "title": "Remove Inconsistent GIF Loading Animations",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-23T20:33:51.482Z"
+  "updatedAt": "2026-01-23T20:38:58.627Z"
 }

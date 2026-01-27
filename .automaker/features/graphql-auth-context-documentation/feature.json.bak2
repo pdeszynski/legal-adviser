@@ -4,7 +4,7 @@
   "id": "graphql-auth-context-documentation",
   "title": "Document GraphQL Authentication Context and Guards",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T17:00:17.925Z"
+  "updatedAt": "2026-01-25T17:00:21.530Z"
 }
