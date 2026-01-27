@@ -7,16 +7,19 @@ This document describes the procedures and methods for verifying data integrity 
 ## Verification Levels
 
 ### Level 1: Basic Verification
+
 - Database connectivity
 - Table existence
 - Row counts
 
 ### Level 2: Data Consistency
+
 - Foreign key integrity
 - Index validation
 - Checksum verification
 
 ### Level 3: Functional Verification
+
 - User authentication
 - Document retrieval
 - Search functionality
@@ -45,6 +48,7 @@ Run the automated verification script:
 ```
 
 This will check:
+
 - Backup metadata
 - Checksums
 - Storage accessibility
@@ -82,6 +86,7 @@ ORDER BY tablename;
 ```
 
 Expected tables:
+
 - `users`
 - `legal_documents`
 - `legal_queries`
@@ -305,6 +310,7 @@ ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
 Use this checklist after any restoration or recovery operation:
 
 ### Database Level
+
 - [ ] PostgreSQL service is running
 - [ ] Database `legal_ai_db` exists
 - [ ] Can connect to database
@@ -313,6 +319,7 @@ Use this checklist after any restoration or recovery operation:
 - [ ] No unvalidated constraints
 
 ### Data Level
+
 - [ ] User count matches expected baseline
 - [ ] Document count matches expected baseline
 - [ ] Query count matches expected baseline
@@ -322,6 +329,7 @@ Use this checklist after any restoration or recovery operation:
 - [ ] Checksums verified (if available)
 
 ### Application Level
+
 - [ ] Backend service is healthy (`/health` returns 200)
 - [ ] User authentication works
 - [ ] Document listing works
@@ -330,6 +338,7 @@ Use this checklist after any restoration or recovery operation:
 - [ ] No error logs in services
 
 ### Performance Level
+
 - [ ] Query performance acceptable
 - [ ] Database size as expected
 - [ ] Index sizes reasonable
@@ -342,6 +351,7 @@ Use this checklist after any restoration or recovery operation:
 ### Issue: Orphaned Records Detected
 
 **Solution**:
+
 ```sql
 -- Identify orphaned records
 SELECT ld.id, ld.title
@@ -362,6 +372,7 @@ WHERE created_by_id NOT IN (SELECT id FROM users);
 ### Issue: Duplicate Records Found
 
 **Solution**:
+
 ```sql
 -- Find duplicates
 SELECT email, COUNT(*)
@@ -385,6 +396,7 @@ WHERE id IN (
 ### Issue: Index Not Valid
 
 **Solution**:
+
 ```sql
 -- Reindex specific table
 REINDEX TABLE legal_documents;
@@ -396,6 +408,7 @@ REINDEX DATABASE legal_ai_db;
 ### Issue: Performance Degraded
 
 **Solution**:
+
 ```sql
 -- Update statistics
 ANALYZE;

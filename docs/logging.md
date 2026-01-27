@@ -5,6 +5,7 @@ This document describes the structured logging implementation using Winston with
 ## Overview
 
 The logging infrastructure provides:
+
 - **Structured JSON logging** in production for log aggregation
 - **Readable console logs** in development with colors
 - **Correlation IDs** for tracking requests across services
@@ -67,7 +68,7 @@ this.logger.logWithMetadata(
     correlationId: req.correlationId,
     loginMethod: 'password',
   },
-  'info'
+  'info',
 );
 ```
 
@@ -136,6 +137,7 @@ childLogger.log('Child logger message');
 ## Sensitive Data Sanitization
 
 The logger automatically redacts sensitive fields:
+
 - `password`
 - `token`
 - `secret`
@@ -143,6 +145,7 @@ The logger automatically redacts sensitive fields:
 - `accessToken`
 
 Example:
+
 ```typescript
 this.logger.logWithMetadata('Login attempt', {
   username: 'user@example.com',

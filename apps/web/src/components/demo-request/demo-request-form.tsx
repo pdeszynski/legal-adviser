@@ -122,10 +122,12 @@ const _demoTimeStepSchema = z.object({
 
 // GDPR Consent Schema
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Used for type inference
-const _gdprConsentSchema = z.boolean().refine(
-  (val) => val === true,
-  'You must agree to the privacy policy and data processing consent to continue',
-);
+const _gdprConsentSchema = z
+  .boolean()
+  .refine(
+    (val) => val === true,
+    'You must agree to the privacy policy and data processing consent to continue',
+  );
 
 // Form type combining all step schemas
 type DemoRequestForm = z.infer<typeof _contactStepSchema> &
@@ -841,11 +843,13 @@ export function DemoRequestForm({ isOpen, onClose }: DemoRequestFormProps) {
                           >
                             Privacy Policy
                           </a>
-                          . I understand that my data will be used to process my demo request and may
-                          be stored in HubSpot CRM for follow-up communications. *
+                          . I understand that my data will be used to process my demo request and
+                          may be stored in HubSpot CRM for follow-up communications. *
                         </Label>
                         {errors.gdprConsent && (
-                          <p className="text-sm text-destructive mt-1">{errors.gdprConsent.message}</p>
+                          <p className="text-sm text-destructive mt-1">
+                            {errors.gdprConsent.message}
+                          </p>
                         )}
                       </div>
                     </div>

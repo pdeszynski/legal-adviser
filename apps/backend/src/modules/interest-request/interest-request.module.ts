@@ -23,14 +23,8 @@ import { HubSpotModule } from '../integrations/hubspot/hubspot.module';
  * - HubSpotModule: For CRM integration
  */
 @Module({
-  imports: [
-    ConfigModule,
-    HubSpotModule,
-  ],
-  providers: [
-    InterestRequestService,
-    InterestRequestResolver,
-  ],
+  imports: [ConfigModule, HubSpotModule],
+  providers: [InterestRequestService, InterestRequestResolver],
   exports: [InterestRequestService],
 })
 export class InterestRequestModule {}

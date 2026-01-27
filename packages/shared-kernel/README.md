@@ -46,7 +46,7 @@ import {
   Uuid,
   Money,
   Result,
-  Option
+  Option,
 } from '@legal/shared-kernel';
 ```
 
@@ -80,7 +80,7 @@ class User extends Entity<string> {
   constructor(
     id: string,
     private name: string,
-    private email: Email
+    private email: Email,
   ) {
     super(id);
   }
@@ -122,9 +122,7 @@ function findUser(id: string): Option<User> {
 
 const userOption = findUser('123');
 
-const userName = userOption
-  .map(user => user.name)
-  .unwrapOr('Unknown User');
+const userName = userOption.map((user) => user.name).unwrapOr('Unknown User');
 ```
 
 ## Principles
@@ -140,11 +138,13 @@ const userName = userOption
 The backend's `apps/backend/src/domain/shared/base` now re-exports from this package. New code should import directly from `@legal/shared-kernel`.
 
 **Before:**
+
 ```typescript
 import { Entity, ValueObject } from '@backend/domain/shared/base';
 ```
 
 **After:**
+
 ```typescript
 import { Entity, ValueObject } from '@legal/shared-kernel';
 ```

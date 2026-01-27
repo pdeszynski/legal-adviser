@@ -5,7 +5,8 @@ import { test, expect } from '@playwright/test';
  * This test verifies that the DocumentTemplate entity and GraphQL API work correctly
  */
 
-const GRAPHQL_ENDPOINT = process.env.GRAPHQL_URL || 'http://localhost:3333/graphql';
+const GRAPHQL_ENDPOINT =
+  process.env.GRAPHQL_URL || 'http://localhost:3333/graphql';
 
 test.describe('Document Templates Feature Verification', () => {
   let authToken: string;
@@ -75,7 +76,8 @@ test.describe('Document Templates Feature Verification', () => {
         name: 'Test Contract Template',
         category: 'CONTRACT',
         description: 'A test contract template for verification',
-        content: 'CONTRACT AGREEMENT\n\nThis contract is between {{partyA}} and {{partyB}}.\nContract value: {{amount}} PLN.\nDate: {{date}}.\n{{#if hasWarranty}}This contract includes a warranty period.{{/if}}',
+        content:
+          'CONTRACT AGREEMENT\n\nThis contract is between {{partyA}} and {{partyB}}.\nContract value: {{amount}} PLN.\nDate: {{date}}.\n{{#if hasWarranty}}This contract includes a warranty period.{{/if}}',
         variables: [
           {
             name: 'partyA',
@@ -151,11 +153,15 @@ test.describe('Document Templates Feature Verification', () => {
 
     expect(body.errors).toBeUndefined();
     expect(body.data.createDocumentTemplate).toBeDefined();
-    expect(body.data.createDocumentTemplate.name).toBe('Test Contract Template');
+    expect(body.data.createDocumentTemplate.name).toBe(
+      'Test Contract Template',
+    );
     expect(body.data.createDocumentTemplate.category).toBe('CONTRACT');
     expect(body.data.createDocumentTemplate.isActive).toBe(true);
     expect(body.data.createDocumentTemplate.usageCount).toBe(0);
-    expect(Array.isArray(body.data.createDocumentTemplate.variables)).toBe(true);
+    expect(Array.isArray(body.data.createDocumentTemplate.variables)).toBe(
+      true,
+    );
     expect(body.data.createDocumentTemplate.variables).toHaveLength(5);
 
     templateId = body.data.createDocumentTemplate.id;
@@ -321,7 +327,9 @@ test.describe('Document Templates Feature Verification', () => {
 
     expect(body.errors).toBeUndefined();
     expect(body.data.updateDocumentTemplate).toBeDefined();
-    expect(body.data.updateDocumentTemplate.description).toBe('Updated description for verification testing');
+    expect(body.data.updateDocumentTemplate.description).toBe(
+      'Updated description for verification testing',
+    );
   });
 
   test('should soft delete a document template', async ({ request }) => {

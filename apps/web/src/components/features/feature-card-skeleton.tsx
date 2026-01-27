@@ -31,7 +31,7 @@ export const FeatureCardSkeleton = React.forwardRef<HTMLDivElement, FeatureCardS
           'group relative overflow-hidden rounded-3xl border border-white/20 bg-white/60 dark:bg-black/20 backdrop-blur-xl p-8',
           !isVisible && 'opacity-0 translate-y-4',
           isVisible && 'opacity-100 translate-y-0 transition-all duration-500',
-          className
+          className,
         )}
         {...props}
       >
@@ -62,12 +62,10 @@ export const FeatureCardSkeleton = React.forwardRef<HTMLDivElement, FeatureCardS
         </div>
 
         {/* CTA button placeholder */}
-        {showCta && (
-          <Skeleton width="100%" height="3rem" className="rounded-lg" />
-        )}
+        {showCta && <Skeleton width="100%" height="3rem" className="rounded-lg" />}
       </div>
     );
-  }
+  },
 );
 
 FeatureCardSkeleton.displayName = 'FeatureCardSkeleton';

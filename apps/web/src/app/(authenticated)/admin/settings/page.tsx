@@ -8,18 +8,14 @@ import { useRouter } from 'next/navigation';
 export default function AdminSettingsPage() {
   const router = useRouter();
   const isAdmin = useIsAdmin();
-  const {
-    settings,
-    isLoading,
-    error,
-    updateSetting,
-    bulkUpdateSettings,
-    getSettingsByCategory,
-  } = useSystemSettings();
+  const { settings, isLoading, error, updateSetting, bulkUpdateSettings, getSettingsByCategory } =
+    useSystemSettings();
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState<'ai' | 'features' | 'maintenance' | 'general'>('features');
+  const [activeTab, setActiveTab] = useState<'ai' | 'features' | 'maintenance' | 'general'>(
+    'features',
+  );
 
   // Redirect if not admin
   React.useEffect(() => {
@@ -49,29 +45,110 @@ export default function AdminSettingsPage() {
 
     if (category === SettingCategory.AI) {
       updates.push(
-        { key: 'ai.default_model', value: (document.getElementById('ai.default_model') as HTMLInputElement)?.value || 'gpt-4', valueType: SettingValueType.STRING },
-        { key: 'ai.temperature', value: (document.getElementById('ai.temperature') as HTMLInputElement)?.value || '0.7', valueType: SettingValueType.NUMBER },
-        { key: 'ai.max_tokens', value: (document.getElementById('ai.max_tokens') as HTMLInputElement)?.value || '2000', valueType: SettingValueType.NUMBER }
+        {
+          key: 'ai.default_model',
+          value:
+            (document.getElementById('ai.default_model') as HTMLInputElement)?.value || 'gpt-4',
+          valueType: SettingValueType.STRING,
+        },
+        {
+          key: 'ai.temperature',
+          value: (document.getElementById('ai.temperature') as HTMLInputElement)?.value || '0.7',
+          valueType: SettingValueType.NUMBER,
+        },
+        {
+          key: 'ai.max_tokens',
+          value: (document.getElementById('ai.max_tokens') as HTMLInputElement)?.value || '2000',
+          valueType: SettingValueType.NUMBER,
+        },
       );
     } else if (category === SettingCategory.FEATURE_FLAGS) {
       updates.push(
-        { key: 'features.chat_enabled', value: (document.getElementById('features.chat_enabled') as HTMLInputElement)?.checked ? 'true' : 'false', valueType: SettingValueType.BOOLEAN },
-        { key: 'features.document_upload_enabled', value: (document.getElementById('features.document_upload_enabled') as HTMLInputElement)?.checked ? 'true' : 'false', valueType: SettingValueType.BOOLEAN },
-        { key: 'features.advanced_search_enabled', value: (document.getElementById('features.advanced_search_enabled') as HTMLInputElement)?.checked ? 'true' : 'false', valueType: SettingValueType.BOOLEAN },
-        { key: 'features.templates_enabled', value: (document.getElementById('features.templates_enabled') as HTMLInputElement)?.checked ? 'true' : 'false', valueType: SettingValueType.BOOLEAN },
-        { key: 'features.collaboration_enabled', value: (document.getElementById('features.collaboration_enabled') as HTMLInputElement)?.checked ? 'true' : 'false', valueType: SettingValueType.BOOLEAN },
-        { key: 'features.notifications_enabled', value: (document.getElementById('features.notifications_enabled') as HTMLInputElement)?.checked ? 'true' : 'false', valueType: SettingValueType.BOOLEAN }
+        {
+          key: 'features.chat_enabled',
+          value: (document.getElementById('features.chat_enabled') as HTMLInputElement)?.checked
+            ? 'true'
+            : 'false',
+          valueType: SettingValueType.BOOLEAN,
+        },
+        {
+          key: 'features.document_upload_enabled',
+          value: (document.getElementById('features.document_upload_enabled') as HTMLInputElement)
+            ?.checked
+            ? 'true'
+            : 'false',
+          valueType: SettingValueType.BOOLEAN,
+        },
+        {
+          key: 'features.advanced_search_enabled',
+          value: (document.getElementById('features.advanced_search_enabled') as HTMLInputElement)
+            ?.checked
+            ? 'true'
+            : 'false',
+          valueType: SettingValueType.BOOLEAN,
+        },
+        {
+          key: 'features.templates_enabled',
+          value: (document.getElementById('features.templates_enabled') as HTMLInputElement)
+            ?.checked
+            ? 'true'
+            : 'false',
+          valueType: SettingValueType.BOOLEAN,
+        },
+        {
+          key: 'features.collaboration_enabled',
+          value: (document.getElementById('features.collaboration_enabled') as HTMLInputElement)
+            ?.checked
+            ? 'true'
+            : 'false',
+          valueType: SettingValueType.BOOLEAN,
+        },
+        {
+          key: 'features.notifications_enabled',
+          value: (document.getElementById('features.notifications_enabled') as HTMLInputElement)
+            ?.checked
+            ? 'true'
+            : 'false',
+          valueType: SettingValueType.BOOLEAN,
+        },
       );
     } else if (category === SettingCategory.MAINTENANCE) {
       updates.push(
-        { key: 'maintenance.enabled', value: (document.getElementById('maintenance.enabled') as HTMLInputElement)?.checked ? 'true' : 'false', valueType: SettingValueType.BOOLEAN },
-        { key: 'maintenance.message', value: (document.getElementById('maintenance.message') as HTMLInputElement)?.value || '', valueType: SettingValueType.STRING },
-        { key: 'maintenance.scheduled_start', value: (document.getElementById('maintenance.scheduled_start') as HTMLInputElement)?.value || '', valueType: SettingValueType.STRING }
+        {
+          key: 'maintenance.enabled',
+          value: (document.getElementById('maintenance.enabled') as HTMLInputElement)?.checked
+            ? 'true'
+            : 'false',
+          valueType: SettingValueType.BOOLEAN,
+        },
+        {
+          key: 'maintenance.message',
+          value: (document.getElementById('maintenance.message') as HTMLInputElement)?.value || '',
+          valueType: SettingValueType.STRING,
+        },
+        {
+          key: 'maintenance.scheduled_start',
+          value:
+            (document.getElementById('maintenance.scheduled_start') as HTMLInputElement)?.value ||
+            '',
+          valueType: SettingValueType.STRING,
+        },
       );
     } else if (category === SettingCategory.GENERAL) {
       updates.push(
-        { key: 'general.max_upload_size_mb', value: (document.getElementById('general.max_upload_size_mb') as HTMLInputElement)?.value || '10', valueType: SettingValueType.NUMBER },
-        { key: 'general.support_email', value: (document.getElementById('general.support_email') as HTMLInputElement)?.value || '', valueType: SettingValueType.STRING }
+        {
+          key: 'general.max_upload_size_mb',
+          value:
+            (document.getElementById('general.max_upload_size_mb') as HTMLInputElement)?.value ||
+            '10',
+          valueType: SettingValueType.NUMBER,
+        },
+        {
+          key: 'general.support_email',
+          value:
+            (document.getElementById('general.support_email') as HTMLInputElement)?.value || '',
+          valueType: SettingValueType.STRING,
+        },
       );
     }
 
@@ -96,9 +173,7 @@ export default function AdminSettingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">System Settings</h1>
-        <p className="text-muted-foreground">
-          Configure system-wide settings and feature flags
-        </p>
+        <p className="text-muted-foreground">Configure system-wide settings and feature flags</p>
       </div>
 
       {error && (
@@ -308,13 +383,19 @@ export default function AdminSettingsPage() {
                 <textarea
                   id="maintenance.message"
                   rows={3}
-                  defaultValue={getSetting('maintenance.message', 'System is under maintenance. Please try again later.')}
+                  defaultValue={getSetting(
+                    'maintenance.message',
+                    'System is under maintenance. Please try again later.',
+                  )}
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 />
               </div>
 
               <div>
-                <label htmlFor="maintenance.scheduled_start" className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="maintenance.scheduled_start"
+                  className="block text-sm font-medium mb-1"
+                >
                   Scheduled Start (ISO 8601 format)
                 </label>
                 <input
@@ -348,13 +429,14 @@ export default function AdminSettingsPage() {
         <div className="space-y-6">
           <div className="rounded-xl border bg-card p-6">
             <h3 className="text-lg font-semibold mb-4">General Settings</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              General platform configuration
-            </p>
+            <p className="text-sm text-muted-foreground mb-6">General platform configuration</p>
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="general.max_upload_size_mb" className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="general.max_upload_size_mb"
+                  className="block text-sm font-medium mb-1"
+                >
                   Max Upload Size (MB)
                 </label>
                 <input

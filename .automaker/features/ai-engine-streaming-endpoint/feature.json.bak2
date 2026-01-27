@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Create streaming FastAPI endpoint POST /api/v1/qa/ask-stream for real-time AI responses. Implement using Server-Sent Events (SSE) or streaming JSON response. Endpoint should: 1) Accept { question: string, sessionId: string, mode: 'LAWYER'|'SIMPLE' } in request body, 2) Validate JWT from Authorization header via jwt_dependency, 3) Initialize LangGraph workflow with user context, 4) Stream partial responses as tokens are generated (yield from PydanticAI agent), 5) Send events in format: { type: 'token'|'citation'|'error'|'done', content: string, metadata?: any }, 6) Include citations as separate events when available, 7) Send final 'done' event with complete response metadata. Use FastAPI's StreamingResponse with async generator. Handle client disconnection gracefully. Test streaming with curl/Postman before frontend integration.",
+  "id": "ai-engine-streaming-endpoint",
+  "title": "AI Engine Streaming Chat Endpoint",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Create streaming FastAPI endpoint POST /api/v1/qa/ask-stream for real-time AI responses. Implement using Server-Sent Events (SSE) or streaming JSON response. Endpoint should: 1) Accept { question: string, sessionId: string, mode: 'LAWYER'|'SIMPLE' } in request body, 2) Validate JWT from Authorization header via jwt_dependency, 3) Initialize LangGraph workflow with user context, 4) Stream partial responses as tokens are generated (yield from PydanticAI agent), 5) Send events in format: { type: 'token'|'citation'|'error'|'done', content: string, metadata?: any }, 6) Include citations as separate events when available, 7) Send final 'done' event with complete response metadata. Use FastAPI's StreamingResponse with async generator. Handle client disconnection gracefully. Test streaming with curl/Postman before frontend integration.",
+      "timestamp": "2026-01-27T09:03:50.799Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -1345,11 +1345,7 @@
             "Versionshistorie",
             "Erweiterte Suchfilter"
           ],
-          "excluded": [
-            "API-Zugang",
-            "White-Label-Optionen",
-            "Dedicated Account Manager"
-          ]
+          "excluded": ["API-Zugang", "White-Label-Optionen", "Dedicated Account Manager"]
         }
       },
       "team": {
@@ -1368,10 +1364,7 @@
             "API-Zugang",
             "Benutzerdefinierte Branding-Optionen"
           ],
-          "excluded": [
-            "On-Premise-Bereitstellung",
-            "Benutzerdefiniertes SLA"
-          ]
+          "excluded": ["On-Premise-Bereitstellung", "Benutzerdefiniertes SLA"]
         }
       },
       "enterprise": {

@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageList } from './message-list';
 import { MessageInput } from './message-input';
 import { ClarificationPrompt } from './clarification-prompt';
+import { StreamErrorMessage } from './stream-error-message';
+import { useStreamingChat, type StreamErrorResponse } from '@/hooks/useStreamingChat';
 import { useChat, type ChatCitation, type ClarificationInfo } from '@/hooks/use-chat';
 import {
   Bot,
@@ -13,6 +15,9 @@ import {
   MessageSquareText,
   ShieldQuestion,
   HelpCircle,
+  WifiOff,
+  AlertCircle,
+  Wifi,
 } from 'lucide-react';
 import { cn } from '@legal/ui';
 
@@ -24,6 +29,9 @@ export interface ChatMessage {
   clarification?: ClarificationInfo;
   timestamp: Date;
   isStreaming?: boolean;
+  hasError?: boolean;
+  errorResponse?: StreamErrorResponse;
+  partial?: boolean;
 }
 
 const STARTER_PROMPTS = [
@@ -53,7 +61,6 @@ const STARTER_PROMPTS = [
  */
 export function ChatInterface() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isStreaming, setIsStreaming] = useState(false);
   const [sessionId, setSessionId] = useState(() => {
     // Get or create session ID (must be valid UUID v4 for backend validation)
     const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -65,16 +72,130 @@ export function ChatInterface() {
     return id;
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const streamingMessageIdRef = useRef<string | null>(null);
+  const [showErrorBanner, setShowErrorBanner] = useState(false);
+  const [currentError, setCurrentError] = useState<StreamErrorResponse | null>(null);
 
+  // Use streaming chat for real-time responses
   const {
-    sendMessage,
+    sendMessage: sendStreamingMessage,
+    isStreaming: isStreamingActive,
+    isReconnecting,
+    abortStream,
+    retryLastRequest,
+    errorResponse,
+    reconnectionState,
+  } = useStreamingChat({
+    onStreamStart: () => {
+      // Stream started - isStreamingActive state will be true
+    },
+    onToken: (token) => {
+      // Update the streaming message with new token
+      if (streamingMessageIdRef.current) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === streamingMessageIdRef.current
+              ? { ...msg, content: msg.content + token }
+              : msg,
+          ),
+        );
+      }
+    },
+    onCitation: (citation) => {
+      // Add citation to the streaming message
+      if (streamingMessageIdRef.current) {
+        setMessages((prev) =>
+          prev.map((msg) => {
+            if (msg.id === streamingMessageIdRef.current) {
+              const newCitation: ChatCitation = {
+                source: citation.source,
+                article: citation.article,
+                url: citation.url,
+                excerpt: '',
+              };
+              return {
+                ...msg,
+                citations: [...(msg.citations || []), newCitation],
+              };
+            }
+            return msg;
+          }),
+        );
+      }
+    },
+    onStreamEnd: (response) => {
+      // Finalize the streaming message
+      if (streamingMessageIdRef.current) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === streamingMessageIdRef.current
+              ? {
+                  ...msg,
+                  content: response.content,
+                  citations: response.citations,
+                  clarification: response.clarification,
+                  isStreaming: false,
+                  hasError: !!response.error,
+                  errorResponse: response.errorResponse,
+                  partial: response.partial,
+                }
+              : msg,
+          ),
+        );
+      }
+      streamingMessageIdRef.current = null;
+    },
+    onStreamError: (error, response) => {
+      // Handle stream errors - show error banner
+      setCurrentError(response);
+      setShowErrorBanner(true);
+
+      if (streamingMessageIdRef.current) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === streamingMessageIdRef.current
+              ? {
+                  ...msg,
+                  content: error,
+                  isStreaming: false,
+                  hasError: true,
+                  errorResponse: response,
+                }
+              : msg,
+          ),
+        );
+      }
+      streamingMessageIdRef.current = null;
+    },
+    onConnectionLost: () => {
+      // Connection was lost - notify user
+      setCurrentError({
+        type: 'CONNECTION_LOST',
+        message: 'Connection lost',
+        userMessage: 'Connection lost. Please check your internet connection.',
+        retryable: true,
+        fallbackAvailable: true,
+        canRecover: true,
+        severity: 'low',
+      });
+      setShowErrorBanner(true);
+    },
+    onRetry: (attempt, delayMs) => {
+      // Update banner to show reconnection status
+      setShowErrorBanner(true);
+    },
+  });
+
+  // Keep non-streaming chat for clarification responses
+  const {
     sendClarificationResponse,
-    isLoading,
+    isLoading: chatLoading,
     mode,
     setMode,
-    clarificationState,
     isInClarificationMode,
   } = useChat();
+
+  const isLoading = isStreamingActive || chatLoading || isReconnecting;
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -109,7 +230,73 @@ export function ChatInterface() {
     }
   }, [messages, sessionId]);
 
+  // Handle aborting the stream
+  const handleAbortStream = useCallback(() => {
+    abortStream();
+    if (streamingMessageIdRef.current) {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === streamingMessageIdRef.current ? { ...msg, isStreaming: false } : msg,
+        ),
+      );
+    }
+    streamingMessageIdRef.current = null;
+    setShowErrorBanner(false);
+  }, [abortStream]);
+
+  // Handle retry from error banner
+  const handleRetryFromBanner = useCallback(async () => {
+    setShowErrorBanner(false);
+
+    if (!lastRequestRef.current) {
+      return;
+    }
+
+    const { question } = lastRequestRef.current;
+
+    // Update the streaming message to show retrying state
+    if (streamingMessageIdRef.current) {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === streamingMessageIdRef.current
+            ? { ...msg, content: 'Retrying...', isStreaming: true }
+            : msg,
+        ),
+      );
+    }
+
+    const result = await retryLastRequest();
+
+    if (result && streamingMessageIdRef.current) {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === streamingMessageIdRef.current
+            ? {
+                ...msg,
+                content: result.content,
+                citations: result.citations,
+                clarification: result.clarification,
+                isStreaming: false,
+                hasError: !!result.error,
+                errorResponse: result.errorResponse,
+                partial: result.partial,
+              }
+            : msg,
+        ),
+      );
+    }
+  }, [retryLastRequest]);
+
+  // Store reference to last request for retry
+  const lastRequestRef = useRef<{ question: string; mode: 'LAWYER' | 'SIMPLE' } | null>(null);
+
   const handleSendMessage = async (content: string) => {
+    // Store request for potential retry
+    lastRequestRef.current = { question: content, mode };
+
+    // Hide any existing error banner
+    setShowErrorBanner(false);
+
     // Add user message to chat
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
@@ -119,45 +306,72 @@ export function ChatInterface() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setIsStreaming(true);
+
+    // Create a placeholder assistant message for streaming
+    const assistantId = `assistant-${Date.now()}`;
+    streamingMessageIdRef.current = assistantId;
+
+    const initialAssistantMessage: ChatMessage = {
+      id: assistantId,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date(),
+      isStreaming: true,
+    };
+
+    setMessages((prev) => [...prev, initialAssistantMessage]);
 
     try {
-      // Send message and get response
-      const response = await sendMessage(content);
+      // Send streaming message to AI Engine
+      const response = await sendStreamingMessage(content, mode, sessionId);
 
-      // Add assistant message to chat
-      const assistantMessage: ChatMessage = {
-        id: `assistant-${Date.now()}`,
-        role: 'assistant',
-        content: response.answerMarkdown || '',
-        citations: response.citations,
-        clarification: response.clarification || undefined,
-        timestamp: new Date(),
-        isStreaming: false,
-      };
+      // Finalize is handled in onStreamEnd callback
+      // This is just a fallback in case callbacks don't fire
+      if (streamingMessageIdRef.current) {
+        const finalAssistantMessage: ChatMessage = {
+          id: assistantId,
+          role: 'assistant',
+          content: response.content,
+          citations: response.citations,
+          clarification: response.clarification,
+          timestamp: new Date(),
+          isStreaming: false,
+          hasError: !!response.error,
+          errorResponse: response.errorResponse,
+          partial: response.partial,
+        };
 
-      setMessages((prev) => [...prev, assistantMessage]);
+        setMessages((prev) =>
+          prev.map((msg) => (msg.id === assistantId ? finalAssistantMessage : msg)),
+        );
+      }
     } catch (err) {
-      // Add error message
-      const errorMessage: ChatMessage = {
-        id: `error-${Date.now()}`,
-        role: 'assistant',
-        content:
-          err instanceof Error ? err.message : 'An error occurred while processing your request.',
-        timestamp: new Date(),
-        isStreaming: false,
-      };
+      // Error is handled in onStreamError callback
+      // This is just a fallback
+      if (streamingMessageIdRef.current) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'An error occurred while processing your request.';
 
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsStreaming(false);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantId
+              ? {
+                  ...msg,
+                  content: errorMessage,
+                  isStreaming: false,
+                  hasError: true,
+                }
+              : msg,
+          ),
+        );
+      }
     }
   };
 
   const handleClarificationSubmit = async (answers: Record<string, string>) => {
     // Add user's clarification answers as a message
     const answerText = Object.entries(answers)
-      .filter(([_, value]) => value.trim())
+      .filter(([, value]) => value.trim())
       .map(([question, answer]) => `${question}: ${answer}`)
       .join('\n');
 
@@ -169,7 +383,6 @@ export function ChatInterface() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setIsStreaming(true);
 
     try {
       const response = await sendClarificationResponse(answers);
@@ -197,8 +410,6 @@ export function ChatInterface() {
       };
 
       setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsStreaming(false);
     }
   };
 
@@ -222,7 +433,9 @@ export function ChatInterface() {
           'px-6 py-4 border-b backdrop-blur-sm flex items-center justify-between sticky top-0 z-10 transition-colors',
           isInClarificationMode
             ? 'bg-amber-50/80 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900'
-            : 'bg-card/50 border-border',
+            : showErrorBanner || isReconnecting
+              ? 'bg-orange-50/80 dark:bg-orange-950/30 border-orange-200 dark:border-orange-900'
+              : 'bg-card/50 border-border',
         )}
       >
         <div className="flex items-center gap-3">
@@ -231,10 +444,14 @@ export function ChatInterface() {
               'h-10 w-10 rounded-xl flex items-center justify-center transition-colors',
               isInClarificationMode
                 ? 'bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-400'
-                : 'bg-primary/10 text-primary',
+                : showErrorBanner || isReconnecting
+                  ? 'bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-400'
+                  : 'bg-primary/10 text-primary',
             )}
           >
-            {isInClarificationMode ? (
+            {isReconnecting ? (
+              <WifiOff className="h-6 w-6" />
+            ) : isInClarificationMode ? (
               <HelpCircle className="h-6 w-6" />
             ) : (
               <Bot className="h-6 w-6" />
@@ -245,16 +462,23 @@ export function ChatInterface() {
               className={cn(
                 'text-lg font-bold transition-colors',
                 isInClarificationMode ? 'text-amber-900 dark:text-amber-100' : '',
+                showErrorBanner || isReconnecting ? 'text-orange-900 dark:text-orange-100' : '',
               )}
             >
-              {isInClarificationMode ? 'Clarification Mode' : 'Legal AI Assistant'}
+              {isReconnecting
+                ? 'Reconnecting...'
+                : isInClarificationMode
+                  ? 'Clarification Mode'
+                  : 'Legal AI Assistant'}
             </h1>
             <p
               className={cn(
                 'text-xs flex items-center gap-1 transition-colors',
                 isInClarificationMode
                   ? 'text-amber-700 dark:text-amber-300'
-                  : 'text-muted-foreground',
+                  : showErrorBanner || isReconnecting
+                    ? 'text-orange-700 dark:text-orange-300'
+                    : 'text-muted-foreground',
               )}
             >
               <span
@@ -262,10 +486,20 @@ export function ChatInterface() {
                   'w-2 h-2 rounded-full inline-block',
                   isInClarificationMode
                     ? 'bg-amber-500 animate-pulse'
-                    : 'bg-green-500 animate-pulse',
+                    : isReconnecting
+                      ? 'bg-orange-500 animate-pulse'
+                      : isStreamingActive
+                        ? 'bg-blue-500 animate-pulse'
+                        : 'bg-green-500 animate-pulse',
                 )}
               ></span>
-              {isInClarificationMode ? 'Waiting for your answers' : 'Online & Ready'}
+              {isReconnecting
+                ? `Reconnecting... (Attempt ${reconnectionState?.attempt || 1}/3)`
+                : isInClarificationMode
+                  ? 'Waiting for your answers'
+                  : isStreamingActive
+                    ? 'Generating response...'
+                    : 'Online & Ready'}
             </p>
           </div>
         </div>
@@ -340,7 +574,22 @@ export function ChatInterface() {
           </div>
         ) : (
           <div className="py-4 space-y-4">
-            <MessageList messages={messages} isLoading={isStreaming || isLoading} />
+            {/* Error Banner */}
+            {showErrorBanner && currentError && (
+              <div className="px-4 md:px-0">
+                <StreamErrorMessage
+                  errorResponse={currentError}
+                  reconnectionState={reconnectionState}
+                  hasPartialContent={messages.some(
+                    (m) => m.role === 'assistant' && m.partial && m.content.length > 0,
+                  )}
+                  onRetry={handleRetryFromBanner}
+                  onDismiss={() => setShowErrorBanner(false)}
+                />
+              </div>
+            )}
+
+            <MessageList messages={messages} isLoading={false} />
 
             {/* Render clarification prompt if pending */}
             {pendingClarification && (
@@ -360,7 +609,9 @@ export function ChatInterface() {
       <div className="px-4 md:px-8 py-6 bg-gradient-to-t from-background to-background/50 backdrop-blur-sm z-10">
         <MessageInput
           onSend={handleSendMessage}
-          disabled={isStreaming || isLoading || !!pendingClarification}
+          onStop={handleAbortStream}
+          disabled={isLoading || !!pendingClarification}
+          isLoading={isStreamingActive}
           placeholder={
             mode === 'LAWYER' ? 'Ask a complex legal question...' : 'Ask for legal help...'
           }

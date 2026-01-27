@@ -150,18 +150,22 @@ const AboutPage = () => {
                 return (
                   <Link key={section.key} href={section.href}>
                     <div className="group relative h-full p-6 rounded-2xl bg-background border shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer">
-                      <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity`} />
+                      <div
+                        className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity`}
+                      />
                       <div className="relative">
-                        <div className={`mb-4 h-12 w-12 rounded-xl ${colors.bg} ${colors.text} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <div
+                          className={`mb-4 h-12 w-12 rounded-xl ${colors.bg} ${colors.text} flex items-center justify-center group-hover:scale-110 transition-transform`}
+                        >
                           <Icon className="h-6 w-6" strokeWidth={1.5} />
                         </div>
-                        <h3 className={`mb-2 text-xl font-bold ${colors.text}`}>
-                          {section.title}
-                        </h3>
+                        <h3 className={`mb-2 text-xl font-bold ${colors.text}`}>{section.title}</h3>
                         <p className="text-muted-foreground leading-relaxed mb-4">
                           {section.description}
                         </p>
-                        <div className={`flex items-center ${colors.text} font-medium text-sm group-hover:gap-2 transition-all`}>
+                        <div
+                          className={`flex items-center ${colors.text} font-medium text-sm group-hover:gap-2 transition-all`}
+                        >
                           {t('aboutUs.navigation.learnMore')}
                           <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -181,9 +185,7 @@ const AboutPage = () => {
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
                 {t('aboutUs.cta.title')}
               </h2>
-              <p className="text-lg text-muted-foreground">
-                {t('aboutUs.cta.description')}
-              </p>
+              <p className="text-lg text-muted-foreground">{t('aboutUs.cta.description')}</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
                   size="lg"

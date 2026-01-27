@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769509255109-445fbba0",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T10:20:55.109Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "test-langfuse-tracing-e2e",
+  "featureName": "Create E2E Tests for Langfuse Tracing",
+  "error": "Feature completed in 599s - auto-verified",
+  "passes": true
+}

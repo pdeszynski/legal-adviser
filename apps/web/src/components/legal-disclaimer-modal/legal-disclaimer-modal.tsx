@@ -64,9 +64,7 @@ export function LegalDisclaimerModal({ onAccept }: LegalDisclaimerModalProps) {
           <h2 id="disclaimer-title" className="text-xl font-semibold text-gray-900">
             {translate('disclaimer.title')}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
-            {translate('disclaimer.subtitle')}
-          </p>
+          <p className="text-sm text-gray-600 mt-1">{translate('disclaimer.subtitle')}</p>
         </div>
 
         {/* Scrollable Content */}
@@ -79,37 +77,27 @@ export function LegalDisclaimerModal({ onAccept }: LegalDisclaimerModalProps) {
             <h3 className="text-lg font-medium text-gray-900 mb-3">
               {translate('disclaimer.sections.important.title')}
             </h3>
-            <p className="mb-4">
-              {translate('disclaimer.sections.important.content')}
-            </p>
+            <p className="mb-4">{translate('disclaimer.sections.important.content')}</p>
 
             <h3 className="text-lg font-medium text-gray-900 mb-3">
               {translate('disclaimer.sections.noLegalAdvice.title')}
             </h3>
-            <p className="mb-4">
-              {translate('disclaimer.sections.noLegalAdvice.content')}
-            </p>
+            <p className="mb-4">{translate('disclaimer.sections.noLegalAdvice.content')}</p>
 
             <h3 className="text-lg font-medium text-gray-900 mb-3">
               {translate('disclaimer.sections.aiLimitations.title')}
             </h3>
-            <p className="mb-4">
-              {translate('disclaimer.sections.aiLimitations.content')}
-            </p>
+            <p className="mb-4">{translate('disclaimer.sections.aiLimitations.content')}</p>
 
             <h3 className="text-lg font-medium text-gray-900 mb-3">
               {translate('disclaimer.sections.userResponsibility.title')}
             </h3>
-            <p className="mb-4">
-              {translate('disclaimer.sections.userResponsibility.content')}
-            </p>
+            <p className="mb-4">{translate('disclaimer.sections.userResponsibility.content')}</p>
 
             <h3 className="text-lg font-medium text-gray-900 mb-3">
               {translate('disclaimer.sections.dataUsage.title')}
             </h3>
-            <p className="mb-4">
-              {translate('disclaimer.sections.dataUsage.content')}
-            </p>
+            <p className="mb-4">{translate('disclaimer.sections.dataUsage.content')}</p>
           </div>
         </div>
 
@@ -117,8 +105,19 @@ export function LegalDisclaimerModal({ onAccept }: LegalDisclaimerModalProps) {
         <div className="px-6 py-4 border-t bg-gray-50 rounded-b-lg">
           {!hasScrolledToBottom && (
             <p className="text-sm text-amber-600 mb-3 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                />
               </svg>
               {translate('disclaimer.scrollToRead')}
             </p>

@@ -1056,9 +1056,11 @@ export class TemporalService {
 
     // Handle list (e.g., 1,3,5)
     if (field.includes(',')) {
-      return field.split(',').map((v) =>
-        this.convertDayOfWeekForTemporal(parseInt(v, 10), isDayOfWeek),
-      );
+      return field
+        .split(',')
+        .map((v) =>
+          this.convertDayOfWeekForTemporal(parseInt(v, 10), isDayOfWeek),
+        );
     }
 
     // Handle single value
@@ -1093,7 +1095,10 @@ export class TemporalService {
    * @param isDayOfWeek - Whether this is a dayOfWeek field
    * @returns Converted value for Temporal (number for other fields, string for dayOfWeek)
    */
-  private convertDayOfWeekForTemporal(value: number, isDayOfWeek: boolean): number | string {
+  private convertDayOfWeekForTemporal(
+    value: number,
+    isDayOfWeek: boolean,
+  ): number | string {
     if (!isDayOfWeek) {
       return value;
     }

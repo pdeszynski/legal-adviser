@@ -5,6 +5,7 @@ This document describes the Application Performance Monitoring (APM) setup for t
 ## Overview
 
 The platform uses **Sentry** for comprehensive APM, including:
+
 - **Error Tracking**: Automatic error capture and reporting
 - **Performance Monitoring**: Request latency and throughput tracking
 - **Distributed Tracing**: Cross-service request tracing
@@ -32,6 +33,7 @@ The platform uses **Sentry** for comprehensive APM, including:
 ### 1. Distributed Tracing
 
 Every request is automatically traced across services:
+
 - **Frontend → Backend**: Via Sentry browser SDK
 - **Backend → AI Engine**: Via `sentry-trace` header propagation
 - **AI Engine → OpenAI**: Via custom instrumentation
@@ -39,6 +41,7 @@ Every request is automatically traced across services:
 ### 2. Performance Metrics
 
 Automatically tracked:
+
 - Request/response latency (p50, p95, p99)
 - Database query performance
 - HTTP client requests
@@ -47,6 +50,7 @@ Automatically tracked:
 ### 3. Error Tracking
 
 Captures and aggregates:
+
 - Unhandled exceptions
 - GraphQL errors
 - HTTP 4xx/5xx responses
@@ -96,11 +100,13 @@ SENTRY_AUTH_TOKEN=your-auth-token
 ## Sampling Rates
 
 ### Development
+
 - **Traces**: 100% (all requests traced)
 - **Profiles**: 0% (profiling disabled)
 - **Events**: Captured locally, not sent to Sentry
 
 ### Production
+
 - **Traces**: 10% (configurable via `SENTRY_TRACES_SAMPLE_RATE`)
 - **Profiles**: 10% (configurable via `SENTRY_PROFILES_SAMPLE_RATE`)
 - **Events**: Filtered, only errors sent to Sentry
@@ -212,18 +218,21 @@ except Exception as e:
 ### Useful Queries
 
 #### Slow Requests
+
 ```
 transaction.duration > 1000ms
 service:backend OR service:ai-engine
 ```
 
 #### Failed AI Operations
+
 ```
 transaction.op:ai.operation
 transaction.status:internal_error
 ```
 
 #### Database Performance
+
 ```
 transaction.op:db
 transaction.duration > 500ms
@@ -247,6 +256,7 @@ transaction.duration > 500ms
 ### High Sampling Rate Costs
 
 If Sentry costs are too high:
+
 1. Reduce `SENTRY_TRACES_SAMPLE_RATE` to 0.05 (5%)
 2. Set `SENTRY_PROFILES_SAMPLE_RATE=0` to disable profiling
 3. Use transaction filtering to ignore health checks
@@ -266,16 +276,19 @@ If Sentry costs are too high:
 Recommended alerts in Sentry:
 
 ### Performance
+
 - **P95 latency > 2s** for any service
 - **Error rate > 1%** for critical endpoints
 - **Database query time > 1s**
 
 ### AI Operations
+
 - **OpenAI API failures** > 5%
 - **AI operation timeout** > 30s
 - **Token usage spike** (potential abuse)
 
 ### Cost
+
 - **Monthly token budget** approaching limit
 - **API call rate** exceeds expected thresholds
 

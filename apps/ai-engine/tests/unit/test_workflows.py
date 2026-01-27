@@ -9,41 +9,42 @@ These tests verify:
 
 import pytest
 
-from src.workflows.states import (
-    CaseAnalysisState,
-    ComplexQAState,
-    DocumentGenerationState,
-    WorkflowMetadata,
-    create_case_analysis_state,
-    create_complex_qa_state,
-    create_document_generation_state,
-    LegalGround,
-    RetrievedContext,
-    LegalCitation,
-    ClarificationQuestion,
-)
 from src.workflows.case_analysis_workflow import (
     CaseAnalysisWorkflow,
+    after_clarify,
     case_analysis_workflow,
     should_clarify,
-    after_clarify,
+)
+from src.workflows.complex_qa_workflow import (
+    ComplexQAWorkflow,
+    complex_qa_workflow,
+)
+from src.workflows.complex_qa_workflow import (
+    should_clarify as qa_should_clarify,
 )
 from src.workflows.document_generation_workflow import (
     DocumentGenerationWorkflow,
     document_generation_workflow,
     should_revise,
 )
-from src.workflows.complex_qa_workflow import (
-    ComplexQAWorkflow,
-    complex_qa_workflow,
-    should_clarify as qa_should_clarify,
-)
 from src.workflows.orchestration import (
     WorkflowOrchestrator,
     WorkflowType,
     get_orchestrator,
 )
-
+from src.workflows.states import (
+    CaseAnalysisState,
+    ClarificationQuestion,
+    ComplexQAState,
+    DocumentGenerationState,
+    LegalCitation,
+    LegalGround,
+    RetrievedContext,
+    WorkflowMetadata,
+    create_case_analysis_state,
+    create_complex_qa_state,
+    create_document_generation_state,
+)
 
 # -----------------------------------------------------------------------------
 # Pydantic Model Tests

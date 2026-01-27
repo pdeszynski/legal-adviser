@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import { Send, Loader2, ArrowUp } from 'lucide-react';
+import { Loader2, ArrowUp, Square } from 'lucide-react';
 import { cn } from '@legal/ui';
 
 interface MessageInputProps {
   readonly onSend: (message: string) => void;
+  readonly onStop?: () => void;
   readonly disabled?: boolean;
+  readonly isLoading?: boolean;
   readonly placeholder?: string;
 }
 
@@ -19,7 +21,9 @@ interface MessageInputProps {
  */
 export function MessageInput({
   onSend,
+  onStop,
   disabled = false,
+  isLoading = false,
   placeholder = 'Ask a legal question...',
 }: MessageInputProps) {
   const [message, setMessage] = useState('');
@@ -68,22 +72,35 @@ export function MessageInput({
           className="w-full px-4 py-3 bg-transparent border-0 focus:ring-0 resize-none disabled:opacity-50 min-h-[52px] max-h-[200px]"
         />
 
-        <button
-          onClick={handleSend}
-          disabled={disabled || !message.trim()}
-          className={cn(
-            'p-2.5 rounded-xl transition-all flex-shrink-0 mb-0.5',
-            message.trim() && !disabled
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
-              : 'bg-muted text-muted-foreground cursor-not-allowed',
-          )}
-        >
-          {disabled ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <ArrowUp className="w-5 h-5" />
-          )}
-        </button>
+        {isLoading ? (
+          <button
+            onClick={onStop}
+            className={cn(
+              'p-2.5 rounded-xl transition-all flex-shrink-0 mb-0.5',
+              'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm',
+            )}
+            title="Stop generating"
+          >
+            <Square className="w-5 h-5" />
+          </button>
+        ) : (
+          <button
+            onClick={handleSend}
+            disabled={disabled || !message.trim()}
+            className={cn(
+              'p-2.5 rounded-xl transition-all flex-shrink-0 mb-0.5',
+              message.trim() && !disabled
+                ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
+                : 'bg-muted text-muted-foreground cursor-not-allowed',
+            )}
+          >
+            {disabled ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <ArrowUp className="w-5 h-5" />
+            )}
+          </button>
+        )}
       </div>
       <p className="text-xs text-center text-muted-foreground mt-2">
         AI can make mistakes. Please double check important information.

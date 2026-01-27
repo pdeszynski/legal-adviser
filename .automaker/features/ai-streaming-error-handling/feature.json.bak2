@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Implement comprehensive error handling for streaming responses. Create: 1) Stream error detection (parse error events from SSE), 2) Automatic retry on connection failures (exponential backoff, max 3 retries), 3) Fallback to non-streaming GraphQL mutation if streaming fails, 4) User-friendly error messages ('Connection lost', 'AI service unavailable'), 5) Partial response preservation (show tokens received before error), 6) Timeout handling (abort after 30s of inactivity), 7) Reconnection prompt if user wants to continue. Log all streaming errors to Sentry with context (session ID, user ID, error type). Ensure errors don't crash the chat UI - always show message and allow retry.",
+  "id": "ai-streaming-error-handling",
+  "title": "Streaming Error Handling and Retry Logic",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Implement comprehensive error handling for streaming responses. Create: 1) Stream error detection (parse error events from SSE), 2) Automatic retry on connection failures (exponential backoff, max 3 retries), 3) Fallback to non-streaming GraphQL mutation if streaming fails, 4) User-friendly error messages ('Connection lost', 'AI service unavailable'), 5) Partial response preservation (show tokens received before error), 6) Timeout handling (abort after 30s of inactivity), 7) Reconnection prompt if user wants to continue. Log all streaming errors to Sentry with context (session ID, user ID, error type). Ensure errors don't crash the chat UI - always show message and allow retry.",
+      "timestamp": "2026-01-27T09:03:50.801Z",
+      "source": "initial"
+    }
+  ]
+}

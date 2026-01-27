@@ -45,7 +45,11 @@ function getErrorCodeFromError(errorName: string, errorMessage: string): AuthErr
   const upperName = errorName.toUpperCase();
   const upperMessage = errorMessage.toUpperCase();
 
-  if (upperName === 'NETWORKERROR' || upperMessage.includes('NETWORK') || upperMessage.includes('FETCH')) {
+  if (
+    upperName === 'NETWORKERROR' ||
+    upperMessage.includes('NETWORK') ||
+    upperMessage.includes('FETCH')
+  ) {
     return AuthErrorCode.NETWORK_ERROR;
   }
 
@@ -104,7 +108,9 @@ function getUserMessageForCode(code: AuthErrorCode, originalMessage?: string): s
  * Parse authentication error from Refine error object
  * Refine passes error as { name: string; message: string }
  */
-export function parseAuthError(error: { name?: string; message?: string } | Error | null | undefined): AuthError | null {
+export function parseAuthError(
+  error: { name?: string; message?: string } | Error | null | undefined,
+): AuthError | null {
   if (!error) {
     return null;
   }

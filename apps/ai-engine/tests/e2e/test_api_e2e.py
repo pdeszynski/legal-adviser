@@ -7,8 +7,7 @@ Langfuse observability integration.
 Tests use FastAPI TestClient and mocked LLM calls to avoid external dependencies.
 """
 
-import asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -26,7 +25,6 @@ from src.models.responses import (
     QAResponse,
 )
 from src.workflows.orchestration import WorkflowOrchestrator, WorkflowType
-
 
 # -----------------------------------------------------------------------------
 # Test Fixtures
@@ -665,9 +663,9 @@ class TestPydanticAIAgents:
 
     def test_agent_output_models(self):
         """Test that agent output models are correctly defined."""
-        from src.agents.qa_agent import QAResult, QueryAnalysis
-        from src.agents.classifier_agent import ClassificationResult
         from src.agents.clarification_agent import ClarificationResponse
+        from src.agents.classifier_agent import ClassificationResult
+        from src.agents.qa_agent import QAResult, QueryAnalysis
 
         # Verify models are BaseModel subclasses
         assert issubclass(QAResult, BaseModel)
@@ -718,9 +716,9 @@ class TestLangfuseObservability:
     def test_langfuse_module_exists(self):
         """Test that Langfuse module can be imported."""
         from src.langfuse_init import (
+            flush,
             get_langfuse,
             is_langfuse_enabled,
-            flush,
         )
 
         # Functions should be callable
@@ -801,6 +799,17 @@ class TestLangfuseObservability:
             assert LangfuseMiddleware is not None
         except ImportError:
             # Middleware may not be available on all Python versions
+            pass
+
+    def test_pydantic_ai_instrumentation_available(self):
+        """Test that PydanticAI instrumentation is available."""
+        try:
+            from pydantic_ai.agent import Agent
+
+            # Agent class should have instrument_all method
+            assert hasattr(Agent, "instrument_all")
+        except ImportError:
+            # PydanticAI may not be available
             pass
 
 

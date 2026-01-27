@@ -17,22 +17,21 @@ from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 
+from ..auth import UserContext
 from ..config import get_settings
-from ..error_handling import with_resilience, safe_agent_run
 from ..exceptions import (
     AgentExecutionError,
-    RetrievalError,
-    LLMTimeoutError,
     LLMContextLengthExceededError,
+    LLMTimeoutError,
+    RetrievalError,
 )
 from ..langfuse_init import (
     _redact_dict_pii,
     is_langfuse_enabled,
     update_current_trace,
-    start_as_current_span,
 )
 from .clarification_agent import generate_clarifications
-from .dependencies import ModelDeps, get_model_deps
+from .dependencies import ModelDeps, get_model_deps_with_user
 from .rag_tool import (
     extract_citations_from_contexts,
     format_contexts_for_prompt,
@@ -222,6 +221,7 @@ async def answer_question(
     session_id: str = "default",
     conversation_history: list[dict[str, Any]] | None = None,
     user_id: str | None = None,
+    user: UserContext | None = None,
 ) -> dict[str, Any]:
     """Complete Q&A workflow using PydanticAI agents.
 
@@ -239,7 +239,8 @@ async def answer_question(
         mode: Either "LAWYER" or "SIMPLE"
         session_id: Session ID for tracking
         conversation_history: Previous messages for multi-turn clarification
-        user_id: User ID for observability
+        user_id: User ID for observability (legacy, prefer user parameter)
+        user: Full UserContext from JWT validation (includes roles, email)
 
     Returns:
         Dictionary with answer, citations, confidence, and optional clarification info
@@ -249,55 +250,45 @@ async def answer_question(
     start_time = time.time()
     settings = get_settings()
 
+    # Use user.id if available, otherwise fall back to user_id for observability
+    effective_user_id = user.id if user else user_id
+
     # Update current trace with workflow metadata
     # PydanticAI agents will automatically create child spans
     if is_langfuse_enabled():
+        trace_metadata = {
+            "mode": mode,
+            "question_length": len(question),
+        }
+        # Add user role if available for observability
+        if user:
+            trace_metadata["user_roles"] = user.roles
+            trace_metadata["user_role_level"] = user.role_level
+
         update_current_trace(
-            name="qa_workflow",
             input=question,
-            user_id=user_id,
+            user_id=effective_user_id,
             session_id=session_id,
-            metadata={
-                "mode": mode,
-                "question_length": len(question),
-            },
+            metadata=trace_metadata,
         )
 
     try:
-        deps = get_model_deps()
+        # Get dependencies with user context if available
+        deps = get_model_deps_with_user(user)
 
         # Step 1: Analyze the query (automatically traced via instrument=True)
-        with start_as_current_span(
-            "query_analysis",
-            input={"question": question[:200]},
-            session_id=session_id,
-            user_id=user_id,
-        ) as analysis_span:
-            analyzer = get_query_analyzer_agent()
-            analysis_result = await analyzer.run(question, deps=deps)
-            analysis = analysis_result.output
-
-            if analysis_span:
-                analysis_span.update(
-                    output={
-                        "query_type": analysis.query_type,
-                        "key_terms": analysis.key_terms,
-                        "needs_clarification": analysis.needs_clarification,
-                    }
-                )
+        analyzer = get_query_analyzer_agent()
+        analysis_result = await analyzer.run(question, deps=deps)
+        analysis = analysis_result.output
 
         # Step 2: Check if clarification is needed
         if analysis.needs_clarification:
-            with start_as_current_span("clarification") as clarification_span:
-                # Use the clarification agent to generate structured questions
-                clarification_result = await generate_clarifications(
-                    question=question,
-                    query_type=analysis.query_type,
-                    mode=mode,
-                )
-
-                if clarification_span:
-                    clarification_span.update(output=clarification_result)
+            # Use the clarification agent to generate structured questions
+            clarification_result = await generate_clarifications(
+                question=question,
+                query_type=analysis.query_type,
+                mode=mode,
+            )
 
             if clarification_result.get("needs_clarification"):
                 result = {
@@ -322,15 +313,10 @@ async def answer_question(
                 return result
 
         # Step 3: Retrieve context using the RAG tool
-        with start_as_current_span("context_retrieval") as retrieval_span:
-            contexts = await retrieve_context_tool(
-                query=analysis.question_refined,
-                limit=5,
-            )
-            if retrieval_span:
-                retrieval_span.update(
-                    output={"contexts_count": len(contexts)}
-                )
+        contexts = await retrieve_context_tool(
+            query=analysis.question_refined,
+            limit=5,
+        )
 
         # Step 4: Generate answer with context (automatically traced via instrument=True)
         qa_agent = get_qa_agent(mode)

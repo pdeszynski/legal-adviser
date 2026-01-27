@@ -166,7 +166,8 @@ export class RulingIndexingSchedulerService implements OnModuleInit {
         );
 
         // Check if schedule already exists before trying to create it
-        const existing = await this.temporalService.describeSchedule(scheduleId);
+        const existing =
+          await this.temporalService.describeSchedule(scheduleId);
 
         if (existing.exists) {
           this.logger.log(
@@ -272,7 +273,8 @@ export class RulingIndexingSchedulerService implements OnModuleInit {
 
       return scheduleId;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
 
       // If schedule already exists in Temporal, just log and add to cache
       if (errorMessage.includes('already exists')) {
@@ -281,7 +283,8 @@ export class RulingIndexingSchedulerService implements OnModuleInit {
         );
 
         // Check if it's paused
-        const existing = await this.temporalService.describeSchedule(scheduleId);
+        const existing =
+          await this.temporalService.describeSchedule(scheduleId);
 
         const schedule: RulingIndexingSchedule = {
           scheduleId,
@@ -531,7 +534,9 @@ export class RulingIndexingSchedulerService implements OnModuleInit {
         },
         spec: {
           // Run once immediately
-          cronExpressions: [{ expression: '0 * * * * *', comment: 'Run immediately' }],
+          cronExpressions: [
+            { expression: '0 * * * * *', comment: 'Run immediately' },
+          ],
         },
         policies: {
           overlap: 'SKIP',

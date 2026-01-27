@@ -30,22 +30,24 @@ interface ServiceHealth {
 
 function get(url: string): Promise<{ status: number; data: any }> {
   return new Promise((resolve, reject) => {
-    http.get(url, (res) => {
-      let data = '';
+    http
+      .get(url, (res) => {
+        let data = '';
 
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
 
-      res.on('end', () => {
-        try {
-          const parsed = JSON.parse(data);
-          resolve({ status: res.statusCode || 500, data: parsed });
-        } catch {
-          resolve({ status: res.statusCode || 500, data });
-        }
-      });
-    }).on('error', reject);
+        res.on('end', () => {
+          try {
+            const parsed = JSON.parse(data);
+            resolve({ status: res.statusCode || 500, data: parsed });
+          } catch {
+            resolve({ status: res.statusCode || 500, data });
+          }
+        });
+      })
+      .on('error', reject);
   });
 }
 
@@ -61,7 +63,10 @@ async function verifyHealthEndpoint() {
     }
     console.log('  ✓ Status code is 200');
 
-    if (!data.status || !['healthy', 'degraded', 'unhealthy'].includes(data.status)) {
+    if (
+      !data.status ||
+      !['healthy', 'degraded', 'unhealthy'].includes(data.status)
+    ) {
       console.error(`  ❌ Invalid status field: ${data.status}`);
       return false;
     }
@@ -84,19 +89,25 @@ async function verifyHealthEndpoint() {
       console.error('  ❌ Missing or invalid database health');
       return false;
     }
-    console.log(`  ✓ Database: ${database.status}${database.latency ? ` (${database.latency}ms)` : ''}`);
+    console.log(
+      `  ✓ Database: ${database.status}${database.latency ? ` (${database.latency}ms)` : ''}`,
+    );
 
     if (!redis || !redis.status) {
       console.error('  ❌ Missing or invalid redis health');
       return false;
     }
-    console.log(`  ✓ Redis: ${redis.status}${redis.latency ? ` (${redis.latency}ms)` : ''}`);
+    console.log(
+      `  ✓ Redis: ${redis.status}${redis.latency ? ` (${redis.latency}ms)` : ''}`,
+    );
 
     if (!aiEngine || !aiEngine.status) {
       console.error('  ❌ Missing or invalid aiEngine health');
       return false;
     }
-    console.log(`  ✓ AI Engine: ${aiEngine.status}${aiEngine.latency ? ` (${aiEngine.latency}ms)` : ''}`);
+    console.log(
+      `  ✓ AI Engine: ${aiEngine.status}${aiEngine.latency ? ` (${aiEngine.latency}ms)` : ''}`,
+    );
 
     if (typeof data.uptime !== 'number') {
       console.error('  ❌ Invalid uptime field');
@@ -153,7 +164,9 @@ async function verifyReadinessEndpoint() {
 
       return true;
     } else if ([500, 503].includes(status)) {
-      console.log(`  ⚠ Status code is ${status} (service not ready - this is acceptable if dependencies are unavailable)`);
+      console.log(
+        `  ⚠ Status code is ${status} (service not ready - this is acceptable if dependencies are unavailable)`,
+      );
       return true;
     } else {
       console.error(`  ❌ Unexpected status code: ${status}`);

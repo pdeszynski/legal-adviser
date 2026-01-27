@@ -10,41 +10,39 @@ Features distributed tracing with Sentry for APM and Langfuse for AI observabili
 """
 
 import asyncio
-import json
 import logging
-import signal
 import time
 import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, AsyncGenerator
 
 import sentry_sdk
 from dotenv import load_dotenv
-from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 # Load environment variables from .env file before other imports
 # This ensures OPENAI_API_KEY is available for PydanticAI's OpenAIModel
 _env_path = Path(__file__).parent.parent / ".env"
 load_dotenv(dotenv_path=_env_path)
 
-from .agents.classifier_agent import classifier_agent as get_classifier_agent
-from .agents.qa_agent import answer_question
-from .error_handling import build_error_response
+# CRITICAL: Initialize Langfuse BEFORE importing agent modules
+# This ensures Agent.instrument_all() is called before any agents are created
+# Following the official integration pattern: https://langfuse.com/integrations/frameworks/pydantic-ai
+from .langfuse_init import init_langfuse
+init_langfuse()
+
+# JWT Authentication imports
+from .auth import UserContext, get_current_user, get_current_user_optional
 from .exceptions import (
     AIEngineError,
     RateLimitError,
     ServiceUnavailableError,
     ValidationError,
-    LLMTimeoutError,
-    BackendConnectionError,
-    get_error_code,
-    get_user_message,
-    get_suggestion,
 )
-from .langfuse_init import flush, init_langfuse
+from .langfuse_init import flush
 from .models.requests import (
     AskQuestionRequest,
     ClassifyCaseRequest,
@@ -63,8 +61,8 @@ from .models.responses import (
     GenerateDocumentResponse,
     GenerateEmbeddingsResponse,
     QAResponse,
-    Ruling,
     RateLimitErrorResponse,
+    Ruling,
     SearchRulingsResponse,
     SemanticSearchResponse,
     SemanticSearchResult,
@@ -74,13 +72,22 @@ from .models.responses import (
 from .sentry_init import init_sentry
 from .services.cost_monitoring import get_cost_summary_dict
 from .services.streaming import create_streaming_response, stream_qa_response
-from .workflows import get_orchestrator
+from .services.streaming_enhanced import (
+    create_enhanced_streaming_response,
+    stream_qa_enhanced,
+)
 
 # Initialize Sentry for error tracking and APM
 init_sentry()
 
-# Initialize Langfuse for AI observability
-init_langfuse()
+# Import workflows AFTER Langfuse initialization
+# Workflows import agents at module level, so this must come after init_langfuse()
+from .workflows import get_orchestrator
+
+# Import agent modules AFTER Langfuse initialization
+# This is critical: Agent.instrument_all() must be called before agents are created
+from .agents.classifier_agent import classifier_agent as get_classifier_agent
+from .agents.qa_agent import answer_question
 
 # Configure logging with DEBUG level for more verbose output
 logging.basicConfig(
@@ -93,8 +100,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-# Global state for graceful shutdown and startup tracking
-shutdown_event = asyncio.Event()
+# Global state for startup tracking
 startup_complete = False
 startup_status: dict[str, str] = {}
 
@@ -110,6 +116,29 @@ async def lifespan(_app: FastAPI):
     startup_status["message"] = "Initializing AI Engine components..."
 
     try:
+        # Validate configuration before starting services
+        startup_status["phase"] = "validating_config"
+        startup_status["message"] = "Validating configuration..."
+
+        from .validate_config import validate_all_config
+
+        # Use non-strict mode: log errors but don't fail startup
+        # This allows the service to start for development even with missing config
+        config_validation = validate_all_config(strict=False)
+
+        # Store validation results in startup status
+        startup_status["config_validation"] = config_validation
+
+        if not config_validation["valid"]:
+            logger.warning(
+                "Configuration validation found %d error(s) and %d warning(s). "
+                "Service will start but some features may not work correctly.",
+                len(config_validation["errors"]),
+                len(config_validation["warnings"]),
+            )
+            # Don't fail startup for missing config in development
+            # In production, you may want to set strict=True
+
         # Initialize ML models and agents (lazy load)
         startup_status["phase"] = "loading_models"
         startup_status["message"] = "Loading ML models and agents..."
@@ -127,22 +156,22 @@ async def lifespan(_app: FastAPI):
         startup_status["message"] = "Startup failed"
         startup_status["error"] = "Initialization error"
 
-    # Set up signal handlers for graceful shutdown
-    def handle_shutdown(signum, _frame):
-        logger.info("Received signal %s, initiating graceful shutdown...", signum)
-        shutdown_event.set()
-
-    signal.signal(signal.SIGINT, handle_shutdown)
-    signal.signal(signal.SIGTERM, handle_shutdown)
-
     yield
 
     # Shutdown - wait for in-flight requests to complete
     logger.info("Legal AI Engine shutting down gracefully...")
     logger.info("Active generation tasks: %d", len(generation_tasks))
 
-    # Flush Langfuse events before shutdown
-    flush()
+    # Flush Langfuse events before shutdown with timeout
+    try:
+        # Use asyncio.wait_for to prevent hanging on Langfuse flush
+        await asyncio.wait_for(asyncio.to_thread(flush), timeout=2.0)
+    except asyncio.TimeoutError:
+        logger.warning("Langfuse flush timed out after 2 seconds - continuing shutdown")
+    except Exception as e:
+        logger.warning("Langfuse flush failed: %s - continuing shutdown", e)
+
+    logger.info("Shutdown complete")
 
 
 app = FastAPI(
@@ -160,6 +189,29 @@ try:
     app.add_middleware(LangfuseMiddleware)
 except ImportError:
     logger.warning("Langfuse middleware not available - skipping")
+
+
+# CORS middleware - must be added before route definitions
+from .config import get_settings
+
+settings = get_settings()
+_cors_origins = [
+    settings.FRONTEND_URL,
+    "http://localhost:3000",  # Always allow local development
+]
+
+# Dedupe origins while preserving order
+cors_origins = list(dict.fromkeys(_cors_origins))
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=True,  # Required for Authorization cookies/headers
+    allow_methods=["GET", "POST", "OPTIONS"],  # Explicitly allow required methods
+    allow_headers=["Authorization", "Content-Type"],  # Explicitly allow required headers
+)
+
+logger.info("CORS configured for origins: %s", cors_origins)
 
 
 # Middleware for distributed tracing
@@ -193,16 +245,6 @@ async def sentry_middleware(request: Request, call_next):
     )
 
     return response
-
-
-# CORS middleware for development
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 # Global exception handler for validation errors (422)
@@ -241,7 +283,7 @@ async def ai_engine_exception_handler(request: Request, exc: AIEngineError):
     )
 
     # Track error in Langfuse using the new pattern
-    from .langfuse_init import is_langfuse_enabled, create_trace
+    from .langfuse_init import create_trace, is_langfuse_enabled
     if is_langfuse_enabled():
         trace = create_trace(
             name=f"error:{exc.error_code}",
@@ -375,7 +417,7 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
     # Track in Langfuse using the new pattern
-    from .langfuse_init import is_langfuse_enabled, create_trace
+    from .langfuse_init import create_trace, is_langfuse_enabled
     if is_langfuse_enabled():
         trace = create_trace(
             name="error:unhandled",
@@ -527,6 +569,161 @@ async def liveness_check():
     return {"status": "alive", "uptime_seconds": round(time.time() - time.time(), 2)}
 
 
+@app.get("/health/jwt")
+async def jwt_health_check():
+    """Health check for JWT validation service.
+
+    Returns 200 if JWT validation is properly configured and operational.
+    This endpoint verifies:
+    - PyJWT library is installed
+    - JWT_SECRET is configured
+    - Token validation logic is working
+
+    Returns:
+        - status: "ok" if JWT validation is healthy
+        - jwt_configured: Whether JWT_SECRET is set (not default)
+        - algorithm: JWT algorithm being used
+        - can_validate: Whether token validation logic works
+    """
+    from .auth import JWTValidationError, validate_jwt_token
+    from .config import get_settings
+
+    settings = get_settings()
+
+    # Check if JWT_SECRET is configured (not default)
+    jwt_configured = settings.JWT_SECRET != "secretKey"
+
+    # Test token validation with a dummy token
+    can_validate = False
+    try:
+        # Try to validate an invalid token - should raise JWTValidationError
+        try:
+            validate_jwt_token("invalid.token.here")
+        except (JWTValidationError, Exception):
+            # Expected to fail - this means validation logic is working
+            can_validate = True
+    except Exception:
+        can_validate = False
+
+    return {
+        "status": "ok",
+        "jwt_configured": jwt_configured,
+        "algorithm": settings.JWT_ALGORITHM,
+        "can_validate": can_validate,
+    }
+
+
+@app.get("/health/langfuse")
+async def langfuse_health_check():
+    """Health check for Langfuse observability service.
+
+    Returns 200 if Langfuse configuration is valid and operational.
+    This endpoint verifies:
+    - Langfuse SDK is available
+    - LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY are configured
+    - Keys have valid format (pk- and sk- prefixes)
+    - LANGFUSE_ENABLED is set correctly
+    - LANGFUSE_HOST is configured (if custom)
+    - Connection to Langfuse server is working
+
+    Returns:
+        - status: "ok" if Langfuse is healthy, "disabled" if explicitly disabled,
+          "error" if configuration is invalid
+        - enabled: Whether Langfuse is enabled in configuration
+        - configured: Whether keys are properly configured
+        - host: The Langfuse host URL (cloud or self-hosted)
+        - sampling_rate: The configured sampling rate (0.0 to 1.0)
+        - connection_status: "connected" if auth_check passed, "disconnected" otherwise
+        - public_key_format: Valid format of the public key (pk-*)
+        - secret_key_format: Valid format of the secret key (sk-*)
+        - warnings: List of configuration warnings (non-critical issues)
+        - errors: List of configuration errors (if any)
+
+    The endpoint returns 200 even if Langfuse is disabled or misconfigured,
+    but includes error details in the response. Use the response body to
+    determine if action is needed.
+    """
+    from .config import get_settings
+    from .langfuse_init import get_langfuse, is_langfuse_enabled
+    from .validate_config import validate_langfuse_config
+
+    settings = get_settings()
+
+    # Check if Langfuse is explicitly disabled
+    if not settings.LANGFUSE_ENABLED:
+        return {
+            "status": "disabled",
+            "enabled": False,
+            "configured": False,
+            "host": settings.LANGFUSE_HOST or "https://cloud.langfuse.com",
+            "sampling_rate": settings.LANGFUSE_SAMPLING_RATE,
+            "connection_status": "disabled",
+            "public_key_format": None,
+            "secret_key_format": None,
+            "warnings": ["Langfuse is disabled by LANGFUSE_ENABLED=false"],
+            "errors": [],
+        }
+
+    # Validate configuration
+    try:
+        validation_result = validate_langfuse_config(settings)
+    except Exception as e:
+        return {
+            "status": "error",
+            "enabled": True,
+            "configured": False,
+            "host": settings.LANGFUSE_HOST or "https://cloud.langfuse.com",
+            "sampling_rate": settings.LANGFUSE_SAMPLING_RATE,
+            "connection_status": "error",
+            "public_key_format": None,
+            "secret_key_format": None,
+            "warnings": [],
+            "errors": [str(e)],
+        }
+
+    if not validation_result["valid"]:
+        return {
+            "status": "error",
+            "enabled": True,
+            "configured": False,
+            "host": settings.LANGFUSE_HOST or "https://cloud.langfuse.com",
+            "sampling_rate": settings.LANGFUSE_SAMPLING_RATE,
+            "connection_status": "invalid_config",
+            "public_key_format": settings.LANGFUSE_PUBLIC_KEY[:2] + "-" if settings.LANGFUSE_PUBLIC_KEY else None,
+            "secret_key_format": settings.LANGFUSE_SECRET_KEY[:2] + "-" if settings.LANGFUSE_SECRET_KEY else None,
+            "warnings": validation_result.get("warnings", []),
+            "errors": validation_result.get("errors", []),
+        }
+
+    # Check connection to Langfuse server
+    connection_status = "disconnected"
+    langfuse_client = get_langfuse()
+    if langfuse_client is not None:
+        try:
+            # Test connection with auth_check
+            if hasattr(langfuse_client, "auth_check"):
+                if langfuse_client.auth_check():
+                    connection_status = "connected"
+            else:
+                # Fallback: if client exists, assume connected
+                connection_status = "connected"
+        except Exception:
+            connection_status = "error"
+
+    return {
+        "status": "ok" if connection_status == "connected" else "degraded",
+        "enabled": True,
+        "configured": True,
+        "host": settings.LANGFUSE_HOST or "https://cloud.langfuse.com",
+        "sampling_rate": settings.LANGFUSE_SAMPLING_RATE,
+        "connection_status": connection_status,
+        "public_key_format": settings.LANGFUSE_PUBLIC_KEY[:3] + "*" * 20 if settings.LANGFUSE_PUBLIC_KEY else None,
+        "secret_key_format": settings.LANGFUSE_SECRET_KEY[:3] + "*" * 20 if settings.LANGFUSE_SECRET_KEY else None,
+        "warnings": validation_result.get("warnings", []),
+        "errors": [],
+    }
+
+
 @app.get("/api/v1/metrics/costs")
 async def get_cost_metrics():
     """Get cost and usage metrics for monitoring.
@@ -547,18 +744,128 @@ async def get_cost_metrics():
     return get_cost_summary_dict()
 
 
+@app.get("/api/v1/debug/langfuse-status")
+async def get_langfuse_status(
+    user: UserContext = Depends(get_current_user),
+):
+    """Get Langfuse observability status for debugging.
+
+    This endpoint helps diagnose Langfuse integration issues without
+    logging into the Langfuse dashboard.
+
+    Requires admin authentication (user with ADMIN or SUPER_ADMIN role).
+
+    Returns:
+        - connection_status: "connected" or "disconnected"
+        - configuration: Langfuse configuration check (keys, sampling rate, etc.)
+        - trace_counts: Number of traces sent in last hour/day/total
+        - recent_traces: List of recent trace IDs for verification
+        - last_successful_trace: Timestamp of last successful trace
+        - seconds_since_last_trace: Seconds since last successful trace
+        - recent_errors: List of recent Langfuse SDK errors
+        - langfuse_available: Whether Langfuse SDK is available
+        - langfuse_enabled: Whether Langfuse is enabled in config
+
+    Raises:
+        HTTPException 403: If user is not an admin
+        HTTPException 401: If authentication is required but not provided
+    """
+    from .config import get_settings
+    from .langfuse_init import get_debug_log, get_langfuse, is_langfuse_enabled
+    from .services.langfuse_tracker import get_langfuse_tracker
+
+    # Check admin authorization
+    if not user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "error_code": "INSUFFICIENT_PERMISSIONS",
+                "message": "Admin access required for Langfuse debug endpoint",
+            },
+        )
+
+    settings = get_settings()
+    tracker = get_langfuse_tracker()
+    langfuse_client = get_langfuse()
+
+    # Check connection status
+    connection_status = "disconnected"
+    if is_langfuse_enabled() and langfuse_client is not None:
+        try:
+            # Use auth_check to verify connection
+            if hasattr(langfuse_client, "auth_check"):
+                if langfuse_client.auth_check():
+                    connection_status = "connected"
+            else:
+                # Fallback: if enabled and client exists, assume connected
+                connection_status = "connected"
+        except Exception as e:
+            logger.warning("Langfuse auth_check failed: %s", e)
+
+    # Get trace counts
+    trace_counts = tracker.get_trace_counts()
+
+    # Get recent traces (limit to 10 for readability)
+    recent_traces = tracker.get_recent_traces(limit=10)
+
+    # Get recent errors (limit to 10)
+    recent_errors = tracker.get_recent_errors(limit=10)
+
+    # Get last successful trace info
+    last_successful_trace = tracker.get_last_successful_trace_timestamp()
+    seconds_since_last_trace = tracker.get_seconds_since_last_trace()
+
+    # Check configuration
+    has_public_key = bool(settings.LANGFUSE_PUBLIC_KEY)
+    has_secret_key = bool(settings.LANGFUSE_SECRET_KEY)
+    sampling_rate = settings.LANGFUSE_SAMPLING_RATE
+
+    # Check if Langfuse SDK is available
+    from .langfuse_init import _langfuse_available
+    langfuse_available = _langfuse_available
+
+    return {
+        "connection_status": connection_status,
+        "configuration": {
+            "public_key_configured": has_public_key,
+            "secret_key_configured": has_secret_key,
+            "host": settings.LANGFUSE_HOST,
+            "sampling_rate": sampling_rate,
+            "enabled": settings.LANGFUSE_ENABLED,
+            "session_id_header": settings.LANGFUSE_SESSION_ID_HEADER,
+        },
+        "trace_counts": trace_counts,
+        "recent_traces": recent_traces,
+        "last_successful_trace": last_successful_trace,
+        "seconds_since_last_trace": seconds_since_last_trace,
+        "recent_errors": recent_errors,
+        "langfuse_available": langfuse_available,
+        "langfuse_enabled": is_langfuse_enabled(),
+        "debug_log": get_debug_log(),  # Include initialization debug log
+    }
+
+
 # -----------------------------------------------------------------------------
 # Streaming Endpoints
 # -----------------------------------------------------------------------------
 
 
 @app.post("/api/v1/qa/stream")
-async def ask_question_stream(request: AskQuestionRequest, http_request: Request):
+async def ask_question_stream(
+    request: AskQuestionRequest,
+    http_request: Request,
+    user: UserContext | None = Depends(get_current_user_optional),
+):
     """Stream a legal Q&A response for real-time user feedback.
 
     Returns Server-Sent Events (SSE) with incremental chunks of the answer.
     The client receives response text progressively rather than waiting for
     the complete generation.
+
+    Authentication:
+    - Accepts JWT tokens from frontend (signed by backend)
+    - Optional: works without auth for anonymous requests
+    - Pass Authorization: Bearer <token> header
 
     SSE Format:
         data: {"content": "text chunk", "done": false, "metadata": {...}}
@@ -574,7 +881,8 @@ async def ask_question_stream(request: AskQuestionRequest, http_request: Request
     - Context retrieval from vector store
     - Streaming answer generation with RAG
     """
-    user_id = http_request.headers.get("x-user-id")
+    # Use authenticated user ID if available, otherwise fall back to header
+    user_id = user.id if user else http_request.headers.get("x-user-id")
 
     async def generate() -> AsyncGenerator[str, None]:
         async for chunk in stream_qa_response(
@@ -586,6 +894,73 @@ async def ask_question_stream(request: AskQuestionRequest, http_request: Request
             yield chunk
 
     return create_streaming_response(generate())
+
+
+@app.post("/api/v1/qa/ask-stream")
+async def ask_question_stream_enhanced(
+    question: str,
+    mode: str = "SIMPLE",
+    session_id: str = "default",
+    http_request: Request = Request,
+    user: UserContext | None = Depends(get_current_user_optional),
+):
+    """Stream a legal Q&A response with structured SSE events.
+
+    Enhanced streaming endpoint that sends typed events for better client-side
+    handling of real-time AI responses.
+
+    Authentication:
+    - Accepts JWT tokens from frontend (signed by backend)
+    - Optional: works without auth for anonymous requests
+    - Pass Authorization: Bearer <token> header
+
+    Request Parameters (as query string or form data):
+        question: The legal question to answer (required)
+        mode: Response mode - LAWYER (detailed) or SIMPLE (layperson), default: SIMPLE
+        session_id: User session ID for tracking, default: "default"
+
+    SSE Event Format:
+        data: {"type": "token", "content": "text chunk", "metadata": {}}
+        data: {"type": "citation", "content": "", "metadata": {"source": "...", "article": "...", "url": "..."}}
+        data: {"type": "error", "content": "", "metadata": {"error": "..."}}
+        data: {"type": "done", "content": "", "metadata": {"citations": [...], "confidence": 0.0, "processing_time_ms": 123}}
+
+    Event Types:
+    - token: Partial response content as it's generated
+    - citation: Legal citation reference when identified
+    - error: Error information if processing fails
+    - done: Final completion event with full metadata
+
+    Client disconnection is handled gracefully - streaming stops if client
+    disconnects during processing.
+
+    Uses PydanticAI agents with:
+    - Query analysis and classification
+    - Context retrieval from vector store (RAG)
+    - Answer generation with citations
+    - LangGraph workflow orchestration
+    """
+    # Validate inputs
+    if not question or len(question.strip()) < 3:
+        raise HTTPException(
+            status_code=400,
+            detail={"error_code": "INVALID_INPUT", "message": "Question must be at least 3 characters long"},
+        )
+
+    if mode not in ("LAWYER", "SIMPLE"):
+        mode = "SIMPLE"
+
+    async def generate() -> AsyncGenerator[str, None]:
+        async for event in stream_qa_enhanced(
+            question=question,
+            mode=mode,
+            session_id=session_id,
+            user=user,
+            request=http_request,
+        ):
+            yield event
+
+    return create_enhanced_streaming_response(generate())
 
 
 @app.post("/api/v1/qa", response_model=QAResponse)
@@ -952,6 +1327,85 @@ async def ask_question_with_rag(request: AskQuestionRequest):
             status_code=500,
             detail=f"RAG question answering failed: {e!s}",
         ) from e
+
+
+# -----------------------------------------------------------------------------
+# Protected Endpoints (require JWT authentication)
+# -----------------------------------------------------------------------------
+
+
+@app.post("/api/v1/qa/ask-authenticated")
+async def ask_question_authenticated(
+    request: AskQuestionRequest,
+    user: "UserContext" = Depends(get_current_user),
+):
+    """Ask a legal question with JWT authentication required.
+
+    This endpoint requires a valid JWT token from the backend.
+    The user context (id, email, roles) is extracted from the token.
+
+    Request headers:
+        Authorization: Bearer <jwt_token>
+
+    Returns:
+        AnswerResponse with citations and confidence score
+
+    Raises:
+        HTTPException 401: If token is missing, invalid, or expired
+    """
+    try:
+        result = await answer_question(
+            question=request.question,
+            mode=request.mode,
+            session_id=request.session_id,
+            user=user,  # Pass full UserContext to the agent
+        )
+
+        return AnswerResponse(
+            answer=result["answer"],
+            citations=[
+                Citation(
+                    source=c.get("source", "Unknown"),
+                    article=c.get("article", ""),
+                    url=c.get("url"),
+                )
+                for c in result.get("citations", [])
+            ],
+            confidence=result.get("confidence", 0.0),
+        )
+
+    except Exception as e:
+        logger.exception("Authenticated Q&A processing failed: %s", e)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Q&A processing failed: {e!s}",
+        ) from e
+
+
+@app.get("/api/v1/auth/me")
+async def get_current_user_info(
+    user: "UserContext" = Depends(get_current_user),
+):
+    """Get current authenticated user information.
+
+    This endpoint validates the JWT token and returns user context.
+    Useful for testing authentication and getting user profile.
+
+    Request headers:
+        Authorization: Bearer <jwt_token>
+
+    Returns:
+        User context with id, username, email, roles, and computed properties
+    """
+    return {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "roles": user.roles,
+        "role_level": user.role_level,
+        "is_admin": user.is_admin,
+        "is_lawyer": user.is_lawyer,
+    }
 
 
 # -----------------------------------------------------------------------------

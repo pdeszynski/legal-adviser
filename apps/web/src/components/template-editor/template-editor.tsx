@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
-import { useForm, FormProvider } from "react-hook-form";
-import { useTranslate } from "@refinedev/core";
-import { Button, Input, Label, Card } from "@legal/ui";
+import { useState, useCallback } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
+import { useTranslate } from '@refinedev/core';
+import { Button, Input, Label, Card } from '@legal/ui';
 
 /**
  * Template Category enum matching backend GraphQL schema
  */
 export enum TemplateCategory {
-  LAWSUIT = "LAWSUIT",
-  COMPLAINT = "COMPLAINT",
-  CONTRACT = "CONTRACT",
-  MOTION = "MOTION",
-  LETTER = "LETTER",
-  OTHER = "OTHER",
+  LAWSUIT = 'LAWSUIT',
+  COMPLAINT = 'COMPLAINT',
+  CONTRACT = 'CONTRACT',
+  MOTION = 'MOTION',
+  LETTER = 'LETTER',
+  OTHER = 'OTHER',
 }
 
 /**
@@ -23,7 +23,7 @@ export enum TemplateCategory {
 export interface TemplateVariable {
   name: string;
   label: string;
-  type: "text" | "number" | "date" | "currency" | "boolean";
+  type: 'text' | 'number' | 'date' | 'currency' | 'boolean';
   required: boolean;
   defaultValue?: string | number | boolean;
   description?: string;
@@ -49,10 +49,10 @@ export interface ConditionalSection {
  * Polish Formatting Rules interface
  */
 export interface PolishFormattingRules {
-  dateFormat?: "DD.MM.YYYY" | "D MMMM YYYY";
-  currencyFormat?: "PLN" | "EUR" | "USD";
-  addressFormat?: "polish" | "standard";
-  numberFormat?: "pl" | "en";
+  dateFormat?: 'DD.MM.YYYY' | 'D MMMM YYYY';
+  currencyFormat?: 'PLN' | 'EUR' | 'USD';
+  addressFormat?: 'polish' | 'standard';
+  numberFormat?: 'pl' | 'en';
   legalCitations?: boolean;
 }
 
@@ -92,25 +92,31 @@ const VariableEditor: React.FC<VariableEditorProps> = ({ variables, onChange }) 
     const newVariable: TemplateVariable = {
       name: `variable_${variables.length + 1}`,
       label: `Variable ${variables.length + 1}`,
-      type: "text",
+      type: 'text',
       required: false,
     };
     onChange([...variables, newVariable]);
     setEditingIndex(variables.length);
   }, [variables, onChange]);
 
-  const updateVariable = useCallback((index: number, updates: Partial<TemplateVariable>) => {
-    const newVariables = [...variables];
-    newVariables[index] = { ...newVariables[index], ...updates };
-    onChange(newVariables);
-  }, [variables, onChange]);
+  const updateVariable = useCallback(
+    (index: number, updates: Partial<TemplateVariable>) => {
+      const newVariables = [...variables];
+      newVariables[index] = { ...newVariables[index], ...updates };
+      onChange(newVariables);
+    },
+    [variables, onChange],
+  );
 
-  const removeVariable = useCallback((index: number) => {
-    onChange(variables.filter((_, i) => i !== index));
-    if (editingIndex === index) {
-      setEditingIndex(null);
-    }
-  }, [variables, onChange, editingIndex]);
+  const removeVariable = useCallback(
+    (index: number) => {
+      onChange(variables.filter((_, i) => i !== index));
+      if (editingIndex === index) {
+        setEditingIndex(null);
+      }
+    },
+    [variables, onChange, editingIndex],
+  );
 
   return (
     <div className="space-y-4">
@@ -127,7 +133,9 @@ const VariableEditor: React.FC<VariableEditorProps> = ({ variables, onChange }) 
 
       {variables.length === 0 ? (
         <div className="text-center py-8 bg-gray-50 rounded-md border border-dashed border-gray-300">
-          <p className="text-gray-500">No variables defined yet. Add variables to create dynamic templates.</p>
+          <p className="text-gray-500">
+            No variables defined yet. Add variables to create dynamic templates.
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -197,7 +205,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variable, onUpdate, onCance
           <select
             id={`var-type-${variable.name}`}
             value={variable.type}
-            onChange={(e) => onUpdate({ type: e.target.value as TemplateVariable["type"] })}
+            onChange={(e) => onUpdate({ type: e.target.value as TemplateVariable['type'] })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="text">Text</option>
@@ -224,7 +232,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variable, onUpdate, onCance
         <Label htmlFor={`var-desc-${variable.name}`}>Description</Label>
         <Input
           id={`var-desc-${variable.name}`}
-          value={variable.description || ""}
+          value={variable.description || ''}
           onChange={(e) => onUpdate({ description: e.target.value })}
           placeholder="Variable description (optional)"
           className="w-full"
@@ -235,7 +243,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variable, onUpdate, onCance
         <Label htmlFor={`var-default-${variable.name}`}>Default Value</Label>
         <Input
           id={`var-default-${variable.name}`}
-          value={variable.defaultValue?.toString() || ""}
+          value={variable.defaultValue?.toString() || ''}
           onChange={(e) => onUpdate({ defaultValue: e.target.value })}
           placeholder="Default value (optional)"
           className="w-full"
@@ -277,16 +285,14 @@ const VariableDisplay: React.FC<VariableDisplayProps> = ({ variable, onEdit, onR
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">
           <span className="font-medium text-gray-900">{variable.label}</span>
-          {variable.required && (
-            <span className="text-red-500 text-xs">*</span>
-          )}
+          {variable.required && <span className="text-red-500 text-xs">*</span>}
           <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded">
             {variable.type}
           </span>
         </div>
         <div className="text-sm text-gray-600">
           <code className="px-1 py-0.5 bg-gray-100 rounded text-xs">
-            {"{{" + variable.name + "}}"}
+            {'{{' + variable.name + '}}'}
           </code>
         </div>
         {variable.description && (
@@ -325,27 +331,30 @@ interface RichTextEditorProps {
 const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, variables }) => {
   const [showVariableMenu, setShowVariableMenu] = useState(false);
 
-  const insertVariable = useCallback((variableName: string) => {
-    const textarea = document.getElementById("template-content") as HTMLTextAreaElement;
-    if (!textarea) return;
+  const insertVariable = useCallback(
+    (variableName: string) => {
+      const textarea = document.getElementById('template-content') as HTMLTextAreaElement;
+      if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = value;
-    const before = text.substring(0, start);
-    const after = text.substring(end);
-    const insertion = `{{${variableName}}}`;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = value;
+      const before = text.substring(0, start);
+      const after = text.substring(end);
+      const insertion = `{{${variableName}}}`;
 
-    onChange(before + insertion + after);
+      onChange(before + insertion + after);
 
-    // Set cursor position after insertion
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + insertion.length, start + insertion.length);
-    }, 0);
+      // Set cursor position after insertion
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + insertion.length, start + insertion.length);
+      }, 0);
 
-    setShowVariableMenu(false);
-  }, [value, onChange]);
+      setShowVariableMenu(false);
+    },
+    [value, onChange],
+  );
 
   return (
     <div className="relative">
@@ -357,7 +366,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, variab
             onClick={() => setShowVariableMenu(!showVariableMenu)}
             className="px-3 py-1 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
           >
-            Insert Variable {"▼"}
+            Insert Variable {'▼'}
           </Button>
           {showVariableMenu && variables.length > 0 && (
             <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-[200px]">
@@ -369,9 +378,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, variab
                   className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 first:rounded-t-md last:rounded-b-md"
                 >
                   <div className="font-medium">{variable.label}</div>
-                  <div className="text-xs text-gray-500">
-                    {"{{" + variable.name + "}}"}
-                  </div>
+                  <div className="text-xs text-gray-500">{'{{' + variable.name + '}}'}</div>
                 </button>
               ))}
             </div>
@@ -386,7 +393,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, variab
         className="w-full min-h-[400px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
       />
       <div className="mt-2 text-xs text-gray-500">
-        <p>Tip: Use {"{{variable_name}}"} syntax to insert variables. Conditional sections: {"{{#if variable}}...{{/if}}"}</p>
+        <p>
+          Tip: Use {'{{variable_name}}'} syntax to insert variables. Conditional sections:{' '}
+          {'{{#if variable}}...{{/if}}'}
+        </p>
       </div>
     </div>
   );
@@ -404,10 +414,10 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
   const translate = useTranslate();
   const methods = useForm<DocumentTemplateFormData>({
     defaultValues: {
-      name: initialData?.name || "",
+      name: initialData?.name || '',
       category: initialData?.category || TemplateCategory.OTHER,
-      description: initialData?.description || "",
-      content: initialData?.content || "",
+      description: initialData?.description || '',
+      content: initialData?.content || '',
       variables: initialData?.variables || [],
       conditionalSections: initialData?.conditionalSections || [],
       polishFormattingRules: initialData?.polishFormattingRules || {},
@@ -416,12 +426,15 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
   });
 
   const { handleSubmit, watch, setValue } = methods;
-  const content = watch("content");
-  const variables = watch("variables");
+  const content = watch('content');
+  const variables = watch('variables');
 
-  const onSubmit = useCallback(async (data: DocumentTemplateFormData) => {
-    await onSave(data);
-  }, [onSave]);
+  const onSubmit = useCallback(
+    async (data: DocumentTemplateFormData) => {
+      await onSave(data);
+    },
+    [onSave],
+  );
 
   return (
     <FormProvider {...methods}>
@@ -434,7 +447,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
               <Label htmlFor="name">Template Name</Label>
               <Input
                 id="name"
-                {...methods.register("name", { required: true })}
+                {...methods.register('name', { required: true })}
                 placeholder="e.g., Employment Contract Template"
                 className="w-full"
               />
@@ -444,7 +457,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
               <Label htmlFor="category">Category</Label>
               <select
                 id="category"
-                {...methods.register("category")}
+                {...methods.register('category')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {Object.values(TemplateCategory).map((category) => (
@@ -459,7 +472,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
               <Label htmlFor="description">Description</Label>
               <textarea
                 id="description"
-                {...methods.register("description")}
+                {...methods.register('description')}
                 placeholder="Brief description of this template..."
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -470,7 +483,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
               <input
                 type="checkbox"
                 id="isActive"
-                {...methods.register("isActive")}
+                {...methods.register('isActive')}
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <Label htmlFor="isActive" className="cursor-pointer">
@@ -484,7 +497,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
         <Card className="p-6">
           <VariableEditor
             variables={variables}
-            onChange={(newVariables) => setValue("variables", newVariables)}
+            onChange={(newVariables) => setValue('variables', newVariables)}
           />
         </Card>
 
@@ -493,7 +506,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
           <h2 className="text-xl font-semibold mb-4">Template Content</h2>
           <RichTextEditor
             value={content}
-            onChange={(newValue) => setValue("content", newValue)}
+            onChange={(newValue) => setValue('content', newValue)}
             variables={variables}
           />
         </Card>
@@ -515,7 +528,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
             disabled={isLoading}
             className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
           >
-            {isLoading ? "Saving..." : "Save Template"}
+            {isLoading ? 'Saving...' : 'Save Template'}
           </Button>
         </div>
       </form>

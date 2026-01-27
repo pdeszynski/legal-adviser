@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769508894981-af2a44a6",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T10:14:54.981Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "verify-langfuse-env-configuration",
+  "featureName": "Verify Langfuse Environment Configuration",
+  "error": "Feature completed in 616s - auto-verified",
+  "passes": true
+}

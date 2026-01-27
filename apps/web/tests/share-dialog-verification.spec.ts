@@ -84,7 +84,9 @@ test.describe('Share Dialog Component', () => {
     await expect(permissionLabel).toBeVisible();
 
     // Check for permission dropdown element
-    const permissionSelect = page.locator('select').filter({ hasText: /view only|can comment|can edit|admin/i });
+    const permissionSelect = page
+      .locator('select')
+      .filter({ hasText: /view only|can comment|can edit|admin/i });
     await expect(permissionSelect).toBeVisible();
   });
 

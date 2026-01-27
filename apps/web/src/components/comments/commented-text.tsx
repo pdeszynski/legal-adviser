@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { memo } from "react";
-import { DocumentComment, CommentResolutionStatus } from "@/hooks";
+import { memo } from 'react';
+import { DocumentComment, CommentResolutionStatus } from '@/hooks';
 
 interface CommentedTextProps {
   content: string;
@@ -33,7 +33,7 @@ export const CommentedText = memo(function CommentedText({
   comments,
   onAnnotationClick,
   selectedCommentId = null,
-  className = "",
+  className = '',
 }: CommentedTextProps) {
   // Sort annotations by start position
   const annotations: CommentAnnotation[] = comments
@@ -62,17 +62,13 @@ export const CommentedText = memo(function CommentedText({
   }
 
   if (annotations.length === 0) {
-    return (
-      <pre className={`whitespace-pre-wrap text-sm ${className}`}>
-        {content}
-      </pre>
-    );
+    return <pre className={`whitespace-pre-wrap text-sm ${className}`}>{content}</pre>;
   }
 
   // Split content and insert annotations
   const segments: Array<
-    | { type: "text"; content: string }
-    | { type: "annotation"; content: string; annotation: CommentAnnotation }
+    | { type: 'text'; content: string }
+    | { type: 'annotation'; content: string; annotation: CommentAnnotation }
   > = [];
 
   let lastIndex = 0;
@@ -81,14 +77,14 @@ export const CommentedText = memo(function CommentedText({
     // Add text before annotation
     if (annotation.startOffset > lastIndex) {
       segments.push({
-        type: "text",
+        type: 'text',
         content: content.slice(lastIndex, annotation.startOffset),
       });
     }
 
     // Add annotated text
     segments.push({
-      type: "annotation",
+      type: 'annotation',
       content: content.slice(annotation.startOffset, annotation.endOffset),
       annotation,
     });
@@ -99,7 +95,7 @@ export const CommentedText = memo(function CommentedText({
   // Add remaining text
   if (lastIndex < content.length) {
     segments.push({
-      type: "text",
+      type: 'text',
       content: content.slice(lastIndex),
     });
   }
@@ -111,19 +107,16 @@ export const CommentedText = memo(function CommentedText({
     const isSelected = selectedCommentId === annotation.commentId;
     const isOpen = annotation.status === CommentResolutionStatus.OPEN;
 
-    const baseClasses = "cursor-pointer transition-all relative inline";
+    const baseClasses = 'cursor-pointer transition-all relative inline';
 
     const statusClasses = isOpen
-      ? "bg-yellow-200 hover:bg-yellow-300"
-      : "bg-green-200 hover:bg-green-300";
+      ? 'bg-yellow-200 hover:bg-yellow-300'
+      : 'bg-green-200 hover:bg-green-300';
 
-    const selectedClasses = isSelected
-      ? "ring-2 ring-blue-500 ring-offset-1"
-      : "";
+    const selectedClasses = isSelected ? 'ring-2 ring-blue-500 ring-offset-1' : '';
 
-    const borderClasses = annotation.commentCount > 1
-      ? "border-b-2 border-dashed border-yellow-500"
-      : "";
+    const borderClasses =
+      annotation.commentCount > 1 ? 'border-b-2 border-dashed border-yellow-500' : '';
 
     return `${baseClasses} ${statusClasses} ${selectedClasses} ${borderClasses}`;
   };
@@ -131,7 +124,7 @@ export const CommentedText = memo(function CommentedText({
   return (
     <pre className={`whitespace-pre-wrap text-sm ${className}`}>
       {segments.map((segment, index) => {
-        if (segment.type === "text") {
+        if (segment.type === 'text') {
           return <span key={`text-${index}`}>{segment.content}</span>;
         }
 
@@ -142,7 +135,7 @@ export const CommentedText = memo(function CommentedText({
             className={getAnnotationClasses(annotation)}
             onClick={() => onAnnotationClick?.(annotation.commentId)}
             title={`Click to view comment (${annotation.commentCount} comment${
-              annotation.commentCount > 1 ? "s" : ""
+              annotation.commentCount > 1 ? 's' : ''
             })`}
           >
             {content}

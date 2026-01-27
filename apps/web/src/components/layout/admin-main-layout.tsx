@@ -90,7 +90,7 @@ export const AdminMainLayout: React.FC<React.PropsWithChildren> = ({ children })
       options={{
         syncWithLocation: true,
         warnWhenUnsavedChanges: true,
-        projectId: "GCrk8D-oPupRw-ZMrDtj"
+        projectId: 'GCrk8D-oPupRw-ZMrDtj',
       }}
     >
       <div className="flex h-screen w-full flex-col">
@@ -106,10 +106,7 @@ export const AdminMainLayout: React.FC<React.PropsWithChildren> = ({ children })
               )}
             </div>
             <div className="flex items-center gap-4">
-              <a
-                href="/dashboard"
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
+              <a href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
                 Back to App
               </a>
             </div>

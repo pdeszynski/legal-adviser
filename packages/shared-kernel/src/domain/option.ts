@@ -26,9 +26,7 @@ export class Option<T> {
   }
 
   static fromNullable<T>(value: T | null | undefined): Option<T> {
-    return value === null || value === undefined
-      ? Option.none<T>()
-      : Option.some(value);
+    return value === null || value === undefined ? Option.none<T>() : Option.some(value);
   }
 
   unwrap(): T {
@@ -58,10 +56,7 @@ export class Option<T> {
     return this.isSome && predicate(this._value as T) ? this : Option.none<T>();
   }
 
-  match<U>(patterns: {
-    some: (value: T) => U;
-    none: () => U;
-  }): U {
+  match<U>(patterns: { some: (value: T) => U; none: () => U }): U {
     return this.isSome ? patterns.some(this._value as T) : patterns.none();
   }
 

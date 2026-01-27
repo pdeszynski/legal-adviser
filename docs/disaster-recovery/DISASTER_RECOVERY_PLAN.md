@@ -7,10 +7,12 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 ## Recovery Objectives
 
 ### RTO (Recovery Time Objective)
+
 - **Critical Services**: 4 hours
 - **Non-Critical Services**: 24 hours
 
 ### RPO (Recovery Point Objective)
+
 - **Database**: 24 hours (daily automated backups)
 - **User Data**: 24 hours
 - **Configuration**: Immediate (stored in git)
@@ -50,6 +52,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 ### Automated Backups
 
 #### Database Backups
+
 - **Frequency**: Daily at 2:00 AM UTC
 - **Method**: PostgreSQL `pg_dump` with custom format
 - **Compression**: gzip level 9
@@ -60,10 +63,12 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
   - Maximum retention: 90 days
 
 #### Backup Locations
+
 - **Development**: Local filesystem (`./backups`)
 - **Production**: S3-compatible storage (configurable endpoint)
 
 ### Backup Components
+
 1. **PostgreSQL Database**: Complete database dump
 2. **Metadata**: Backup timestamps, checksums, PostgreSQL version
 3. **Configuration**: Environment variables (version controlled)
@@ -76,6 +81,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 **Impact**: Complete system unavailability
 
 #### Detection
+
 - Application errors: `database connection failed`
 - PostgreSQL logs: `corruption detected`
 - Health checks failing
@@ -83,6 +89,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 #### Recovery Steps
 
 1. **Assess the situation**
+
    ```bash
    # Check PostgreSQL logs
    docker-compose logs postgres | tail -100
@@ -92,11 +99,13 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
    ```
 
 2. **Stop application services**
+
    ```bash
    docker-compose stop backend web ai-engine
    ```
 
 3. **Identify last healthy backup**
+
    ```bash
    # Via GraphQL API
    curl -X POST http://localhost:3001/graphql \
@@ -109,6 +118,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 5. **Verify data integrity** (see [Data Integrity Verification](#data-integrity-verification))
 
 6. **Restart services**
+
    ```bash
    docker-compose start backend web ai-engine
    ```
@@ -128,6 +138,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 **Impact**: Complete system unavailability
 
 #### Detection
+
 - Server not responding to ping
 - All services unreachable
 - Monitoring alerts
@@ -137,6 +148,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 1. **Provision new server** (or restore from standby)
 
 2. **Install dependencies**
+
    ```bash
    # Install Docker
    curl -fsSL https://get.docker.com -o get-docker.sh
@@ -151,6 +163,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
    ```
 
 3. **Configure environment**
+
    ```bash
    cp .env.production .env
    # Edit .env with production values
@@ -159,6 +172,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 4. **Restore database** (see below)
 
 5. **Start services**
+
    ```bash
    docker-compose up -d
    ```
@@ -175,6 +189,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 **Impact**: Partial or complete data loss
 
 #### Detection
+
 - User reports of missing data
 - Database queries returning unexpected results
 - Application logs showing deletion errors
@@ -182,6 +197,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 #### Recovery Steps
 
 1. **Identify affected data**
+
    ```bash
    # Connect to database
    docker-compose exec postgres psql -U postgres -d legal_ai_db
@@ -196,6 +212,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
    - Identify when data was lost
 
 3. **Create backup of current state**
+
    ```bash
    # Before restoring, backup current (possibly corrupted) state
    docker-compose exec backend curl -X POST http://localhost:3001/graphql \
@@ -219,6 +236,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 **Impact**: Slow response times, partial functionality
 
 #### Detection
+
 - Performance monitoring alerts
 - User complaints about slowness
 - High CPU/memory usage
@@ -226,6 +244,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 #### Recovery Steps
 
 1. **Identify bottleneck**
+
    ```bash
    # Check resource usage
    docker stats
@@ -236,11 +255,13 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
    ```
 
 2. **Scale services** if needed
+
    ```bash
    docker-compose up -d --scale backend=3 --scale web=2
    ```
 
 3. **Restart affected services**
+
    ```bash
    docker-compose restart backend
    ```
@@ -268,6 +289,7 @@ This document outlines the comprehensive disaster recovery (DR) procedures for t
 #### Method 1: Via GraphQL API (Recommended)
 
 This method uses the built-in BackupService which handles:
+
 - Downloading from storage
 - Database restoration
 - Integrity verification
@@ -291,18 +313,18 @@ query GetBackups {
 
 # Restore to existing database (DESTRUCTIVE)
 mutation RestoreBackup {
-  restoreBackup(input: {
-    id: "backup-id-here"
-  })
+  restoreBackup(input: { id: "backup-id-here" })
 }
 
 # Restore to new database (SAFE - for testing)
 mutation RestoreBackupNew {
-  restoreBackup(input: {
-    id: "backup-id-here"
-    createNewDatabase: true
-    newDatabaseName: "legal_ai_db_restored"
-  })
+  restoreBackup(
+    input: {
+      id: "backup-id-here"
+      createNewDatabase: true
+      newDatabaseName: "legal_ai_db_restored"
+    }
+  )
 }
 ```
 
@@ -334,6 +356,7 @@ docker-compose exec postgres psql -U postgres -d legal_ai_db -c "\dt"
 For more granular recovery, you can use WAL (Write-Ahead Log) archives:
 
 1. **Enable WAL archiving** in `postgresql.conf`:
+
    ```
    wal_level = replica
    archive_mode = on
@@ -417,6 +440,7 @@ The backup system includes automatic integrity checks:
    - Stored in backup metadata
 
 2. **Database Consistency Checks**
+
    ```sql
    -- Check for corrupted tables
    SELECT relname, pg_size_pretty(pg_relation_size(oid)) AS size
@@ -490,17 +514,18 @@ Document all test results in `docs/disaster-recovery/test-results/`
 
 ## Contacts
 
-| Role | Name | Email | Phone |
-|------|------|-------|-------|
-| DevOps Lead | | | |
-| Database Admin | | | |
-| Engineering Lead | | | |
+| Role             | Name | Email | Phone |
+| ---------------- | ---- | ----- | ----- |
+| DevOps Lead      |      |       |       |
+| Database Admin   |      |       |       |
+| Engineering Lead |      |       |       |
 
 ---
 
 ## Appendix: Quick Reference Commands
 
 ### Database
+
 ```bash
 # Backup
 docker-compose exec postgres pg_dump -U postgres -d legal_ai_db -F c -Z 9 > backup.dump
@@ -513,6 +538,7 @@ docker-compose exec postgres psql -U postgres -d legal_ai_db
 ```
 
 ### Docker
+
 ```bash
 # Stop all services
 docker-compose down
@@ -528,6 +554,7 @@ docker-compose restart backend
 ```
 
 ### Health Checks
+
 ```bash
 # Backend health
 curl http://localhost:3001/health

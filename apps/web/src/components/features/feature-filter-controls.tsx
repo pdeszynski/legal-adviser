@@ -40,10 +40,7 @@ const defaultFilterOptions: FeatureFilterOption[] = [
   { value: 'platform', label: 'Platform' },
 ];
 
-export const FeatureFilterControls = React.forwardRef<
-  HTMLDivElement,
-  FeatureFilterControlsProps
->(
+export const FeatureFilterControls = React.forwardRef<HTMLDivElement, FeatureFilterControlsProps>(
   (
     {
       filter,
@@ -55,7 +52,7 @@ export const FeatureFilterControls = React.forwardRef<
       showSearch = true,
       resultsCount,
     },
-    ref
+    ref,
   ) => {
     const [isSearchFocused, setIsSearchFocused] = React.useState(false);
 
@@ -80,7 +77,7 @@ export const FeatureFilterControls = React.forwardRef<
                       'hover:bg-accent',
                       isActive
                         ? 'bg-primary text-primary-foreground shadow-md'
-                        : 'bg-background text-muted-foreground'
+                        : 'bg-background text-muted-foreground',
                     )}
                   >
                     {option.label}
@@ -88,9 +85,7 @@ export const FeatureFilterControls = React.forwardRef<
                       <span
                         className={cn(
                           'text-xs px-2 py-0.5 rounded-full',
-                          isActive
-                            ? 'bg-primary-foreground/20'
-                            : 'bg-muted-foreground/10'
+                          isActive ? 'bg-primary-foreground/20' : 'bg-muted-foreground/10',
                         )}
                       >
                         {option.count}
@@ -107,13 +102,13 @@ export const FeatureFilterControls = React.forwardRef<
                 <div
                   className={cn(
                     'relative flex items-center transition-all duration-200',
-                    isSearchFocused && 'ring-2 ring-ring ring-offset-2 rounded-md'
+                    isSearchFocused && 'ring-2 ring-ring ring-offset-2 rounded-md',
                   )}
                 >
                   <Search
                     className={cn(
                       'absolute left-3 h-4 w-4 transition-colors',
-                      isSearchFocused ? 'text-primary' : 'text-muted-foreground'
+                      isSearchFocused ? 'text-primary' : 'text-muted-foreground',
                     )}
                   />
                   <Input
@@ -150,7 +145,7 @@ export const FeatureFilterControls = React.forwardRef<
         </div>
       </div>
     );
-  }
+  },
 );
 
 FeatureFilterControls.displayName = 'FeatureFilterControls';

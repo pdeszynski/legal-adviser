@@ -2,6 +2,8 @@
 
 This middleware provides automatic request tracing with Langfuse,
 including trace ID propagation and request metadata tracking.
+
+Updated for Langfuse SDK 3.x which uses OpenTelemetry and @observe decorator.
 """
 
 import time
@@ -19,11 +21,15 @@ class LangfuseMiddleware(BaseHTTPMiddleware):
     """Middleware for automatic Langfuse tracing of HTTP requests.
 
     Features:
-    - Automatic trace creation for all requests
+    - Automatic trace creation for all requests via @observe decorator
     - Request/response body logging (PII-redacted)
     - Timing measurements
     - Error tracking
     - Session/user ID extraction from headers
+
+    Note: With Langfuse SDK 3.x, traces are automatically created via
+    the @observe decorator and OpenTelemetry context propagation.
+    This middleware focuses on metadata collection and timing.
     """
 
     # Paths that should not be traced
@@ -54,12 +60,6 @@ class LangfuseMiddleware(BaseHTTPMiddleware):
         if not is_langfuse_enabled():
             return await call_next(request)
 
-        from .langfuse_init import get_langfuse
-
-        langfuse = get_langfuse()
-        if langfuse is None:
-            return await call_next(request)
-
         start_time = time.time()
 
         # Extract session and user IDs from headers
@@ -68,25 +68,15 @@ class LangfuseMiddleware(BaseHTTPMiddleware):
         )
         user_id = request.headers.get("x-user-id")
 
-        # Extract existing trace ID for distributed tracing
-        existing_trace_id = request.headers.get("x-langfuse-trace-id")
-
-        # Create trace
-        trace = langfuse.trace(
-            name=f"{request.method} {request.url.path}",
-            session_id=session_id,
-            user_id=user_id,
-            trace_id=existing_trace_id,  # Continue existing trace if provided
-            metadata={
-                "method": request.method,
-                "path": request.url.path,
-                "query_params": str(request.query_params),
-            },
-        )
-
-        # Store trace in request state for access in endpoints
-        request.state.langfuse_trace = trace
+        # Store metadata in request state for access in endpoints
+        request.state.langfuse_session_id = session_id
+        request.state.langfuse_user_id = user_id
         request.state.langfuse_start_time = start_time
+        request.state.langfuse_metadata = {
+            "method": request.method,
+            "path": request.url.path,
+            "query_params": str(request.query_params),
+        }
 
         try:
             response = await call_next(request)
@@ -94,65 +84,66 @@ class LangfuseMiddleware(BaseHTTPMiddleware):
             # Calculate processing time
             processing_time_ms = (time.time() - start_time) * 1000
 
-            # Update trace with response info
-            trace.update(
-                output={
-                    "status_code": response.status_code,
-                    "processing_time_ms": round(processing_time_ms, 2),
-                }
-            )
-            trace.metadata["processing_time_ms"] = processing_time_ms
-            trace.metadata["status_code"] = response.status_code
-
-            # Set trace ID in response header for distributed tracing
-            response.headers["x-langfuse-trace-id"] = trace.trace_id or ""
-
-            trace.end()
+            # Store response info in request state
+            request.state.langfuse_processing_time_ms = processing_time_ms
+            request.state.langfuse_status_code = response.status_code
 
             return response
 
         except Exception as e:
-            # End trace with error
-            trace.end(level="ERROR", status_message=str(e))
+            # Store error info
+            request.state.langfuse_error = str(e)
             raise
 
 
-async def get_langfuse_trace(request: Request) -> Any | None:
-    """Get the Langfuse trace from request state.
+async def get_langfuse_metadata(request: Request) -> dict[str, Any]:
+    """Get the Langfuse metadata from request state.
 
     Args:
         request: FastAPI request object
 
     Returns:
-        Langfuse trace or None
+        Dictionary containing Langfuse metadata
     """
-    return getattr(request.state, "langfuse_trace", None)
+    return {
+        "session_id": getattr(request.state, "langfuse_session_id", None),
+        "user_id": getattr(request.state, "langfuse_user_id", None),
+        "start_time": getattr(request.state, "langfuse_start_time", None),
+        "metadata": getattr(request.state, "langfuse_metadata", {}),
+        "processing_time_ms": getattr(request.state, "langfuse_processing_time_ms", None),
+        "status_code": getattr(request.state, "langfuse_status_code", None),
+        "error": getattr(request.state, "langfuse_error", None),
+    }
 
 
 async def update_trace_metadata(request: Request, metadata: dict[str, Any]) -> None:
     """Update the current trace with additional metadata.
 
+    Note: With Langfuse SDK 3.x, manual trace updates are done via OpenTelemetry API.
+    This function updates request state for compatibility.
+
     Args:
         request: FastAPI request object
         metadata: Metadata to add to trace
     """
-    trace = await get_langfuse_trace(request)
-    if trace:
-        redacted = _redact_dict_pii(metadata)
-        trace.metadata.update(redacted)  # type: ignore
+    redacted = _redact_dict_pii(metadata)
+    current_metadata = getattr(request.state, "langfuse_metadata", {})
+    current_metadata.update(redacted)
+    request.state.langfuse_metadata = current_metadata
 
 
 async def update_trace_output(request: Request, output: dict[str, Any]) -> None:
     """Update the current trace with output data.
 
+    Note: With Langfuse SDK 3.x, manual trace updates are done via OpenTelemetry API.
+    This function stores output in request state for compatibility.
+
     Args:
         request: FastAPI request object
         output: Output data to add to trace
     """
-    trace = await get_langfuse_trace(request)
-    if trace:
-        redacted = _redact_dict_pii(output)
-        trace.update(output=redacted)
+    redacted = _redact_dict_pii(output)
+    request.state.langfuse_output = redacted
 
 
 def create_span_from_request(
@@ -162,16 +153,16 @@ def create_span_from_request(
 ) -> Any | None:
     """Create a child span from the current request trace.
 
+    Note: With Langfuse SDK 3.x, spans are automatically created via @observe decorator.
+    This function is kept for API compatibility but returns None.
+
     Args:
         request: FastAPI request object
         name: Span name
         metadata: Optional metadata
 
     Returns:
-        Langfuse span or None
+        None (spans are auto-created via @observe)
     """
-    trace = getattr(request.state, "langfuse_trace", None)
-    if trace is None:
-        return None
-
-    return trace.span(name=name, metadata=metadata or {})
+    # Spans are automatically created via @observe decorator in SDK 3.x
+    return None

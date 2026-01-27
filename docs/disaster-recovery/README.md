@@ -5,7 +5,9 @@ This directory contains comprehensive disaster recovery documentation and proced
 ## Documentation
 
 ### [DISASTER_RECOVERY_PLAN.md](./DISASTER_RECOVERY_PLAN.md)
+
 Complete disaster recovery plan covering:
+
 - Recovery objectives (RTO/RPO)
 - Architecture overview
 - Backup strategy
@@ -17,7 +19,9 @@ Complete disaster recovery plan covering:
 - Quick reference commands
 
 ### [DATA_INTEGRITY_VERIFICATION.md](./DATA_INTEGRITY_VERIFICATION.md)
+
 Data integrity verification procedures:
+
 - Verification levels (basic, consistency, functional)
 - Automated verification with checksums
 - Manual verification procedures
@@ -29,7 +33,9 @@ Data integrity verification procedures:
 ## Scripts
 
 ### [restore-database.sh](../../scripts/disaster-recovery/restore-database.sh)
+
 Database restoration script with support for:
+
 - Restoring from backup ID (via GraphQL API)
 - Restoring from local backup files
 - Creating new databases (non-destructive testing)
@@ -37,6 +43,7 @@ Database restoration script with support for:
 - Automated verification after restoration
 
 Usage:
+
 ```bash
 # Restore from backup ID
 ./restore-database.sh --backup-id abc123-def456
@@ -49,7 +56,9 @@ Usage:
 ```
 
 ### [verify-backup.sh](../../scripts/disaster-recovery/verify-backup.sh)
+
 Backup verification script that checks:
+
 - Backup metadata integrity
 - Checksum verification
 - Storage accessibility
@@ -58,6 +67,7 @@ Backup verification script that checks:
 - Row counts
 
 Usage:
+
 ```bash
 # Verify latest backup
 ./verify-backup.sh --latest
@@ -70,13 +80,16 @@ Usage:
 ```
 
 ### [service-failover.sh](../../scripts/disaster-recovery/service-failover.sh)
+
 Service failover and restart management:
+
 - Check service health status
 - Restart individual services
 - Full failover procedure
 - All service status overview
 
 Usage:
+
 ```bash
 # Check all services
 ./service-failover.sh check all
@@ -94,6 +107,7 @@ Usage:
 ## Quick Reference
 
 ### Emergency Contacts
+
 - DevOps Lead: [Add contact]
 - Database Admin: [Add contact]
 - Engineering Lead: [Add contact]
@@ -101,27 +115,32 @@ Usage:
 ### Common Commands
 
 **Check service health:**
+
 ```bash
 ./scripts/disaster-recovery/service-failover.sh check all
 ```
 
 **Restore database:**
+
 ```bash
 ./scripts/disaster-recovery/restore-database.sh --backup-id <ID>
 ```
 
 **Verify backup:**
+
 ```bash
 ./scripts/disaster-recovery/verify-backup.sh --latest
 ```
 
 **View logs:**
+
 ```bash
 docker-compose logs -f postgres
 docker-compose logs -f backend
 ```
 
 ### Recovery Time Objectives
+
 - Critical Services: 4 hours
 - Non-Critical Services: 24 hours
 - Database RPO: 24 hours
@@ -129,13 +148,16 @@ docker-compose logs -f backend
 ## Testing
 
 ### Quarterly Testing Schedule
+
 1. **Q1**: Tabletop exercise (review procedures)
 2. **Q2**: Simulation test (restore to staging)
 3. **Q3**: Full DR test (complete failover)
 4. **Q4**: Review and update documentation
 
 ### Test Results
+
 Document all test results in:
+
 ```
 docs/disaster-recovery/test-results/YYYY-MM-DD-test-name.md
 ```
@@ -143,13 +165,16 @@ docs/disaster-recovery/test-results/YYYY-MM-DD-test-name.md
 ## Maintenance
 
 ### Regular Updates
+
 - Review and update this documentation quarterly
 - Update contact information as needed
 - Add lessons learned from incidents
 - Update baseline metrics after major changes
 
 ### Backup Configuration
+
 Environment variables for backup configuration:
+
 - `BACKUP_STORAGE_TYPE`: local or s3
 - `BACKUP_RETENTION_DAILY`: 7
 - `BACKUP_RETENTION_WEEKLY`: 4
@@ -161,6 +186,7 @@ See `apps/backend/.env.example` for full configuration.
 ## Support
 
 For questions or issues with disaster recovery procedures:
+
 1. Check this documentation first
 2. Review logs: `docker-compose logs`
 3. Contact the DevOps team

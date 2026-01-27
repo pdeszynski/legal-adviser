@@ -214,9 +214,13 @@ const HowItWorksContent = () => {
                     </div>
 
                     {/* Content */}
-                    <div className={`flex-1 ${isEven ? 'lg:text-right lg:pr-16' : 'lg:text-left lg:pl-16'} pt-8 lg:pt-0`}>
+                    <div
+                      className={`flex-1 ${isEven ? 'lg:text-right lg:pr-16' : 'lg:text-left lg:pl-16'} pt-8 lg:pt-0`}
+                    >
                       <div className="space-y-4">
-                        <div className={`inline-flex items-center gap-2 ${colors.text} font-semibold`}>
+                        <div
+                          className={`inline-flex items-center gap-2 ${colors.text} font-semibold`}
+                        >
                           <Icon className="h-5 w-5" />
                           <span className="text-sm uppercase tracking-wider">
                             {t('step')} {step.number}
@@ -227,7 +231,9 @@ const HowItWorksContent = () => {
                         <p className="text-muted-foreground">{step.details}</p>
 
                         {/* Features List */}
-                        <ul className={`space-y-2 ${isEven ? 'lg:ml-auto' : 'lg:mr-auto'} max-w-md`}>
+                        <ul
+                          className={`space-y-2 ${isEven ? 'lg:ml-auto' : 'lg:mr-auto'} max-w-md`}
+                        >
                           {step.features.map((feature, idx) => (
                             <li key={idx} className="flex items-center gap-2">
                               <CheckCircle2 className={`h-4 w-4 ${colors.text} flex-shrink-0`} />
@@ -243,9 +249,13 @@ const HowItWorksContent = () => {
                       <div
                         className={`relative rounded-3xl ${colors.bg} border ${colors.border} p-8 transition-all hover:shadow-xl`}
                       >
-                        <div className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-5 rounded-3xl`} />
+                        <div
+                          className={`absolute inset-0 bg-gradient-to-br ${colors.gradient} opacity-5 rounded-3xl`}
+                        />
                         <div className="relative h-64 flex items-center justify-center">
-                          <div className={`w-32 h-32 rounded-full ${colors.bg} ${colors.text} flex items-center justify-center`}>
+                          <div
+                            className={`w-32 h-32 rounded-full ${colors.bg} ${colors.text} flex items-center justify-center`}
+                          >
                             <Icon className="h-16 w-16" strokeWidth={1.5} />
                           </div>
                         </div>
@@ -265,7 +275,9 @@ const HowItWorksContent = () => {
         <section className="w-full py-24 bg-background">
           <div className="container mx-auto px-4 md:px-6">
             <div className="text-center mb-16 max-w-3xl mx-auto space-y-4">
-              <h2 className="text-3xl font-bold tracking-tight md:text-5xl">{t('benefits.title')}</h2>
+              <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
+                {t('benefits.title')}
+              </h2>
               <p className="text-lg text-muted-foreground">{t('benefits.subtitle')}</p>
             </div>
 
@@ -293,7 +305,9 @@ const HowItWorksContent = () => {
         <section className="w-full py-24 bg-muted/30">
           <div className="container mx-auto px-4 md:px-6">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{t('testimonials.title')}</h2>
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+                {t('testimonials.title')}
+              </h2>
               <p className="text-lg text-muted-foreground mt-4">{t('testimonials.subtitle')}</p>
             </div>
 
@@ -305,10 +319,14 @@ const HowItWorksContent = () => {
                     key={index}
                     className="p-8 rounded-2xl bg-background border shadow-sm hover:shadow-md transition-shadow"
                   >
-                    <div className={`mb-4 h-12 w-12 rounded-full ${colors.bg} ${colors.text} flex items-center justify-center text-xl font-bold`}>
+                    <div
+                      className={`mb-4 h-12 w-12 rounded-full ${colors.bg} ${colors.text} flex items-center justify-center text-xl font-bold`}
+                    >
                       {testimonial.author.substring(0, 2).toUpperCase()}
                     </div>
-                    <p className="text-muted-foreground mb-6 italic">&ldquo;{testimonial.quote}&rdquo;</p>
+                    <p className="text-muted-foreground mb-6 italic">
+                      &ldquo;{testimonial.quote}&rdquo;
+                    </p>
                     <div>
                       <p className="font-semibold">{testimonial.author}</p>
                       <p className="text-sm text-muted-foreground">{testimonial.role}</p>

@@ -29,7 +29,8 @@ export default async function RootLayout({
   const locale = await getLocale();
   const messages = await getMessages();
   // Get GA ID from environment directly (server-safe)
-  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || process.env.NEXT_PUBLIC_GA_ID;
+  const gaMeasurementId =
+    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || process.env.NEXT_PUBLIC_GA_ID;
 
   return (
     <html lang={locale}>

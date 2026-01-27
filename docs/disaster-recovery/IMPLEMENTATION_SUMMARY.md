@@ -13,6 +13,7 @@ Implemented comprehensive disaster recovery procedures including database restor
 ### 1. Documentation Created
 
 #### Main Disaster Recovery Plan
+
 - **File**: `docs/disaster-recovery/DISASTER_RECOVERY_PLAN.md`
 - **Contents**:
   - Recovery objectives (RTO: 4 hours for critical services, 24 hours for non-critical)
@@ -29,6 +30,7 @@ Implemented comprehensive disaster recovery procedures including database restor
   - Quick reference commands
 
 #### Data Integrity Verification Guide
+
 - **File**: `docs/disaster-recovery/DATA_INTEGRITY_VERIFICATION.md`
 - **Contents**:
   - Three verification levels (basic, consistency, functional)
@@ -39,6 +41,7 @@ Implemented comprehensive disaster recovery procedures including database restor
   - Troubleshooting guide for common issues
 
 #### README
+
 - **File**: `docs/disaster-recovery/README.md`
 - **Contents**:
   - Overview of all documentation and scripts
@@ -49,6 +52,7 @@ Implemented comprehensive disaster recovery procedures including database restor
 ### 2. Scripts Created
 
 #### Database Restoration Script
+
 - **File**: `scripts/disaster-recovery/restore-database.sh`
 - **Features**:
   - Restore from backup ID (via GraphQL API)
@@ -59,6 +63,7 @@ Implemented comprehensive disaster recovery procedures including database restor
   - Support for custom target databases
 
 **Usage Examples**:
+
 ```bash
 # Restore from backup ID
 ./restore-database.sh --backup-id abc123-def456
@@ -71,6 +76,7 @@ Implemented comprehensive disaster recovery procedures including database restor
 ```
 
 #### Backup Verification Script
+
 - **File**: `scripts/disaster-recovery/verify-backup.sh`
 - **Features**:
   - Verify latest or specific backup
@@ -81,6 +87,7 @@ Implemented comprehensive disaster recovery procedures including database restor
   - Table row count verification
 
 **Usage Examples**:
+
 ```bash
 # Verify latest backup
 ./verify-backup.sh --latest
@@ -93,6 +100,7 @@ Implemented comprehensive disaster recovery procedures including database restor
 ```
 
 #### Service Failover Script
+
 - **File**: `scripts/disaster-recovery/service-failover.sh`
 - **Features**:
   - Check service health status
@@ -102,6 +110,7 @@ Implemented comprehensive disaster recovery procedures including database restor
   - Color-coded status output
 
 **Usage Examples**:
+
 ```bash
 # Check all services
 ./service-failover.sh check all
@@ -119,6 +128,7 @@ Implemented comprehensive disaster recovery procedures including database restor
 ### 3. Integration with Existing Backup System
 
 The disaster recovery implementation integrates seamlessly with the existing backup module (`apps/backend/src/modules/backup/`) which provides:
+
 - Automated daily backups (via `@nestjs/schedule` cron jobs)
 - Multiple storage backends (local filesystem, S3-compatible storage)
 - Retention policy enforcement (daily, weekly, monthly)
@@ -129,6 +139,7 @@ The disaster recovery implementation integrates seamlessly with the existing bac
 ## Files Modified
 
 ### New Files Created:
+
 - `docs/disaster-recovery/DISASTER_RECOVERY_PLAN.md`
 - `docs/disaster-recovery/DATA_INTEGRITY_VERIFICATION.md`
 - `docs/disaster-recovery/README.md`
@@ -138,7 +149,9 @@ The disaster recovery implementation integrates seamlessly with the existing bac
 - `scripts/disaster-recovery/service-failover.sh` (executable)
 
 ### Existing Files (No Changes Required):
+
 The existing backup module implementation is sufficient and requires no modifications. It includes:
+
 - `apps/backend/src/modules/backup/backup.module.ts`
 - `apps/backend/src/modules/backup/backup.resolver.ts`
 - `apps/backend/src/modules/backup/services/backup.service.ts`
@@ -151,32 +164,40 @@ The existing backup module implementation is sufficient and requires no modifica
 ## Notes for Developer
 
 ### Environment Variables
+
 The disaster recovery procedures rely on these existing environment variables (already configured in `.env.example`):
+
 - Database connection: `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE`
 - Backup configuration: `BACKUP_STORAGE_TYPE`, `BACKUP_LOCAL_PATH`
 - S3 storage: `BACKUP_S3_BUCKET`, `BACKUP_S3_REGION`, `BACKUP_S3_ENDPOINT`, etc.
 - PostgreSQL utilities: `PG_DUMP_PATH`, `PG_RESTORE_PATH`
 
 ### Script Dependencies
+
 All scripts require:
+
 - `docker` and `docker-compose` for container management
 - `curl` for HTTP requests
 - `jq` for JSON parsing
 - PostgreSQL client tools (in containers)
 
 ### Security Considerations
+
 - All scripts require appropriate database credentials
 - S3 backups require proper IAM permissions
 - Restoration procedures should be tested in non-production environments first
 
 ### Testing Status
+
 The disaster recovery scripts have been tested and verified:
+
 - ✅ Service failover script successfully checks PostgreSQL and Redis health
 - ✅ Color-coded output works correctly
 - ✅ Container lookup handles multiple matching containers
 - ✅ Health checks work for running services
 
 ### Recommended Next Steps
+
 1. **Establish Baselines**: Record current table counts, database sizes, and query performance metrics
 2. **Schedule Quarterly Tests**: Implement the testing schedule outlined in the documentation
 3. **Set Up Monitoring**: Configure alerts for backup failures
@@ -184,7 +205,9 @@ The disaster recovery scripts have been tested and verified:
 5. **Create Runbooks**: Develop detailed runbooks for common scenarios
 
 ### Recovery Verification Checklist
+
 After any restoration, verify:
+
 - [ ] Database connectivity restored
 - [ ] All services healthy
 - [ ] User authentication works
@@ -201,6 +224,7 @@ The disaster recovery implementation has been verified through:
 3. **Integration Check**: Scripts integrate with existing backup module GraphQL API
 
 ### Test Results:
+
 ```
 Service Health Status:
 - postgres: HEALTHY (CPU: 1.06%, Memory: 21.89MiB)

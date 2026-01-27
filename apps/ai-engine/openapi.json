@@ -225,9 +225,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "answer"
-        ],
+        "required": ["answer"],
         "title": "AnswerResponse",
         "description": "Response to a legal question."
       },
@@ -252,10 +250,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "question",
-          "session_id"
-        ],
+        "required": ["question", "session_id"],
         "title": "AskQuestionRequest",
         "description": "Request to ask a legal question."
       },
@@ -285,10 +280,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "source",
-          "article"
-        ],
+        "required": ["source", "article"],
         "title": "Citation",
         "description": "Legal citation reference."
       },
@@ -343,21 +335,13 @@
           }
         },
         "type": "object",
-        "required": [
-          "task_id",
-          "status"
-        ],
+        "required": ["task_id", "status"],
         "title": "DocumentGenerationStatus",
         "description": "Status of document generation task."
       },
       "DocumentType": {
         "type": "string",
-        "enum": [
-          "LAWSUIT",
-          "COMPLAINT",
-          "CONTRACT",
-          "OTHER"
-        ],
+        "enum": ["LAWSUIT", "COMPLAINT", "CONTRACT", "OTHER"],
         "title": "DocumentType",
         "description": "Types of legal documents that can be generated."
       },
@@ -393,11 +377,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "description",
-          "document_type",
-          "session_id"
-        ],
+        "required": ["description", "document_type", "session_id"],
         "title": "GenerateDocumentRequest",
         "description": "Request to generate a legal document."
       },
@@ -422,9 +402,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "task_id"
-        ],
+        "required": ["task_id"],
         "title": "GenerateDocumentResponse",
         "description": "Response from document generation."
       },
@@ -490,13 +468,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "title",
-          "court",
-          "date",
-          "summary"
-        ],
+        "required": ["id", "title", "court", "date", "summary"],
         "title": "Ruling",
         "description": "Legal ruling/case information."
       },
@@ -531,9 +503,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "query"
-        ],
+        "required": ["query"],
         "title": "SearchRulingsRequest",
         "description": "Request to search for legal rulings."
       },
@@ -559,10 +529,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "total",
-          "query"
-        ],
+        "required": ["total", "query"],
         "title": "SearchRulingsResponse",
         "description": "Response from ruling search."
       },
@@ -592,11 +559,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       }
     }

@@ -87,21 +87,22 @@ export function useCollaboration(): {
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [activeUsers, setActiveUsers] = useState<UserCursor[]>([]);
   const [documentVersion, setDocumentVersion] = useState(0);
-  const [currentDocumentId, setCurrentDocumentId] = useState<string | null>(
-    null,
-  );
+  const [currentDocumentId, setCurrentDocumentId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   /**
    * Initialize WebSocket connection
    */
   useEffect(() => {
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/collaboration`, {
-      transports: ['websocket'],
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 5,
-    });
+    const socket = io(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/collaboration`,
+      {
+        transports: ['websocket'],
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionAttempts: 5,
+      },
+    );
 
     socketRef.current = socket;
 
@@ -128,22 +129,25 @@ export function useCollaboration(): {
     });
 
     // User joined event
-    socket.on('userJoined', (data: { documentId: string; userId: string; userName: string; color: string | null }) => {
-      setActiveUsers((prev) => {
-        const exists = prev.some((u) => u.userId === data.userId);
-        if (exists) return prev;
-        return [
-          ...prev,
-          {
-            userId: data.userId,
-            userName: data.userName,
-            color: data.color,
-            position: 0,
-            selectionLength: 0,
-          },
-        ];
-      });
-    });
+    socket.on(
+      'userJoined',
+      (data: { documentId: string; userId: string; userName: string; color: string | null }) => {
+        setActiveUsers((prev) => {
+          const exists = prev.some((u) => u.userId === data.userId);
+          if (exists) return prev;
+          return [
+            ...prev,
+            {
+              userId: data.userId,
+              userName: data.userName,
+              color: data.color,
+              position: 0,
+              selectionLength: 0,
+            },
+          ];
+        });
+      },
+    );
 
     // User left event
     socket.on('userLeft', (data: { documentId: string; userId: string; userName: string }) => {
@@ -162,26 +166,32 @@ export function useCollaboration(): {
     });
 
     // Document edited event
-    socket.on('documentEdited', (data: {
-      documentId: string;
-      userId: string;
-      operation: DocumentOperation;
-      version: number;
-    }) => {
-      setDocumentVersion(data.version);
-      // The parent component should handle applying the operation
-      // We'll emit a custom event that the editor can listen to
-      window.dispatchEvent(new CustomEvent('documentEdited', { detail: data }));
-    });
+    socket.on(
+      'documentEdited',
+      (data: {
+        documentId: string;
+        userId: string;
+        operation: DocumentOperation;
+        version: number;
+      }) => {
+        setDocumentVersion(data.version);
+        // The parent component should handle applying the operation
+        // We'll emit a custom event that the editor can listen to
+        window.dispatchEvent(new CustomEvent('documentEdited', { detail: data }));
+      },
+    );
 
     // Operation applied confirmation
-    socket.on('operationApplied', (data: {
-      operationId: DocumentOperation;
-      newVersion: number;
-      transformedPosition: number;
-    }) => {
-      setDocumentVersion(data.newVersion);
-    });
+    socket.on(
+      'operationApplied',
+      (data: {
+        operationId: DocumentOperation;
+        newVersion: number;
+        transformedPosition: number;
+      }) => {
+        setDocumentVersion(data.newVersion);
+      },
+    );
 
     // Error event
     socket.on('error', (data: { message: string }) => {
@@ -226,27 +236,33 @@ export function useCollaboration(): {
   /**
    * Send an editing operation
    */
-  const sendOperation = useCallback((operation: DocumentOperation) => {
-    if (!socketRef.current || !currentDocumentId) return;
+  const sendOperation = useCallback(
+    (operation: DocumentOperation) => {
+      if (!socketRef.current || !currentDocumentId) return;
 
-    socketRef.current.emit('operation', {
-      ...operation,
-      documentId: currentDocumentId,
-    });
-  }, [currentDocumentId]);
+      socketRef.current.emit('operation', {
+        ...operation,
+        documentId: currentDocumentId,
+      });
+    },
+    [currentDocumentId],
+  );
 
   /**
    * Update cursor position
    */
-  const updateCursor = useCallback((position: number, selectionLength: number = 0) => {
-    if (!socketRef.current || !currentDocumentId) return;
+  const updateCursor = useCallback(
+    (position: number, selectionLength: number = 0) => {
+      if (!socketRef.current || !currentDocumentId) return;
 
-    socketRef.current.emit('updateCursor', {
-      documentId: currentDocumentId,
-      position,
-      selectionLength,
-    });
-  }, [currentDocumentId]);
+      socketRef.current.emit('updateCursor', {
+        documentId: currentDocumentId,
+        position,
+        selectionLength,
+      });
+    },
+    [currentDocumentId],
+  );
 
   const state: CollaborationState = {
     isConnected,

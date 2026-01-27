@@ -64,9 +64,12 @@ export function useAnalytics() {
    * @param name - Event name
    * @param params - Event parameters
    */
-  const trackCustomEvent = useCallback((name: string, params?: Record<string, string | number | boolean | undefined>) => {
-    trackEvent(name, params);
-  }, []);
+  const trackCustomEvent = useCallback(
+    (name: string, params?: Record<string, string | number | boolean | undefined>) => {
+      trackEvent(name, params);
+    },
+    [],
+  );
 
   /**
    * Track a page view.
@@ -119,32 +122,37 @@ export function useAnalytics() {
     trackInterestFormError(fieldName, errorType);
   }, []);
 
-  const trackInterestSubmitStart = useCallback((formData: {
-    hasCompany: boolean;
-    hasRole: boolean;
-    source?: string;
-  }) => {
-    trackInterestFormSubmitStart(formData);
-  }, []);
+  const trackInterestSubmitStart = useCallback(
+    (formData: { hasCompany: boolean; hasRole: boolean; source?: string }) => {
+      trackInterestFormSubmitStart(formData);
+    },
+    [],
+  );
 
-  const trackInterestSubmitSuccess = useCallback((data: {
-    email?: string;
-    company?: string;
-    companyProvided: boolean;
-    roleProvided: boolean;
-    source?: string;
-    referenceId?: string;
-  }) => {
-    trackInterestFormSubmitSuccess(data);
-  }, []);
+  const trackInterestSubmitSuccess = useCallback(
+    (data: {
+      email?: string;
+      company?: string;
+      companyProvided: boolean;
+      roleProvided: boolean;
+      source?: string;
+      referenceId?: string;
+    }) => {
+      trackInterestFormSubmitSuccess(data);
+    },
+    [],
+  );
 
   const trackInterestSubmitFailure = useCallback((errorType: string, errorMessage?: string) => {
     trackInterestFormSubmitFailure(errorType, errorMessage);
   }, []);
 
-  const trackInterestFaq = useCallback((faqIndex: number, faqQuestion: string, expanded: boolean) => {
-    trackInterestFaqToggle(faqIndex, faqQuestion, expanded);
-  }, []);
+  const trackInterestFaq = useCallback(
+    (faqIndex: number, faqQuestion: string, expanded: boolean) => {
+      trackInterestFaqToggle(faqIndex, faqQuestion, expanded);
+    },
+    [],
+  );
 
   const trackInterestEngagement = useCallback((timeSpentSeconds: number, scrollDepth: number) => {
     trackInterestPageEngagement(timeSpentSeconds, scrollDepth);

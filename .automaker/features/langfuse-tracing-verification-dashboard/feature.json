@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Create a simple admin or debug page in the AI Engine or backend to verify Langfuse is receiving traces. Add endpoint GET /api/v1/debug/langfuse-status that returns: 1) Langfuse connection status (connected/disconnected), 2) Number of traces sent in last hour/day, 3) Recent trace IDs for verification, 4) Last successful trace timestamp, 5) Any recent errors from Langfuse SDK, 6) Configuration check (keys present, sampling rate, etc.). This helps diagnose Langfuse issues without logging into Langfuse dashboard. Protect this endpoint with admin authentication.",
+  "id": "langfuse-tracing-verification-dashboard",
+  "title": "Create Langfuse Trace Verification Dashboard",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Create a simple admin or debug page in the AI Engine or backend to verify Langfuse is receiving traces. Add endpoint GET /api/v1/debug/langfuse-status that returns: 1) Langfuse connection status (connected/disconnected), 2) Number of traces sent in last hour/day, 3) Recent trace IDs for verification, 4) Last successful trace timestamp, 5) Any recent errors from Langfuse SDK, 6) Configuration check (keys present, sampling rate, etc.). This helps diagnose Langfuse issues without logging into Langfuse dashboard. Protect this endpoint with admin authentication.",
+      "timestamp": "2026-01-27T10:04:34.556Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-27T10:10:53.767Z"
+}

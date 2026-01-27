@@ -146,7 +146,8 @@ export class HubSpotResolver {
     if (listType === 'earlyAccess' && result.contactId) {
       try {
         const referenceId = randomUUID();
-        const firstName = input.firstName || input.email?.split('@')[0] || 'there';
+        const firstName =
+          input.firstName || input.email?.split('@')[0] || 'there';
 
         await this.emailSendingStarter.queueEmail({
           to: input.email,

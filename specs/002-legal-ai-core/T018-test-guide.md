@@ -7,11 +7,13 @@
 ## What Was Implemented
 
 ### 1. Backend GraphQL Setup (`apps/backend/src/app.module.ts`)
+
 - Configured GraphQL module with Apollo Driver
 - Code-First schema generation per constitution
 - GraphQL Playground enabled for development
 
 ### 2. GraphQL Types and Resolver (`apps/backend/src/modules/documents/`)
+
 - Created GraphQL Object Types: `LegalDocumentType`, `DocumentMetadataType`
 - Created GraphQL Input Types: `GenerateDocumentInput`, `UpdateDocumentInput`
 - Implemented `DocumentsResolver` with queries and mutations:
@@ -22,13 +24,16 @@
   - `deleteDocument(id)` - Delete document
 
 ### 3. GraphQL Data Provider (`apps/web/src/providers/data-provider/index.ts`)
+
 - **Per Constitution**: GraphQL is the primary API for data operations
 - Custom GraphQL data provider connecting to `http://localhost:4000/graphql`
 - Implements all Refine DataProvider methods using GraphQL queries/mutations
 - Proper TypeScript typing for type safety
 
 ### 2. Added i18n Translations
+
 Updated all three language files (`en`, `pl`, `de`) in `apps/web/public/locales/*/common.json`:
+
 - Document field labels (title, type, status, etc.)
 - Document types (LAWSUIT, COMPLAINT, CONTRACT, OTHER)
 - Document statuses (DRAFT, GENERATING, COMPLETED, FAILED)
@@ -36,7 +41,9 @@ Updated all three language files (`en`, `pl`, `de`) in `apps/web/public/locales/
 - Page titles
 
 ### 3. Created Document Generation Form (`apps/web/src/app/documents/create/page.tsx`)
+
 Features:
+
 - Title input field (required)
 - Document type dropdown (LAWSUIT, COMPLAINT, CONTRACT, OTHER)
 - Collapsible metadata section with:
@@ -49,7 +56,9 @@ Features:
 - Responsive Tailwind CSS styling
 
 ### 4. Created Document List Page (`apps/web/src/app/documents/page.tsx`)
+
 Features:
+
 - Table view with columns: Title, Type, Status, Created At, Actions
 - Color-coded status badges
 - Pagination controls
@@ -57,7 +66,9 @@ Features:
 - Click-through links to document details
 
 ### 5. Created Document Show Page (`apps/web/src/app/documents/show/[id]/page.tsx`)
+
 Features:
+
 - Full document details display
 - Status badge with color coding
 - Metadata section (if available)
@@ -66,6 +77,7 @@ Features:
 - Back to list navigation
 
 ### 6. Registered Documents Resource (`apps/web/src/app/_refine_context.tsx`)
+
 - Added documents resource to Refine configuration
 - Configured all CRUD routes (list, create, edit, show)
 - Enabled delete capability
@@ -73,19 +85,23 @@ Features:
 ## Testing Steps
 
 ### Prerequisites
+
 1. Start infrastructure:
+
    ```bash
    cd /Users/piteer/workspace/radca-prawny/legal
    docker-compose up -d
    ```
 
 2. Start backend (in one terminal):
+
    ```bash
    cd apps/backend
    PORT=4000 pnpm run start:dev
    ```
 
 3. Start frontend (in another terminal):
+
    ```bash
    cd apps/web
    pnpm run dev
@@ -96,16 +112,19 @@ Features:
 ### Manual Testing Checklist
 
 #### Test 1: Access Document Creation Form
+
 - [ ] Navigate to `http://localhost:3000/documents/create`
 - [ ] Verify form loads without errors
 - [ ] Check all translations are displayed correctly
 
 #### Test 2: Form Validation
+
 - [ ] Try submitting empty form → should show validation error
 - [ ] Enter title only → should allow proceeding to next step
 - [ ] Verify all dropdown options display translated labels
 
 #### Test 3: Create a Document
+
 - [ ] Fill in form:
   - Title: "Test Debt Recovery Lawsuit"
   - Type: LAWSUIT
@@ -118,18 +137,21 @@ Features:
 - [ ] Check document status is "GENERATING" or "DRAFT"
 
 #### Test 4: View Document List
+
 - [ ] Navigate to `http://localhost:3000/documents`
 - [ ] Verify created document appears in list
 - [ ] Check status badge color is correct
 - [ ] Verify pagination controls work (if multiple pages)
 
 #### Test 5: View Document Details
+
 - [ ] Click on document title in list
 - [ ] Verify all fields display correctly
 - [ ] Check metadata section shows entered values
 - [ ] If AI generation is complete, verify content displays
 
 #### Test 6: Multi-language Support
+
 - [ ] Switch language to Polish (pl)
 - [ ] Verify all labels are translated
 - [ ] Switch to German (de)
@@ -141,6 +163,7 @@ Features:
 **Endpoint**: `POST http://localhost:4000/graphql`
 
 **GraphQL Mutation:**
+
 ```graphql
 mutation GenerateDocument($input: GenerateDocumentInput!) {
   generateDocument(input: $input) {
@@ -163,6 +186,7 @@ mutation GenerateDocument($input: GenerateDocumentInput!) {
 ```
 
 **Variables:**
+
 ```json
 {
   "input": {
@@ -180,6 +204,7 @@ mutation GenerateDocument($input: GenerateDocumentInput!) {
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -234,10 +259,12 @@ mutation GenerateDocument($input: GenerateDocumentInput!) {
 ## Files Modified/Created
 
 ### Created (Backend - GraphQL):
+
 - `/apps/backend/src/modules/documents/dto/document.types.ts` - GraphQL types
 - `/apps/backend/src/modules/documents/documents.resolver.ts` - GraphQL resolver
 
 ### Created (Frontend):
+
 - `/apps/web/src/app/documents/create/page.tsx` - Document generation form
 - `/apps/web/src/app/documents/page.tsx` - Document list view
 - `/apps/web/src/app/documents/show/[id]/page.tsx` - Document detail view
@@ -245,10 +272,12 @@ mutation GenerateDocument($input: GenerateDocumentInput!) {
 - `/specs/002-legal-ai-core/T018-implementation.md` - Implementation summary
 
 ### Modified (Backend):
+
 - `/apps/backend/src/app.module.ts` - Added GraphQL module configuration
 - `/apps/backend/src/modules/documents/documents.module.ts` - Added resolver to providers
 
 ### Modified (Frontend):
+
 - `/apps/web/src/providers/data-provider/index.ts` - GraphQL data provider
 - `/apps/web/src/app/_refine_context.tsx` - Documents resource registration
 - `/apps/web/public/locales/en/common.json` - English translations
@@ -258,12 +287,14 @@ mutation GenerateDocument($input: GenerateDocumentInput!) {
 ## Integration with Other Tasks
 
 ### Dependencies (Must be complete):
+
 - ✅ T014: LegalDocument entity
 - ✅ T015: DocumentService CRUD
 - ✅ T016: AI Graph for Drafting
 - ✅ T017: API endpoint POST /api/documents/generate
 
 ### Next Tasks:
+
 - ⏳ T019: Streaming Response Handler (for real-time AI output)
 - ⏳ T020: PDF Export functionality
 
@@ -272,6 +303,7 @@ mutation GenerateDocument($input: GenerateDocumentInput!) {
 T018 is **COMPLETE** and ready for testing. The document generation form is fully functional and integrated with the backend API. All user-facing text is properly internationalized in English, Polish, and German.
 
 The implementation follows:
+
 - ✅ Refine.dev best practices
 - ✅ React Hook Form validation
 - ✅ Tailwind CSS styling

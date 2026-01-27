@@ -7,14 +7,7 @@ import { Button } from '@legal/ui';
 import { Input } from '@legal/ui';
 import { Label } from '@legal/ui';
 import { Textarea } from '@legal/ui';
-import {
-  CheckCircle2,
-  Loader2,
-  AlertCircle,
-  Mail,
-  Building,
-  FileText,
-} from 'lucide-react';
+import { CheckCircle2, Loader2, AlertCircle, Mail, Building, FileText } from 'lucide-react';
 import { useDataProvider } from '@refinedev/core';
 import type { GraphQLMutationConfig } from '@/providers/data-provider';
 
@@ -59,10 +52,9 @@ function markDemoRequestSubmitted(email: string): void {
 }
 
 // GDPR Consent Schema
-const gdprConsentSchema = z.boolean().refine(
-  (val) => val === true,
-  'You must agree to the privacy policy to continue',
-);
+const gdprConsentSchema = z
+  .boolean()
+  .refine((val) => val === true, 'You must agree to the privacy policy to continue');
 
 // Form validation schema
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Used for type inference
@@ -85,9 +77,7 @@ const _hubspotFormSchema = z.object({
       return !domain || !disposableDomains.includes(domain);
     }, 'Please use your work email instead of a temporary email'),
   company: z.string().min(2, 'Company name must be at least 2 characters'),
-  useCase: z
-    .string()
-    .min(10, 'Please describe your use case (at least 10 characters)'),
+  useCase: z.string().min(10, 'Please describe your use case (at least 10 characters)'),
   gdprConsent: gdprConsentSchema,
 });
 
@@ -134,10 +124,7 @@ const mapTimeline = (value: string): string => {
  * - NEXT_PUBLIC_HUBSPOT_PORTAL_ID: HubSpot portal ID
  * - NEXT_PUBLIC_USE_HUBSPOT_EMBED: Set to 'true' to use HubSpot embed script
  */
-export function HubSpotEmbedForm({
-  source = 'demo',
-  className = '',
-}: HubSpotEmbedFormProps) {
+export function HubSpotEmbedForm({ source = 'demo', className = '' }: HubSpotEmbedFormProps) {
   const [formState, setFormState] = useState<FormState>(() => {
     return hasAlreadyRequested() ? 'alreadySubmitted' : 'idle';
   });
@@ -183,7 +170,9 @@ export function HubSpotEmbedForm({
       script.async = true;
       script.onload = () => {
         if (typeof window !== 'undefined' && (window as unknown).hbspt) {
-          const hbspt = (window as unknown as { hbspt: { forms: { create: (config: unknown) => void } } }).hbspt;
+          const hbspt = (
+            window as unknown as { hbspt: { forms: { create: (config: unknown) => void } } }
+          ).hbspt;
           hbspt.forms.create({
             portalId: HUBSPOT_PORTAL_ID,
             formId: HUBSPOT_FORM_ID,
@@ -358,9 +347,7 @@ export function HubSpotEmbedForm({
     return (
       <div className={`bg-card border rounded-lg p-6 ${className}`}>
         <div id={`hubspot-form-${HUBSPOT_FORM_ID}`} />
-        <div className="mt-4 text-xs text-muted-foreground text-center">
-          Powered by HubSpot
-        </div>
+        <div className="mt-4 text-xs text-muted-foreground text-center">Powered by HubSpot</div>
       </div>
     );
   }
@@ -396,9 +383,7 @@ export function HubSpotEmbedForm({
             className={errors.fullName ? 'border-destructive' : ''}
             disabled={formState === 'submitting'}
           />
-          {errors.fullName && (
-            <p className="text-sm text-destructive">{errors.fullName.message}</p>
-          )}
+          {errors.fullName && <p className="text-sm text-destructive">{errors.fullName.message}</p>}
         </div>
 
         {/* Email Field */}
@@ -442,9 +427,7 @@ export function HubSpotEmbedForm({
             className={errors.company ? 'border-destructive' : ''}
             disabled={formState === 'submitting'}
           />
-          {errors.company && (
-            <p className="text-sm text-destructive">{errors.company.message}</p>
-          )}
+          {errors.company && <p className="text-sm text-destructive">{errors.company.message}</p>}
         </div>
 
         {/* Use Case Field */}
@@ -467,9 +450,7 @@ export function HubSpotEmbedForm({
             className={errors.useCase ? 'border-destructive' : ''}
             disabled={formState === 'submitting'}
           />
-          {errors.useCase && (
-            <p className="text-sm text-destructive">{errors.useCase.message}</p>
-          )}
+          {errors.useCase && <p className="text-sm text-destructive">{errors.useCase.message}</p>}
         </div>
 
         {/* GDPR Consent */}
@@ -514,12 +495,7 @@ export function HubSpotEmbedForm({
         )}
 
         {/* Submit Button */}
-        <Button
-          type="submit"
-          disabled={formState === 'submitting'}
-          className="w-full"
-          size="lg"
-        >
+        <Button type="submit" disabled={formState === 'submitting'} className="w-full" size="lg">
           {formState === 'submitting' ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />

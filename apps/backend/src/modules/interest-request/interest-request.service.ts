@@ -1,9 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { HubSpotService } from '../../modules/integrations/hubspot/hubspot.service';
-import {
-  InterestRequestInput,
-} from './dto/interest-request.graphql-dto';
+import { InterestRequestInput } from './dto/interest-request.graphql-dto';
 
 /**
  * Interest Request Service
@@ -23,9 +21,7 @@ import {
 export class InterestRequestService {
   private readonly logger = new Logger(InterestRequestService.name);
 
-  constructor(
-    private readonly hubSpotService: HubSpotService,
-  ) {}
+  constructor(private readonly hubSpotService: HubSpotService) {}
 
   /**
    * Submit an early access interest request
@@ -48,7 +44,9 @@ export class InterestRequestService {
   }> {
     // Validate GDPR consent
     if (!request.consent) {
-      this.logger.warn(`Interest request rejected: GDPR consent not given for ${request.email}`);
+      this.logger.warn(
+        `Interest request rejected: GDPR consent not given for ${request.email}`,
+      );
       throw new Error('GDPR consent is required to submit an interest request');
     }
 
@@ -82,9 +80,10 @@ export class InterestRequestService {
       messageParts.push(`Lead Source: ${request.leadSource}`);
     }
 
-    const message = messageParts.length > 0
-      ? messageParts.join('\n')
-      : 'No additional details provided';
+    const message =
+      messageParts.length > 0
+        ? messageParts.join('\n')
+        : 'No additional details provided';
 
     // Sync to HubSpot
     try {
@@ -118,7 +117,8 @@ export class InterestRequestService {
 
     return {
       success: true,
-      message: 'Thank you for your interest in early access! We have received your request and will notify you when early access becomes available.',
+      message:
+        'Thank you for your interest in early access! We have received your request and will notify you when early access becomes available.',
       referenceId,
     };
   }

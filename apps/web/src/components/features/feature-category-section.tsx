@@ -29,44 +29,38 @@ const gridColumns = {
   3: 'md:grid-cols-2 lg:grid-cols-3',
 };
 
-export const FeatureCategorySection = React.forwardRef<
-  HTMLDivElement,
-  FeatureCategorySectionProps
->(({ category, className, columns = 3, showHeader = true }, ref) => {
-  return (
-    <div ref={ref} className={cn('w-full py-16', className)}>
-      <div className="container mx-auto px-4 md:px-6">
-        {/* Category Header */}
-        {showHeader && (
-          <div className="mb-12 max-w-3xl">
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-4">
-              {category.title}
-            </h2>
-            {category.description && (
-              <p className="text-lg text-muted-foreground">
-                {category.description}
-              </p>
-            )}
-          </div>
-        )}
+export const FeatureCategorySection = React.forwardRef<HTMLDivElement, FeatureCategorySectionProps>(
+  ({ category, className, columns = 3, showHeader = true }, ref) => {
+    return (
+      <div ref={ref} className={cn('w-full py-16', className)}>
+        <div className="container mx-auto px-4 md:px-6">
+          {/* Category Header */}
+          {showHeader && (
+            <div className="mb-12 max-w-3xl">
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-4">
+                {category.title}
+              </h2>
+              {category.description && (
+                <p className="text-lg text-muted-foreground">{category.description}</p>
+              )}
+            </div>
+          )}
 
-        {/* Features Grid */}
-        <div className={cn(
-          'grid gap-8',
-          gridColumns[columns]
-        )}>
-          {category.features.map((feature, index) => (
-            <FeatureCard
-              key={feature.id}
-              {...feature}
-              animationDelay={index * 100}
-              color={category.color || feature.color}
-            />
-          ))}
+          {/* Features Grid */}
+          <div className={cn('grid gap-8', gridColumns[columns])}>
+            {category.features.map((feature, index) => (
+              <FeatureCard
+                key={feature.id}
+                {...feature}
+                animationDelay={index * 100}
+                color={category.color || feature.color}
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
 FeatureCategorySection.displayName = 'FeatureCategorySection';

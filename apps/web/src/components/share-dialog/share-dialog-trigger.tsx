@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { ShareDialog } from "./share-dialog";
-import { Button } from "@legal/ui";
-import { Share2 } from "lucide-react";
+import { useState } from 'react';
+import { ShareDialog } from './share-dialog';
+import { Button } from '@legal/ui';
+import { Share2 } from 'lucide-react';
 
 interface ShareDialogTriggerProps {
   documentId: string;
   documentTitle: string;
-  variant?: "default" | "outline" | "ghost" | "destructive";
-  size?: "default" | "sm" | "lg" | "icon";
+  variant?: 'default' | 'outline' | 'ghost' | 'destructive';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
   className?: string;
   children?: React.ReactNode;
 }
@@ -23,8 +23,8 @@ interface ShareDialogTriggerProps {
 export function ShareDialogTrigger({
   documentId,
   documentTitle,
-  variant = "default",
-  size = "default",
+  variant = 'default',
+  size = 'default',
   className,
   children,
 }: ShareDialogTriggerProps) {
@@ -32,12 +32,7 @@ export function ShareDialogTrigger({
 
   return (
     <>
-      <Button
-        onClick={() => setIsOpen(true)}
-        variant={variant}
-        size={size}
-        className={className}
-      >
+      <Button onClick={() => setIsOpen(true)} variant={variant} size={size} className={className}>
         {children || (
           <>
             <Share2 className="w-4 h-4 mr-2" />

@@ -45,16 +45,22 @@ const divideResult = (a: number, b: number): Result<number, string> => {
 };
 
 const result1 = divideResult(10, 2);
-console.log('Division result:', result1.match({
-  success: (value) => `Success: ${value}`,
-  failure: (error) => `Error: ${error}`,
-}));
+console.log(
+  'Division result:',
+  result1.match({
+    success: (value) => `Success: ${value}`,
+    failure: (error) => `Error: ${error}`,
+  }),
+);
 
 const result2 = divideResult(10, 0);
-console.log('Division by zero:', result2.match({
-  success: (value) => `Success: ${value}`,
-  failure: (error) => `Error: ${error}`,
-}));
+console.log(
+  'Division by zero:',
+  result2.match({
+    success: (value) => `Success: ${value}`,
+    failure: (error) => `Error: ${error}`,
+  }),
+);
 
 // Example: Option type
 const findUser = (id: string): Option<{ name: string }> => {
@@ -65,9 +71,12 @@ const findUser = (id: string): Option<{ name: string }> => {
 };
 
 const user = findUser('123');
-console.log('User found:', user.match({
-  some: (u) => `Found: ${u.name}`,
-  none: () => 'Not found',
-}));
+console.log(
+  'User found:',
+  user.match({
+    some: (u) => `Found: ${u.name}`,
+    none: () => 'Not found',
+  }),
+);
 
 console.log('Shared kernel examples completed successfully!');

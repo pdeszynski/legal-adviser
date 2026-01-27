@@ -1344,11 +1344,7 @@
             "Version history",
             "Advanced search filters"
           ],
-          "excluded": [
-            "API access",
-            "White-label options",
-            "Dedicated account manager"
-          ]
+          "excluded": ["API access", "White-label options", "Dedicated account manager"]
         }
       },
       "team": {
@@ -1367,10 +1363,7 @@
             "API access",
             "Custom branding options"
           ],
-          "excluded": [
-            "On-premise deployment",
-            "Custom SLA"
-          ]
+          "excluded": ["On-premise deployment", "Custom SLA"]
         }
       },
       "enterprise": {
@@ -1724,4 +1717,3 @@
     }
   }
 }
-

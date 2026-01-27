@@ -1343,11 +1343,7 @@
             "Historia wersji",
             "Zaawansowane filtry wyszukiwania"
           ],
-          "excluded": [
-            "Dostęp API",
-            "Opcje white-label",
-            "Dedykowany opiekun konta"
-          ]
+          "excluded": ["Dostęp API", "Opcje white-label", "Dedykowany opiekun konta"]
         }
       },
       "team": {
@@ -1366,10 +1362,7 @@
             "Dostęp API",
             "Opcje niestandardowego brandingu"
           ],
-          "excluded": [
-            "Wdrożenie on-premise",
-            "Niestandardowy SLA"
-          ]
+          "excluded": ["Wdrożenie on-premise", "Niestandardowy SLA"]
         }
       },
       "enterprise": {

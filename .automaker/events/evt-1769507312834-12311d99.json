@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769507312834-12311d99",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T09:48:32.834Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "ai-streaming-error-handling",
+  "featureName": "Streaming Error Handling and Retry Logic",
+  "error": "Feature completed in 1120s - auto-verified",
+  "passes": true
+}

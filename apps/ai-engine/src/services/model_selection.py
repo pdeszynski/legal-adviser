@@ -284,7 +284,7 @@ def get_model_for_operation(operation: str) -> str:
 
     if tier == ModelTier.FAST:
         return "openai:gpt-4o-mini"
-    elif tier == ModelTier.BALANCED:
+    if tier == ModelTier.BALANCED:
         return "openai:gpt-4o"
 
     # Default to settings

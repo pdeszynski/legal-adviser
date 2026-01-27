@@ -22,7 +22,7 @@ from langgraph.graph import END, StateGraph
 
 from ..agents.classifier_agent import classify_case
 from ..agents.drafting_agent import generate_document
-from ..langfuse_init import is_langfuse_enabled, start_as_current_span
+from ..langfuse_init import is_langfuse_enabled, update_current_trace
 from .states import DocumentGenerationState, create_document_generation_state
 
 # -----------------------------------------------------------------------------
@@ -38,42 +38,37 @@ async def classify_case_node(state: DocumentGenerationState) -> DocumentGenerati
     """
     metadata = state.get("metadata", {})
 
-    async with start_as_current_span(
-        "classify_case",
-        session_id=metadata.get("session_id"),
-        metadata={"workflow": "document_generation", "step": "classify_case"},
-    ):
-        try:
-            # Use description for classification
-            result, _agent_metadata = await classify_case(
-                case_description=state["description"],
-                session_id=metadata.get("session_id", "default"),
-                user_id=metadata.get("user_id"),
-            )
+    try:
+        # Use description for classification
+        result, _agent_metadata = await classify_case(
+            case_description=state["description"],
+            session_id=metadata.get("session_id", "default"),
+            user_id=metadata.get("user_id"),
+        )
 
-            # Convert to dicts for state
-            legal_grounds = [
-                {
-                    "name": ground.name,
-                    "description": ground.description,
-                    "confidence_score": ground.confidence_score,
-                    "legal_basis": ground.legal_basis,
-                    "notes": ground.notes,
-                }
-                for ground in result.identified_grounds
-            ]
+        # Convert to dicts for state
+        legal_grounds = [
+            {
+                "name": ground.name,
+                "description": ground.description,
+                "confidence_score": ground.confidence_score,
+                "legal_basis": ground.legal_basis,
+                "notes": ground.notes,
+            }
+            for ground in result.identified_grounds
+        ]
 
-            state["legal_grounds"] = legal_grounds
-            state["metadata"]["current_step"] = "classify_case"
-            state["next_step"] = "draft"
+        state["legal_grounds"] = legal_grounds
+        state["metadata"]["current_step"] = "classify_case"
+        state["next_step"] = "draft"
 
-            return state
+        return state
 
-        except Exception:
-            # Classification failure is not fatal - proceed without it
-            state["legal_grounds"] = []
-            state["next_step"] = "draft"
-            return state
+    except Exception:
+        # Classification failure is not fatal - proceed without it
+        state["legal_grounds"] = []
+        state["next_step"] = "draft"
+        return state
 
 
 async def draft_node(state: DocumentGenerationState) -> DocumentGenerationState:
@@ -86,47 +81,42 @@ async def draft_node(state: DocumentGenerationState) -> DocumentGenerationState:
     """
     metadata = state.get("metadata", {})
 
-    async with start_as_current_span(
-        "draft",
-        session_id=metadata.get("session_id"),
-        metadata={"workflow": "document_generation", "step": "draft"},
-    ):
-        try:
-            iteration = state.get("draft_iteration", 0)
+    try:
+        iteration = state.get("draft_iteration", 0)
 
-            # Build context with legal grounds and previous feedback
-            context = state.get("context", {}).copy()
+        # Build context with legal grounds and previous feedback
+        context = state.get("context", {}).copy()
 
-            if state.get("legal_grounds"):
-                context["legal_grounds"] = state["legal_grounds"]
+        if state.get("legal_grounds"):
+            context["legal_grounds"] = state["legal_grounds"]
 
-            if iteration > 0 and state.get("review_feedback"):
-                feedback = state["review_feedback"]
-                context["revision_feedback"] = {
-                    "issues": feedback.get("issues", []),
-                    "suggestions": feedback.get("suggestions", []),
-                }
+        if iteration > 0 and state.get("review_feedback"):
+            feedback = state["review_feedback"]
+            context["revision_feedback"] = {
+                "issues": feedback.get("issues", []),
+                "suggestions": feedback.get("suggestions", []),
+            }
 
-            # Call the drafting agent
-            result, _agent_metadata = await generate_document(
-                document_type=state["document_type"],
-                description=state["description"],
-                context=context,
-                session_id=metadata.get("session_id", "default"),
-                user_id=metadata.get("user_id"),
-            )
+        # Call the drafting agent
+        result, _agent_metadata = await generate_document(
+            document_type=state["document_type"],
+            description=state["description"],
+            context=context,
+            session_id=metadata.get("session_id", "default"),
+            user_id=metadata.get("user_id"),
+        )
 
-            state["current_draft"] = result.content
-            state["draft_iteration"] = iteration + 1
-            state["metadata"]["current_step"] = "draft"
-            state["next_step"] = "review"
+        state["current_draft"] = result.content
+        state["draft_iteration"] = iteration + 1
+        state["metadata"]["current_step"] = "draft"
+        state["next_step"] = "review"
 
-            return state
+        return state
 
-        except Exception as e:
-            state["error"] = str(e)
-            state["next_step"] = "error"
-            return state
+    except Exception as e:
+        state["error"] = str(e)
+        state["next_step"] = "error"
+        return state
 
 
 async def review_node(state: DocumentGenerationState) -> DocumentGenerationState:
@@ -141,65 +131,60 @@ async def review_node(state: DocumentGenerationState) -> DocumentGenerationState
     metadata = state.get("metadata", {})
     draft = state.get("current_draft", "")
 
-    async with start_as_current_span(
-        "review",
-        session_id=metadata.get("session_id"),
-        metadata={"workflow": "document_generation", "step": "review"},
-    ):
-        try:
-            # Simple review logic (could be enhanced with an actual reviewer agent)
-            issues = []
-            suggestions = []
+    try:
+        # Simple review logic (could be enhanced with an actual reviewer agent)
+        issues = []
+        suggestions = []
 
-            # Check for placeholders
-            import re
+        # Check for placeholders
+        import re
 
-            placeholders = re.findall(r'\[([A-Z_]+)\]', draft)
-            if placeholders:
-                issues.append(f"Document contains {len(placeholders)} placeholders: {', '.join(set(placeholders))}")
+        placeholders = re.findall(r'\[([A-Z_]+)\]', draft)
+        if placeholders:
+            issues.append(f"Document contains {len(placeholders)} placeholders: {', '.join(set(placeholders))}")
 
-            # Check minimum length
-            if len(draft) < 200:
-                issues.append("Document appears too short for the requested type")
+        # Check minimum length
+        if len(draft) < 200:
+            issues.append("Document appears too short for the requested type")
 
-            # Check for document structure based on type
-            doc_type = state.get("document_type", "").lower()
-            if "pozew" in doc_type or "allow" in doc_type:
-                required_sections = ["Strona", "Wnioskodawca", "Wnioskowany"]
-                missing = [s for s in required_sections if s.lower() not in draft.lower()]
-                if missing:
-                    issues.append(f"Missing required sections for lawsuit: {', '.join(missing)}")
+        # Check for document structure based on type
+        doc_type = state.get("document_type", "").lower()
+        if "pozew" in doc_type or "allow" in doc_type:
+            required_sections = ["Strona", "Wnioskodawca", "Wnioskowany"]
+            missing = [s for s in required_sections if s.lower() not in draft.lower()]
+            if missing:
+                issues.append(f"Missing required sections for lawsuit: {', '.join(missing)}")
 
-            # Check for legal basis if classification was done
-            if state.get("legal_grounds"):
-                has_legal_basis = any(
-                    "podstawa prawna" in draft.lower() or
-                    any(basis.lower() in draft.lower() for ground in state["legal_grounds"]
-                        for basis in ground.get("legal_basis", []))
-                )
-                if not has_legal_basis:
-                    suggestions.append("Consider adding explicit legal basis references")
+        # Check for legal basis if classification was done
+        if state.get("legal_grounds"):
+            has_legal_basis = any(
+                "podstawa prawna" in draft.lower() or
+                any(basis.lower() in draft.lower() for ground in state["legal_grounds"]
+                    for basis in ground.get("legal_basis", []))
+            )
+            if not has_legal_basis:
+                suggestions.append("Consider adding explicit legal basis references")
 
-            # Determine approval status
-            # Auto-approve if no major issues and we've done at least one iteration
-            approved = len(issues) == 0
+        # Determine approval status
+        # Auto-approve if no major issues and we've done at least one iteration
+        approved = len(issues) == 0
 
-            state["review_feedback"] = {
-                "approved": approved,
-                "issues": issues,
-                "suggestions": suggestions,
-                "needs_revision": not approved,
-            }
-            state["approved"] = approved
-            state["metadata"]["current_step"] = "review"
-            state["next_step"] = "check_approval"
+        state["review_feedback"] = {
+            "approved": approved,
+            "issues": issues,
+            "suggestions": suggestions,
+            "needs_revision": not approved,
+        }
+        state["approved"] = approved
+        state["metadata"]["current_step"] = "review"
+        state["next_step"] = "check_approval"
 
-            return state
+        return state
 
-        except Exception as e:
-            state["error"] = str(e)
-            state["next_step"] = "error"
-            return state
+    except Exception as e:
+        state["error"] = str(e)
+        state["next_step"] = "error"
+        return state
 
 
 async def check_approval_node(state: DocumentGenerationState) -> DocumentGenerationState:
@@ -242,24 +227,17 @@ async def complete_node(state: DocumentGenerationState) -> DocumentGenerationSta
 
     This node produces the final output with metadata.
     """
-    metadata = state.get("metadata", {})
+    try:
+        state["final_document"] = state.get("current_draft", "")
+        state["metadata"]["current_step"] = "complete"
+        state["next_step"] = END  # type: ignore
 
-    async with start_as_current_span(
-        "complete",
-        session_id=metadata.get("session_id"),
-        metadata={"workflow": "document_generation", "step": "complete"},
-    ):
-        try:
-            state["final_document"] = state.get("current_draft", "")
-            state["metadata"]["current_step"] = "complete"
-            state["next_step"] = END  # type: ignore
+        return state
 
-            return state
-
-        except Exception as e:
-            state["error"] = str(e)
-            state["next_step"] = "error"
-            return state
+    except Exception as e:
+        state["error"] = str(e)
+        state["next_step"] = "error"
+        return state
 
 
 # -----------------------------------------------------------------------------
@@ -387,20 +365,6 @@ class DocumentGenerationWorkflow:
         )
         state["max_iterations"] = max_iterations
 
-        # Create workflow-level trace
-        from ..langfuse_init import create_trace
-        trace = create_trace(
-            name="document_generation_workflow",
-            input={"document_type": document_type, "description": description[:200]},
-            session_id=session_id,
-            user_id=user_id,
-            metadata={
-                "workflow": "document_generation",
-                "document_type": document_type,
-                "max_iterations": max_iterations,
-            },
-        )
-
         try:
             # Run the workflow (agents are automatically traced via instrument=True)
             result = await self.graph.ainvoke(state)
@@ -419,8 +383,9 @@ class DocumentGenerationWorkflow:
                 "error": result.get("error"),
             }
 
-            if trace:
-                trace.update(
+            # Update trace with workflow-level metadata
+            if is_langfuse_enabled():
+                update_current_trace(
                     output={
                         "document_length": len(output["final_document"] or ""),
                         "iterations": output["draft_iteration"],
@@ -428,13 +393,10 @@ class DocumentGenerationWorkflow:
                         "processing_time_ms": processing_time_ms,
                     }
                 )
-                trace.end()
 
             return output
 
         except Exception as e:
-            if trace:
-                trace.end(level="ERROR", status_message=str(e))
             raise
 
 

@@ -107,7 +107,7 @@ const InterestPage = () => {
           }
         });
       },
-      { threshold: 0.5 } // Track when 50% of form is visible
+      { threshold: 0.5 }, // Track when 50% of form is visible
     );
 
     observer.observe(formSectionRef.current);
@@ -262,7 +262,9 @@ const InterestPage = () => {
           setIsSuccess(false);
         }, 10000);
       } else {
-        throw new Error(result?.submitInterestRequest?.message || 'Failed to submit interest request');
+        throw new Error(
+          result?.submitInterestRequest?.message || 'Failed to submit interest request',
+        );
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
@@ -423,8 +425,12 @@ const InterestPage = () => {
         <section className="w-full py-12 sm:py-16 bg-muted/30">
           <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
             <div className="max-w-4xl mx-auto text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">{t('valueProp.title')}</h2>
-              <p className="text-muted-foreground text-base sm:text-lg px-2">{t('valueProp.subtitle')}</p>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
+                {t('valueProp.title')}
+              </h2>
+              <p className="text-muted-foreground text-base sm:text-lg px-2">
+                {t('valueProp.subtitle')}
+              </p>
             </div>
 
             <div className="grid gap-6 sm:gap-8 md:grid-cols-3 max-w-5xl mx-auto">
@@ -460,8 +466,12 @@ const InterestPage = () => {
           <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-8 sm:mb-12">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">{t('whatToExpect.title')}</h2>
-                <p className="text-muted-foreground text-base sm:text-lg px-2">{t('whatToExpect.subtitle')}</p>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
+                  {t('whatToExpect.title')}
+                </h2>
+                <p className="text-muted-foreground text-base sm:text-lg px-2">
+                  {t('whatToExpect.subtitle')}
+                </p>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
@@ -486,7 +496,9 @@ const InterestPage = () => {
           <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-8 sm:mb-12">
-                <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">{t('socialProof.title')}</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
+                  {t('socialProof.title')}
+                </h2>
                 <div className="flex items-center justify-center gap-2 text-muted-foreground">
                   <Users className="h-5 w-5" />
                   <span className="text-base sm:text-lg">{t('socialProof.waitlist')}</span>
@@ -495,40 +507,58 @@ const InterestPage = () => {
 
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <div className="p-5 sm:p-6 rounded-2xl bg-background border">
-                  <p className="text-muted-foreground text-sm mb-4">&ldquo;{t('socialProof.testimonial1.quote')}&rdquo;</p>
+                  <p className="text-muted-foreground text-sm mb-4">
+                    &ldquo;{t('socialProof.testimonial1.quote')}&rdquo;
+                  </p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center font-bold text-blue-700 text-sm flex-shrink-0">
                       {t('socialProof.testimonial1.author').substring(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-sm truncate">{t('socialProof.testimonial1.author')}</p>
-                      <p className="text-xs text-muted-foreground truncate">{t('socialProof.testimonial1.role')}</p>
+                      <p className="font-semibold text-sm truncate">
+                        {t('socialProof.testimonial1.author')}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {t('socialProof.testimonial1.role')}
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="p-5 sm:p-6 rounded-2xl bg-background border">
-                  <p className="text-muted-foreground text-sm mb-4">&ldquo;{t('socialProof.testimonial2.quote')}&rdquo;</p>
+                  <p className="text-muted-foreground text-sm mb-4">
+                    &ldquo;{t('socialProof.testimonial2.quote')}&rdquo;
+                  </p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center font-bold text-purple-700 text-sm flex-shrink-0">
                       {t('socialProof.testimonial2.author').substring(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-sm truncate">{t('socialProof.testimonial2.author')}</p>
-                      <p className="text-xs text-muted-foreground truncate">{t('socialProof.testimonial2.role')}</p>
+                      <p className="font-semibold text-sm truncate">
+                        {t('socialProof.testimonial2.author')}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {t('socialProof.testimonial2.role')}
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="p-5 sm:p-6 rounded-2xl bg-background border sm:col-span-2 lg:col-span-1">
-                  <p className="text-muted-foreground text-sm mb-4">&ldquo;{t('socialProof.testimonial3.quote')}&rdquo;</p>
+                  <p className="text-muted-foreground text-sm mb-4">
+                    &ldquo;{t('socialProof.testimonial3.quote')}&rdquo;
+                  </p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center font-bold text-emerald-700 text-sm flex-shrink-0">
                       {t('socialProof.testimonial3.author').substring(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-sm truncate">{t('socialProof.testimonial3.author')}</p>
-                      <p className="text-xs text-muted-foreground truncate">{t('socialProof.testimonial3.role')}</p>
+                      <p className="font-semibold text-sm truncate">
+                        {t('socialProof.testimonial3.author')}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {t('socialProof.testimonial3.role')}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -547,241 +577,260 @@ const InterestPage = () => {
                 <div className="rounded-2xl sm:rounded-3xl border border-border bg-card p-6 sm:p-8 md:p-10 shadow-xl">
                   <div className="text-center mb-6 sm:mb-8">
                     <h2 className="text-xl sm:text-2xl font-bold mb-2">{t('form.title')}</h2>
-                    <p className="text-muted-foreground text-sm sm:text-base">{t('form.subtitle')}</p>
+                    <p className="text-muted-foreground text-sm sm:text-base">
+                      {t('form.subtitle')}
+                    </p>
                   </div>
 
                   {isSuccess ? (
-                  <div className="py-8 text-center space-y-6">
-                    <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto">
-                      <CheckCircle className="h-8 w-8 text-green-600" />
-                    </div>
-                    <h3 className="text-xl font-bold">{t('form.success.title')}</h3>
-                    <p className="text-muted-foreground">{t('form.success.message')}</p>
-                    <div className="bg-muted/50 rounded-xl p-4 text-left">
-                      <p className="font-semibold text-sm mb-3">{t('form.success.nextSteps')}</p>
-                      <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li className="flex items-start gap-2">
-                          <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                          {t('form.success.step1')}
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                          {t('form.success.step2')}
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                          {t('form.success.step3')}
-                        </li>
-                      </ul>
-                    </div>
-                    <Link href="/">
-                      <Button variant="outline" className="mt-4">
-                        {t('form.success.backButton')}
-                      </Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Name */}
-                    <div className="space-y-2">
-                      <label htmlFor="fullName" className="block text-sm font-medium">
-                        {t('form.fields.name')} <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="fullName"
-                        type="text"
-                        autoComplete="name"
-                        inputMode="text"
-                        value={formData.fullName}
-                        onChange={(e) => handleInputChange('fullName', e.target.value)}
-                        onFocus={() => handleFieldFocus('fullName')}
-                        placeholder={t('form.placeholders.name')}
-                        className="w-full px-4 py-3.5 min-h-[44px] bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-base"
-                      />
-                      {errors.fullName && <p className="text-sm text-red-500">{errors.fullName}</p>}
-                    </div>
-
-                    {/* Email */}
-                    <div className="space-y-2">
-                      <label htmlFor="email" className="block text-sm font-medium">
-                        {t('form.fields.email')} <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                        <input
-                          id="email"
-                          type="email"
-                          autoComplete="email"
-                          inputMode="email"
-                          value={formData.email}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
-                          onFocus={() => handleFieldFocus('email')}
-                          placeholder={t('form.placeholders.email')}
-                          className="w-full pl-10 pr-4 py-3.5 min-h-[44px] bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-base"
-                        />
+                    <div className="py-8 text-center space-y-6">
+                      <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto">
+                        <CheckCircle className="h-8 w-8 text-green-600" />
                       </div>
-                      {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+                      <h3 className="text-xl font-bold">{t('form.success.title')}</h3>
+                      <p className="text-muted-foreground">{t('form.success.message')}</p>
+                      <div className="bg-muted/50 rounded-xl p-4 text-left">
+                        <p className="font-semibold text-sm mb-3">{t('form.success.nextSteps')}</p>
+                        <ul className="space-y-2 text-sm text-muted-foreground">
+                          <li className="flex items-start gap-2">
+                            <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                            {t('form.success.step1')}
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                            {t('form.success.step2')}
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                            {t('form.success.step3')}
+                          </li>
+                        </ul>
+                      </div>
+                      <Link href="/">
+                        <Button variant="outline" className="mt-4">
+                          {t('form.success.backButton')}
+                        </Button>
+                      </Link>
                     </div>
-
-                    {/* Company (Optional) */}
-                    <div className="space-y-2">
-                      <label htmlFor="company" className="block text-sm font-medium">
-                        {t('form.fields.company')}
-                      </label>
-                      <div className="relative">
-                        <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  ) : (
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                      {/* Name */}
+                      <div className="space-y-2">
+                        <label htmlFor="fullName" className="block text-sm font-medium">
+                          {t('form.fields.name')} <span className="text-red-500">*</span>
+                        </label>
                         <input
-                          id="company"
+                          id="fullName"
                           type="text"
-                          autoComplete="organization"
+                          autoComplete="name"
                           inputMode="text"
-                          value={formData.company}
-                          onChange={(e) => handleInputChange('company', e.target.value)}
-                          onFocus={() => handleFieldFocus('company')}
-                          placeholder={t('form.placeholders.company')}
-                          className="w-full pl-10 pr-4 py-3.5 min-h-[44px] bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-base"
+                          value={formData.fullName}
+                          onChange={(e) => handleInputChange('fullName', e.target.value)}
+                          onFocus={() => handleFieldFocus('fullName')}
+                          placeholder={t('form.placeholders.name')}
+                          className="w-full px-4 py-3.5 min-h-[44px] bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-base"
                         />
+                        {errors.fullName && (
+                          <p className="text-sm text-red-500">{errors.fullName}</p>
+                        )}
                       </div>
-                    </div>
 
-                    {/* Role */}
-                    <div className="space-y-2">
-                      <label htmlFor="role" className="block text-sm font-medium">
-                        {t('form.fields.role')}
-                      </label>
-                      <div className="relative">
-                        <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                        <input
-                          id="role"
-                          type="text"
-                          autoComplete="organization-title"
-                          inputMode="text"
-                          value={formData.role}
-                          onChange={(e) => handleInputChange('role', e.target.value)}
-                          onFocus={() => handleFieldFocus('role')}
-                          placeholder={t('form.placeholders.role')}
-                          className="w-full pl-10 pr-4 py-3.5 min-h-[44px] bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-base"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Use Case */}
-                    <div className="space-y-2">
-                      <label htmlFor="useCase" className="block text-sm font-medium">
-                        {t('form.fields.useCase')} <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <MessageSquare className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
-                        <textarea
-                          id="useCase"
-                          value={formData.useCase}
-                          onChange={(e) => handleInputChange('useCase', e.target.value)}
-                          onFocus={() => handleFieldFocus('useCase')}
-                          placeholder={t('form.placeholders.useCase')}
-                          rows={3}
-                          className="w-full pl-10 pr-4 py-3.5 min-h-[44px] bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none text-base"
-                        />
-                      </div>
-                      {errors.useCase && <p className="text-sm text-red-500">{errors.useCase}</p>}
-                    </div>
-
-                    {/* Source */}
-                    <div className="space-y-2">
-                      <label htmlFor="leadSource" className="block text-sm font-medium">
-                        {t('form.fields.source')}
-                      </label>
-                      <div className="relative">
-                        <select
-                          id="leadSource"
-                          value={formData.leadSource}
-                          onChange={(e) => handleInputChange('leadSource', e.target.value)}
-                          onFocus={() => handleFieldFocus('leadSource')}
-                          className="w-full px-4 py-3.5 min-h-[44px] bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none cursor-pointer text-base"
-                        >
-                          <option value="">{t('form.placeholders.source')}</option>
-                          <option value="searchEngine">{t('form.sources.searchEngine')}</option>
-                          <option value="socialMedia">{t('form.sources.socialMedia')}</option>
-                          <option value="referral">{t('form.sources.referral')}</option>
-                          <option value="event">{t('form.sources.event')}</option>
-                          <option value="article">{t('form.sources.article')}</option>
-                          <option value="other">{t('form.sources.other')}</option>
-                        </select>
-                        {/* Custom dropdown arrow */}
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                          <svg className="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* GDPR Consent */}
-                    <div className="space-y-2">
-                      <div className="flex items-start gap-3">
-                        <div className="relative flex items-start pt-1">
+                      {/* Email */}
+                      <div className="space-y-2">
+                        <label htmlFor="email" className="block text-sm font-medium">
+                          {t('form.fields.email')} <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                           <input
-                            id="consent"
-                            type="checkbox"
-                            checked={formData.consent}
-                            onChange={(e) => handleInputChange('consent', e.target.checked)}
-                            disabled={isSubmitting}
-                            className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-600 focus:ring-2"
-                            style={{ minWidth: '20px' }}
+                            id="email"
+                            type="email"
+                            autoComplete="email"
+                            inputMode="email"
+                            value={formData.email}
+                            onChange={(e) => handleInputChange('email', e.target.value)}
+                            onFocus={() => handleFieldFocus('email')}
+                            placeholder={t('form.placeholders.email')}
+                            className="w-full pl-10 pr-4 py-3.5 min-h-[44px] bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-base"
                           />
                         </div>
-                        <div className="flex-1">
-                          <label htmlFor="consent" className="text-sm font-normal cursor-pointer leading-relaxed">
-                            I agree to receive product updates and my data being processed in accordance
-                            with the{' '}
-                            <a
-                              href="/privacy"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
-                            >
-                              Privacy Policy
-                            </a>
-                            . *
-                          </label>
-                          {errors.consent && <p className="text-sm text-red-500 mt-1">{errors.consent}</p>}
+                        {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+                      </div>
+
+                      {/* Company (Optional) */}
+                      <div className="space-y-2">
+                        <label htmlFor="company" className="block text-sm font-medium">
+                          {t('form.fields.company')}
+                        </label>
+                        <div className="relative">
+                          <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                          <input
+                            id="company"
+                            type="text"
+                            autoComplete="organization"
+                            inputMode="text"
+                            value={formData.company}
+                            onChange={(e) => handleInputChange('company', e.target.value)}
+                            onFocus={() => handleFieldFocus('company')}
+                            placeholder={t('form.placeholders.company')}
+                            className="w-full pl-10 pr-4 py-3.5 min-h-[44px] bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-base"
+                          />
                         </div>
                       </div>
-                    </div>
 
-                    {/* Error message */}
-                    {submitError && (
-                      <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive flex items-start gap-2">
-                        <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                        <span>{submitError}</span>
+                      {/* Role */}
+                      <div className="space-y-2">
+                        <label htmlFor="role" className="block text-sm font-medium">
+                          {t('form.fields.role')}
+                        </label>
+                        <div className="relative">
+                          <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                          <input
+                            id="role"
+                            type="text"
+                            autoComplete="organization-title"
+                            inputMode="text"
+                            value={formData.role}
+                            onChange={(e) => handleInputChange('role', e.target.value)}
+                            onFocus={() => handleFieldFocus('role')}
+                            placeholder={t('form.placeholders.role')}
+                            className="w-full pl-10 pr-4 py-3.5 min-h-[44px] bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-base"
+                          />
+                        </div>
                       </div>
-                    )}
 
-                    {/* Submit Button */}
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full min-h-[48px] bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] rounded-full text-base font-medium mt-6 active:scale-[0.98]"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          {t('form.submitting')}
-                        </>
-                      ) : (
-                        <>
-                          {t('form.submit')}
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </>
+                      {/* Use Case */}
+                      <div className="space-y-2">
+                        <label htmlFor="useCase" className="block text-sm font-medium">
+                          {t('form.fields.useCase')} <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <MessageSquare className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+                          <textarea
+                            id="useCase"
+                            value={formData.useCase}
+                            onChange={(e) => handleInputChange('useCase', e.target.value)}
+                            onFocus={() => handleFieldFocus('useCase')}
+                            placeholder={t('form.placeholders.useCase')}
+                            rows={3}
+                            className="w-full pl-10 pr-4 py-3.5 min-h-[44px] bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none text-base"
+                          />
+                        </div>
+                        {errors.useCase && <p className="text-sm text-red-500">{errors.useCase}</p>}
+                      </div>
+
+                      {/* Source */}
+                      <div className="space-y-2">
+                        <label htmlFor="leadSource" className="block text-sm font-medium">
+                          {t('form.fields.source')}
+                        </label>
+                        <div className="relative">
+                          <select
+                            id="leadSource"
+                            value={formData.leadSource}
+                            onChange={(e) => handleInputChange('leadSource', e.target.value)}
+                            onFocus={() => handleFieldFocus('leadSource')}
+                            className="w-full px-4 py-3.5 min-h-[44px] bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all appearance-none cursor-pointer text-base"
+                          >
+                            <option value="">{t('form.placeholders.source')}</option>
+                            <option value="searchEngine">{t('form.sources.searchEngine')}</option>
+                            <option value="socialMedia">{t('form.sources.socialMedia')}</option>
+                            <option value="referral">{t('form.sources.referral')}</option>
+                            <option value="event">{t('form.sources.event')}</option>
+                            <option value="article">{t('form.sources.article')}</option>
+                            <option value="other">{t('form.sources.other')}</option>
+                          </select>
+                          {/* Custom dropdown arrow */}
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                            <svg
+                              className="h-4 w-4 text-muted-foreground"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* GDPR Consent */}
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-3">
+                          <div className="relative flex items-start pt-1">
+                            <input
+                              id="consent"
+                              type="checkbox"
+                              checked={formData.consent}
+                              onChange={(e) => handleInputChange('consent', e.target.checked)}
+                              disabled={isSubmitting}
+                              className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-600 focus:ring-2"
+                              style={{ minWidth: '20px' }}
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <label
+                              htmlFor="consent"
+                              className="text-sm font-normal cursor-pointer leading-relaxed"
+                            >
+                              I agree to receive product updates and my data being processed in
+                              accordance with the{' '}
+                              <a
+                                href="/privacy"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline"
+                              >
+                                Privacy Policy
+                              </a>
+                              . *
+                            </label>
+                            {errors.consent && (
+                              <p className="text-sm text-red-500 mt-1">{errors.consent}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Error message */}
+                      {submitError && (
+                        <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive flex items-start gap-2">
+                          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                          <span>{submitError}</span>
+                        </div>
                       )}
-                    </Button>
 
-                    <p className="text-xs text-center text-muted-foreground mt-4">
-                      {t('form.privacyNotice')}
-                    </p>
-                  </form>
-                )}
-              </div>
-                )}
+                      {/* Submit Button */}
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full min-h-[48px] bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] rounded-full text-base font-medium mt-6 active:scale-[0.98]"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            {t('form.submitting')}
+                          </>
+                        ) : (
+                          <>
+                            {t('form.submit')}
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </>
+                        )}
+                      </Button>
+
+                      <p className="text-xs text-center text-muted-foreground mt-4">
+                        {t('form.privacyNotice')}
+                      </p>
+                    </form>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -790,11 +839,16 @@ const InterestPage = () => {
         <section className="w-full py-12 sm:py-16 bg-muted/30">
           <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
             <div className="max-w-2xl mx-auto">
-              <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">{t('faq.title')}</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">
+                {t('faq.title')}
+              </h2>
 
               <div className="space-y-3 sm:space-y-4">
                 {faqs.map((faq, index) => (
-                  <div key={index} className="rounded-xl border border-border bg-card overflow-hidden">
+                  <div
+                    key={index}
+                    className="rounded-xl border border-border bg-card overflow-hidden"
+                  >
                     <button
                       type="button"
                       onClick={() => toggleFaq(index)}
@@ -824,7 +878,9 @@ const InterestPage = () => {
           <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
             <div className="max-w-2xl mx-auto text-center space-y-4 sm:space-y-6 px-2">
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">{t('bottomCta.title')}</h2>
-              <p className="text-muted-foreground text-sm sm:text-base">{t('bottomCta.subtitle')}</p>
+              <p className="text-muted-foreground text-sm sm:text-base">
+                {t('bottomCta.subtitle')}
+              </p>
               <Link href="/early-access">
                 <Button
                   size="lg"

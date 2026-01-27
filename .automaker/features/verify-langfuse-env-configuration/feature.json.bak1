@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Ensure all required Langfuse environment variables are properly configured in the AI Engine. Check: 1) LANGFUSE_PUBLIC_KEY is set and valid (pk-... format), 2) LANGFUSE_SECRET_KEY is set and valid (sk-... format), 3) LANGFUSE_HOST is correctly configured (https://cloud.langfuse.com for cloud, or custom URL for self-hosted), 4) LANGFUSE_ENABLED flag is working correctly, 5) LANGFUSE_SAMPLING_RATE is set appropriately (1.0 for full tracing in dev), 6) Environment variables are loaded correctly in FastAPI config, 7) Add validation at startup that fails fast if Langfuse keys are missing when enabled, 8) Document required environment variables in .env.example or CLAUDE.md.",
+  "id": "verify-langfuse-env-configuration",
+  "title": "Verify Langfuse Environment Configuration",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Ensure all required Langfuse environment variables are properly configured in the AI Engine. Check: 1) LANGFUSE_PUBLIC_KEY is set and valid (pk-... format), 2) LANGFUSE_SECRET_KEY is set and valid (sk-... format), 3) LANGFUSE_HOST is correctly configured (https://cloud.langfuse.com for cloud, or custom URL for self-hosted), 4) LANGFUSE_ENABLED flag is working correctly, 5) LANGFUSE_SAMPLING_RATE is set appropriately (1.0 for full tracing in dev), 6) Environment variables are loaded correctly in FastAPI config, 7) Add validation at startup that fails fast if Langfuse keys are missing when enabled, 8) Document required environment variables in .env.example or CLAUDE.md.",
+      "timestamp": "2026-01-27T10:04:34.555Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-27T10:04:38.502Z"
+}

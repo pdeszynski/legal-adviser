@@ -3486,6 +3486,76 @@ Please fix that error</description>
       <name>Fix Langfuse integration to follow official guidelines</name>
       <description>Langfuse integration is done bad, too manully, please follow the official instruction https://langfuse.com/integrations/frameworks/pydantic-ai</description>
     </feature>
+    <feature>
+      <name>AI Engine CORS Configuration for Frontend Access</name>
+      <description>Configure FastAPI CORS middleware to allow direct frontend requests. Update AI Engine main.py: 1) Add CORSMiddleware from fastapi.middleware.cors, 2) Allow origins: [frontend_url, localhost:3000] from environment, 3) Allow credentials: true (for Authorization cookies/headers), 4) Allow methods: [&apos;GET&apos;, &apos;POST&apos;, &apos;OPTIONS&apos;], 5) Allow headers: [&apos;Authorization&apos;, &apos;Content-Type&apos;], 6) Handle preflight OPTIONS requests. Ensure CORS is configured before route definitions. Add FRONTEND_URL environment variable. Test CORS with browser DevTools to verify Authorization headers are sent correctly. Document CORS configuration in CLAUDE.md.</description>
+    </feature>
+    <feature>
+      <name>AI Engine JWT Token Validation Middleware</name>
+      <description>Implement JWT validation middleware in FastAPI AI Engine to authenticate users directly. Create: 1) JWT validation function using backend&apos;s JWT_SECRET or RS256 public key, 2) FastAPI dependency (jwt_dependency) that extracts and validates Authorization header, 3) User context object with userId, email, roles extracted from token claims, 4) Error handling for expired/invalid tokens returning 401, 5) Integration with existing PydanticAI agents to receive user context. Use same JWT signing key as backend (shared secret or environment variable). Ensure token expiration matches backend settings. Add health check for JWT validation service.</description>
+    </feature>
+    <feature>
+      <name>Direct AI Engine Streaming with JWT Auth</name>
+      <description>Implement streaming responses by allowing frontend to communicate directly with AI Engine. AI Engine will validate JWT tokens using the same authentication mechanism as the backend. This eliminates the backend proxy and enables real-time streaming from PydanticAI agents to frontend. Tasks: 1) Configure AI Engine to accept and validate JWT tokens from frontend requests, 2) Set up JWT verification using shared JWT_SECRET or backend public key, 3) Add user context extraction from validated tokens, 4) Configure CORS to allow frontend origin, 5) Implement Server-Sent Events (SSE) or streaming HTTP response from FastAPI endpoints (/api/v1/qa/ask-stream), 6) Update PydanticAI agents to yield partial responses as tokens generate, 7) Update frontend chat UI to consume streaming endpoint directly, 8) Remove backend GraphQL mutation askLegalQuestion for chat (keep for non-streaming if needed), 9) Update AI Client Service or create new streaming client, 10) Handle streaming errors and connection drops gracefully. This approach is simpler than GraphQL subscriptions and leverages FastAPI&apos;s native streaming capabilities.</description>
+    </feature>
+    <feature>
+      <name>AI Engine Streaming Chat Endpoint</name>
+      <description>Create streaming FastAPI endpoint POST /api/v1/qa/ask-stream for real-time AI responses. Implement using Server-Sent Events (SSE) or streaming JSON response. Endpoint should: 1) Accept { question: string, sessionId: string, mode: &apos;LAWYER&apos;|&apos;SIMPLE&apos; } in request body, 2) Validate JWT from Authorization header via jwt_dependency, 3) Initialize LangGraph workflow with user context, 4) Stream partial responses as tokens are generated (yield from PydanticAI agent), 5) Send events in format: { type: &apos;token&apos;|&apos;citation&apos;|&apos;error&apos;|&apos;done&apos;, content: string, metadata?: any }, 6) Include citations as separate events when available, 7) Send final &apos;done&apos; event with complete response metadata. Use FastAPI&apos;s StreamingResponse with async generator. Handle client disconnection gracefully. Test streaming with curl/Postman before frontend integration.</description>
+    </feature>
+    <feature>
+      <name>Frontend Streaming Chat UI Integration</name>
+      <description>Update legal chat frontend to consume streaming endpoint directly. Create: 1) StreamingChatService hook using fetch with TextDecoder or EventSource for SSE, 2) Token-by-token message bubble updates (append tokens to current message), 3) Citation rendering when citation events received, 4) Loading state during streaming (pulsing indicator or stop button), 5) Error handling for stream failures, 6) Session ID management (reuse existing or generate UUID v4), 7) JWT token inclusion from authProvider storage, 8) Abort controller for stopping mid-stream. Replace askLegalQuestion GraphQL mutation with direct streaming call. Maintain backward compatibility - fallback to GraphQL if streaming fails or for non-streaming queries. Update chat-ui-component to render streaming messages smoothly.</description>
+    </feature>
+    <feature>
+      <name>Document Streaming Architecture and Usage</name>
+      <description>Update CLAUDE.md with streaming architecture documentation. Include: 1) Overview of direct frontend-to-AI-Engine communication pattern, 2) JWT validation flow and token format, 3) Streaming endpoint API specification (/api/v1/qa/ask-stream), 4) SSE event format examples (token, citation, done events), 5) Frontend integration patterns (StreamingChatService hook usage), 6) Error handling and retry strategies, 7) CORS configuration and security considerations, 8) Monitoring and debugging streaming connections, 9) Migration guide from GraphQL mutation to streaming, 10) Troubleshooting common issues (CORS errors, token validation failures, stream drops). Add code examples for consuming streaming endpoint in frontend components.</description>
+    </feature>
+    <feature>
+      <name>E2E Tests for Streaming Chat</name>
+      <description>Create Playwright E2E tests for streaming chat functionality. Test scenarios: 1) Streaming response renders token-by-token (verify content accumulation), 2) Citations appear during stream, 3) Stop button interrupts stream correctly, 4) Reconnection after stream failure works, 5) Fallback to GraphQL on stream error (if backend still exists), 6) JWT token is sent correctly (verify in network trace), 7) Stream timeout handling, 8) Multiple sequential queries maintain session context, 9) Error messages display on stream failures. Use Playwright&apos;s request interception to mock streaming responses or test against real AI Engine. Measure time-to-first-token latency in tests.</description>
+    </feature>
+    <feature>
+      <name>Streaming Error Handling and Retry Logic</name>
+      <description>Implement comprehensive error handling for streaming responses. Create: 1) Stream error detection (parse error events from SSE), 2) Automatic retry on connection failures (exponential backoff, max 3 retries), 3) Fallback to non-streaming GraphQL mutation if streaming fails, 4) User-friendly error messages (&apos;Connection lost&apos;, &apos;AI service unavailable&apos;), 5) Partial response preservation (show tokens received before error), 6) Timeout handling (abort after 30s of inactivity), 7) Reconnection prompt if user wants to continue. Log all streaming errors to Sentry with context (session ID, user ID, error type). Ensure errors don&apos;t crash the chat UI - always show message and allow retry.</description>
+    </feature>
+    <feature>
+      <name>Fix Langfuse Integration with PydanticAI Following Official Documentation</name>
+      <description>Fix the Langfuse observability integration in AI Engine to properly send traces and metrics. The current implementation is not sending any data to Langfuse. Follow the official PydanticAI integration guide from https://langfuse.com/integrations/frameworks/pydantic-ai. Tasks: 1) Review existing Langfuse setup in apps/ai-engine (currently in src/config.py or initialization files), 2) Follow official PydanticAI integration pattern - use pydantic_ai.instrument_langfuse() instead of manual tracing, 3) Ensure LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY environment variables are properly set, 4) Initialize Langfuse correctly with proper host (cloud or self-hosted), 5) Instrument all PydanticAI agents (classifier_agent.py, qa_agent.py, drafting_agent.py, clarification_agent.py) with Langfuse using the official integration method, 6) Verify that traces appear in Langfuse dashboard when agents are called, 7) Test with sample agent calls and confirm data is sent, 8) Remove any manual tracing code that conflicts with the official integration, 9) Ensure proper error handling if Langfuse is unavailable, 10) Update CLAUDE.md with correct PydanticAI-Langfuse integration documentation.</description>
+    </feature>
+    <feature>
+      <name>Create Langfuse Trace Verification Dashboard</name>
+      <description>Create a simple admin or debug page in the AI Engine or backend to verify Langfuse is receiving traces. Add endpoint GET /api/v1/debug/langfuse-status that returns: 1) Langfuse connection status (connected/disconnected), 2) Number of traces sent in last hour/day, 3) Recent trace IDs for verification, 4) Last successful trace timestamp, 5) Any recent errors from Langfuse SDK, 6) Configuration check (keys present, sampling rate, etc.). This helps diagnose Langfuse issues without logging into Langfuse dashboard. Protect this endpoint with admin authentication.</description>
+    </feature>
+    <feature>
+      <name>Verify Langfuse Environment Configuration</name>
+      <description>Ensure all required Langfuse environment variables are properly configured in the AI Engine. Check: 1) LANGFUSE_PUBLIC_KEY is set and valid (pk-... format), 2) LANGFUSE_SECRET_KEY is set and valid (sk-... format), 3) LANGFUSE_HOST is correctly configured (https://cloud.langfuse.com for cloud, or custom URL for self-hosted), 4) LANGFUSE_ENABLED flag is working correctly, 5) LANGFUSE_SAMPLING_RATE is set appropriately (1.0 for full tracing in dev), 6) Environment variables are loaded correctly in FastAPI config, 7) Add validation at startup that fails fast if Langfuse keys are missing when enabled, 8) Document required environment variables in .env.example or CLAUDE.md.</description>
+    </feature>
+    <feature>
+      <name>Create E2E Tests for Langfuse Tracing</name>
+      <description>Create comprehensive E2E tests to verify Langfuse tracing works correctly. Test scenarios: 1) Call classifier agent and verify trace appears in Langfuse, 2) Call Q&amp;A agent and verify trace with spans appears, 3) Verify token usage is captured in traces, 4) Verify latency metrics are recorded, 5) Verify user ID and session ID are propagated to traces, 6) Test with Langfuse disabled to ensure no errors occur, 7) Test error cases - verify exceptions are captured in traces, 8) Use Langfuse public API or SDK to fetch traces and validate content, 9) Mock Langfuse API if needed for CI/CD, 10) Add tests to apps/ai-engine/tests/integration/test_langfuse_tracing.py.</description>
+    </feature>
+    <feature>
+      <name>Remove Manual Langfuse Tracing Code After Official Integration</name>
+      <description>After implementing the official PydanticAI-Langfuse integration, remove any manual tracing code that might conflict or be redundant. Tasks: 1) Search for manual Langfuse SDK usage (langfuse_sdk.create_span, langfuse_sdk.end_span, etc.), 2) Remove manual span creation in agent files, 3) Remove manual span creation in workflow files, 4) Keep only the official pydantic_ai.instrument_langfuse() call, 5) Ensure no duplicate tracing occurs, 6) Verify that all necessary context (user ID, session ID, metadata) is still captured through the official integration, 7) Clean up any unused Langfuse-related utility functions.</description>
+    </feature>
+    <feature>
+      <name>Fix ask-stream endpoint empty request body validation</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### AI Engine Streaming Chat Endpoint
+
+**Description:** Create streaming FastAPI endpoint POST /api/v1/qa/ask-stream for real-time AI responses. Implement using Server-Sent Events (SSE) or streaming JSON response. Endpoint should: 1) Accept { question: string, sessionId: string, mode: &apos;LAWYER&apos;|&apos;SIMPLE&apos; } in request body, 2) Validate JWT from Authorization header via jwt_dependency, 3) Initialize LangGraph workflow with user context, 4) Stream partial responses as tokens are generated (yield from PydanticAI agent), 5) Send events in format: { type: &apos;token&apos;|&apos;citation&apos;|&apos;error&apos;|&apos;done&apos;, content: string, metadata?: any }, 6) Include citations as separate events when available, 7) Send final &apos;done&apos; event with complete response metadata. Use FastAPI&apos;s StreamingResponse with async generator. Handle client disconnection gracefully. Test streaming with curl/Postman before frontend integration.
+
+---
+
+## Task Description
+
+Fix 2026-01-27 11:48:52,906 - src.main - DEBUG - Incoming request: POST /api/v1/qa/ask-stream - Headers: {&apos;host&apos;: &apos;localhost:8000&apos;, &apos;connection&apos;: &apos;keep-alive&apos;, &apos;content-length&apos;: &apos;0&apos;, &apos;pragma&apos;: &apos;no-cache&apos;, &apos;cache-control&apos;: &apos;no-cache&apos;, &apos;sec-ch-ua-platform&apos;: &apos;&quot;macOS&quot;&apos;, &apos;authorization&apos;: &apos;Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwZTJiYzgwZS03NjFhLTQ4ODgtOTViZC0yYzQ2NGI0ZjI0MzUiLCJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkByZWZpbmUuZGV2Iiwicm9sZXMiOlsidXNlciJdLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzY5NTEwOTE2LCJleHAiOjE3Njk1MTQ1MTZ9.lyASPBLbR07Ko8fbiqeomGB5Jh8DpJXF8llvoa1MrNA&apos;, &apos;user-agent&apos;: &apos;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36&apos;, &apos;sec-ch-ua&apos;: &apos;&quot;Not(A:Brand&quot;;v=&quot;8&quot;, &quot;Chromium&quot;;v=&quot;144&quot;, &quot;Brave&quot;;v=&quot;144&quot;&apos;, &apos;content-type&apos;: &apos;application/json&apos;, &apos;sec-ch-ua-mobile&apos;: &apos;?0&apos;, &apos;accept&apos;: &apos;*/*&apos;, &apos;sec-gpc&apos;: &apos;1&apos;, &apos;accept-language&apos;: &apos;pl-PL,pl;q=0.7&apos;, &apos;origin&apos;: &apos;http://localhost:3000&apos;, &apos;sec-fetch-site&apos;: &apos;same-site&apos;, &apos;sec-fetch-mode&apos;: &apos;cors&apos;, &apos;sec-fetch-dest&apos;: &apos;empty&apos;, &apos;referer&apos;: &apos;http://localhost:3000/&apos;, &apos;accept-encoding&apos;: &apos;gzip, deflate, br, zstd&apos;}
+2026-01-27 11:48:52,969 - src.main - DEBUG - Outgoing response: /api/v1/qa/ask-stream - Status: 422
+      INFO   127.0.0.1:54554 - &quot;POST /api/v1/qa/ask-stream?question=What+are+the+common+pitfalls+in+a+residential+re</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

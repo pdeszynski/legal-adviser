@@ -4,7 +4,7 @@
   "id": "client-side-auth-state-persistence",
   "title": "Implement Client-Side Auth State Persistence",
   "priority": 2,
-  "status": "backlog",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-25T13:44:04.757Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-25T15:23:07.805Z"
 }

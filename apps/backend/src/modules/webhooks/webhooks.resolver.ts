@@ -218,8 +218,7 @@ export class WebhooksResolver {
   ): Promise<WebhookStats> {
     const userId = context.req.user.id;
     const stats = await this.webhooksService.getStats(userId);
-    const deliveryStats =
-      await this.webhookDeliveryService.getDeliveryStats();
+    const deliveryStats = await this.webhookDeliveryService.getDeliveryStats();
 
     return {
       totalWebhooks: stats.total,

@@ -1,0 +1,19 @@
+{
+  "category": "feature",
+  "description": "Implement JWT validation middleware in FastAPI AI Engine to authenticate users directly. Create: 1) JWT validation function using backend's JWT_SECRET or RS256 public key, 2) FastAPI dependency (jwt_dependency) that extracts and validates Authorization header, 3) User context object with userId, email, roles extracted from token claims, 4) Error handling for expired/invalid tokens returning 401, 5) Integration with existing PydanticAI agents to receive user context. Use same JWT signing key as backend (shared secret or environment variable). Ensure token expiration matches backend settings. Add health check for JWT validation service.",
+  "id": "ai-engine-jwt-validation",
+  "title": "AI Engine JWT Token Validation Middleware",
+  "dependencies": [
+    "ai-streaming-auth-integration"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Implement JWT validation middleware in FastAPI AI Engine to authenticate users directly. Create: 1) JWT validation function using backend's JWT_SECRET or RS256 public key, 2) FastAPI dependency (jwt_dependency) that extracts and validates Authorization header, 3) User context object with userId, email, roles extracted from token claims, 4) Error handling for expired/invalid tokens returning 401, 5) Integration with existing PydanticAI agents to receive user context. Use same JWT signing key as backend (shared secret or environment variable). Ensure token expiration matches backend settings. Add health check for JWT validation service.",
+      "timestamp": "2026-01-27T09:03:50.799Z",
+      "source": "initial"
+    }
+  ]
+}

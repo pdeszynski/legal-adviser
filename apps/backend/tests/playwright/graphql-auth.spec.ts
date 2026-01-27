@@ -5,7 +5,8 @@ import { test, expect, APIRequestContext } from '@playwright/test';
  * This test file should be deleted after verification
  */
 
-const GRAPHQL_ENDPOINT = process.env.GRAPHQL_URL || 'http://localhost:3333/graphql';
+const GRAPHQL_ENDPOINT =
+  process.env.GRAPHQL_URL || 'http://localhost:3333/graphql';
 
 // Helper function to execute GraphQL mutations
 async function graphqlRequest(
@@ -186,7 +187,9 @@ test.describe('GraphQL Authentication Mutations', () => {
     expect(body.errors[0].message).toContain('Invalid credentials');
   });
 
-  test('should refresh tokens with valid refresh token', async ({ request }) => {
+  test('should refresh tokens with valid refresh token', async ({
+    request,
+  }) => {
     // First register and get tokens
     const email = `refresh-test-${Date.now()}@example.com`;
     const registerMutation = `
@@ -232,7 +235,9 @@ test.describe('GraphQL Authentication Mutations', () => {
     expect(body.data.refreshToken.accessToken).toBeTruthy();
     expect(body.data.refreshToken.refreshToken).toBeTruthy();
     // New tokens should be different from old ones
-    expect(body.data.refreshToken.accessToken).not.toBe(registerBody.data.register.accessToken);
+    expect(body.data.refreshToken.accessToken).not.toBe(
+      registerBody.data.register.accessToken,
+    );
   });
 
   test('should fail refresh with invalid token', async ({ request }) => {
@@ -255,7 +260,9 @@ test.describe('GraphQL Authentication Mutations', () => {
     expect(body.errors[0].message).toContain('Invalid or expired');
   });
 
-  test('should get current user with valid access token', async ({ request }) => {
+  test('should get current user with valid access token', async ({
+    request,
+  }) => {
     // First register and get access token
     const email = `me-test-${Date.now()}@example.com`;
     const registerMutation = `
@@ -295,9 +302,14 @@ test.describe('GraphQL Authentication Mutations', () => {
       }
     `;
 
-    const response = await graphqlRequest(request, meQuery, {}, {
-      Authorization: `Bearer ${accessToken}`,
-    });
+    const response = await graphqlRequest(
+      request,
+      meQuery,
+      {},
+      {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    );
 
     expect(response.status()).toBe(200);
     const body = await response.json();
@@ -310,7 +322,9 @@ test.describe('GraphQL Authentication Mutations', () => {
     expect(body.data.me.isActive).toBe(true);
   });
 
-  test('should return error for me query without auth token', async ({ request }) => {
+  test('should return error for me query without auth token', async ({
+    request,
+  }) => {
     const meQuery = `
       query Me {
         me {

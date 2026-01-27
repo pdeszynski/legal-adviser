@@ -81,8 +81,16 @@ type OverlapPolicy = 'SKIP' | 'ALLOW_ALL' | 'BUFFER_ONE';
 
 const OVERLAP_POLICIES: { value: OverlapPolicy; label: string; description: string }[] = [
   { value: 'SKIP', label: 'Skip', description: 'Skip new execution if previous is still running' },
-  { value: 'ALLOW_ALL', label: 'Allow All', description: 'Allow all executions to run concurrently' },
-  { value: 'BUFFER_ONE', label: 'Buffer One', description: 'Allow one execution to buffer while another runs' },
+  {
+    value: 'ALLOW_ALL',
+    label: 'Allow All',
+    description: 'Allow all executions to run concurrently',
+  },
+  {
+    value: 'BUFFER_ONE',
+    label: 'Buffer One',
+    description: 'Allow one execution to buffer while another runs',
+  },
 ];
 
 const COMMON_CRON_EXPRESSIONS: { expression: string; label: string }[] = [
@@ -216,7 +224,15 @@ export default function AdminSchedulesPage() {
               'failedActions',
               'lastRunAt',
               'nextRunAt',
-              { state: ['missedActions', 'totalActions', 'successfulActions', 'failedActions', 'runningActions'] },
+              {
+                state: [
+                  'missedActions',
+                  'totalActions',
+                  'successfulActions',
+                  'failedActions',
+                  'runningActions',
+                ],
+              },
             ],
             variables: {
               scheduleId,
@@ -259,7 +275,10 @@ export default function AdminSchedulesPage() {
             operation: currentlyPaused ? 'resumeSchedule' : 'pauseSchedule',
             fields: ['scheduleId', 'success'],
             variables: {
-              input: { scheduleId, reason: `Manual ${currentlyPaused ? 'resume' : 'pause'} via admin UI` },
+              input: {
+                scheduleId,
+                reason: `Manual ${currentlyPaused ? 'resume' : 'pause'} via admin UI`,
+              },
             },
           },
         },
@@ -289,7 +308,11 @@ export default function AdminSchedulesPage() {
       const dp = dataProvider;
       if (!dp) return;
 
-      const mutationConfig: GraphQLMutationConfig<{ scheduleId: string; confirm: boolean; reason?: string }> = {
+      const mutationConfig: GraphQLMutationConfig<{
+        scheduleId: string;
+        confirm: boolean;
+        reason?: string;
+      }> = {
         url: '',
         method: 'post',
         config: {
@@ -460,9 +483,7 @@ export default function AdminSchedulesPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Temporal Schedules</h1>
-            <p className="text-muted-foreground">
-              Manage recurring workflow execution schedules
-            </p>
+            <p className="text-muted-foreground">Manage recurring workflow execution schedules</p>
           </div>
           <Button onClick={() => setCreateDialogOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
@@ -510,10 +531,7 @@ export default function AdminSchedulesPage() {
                 <Zap className="h-5 w-5 text-blue-600" />
               </div>
               <div className="text-2xl font-bold">
-                {schedules.reduce(
-                  (sum, s) => sum + (s.details?.state?.runningActions || 0),
-                  0,
-                )}
+                {schedules.reduce((sum, s) => sum + (s.details?.state?.runningActions || 0), 0)}
               </div>
             </div>
           </div>
@@ -584,7 +602,9 @@ export default function AdminSchedulesPage() {
                         </div>
                       </td>
                       <td className="p-4">
-                        <div className="text-sm">{getCronDescription(details?.spec?.cronExpression)}</div>
+                        <div className="text-sm">
+                          {getCronDescription(details?.spec?.cronExpression)}
+                        </div>
                         {details?.spec?.cronExpression && (
                           <div className="text-xs text-muted-foreground font-mono">
                             {details.spec.cronExpression}
@@ -639,9 +659,7 @@ export default function AdminSchedulesPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() =>
-                              handlePauseResume(scheduleId, details?.paused ?? false)
-                            }
+                            onClick={() => handlePauseResume(scheduleId, details?.paused ?? false)}
                             disabled={actionLoading[scheduleId]}
                             title={details?.paused ? 'Resume schedule' : 'Pause schedule'}
                           >
@@ -656,9 +674,7 @@ export default function AdminSchedulesPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() =>
-                              openDeleteDialog(details || { scheduleId })
-                            }
+                            onClick={() => openDeleteDialog(details || { scheduleId })}
                             title="Delete schedule"
                             className="text-destructive hover:text-destructive hover:bg-destructive/10"
                           >
@@ -825,9 +841,7 @@ export default function AdminSchedulesPage() {
                     <SelectItem key={policy.value} value={policy.value}>
                       <div className="flex flex-col">
                         <span>{policy.label}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {policy.description}
-                        </span>
+                        <span className="text-xs text-muted-foreground">{policy.description}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -1072,8 +1086,7 @@ export default function AdminSchedulesPage() {
           <DialogHeader>
             <DialogTitle>Delete Schedule</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. The schedule will be permanently removed from
-              Temporal.
+              This action cannot be undone. The schedule will be permanently removed from Temporal.
             </DialogDescription>
           </DialogHeader>
 
@@ -1111,7 +1124,11 @@ export default function AdminSchedulesPage() {
           )}
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleteLoading}>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={deleteLoading}
+            >
               Cancel
             </Button>
             <Button

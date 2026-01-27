@@ -65,10 +65,7 @@ export class Result<T, E = Error> {
     return this.isSuccess ? this.value : defaultValue;
   }
 
-  match<U>(patterns: {
-    success: (value: T) => U;
-    failure: (error: E) => U;
-  }): U {
+  match<U>(patterns: { success: (value: T) => U; failure: (error: E) => U }): U {
     return this.isSuccess ? patterns.success(this.value) : patterns.failure(this.error);
   }
 }

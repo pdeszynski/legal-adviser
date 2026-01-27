@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769506652814-f30875d1",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T09:37:32.814Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "ai-streaming-documentation",
+  "featureName": "Document Streaming Architecture and Usage",
+  "error": "Feature completed in 227s - auto-verified",
+  "passes": true
+}

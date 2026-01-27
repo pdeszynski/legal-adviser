@@ -42,16 +42,13 @@ const LandingContent = () => {
   }, []);
 
   // Exit intent detection
-  const handleMouseLeave = useCallback(
-    (e: MouseEvent) => {
-      // Only show if mouse leaves from the top of the viewport
-      if (e.clientY <= 0 && !hasShownExitModal.current) {
-        hasShownExitModal.current = true;
-        setShowExitModal(true);
-      }
-    },
-    [],
-  );
+  const handleMouseLeave = useCallback((e: MouseEvent) => {
+    // Only show if mouse leaves from the top of the viewport
+    if (e.clientY <= 0 && !hasShownExitModal.current) {
+      hasShownExitModal.current = true;
+      setShowExitModal(true);
+    }
+  }, []);
 
   useEffect(() => {
     document.addEventListener('mouseleave', handleMouseLeave);
@@ -130,7 +127,11 @@ const LandingContent = () => {
                   <Button
                     variant="outline"
                     size="lg"
-                    onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() =>
+                      document
+                        .getElementById('how-it-works')
+                        ?.scrollIntoView({ behavior: 'smooth' })
+                    }
                     className="w-full sm:w-auto px-8 h-14 border-muted-foreground/20 hover:bg-muted/50 backdrop-blur-sm rounded-full text-base"
                   >
                     {t('hero.cta.secondary')}
@@ -557,8 +558,8 @@ const LandingContent = () => {
               <h3 className="text-2xl font-bold">Wait! Don&apos;t miss out</h3>
 
               <p className="text-muted-foreground">
-                Get exclusive early access to our AI-powered legal platform. Join our waitlist
-                to be among the first to transform your practice.
+                Get exclusive early access to our AI-powered legal platform. Join our waitlist to be
+                among the first to transform your practice.
               </p>
 
               <div className="space-y-3 pt-2">
@@ -593,13 +594,13 @@ const LandingContent = () => {
               </div>
 
               <p className="text-xs text-muted-foreground">
-                No commitment required. Join thousands of legal professionals waiting for early access.
+                No commitment required. Join thousands of legal professionals waiting for early
+                access.
               </p>
             </div>
           </div>
         </div>
       )}
-
     </PublicLayout>
   );
 };

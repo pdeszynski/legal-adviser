@@ -30,17 +30,17 @@ Before configuring workflows, ensure the HubSpot integration is properly set up:
 
 The backend automatically scores leads on submission. Understanding this helps configure workflows:
 
-| Criteria | Points |
-|----------|--------|
-| Immediate timeline | +50 |
-| Within 1 month timeline | +40 |
-| Within 3 months timeline | +20 |
-| Enterprise company (500+) | +30 |
-| Mid-size company (50-500) | +20 |
-| Small company/startup | +10 |
-| Detailed use case (>20 chars) | +15 |
-| Company name provided | +10 |
-| Website provided | +5 |
+| Criteria                      | Points |
+| ----------------------------- | ------ |
+| Immediate timeline            | +50    |
+| Within 1 month timeline       | +40    |
+| Within 3 months timeline      | +20    |
+| Enterprise company (500+)     | +30    |
+| Mid-size company (50-500)     | +20    |
+| Small company/startup         | +10    |
+| Detailed use case (>20 chars) | +15    |
+| Company name provided         | +10    |
+| Website provided              | +5     |
 
 **Qualified Lead Threshold: 50+ points** (automatically creates a deal in HubSpot)
 
@@ -328,13 +328,13 @@ When deal is won:
 
 ### Key Metrics to Track
 
-| Metric | Description | Target |
-|--------|-------------|--------|
-| Lead Response Time | Time from submission to first contact | <4 hours (hot), <24h (all) |
-| Demo Booking Rate | % of leads that book demos | >30% |
-| Lead-to-Customer Rate | Conversion from demo request | >15% |
-| Email Open Rate | Engagement with nurture emails | >25% |
-| Deal Cycle Time | Average days to close | <30 days |
+| Metric                | Description                           | Target                     |
+| --------------------- | ------------------------------------- | -------------------------- |
+| Lead Response Time    | Time from submission to first contact | <4 hours (hot), <24h (all) |
+| Demo Booking Rate     | % of leads that book demos            | >30%                       |
+| Lead-to-Customer Rate | Conversion from demo request          | >15%                       |
+| Email Open Rate       | Engagement with nurture emails        | >25%                       |
+| Deal Cycle Time       | Average days to close                 | <30 days                   |
 
 ### A/B Testing Ideas
 

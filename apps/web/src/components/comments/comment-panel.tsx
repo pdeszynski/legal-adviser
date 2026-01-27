@@ -1,13 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useMemo } from "react";
-import {
-  useDocumentComments,
-  DocumentComment,
-  CommentResolutionStatus,
-} from "@/hooks";
-import { CommentItem } from "./comment-item";
-import { useTranslate } from "@refinedev/core";
+import { useState, useMemo } from 'react';
+import { useDocumentComments, DocumentComment, CommentResolutionStatus } from '@/hooks';
+import { CommentItem } from './comment-item';
+import { useTranslate } from '@refinedev/core';
 
 interface CommentPanelProps {
   documentId: string | undefined;
@@ -31,7 +27,7 @@ export function CommentPanel({
   currentUserId,
   selectedCommentId,
   onCommentSelect,
-  className = "",
+  className = '',
 }: CommentPanelProps) {
   const translate = useTranslate();
   const {
@@ -45,14 +41,14 @@ export function CommentPanel({
     reopenComment,
   } = useDocumentComments(documentId);
 
-  const [filter, setFilter] = useState<"all" | "open" | "resolved">("all");
+  const [filter, setFilter] = useState<'all' | 'open' | 'resolved'>('all');
 
   // Filter comments based on selected filter
   const filteredComments = useMemo(() => {
-    if (filter === "open") {
+    if (filter === 'open') {
       return comments.filter((c) => c.resolutionStatus === CommentResolutionStatus.OPEN);
     }
-    if (filter === "resolved") {
+    if (filter === 'resolved') {
       return comments.filter((c) => c.resolutionStatus === CommentResolutionStatus.RESOLVED);
     }
     return comments;
@@ -60,10 +56,10 @@ export function CommentPanel({
 
   // Count comments by status
   const openCount = comments.filter(
-    (c) => c.resolutionStatus === CommentResolutionStatus.OPEN
+    (c) => c.resolutionStatus === CommentResolutionStatus.OPEN,
   ).length;
   const resolvedCount = comments.filter(
-    (c) => c.resolutionStatus === CommentResolutionStatus.RESOLVED
+    (c) => c.resolutionStatus === CommentResolutionStatus.RESOLVED,
   ).length;
 
   const handleDelete = (id: string) => {
@@ -92,7 +88,7 @@ export function CommentPanel({
     return (
       <div className={`p-4 bg-white rounded-lg shadow ${className}`}>
         <div className="text-center text-gray-500">
-          {translate("comments.loading", "Loading comments...")}
+          {translate('comments.loading', 'Loading comments...')}
         </div>
       </div>
     );
@@ -102,7 +98,7 @@ export function CommentPanel({
     return (
       <div className={`p-4 bg-white rounded-lg shadow ${className}`}>
         <div className="text-center text-red-500">
-          {translate("comments.error", "Error loading comments")}
+          {translate('comments.error', 'Error loading comments')}
         </div>
       </div>
     );
@@ -113,40 +109,40 @@ export function CommentPanel({
       {/* Header */}
       <div className="border-b px-4 py-3">
         <h3 className="text-lg font-semibold text-gray-900">
-          {translate("comments.title", "Comments")}
+          {translate('comments.title', 'Comments')}
         </h3>
 
         {/* Filter tabs */}
         <div className="flex gap-2 mt-3">
           <button
-            onClick={() => setFilter("all")}
+            onClick={() => setFilter('all')}
             className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-              filter === "all"
-                ? "bg-blue-100 text-blue-700"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              filter === 'all'
+                ? 'bg-blue-100 text-blue-700'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            {translate("comments.all", "All")} ({comments.length})
+            {translate('comments.all', 'All')} ({comments.length})
           </button>
           <button
-            onClick={() => setFilter("open")}
+            onClick={() => setFilter('open')}
             className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-              filter === "open"
-                ? "bg-yellow-100 text-yellow-700"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              filter === 'open'
+                ? 'bg-yellow-100 text-yellow-700'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            {translate("comments.open", "Open")} ({openCount})
+            {translate('comments.open', 'Open')} ({openCount})
           </button>
           <button
-            onClick={() => setFilter("resolved")}
+            onClick={() => setFilter('resolved')}
             className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-              filter === "resolved"
-                ? "bg-green-100 text-green-700"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              filter === 'resolved'
+                ? 'bg-green-100 text-green-700'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            {translate("comments.resolved", "Resolved")} ({resolvedCount})
+            {translate('comments.resolved', 'Resolved')} ({resolvedCount})
           </button>
         </div>
       </div>
@@ -155,11 +151,11 @@ export function CommentPanel({
       <div className="px-4 py-3 max-h-[600px] overflow-y-auto">
         {filteredComments.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
-            {filter === "open"
-              ? translate("comments.noOpen", "No open comments")
-              : filter === "resolved"
-              ? translate("comments.noResolved", "No resolved comments")
-              : translate("comments.noComments", "No comments yet")}
+            {filter === 'open'
+              ? translate('comments.noOpen', 'No open comments')
+              : filter === 'resolved'
+                ? translate('comments.noResolved', 'No resolved comments')
+                : translate('comments.noComments', 'No comments yet')}
           </div>
         ) : (
           <div>
@@ -183,10 +179,7 @@ export function CommentPanel({
       {/* Footer with create button hint */}
       {documentId && (
         <div className="border-t px-4 py-3 bg-gray-50 text-sm text-gray-600">
-          {translate(
-            "comments.selectTextHint",
-            "Select text in the document to add a comment"
-          )}
+          {translate('comments.selectTextHint', 'Select text in the document to add a comment')}
         </div>
       )}
     </div>

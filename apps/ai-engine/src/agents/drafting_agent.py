@@ -230,7 +230,6 @@ async def generate_document(
     # Update current trace with metadata
     if is_langfuse_enabled():
         update_current_trace(
-            name="document_generation",
             input={
                 "document_type": document_type,
                 "description": description[:200],
@@ -308,6 +307,6 @@ Generate the complete document with all requested metadata."""
 
         return draft, metadata
 
-    except Exception as e:
+    except Exception:
         # Error is automatically tracked by PydanticAI's instrumentation
         raise

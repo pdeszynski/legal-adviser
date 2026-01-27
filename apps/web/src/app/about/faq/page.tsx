@@ -4,13 +4,7 @@ import { useTranslations } from 'next-intl';
 import { PublicLayout } from '@components/layout/public-layout';
 import { Button } from '@legal/ui';
 import Link from 'next/link';
-import {
-  HelpCircle,
-  Mail,
-  ArrowLeft,
-  ChevronDown,
-  ChevronUp,
-} from 'lucide-react';
+import { HelpCircle, Mail, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 
 const FAQPage = () => {
@@ -72,7 +66,10 @@ const FAQPage = () => {
                 const isOpen = openCategories[categoryKey];
 
                 return (
-                  <div key={categoryKey} className="bg-background rounded-2xl border overflow-hidden">
+                  <div
+                    key={categoryKey}
+                    className="bg-background rounded-2xl border overflow-hidden"
+                  >
                     <button
                       onClick={() => toggleCategory(categoryKey)}
                       className="w-full flex items-center justify-between p-6 hover:bg-muted/50 transition-colors"
@@ -121,9 +118,7 @@ const FAQPage = () => {
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
                 {t('contact.title')}
               </h2>
-              <p className="text-lg text-muted-foreground">
-                {t('contact.description')}
-              </p>
+              <p className="text-lg text-muted-foreground">{t('contact.description')}</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <a
                   href={`mailto:${t('contact.email')}`}
@@ -133,11 +128,7 @@ const FAQPage = () => {
                   {t('contact.cta')}
                 </a>
                 <Link href="/about">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="px-8 h-12 rounded-full text-lg"
-                  >
+                  <Button variant="outline" size="lg" className="px-8 h-12 rounded-full text-lg">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     {t('navigation.backToAbout')}
                   </Button>

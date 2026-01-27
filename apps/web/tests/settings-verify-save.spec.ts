@@ -115,7 +115,7 @@ test.describe('Settings Preferences Save Verification', () => {
     // Log all captured requests
     console.log('Total GraphQL requests:', allRequests.length);
     const mutationRequest = allRequests.find(
-      (r) => r.query.includes('updateMyPreferences') || r.query.includes('mutation')
+      (r) => r.query.includes('updateMyPreferences') || r.query.includes('mutation'),
     );
 
     // Verify the mutation was called

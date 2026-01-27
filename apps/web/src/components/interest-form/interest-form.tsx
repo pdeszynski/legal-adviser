@@ -6,13 +6,7 @@ import { Button } from '@legal/ui';
 import { Input } from '@legal/ui';
 import { Label } from '@legal/ui';
 import { Textarea } from '@legal/ui';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@legal/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@legal/ui';
 import {
   CheckCircle2,
   Loader2,
@@ -151,9 +145,12 @@ export function InterestForm({ source = 'early-access', className = '' }: Intere
   }, [analytics]);
 
   // Track field focus for analytics
-  const handleFieldFocus = useCallback((fieldName: string) => {
-    analytics.trackInterestFieldFocus(fieldName);
-  }, [analytics]);
+  const handleFieldFocus = useCallback(
+    (fieldName: string) => {
+      analytics.trackInterestFieldFocus(fieldName);
+    },
+    [analytics],
+  );
 
   // Manual validation matching backend DTO
   const validateForm = useCallback((data: InterestFormInput): string | null => {
@@ -411,9 +408,7 @@ export function InterestForm({ source = 'early-access', className = '' }: Intere
             className={`h-11 sm:h-10 text-base sm:text-sm ${errors.fullName ? 'border-destructive' : ''}`}
             disabled={formState === 'submitting'}
           />
-          {errors.fullName && (
-            <p className="text-sm text-destructive">{errors.fullName.message}</p>
-          )}
+          {errors.fullName && <p className="text-sm text-destructive">{errors.fullName.message}</p>}
         </div>
 
         {/* Email Field */}
@@ -439,9 +434,7 @@ export function InterestForm({ source = 'early-access', className = '' }: Intere
             className={`h-11 sm:h-10 text-base sm:text-sm ${errors.email ? 'border-destructive' : ''}`}
             disabled={formState === 'submitting'}
           />
-          {errors.email && (
-            <p className="text-sm text-destructive">{errors.email.message}</p>
-          )}
+          {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
         </div>
 
         {/* Company Field (Optional) */}
@@ -460,9 +453,7 @@ export function InterestForm({ source = 'early-access', className = '' }: Intere
             className={`h-11 sm:h-10 text-base sm:text-sm ${errors.company ? 'border-destructive' : ''}`}
             disabled={formState === 'submitting'}
           />
-          {errors.company && (
-            <p className="text-sm text-destructive">{errors.company.message}</p>
-          )}
+          {errors.company && <p className="text-sm text-destructive">{errors.company.message}</p>}
         </div>
 
         {/* Role Field (Optional) */}
@@ -481,9 +472,7 @@ export function InterestForm({ source = 'early-access', className = '' }: Intere
             className={`h-11 sm:h-10 text-base sm:text-sm ${errors.role ? 'border-destructive' : ''}`}
             disabled={formState === 'submitting'}
           />
-          {errors.role && (
-            <p className="text-sm text-destructive">{errors.role.message}</p>
-          )}
+          {errors.role && <p className="text-sm text-destructive">{errors.role.message}</p>}
         </div>
 
         {/* Use Case Field (Optional) */}
@@ -501,12 +490,8 @@ export function InterestForm({ source = 'early-access', className = '' }: Intere
             className={`text-base sm:text-sm resize-none ${errors.useCase ? 'border-destructive' : ''}`}
             disabled={formState === 'submitting'}
           />
-          {errors.useCase && (
-            <p className="text-sm text-destructive">{errors.useCase.message}</p>
-          )}
-          <p className="text-xs text-muted-foreground">
-            Minimum 10 characters if provided
-          </p>
+          {errors.useCase && <p className="text-sm text-destructive">{errors.useCase.message}</p>}
+          <p className="text-xs text-muted-foreground">Minimum 10 characters if provided</p>
         </div>
 
         {/* Lead Source Dropdown (Optional) */}
@@ -516,12 +501,18 @@ export function InterestForm({ source = 'early-access', className = '' }: Intere
             value={watchedFields.leadSource}
             onValueChange={(value) => setValue('leadSource', value)}
           >
-            <SelectTrigger className={`h-11 sm:h-10 text-base sm:text-sm ${errors.leadSource ? 'border-destructive' : ''}`}>
+            <SelectTrigger
+              className={`h-11 sm:h-10 text-base sm:text-sm ${errors.leadSource ? 'border-destructive' : ''}`}
+            >
               <SelectValue placeholder="Select an option" />
             </SelectTrigger>
             <SelectContent>
               {leadSourceOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value} className="text-base sm:text-sm">
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="text-base sm:text-sm"
+                >
                   {option.label}
                 </SelectItem>
               ))}
@@ -546,7 +537,10 @@ export function InterestForm({ source = 'early-access', className = '' }: Intere
               style={{ minWidth: '20px' }}
             />
             <div className="flex-1">
-              <Label htmlFor="gdprConsent" className="text-sm font-normal cursor-pointer leading-relaxed">
+              <Label
+                htmlFor="gdprConsent"
+                className="text-sm font-normal cursor-pointer leading-relaxed"
+              >
                 I agree to the processing of my personal data in accordance with the{' '}
                 <a
                   href="/privacy"

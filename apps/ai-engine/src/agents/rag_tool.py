@@ -19,7 +19,6 @@ from ..langfuse_init import is_langfuse_enabled
 from ..services.embedding_service import EmbeddingService
 from .dependencies import ModelDeps
 
-
 # -----------------------------------------------------------------------------
 # Pydantic Models for RAG Tool
 # -----------------------------------------------------------------------------

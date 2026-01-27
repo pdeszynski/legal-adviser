@@ -3,4 +3,4 @@ export {
   type LegalGroundSuggestion,
   type ConfidenceLevel,
   type LegalGroundSuggestionsProps,
-} from "./legal-grounds-suggestions";
+} from './legal-grounds-suggestions';

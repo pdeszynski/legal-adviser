@@ -308,7 +308,11 @@ export function TwoFactorSetup({
               </p>
             </div>
           </div>
-          <Button type="button" onClick={handleOpenDialog} variant={isEnabled ? 'outline' : 'default'}>
+          <Button
+            type="button"
+            onClick={handleOpenDialog}
+            variant={isEnabled ? 'outline' : 'default'}
+          >
             {isEnabled ? 'Manage' : 'Enable'}
           </Button>
         </div>
@@ -464,7 +468,12 @@ export function TwoFactorSetup({
               </div>
 
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={handleCloseDialog} disabled={isLoading}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseDialog}
+                  disabled={isLoading}
+                >
                   Cancel
                 </Button>
                 <Button
@@ -521,7 +530,13 @@ export function TwoFactorSetup({
                     <Copy className="h-4 w-4 mr-2" />
                     Copy All
                   </Button>
-                  <Button type="button" variant="outline" size="sm" className="flex-1" onClick={downloadCodes}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={downloadCodes}
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -536,7 +551,9 @@ export function TwoFactorSetup({
               </div>
 
               <DialogFooter>
-                <Button type="button" onClick={handleCloseDialog}>Done</Button>
+                <Button type="button" onClick={handleCloseDialog}>
+                  Done
+                </Button>
               </DialogFooter>
             </>
           )}
@@ -589,7 +606,12 @@ export function TwoFactorSetup({
               </div>
 
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={handleCloseDialog} disabled={isLoading}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseDialog}
+                  disabled={isLoading}
+                >
                   Cancel
                 </Button>
                 <Button
@@ -726,7 +748,13 @@ export function TwoFactorSetup({
                     <Copy className="h-4 w-4 mr-2" />
                     Copy All
                   </Button>
-                  <Button type="button" variant="outline" size="sm" className="flex-1" onClick={downloadCodes}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={downloadCodes}
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Download
                   </Button>
@@ -734,7 +762,9 @@ export function TwoFactorSetup({
               </div>
 
               <DialogFooter>
-                <Button type="button" onClick={handleCloseDialog}>Done</Button>
+                <Button type="button" onClick={handleCloseDialog}>
+                  Done
+                </Button>
               </DialogFooter>
             </>
           )}

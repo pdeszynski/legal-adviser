@@ -16,7 +16,9 @@ import { Skeleton } from '@legal/ui';
  */
 export function InterestFormSkeleton({ className = '' }: { className?: string }) {
   return (
-    <div className={`bg-card border rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 shadow-xl ${className}`}>
+    <div
+      className={`bg-card border rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 shadow-xl ${className}`}
+    >
       {/* Header Section */}
       <div className="text-center mb-6 sm:mb-8 space-y-3">
         <Skeleton width="60%" height="2rem" className="mx-auto" />
@@ -64,7 +66,12 @@ export function InterestFormSkeleton({ className = '' }: { className?: string })
         {/* GDPR Consent Checkbox */}
         <div className="space-y-2">
           <div className="flex items-start gap-3">
-            <Skeleton width="1.25rem" height="1.25rem" variant="circular" className="mt-1 flex-shrink-0" />
+            <Skeleton
+              width="1.25rem"
+              height="1.25rem"
+              variant="circular"
+              className="mt-1 flex-shrink-0"
+            />
             <div className="flex-1 space-y-2">
               <Skeleton width="95%" height="1rem" />
               <Skeleton width="70%" height="1rem" />

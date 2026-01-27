@@ -186,6 +186,6 @@ async def classify_case(
 
         return classification, metadata
 
-    except Exception as e:
+    except Exception:
         # Error is automatically tracked by PydanticAI's instrumentation
         raise

@@ -23,9 +23,9 @@ from langgraph.graph import END, StateGraph
 
 from ..agents.clarification_agent import clarification_agent
 from ..agents.classifier_agent import classify_case
-from ..error_handling import track_error_context, build_error_response
-from ..exceptions import WorkflowExecutionError, AgentExecutionError
-from ..langfuse_init import is_langfuse_enabled, start_as_current_span
+from ..error_handling import build_error_response
+from ..exceptions import WorkflowExecutionError
+from ..langfuse_init import is_langfuse_enabled, update_current_trace
 from .states import CaseAnalysisState, create_case_analysis_state
 
 # -----------------------------------------------------------------------------
@@ -40,59 +40,53 @@ async def classify_node(state: CaseAnalysisState) -> CaseAnalysisState:
     and identify applicable legal grounds with confidence scores.
 
     The classifier agent has instrument=True for automatic Langfuse tracing.
-    This node adds additional workflow-level context.
     """
 
     metadata = state.get("metadata", {})
 
-    async with start_as_current_span(
-        "classify",
-        session_id=metadata.get("session_id"),
-        metadata={"workflow": "case_analysis", "step": "classify"},
-    ):
-        try:
-            case_description = state["case_description"]
+    try:
+        case_description = state["case_description"]
 
-            # Call the classifier agent (automatically traced via instrument=True)
-            result, _agent_metadata = await classify_case(
-                case_description=case_description,
-                session_id=metadata.get("session_id", "default"),
-                user_id=metadata.get("user_id"),
+        # Call the classifier agent (automatically traced via instrument=True)
+        result, _agent_metadata = await classify_case(
+            case_description=case_description,
+            session_id=metadata.get("session_id", "default"),
+            user_id=metadata.get("user_id"),
+        )
+
+        # Convert LegalGround objects to dicts for state
+        legal_grounds = [
+            {
+                "name": ground.name,
+                "description": ground.description,
+                "confidence_score": ground.confidence_score,
+                "legal_basis": ground.legal_basis,
+                "notes": ground.notes,
+            }
+            for ground in result.identified_grounds
+        ]
+
+        # Update state
+        state["legal_grounds"] = legal_grounds
+        state["classification_confidence"] = result.overall_confidence
+        state["metadata"]["current_step"] = "classify"
+        state["metadata"]["iteration_count"] = state["metadata"].get("iteration_count", 0) + 1
+        state["next_step"] = "check_clarification"
+
+        return state
+
+    except Exception as e:
+        # Convert to structured error
+        if not isinstance(e, WorkflowExecutionError):
+            e = WorkflowExecutionError(
+                workflow="case_analysis",
+                step="classify",
+                reason=str(e),
             )
 
-            # Convert LegalGround objects to dicts for state
-            legal_grounds = [
-                {
-                    "name": ground.name,
-                    "description": ground.description,
-                    "confidence_score": ground.confidence_score,
-                    "legal_basis": ground.legal_basis,
-                    "notes": ground.notes,
-                }
-                for ground in result.identified_grounds
-            ]
-
-            # Update state
-            state["legal_grounds"] = legal_grounds
-            state["classification_confidence"] = result.overall_confidence
-            state["metadata"]["current_step"] = "classify"
-            state["metadata"]["iteration_count"] = state["metadata"].get("iteration_count", 0) + 1
-            state["next_step"] = "check_clarification"
-
-            return state
-
-        except Exception as e:
-            # Convert to structured error
-            if not isinstance(e, WorkflowExecutionError):
-                e = WorkflowExecutionError(
-                    workflow="case_analysis",
-                    step="classify",
-                    reason=str(e),
-                )
-
-            state["error"] = build_error_response(e, include_details=True)
-            state["next_step"] = "error"
-            return state
+        state["error"] = build_error_response(e, include_details=True)
+        state["next_step"] = "error"
+        return state
 
 
 async def check_clarification_node(state: CaseAnalysisState) -> CaseAnalysisState:
@@ -140,21 +134,16 @@ async def clarify_node(state: CaseAnalysisState) -> CaseAnalysisState:
     """
     metadata = state.get("metadata", {})
 
-    async with start_as_current_span(
-        "clarify",
-        session_id=metadata.get("session_id"),
-        metadata={"workflow": "case_analysis", "step": "clarify"},
-    ):
-        try:
-            agent = clarification_agent()
+    try:
+        agent = clarification_agent()
 
-            # Build prompt with classification context
-            grounds_summary = "\n".join([
-                f"- {g.get('name', 'Unknown')}: {g.get('description', '')}"
-                for g in state.get("legal_grounds", [])
-            ])
+        # Build prompt with classification context
+        grounds_summary = "\n".join([
+            f"- {g.get('name', 'Unknown')}: {g.get('description', '')}"
+            for g in state.get("legal_grounds", [])
+        ])
 
-            prompt = f"""Based on the following case analysis, generate clarification questions
+        prompt = f"""Based on the following case analysis, generate clarification questions
 to gather more information and improve confidence.
 
 Case Description: {state['case_description']}
@@ -166,38 +155,38 @@ Confidence: {state.get('classification_confidence', 0.0):.2f}
 
 Generate 2-4 specific questions to improve the analysis."""
 
-            result = await agent.run(prompt)
-            response = result.output
+        result = await agent.run(prompt)
+        response = result.output
 
-            # Convert questions to dicts
-            questions = [
-                {
-                    "question": q.question,
-                    "question_type": q.question_type,
-                    "options": q.options,
-                    "hint": q.hint,
-                }
-                for q in response.questions
-            ]
+        # Convert questions to dicts
+        questions = [
+            {
+                "question": q.question,
+                "question_type": q.question_type,
+                "options": q.options,
+                "hint": q.hint,
+            }
+            for q in response.questions
+        ]
 
-            state["clarification_questions"] = questions
-            state["metadata"]["current_step"] = "clarify"
-            state["next_step"] = "await_clarification"  # Pause for user input
+        state["clarification_questions"] = questions
+        state["metadata"]["current_step"] = "clarify"
+        state["next_step"] = "await_clarification"  # Pause for user input
 
-            return state
+        return state
 
-        except Exception as e:
-            # Convert to structured error
-            if not isinstance(e, WorkflowExecutionError):
-                e = WorkflowExecutionError(
-                    workflow="case_analysis",
-                    step="clarify",
-                    reason=str(e),
-                )
+    except Exception as e:
+        # Convert to structured error
+        if not isinstance(e, WorkflowExecutionError):
+            e = WorkflowExecutionError(
+                workflow="case_analysis",
+                step="clarify",
+                reason=str(e),
+            )
 
-            state["error"] = build_error_response(e, include_details=True)
-            state["next_step"] = "error"
-            return state
+        state["error"] = build_error_response(e, include_details=True)
+        state["next_step"] = "error"
+        return state
 
 
 async def research_node(state: CaseAnalysisState) -> CaseAnalysisState:
@@ -206,52 +195,45 @@ async def research_node(state: CaseAnalysisState) -> CaseAnalysisState:
     This node retrieves relevant legal context from the vector store
     based on the identified legal grounds.
     """
-    metadata = state.get("metadata", {})
+    try:
+        # TODO: Integrate with actual vector store service
+        # For now, mock retrieval
+        mock_contexts = [
+            {
+                "content": "Polish Civil Code Article 471: The debtor is liable for non-performance or improper performance of an obligation, unless it is caused by circumstances beyond their control.",
+                "source": "Polish Civil Code",
+                "article": "Art. 471 KC",
+                "similarity": 0.89,
+                "url": "https://isap.sejm.gov.pl/",
+            },
+            {
+                "content": "Supreme Court ruling: In contractual disputes, the limitation period is 10 years from the date the breach became known.",
+                "source": "Supreme Court",
+                "article": "III CZP 45/23",
+                "similarity": 0.82,
+                "url": "https://sn.pl/orzeczenia",
+            },
+        ]
 
-    async with start_as_current_span(
-        "research",
-        session_id=metadata.get("session_id"),
-        metadata={"workflow": "case_analysis", "step": "research"},
-    ):
-        try:
-            # TODO: Integrate with actual vector store service
-            # For now, mock retrieval
-            mock_contexts = [
-                {
-                    "content": "Polish Civil Code Article 471: The debtor is liable for non-performance or improper performance of an obligation, unless it is caused by circumstances beyond their control.",
-                    "source": "Polish Civil Code",
-                    "article": "Art. 471 KC",
-                    "similarity": 0.89,
-                    "url": "https://isap.sejm.gov.pl/",
-                },
-                {
-                    "content": "Supreme Court ruling: In contractual disputes, the limitation period is 10 years from the date the breach became known.",
-                    "source": "Supreme Court",
-                    "article": "III CZP 45/23",
-                    "similarity": 0.82,
-                    "url": "https://sn.pl/orzeczenia",
-                },
-            ]
+        state["retrieved_contexts"] = mock_contexts
+        state["research_summary"] = f"Retrieved {len(mock_contexts)} relevant legal contexts."
+        state["metadata"]["current_step"] = "research"
+        state["next_step"] = "complete"
 
-            state["retrieved_contexts"] = mock_contexts
-            state["research_summary"] = f"Retrieved {len(mock_contexts)} relevant legal contexts."
-            state["metadata"]["current_step"] = "research"
-            state["next_step"] = "complete"
+        return state
 
-            return state
+    except Exception as e:
+        # Convert to structured error
+        if not isinstance(e, WorkflowExecutionError):
+            e = WorkflowExecutionError(
+                workflow="case_analysis",
+                step="research",
+                reason=str(e),
+            )
 
-        except Exception as e:
-            # Convert to structured error
-            if not isinstance(e, WorkflowExecutionError):
-                e = WorkflowExecutionError(
-                    workflow="case_analysis",
-                    step="research",
-                    reason=str(e),
-                )
-
-            state["error"] = build_error_response(e, include_details=True)
-            state["next_step"] = "error"
-            return state
+        state["error"] = build_error_response(e, include_details=True)
+        state["next_step"] = "error"
+        return state
 
 
 async def complete_node(state: CaseAnalysisState) -> CaseAnalysisState:
@@ -262,70 +244,63 @@ async def complete_node(state: CaseAnalysisState) -> CaseAnalysisState:
     - Research findings
     - Recommendations
     """
-    metadata = state.get("metadata", {})
+    try:
+        grounds = state.get("legal_grounds", [])
+        contexts = state.get("retrieved_contexts", [])
 
-    async with start_as_current_span(
-        "complete",
-        session_id=metadata.get("session_id"),
-        metadata={"workflow": "case_analysis", "step": "complete"},
-    ):
-        try:
-            grounds = state.get("legal_grounds", [])
-            contexts = state.get("retrieved_contexts", [])
+        # Build final analysis
+        analysis_parts = [
+            "# Case Analysis Report\n",
+            "## Identified Legal Grounds\n",
+        ]
 
-            # Build final analysis
-            analysis_parts = [
-                "# Case Analysis Report\n",
-                "## Identified Legal Grounds\n",
-            ]
+        # Add legal grounds
+        analysis_parts.extend([
+            f"### {ground.get('name', 'Unknown')}\n"
+            f"**Confidence**: {ground.get('confidence_score', 0):.2f}\n\n"
+            f"{ground.get('description', '')}\n\n"
+            f"**Legal Basis**: {', '.join(ground.get('legal_basis', []))}\n"
+            for ground in grounds
+        ])
 
-            # Add legal grounds
+        if contexts:
+            analysis_parts.append("\n## Relevant Legal Context\n")
             analysis_parts.extend([
-                f"### {ground.get('name', 'Unknown')}\n"
-                f"**Confidence**: {ground.get('confidence_score', 0):.2f}\n\n"
-                f"{ground.get('description', '')}\n\n"
-                f"**Legal Basis**: {', '.join(ground.get('legal_basis', []))}\n"
-                for ground in grounds
+                f"- **{ctx.get('source', 'Unknown')} - {ctx.get('article', 'N/A')}**: "
+                f"{ctx.get('content', '')[:200]}...\n"
+                for ctx in contexts
             ])
 
-            if contexts:
-                analysis_parts.append("\n## Relevant Legal Context\n")
-                analysis_parts.extend([
-                    f"- **{ctx.get('source', 'Unknown')} - {ctx.get('article', 'N/A')}**: "
-                    f"{ctx.get('content', '')[:200]}...\n"
-                    for ctx in contexts
-                ])
+        # Generate recommendations based on confidence
+        confidence = state.get("classification_confidence", 0.0)
+        if confidence >= 0.8:
+            recommendations = "Strong case basis. Proceed with formal legal action preparation."
+        elif confidence >= 0.6:
+            recommendations = "Moderate case basis. Additional documentation recommended."
+        else:
+            recommendations = "Limited case basis. Comprehensive fact-finding required before proceeding."
 
-            # Generate recommendations based on confidence
-            confidence = state.get("classification_confidence", 0.0)
-            if confidence >= 0.8:
-                recommendations = "Strong case basis. Proceed with formal legal action preparation."
-            elif confidence >= 0.6:
-                recommendations = "Moderate case basis. Additional documentation recommended."
-            else:
-                recommendations = "Limited case basis. Comprehensive fact-finding required before proceeding."
+        analysis_parts.append(f"\n## Recommendations\n\n{recommendations}")
 
-            analysis_parts.append(f"\n## Recommendations\n\n{recommendations}")
+        state["final_analysis"] = "".join(analysis_parts)
+        state["recommendations"] = recommendations
+        state["metadata"]["current_step"] = "complete"
+        state["next_step"] = END  # type: ignore
 
-            state["final_analysis"] = "".join(analysis_parts)
-            state["recommendations"] = recommendations
-            state["metadata"]["current_step"] = "complete"
-            state["next_step"] = END  # type: ignore
+        return state
 
-            return state
+    except Exception as e:
+        # Convert to structured error
+        if not isinstance(e, WorkflowExecutionError):
+            e = WorkflowExecutionError(
+                workflow="case_analysis",
+                step="complete",
+                reason=str(e),
+            )
 
-        except Exception as e:
-            # Convert to structured error
-            if not isinstance(e, WorkflowExecutionError):
-                e = WorkflowExecutionError(
-                    workflow="case_analysis",
-                    step="complete",
-                    reason=str(e),
-                )
-
-            state["error"] = build_error_response(e, include_details=True)
-            state["next_step"] = "error"
-            return state
+        state["error"] = build_error_response(e, include_details=True)
+        state["next_step"] = "error"
+        return state
 
 
 # -----------------------------------------------------------------------------
@@ -464,19 +439,6 @@ class CaseAnalysisWorkflow:
         if user_responses:
             state["user_responses"] = user_responses
 
-        # Create workflow-level trace
-        from ..langfuse_init import create_trace
-        trace = create_trace(
-            name="case_analysis_workflow",
-            input={"case_description": case_description[:200]},
-            session_id=session_id,
-            user_id=user_id,
-            metadata={
-                "workflow": "case_analysis",
-                "description_length": len(case_description),
-            },
-        )
-
         try:
             # Run the workflow (agents are automatically traced via instrument=True)
             result = await self.graph.ainvoke(state)
@@ -496,8 +458,9 @@ class CaseAnalysisWorkflow:
                 "error": result.get("error"),
             }
 
-            if trace:
-                trace.update(
+            # Update trace with workflow-level metadata
+            if is_langfuse_enabled():
+                update_current_trace(
                     output={
                         "grounds_count": len(output["legal_grounds"]),
                         "confidence": output["classification_confidence"],
@@ -505,13 +468,10 @@ class CaseAnalysisWorkflow:
                         "processing_time_ms": processing_time_ms,
                     }
                 )
-                trace.end()
 
             return output
 
         except Exception as e:
-            if trace:
-                trace.end(level="ERROR", status_message=str(e))
 
             # Convert to structured workflow error
             if not isinstance(e, WorkflowExecutionError):

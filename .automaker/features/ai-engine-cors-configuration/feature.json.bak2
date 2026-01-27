@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Configure FastAPI CORS middleware to allow direct frontend requests. Update AI Engine main.py: 1) Add CORSMiddleware from fastapi.middleware.cors, 2) Allow origins: [frontend_url, localhost:3000] from environment, 3) Allow credentials: true (for Authorization cookies/headers), 4) Allow methods: ['GET', 'POST', 'OPTIONS'], 5) Allow headers: ['Authorization', 'Content-Type'], 6) Handle preflight OPTIONS requests. Ensure CORS is configured before route definitions. Add FRONTEND_URL environment variable. Test CORS with browser DevTools to verify Authorization headers are sent correctly. Document CORS configuration in CLAUDE.md.",
+  "id": "ai-engine-cors-configuration",
+  "title": "AI Engine CORS Configuration for Frontend Access",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Configure FastAPI CORS middleware to allow direct frontend requests. Update AI Engine main.py: 1) Add CORSMiddleware from fastapi.middleware.cors, 2) Allow origins: [frontend_url, localhost:3000] from environment, 3) Allow credentials: true (for Authorization cookies/headers), 4) Allow methods: ['GET', 'POST', 'OPTIONS'], 5) Allow headers: ['Authorization', 'Content-Type'], 6) Handle preflight OPTIONS requests. Ensure CORS is configured before route definitions. Add FRONTEND_URL environment variable. Test CORS with browser DevTools to verify Authorization headers are sent correctly. Document CORS configuration in CLAUDE.md.",
+      "timestamp": "2026-01-27T09:03:50.800Z",
+      "source": "initial"
+    }
+  ]
+}

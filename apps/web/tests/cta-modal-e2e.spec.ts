@@ -153,7 +153,9 @@ test.describe('CTA Modal - Single Display Bug Test', () => {
 
     // Verify we're NOT seeing the "Already Requested" screen
     await expect(page.locator('text=Already Requested')).not.toBeVisible();
-    await expect(page.locator('text=You have already submitted a demo request recently')).not.toBeVisible();
+    await expect(
+      page.locator('text=You have already submitted a demo request recently'),
+    ).not.toBeVisible();
   });
 
   test('should open modal three times consecutively', async ({ page }) => {
@@ -449,7 +451,10 @@ test.describe('CTA Modal - Mobile Responsive', () => {
     await page.waitForSelector('text=Contact Information', { timeout: 5000 });
 
     // Click on backdrop (outside modal) - try multiple approaches
-    const backdropVisible = await page.locator('.bg-black\\/80').isVisible().catch(() => false);
+    const backdropVisible = await page
+      .locator('.bg-black\\/80')
+      .isVisible()
+      .catch(() => false);
 
     if (backdropVisible) {
       await page.locator('.bg-black\\/80').first().click({ force: true });
@@ -563,7 +568,7 @@ test.describe('CTA Modal - Exit Intent Integration', () => {
     // Wait for exit modal to appear (it has a delay)
     await page.waitForTimeout(2000);
 
-    const exitModalVisible = await page.isVisible('text=Wait! Don\'t miss out');
+    const exitModalVisible = await page.isVisible("text=Wait! Don't miss out");
 
     if (exitModalVisible) {
       // Click the CTA in exit modal
@@ -574,7 +579,7 @@ test.describe('CTA Modal - Exit Intent Integration', () => {
       await expect(page.locator('text=Contact Information')).toBeVisible();
 
       // Exit modal should be closed
-      await expect(page.locator('text=Wait! Don\'t miss out')).not.toBeVisible();
+      await expect(page.locator("text=Wait! Don't miss out")).not.toBeVisible();
     }
   });
 });

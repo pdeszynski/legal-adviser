@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useDocumentProgress, ConnectionState } from "@/hooks/useDocumentProgress";
+import { useEffect } from 'react';
+import { useDocumentProgress, ConnectionState } from '@/hooks/useDocumentProgress';
 
 interface DocumentGenerationProgressProps {
   /** Document ID to track */
@@ -32,14 +32,10 @@ export function DocumentGenerationProgress({
   onFailed,
   enabled = true,
 }: DocumentGenerationProgressProps) {
-  const {
-    progress,
-    message,
-    connectionState,
-    isComplete,
-    isFailed,
-    error,
-  } = useDocumentProgress(documentId, enabled);
+  const { progress, message, connectionState, isComplete, isFailed, error } = useDocumentProgress(
+    documentId,
+    enabled,
+  );
 
   // Trigger callbacks on completion/failure
   useEffect(() => {
@@ -53,10 +49,10 @@ export function DocumentGenerationProgress({
 
   // Connection state colors
   const connectionColors: Record<ConnectionState, string> = {
-    connecting: "bg-yellow-500",
-    connected: "bg-green-500",
-    disconnected: "bg-gray-400",
-    error: "bg-red-500",
+    connecting: 'bg-yellow-500',
+    connected: 'bg-green-500',
+    disconnected: 'bg-gray-400',
+    error: 'bg-red-500',
   };
 
   // Don't render if not generating
@@ -73,9 +69,7 @@ export function DocumentGenerationProgress({
             className={`w-2 h-2 rounded-full ${connectionColors[connectionState]} animate-pulse`}
             title={`Connection: ${connectionState}`}
           />
-          <span className="text-sm font-medium text-blue-800">
-            Document Generation
-          </span>
+          <span className="text-sm font-medium text-blue-800">Document Generation</span>
         </div>
         <span className="text-sm text-blue-600 font-mono">{progress}%</span>
       </div>
@@ -89,9 +83,7 @@ export function DocumentGenerationProgress({
       </div>
 
       {/* Status message */}
-      {message && (
-        <p className="text-sm text-blue-700">{message}</p>
-      )}
+      {message && <p className="text-sm text-blue-700">{message}</p>}
 
       {/* Error message */}
       {isFailed && error && (

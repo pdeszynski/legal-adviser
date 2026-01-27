@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769508653793-91c2ea74",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T10:10:53.793Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "langfuse-tracing-verification-dashboard",
+  "featureName": "Create Langfuse Trace Verification Dashboard",
+  "error": "Feature completed in 373s - auto-verified",
+  "passes": true
+}

@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Fix the Langfuse observability integration in AI Engine to properly send traces and metrics. The current implementation is not sending any data to Langfuse. Follow the official PydanticAI integration guide from https://langfuse.com/integrations/frameworks/pydantic-ai. Tasks: 1) Review existing Langfuse setup in apps/ai-engine (currently in src/config.py or initialization files), 2) Follow official PydanticAI integration pattern - use pydantic_ai.instrument_langfuse() instead of manual tracing, 3) Ensure LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY environment variables are properly set, 4) Initialize Langfuse correctly with proper host (cloud or self-hosted), 5) Instrument all PydanticAI agents (classifier_agent.py, qa_agent.py, drafting_agent.py, clarification_agent.py) with Langfuse using the official integration method, 6) Verify that traces appear in Langfuse dashboard when agents are called, 7) Test with sample agent calls and confirm data is sent, 8) Remove any manual tracing code that conflicts with the official integration, 9) Ensure proper error handling if Langfuse is unavailable, 10) Update CLAUDE.md with correct PydanticAI-Langfuse integration documentation.",
+  "id": "fix-langfuse-pydantic-ai-integration",
+  "title": "Fix Langfuse Integration with PydanticAI Following Official Documentation",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Fix the Langfuse observability integration in AI Engine to properly send traces and metrics. The current implementation is not sending any data to Langfuse. Follow the official PydanticAI integration guide from https://langfuse.com/integrations/frameworks/pydantic-ai. Tasks: 1) Review existing Langfuse setup in apps/ai-engine (currently in src/config.py or initialization files), 2) Follow official PydanticAI integration pattern - use pydantic_ai.instrument_langfuse() instead of manual tracing, 3) Ensure LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY environment variables are properly set, 4) Initialize Langfuse correctly with proper host (cloud or self-hosted), 5) Instrument all PydanticAI agents (classifier_agent.py, qa_agent.py, drafting_agent.py, clarification_agent.py) with Langfuse using the official integration method, 6) Verify that traces appear in Langfuse dashboard when agents are called, 7) Test with sample agent calls and confirm data is sent, 8) Remove any manual tracing code that conflicts with the official integration, 9) Ensure proper error handling if Langfuse is unavailable, 10) Update CLAUDE.md with correct PydanticAI-Langfuse integration documentation.",
+      "timestamp": "2026-01-27T10:04:34.554Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-27T10:04:36.418Z"
+}

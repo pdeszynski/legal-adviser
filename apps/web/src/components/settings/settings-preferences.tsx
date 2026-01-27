@@ -5,10 +5,7 @@ import { useTranslate } from '@refinedev/core';
 import { useForm } from 'react-hook-form';
 import { LoadingButton } from '@legal/ui';
 import { Globe, Moon, Clock, Calendar } from 'lucide-react';
-import {
-  useUpdateMyPreferencesMutation,
-  type ThemePreference,
-} from '@/generated/graphql';
+import { useUpdateMyPreferencesMutation, type ThemePreference } from '@/generated/graphql';
 
 interface PreferencesFormData {
   locale?: string;

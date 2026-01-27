@@ -12,17 +12,18 @@ import functools
 import logging
 import time
 import traceback
-from typing import Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from .config import get_settings
 from .exceptions import (
     AIEngineError,
-    is_retryable,
     get_error_code,
-    get_user_message,
     get_suggestion,
+    get_user_message,
+    is_retryable,
 )
-from .langfuse_init import is_langfuse_enabled, get_langfuse
+from .langfuse_init import get_langfuse, is_langfuse_enabled
 
 logger = logging.getLogger(__name__)
 
@@ -314,51 +315,50 @@ def with_retry(
                 raise RuntimeError("Retry logic failed without error")
 
             return async_wrapper
-        else:
-            @functools.wraps(func)
-            def sync_wrapper(*args: Any, **kwargs: Any) -> T:
-                retry_config = config or DEFAULT_RETRY_CONFIG
-                last_error: Exception | None = None
-                operation = operation_name or func.__name__
+        @functools.wraps(func)
+        def sync_wrapper(*args: Any, **kwargs: Any) -> T:
+            retry_config = config or DEFAULT_RETRY_CONFIG
+            last_error: Exception | None = None
+            operation = operation_name or func.__name__
 
-                for attempt in range(retry_config.max_attempts):
-                    try:
-                        return func(*args, **kwargs)
-                    except Exception as e:
-                        last_error = e
+            for attempt in range(retry_config.max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_error = e
 
-                        if not is_retryable(e):
-                            logger.error(
-                                "Non-retryable error in %s: %s",
-                                operation,
-                                e,
-                            )
-                            raise
+                    if not is_retryable(e):
+                        logger.error(
+                            "Non-retryable error in %s: %s",
+                            operation,
+                            e,
+                        )
+                        raise
 
-                        if attempt < retry_config.max_attempts - 1:
-                            delay = calculate_delay(attempt, retry_config)
-                            logger.warning(
-                                "Retryable error in %s (attempt %d/%d): %s. "
-                                "Retrying in %.2fs...",
-                                operation,
-                                attempt + 1,
-                                retry_config.max_attempts,
-                                e,
-                                delay,
-                            )
-                            time.sleep(delay)
-                        else:
-                            logger.error(
-                                "Max retries exceeded for %s: %s",
-                                operation,
-                                e,
-                            )
+                    if attempt < retry_config.max_attempts - 1:
+                        delay = calculate_delay(attempt, retry_config)
+                        logger.warning(
+                            "Retryable error in %s (attempt %d/%d): %s. "
+                            "Retrying in %.2fs...",
+                            operation,
+                            attempt + 1,
+                            retry_config.max_attempts,
+                            e,
+                            delay,
+                        )
+                        time.sleep(delay)
+                    else:
+                        logger.error(
+                            "Max retries exceeded for %s: %s",
+                            operation,
+                            e,
+                        )
 
-                if last_error:
-                    raise last_error
-                raise RuntimeError("Retry logic failed without error")
+            if last_error:
+                raise last_error
+            raise RuntimeError("Retry logic failed without error")
 
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 
@@ -433,42 +433,41 @@ def with_error_tracking(
                     return None  # type: ignore
 
             return async_wrapper
-        else:
-            @functools.wraps(func)
-            def sync_wrapper(*args: Any, **kwargs: Any) -> T:
-                trace = None
+        @functools.wraps(func)
+        def sync_wrapper(*args: Any, **kwargs: Any) -> T:
+            trace = None
 
-                if is_langfuse_enabled():
-                    trace = create_error_trace(
-                        op_name,
-                        session_id=session_id,
-                        user_id=user_id,
-                    )
+            if is_langfuse_enabled():
+                trace = create_error_trace(
+                    op_name,
+                    session_id=session_id,
+                    user_id=user_id,
+                )
 
-                try:
-                    result = func(*args, **kwargs)
+            try:
+                result = func(*args, **kwargs)
 
-                    if trace:
-                        trace.end()
+                if trace:
+                    trace.end()
 
-                    return result
+                return result
 
-                except Exception as e:
-                    logger.error(
-                        "Error in %s: %s",
-                        op_name,
-                        e,
-                        exc_info=True,
-                    )
+            except Exception as e:
+                logger.error(
+                    "Error in %s: %s",
+                    op_name,
+                    e,
+                    exc_info=True,
+                )
 
-                    if trace:
-                        track_error_context(trace, e)
+                if trace:
+                    track_error_context(trace, e)
 
-                    if reraise:
-                        raise
-                    return None  # type: ignore
+                if reraise:
+                    raise
+                return None  # type: ignore
 
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 
@@ -623,31 +622,30 @@ def with_fallback(
                     raise
 
             return async_wrapper
-        else:
-            @functools.wraps(func)
-            def sync_wrapper(*args: Any, **kwargs: Any) -> T:
-                try:
-                    return func(*args, **kwargs)
-                except Exception as e:
-                    logger.warning(
-                        "Primary function failed in %s, using fallback: %s",
-                        op_name,
-                        e,
-                    )
+        @functools.wraps(func)
+        def sync_wrapper(*args: Any, **kwargs: Any) -> T:
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                logger.warning(
+                    "Primary function failed in %s, using fallback: %s",
+                    op_name,
+                    e,
+                )
 
-                    if fallback_config.fallback_function:
-                        return fallback_config.fallback_function(*args, **kwargs)  # type: ignore
+                if fallback_config.fallback_function:
+                    return fallback_config.fallback_function(*args, **kwargs)  # type: ignore
 
-                    if fallback_config.fallback_message:
-                        return {
-                            "error": get_user_message(e),
-                            "fallback_message": fallback_config.fallback_message,
-                            "suggestion": get_suggestion(e),
-                        }  # type: ignore
+                if fallback_config.fallback_message:
+                    return {
+                        "error": get_user_message(e),
+                        "fallback_message": fallback_config.fallback_message,
+                        "suggestion": get_suggestion(e),
+                    }  # type: ignore
 
-                    raise
+                raise
 
-            return sync_wrapper
+        return sync_wrapper
 
     return decorator
 

@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive E2E tests to verify Langfuse tracing works correctly. Test scenarios: 1) Call classifier agent and verify trace appears in Langfuse, 2) Call Q&A agent and verify trace with spans appears, 3) Verify token usage is captured in traces, 4) Verify latency metrics are recorded, 5) Verify user ID and session ID are propagated to traces, 6) Test with Langfuse disabled to ensure no errors occur, 7) Test error cases - verify exceptions are captured in traces, 8) Use Langfuse public API or SDK to fetch traces and validate content, 9) Mock Langfuse API if needed for CI/CD, 10) Add tests to apps/ai-engine/tests/integration/test_langfuse_tracing.py.",
+  "id": "test-langfuse-tracing-e2e",
+  "title": "Create E2E Tests for Langfuse Tracing",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive E2E tests to verify Langfuse tracing works correctly. Test scenarios: 1) Call classifier agent and verify trace appears in Langfuse, 2) Call Q&A agent and verify trace with spans appears, 3) Verify token usage is captured in traces, 4) Verify latency metrics are recorded, 5) Verify user ID and session ID are propagated to traces, 6) Test with Langfuse disabled to ensure no errors occur, 7) Test error cases - verify exceptions are captured in traces, 8) Use Langfuse public API or SDK to fetch traces and validate content, 9) Mock Langfuse API if needed for CI/CD, 10) Add tests to apps/ai-engine/tests/integration/test_langfuse_tracing.py.",
+      "timestamp": "2026-01-27T10:04:34.555Z",
+      "source": "initial"
+    }
+  ]
+}

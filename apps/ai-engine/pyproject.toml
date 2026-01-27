@@ -15,8 +15,9 @@ dependencies = [
     "psutil",
     "langfuse>=2.50.0",
     "httpx",
+    "pyjwt",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.14"
 readme = "README.md"
 license = { text = "MIT" }
 

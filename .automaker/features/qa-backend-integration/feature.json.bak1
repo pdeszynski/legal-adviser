@@ -3,7 +3,7 @@
   "category": "Core",
   "title": "Q&A Backend Integration",
   "description": "Extend AI Client Service with askQuestion method. Implement GraphQL mutation in backend to trigger Q&A workflow and store results.",
-  "status": "verified",
+  "status": "completed",
   "priority": 1,
   "complexity": "moderate",
   "createdAt": "2026-01-12T10:31:20.832Z",

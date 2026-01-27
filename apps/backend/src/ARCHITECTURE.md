@@ -46,18 +46,22 @@ This backend follows a strict layered architecture with clear dependency rules a
 ## Dependency Rules
 
 ### Presentation Layer → Application Layer
+
 - ✅ CAN depend on: Application layer (use cases, DTOs)
 - ❌ CANNOT depend on: Domain layer directly, Infrastructure layer
 
 ### Application Layer → Domain Layer
+
 - ✅ CAN depend on: Domain layer (aggregates, value objects, repository interfaces)
 - ❌ CANNOT depend on: Infrastructure layer, Presentation layer
 
 ### Domain Layer (Core)
+
 - ✅ CAN depend on: Nothing (pure business logic)
 - ❌ CANNOT depend on: Any other layer
 
 ### Infrastructure Layer → Domain Layer
+
 - ✅ CAN depend on: Domain layer (implements repository interfaces)
 - ✅ CAN depend on: Application layer (for DTOs if needed)
 - ❌ CANNOT depend on: Presentation layer
@@ -137,9 +141,10 @@ Each use case follows this structure:
 
 ```typescript
 @Injectable()
-export class CreateDocumentUseCase
-  implements IUseCase<CreateDocumentDto, CreateDocumentResultDto>
-{
+export class CreateDocumentUseCase implements IUseCase<
+  CreateDocumentDto,
+  CreateDocumentResultDto
+> {
   constructor(
     @Inject('ILegalDocumentRepository')
     private readonly documentRepository: ILegalDocumentRepository,
@@ -163,8 +168,10 @@ Repositories are defined as interfaces in the Domain layer and implemented in th
 
 ```typescript
 // Domain Layer - Interface
-export interface ILegalDocumentRepository
-  extends IRepository<LegalDocumentAggregate, string> {
+export interface ILegalDocumentRepository extends IRepository<
+  LegalDocumentAggregate,
+  string
+> {
   findByOwnerId(ownerId: string): Promise<LegalDocumentAggregate[]>;
   // ...other query methods
 }
@@ -199,7 +206,9 @@ export class LegalDocumentMapper {
     );
   }
 
-  static toPersistence(aggregate: LegalDocumentAggregate): LegalDocumentOrmEntity {
+  static toPersistence(
+    aggregate: LegalDocumentAggregate,
+  ): LegalDocumentOrmEntity {
     const entity = new LegalDocumentOrmEntity();
     entity.id = aggregate.id;
     entity.title = aggregate.title.toValue();
@@ -212,6 +221,7 @@ export class LegalDocumentMapper {
 ## API Endpoints (V2)
 
 ### REST API
+
 - `POST /api/v2/documents` - Create document
 - `GET /api/v2/documents/:id` - Get document by ID
 - `GET /api/v2/documents?ownerId=xxx` - List documents by owner
@@ -220,6 +230,7 @@ export class LegalDocumentMapper {
 - `DELETE /api/v2/documents/:id` - Delete document
 
 ### GraphQL API
+
 - Query: `documentV2(id: ID!)` - Get document by ID
 - Query: `documentsByOwnerV2(ownerId: ID!, status: DocumentStatus)` - List documents
 - Mutation: `createDocumentV2(input: CreateLegalDocumentInputV2!)` - Create document
@@ -232,6 +243,7 @@ export class LegalDocumentMapper {
 The existing modules in `/src/modules/` are being gradually migrated to the new layered architecture. The V2 endpoints are available alongside the existing V1 endpoints for backward compatibility.
 
 Migration steps for each module:
+
 1. Create Domain layer entities (aggregates, value objects, events, repository interfaces)
 2. Create Application layer use cases
 3. Create Infrastructure layer implementations (repositories, mappers)

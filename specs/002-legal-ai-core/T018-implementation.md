@@ -27,6 +27,7 @@ The implementation includes:
 ## 🎯 Key Features
 
 ### Document Generation Form
+
 - ✅ Title input (required field with validation)
 - ✅ Document type selection (LAWSUIT, COMPLAINT, CONTRACT, OTHER)
 - ✅ Collapsible metadata section:
@@ -38,6 +39,7 @@ The implementation includes:
 - ✅ Responsive design with Tailwind CSS
 
 ### Document List
+
 - ✅ Table view with sortable columns
 - ✅ Color-coded status badges
 - ✅ Pagination controls
@@ -45,6 +47,7 @@ The implementation includes:
 - ✅ Create new document button
 
 ### Document Detail View
+
 - ✅ Full document information display
 - ✅ Metadata section with all context variables
 - ✅ Content preview (when available)
@@ -56,6 +59,7 @@ The implementation includes:
 ## 📁 Files Created/Modified
 
 ### Created Files:
+
 ```
 apps/web/src/app/documents/
 ├── create/
@@ -71,6 +75,7 @@ specs/002-legal-ai-core/
 ```
 
 ### Modified Files:
+
 ```
 apps/web/src/
 ├── providers/data-provider/index.ts    # Custom endpoint handling
@@ -88,6 +93,7 @@ specs/002-legal-ai-core/tasks.md        # Marked T018 as complete
 ## 🔗 Integration Points
 
 ### Backend API Integration
+
 - **Endpoint**: `POST /api/documents/generate`
 - **Request Body**:
   ```typescript
@@ -105,12 +111,14 @@ specs/002-legal-ai-core/tasks.md        # Marked T018 as complete
   ```
 
 ### Dependencies (Completed):
+
 - ✅ T014: LegalDocument entity
 - ✅ T015: DocumentService CRUD operations
 - ✅ T016: AI Graph for Drafting
 - ✅ T017: API endpoint POST /api/documents/generate
 
 ### Next Tasks:
+
 - ⏳ T019: Streaming Response Handler (real-time AI output)
 - ⏳ T020: PDF Export functionality
 
@@ -121,6 +129,7 @@ specs/002-legal-ai-core/tasks.md        # Marked T018 as complete
 A comprehensive test guide has been created: `T018-test-guide.md`
 
 ### Quick Test:
+
 1. Start infrastructure: `docker-compose up -d`
 2. Start backend: `cd apps/backend && PORT=4000 npm run start:dev`
 3. Start frontend: `cd apps/web && npm run dev`
@@ -134,13 +143,14 @@ A comprehensive test guide has been created: `T018-test-guide.md`
 
 All user-facing text is fully translated:
 
-| Language | Code | Status |
-|----------|------|--------|
+| Language | Code | Status      |
+| -------- | ---- | ----------- |
 | English  | en   | ✅ Complete |
 | Polish   | pl   | ✅ Complete |
 | German   | de   | ✅ Complete |
 
 Translation keys added:
+
 - `documents.fields.*` - Field labels
 - `documents.types.*` - Document type labels
 - `documents.statuses.*` - Status labels
@@ -221,6 +231,7 @@ Translation keys added:
 The document generation form provides a solid foundation for User Story 1 (AI Document Generation). It integrates seamlessly with the backend API and provides an excellent user experience across multiple languages.
 
 The implementation:
+
 - ✅ Meets all acceptance criteria
 - ✅ Follows project architecture guidelines
 - ✅ Maintains code quality standards

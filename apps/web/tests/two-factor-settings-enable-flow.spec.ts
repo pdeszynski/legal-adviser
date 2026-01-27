@@ -189,7 +189,7 @@ function generateTOTPToken(secret: string): string {
   // Convert time to 8-byte big-endian array
   const timeBytes: number[] = [];
   for (let i = 8; i > 0; i--) {
-    timeBytes.push((time >>> (i - 1) * 8) & 0xff);
+    timeBytes.push((time >>> ((i - 1) * 8)) & 0xff);
   }
 
   // HMAC-SHA1 with secret as key and time as message
@@ -221,7 +221,10 @@ function generateTOTPToken(secret: string): string {
 /**
  * Helper to enable 2FA via API (returns secret for generating TOTP)
  */
-async function enableTwoFactorViaApi(request: any, accessToken: string): Promise<{
+async function enableTwoFactorViaApi(
+  request: any,
+  accessToken: string,
+): Promise<{
   secret: string;
   qrCodeDataUrl: string;
   backupCodes: string[];
@@ -254,7 +257,11 @@ async function enableTwoFactorViaApi(request: any, accessToken: string): Promise
 /**
  * Helper to verify 2FA setup via API
  */
-async function verifyTwoFactorViaApi(request: any, accessToken: string, token: string): Promise<boolean> {
+async function verifyTwoFactorViaApi(
+  request: any,
+  accessToken: string,
+  token: string,
+): Promise<boolean> {
   const mutation = `
     mutation VerifyTwoFactorSetup($input: VerifyTwoFactorSetupInput!) {
       verifyTwoFactorSetup(input: $input) {
@@ -385,14 +392,14 @@ test.describe('Two-Factor Authentication Settings Enable Flow', () => {
       await expect(statusCard).toBeVisible();
 
       // Look for "Enable" button (2FA should be disabled initially)
-      const enableButton = page.getByRole('button', { name: /enable/i }).or(
-        page.locator('button').filter({ hasText: /enable/i })
-      );
+      const enableButton = page
+        .getByRole('button', { name: /enable/i })
+        .or(page.locator('button').filter({ hasText: /enable/i }));
 
       // Check if 2FA is already enabled (from previous failed test)
-      const manageButton = page.getByRole('button', { name: /manage/i }).or(
-        page.locator('button').filter({ hasText: /manage/i })
-      );
+      const manageButton = page
+        .getByRole('button', { name: /manage/i })
+        .or(page.locator('button').filter({ hasText: /manage/i }));
 
       const isManageVisible = await manageButton.isVisible().catch(() => false);
 
@@ -404,9 +411,9 @@ test.describe('Two-Factor Authentication Settings Enable Flow', () => {
         await page.waitForTimeout(500);
 
         // Look for disable button
-        const disableButton = page.getByRole('button', { name: /disable 2fa/i }).or(
-          page.locator('button').filter({ hasText: /disable 2fa/i })
-        );
+        const disableButton = page
+          .getByRole('button', { name: /disable 2fa/i })
+          .or(page.locator('button').filter({ hasText: /disable 2fa/i }));
 
         if (await disableButton.isVisible().catch(() => false)) {
           await disableButton.click();
@@ -428,9 +435,9 @@ test.describe('Two-Factor Authentication Settings Enable Flow', () => {
       }
 
       // 3. Click 'Enable two-factor authentication' button
-      const finalEnableButton = page.getByRole('button', { name: /^enable$/i }).or(
-        page.locator('button').filter({ hasText: /^enable$/i })
-      );
+      const finalEnableButton = page
+        .getByRole('button', { name: /^enable$/i })
+        .or(page.locator('button').filter({ hasText: /^enable$/i }));
       await expect(finalEnableButton).toBeVisible();
       await finalEnableButton.click();
 
@@ -445,9 +452,9 @@ test.describe('Two-Factor Authentication Settings Enable Flow', () => {
       await expect(page.locator('text=/backup codes/i')).toBeVisible();
 
       // 5. Click 'Get Started' button
-      const getStartedButton = page.getByRole('button', { name: /get started/i }).or(
-        page.locator('button').filter({ hasText: /get started/i })
-      );
+      const getStartedButton = page
+        .getByRole('button', { name: /get started/i })
+        .or(page.locator('button').filter({ hasText: /get started/i }));
       await expect(getStartedButton).toBeVisible();
 
       // Track network calls for enableTwoFactorAuth mutation
@@ -463,21 +470,21 @@ test.describe('Two-Factor Authentication Settings Enable Flow', () => {
       await page.waitForTimeout(1000);
 
       // 6. Verify QR code is displayed
-      const qrCodeSection = page.locator('text=/scan qr code/i').or(
-        page.locator('text=/Scan QR Code/i')
-      );
+      const qrCodeSection = page
+        .locator('text=/scan qr code/i')
+        .or(page.locator('text=/Scan QR Code/i'));
       await expect(qrCodeSection).toBeVisible();
 
       // Verify QR code image or canvas is present
-      const qrImage = page.locator('img[src*="data:image"]').or(
-        page.locator('canvas').or(page.locator('svg'))
-      );
+      const qrImage = page
+        .locator('img[src*="data:image"]')
+        .or(page.locator('canvas').or(page.locator('svg')));
       await expect(qrImage.first()).toBeVisible();
 
       // Also verify "Enter 6-digit code" input is visible
-      const codeInput = page.locator('input[id="verify-code"], input[placeholder*="000"]').or(
-        page.locator('input[inputmode="numeric"]')
-      );
+      const codeInput = page
+        .locator('input[id="verify-code"], input[placeholder*="000"]')
+        .or(page.locator('input[inputmode="numeric"]'));
       await expect(codeInput).toBeVisible();
 
       // Get the secret from the page for generating TOTP (if visible)
@@ -485,9 +492,7 @@ test.describe('Two-Factor Authentication Settings Enable Flow', () => {
       const secretElement = page.locator('code').filter({ hasText: /^[A-Z2-7]+$/ });
 
       // Expand "Can't scan?" section to get the secret
-      const cantScanLink = page.getByText(/can'?t scan/i).or(
-        page.locator('text=/can.?t scan/i')
-      );
+      const cantScanLink = page.getByText(/can'?t scan/i).or(page.locator('text=/can.?t scan/i'));
 
       if (await cantScanLink.isVisible().catch(() => false)) {
         await cantScanLink.click();
@@ -526,9 +531,9 @@ test.describe('Two-Factor Authentication Settings Enable Flow', () => {
       await page.waitForTimeout(500);
 
       // Verify the button is now enabled
-      const verifyButton = page.getByRole('button', { name: /verify & enable/i }).or(
-        page.locator('button').filter({ hasText: /verify/i })
-      );
+      const verifyButton = page
+        .getByRole('button', { name: /verify & enable/i })
+        .or(page.locator('button').filter({ hasText: /verify/i }));
       await expect(verifyButton).toBeEnabled();
 
       // Track network calls for verifyTwoFactorSetup mutation
@@ -545,9 +550,9 @@ test.describe('Two-Factor Authentication Settings Enable Flow', () => {
       await page.waitForTimeout(2000);
 
       // 8. Verify success modal with backup codes is shown
-      const successTitle = page.locator('text=/enabled/i').or(
-        page.locator('text=/Two-Factor Authentication Enabled/i')
-      );
+      const successTitle = page
+        .locator('text=/enabled/i')
+        .or(page.locator('text=/Two-Factor Authentication Enabled/i'));
       await expect(successTitle).toBeVisible({ timeout: 5000 });
 
       // Verify backup codes are displayed
@@ -560,43 +565,43 @@ test.describe('Two-Factor Authentication Settings Enable Flow', () => {
       expect(codeCount).toBeGreaterThanOrEqual(5); // At least some codes should be visible
 
       // Verify copy and download buttons
-      const copyButton = page.getByRole('button', { name: /copy all/i }).or(
-        page.locator('button').filter({ hasText: /copy/i })
-      );
+      const copyButton = page
+        .getByRole('button', { name: /copy all/i })
+        .or(page.locator('button').filter({ hasText: /copy/i }));
       await expect(copyButton).toBeVisible();
 
-      const downloadButton = page.getByRole('button', { name: /download/i }).or(
-        page.locator('button').filter({ hasText: /download/i })
-      );
+      const downloadButton = page
+        .getByRole('button', { name: /download/i })
+        .or(page.locator('button').filter({ hasText: /download/i }));
       await expect(downloadButton).toBeVisible();
 
       // Take screenshot of success state
       await page.screenshot({ path: 'test-results/2fa-enable-success.png' });
 
       // Close the dialog
-      const doneButton = page.getByRole('button', { name: /done/i }).or(
-        page.locator('button').filter({ hasText: /done/i })
-      );
+      const doneButton = page
+        .getByRole('button', { name: /done/i })
+        .or(page.locator('button').filter({ hasText: /done/i }));
       await doneButton.click();
 
       await page.waitForTimeout(500);
 
       // 9. Confirm 2FA is enabled in settings
       // The status should now show "Enabled"
-      const enabledStatus = page.locator('text=/enabled - your account is protected/i').or(
-        page.locator('text=/Enabled/i').locator('..').locator('text=/protected/i')
-      );
+      const enabledStatus = page
+        .locator('text=/enabled - your account is protected/i')
+        .or(page.locator('text=/Enabled/i').locator('..').locator('text=/protected/i'));
 
       // The button should now say "Manage" instead of "Enable"
-      const manageButtonAfter = page.getByRole('button', { name: /manage/i }).or(
-        page.locator('button').filter({ hasText: /^manage$/i })
-      );
+      const manageButtonAfter = page
+        .getByRole('button', { name: /manage/i })
+        .or(page.locator('button').filter({ hasText: /^manage$/i }));
       await expect(manageButtonAfter).toBeVisible({ timeout: 5000 });
 
       // Verify backup codes remaining count is shown
-      const backupCodesCount = page.locator('text=/backup codes remaining/i').or(
-        page.locator('text=/\\d+ backup codes/i')
-      );
+      const backupCodesCount = page
+        .locator('text=/backup codes remaining/i')
+        .or(page.locator('text=/\\d+ backup codes/i'));
       await expect(backupCodesCount).toBeVisible();
 
       // Also verify via API that 2FA is enabled
@@ -748,9 +753,9 @@ test.describe('Two-Factor Authentication Settings Enable Flow', () => {
       await page.waitForTimeout(1000);
 
       // Find the code input
-      const codeInput = page.locator('input[id="verify-code"], input[placeholder*="000"]').or(
-        page.locator('input[inputmode="numeric"]')
-      );
+      const codeInput = page
+        .locator('input[id="verify-code"], input[placeholder*="000"]')
+        .or(page.locator('input[inputmode="numeric"]'));
 
       // Enter invalid code
       await codeInput.fill('999999');
@@ -762,9 +767,9 @@ test.describe('Two-Factor Authentication Settings Enable Flow', () => {
       await page.waitForTimeout(2000);
 
       // Verify error message is shown
-      const errorMessage = page.locator('text=/invalid|incorrect/i').or(
-        page.locator('.destructive, .error').filter({ hasText: /invalid|incorrect/i })
-      );
+      const errorMessage = page
+        .locator('text=/invalid|incorrect/i')
+        .or(page.locator('.destructive, .error').filter({ hasText: /invalid|incorrect/i }));
 
       const errorVisible = await errorMessage.isVisible().catch(() => false);
       if (errorVisible) {

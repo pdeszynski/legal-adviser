@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useTranslation } from "@refinedev/core";
-import { SUPPORTED_LOCALES, LOCALE_METADATA } from "@i18n/config";
+import { useTranslation } from '@refinedev/core';
+import { SUPPORTED_LOCALES, LOCALE_METADATA } from '@i18n/config';
 
 export const SelectLanguage = () => {
   const { getLocale, changeLocale } = useTranslation();
@@ -9,10 +9,7 @@ export const SelectLanguage = () => {
 
   return (
     <div>
-      <select
-        value={currentLocale}
-        onChange={(e) => changeLocale(e.target.value)}
-      >
+      <select value={currentLocale} onChange={(e) => changeLocale(e.target.value)}>
         {SUPPORTED_LOCALES.map((locale) => {
           const metadata = LOCALE_METADATA[locale];
           return (

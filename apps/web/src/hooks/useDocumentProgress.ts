@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 /**
  * Document Generation Progress Event
@@ -11,7 +11,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 export interface DocumentProgressEvent {
   documentId: string;
   sessionId: string;
-  status: "GENERATING" | "COMPLETED" | "FAILED";
+  status: 'GENERATING' | 'COMPLETED' | 'FAILED';
   progress: number; // 0-100
   message?: string;
   partialContent?: string;
@@ -22,7 +22,7 @@ export interface DocumentProgressEvent {
 /**
  * SSE Connection State
  */
-export type ConnectionState = "connecting" | "connected" | "disconnected" | "error";
+export type ConnectionState = 'connecting' | 'connected' | 'disconnected' | 'error';
 
 /**
  * Hook Return Type
@@ -51,7 +51,7 @@ export interface UseDocumentProgressReturn {
 /**
  * Backend API base URL
  */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 /**
  * useDocumentProgress Hook
@@ -82,10 +82,10 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
  */
 export function useDocumentProgress(
   documentId: string | null,
-  enabled: boolean = true
+  enabled: boolean = true,
 ): UseDocumentProgressReturn {
   const [progressEvent, setProgressEvent] = useState<DocumentProgressEvent | null>(null);
-  const [connectionState, setConnectionState] = useState<ConnectionState>("disconnected");
+  const [connectionState, setConnectionState] = useState<ConnectionState>('disconnected');
   const eventSourceRef = useRef<EventSource | null>(null);
 
   /**
@@ -99,19 +99,19 @@ export function useDocumentProgress(
       eventSourceRef.current.close();
     }
 
-    setConnectionState("connecting");
+    setConnectionState('connecting');
 
     const url = `${API_BASE_URL}/api/documents/${documentId}/stream`;
     const eventSource = new EventSource(url);
     eventSourceRef.current = eventSource;
 
     // Handle connection opened
-    eventSource.addEventListener("connected", () => {
-      setConnectionState("connected");
+    eventSource.addEventListener('connected', () => {
+      setConnectionState('connected');
     });
 
     // Handle progress events
-    eventSource.addEventListener("progress", (event) => {
+    eventSource.addEventListener('progress', (event) => {
       try {
         const data = JSON.parse(event.data) as DocumentProgressEvent;
         setProgressEvent(data);
@@ -121,11 +121,11 @@ export function useDocumentProgress(
     });
 
     // Handle completion event
-    eventSource.addEventListener("completed", (event) => {
+    eventSource.addEventListener('completed', (event) => {
       try {
         const data = JSON.parse(event.data) as DocumentProgressEvent;
         setProgressEvent(data);
-        setConnectionState("disconnected");
+        setConnectionState('disconnected');
         eventSource.close();
       } catch {
         // Silently ignore parse errors
@@ -133,11 +133,11 @@ export function useDocumentProgress(
     });
 
     // Handle failure event
-    eventSource.addEventListener("failed", (event) => {
+    eventSource.addEventListener('failed', (event) => {
       try {
         const data = JSON.parse(event.data) as DocumentProgressEvent;
         setProgressEvent(data);
-        setConnectionState("disconnected");
+        setConnectionState('disconnected');
         eventSource.close();
       } catch {
         // Silently ignore parse errors
@@ -145,23 +145,23 @@ export function useDocumentProgress(
     });
 
     // Handle heartbeat (keep-alive)
-    eventSource.addEventListener("heartbeat", () => {
+    eventSource.addEventListener('heartbeat', () => {
       // Heartbeat received, connection is alive
     });
 
     // Handle errors
-    eventSource.addEventListener("error", (event) => {
+    eventSource.addEventListener('error', (event) => {
       try {
         const data = JSON.parse((event as MessageEvent).data);
         setProgressEvent((prev) => ({
           ...prev!,
-          status: "FAILED",
-          error: data.error || "Connection error",
+          status: 'FAILED',
+          error: data.error || 'Connection error',
         }));
       } catch {
         // Standard error event (not custom error)
       }
-      setConnectionState("error");
+      setConnectionState('error');
     });
 
     // Handle connection error/close
@@ -169,9 +169,9 @@ export function useDocumentProgress(
       // EventSource will automatically try to reconnect
       // We just update our state
       if (eventSource.readyState === EventSource.CLOSED) {
-        setConnectionState("disconnected");
+        setConnectionState('disconnected');
       } else {
-        setConnectionState("error");
+        setConnectionState('error');
       }
     };
   }, [documentId, enabled]);
@@ -183,7 +183,7 @@ export function useDocumentProgress(
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
       eventSourceRef.current = null;
-      setConnectionState("disconnected");
+      setConnectionState('disconnected');
     }
   }, []);
 
@@ -208,9 +208,9 @@ export function useDocumentProgress(
 
   // Derived state
   const progress = progressEvent?.progress ?? 0;
-  const message = progressEvent?.message ?? "";
-  const isComplete = progressEvent?.status === "COMPLETED";
-  const isFailed = progressEvent?.status === "FAILED";
+  const message = progressEvent?.message ?? '';
+  const isComplete = progressEvent?.status === 'COMPLETED';
+  const isFailed = progressEvent?.status === 'FAILED';
   const error = progressEvent?.error ?? null;
 
   return {

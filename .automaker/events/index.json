@@ -2,6 +2,120 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769511558515-21f25d36",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T10:59:18.515Z",
+      "featureName": "",
+      "featureId": "feature-1769511081956-clfpcu1v7"
+    },
+    {
+      "id": "evt-1769511082069-867b4d9d",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-27T10:51:22.069Z",
+      "featureId": "feature-1769511081956-clfpcu1v7"
+    },
+    {
+      "id": "evt-1769509433411-25a15d55",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-27T10:23:53.411Z"
+    },
+    {
+      "id": "evt-1769509428757-850f616e",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T10:23:48.757Z",
+      "featureName": "Remove Manual Langfuse Tracing Code After Official Integration",
+      "featureId": "remove-manual-langfuse-tracing-code"
+    },
+    {
+      "id": "evt-1769509255109-445fbba0",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T10:20:55.109Z",
+      "featureName": "Create E2E Tests for Langfuse Tracing",
+      "featureId": "test-langfuse-tracing-e2e"
+    },
+    {
+      "id": "evt-1769508894981-af2a44a6",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T10:14:54.981Z",
+      "featureName": "Verify Langfuse Environment Configuration",
+      "featureId": "verify-langfuse-env-configuration"
+    },
+    {
+      "id": "evt-1769508653793-91c2ea74",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T10:10:53.793Z",
+      "featureName": "Create Langfuse Trace Verification Dashboard",
+      "featureId": "langfuse-tracing-verification-dashboard"
+    },
+    {
+      "id": "evt-1769508561106-f0f2d747",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T10:09:21.106Z",
+      "featureName": "Fix Langfuse Integration with PydanticAI Following Official Documentation",
+      "featureId": "fix-langfuse-pydantic-ai-integration"
+    },
+    {
+      "id": "evt-1769507319691-83f94d4b",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-27T09:48:39.691Z"
+    },
+    {
+      "id": "evt-1769507312834-12311d99",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T09:48:32.834Z",
+      "featureName": "Streaming Error Handling and Retry Logic",
+      "featureId": "ai-streaming-error-handling"
+    },
+    {
+      "id": "evt-1769506659014-044e2287",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T09:37:39.014Z",
+      "featureName": "E2E Tests for Streaming Chat",
+      "featureId": "ai-streaming-e2e-tests"
+    },
+    {
+      "id": "evt-1769506652814-f30875d1",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T09:37:32.814Z",
+      "featureName": "Document Streaming Architecture and Usage",
+      "featureId": "ai-streaming-documentation"
+    },
+    {
+      "id": "evt-1769506424360-4a580299",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T09:33:44.360Z",
+      "featureName": "Frontend Streaming Chat UI Integration",
+      "featureId": "frontend-streaming-chat-client"
+    },
+    {
+      "id": "evt-1769506188792-329b61e7",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T09:29:48.792Z",
+      "featureName": "AI Engine Streaming Chat Endpoint",
+      "featureId": "ai-engine-streaming-endpoint"
+    },
+    {
+      "id": "evt-1769506185214-54a96d75",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T09:29:45.214Z",
+      "featureName": "Direct AI Engine Streaming with JWT Auth",
+      "featureId": "ai-streaming-auth-integration"
+    },
+    {
+      "id": "evt-1769505488647-695199a5",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T09:18:08.647Z",
+      "featureName": "AI Engine JWT Token Validation Middleware",
+      "featureId": "ai-engine-jwt-validation"
+    },
+    {
+      "id": "evt-1769505038443-91eb6f7e",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T09:10:38.443Z",
+      "featureName": "AI Engine CORS Configuration for Frontend Access",
+      "featureId": "ai-engine-cors-configuration"
+    },
+    {
       "id": "evt-1769500727072-a7fcb6a1",
       "trigger": "auto_mode_complete",
       "timestamp": "2026-01-27T07:58:47.072Z"

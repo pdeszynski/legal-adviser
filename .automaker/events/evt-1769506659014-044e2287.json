@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769506659014-044e2287",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T09:37:39.014Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "ai-streaming-e2e-tests",
+  "featureName": "E2E Tests for Streaming Chat",
+  "error": "Feature completed in 473s - auto-verified",
+  "passes": true
+}

@@ -392,6 +392,7 @@ OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 AI_ENGINE_PORT=8000
 AI_ENGINE_HOST=0.0.0.0
 BACKEND_URL=http://localhost:3001
+FRONTEND_URL=http://localhost:3000
 
 # Langfuse Observability (Optional but recommended)
 LANGFUSE_PUBLIC_KEY=pk-...
@@ -400,6 +401,383 @@ LANGFUSE_ENABLED=true
 LANGFUSE_SAMPLING_RATE=1.0
 LANGFUSE_SESSION_ID_HEADER=x-session-id
 ```
+
+### CORS Configuration
+
+**Location:** `apps/ai-engine/src/main.py`
+
+**Purpose:** Allow direct frontend requests to AI Engine with proper authorization headers.
+
+**Environment Variables:**
+
+```bash
+FRONTEND_URL=http://localhost:3000  # Frontend origin (default: http://localhost:3000)
+```
+
+**Configuration:**
+
+The CORS middleware is configured to:
+
+- Allow origins from `FRONTEND_URL` environment variable plus `http://localhost:3000` for local development
+- Allow credentials (`true`) for Authorization cookies/headers
+- Allow methods: `GET`, `POST`, `OPTIONS` (explicitly defined)
+- Allow headers: `Authorization`, `Content-Type` (explicitly defined)
+- Handle preflight OPTIONS requests automatically
+
+**CORS middleware is added before route definitions** to ensure all endpoints are protected.
+
+**Verification:**
+
+```bash
+# Test CORS with curl (preflight request)
+curl -X OPTIONS http://localhost:8000/api/v1/qa/ask \
+  -H "Origin: http://localhost:3000" \
+  -H "Access-Control-Request-Method: POST" \
+  -H "Access-Control-Request-Headers: Authorization,Content-Type" \
+  -v
+
+# Check response headers for:
+# Access-Control-Allow-Origin: http://localhost:3000
+# Access-Control-Allow-Credentials: true
+# Access-Control-Allow-Methods: GET, POST, OPTIONS
+# Access-Control-Allow-Headers: Authorization, Content-Type
+```
+
+**Browser DevTools Verification:**
+
+1. Open Network tab in DevTools
+2. Make a request from frontend to AI Engine
+3. Check that `Authorization` header is sent in request
+4. Verify response contains proper CORS headers
+5. No CORS errors should appear in console
+
+### Streaming Chat Architecture
+
+**Overview:** Frontend communicates directly with AI Engine for real-time streaming responses, bypassing the GraphQL layer for improved latency and user experience.
+
+#### Architecture Diagram
+
+```
+┌─────────────┐         JWT          ┌─────────────┐         SSE          ┌─────────────┐
+│   Frontend  │ ────────────────────▶│  AI Engine  │ ────────────────────▶│   Frontend  │
+│  (Next.js)  │   Authorization:     │  (FastAPI)  │   text/event-stream  │  (SSE Client)│
+│             │      Bearer <token>   │             │                     │             │
+└─────────────┘                      └─────────────┘                     └─────────────┘
+       │                                         │
+       │                                         │
+       ▼                                         ▼
+┌─────────────┐                         ┌─────────────┐
+│   Backend   │◄────────────────────────│  AI Engine  │
+│  (NestJS)   │     User Context        │  (FastAPI)  │
+│             │      Validation          │             │
+└─────────────┘                         └─────────────┘
+```
+
+#### JWT Token Format
+
+The frontend includes JWT tokens from the backend in AI Engine requests:
+
+**Token Claims:**
+```json
+{
+  "sub": "user-uuid",           // User ID
+  "username": "johndoe",        // Username
+  "email": "user@example.com",  // Email
+  "roles": ["LAWYER"],          // User roles
+  "type": "access",             // Token type (must NOT be "refresh" or "2fa-temp")
+  "exp": 1234567890             // Expiration timestamp
+}
+```
+
+**Validation in AI Engine:**
+- Algorithm: HS256
+- Secret: `JWT_SECRET` environment variable (shared with backend)
+- Required claims: `sub`, `email`
+- Token type validation: Rejects `refresh` and `2fa-temp` tokens
+
+#### Streaming Endpoint: `/api/v1/qa/ask-stream`
+
+**Request:**
+```bash
+POST /api/v1/qa/ask-stream
+Authorization: Bearer <jwt_token>
+
+# Query parameters:
+question=What are my rights?
+mode=LAWYER|SIMPLE
+session_id=uuid-v4
+```
+
+**Response Format:** Server-Sent Events (SSE)
+
+```http
+Content-Type: text/event-stream
+Cache-Control: no-cache
+Connection: keep-alive
+X-Accel-Buffering: no
+```
+
+#### SSE Event Types
+
+| Event Type | Structure | Description |
+|------------|-----------|-------------|
+| `token` | Partial response content | Streaming text chunks |
+| `citation` | Legal citation reference | Source, article, URL |
+| `clarification` | Follow-up questions needed | Questions array |
+| `error` | Error information | Error message and code |
+| `done` | Final completion | Metadata and stats |
+
+**Event Format Examples:**
+
+```javascript
+// Token event (streaming content)
+data: {"type":"token","content":"Based on Polish labor law","metadata":{}}
+
+// Citation event
+data: {"type":"citation","content":"","metadata":{"source":"Labour Code","article":"Art. 94 § 1","url":"https://isap.sejm.gov.pl/..."}}
+
+// Clarification event (follow-up questions needed)
+data: {"type":"token","content":"{\"type\":\"clarification\",\"questions\":[\"When did the employment end?\"],\"context_summary\":\"More details needed\",\"next_steps\":\"Please answer\"}","metadata":{}}
+
+// Error event
+data: {"type":"error","content":"","metadata":{"error":"OpenAI API error","error_code":"LLM_API_ERROR"}}
+
+// Done event (completion)
+data: {"type":"done","content":"","metadata":{"citations":[...],"confidence":0.87,"processing_time_ms":1234,"query_type":"EMPLOYMENT_LAW","key_terms":["notice period","severance"]}}
+```
+
+#### Frontend Integration: `useStreamingChat` Hook
+
+**Location:** `apps/web/src/hooks/useStreamingChat.ts`
+
+```tsx
+import { useStreamingChat } from '@/hooks/useStreamingChat';
+
+function ChatInterface() {
+  const { sendMessage, isStreaming, abortStream, currentContent } = useStreamingChat({
+    onToken: (token) => console.log('Received token:', token),
+    onCitation: (citation) => console.log('Citation:', citation),
+    onStreamEnd: (response) => console.log('Complete:', response),
+    onStreamError: (error) => console.error('Error:', error),
+  });
+
+  const handleSend = async () => {
+    const response = await sendMessage(
+      'What are my rights as an employee?',
+      'LAWYER'
+    );
+    console.log('Final response:', response);
+  };
+
+  return (
+    <div>
+      <p>{currentContent}</p>
+      <button onClick={handleSend} disabled={isStreaming}>
+        Send
+      </button>
+      {isStreaming && <button onClick={abortStream}>Stop</button>}
+    </div>
+  );
+}
+```
+
+**Hook Return Values:**
+- `sendMessage(question, mode, sessionId?)` - Send a streaming request
+- `abortStream()` - Cancel the current stream
+- `isStreaming` - Whether a stream is active
+- `error` - Current error message
+- `currentContent` - Accumulated response during streaming
+- `currentCitations` - Citations received so far
+
+**Hook Options:**
+- `enabled` - Enable/disable streaming (default: `true`)
+- `fallbackToGraphQL` - Fallback to GraphQL on error (default: `true`)
+- `onStreamStart` - Callback when stream starts
+- `onToken` - Callback for each token received
+- `onCitation` - Callback when citation is received
+- `onStreamEnd` - Callback when stream completes
+- `onStreamError` - Callback on error
+
+#### Error Handling and Retry Strategies
+
+**Automatic Fallback:**
+
+If streaming fails, the hook automatically falls back to GraphQL mutation:
+
+```tsx
+const { sendMessage } = useStreamingChat({
+  fallbackToGraphQL: true,  // Default behavior
+  onStreamError: (error) => {
+    // User sees: "Falling back to GraphQL: <error>"
+  },
+});
+```
+
+**Common Error Codes:**
+
+| Error Code | Description | Retry Strategy |
+|------------|-------------|----------------|
+| `MISSING_TOKEN` | No Authorization header | Prompt user to login |
+| `INVALID_TOKEN` | Token validation failed | Refresh token or re-login |
+| `TOKEN_EXPIRED` | Token expired | Refresh token |
+| `INVALID_TOKEN_TYPE` | Refresh token used for API | Use access token instead |
+| `INCOMPLETE_AUTH` | 2FA not completed | Complete 2FA flow |
+| `LLM_API_ERROR` | OpenAI API error | Retry with backoff |
+| `RATE_LIMIT_EXCEEDED` | Too many requests | Wait and retry |
+
+**Manual Error Handling:**
+
+```tsx
+const { sendMessage } = useStreamingChat({
+  fallbackToGraphQL: false,  // Disable auto-fallback
+  onStreamError: async (error) => {
+    if (error.includes('TOKEN_EXPIRED')) {
+      // Trigger token refresh
+      await refreshToken();
+      // Retry the request
+    }
+  },
+});
+```
+
+#### CORS and Security Configuration
+
+**CORS Setup in AI Engine:**
+
+```python
+# apps/ai-engine/src/main.py
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.FRONTEND_URL, "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
+)
+```
+
+**Security Considerations:**
+
+1. **JWT Secret:** Must match backend's `JWT_SECRET` exactly
+2. **Token Type Validation:** AI Engine rejects refresh tokens
+3. **CORS Origins:** Only allow frontend domains
+4. **HTTPS:** Required in production for token security
+5. **Session Management:** Use persistent session IDs for conversation context
+
+#### Monitoring and Debugging
+
+**Health Checks:**
+
+```bash
+# Check AI Engine health
+curl http://localhost:8000/health
+
+# Check JWT validation health
+curl http://localhost:8000/health/jwt
+```
+
+**SSE Testing with curl:**
+
+```bash
+curl -N -X POST "http://localhost:8000/api/v1/qa/ask-stream?question=Test&mode=SIMPLE&session_id=test-123" \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json"
+```
+
+**Browser DevTools:**
+
+1. Network tab → Filter by "event-stream" or "ask-stream"
+2. Check Headers: `Content-Type: text/event-stream`
+3. Check Messages tab for SSE events
+4. Look for `Authorization: Bearer <token>` in request headers
+
+**Langfuse Observability:**
+
+Streaming requests are automatically traced in Langfuse with:
+- `streaming: true` flag
+- Token count and processing time
+- User ID and session ID from JWT
+
+#### Migration Guide: GraphQL to Streaming
+
+**Before (GraphQL Mutation):**
+
+```tsx
+const { data } = await graphqlClient.mutation({
+  operation: 'askLegalQuestion',
+  variables: {
+    input: { question: '...', mode: 'LAWYER' }
+  }
+});
+// Wait for complete response...
+const answer = data.askLegalQuestion.answerMarkdown;
+```
+
+**After (Streaming):**
+
+```tsx
+const { sendMessage } = useStreamingChat();
+const response = await sendMessage('...', 'LAWYER');
+// Content streams in real-time via onToken callback
+const answer = response.content;
+```
+
+**Key Differences:**
+
+| Aspect | GraphQL | Streaming |
+|--------|---------|-----------|
+| Latency | Full generation time | First token ~100ms |
+| UX | Loading spinner | Progressive text |
+| Abort | Not supported | Built-in |
+| Citations | At end only | As received |
+| Fallback | N/A | Automatic |
+
+#### Troubleshooting
+
+**CORS Errors:**
+
+```
+Error: Access to fetch at 'http://localhost:8000/api/v1/qa/ask-stream'
+from origin 'http://localhost:3000' has been blocked by CORS policy
+```
+
+**Solutions:**
+1. Verify `FRONTEND_URL` matches exactly (no trailing slash)
+2. Check CORS middleware is added before routes
+3. Ensure `allow_credentials=True` is set
+4. Verify `Authorization` is in `allow_headers`
+
+**Token Validation Failures:**
+
+```
+401 Unauthorized: {"error_code":"MISSING_TOKEN","message":"Authorization header required"}
+```
+
+**Solutions:**
+1. Check `getAccessToken()` returns a valid token
+2. Verify header format: `Authorization: Bearer <token>`
+3. Ensure token hasn't expired
+4. Confirm `JWT_SECRET` matches backend
+
+**Stream Drops:**
+
+```
+Stream stops mid-response without 'done' event
+```
+
+**Solutions:**
+1. Check AI Engine logs for errors
+2. Verify `keep-alive` headers
+3. Disable nginx buffering: `X-Accel-Buffering: no`
+4. Check network connectivity
+5. Implement automatic reconnection in hook
+
+**No Events Received:**
+
+**Solutions:**
+1. Verify `Content-Type: text/event-stream` in response
+2. Check browser supports EventSource (most do)
+3. Ensure query parameters are URL-encoded
+4. Test with curl to isolate frontend issues
 
 ### Architecture Overview
 
@@ -564,28 +942,111 @@ class ClarificationQuestion(BaseModel):
 
 ### Langfuse Observability
 
-#### Setup
+#### Official PydanticAI Integration
 
-1. Get credentials from [Langfuse Cloud](https://cloud.langfuse.com)
-2. Set environment variables (see above)
-3. All agents and workflows are automatically traced
+The AI Engine uses the official Langfuse + PydanticAI integration pattern. See: https://langfuse.com/integrations/frameworks/pydantic-ai
 
-#### What Gets Traced
+**How it works:**
 
-- All LLM calls (model, tokens, latency)
-- HTTP requests (middleware)
-- Workflow nodes (spans)
-- User sessions and IDs
+1. On startup, `init_langfuse()` is called from `src/main.py`
+2. After authenticating with Langfuse, it calls `Agent.instrument_all()`
+3. All PydanticAI agents created with `instrument=True` automatically send traces to Langfuse
+
+**Environment Variables:**
+
+```bash
+# Get credentials from: https://cloud.langfuse.com
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_SECRET_KEY=sk-lf-...
+LANGFUSE_HOST=https://cloud.langfuse.com  # EU region (default)
+# LANGFUSE_HOST=https://us.cloud.langfuse.com  # US region
+
+# Optional settings
+LANGFUSE_ENABLED=true
+LANGFUSE_SAMPLING_RATE=1.0  # 1.0 = trace all requests
+LANGFUSE_SESSION_ID_HEADER=x-session-id
+```
+
+#### Initialization Code
+
+The key initialization happens in `src/langfuse_init.py`:
+
+```python
+def init_langfuse() -> None:
+    # Set environment variables
+    os.environ["LANGFUSE_PUBLIC_KEY"] = settings.LANGFUSE_PUBLIC_KEY
+    os.environ["LANGFUSE_SECRET_KEY"] = settings.LANGFUSE_SECRET_KEY
+
+    # Get Langfuse client (initializes OpenTelemetry)
+    _langfuse_client = get_client()
+
+    # Test connection
+    if _langfuse_client.auth_check():
+        # KEY STEP: Enable PydanticAI instrumentation globally
+        Agent.instrument_all()
+```
+
+#### Agent Configuration
+
+All agents are created with `instrument=True` for automatic tracing:
+
+```python
+from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
+
+def get_my_agent() -> Agent:
+    settings = get_settings()
+    return Agent(
+        OpenAIModel(settings.OPENAI_MODEL),
+        system_prompt="You are a helpful assistant.",
+        instrument=True,  # Enable automatic Langfuse tracing
+    )
+```
+
+#### Adding Custom Metadata
+
+Use `update_current_trace()` to add additional metadata to the auto-created traces:
+
+```python
+from ..langfuse_init import is_langfuse_enabled, update_current_trace
+
+async def my_workflow(question: str, user_id: str, session_id: str):
+    # Add trace metadata
+    if is_langfuse_enabled():
+        update_current_trace(
+            input=question,
+            user_id=user_id,
+            session_id=session_id,
+            metadata={"workflow": "my_workflow"},
+        )
+
+    # Run agent (automatically traced)
+    result = await agent.run(question)
+
+    # Update with output metadata
+    if is_langfuse_enabled():
+        update_current_trace(
+            output={"result_length": len(result.output)}
+        )
+```
+
+#### What Gets Traced Automatically
+
+- **LLM calls**: Model name, tokens used, latency, cost
+- **Agent runs**: Input, output, system prompt
+- **Tools**: Tool calls and results
+- **HTTP requests**: Via middleware in `src/langfuse_middleware.py`
 
 #### PII Redaction
 
-Automatic redaction for:
+The `langfuse_init.py` module provides automatic PII redaction for all traces:
 
-- Email addresses
-- Polish phone numbers
-- PESEL numbers (Polish national ID)
-- NIP numbers (Polish tax ID)
-- Credit card numbers
+- Email addresses → `[REDACTED_EMAIL]`
+- Polish phone numbers → `[REDACTED_PHONE]`
+- PESEL numbers (11 digits) → `[REDACTED_PESEL]`
+- NIP numbers (10 digits) → `[REDACTED_NIP]`
+- Credit card numbers → `[REDACTED_CARD]`
+- Common Polish names → `[REDACTED_NAME]`
 
 #### Viewing Traces
 
@@ -593,8 +1054,24 @@ Go to `https://cloud.langfuse.com` to view:
 
 - Agent performance (latency, success rate)
 - Token usage and costs
-- User analytics
-- Error correlation with Sentry
+- User analytics by `user_id`
+- Session grouping by `session_id`
+- Error correlation with Sentry traces
+
+#### Troubleshooting
+
+**No traces appearing:**
+
+1. Verify environment variables are set correctly
+2. Check that `LANGFUSE_ENABLED=true`
+3. Look for "PydanticAI instrumentation enabled" message in startup logs
+4. Test authentication: `langfuse.auth_check()` should return `True`
+
+**Missing agent traces:**
+
+1. Ensure `instrument=True` is set on agent creation
+2. Verify `Agent.instrument_all()` is called after `init_langfuse()`
+3. Agents created before `init_langfuse()` won't be traced - use lazy loading pattern
 
 ### API Endpoints
 

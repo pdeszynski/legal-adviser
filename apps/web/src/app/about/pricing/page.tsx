@@ -4,15 +4,7 @@ import { useTranslations } from 'next-intl';
 import { PublicLayout } from '@components/layout/public-layout';
 import { Button } from '@legal/ui';
 import Link from 'next/link';
-import {
-  Check,
-  X,
-  CreditCard,
-  Calendar,
-  Sparkles,
-  ArrowLeft,
-  HelpCircle,
-} from 'lucide-react';
+import { Check, X, CreditCard, Calendar, Sparkles, ArrowLeft, HelpCircle } from 'lucide-react';
 import { useState } from 'react';
 import { DemoRequestForm } from '@components/demo-request';
 
@@ -58,7 +50,9 @@ const PricingPage = () => {
 
               {/* Billing Toggle */}
               <div className="flex items-center justify-center gap-4 pt-4">
-                <span className={`text-sm ${!isYearly ? 'font-semibold' : 'text-muted-foreground'}`}>
+                <span
+                  className={`text-sm ${!isYearly ? 'font-semibold' : 'text-muted-foreground'}`}
+                >
                   {t('toggle.monthly')}
                 </span>
                 <button
@@ -116,7 +110,9 @@ const PricingPage = () => {
                         </span>
                         {planKey !== 'enterprise' && (
                           <span className="text-muted-foreground">
-                            {planKey === 'free' ? t('forever') : `$/{isYearly ? t('month') : t('month')}`}
+                            {planKey === 'free'
+                              ? t('forever')
+                              : `$/{isYearly ? t('month') : t('month')}`}
                           </span>
                         )}
                       </div>
@@ -124,7 +120,11 @@ const PricingPage = () => {
 
                     <Button
                       size="lg"
-                      onClick={() => planKey === 'enterprise' || planKey === 'team' ? setIsDemoFormOpen(true) : null}
+                      onClick={() =>
+                        planKey === 'enterprise' || planKey === 'team'
+                          ? setIsDemoFormOpen(true)
+                          : null
+                      }
                       asChild={planKey !== 'enterprise' && planKey !== 'team'}
                       className={`w-full mb-8 rounded-full ${
                         isPopular
@@ -140,9 +140,7 @@ const PricingPage = () => {
                     </Button>
 
                     <div className="space-y-4">
-                      <div className="text-sm font-semibold text-center mb-4">
-                        {t('included')}
-                      </div>
+                      <div className="text-sm font-semibold text-center mb-4">{t('included')}</div>
                       {plan.features.included.map((feature: string, idx: number) => (
                         <div key={idx} className="flex items-start gap-3">
                           <Check className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
@@ -192,12 +190,8 @@ const PricingPage = () => {
         <section className="w-full py-24 bg-muted/30">
           <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-3xl mx-auto text-center space-y-8">
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-                {t('cta.title')}
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                {t('cta.description')}
-              </p>
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{t('cta.title')}</h2>
+              <p className="text-lg text-muted-foreground">{t('cta.description')}</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Button
                   size="lg"
@@ -208,11 +202,7 @@ const PricingPage = () => {
                   {t('cta.getStarted')}
                 </Button>
                 <Link href="/about">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="px-8 h-12 rounded-full text-lg"
-                  >
+                  <Button variant="outline" size="lg" className="px-8 h-12 rounded-full text-lg">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     {t('navigation.backToAbout')}
                   </Button>

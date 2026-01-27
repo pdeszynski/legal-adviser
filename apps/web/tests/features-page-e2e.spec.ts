@@ -163,39 +163,40 @@ test.describe('Features Landing Page - Feature Cards', () => {
 
   test('should display status badges on features', async ({ page }) => {
     // Check for "New" badge
-    const newBadge = page.locator('text=New').or(
-      page.locator('[class*="badge"]').filter({ hasText: 'New' })
-    );
+    const newBadge = page
+      .locator('text=New')
+      .or(page.locator('[class*="badge"]').filter({ hasText: 'New' }));
     const newBadgeCount = await newBadge.count();
     expect(newBadgeCount).toBeGreaterThan(0);
 
     // Check for "Beta" badge
-    const betaBadge = page.locator('text=Beta').or(
-      page.locator('[class*="badge"]').filter({ hasText: 'Beta' })
-    );
+    const betaBadge = page
+      .locator('text=Beta')
+      .or(page.locator('[class*="badge"]').filter({ hasText: 'Beta' }));
     const betaBadgeCount = await betaBadge.count();
     expect(betaBadgeCount).toBeGreaterThan(0);
 
     // Check for "Stable" badge
-    const stableBadge = page.locator('text=Stable').or(
-      page.locator('[class*="badge"]').filter({ hasText: 'Stable' })
-    );
+    const stableBadge = page
+      .locator('text=Stable')
+      .or(page.locator('[class*="badge"]').filter({ hasText: 'Stable' }));
     const stableBadgeCount = await stableBadge.count();
     expect(stableBadgeCount).toBeGreaterThan(0);
 
     // Check for "Coming Soon" badge
-    const comingSoonBadge = page.locator('text=Coming Soon').or(
-      page.locator('[class*="badge"]').filter({ hasText: 'Coming Soon' })
-    );
+    const comingSoonBadge = page
+      .locator('text=Coming Soon')
+      .or(page.locator('[class*="badge"]').filter({ hasText: 'Coming Soon' }));
     const comingSoonBadgeCount = await comingSoonBadge.count();
     expect(comingSoonBadgeCount).toBeGreaterThan(0);
   });
 
   test('should display CTA buttons on feature cards', async ({ page }) => {
     // Check for "Learn More" buttons
-    const learnMoreButtons = page.locator('button').filter({ hasText: /learn more/i }).or(
-      page.locator('a').filter({ hasText: /learn more/i })
-    );
+    const learnMoreButtons = page
+      .locator('button')
+      .filter({ hasText: /learn more/i })
+      .or(page.locator('a').filter({ hasText: /learn more/i }));
 
     const buttonCount = await learnMoreButtons.count();
     expect(buttonCount).toBeGreaterThan(0);
@@ -311,9 +312,9 @@ test.describe('Features Landing Page - Category Filtering', () => {
 
   test('should show results count when filtering', async ({ page }) => {
     // Look for results count text
-    const resultsCount = page.locator('text=/Showing \\d+ feature/').or(
-      page.locator('text=/features$/')
-    );
+    const resultsCount = page
+      .locator('text=/Showing \\d+ feature/')
+      .or(page.locator('text=/features$/'));
 
     // Results count should be visible (it appears in the filter controls)
     await expect(resultsCount.first()).toBeVisible();
@@ -328,17 +329,17 @@ test.describe('Features Landing Page - Search Functionality', () => {
   });
 
   test('should display search input', async ({ page }) => {
-    const searchInput = page.locator('input[placeholder="Search features..."]').or(
-      page.locator('input[type="search"]')
-    );
+    const searchInput = page
+      .locator('input[placeholder="Search features..."]')
+      .or(page.locator('input[type="search"]'));
 
     await expect(searchInput).toBeVisible();
   });
 
   test('should filter features by search term in title', async ({ page }) => {
-    const searchInput = page.locator('input[placeholder="Search features..."]').or(
-      page.locator('input[type="search"]')
-    );
+    const searchInput = page
+      .locator('input[placeholder="Search features..."]')
+      .or(page.locator('input[type="search"]'));
 
     // Search for "Document"
     await searchInput.fill('Document');
@@ -352,9 +353,9 @@ test.describe('Features Landing Page - Search Functionality', () => {
   });
 
   test('should filter features by search term in description', async ({ page }) => {
-    const searchInput = page.locator('input[placeholder="Search features..."]').or(
-      page.locator('input[type="search"]')
-    );
+    const searchInput = page
+      .locator('input[placeholder="Search features..."]')
+      .or(page.locator('input[type="search"]'));
 
     // Search for "encryption" (in Enterprise Security description)
     await searchInput.fill('encryption');
@@ -365,9 +366,9 @@ test.describe('Features Landing Page - Search Functionality', () => {
   });
 
   test('should show empty state when no results found', async ({ page }) => {
-    const searchInput = page.locator('input[placeholder="Search features..."]').or(
-      page.locator('input[type="search"]')
-    );
+    const searchInput = page
+      .locator('input[placeholder="Search features..."]')
+      .or(page.locator('input[type="search"]'));
 
     // Search for something that won't match
     await searchInput.fill('xyznonexistentfeature');
@@ -383,9 +384,9 @@ test.describe('Features Landing Page - Search Functionality', () => {
   });
 
   test('should clear search when X button is clicked', async ({ page }) => {
-    const searchInput = page.locator('input[placeholder="Search features..."]').or(
-      page.locator('input[type="search"]')
-    );
+    const searchInput = page
+      .locator('input[placeholder="Search features..."]')
+      .or(page.locator('input[type="search"]'));
 
     // Enter search term
     await searchInput.fill('Document');
@@ -415,9 +416,9 @@ test.describe('Features Landing Page - Search Functionality', () => {
   });
 
   test('should work with combined search and category filter', async ({ page }) => {
-    const searchInput = page.locator('input[placeholder="Search features..."]').or(
-      page.locator('input[type="search"]')
-    );
+    const searchInput = page
+      .locator('input[placeholder="Search features..."]')
+      .or(page.locator('input[type="search"]'));
 
     // First filter to Platform category
     const platformFilter = page.locator('button').filter({ hasText: 'Platform' });
@@ -601,7 +602,10 @@ test.describe('Features Landing Page - Skeleton Loading', () => {
     await page.goto(`${BASE_URL}${FEATURES_PATH}`, { waitUntil: 'domcontentloaded' });
 
     // Skeleton may appear briefly - check for it within first 100ms
-    const skeletonExists = await page.locator('[class*="skeleton"]').isVisible().catch(() => false);
+    const skeletonExists = await page
+      .locator('[class*="skeleton"]')
+      .isVisible()
+      .catch(() => false);
 
     // Wait for content to load
     await page.waitForTimeout(1500);
@@ -683,7 +687,9 @@ test.describe('Features Landing Page - Accessibility', () => {
     await page.waitForTimeout(2000);
 
     // Filter buttons should be accessible
-    const filterButtons = page.locator('button').filter({ hasText: /All Features|AI Tools|Research|Collaboration|Platform/ });
+    const filterButtons = page
+      .locator('button')
+      .filter({ hasText: /All Features|AI Tools|Research|Collaboration|Platform/ });
 
     const buttonCount = await filterButtons.count();
     expect(buttonCount).toBeGreaterThan(0);
@@ -698,9 +704,9 @@ test.describe('Features Landing Page - Accessibility', () => {
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(2000);
 
-    const searchInput = page.locator('input[placeholder="Search features..."]').or(
-      page.locator('input[type="search"]')
-    );
+    const searchInput = page
+      .locator('input[placeholder="Search features..."]')
+      .or(page.locator('input[type="search"]'));
 
     await expect(searchInput).toBeVisible();
 
@@ -765,9 +771,9 @@ test.describe('Features Landing Page - Edge Cases', () => {
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(2000);
 
-    const searchInput = page.locator('input[placeholder="Search features..."]').or(
-      page.locator('input[type="search"]')
-    );
+    const searchInput = page
+      .locator('input[placeholder="Search features..."]')
+      .or(page.locator('input[type="search"]'));
 
     // Enter a very long search query
     const longQuery = 'a'.repeat(200);
@@ -784,9 +790,9 @@ test.describe('Features Landing Page - Edge Cases', () => {
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(2000);
 
-    const searchInput = page.locator('input[placeholder="Search features..."]').or(
-      page.locator('input[type="search"]')
-    );
+    const searchInput = page
+      .locator('input[placeholder="Search features..."]')
+      .or(page.locator('input[type="search"]'));
 
     // Enter special characters
     await searchInput.fill('!@#$%^&*()');

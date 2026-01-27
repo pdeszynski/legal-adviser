@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Update CLAUDE.md with streaming architecture documentation. Include: 1) Overview of direct frontend-to-AI-Engine communication pattern, 2) JWT validation flow and token format, 3) Streaming endpoint API specification (/api/v1/qa/ask-stream), 4) SSE event format examples (token, citation, done events), 5) Frontend integration patterns (StreamingChatService hook usage), 6) Error handling and retry strategies, 7) CORS configuration and security considerations, 8) Monitoring and debugging streaming connections, 9) Migration guide from GraphQL mutation to streaming, 10) Troubleshooting common issues (CORS errors, token validation failures, stream drops). Add code examples for consuming streaming endpoint in frontend components.",
+  "id": "ai-streaming-documentation",
+  "title": "Document Streaming Architecture and Usage",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Update CLAUDE.md with streaming architecture documentation. Include: 1) Overview of direct frontend-to-AI-Engine communication pattern, 2) JWT validation flow and token format, 3) Streaming endpoint API specification (/api/v1/qa/ask-stream), 4) SSE event format examples (token, citation, done events), 5) Frontend integration patterns (StreamingChatService hook usage), 6) Error handling and retry strategies, 7) CORS configuration and security considerations, 8) Monitoring and debugging streaming connections, 9) Migration guide from GraphQL mutation to streaming, 10) Troubleshooting common issues (CORS errors, token validation failures, stream drops). Add code examples for consuming streaming endpoint in frontend components.",
+      "timestamp": "2026-01-27T09:03:50.802Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-27T09:37:32.779Z"
+}

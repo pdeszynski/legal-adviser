@@ -22,10 +22,10 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 TypeScript 5+ (Node.js 20+), Python 3.11+: Follow standard conventions
 
 ## Recent Changes
-- 002-legal-ai-core: Added TypeScript 5+ (Node.js 20+), Python 3.11+
-- 002-legal-ai-core: Added TypeScript 5+ (Node.js 20+), Python 3.11+
-- 002-legal-ai-core: Added TypeScript 5+ (Node.js 20+), Python 3.11+
 
+- 002-legal-ai-core: Added TypeScript 5+ (Node.js 20+), Python 3.11+
+- 002-legal-ai-core: Added TypeScript 5+ (Node.js 20+), Python 3.11+
+- 002-legal-ai-core: Added TypeScript 5+ (Node.js 20+), Python 3.11+
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

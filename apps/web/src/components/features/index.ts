@@ -1,4 +1,9 @@
-export { FeatureCard, type FeatureCardProps, type FeatureStatus, type CTAAction } from './feature-card';
+export {
+  FeatureCard,
+  type FeatureCardProps,
+  type FeatureStatus,
+  type CTAAction,
+} from './feature-card';
 export {
   FeatureCategorySection,
   type FeatureCategorySectionProps,
@@ -10,10 +15,7 @@ export {
   type FeatureFilterValue,
   type FeatureFilterOption,
 } from './feature-filter-controls';
-export {
-  FeatureCardSkeleton,
-  type FeatureCardSkeletonProps,
-} from './feature-card-skeleton';
+export { FeatureCardSkeleton, type FeatureCardSkeletonProps } from './feature-card-skeleton';
 export {
   FeatureCategorySectionSkeleton,
   type FeatureCategorySectionSkeletonProps,

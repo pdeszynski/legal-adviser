@@ -72,7 +72,9 @@ test.describe('Interest Page Skeleton Loading', () => {
     await page.waitForLoadState('networkidle');
 
     // Get bounding box of actual form container
-    const formCard = page.locator('.rounded-2xl.sm\\:rounded-3xl.border.border-border.bg-card').first();
+    const formCard = page
+      .locator('.rounded-2xl.sm\\:rounded-3xl.border.border-border.bg-card')
+      .first();
     await expect(formCard).toBeVisible();
 
     const formBox = await formCard.boundingBox();

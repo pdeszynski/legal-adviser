@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769509428757-850f616e",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T10:23:48.757Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "remove-manual-langfuse-tracing-code",
+  "featureName": "Remove Manual Langfuse Tracing Code After Official Integration",
+  "error": "Feature completed in 865s - auto-verified",
+  "passes": true
+}

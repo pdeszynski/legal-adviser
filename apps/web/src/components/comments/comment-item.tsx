@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { DocumentComment, CommentResolutionStatus } from "@/hooks";
-import { useTranslate } from "@refinedev/core";
+import { useState } from 'react';
+import { DocumentComment, CommentResolutionStatus } from '@/hooks';
+import { useTranslate } from '@refinedev/core';
 
 interface CommentItemProps {
   comment: DocumentComment;
@@ -42,9 +42,7 @@ export function CommentItem({
   const isOwner = currentUserId === comment.authorId;
   const isResolved = comment.resolutionStatus === CommentResolutionStatus.RESOLVED;
   const createdAt = new Date(comment.createdAt).toLocaleString();
-  const resolvedAt = comment.resolvedAt
-    ? new Date(comment.resolvedAt).toLocaleString()
-    : null;
+  const resolvedAt = comment.resolvedAt ? new Date(comment.resolvedAt).toLocaleString() : null;
 
   const handleSaveEdit = () => {
     if (editedText.trim() && editedText !== comment.text && onEdit) {
@@ -68,17 +66,17 @@ export function CommentItem({
     if (comment.author?.email) {
       return comment.author.email;
     }
-    return translate("comments.anonymous", "Anonymous");
+    return translate('comments.anonymous', 'Anonymous');
   };
 
   return (
     <div
       className={`border-l-4 pl-4 py-3 mb-3 transition-colors cursor-pointer ${
         isSelected
-          ? "border-blue-500 bg-blue-50"
+          ? 'border-blue-500 bg-blue-50'
           : isResolved
-          ? "border-gray-300 bg-gray-50 opacity-75"
-          : "border-yellow-400 bg-yellow-50"
+            ? 'border-gray-300 bg-gray-50 opacity-75'
+            : 'border-yellow-400 bg-yellow-50'
       }`}
       onClick={onClick}
     >
@@ -86,19 +84,17 @@ export function CommentItem({
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm text-gray-900">
-              {getAuthorName()}
-            </span>
+            <span className="font-semibold text-sm text-gray-900">{getAuthorName()}</span>
             <span className="text-xs text-gray-500">{createdAt}</span>
             {isResolved && (
               <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                {translate("comments.resolved", "Resolved")}
+                {translate('comments.resolved', 'Resolved')}
               </span>
             )}
           </div>
           {resolvedAt && (
             <div className="text-xs text-gray-500 mt-1">
-              {translate("comments.resolvedAt", "Resolved at")} {resolvedAt}
+              {translate('comments.resolvedAt', 'Resolved at')} {resolvedAt}
             </div>
           )}
         </div>
@@ -112,9 +108,9 @@ export function CommentItem({
                 onResolve(comment.id);
               }}
               className="text-xs px-2 py-1 rounded hover:bg-green-100 text-green-700 transition-colors"
-              title={translate("comments.resolve", "Mark as resolved")}
+              title={translate('comments.resolve', 'Mark as resolved')}
             >
-              {translate("comments.resolve", "Resolve")}
+              {translate('comments.resolve', 'Resolve')}
             </button>
           )}
           {isResolved && onReopen && (
@@ -124,9 +120,9 @@ export function CommentItem({
                 onReopen(comment.id);
               }}
               className="text-xs px-2 py-1 rounded hover:bg-yellow-100 text-yellow-700 transition-colors"
-              title={translate("comments.reopen", "Reopen comment")}
+              title={translate('comments.reopen', 'Reopen comment')}
             >
-              {translate("comments.reopen", "Reopen")}
+              {translate('comments.reopen', 'Reopen')}
             </button>
           )}
           {isOwner && onEdit && !isResolved && (
@@ -136,9 +132,9 @@ export function CommentItem({
                 setIsEditing(true);
               }}
               className="text-xs px-2 py-1 rounded hover:bg-blue-100 text-blue-700 transition-colors"
-              title={translate("comments.edit", "Edit comment")}
+              title={translate('comments.edit', 'Edit comment')}
             >
-              {translate("comments.edit", "Edit")}
+              {translate('comments.edit', 'Edit')}
             </button>
           )}
           {isOwner && onDelete && (
@@ -148,18 +144,18 @@ export function CommentItem({
                 if (
                   window.confirm(
                     translate(
-                      "comments.deleteConfirm",
-                      "Are you sure you want to delete this comment?"
-                    )
+                      'comments.deleteConfirm',
+                      'Are you sure you want to delete this comment?',
+                    ),
                   )
                 ) {
                   onDelete(comment.id);
                 }
               }}
               className="text-xs px-2 py-1 rounded hover:bg-red-100 text-red-700 transition-colors"
-              title={translate("comments.delete", "Delete comment")}
+              title={translate('comments.delete', 'Delete comment')}
             >
-              {translate("comments.delete", "Delete")}
+              {translate('comments.delete', 'Delete')}
             </button>
           )}
         </div>
@@ -188,20 +184,18 @@ export function CommentItem({
               disabled={!editedText.trim()}
               className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {translate("buttons.save", "Save")}
+              {translate('buttons.save', 'Save')}
             </button>
             <button
               onClick={handleCancelEdit}
               className="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300"
             >
-              {translate("buttons.cancel", "Cancel")}
+              {translate('buttons.cancel', 'Cancel')}
             </button>
           </div>
         </div>
       ) : (
-        <div className="text-sm text-gray-800 whitespace-pre-wrap">
-          {comment.text}
-        </div>
+        <div className="text-sm text-gray-800 whitespace-pre-wrap">{comment.text}</div>
       )}
     </div>
   );

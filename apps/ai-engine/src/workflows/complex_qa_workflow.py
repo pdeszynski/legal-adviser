@@ -23,7 +23,7 @@ from ..agents.qa_agent import (
     get_query_analyzer_agent,
     retrieve_context_tool,
 )
-from ..langfuse_init import is_langfuse_enabled
+from ..langfuse_init import is_langfuse_enabled, update_current_trace
 from .states import (
     ComplexQAState,
     create_complex_qa_state,
@@ -43,19 +43,6 @@ async def analyze_query_node(state: ComplexQAState) -> ComplexQAState:
     3. Refine the question for better search
     4. Check if clarification is needed
     """
-    metadata = state.get("metadata", {})
-
-    # Create Langfuse span
-    span = None
-    if is_langfuse_enabled():
-        from ..langfuse_init import get_langfuse
-        client = get_langfuse()
-        if client:
-            span = client.span(
-                name="analyze_query",
-                session_id=metadata.get("session_id"),
-            )
-
     try:
         deps = get_model_deps()
         analyzer = get_query_analyzer_agent()
@@ -70,18 +57,9 @@ async def analyze_query_node(state: ComplexQAState) -> ComplexQAState:
         state["metadata"]["current_step"] = "analyze_query"
         state["next_step"] = "check_clarification"
 
-        if span:
-            span.end(output={
-                "query_type": analysis.query_type,
-                "key_terms": analysis.key_terms,
-                "needs_clarification": analysis.needs_clarification,
-            })
-
         return state
 
     except Exception as e:
-        if span:
-            span.end(level="ERROR", status_message=str(e))
         state["error"] = str(e)
         state["next_step"] = "error"
         return state
@@ -111,19 +89,6 @@ async def clarify_node(state: ComplexQAState) -> ComplexQAState:
     This node uses the clarification agent to generate
     targeted follow-up questions.
     """
-    metadata = state.get("metadata", {})
-
-    # Create Langfuse span
-    span = None
-    if is_langfuse_enabled():
-        from ..langfuse_init import get_langfuse
-        client = get_langfuse()
-        if client:
-            span = client.span(
-                name="clarify",
-                session_id=metadata.get("session_id"),
-            )
-
     try:
         result = await generate_clarifications(
             question=state["question"],
@@ -135,14 +100,9 @@ async def clarify_node(state: ComplexQAState) -> ComplexQAState:
         state["metadata"]["current_step"] = "clarify"
         state["next_step"] = "await_clarification"
 
-        if span:
-            span.end(output={"questions_count": len(state["clarification_questions"])})
-
         return state
 
     except Exception as e:
-        if span:
-            span.end(level="ERROR", status_message=str(e))
         # Clarification failure is not fatal - proceed to research
         state["clarification_questions"] = []
         state["next_step"] = "research"
@@ -157,19 +117,6 @@ async def research_node(state: ComplexQAState) -> ComplexQAState:
     2. Separates statute and case law references
     3. Collects commentary if available
     """
-    metadata = state.get("metadata", {})
-
-    # Create Langfuse span
-    span = None
-    if is_langfuse_enabled():
-        from ..langfuse_init import get_langfuse
-        client = get_langfuse()
-        if client:
-            span = client.span(
-                name="research",
-                session_id=metadata.get("session_id"),
-            )
-
     try:
         deps = get_model_deps()
 
@@ -197,18 +144,9 @@ async def research_node(state: ComplexQAState) -> ComplexQAState:
         state["metadata"]["current_step"] = "research"
         state["next_step"] = "generate_answer"
 
-        if span:
-            span.end(output={
-                "total_contexts": len(contexts),
-                "statutes": len(statute_refs),
-                "case_law": len(case_law_refs),
-            })
-
         return state
 
     except Exception as e:
-        if span:
-            span.end(level="ERROR", status_message=str(e))
         # Research failure is not fatal - proceed with empty context
         state["retrieved_contexts"] = []
         state["statute_references"] = []
@@ -223,19 +161,6 @@ async def generate_answer_node(state: ComplexQAState) -> ComplexQAState:
     This node uses the Q&A agent to produce a detailed answer
     with proper citations.
     """
-    metadata = state.get("metadata", {})
-
-    # Create Langfuse span
-    span = None
-    if is_langfuse_enabled():
-        from ..langfuse_init import get_langfuse
-        client = get_langfuse()
-        if client:
-            span = client.span(
-                name="generate_answer",
-                session_id=metadata.get("session_id"),
-            )
-
     try:
         deps = get_model_deps()
         mode = state.get("mode", "SIMPLE")
@@ -282,17 +207,9 @@ Please provide a comprehensive answer based on the above context."""
         state["metadata"]["current_step"] = "generate_answer"
         state["next_step"] = "format_citations"
 
-        if span:
-            span.end(output={
-                "answer_length": len(qa_result.answer),
-                "confidence": qa_result.confidence,
-            })
-
         return state
 
     except Exception as e:
-        if span:
-            span.end(level="ERROR", status_message=str(e))
         state["error"] = str(e)
         state["next_step"] = "error"
         return state
@@ -306,19 +223,6 @@ async def format_citations_node(state: ComplexQAState) -> ComplexQAState:
     2. Validates citation format
     3. Removes duplicates
     """
-    metadata = state.get("metadata", {})
-
-    # Create Langfuse span
-    span = None
-    if is_langfuse_enabled():
-        from ..langfuse_init import get_langfuse
-        client = get_langfuse()
-        if client:
-            span = client.span(
-                name="format_citations",
-                session_id=metadata.get("session_id"),
-            )
-
     try:
         # Gather citations from multiple sources
         citations: list[dict[str, Any]] = []
@@ -350,14 +254,9 @@ async def format_citations_node(state: ComplexQAState) -> ComplexQAState:
         state["metadata"]["current_step"] = "format_citations"
         state["next_step"] = "complete"
 
-        if span:
-            span.end(output={"citations_count": len(formatted)})
-
         return state
 
     except Exception as e:
-        if span:
-            span.end(level="ERROR", status_message=str(e))
         # Citation formatting failure is not fatal
         state["formatted_citations"] = state.get("raw_citations", [])
         state["final_answer"] = state.get("answer", "")
@@ -370,33 +269,11 @@ async def complete_node(state: ComplexQAState) -> ComplexQAState:
 
     This node produces the final structured response.
     """
-    metadata = state.get("metadata", {})
-
-    # Create Langfuse span
-    span = None
-    if is_langfuse_enabled():
-        from ..langfuse_init import get_langfuse
-        client = get_langfuse()
-        if client:
-            span = client.span(
-                name="complete",
-                session_id=metadata.get("session_id"),
-            )
-
     try:
         state["next_step"] = END  # type: ignore
-
-        if span:
-            span.end(output={
-                "answer_length": len(state.get("final_answer", "")),
-                "citations_count": len(state.get("formatted_citations", [])),
-            })
-
         return state
 
     except Exception as e:
-        if span:
-            span.end(level="ERROR", status_message=str(e))
         state["error"] = str(e)
         state["next_step"] = "error"
         return state
@@ -524,24 +401,6 @@ class ComplexQAWorkflow:
         if user_responses:
             state["user_responses"] = user_responses
 
-        # Create Langfuse trace
-        trace = None
-        if is_langfuse_enabled():
-            from ..langfuse_init import get_langfuse
-            langfuse = get_langfuse()
-            if langfuse:
-                trace = langfuse.trace(
-                    name="complex_qa_workflow",
-                    session_id=session_id,
-                    user_id=user_id,
-                    metadata={
-                        "workflow": "complex_qa",
-                        "mode": mode,
-                        "question_length": len(question),
-                    },
-                )
-                state["metadata"]["parent_span_id"] = trace.trace_id
-
         try:
             # Run the workflow
             result = await self.graph.ainvoke(state)
@@ -563,20 +422,19 @@ class ComplexQAWorkflow:
                 "error": result.get("error"),
             }
 
-            if trace:
-                trace.update(output={
-                    "answer_length": len(output["answer"] or ""),
-                    "confidence": output["confidence"],
-                    "needs_clarification": output["needs_clarification"],
-                })
-                trace.metadata["processing_time_ms"] = processing_time_ms
-                trace.end()
+            # Update trace with workflow-level metadata
+            if is_langfuse_enabled():
+                update_current_trace(
+                    output={
+                        "answer_length": len(output["answer"] or ""),
+                        "confidence": output["confidence"],
+                        "needs_clarification": output["needs_clarification"],
+                    }
+                )
 
             return output
 
         except Exception as e:
-            if trace:
-                trace.end(level="ERROR", status_message=str(e))
             raise
 
 

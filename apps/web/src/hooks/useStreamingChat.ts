@@ -1,0 +1,769 @@
+'use client';
+
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { getAccessToken } from '@/providers/auth-provider/auth-provider.client';
+import type { ChatCitation, ClarificationInfo } from './use-chat';
+import {
+  detectStreamErrorType,
+  isRetryableError,
+  calculateBackoffDelay,
+  delay,
+  shouldUseFallback,
+  buildErrorResponse,
+  logStreamError,
+  logStreamCompletion,
+  hasStreamTimedOut,
+  updateActivity,
+  DEFAULT_RETRY_CONFIG,
+} from './streaming/streaming-error-handler';
+import type {
+  StreamErrorContext,
+  StreamErrorResponse,
+  RetryConfig,
+  ReconnectionState,
+} from './streaming/streaming-error-handler';
+
+// Re-export types for convenience
+export type { StreamErrorResponse } from './streaming/streaming-error-handler';
+
+const AI_ENGINE_URL = process.env.NEXT_PUBLIC_AI_ENGINE_URL || 'http://localhost:8000';
+
+// Stream event types from AI Engine
+type StreamEventType = 'token' | 'citation' | 'error' | 'done' | 'clarification';
+
+interface StreamEvent {
+  type: StreamEventType;
+  content: string;
+  metadata: Record<string, unknown>;
+}
+
+interface StreamCitation {
+  source: string;
+  article: string;
+  url?: string;
+}
+
+interface DoneMetadata {
+  citations: StreamCitation[];
+  confidence: number;
+  processing_time_ms: number;
+  query_type?: string;
+  key_terms?: string[];
+}
+
+interface StreamError {
+  error: string;
+  error_code?: string;
+}
+
+export interface StreamingChatResponse {
+  content: string;
+  citations: ChatCitation[];
+  clarification?: ClarificationInfo;
+  queryType?: string;
+  keyTerms?: string[];
+  confidence?: number;
+  error?: string;
+  errorResponse?: StreamErrorResponse;
+  partial?: boolean;
+  fellBack?: boolean;
+}
+
+export interface UseStreamingChatOptions {
+  /** Enable/disable streaming (default: true) */
+  enabled?: boolean;
+  /** Fallback to GraphQL if streaming fails (default: true) */
+  fallbackToGraphQL?: boolean;
+  /** Maximum retry attempts (default: 3) */
+  maxRetries?: number;
+  /** Retry configuration */
+  retryConfig?: Partial<RetryConfig>;
+  /** Callback when stream starts */
+  onStreamStart?: () => void;
+  /** Callback when each token is received */
+  onToken?: (token: string) => void;
+  /** Callback when citation is received */
+  onCitation?: (citation: StreamCitation) => void;
+  /** Callback when stream completes */
+  onStreamEnd?: (response: StreamingChatResponse) => void;
+  /** Callback when stream errors */
+  onStreamError?: (error: string, errorResponse: StreamErrorResponse) => void;
+  /** Callback when retrying */
+  onRetry?: (attempt: number, delayMs: number) => void;
+  /** Callback when connection is lost */
+  onConnectionLost?: () => void;
+  /** Callback when fallback occurs */
+  onFallback?: () => void;
+}
+
+export interface UseStreamingChatReturn {
+  /** Send a message with streaming response */
+  sendMessage: (
+    question: string,
+    mode: 'LAWYER' | 'SIMPLE',
+    sessionId?: string,
+  ) => Promise<StreamingChatResponse>;
+  /** Abort the current stream */
+  abortStream: () => void;
+  /** Retry the last failed request */
+  retryLastRequest: () => Promise<StreamingChatResponse | null>;
+  /** Whether a stream is currently active */
+  isStreaming: boolean;
+  /** Whether reconnection is in progress */
+  isReconnecting: boolean;
+  /** Current error message */
+  error: string | null;
+  /** Current error response */
+  errorResponse: StreamErrorResponse | null;
+  /** Current accumulated content during streaming */
+  currentContent: string;
+  /** Current citations during streaming */
+  currentCitations: StreamCitation[];
+  /** Whether response was a fallback */
+  wasFallback: boolean;
+  /** Reconnection state */
+  reconnectionState: ReconnectionState | null;
+}
+
+/**
+ * useStreamingChat Hook
+ *
+ * Enhanced streaming hook with comprehensive error handling:
+ * - Automatic retry with exponential backoff (max 3 retries)
+ * - Fallback to GraphQL if streaming fails
+ * - Timeout handling (30s inactivity)
+ * - Partial response preservation
+ * - Connection loss detection
+ * - Sentry error logging with context
+ * - User-friendly error messages
+ *
+ * @example
+ * ```tsx
+ * const { sendMessage, isStreaming, abortStream, retryLastRequest } = useStreamingChat({
+ *   onStreamError: (error, response) => console.log('Error:', error, response),
+ *   onRetry: (attempt, delay) => console.log(`Retry ${attempt} in ${delay}ms`),
+ * });
+ * ```
+ */
+export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStreamingChatReturn {
+  const {
+    enabled = true,
+    fallbackToGraphQL = true,
+    maxRetries = 3,
+    retryConfig: partialRetryConfig,
+    onStreamStart,
+    onToken,
+    onCitation,
+    onStreamEnd,
+    onStreamError,
+    onRetry,
+    onConnectionLost,
+    onFallback,
+  } = options;
+
+  const retryConfig: RetryConfig = { ...DEFAULT_RETRY_CONFIG, ...partialRetryConfig, maxRetries };
+
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [isReconnecting, setIsReconnecting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [errorResponse, setErrorResponse] = useState<StreamErrorResponse | null>(null);
+  const [currentContent, setCurrentContent] = useState('');
+  const [currentCitations, setCurrentCitations] = useState<StreamCitation[]>([]);
+  const [wasFallback, setWasFallback] = useState(false);
+  const [reconnectionState, setReconnectionState] = useState<ReconnectionState | null>(null);
+
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const lastRequestRef = useRef<{ question: string; mode: 'LAWYER' | 'SIMPLE'; sessionId: string } | null>(
+    null,
+  );
+  const activityTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const startTimeRef = useRef<number>(0);
+
+  /**
+   * Clear activity timeout
+   */
+  const clearActivityTimeout = useCallback(() => {
+    if (activityTimeoutRef.current) {
+      clearTimeout(activityTimeoutRef.current);
+      activityTimeoutRef.current = null;
+    }
+  }, []);
+
+  /**
+   * Setup activity timeout to detect stale streams
+   */
+  const setupActivityTimeout = useCallback(() => {
+    clearActivityTimeout();
+    activityTimeoutRef.current = setTimeout(() => {
+      // If we're still streaming but haven't received data in 30s, abort
+      if (abortControllerRef.current && isStreaming) {
+        onConnectionLost?.();
+        abortControllerRef.current.abort();
+        setError('Stream timed out - no activity for 30 seconds');
+      }
+    }, 30000); // 30 second timeout
+  }, [isStreaming, onConnectionLost, clearActivityTimeout]);
+
+  /**
+   * Parse an SSE line into a StreamEvent
+   */
+  const parseEventLine = useCallback((line: string): StreamEvent | null => {
+    if (!line.startsWith('data: ')) return null;
+
+    try {
+      const jsonStr = line.slice(6);
+      const data = JSON.parse(jsonStr) as StreamEvent;
+      return data;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  /**
+   * Process a single stream event
+   */
+  const processEvent = useCallback(
+    (event: StreamEvent): Partial<StreamingChatResponse> | null => {
+      switch (event.type) {
+        case 'token':
+          const tokenContent = event.content;
+          onToken?.(tokenContent);
+          return { content: tokenContent };
+
+        case 'citation':
+          const citation: StreamCitation = {
+            source: event.metadata.source as string,
+            article: event.metadata.article as string,
+            url: event.metadata.url as string | undefined,
+          };
+          onCitation?.(citation);
+          return { citations: [citation] };
+
+        case 'error':
+          const errorData = event.metadata as unknown as StreamError;
+          const errorMsg = errorData.error || 'Unknown error';
+          return { error: errorMsg };
+
+        case 'clarification':
+          try {
+            const clarificationData = JSON.parse(event.content);
+            return {
+              clarification: {
+                needs_clarification: true,
+                questions: clarificationData.questions || [],
+                context_summary: clarificationData.context_summary || '',
+                next_steps: clarificationData.next_steps || '',
+              },
+            };
+          } catch {
+            return null;
+          }
+
+        case 'done':
+          const metadata = event.metadata as unknown as DoneMetadata;
+          return {
+            citations: metadata.citations,
+            confidence: metadata.confidence,
+            queryType: metadata.query_type,
+            keyTerms: metadata.key_terms,
+          };
+
+        default:
+          return null;
+      }
+    },
+    [onToken, onCitation],
+  );
+
+  /**
+   * Fallback to GraphQL mutation when streaming fails
+   */
+  const fallbackSendMessage = useCallback(
+    async (
+      question: string,
+      mode: 'LAWYER' | 'SIMPLE',
+      sessionId: string,
+    ): Promise<StreamingChatResponse> => {
+      onFallback?.();
+      setWasFallback(true);
+
+      const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      const accessToken = getAccessToken();
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+
+      const mutation = `
+        mutation AskLegalQuestion($input: AskLegalQuestionInput!) {
+          askLegalQuestion(input: $input) {
+            id
+            question
+            answerMarkdown
+            citations {
+              source
+              url
+              excerpt
+              article
+            }
+            sessionId
+            clarificationInfo {
+              needs_clarification
+              questions
+              context_summary
+              next_steps
+            }
+            queryType
+            keyTerms
+            confidence
+          }
+        }
+      `;
+
+      const response = await fetch(GRAPHQL_URL, {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+        body: JSON.stringify({
+          query: mutation,
+          variables: {
+            input: {
+              question,
+              mode,
+              sessionId,
+            },
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.errors && result.errors.length > 0) {
+        throw new Error(result.errors[0].message || 'GraphQL error');
+      }
+
+      const data = result.data?.askLegalQuestion;
+
+      if (!data) {
+        throw new Error('No data returned from server');
+      }
+
+      if (data.sessionId) {
+        localStorage.setItem('chat_session_id', data.sessionId);
+      }
+
+      return {
+        content: data.answerMarkdown || '',
+        citations: data.citations || [],
+        clarification: data.clarificationInfo || undefined,
+        queryType: data.queryType,
+        keyTerms: data.keyTerms,
+        confidence: data.confidence,
+        fellBack: true,
+      };
+    },
+    [onFallback],
+  );
+
+  /**
+   * Execute streaming request with retry logic
+   */
+  const executeStreamRequest = useCallback(
+    async (
+      question: string,
+      mode: 'LAWYER' | 'SIMPLE',
+      sessionId: string,
+      retryAttempt = 0,
+    ): Promise<StreamingChatResponse> => {
+      startTimeRef.current = Date.now();
+
+      // Get JWT token for authentication
+      const accessToken = getAccessToken();
+      const userId = accessToken ? (parseJwt(accessToken)?.sub as string) : undefined;
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+
+      // Build URL with query parameters
+      const url = new URL(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`);
+      url.searchParams.set('question', question);
+      url.searchParams.set('mode', mode);
+      url.searchParams.set('session_id', sessionId);
+
+      // Create abort controller for this attempt
+      abortControllerRef.current = new AbortController();
+
+      try {
+        // Fetch with streaming
+        const response = await fetch(url.toString(), {
+          method: 'POST',
+          headers,
+          signal: abortControllerRef.current.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Check for SSE content type
+        const contentType = response.headers.get('content-type');
+        if (!contentType?.includes('text/event-stream')) {
+          throw new Error('Invalid response type: expected text/event-stream');
+        }
+
+        // Read the stream
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error('No response body reader available');
+        }
+
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let finalResponse: StreamingChatResponse = {
+          content: '',
+          citations: [],
+        };
+
+        // Setup activity timeout
+        setupActivityTimeout();
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+
+            if (done) break;
+
+            // Update activity timeout on each chunk
+            setupActivityTimeout();
+
+            // Decode chunk and add to buffer
+            buffer += decoder.decode(value, { stream: true });
+
+            // Process complete lines
+            const lines = buffer.split('\n\n');
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+              if (!line.trim()) continue;
+
+              const eventLine = line.split('\n').find((l) => l.startsWith('data: '));
+              if (!eventLine) continue;
+
+              const event = parseEventLine(eventLine);
+              if (!event) continue;
+
+              const processed = processEvent(event);
+
+              if (processed) {
+                // Update accumulated content for tokens
+                if (event.type === 'token') {
+                  finalResponse.content += processed.content || '';
+                  setCurrentContent(finalResponse.content);
+                }
+
+                // Add citations
+                if (event.type === 'citation' && processed.citations) {
+                  finalResponse.citations = [
+                    ...finalResponse.citations,
+                    ...processed.citations,
+                  ] as ChatCitation[];
+                  setCurrentCitations(finalResponse.citations as StreamCitation[]);
+                }
+
+                // Handle clarification
+                if (event.type === 'clarification' && processed.clarification) {
+                  finalResponse.clarification = processed.clarification;
+                }
+
+                // Handle done event
+                if (event.type === 'done') {
+                  finalResponse = {
+                    ...finalResponse,
+                    citations: processed.citations as ChatCitation[],
+                    confidence: processed.confidence,
+                    queryType: processed.queryType,
+                    keyTerms: processed.keyTerms,
+                  };
+                }
+
+                // Handle error event from server
+                if (event.type === 'error' && processed.error) {
+                  finalResponse.error = processed.error;
+                  // Server-side error - don't retry, return immediately
+                  return finalResponse;
+                }
+              }
+            }
+          }
+        } finally {
+          reader.releaseLock();
+          clearActivityTimeout();
+        }
+
+        // Log successful completion
+        const duration = Date.now() - startTimeRef.current;
+        logStreamCompletion(sessionId, userId, true, duration, finalResponse.content.length);
+
+        return finalResponse;
+      } catch (err) {
+        const errorType = detectStreamErrorType(err);
+        const isRetryable = isRetryableError(errorType) && retryAttempt < retryConfig.maxRetries;
+
+        // Build error context for logging
+        const errorContext: StreamErrorContext = {
+          sessionId,
+          userId,
+          question,
+          timestamp: new Date(),
+          retryAttempt,
+          partialContent: currentContent,
+          errorType,
+        };
+
+        // Log to Sentry
+        logStreamError(err, errorContext);
+
+        // Check if we should retry or fallback
+        const fallbackDecision = shouldUseFallback(errorType, retryAttempt, retryConfig);
+
+        if (isRetryable && !fallbackDecision.shouldFallback) {
+          // Retry with backoff
+          const backoffDelay = calculateBackoffDelay(retryAttempt, retryConfig);
+
+          setIsReconnecting(true);
+          setReconnectionState({
+            isReconnecting: true,
+            attempt: retryAttempt + 1,
+            lastAttemptTime: new Date(),
+            nextAttemptTime: new Date(Date.now() + backoffDelay),
+          });
+
+          onRetry?.(retryAttempt + 1, backoffDelay);
+
+          // Wait before retry
+          await delay(backoffDelay);
+
+          // Recursive retry
+          return executeStreamRequest(question, mode, sessionId, retryAttempt + 1);
+        }
+
+        // Can't retry - build error response
+        const responseError = buildErrorResponse(
+          errorType,
+          retryAttempt,
+          currentContent,
+          retryConfig,
+        );
+
+        setError(responseError.userMessage);
+        setErrorResponse(responseError);
+
+        onStreamError?.(responseError.userMessage, responseError);
+
+        // Check if we should fallback to GraphQL
+        if (fallbackToGraphQL && fallbackDecision.fallbackMethod === 'graphql') {
+          return fallbackSendMessage(question, mode, sessionId);
+        }
+
+        // Return partial response with error
+        return {
+          content: currentContent,
+          citations: currentCitations as ChatCitation[],
+          error: responseError.userMessage,
+          errorResponse: responseError,
+          partial: currentContent.length > 0,
+        };
+      }
+    },
+    [
+      currentContent,
+      currentCitations,
+      retryConfig,
+      fallbackToGraphQL,
+      onStreamError,
+      onRetry,
+      onFallback,
+      parseEventLine,
+      processEvent,
+      fallbackSendMessage,
+      setupActivityTimeout,
+      clearActivityTimeout,
+    ],
+  );
+
+  /**
+   * Send a message with streaming response
+   */
+  const sendMessage = useCallback(
+    async (
+      question: string,
+      mode: 'LAWYER' | 'SIMPLE',
+      sessionId?: string,
+    ): Promise<StreamingChatResponse> => {
+      // Reset state
+      setIsStreaming(true);
+      setIsReconnecting(false);
+      setError(null);
+      setErrorResponse(null);
+      setCurrentContent('');
+      setCurrentCitations([]);
+      setWasFallback(false);
+      setReconnectionState(null);
+      onStreamStart?.();
+
+      // Store request for potential retry
+      const uuidV4Regex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      let id = sessionId || localStorage.getItem('chat_session_id');
+      if (!id || !uuidV4Regex.test(id)) {
+        id = crypto.randomUUID();
+        localStorage.setItem('chat_session_id', id);
+      }
+
+      lastRequestRef.current = { question, mode, sessionId: id };
+
+      try {
+        // If streaming is disabled, fallback immediately
+        if (!enabled) {
+          throw new Error('Streaming disabled');
+        }
+
+        // Execute streaming request (includes retry logic)
+        const response = await executeStreamRequest(question, mode, id);
+
+        setIsStreaming(false);
+        setIsReconnecting(false);
+        onStreamEnd?.(response);
+
+        return response;
+      } catch (err) {
+        setIsStreaming(false);
+        setIsReconnecting(false);
+
+        const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
+
+        // Handle abort
+        if (err instanceof Error && err.name === 'AbortError') {
+          return {
+            content: currentContent,
+            citations: currentCitations as ChatCitation[],
+            error: 'Stream aborted by user',
+            partial: currentContent.length > 0,
+          };
+        }
+
+        setError(errorMessage);
+
+        // Final fallback attempt
+        if (fallbackToGraphQL) {
+          return fallbackSendMessage(question, mode, id);
+        }
+
+        throw err;
+      }
+    },
+    [
+      enabled,
+      fallbackToGraphQL,
+      onStreamStart,
+      onStreamEnd,
+      executeStreamRequest,
+      currentContent,
+      currentCitations,
+      fallbackSendMessage,
+    ],
+  );
+
+  /**
+   * Abort the current stream
+   */
+  const abortStream = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    clearActivityTimeout();
+    setIsStreaming(false);
+    setIsReconnecting(false);
+    setReconnectionState(null);
+  }, [clearActivityTimeout]);
+
+  /**
+   * Retry the last failed request
+   */
+  const retryLastRequest = useCallback(async (): Promise<StreamingChatResponse | null> => {
+    if (!lastRequestRef.current) {
+      return null;
+    }
+
+    const { question, mode, sessionId } = lastRequestRef.current;
+
+    // Reset error state
+    setError(null);
+    setErrorResponse(null);
+
+    try {
+      return await executeStreamRequest(question, mode, sessionId, 0);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Retry failed';
+      setError(errorMessage);
+      return null;
+    }
+  }, [executeStreamRequest]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      clearActivityTimeout();
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [clearActivityTimeout]);
+
+  return {
+    sendMessage,
+    abortStream,
+    retryLastRequest,
+    isStreaming,
+    isReconnecting,
+    error,
+    errorResponse,
+    currentContent,
+    currentCitations,
+    wasFallback,
+    reconnectionState,
+  };
+}
+
+/**
+ * Parse JWT token to extract user ID
+ */
+function parseJwt(token: string): { sub?: string } | null {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
+        .join(''),
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}

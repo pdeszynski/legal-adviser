@@ -82,29 +82,32 @@ const colorConfig = {
 };
 
 const statusConfig: Record<FeatureStatus, { text: string; variant: BadgeProps['variant'] }> = {
-  'beta': { text: 'Beta', variant: 'secondary' },
-  'new': { text: 'New', variant: 'default' },
+  beta: { text: 'Beta', variant: 'secondary' },
+  new: { text: 'New', variant: 'default' },
   'coming-soon': { text: 'Coming Soon', variant: 'outline' },
-  'stable': { text: 'Stable', variant: 'success' },
+  stable: { text: 'Stable', variant: 'success' },
 };
 
 export const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
-  ({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    id,
-    icon: Icon,
-    title,
-    description,
-    status,
-    statusText,
-    ctaLabel = 'Learn More',
-    ctaAction = 'link',
-    ctaHref,
-    onCtaClick,
-    color = 'blue',
-    className,
-    animationDelay = 0,
-  }, ref) => {
+  (
+    {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      id,
+      icon: Icon,
+      title,
+      description,
+      status,
+      statusText,
+      ctaLabel = 'Learn More',
+      ctaAction = 'link',
+      ctaHref,
+      onCtaClick,
+      color = 'blue',
+      className,
+      animationDelay = 0,
+    },
+    ref,
+  ) => {
     const colors = colorConfig[color];
     const [isHovered, setIsHovered] = React.useState(false);
     const [isVisible, setIsVisible] = React.useState(false);
@@ -133,31 +136,35 @@ export const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
           colors.hoverBg,
           !isVisible && 'opacity-0 translate-y-4',
           isVisible && 'opacity-100 translate-y-0 transition-all duration-500',
-          className
+          className,
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Gradient overlay on hover */}
-        <div className={cn(
-          'absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none',
-          colors.gradient
-        )} style={{ background: `linear-gradient(to bottom right, ${colors.gradient})`, opacity: isHovered ? 0.05 : 0 }} />
+        <div
+          className={cn(
+            'absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none',
+            colors.gradient,
+          )}
+          style={{
+            background: `linear-gradient(to bottom right, ${colors.gradient})`,
+            opacity: isHovered ? 0.05 : 0,
+          }}
+        />
 
         <div className="relative">
           {/* Icon/Illustration slot */}
           {Icon && (
-            <div className={cn(
-              'mb-6 h-12 w-12 rounded-xl flex items-center justify-center',
-              colors.bg,
-              colors.text,
-              'group-hover:scale-110 transition-transform duration-300'
-            )}>
-              {React.isValidElement(Icon) ? (
-                Icon
-              ) : (
-                <Icon className="h-6 w-6" strokeWidth={1.5} />
+            <div
+              className={cn(
+                'mb-6 h-12 w-12 rounded-xl flex items-center justify-center',
+                colors.bg,
+                colors.text,
+                'group-hover:scale-110 transition-transform duration-300',
               )}
+            >
+              {React.isValidElement(Icon) ? Icon : <Icon className="h-6 w-6" strokeWidth={1.5} />}
             </div>
           )}
 
@@ -171,17 +178,10 @@ export const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
           )}
 
           {/* Title */}
-          <h3 className={cn(
-            'mb-3 text-2xl font-bold',
-            colors.text
-          )}>
-            {title}
-          </h3>
+          <h3 className={cn('mb-3 text-2xl font-bold', colors.text)}>{title}</h3>
 
           {/* Description */}
-          <p className="text-muted-foreground leading-relaxed mb-6">
-            {description}
-          </p>
+          <p className="text-muted-foreground leading-relaxed mb-6">{description}</p>
 
           {/* CTA Button */}
           {ctaAction !== 'disabled' && (
@@ -191,7 +191,7 @@ export const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
                 'w-full group-hover:border-transparent transition-all duration-300',
                 colors.border,
                 colors.text,
-                ctaAction === 'demo' && 'bg-primary text-primary-foreground hover:bg-primary/90'
+                ctaAction === 'demo' && 'bg-primary text-primary-foreground hover:bg-primary/90',
               )}
               onClick={handleCtaClick}
               {...(ctaAction === 'link' && ctaHref ? { asChild: true } : {})}
@@ -199,18 +199,22 @@ export const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
               {ctaAction === 'link' && ctaHref ? (
                 <a href={ctaHref} className="flex items-center w-full justify-center">
                   {ctaLabel}
-                  <ArrowRight className={cn(
-                    'ml-2 h-4 w-4 transition-transform duration-300',
-                    isHovered && 'translate-x-1'
-                  )} />
+                  <ArrowRight
+                    className={cn(
+                      'ml-2 h-4 w-4 transition-transform duration-300',
+                      isHovered && 'translate-x-1',
+                    )}
+                  />
                 </a>
               ) : (
                 <>
                   {ctaLabel}
-                  <ArrowRight className={cn(
-                    'ml-2 h-4 w-4 transition-transform duration-300',
-                    isHovered && 'translate-x-1'
-                  )} />
+                  <ArrowRight
+                    className={cn(
+                      'ml-2 h-4 w-4 transition-transform duration-300',
+                      isHovered && 'translate-x-1',
+                    )}
+                  />
                 </>
               )}
             </Button>
@@ -220,7 +224,7 @@ export const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
     );
 
     return cardContent;
-  }
+  },
 );
 
 FeatureCard.displayName = 'FeatureCard';

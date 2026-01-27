@@ -14,9 +14,7 @@ from langgraph.graph import END, StateGraph
 
 from ..agents.clarification_agent import clarification_agent
 from ..agents.classifier_agent import classify_case
-from ..agents.dependencies import create_agent_for_operation, get_model_deps
-from ..langfuse_init import is_langfuse_enabled
-from ..services.cache_service import cached_call
+from ..langfuse_init import is_langfuse_enabled, update_current_trace
 from ..services.cost_monitoring import track_llm_call
 from .states import CaseAnalysisState, create_case_analysis_state
 
@@ -37,17 +35,6 @@ async def parallel_classify_research_node(state: CaseAnalysisState) -> CaseAnaly
     """
     metadata = state.get("metadata", {})
     session_id = metadata.get("session_id", "default")
-
-    # Create Langfuse span
-    span = None
-    if is_langfuse_enabled():
-        from ..langfuse_init import get_langfuse
-        client = get_langfuse()
-        if client:
-            span = client.trace(
-                name="parallel_classify_research",
-                session_id=session_id,
-            )
 
     start_time = time.time()
 
@@ -118,19 +105,9 @@ async def parallel_classify_research_node(state: CaseAnalysisState) -> CaseAnaly
             session_id=session_id,
         )
 
-        if span:
-            span.end(output={
-                "grounds_count": len(legal_grounds),
-                "contexts_count": len(contexts),
-                "duration_ms": duration_ms,
-                "parallel_execution": True,
-            })
-
         return state
 
     except Exception as e:
-        if span:
-            span.end(level="ERROR", status_message=str(e))
         state["error"] = str(e)
         state["next_step"] = "error"
         return state
@@ -172,17 +149,6 @@ async def clarify_node(state: CaseAnalysisState) -> CaseAnalysisState:
     """
     metadata = state.get("metadata", {})
 
-    # Create Langfuse span
-    span = None
-    if is_langfuse_enabled():
-        from ..langfuse_init import get_langfuse
-        client = get_langfuse()
-        if client:
-            span = client.span(
-                name="clarify",
-                session_id=metadata.get("session_id"),
-            )
-
     try:
         agent = clarification_agent()
 
@@ -193,7 +159,6 @@ async def clarify_node(state: CaseAnalysisState) -> CaseAnalysisState:
         ])
 
         # Use fast model for clarification
-        from ..agents.dependencies import create_agent_for_operation
 
         optimized_prompt = f"""Case: {state['case_description'][:200]}...
 
@@ -230,14 +195,9 @@ Generate 2-3 targeted clarification questions to improve analysis."""
             session_id=metadata.get("session_id"),
         )
 
-        if span:
-            span.end(output={"questions_count": len(questions)})
-
         return state
 
     except Exception as e:
-        if span:
-            span.end(level="ERROR", status_message=str(e))
         state["error"] = str(e)
         state["next_step"] = "error"
         return state
@@ -248,19 +208,6 @@ async def complete_node(state: CaseAnalysisState) -> CaseAnalysisState:
 
     Uses optimized template to reduce token usage.
     """
-    metadata = state.get("metadata", {})
-
-    # Create Langfuse span
-    span = None
-    if is_langfuse_enabled():
-        from ..langfuse_init import get_langfuse
-        client = get_langfuse()
-        if client:
-            span = client.span(
-                name="complete",
-                session_id=metadata.get("session_id"),
-            )
-
     try:
         grounds = state.get("legal_grounds", [])
         contexts = state.get("retrieved_contexts", [])
@@ -294,14 +241,9 @@ async def complete_node(state: CaseAnalysisState) -> CaseAnalysisState:
         state["metadata"]["current_step"] = "complete"
         state["next_step"] = END  # type: ignore
 
-        if span:
-            span.end(output={"analysis_length": len(state["final_analysis"])})
-
         return state
 
     except Exception as e:
-        if span:
-            span.end(level="ERROR", status_message=str(e))
         state["error"] = str(e)
         state["next_step"] = "error"
         return state
@@ -475,24 +417,6 @@ class OptimizedCaseAnalysisWorkflow:
         if user_responses:
             state["user_responses"] = user_responses
 
-        # Create Langfuse trace
-        trace = None
-        if is_langfuse_enabled():
-            from ..langfuse_init import get_langfuse
-            langfuse = get_langfuse()
-            if langfuse:
-                trace = langfuse.trace(
-                    name="optimized_case_analysis_workflow",
-                    session_id=session_id,
-                    user_id=user_id,
-                    metadata={
-                        "workflow": "optimized_case_analysis",
-                        "description_length": len(case_description),
-                        "optimized": True,
-                    },
-                )
-                state["metadata"]["parent_span_id"] = trace.trace_id
-
         try:
             # Run the workflow
             result = await self.graph.ainvoke(state)
@@ -513,20 +437,19 @@ class OptimizedCaseAnalysisWorkflow:
                 "error": result.get("error"),
             }
 
-            if trace:
-                trace.update(output={
-                    "grounds_count": len(output["legal_grounds"]),
-                    "confidence": output["classification_confidence"],
-                    "needs_clarification": output["needs_clarification"],
-                })
-                trace.metadata["processing_time_ms"] = processing_time_ms
-                trace.end()
+            # Update trace with workflow-level metadata
+            if is_langfuse_enabled():
+                update_current_trace(
+                    output={
+                        "grounds_count": len(output["legal_grounds"]),
+                        "confidence": output["classification_confidence"],
+                        "needs_clarification": output["needs_clarification"],
+                    }
+                )
 
             return output
 
         except Exception as e:
-            if trace:
-                trace.end(level="ERROR", status_message=str(e))
             raise
 
 

@@ -149,7 +149,10 @@ export function trackDemoFormSubmitted(data: {
  * Track a generic analytics event.
  * Sends to Google Analytics 4 if available.
  */
-export function trackEvent(eventName: string, params?: Record<string, string | number | boolean | undefined>): void {
+export function trackEvent(
+  eventName: string,
+  params?: Record<string, string | number | boolean | undefined>,
+): void {
   if (typeof window === 'undefined') return;
 
   const gtagWindow = window as unknown as {
@@ -291,7 +294,9 @@ export function trackInterestFormSubmitSuccess(data: {
 }): void {
   // Extract email domain for lead quality analysis
   const emailDomain = data.email ? data.email.split('@')[1] : undefined;
-  const isCompanyEmail = emailDomain && !['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'].includes(emailDomain.toLowerCase());
+  const isCompanyEmail =
+    emailDomain &&
+    !['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'].includes(emailDomain.toLowerCase());
 
   trackEvent('interest_form_submit_success', {
     page: 'early-access',
@@ -334,7 +339,11 @@ export function trackInterestFormSubmitFailure(errorType: string, errorMessage?:
  * @param faqQuestion - The question text (for analysis)
  * @param expanded - Whether the FAQ was expanded or collapsed
  */
-export function trackInterestFaqToggle(faqIndex: number, faqQuestion: string, expanded: boolean): void {
+export function trackInterestFaqToggle(
+  faqIndex: number,
+  faqQuestion: string,
+  expanded: boolean,
+): void {
   trackEvent('interest_faq_toggle', {
     page: 'early-access',
     faq_index: faqIndex,

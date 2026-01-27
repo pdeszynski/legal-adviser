@@ -68,9 +68,7 @@ const FeaturesPage = () => {
     'compliance',
   ];
 
-  const filteredFeatures = activeCategory === 'all'
-    ? features
-    : categoryMap[activeCategory] || [];
+  const filteredFeatures = activeCategory === 'all' ? features : categoryMap[activeCategory] || [];
 
   return (
     <PublicLayout>
@@ -136,7 +134,10 @@ const FeaturesPage = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-500 opacity-0 group-hover:opacity-5 transition-opacity rounded-2xl" />
                     <div className="relative">
                       <div className="mb-6 h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900 dark:to-orange-900 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Icon className="h-7 w-7 text-amber-600 dark:text-amber-400" strokeWidth={1.5} />
+                        <Icon
+                          className="h-7 w-7 text-amber-600 dark:text-amber-400"
+                          strokeWidth={1.5}
+                        />
                       </div>
                       <h3 className="mb-3 text-xl font-bold">{feature.title}</h3>
                       <p className="text-muted-foreground leading-relaxed mb-6">
@@ -168,12 +169,8 @@ const FeaturesPage = () => {
         <section className="w-full py-24 bg-background">
           <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-3xl mx-auto text-center space-y-8">
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-                {t('cta.title')}
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                {t('cta.description')}
-              </p>
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{t('cta.title')}</h2>
+              <p className="text-lg text-muted-foreground">{t('cta.description')}</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Button
                   size="lg"
@@ -184,11 +181,7 @@ const FeaturesPage = () => {
                   {t('cta.getStarted')}
                 </Button>
                 <Link href="/about">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="px-8 h-12 rounded-full text-lg"
-                  >
+                  <Button variant="outline" size="lg" className="px-8 h-12 rounded-full text-lg">
                     {t('navigation.backToAbout')}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>

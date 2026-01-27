@@ -3585,6 +3585,160 @@
       "dismissed": false,
       "featureId": "feature-1769433556946-stcyssvod",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "d4a7135a-3440-44cd-83f0-4b4a0b5ca1fc",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-cors-configuration\" has been verified and is complete.",
+      "createdAt": "2026-01-27T09:10:38.434Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-cors-configuration",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "7443dd5c-5c65-4b17-845b-b101cb9434f9",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-jwt-validation\" has been verified and is complete.",
+      "createdAt": "2026-01-27T09:18:08.633Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-jwt-validation",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "eb24104a-f884-4bd3-a096-c20edc52a1d5",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-streaming-auth-integration\" has been verified and is complete.",
+      "createdAt": "2026-01-27T09:29:45.194Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-streaming-auth-integration",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "799129e3-a5ff-4fb1-a9bb-5b880d3cb0ae",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-streaming-endpoint\" has been verified and is complete.",
+      "createdAt": "2026-01-27T09:29:48.781Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-streaming-endpoint",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "2addc2c7-ecf5-4376-85fd-98b0eeb76e39",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"frontend-streaming-chat-client\" has been verified and is complete.",
+      "createdAt": "2026-01-27T09:33:44.350Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "frontend-streaming-chat-client",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "a6a4d338-be26-475d-bf21-a1c419c2cdd9",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-streaming-documentation\" has been verified and is complete.",
+      "createdAt": "2026-01-27T09:37:32.781Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-streaming-documentation",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "51c4ed7d-fb04-4389-87bf-6883a0a0a6e0",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-streaming-e2e-tests\" has been verified and is complete.",
+      "createdAt": "2026-01-27T09:37:39.005Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-streaming-e2e-tests",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "351e6d5f-657f-44c2-b48b-4cd0a4e5c6c9",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-streaming-error-handling\" has been verified and is complete.",
+      "createdAt": "2026-01-27T09:48:32.824Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-streaming-error-handling",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "012a24ed-e6ed-4966-8a90-724b09975c3c",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-langfuse-pydantic-ai-integration\" has been verified and is complete.",
+      "createdAt": "2026-01-27T10:09:21.091Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-langfuse-pydantic-ai-integration",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "84fa9b99-6e2e-46f5-8481-07e7a7d46d62",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"langfuse-tracing-verification-dashboard\" has been verified and is complete.",
+      "createdAt": "2026-01-27T10:10:53.768Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "langfuse-tracing-verification-dashboard",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "f580c482-29f6-48b2-a20c-4996fb1df64d",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"verify-langfuse-env-configuration\" has been verified and is complete.",
+      "createdAt": "2026-01-27T10:14:54.969Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "verify-langfuse-env-configuration",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "08f00648-52d8-48aa-9229-a06cecbec662",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"test-langfuse-tracing-e2e\" has been verified and is complete.",
+      "createdAt": "2026-01-27T10:20:55.086Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "test-langfuse-tracing-e2e",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "755f9f68-f2d7-4c35-a4e6-3aafa5f7cd96",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"remove-manual-langfuse-tracing-code\" has been verified and is complete.",
+      "createdAt": "2026-01-27T10:23:48.747Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "remove-manual-langfuse-tracing-code",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "4b52b623-57e3-4cb6-ba27-9f1a1cbedecb",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769511081956-clfpcu1v7\" has been verified and is complete.",
+      "createdAt": "2026-01-27T10:59:18.504Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769511081956-clfpcu1v7",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

@@ -1,8 +1,4 @@
-import {
-  Field,
-  ObjectType,
-  InputType,
-} from '@nestjs/graphql';
+import { Field, ObjectType, InputType } from '@nestjs/graphql';
 import {
   IsString,
   IsNotEmpty,
@@ -85,7 +81,9 @@ export class InterestRequestInput {
   })
   @IsOptional()
   @IsString()
-  @MaxLength(255, { message: 'Lead source must be at most 255 characters long' })
+  @MaxLength(255, {
+    message: 'Lead source must be at most 255 characters long',
+  })
   @Transform(({ value }) => sanitizeString(value))
   leadSource?: string;
 

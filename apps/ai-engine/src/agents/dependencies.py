@@ -16,11 +16,10 @@ Langfuse Integration:
 """
 
 from functools import lru_cache
-from typing import Any
 
 from pydantic_ai import Agent
-from pydantic_ai.models.openai import OpenAIModel
 
+from ..auth import UserContext
 from ..config import get_settings
 
 
@@ -47,7 +46,7 @@ class ModelDeps:
     """Dependency container for model-related dependencies.
 
     This class can be passed to PydanticAI agents to provide
-    access to models and clients.
+    access to models, clients, and user context.
 
     Example:
         ```python
@@ -63,10 +62,15 @@ class ModelDeps:
         ```
     """
 
-    def __init__(self) -> None:
-        """Initialize dependencies with cached models and clients."""
+    def __init__(self, user: UserContext | None = None) -> None:
+        """Initialize dependencies with cached models and clients.
+
+        Args:
+            user: Optional authenticated user context from JWT token
+        """
         self.settings = get_settings()
         self.openai_client = get_openai_client()
+        self.user = user
 
 
 @lru_cache
@@ -76,10 +80,28 @@ def get_model_deps() -> ModelDeps:
     This is the primary dependency injection function.
     Use this to get the dependency container for PydanticAI agents.
 
+    Note: This returns a singleton without user context.
+    For user-context-aware deps, use get_model_deps_with_user().
+
     Returns:
         ModelDeps: Cached dependency container
     """
     return ModelDeps()
+
+
+def get_model_deps_with_user(user: UserContext | None) -> ModelDeps:
+    """Get ModelDeps with user context.
+
+    Use this when you need to pass authenticated user information
+    to PydanticAI agents.
+
+    Args:
+        user: UserContext from validated JWT token, or None for anonymous
+
+    Returns:
+        ModelDeps: Dependency container with user context
+    """
+    return ModelDeps(user=user)
 
 
 def create_agent(

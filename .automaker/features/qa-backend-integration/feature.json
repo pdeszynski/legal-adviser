@@ -2,7 +2,7 @@
   "id": "qa-backend-integration",
   "category": "Core",
   "title": "Q&A Backend Integration",
-  "description": "Extend AI Client Service with askQuestion method. Implement GraphQL mutation in backend to trigger Q&A workflow and store results.",
+  "description": "DEPRECATED: Direct streaming from AI Engine replaces backend proxy. Update to minimal integration if needed for non-streaming queries. Keep askLegalQuestion GraphQL mutation as fallback for compatibility but mark as deprecated. Document that new streaming approach bypasses backend for chat queries.",
   "status": "completed",
   "priority": 1,
   "complexity": "moderate",
@@ -11,5 +11,11 @@
   "model": "sonnet",
   "thinkingLevel": "none",
   "reasoningEffort": "none",
-  "descriptionHistory": []
+  "descriptionHistory": [
+    {
+      "description": "DEPRECATED: Direct streaming from AI Engine replaces backend proxy. Update to minimal integration if needed for non-streaming queries. Keep askLegalQuestion GraphQL mutation as fallback for compatibility but mark as deprecated. Document that new streaming approach bypasses backend for chat queries.",
+      "timestamp": "2026-01-27T09:03:50.802Z",
+      "source": "edit"
+    }
+  ]
 }

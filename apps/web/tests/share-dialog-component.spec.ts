@@ -17,12 +17,18 @@ test.describe('Share Dialog Component Verification', () => {
 
     const componentPath = path.join(__dirname, '../src/components/share-dialog/share-dialog.tsx');
     const indexPath = path.join(__dirname, '../src/components/share-dialog/index.ts');
-    const triggerPath = path.join(__dirname, '../src/components/share-dialog/share-dialog-trigger.tsx');
+    const triggerPath = path.join(
+      __dirname,
+      '../src/components/share-dialog/share-dialog-trigger.tsx',
+    );
 
     // Check files exist
     expect(fs.existsSync(componentPath), 'ShareDialog component file should exist').toBeTruthy();
     expect(fs.existsSync(indexPath), 'ShareDialog index file should exist').toBeTruthy();
-    expect(fs.existsSync(triggerPath), 'ShareDialogTrigger component file should exist').toBeTruthy();
+    expect(
+      fs.existsSync(triggerPath),
+      'ShareDialogTrigger component file should exist',
+    ).toBeTruthy();
 
     // Check component exports
     const componentContent = fs.readFileSync(componentPath, 'utf-8');

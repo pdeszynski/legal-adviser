@@ -5,7 +5,9 @@
   "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
   "branchName": null,
   "runningFeatureIds": [
-    "feature-1769151063866-n6s5466d9"
+    "verify-langfuse-env-configuration",
+    "remove-manual-langfuse-tracing-code",
+    "test-langfuse-tracing-e2e"
   ],
-  "savedAt": "2026-01-27T07:56:03.483Z"
+  "savedAt": "2026-01-27T10:10:56.260Z"
 }

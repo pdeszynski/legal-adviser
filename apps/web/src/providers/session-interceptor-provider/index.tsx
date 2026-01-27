@@ -3,9 +3,7 @@
 import { useEffect, type PropsWithChildren } from 'react';
 import { useAuthContext } from '@/contexts/auth-context';
 import { initializeSessionHandler } from '@/providers/data-provider';
-import {
-  resetSessionExpiryFlag as resetInterceptorFlag,
-} from '@/lib/http-interceptor';
+import { resetSessionExpiryFlag as resetInterceptorFlag } from '@/lib/http-interceptor';
 
 /**
  * Session Interceptor Provider

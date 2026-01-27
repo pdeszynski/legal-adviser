@@ -319,7 +319,10 @@ const DemoPage = () => {
                           className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
                         />
                         <div className="flex-1">
-                          <label htmlFor="gdprConsent" className="text-sm font-normal cursor-pointer">
+                          <label
+                            htmlFor="gdprConsent"
+                            className="text-sm font-normal cursor-pointer"
+                          >
                             I agree to the processing of my personal data in accordance with the{' '}
                             <a
                               href="/privacy"
@@ -329,10 +332,12 @@ const DemoPage = () => {
                             >
                               Privacy Policy
                             </a>
-                            . I understand that my data will be used to process my demo request and may
-                            be stored in HubSpot CRM for follow-up communications. *
+                            . I understand that my data will be used to process my demo request and
+                            may be stored in HubSpot CRM for follow-up communications. *
                           </label>
-                          {errors.gdprConsent && <p className="text-sm text-red-500 mt-1">{errors.gdprConsent}</p>}
+                          {errors.gdprConsent && (
+                            <p className="text-sm text-red-500 mt-1">{errors.gdprConsent}</p>
+                          )}
                         </div>
                       </div>
                     </div>

@@ -99,7 +99,9 @@ const AboutUsPage = () => {
         <section className="w-full py-24 bg-background">
           <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-4xl mx-auto text-center space-y-8 mb-16">
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{t('mission.title')}</h2>
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+                {t('mission.title')}
+              </h2>
               <p className="text-lg text-muted-foreground">{t('mission.subtitle')}</p>
               <p className="text-base leading-relaxed">{t('mission.description')}</p>
             </div>
@@ -112,10 +114,15 @@ const AboutUsPage = () => {
                   return (
                     <div key={value.key} className="text-center">
                       <div className="mb-4 h-16 w-16 rounded-2xl bg-rose-100 dark:bg-rose-900 flex items-center justify-center mx-auto">
-                        <Icon className="h-8 w-8 text-rose-600 dark:text-rose-400" strokeWidth={1.5} />
+                        <Icon
+                          className="h-8 w-8 text-rose-600 dark:text-rose-400"
+                          strokeWidth={1.5}
+                        />
                       </div>
                       <h4 className="mb-2 font-bold">{t(`mission.values.${value.key}.title`)}</h4>
-                      <p className="text-sm text-muted-foreground">{t(`mission.values.${value.key}.description`)}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {t(`mission.values.${value.key}.description`)}
+                      </p>
                     </div>
                   );
                 })}
@@ -129,10 +136,15 @@ const AboutUsPage = () => {
           <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-5xl mx-auto">
               <div className="text-center mb-16">
-                <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-4">{t('story.title')}</h2>
+                <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-4">
+                  {t('story.title')}
+                </h2>
                 <p className="text-lg text-muted-foreground mb-8">{t('story.subtitle')}</p>
                 <p className="text-base leading-relaxed max-w-3xl mx-auto">
-                  <span className="font-semibold text-rose-600 dark:text-rose-400">{t('story.founded')}</span>. {t('story.description')}
+                  <span className="font-semibold text-rose-600 dark:text-rose-400">
+                    {t('story.founded')}
+                  </span>
+                  . {t('story.description')}
                 </p>
               </div>
 
@@ -157,15 +169,21 @@ const AboutUsPage = () => {
                         </div>
 
                         {/* Content */}
-                        <div className={`flex-1 ${isEven ? 'lg:text-right lg:pr-16' : 'lg:text-left lg:pl-16'} pt-8 lg:pt-0`}>
+                        <div
+                          className={`flex-1 ${isEven ? 'lg:text-right lg:pr-16' : 'lg:text-left lg:pl-16'} pt-8 lg:pt-0`}
+                        >
                           <div className="bg-background p-6 rounded-2xl border shadow-sm">
                             <div className="lg:hidden mb-4">
                               <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-br from-rose-500 to-pink-500 text-white font-bold">
                                 {step.year}
                               </div>
                             </div>
-                            <h4 className="text-xl font-bold mb-2">{t(`story.journey.${step.key}.title`)}</h4>
-                            <p className="text-muted-foreground">{t(`story.journey.${step.key}.description`)}</p>
+                            <h4 className="text-xl font-bold mb-2">
+                              {t(`story.journey.${step.key}.title`)}
+                            </h4>
+                            <p className="text-muted-foreground">
+                              {t(`story.journey.${step.key}.description`)}
+                            </p>
                           </div>
                         </div>
 
@@ -184,7 +202,9 @@ const AboutUsPage = () => {
         <section className="w-full py-24 bg-background">
           <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-5xl mx-auto text-center">
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-4">{t('team.title')}</h2>
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-4">
+                {t('team.title')}
+              </h2>
               <p className="text-lg text-muted-foreground mb-4">{t('team.subtitle')}</p>
               <p className="text-base max-w-3xl mx-auto mb-16">{t('team.description')}</p>
 
@@ -192,12 +212,19 @@ const AboutUsPage = () => {
                 {teamMembers.map((member) => {
                   const Icon = member.icon;
                   return (
-                    <div key={member.key} className="p-8 rounded-2xl border bg-card hover:shadow-xl transition-shadow">
+                    <div
+                      key={member.key}
+                      className="p-8 rounded-2xl border bg-card hover:shadow-xl transition-shadow"
+                    >
                       <div className="mb-4 h-16 w-16 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center mx-auto">
                         <Icon className="h-8 w-8 text-white" strokeWidth={1.5} />
                       </div>
-                      <h3 className="text-xl font-bold mb-2">{t(`team.members.${member.key}.title`)}</h3>
-                      <p className="text-muted-foreground">{t(`team.members.${member.key}.description`)}</p>
+                      <h3 className="text-xl font-bold mb-2">
+                        {t(`team.members.${member.key}.title`)}
+                      </h3>
+                      <p className="text-muted-foreground">
+                        {t(`team.members.${member.key}.description`)}
+                      </p>
                     </div>
                   );
                 })}
@@ -210,7 +237,9 @@ const AboutUsPage = () => {
         <section className="w-full py-24 bg-muted/30">
           <div className="container mx-auto px-4 md:px-6">
             <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-4">{t('contact.title')}</h2>
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-4">
+                {t('contact.title')}
+              </h2>
               <p className="text-lg text-muted-foreground mb-12">{t('contact.subtitle')}</p>
 
               <div className="grid md:grid-cols-3 gap-6 mb-12">
@@ -241,11 +270,7 @@ const AboutUsPage = () => {
                   {t('cta.getStarted')}
                 </Button>
                 <Link href="/about">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="px-8 h-12 rounded-full text-lg"
-                  >
+                  <Button variant="outline" size="lg" className="px-8 h-12 rounded-full text-lg">
                     {t('navigation.backToAbout')}
                   </Button>
                 </Link>

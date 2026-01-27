@@ -72,7 +72,8 @@ const featuresPage = () => {
           id: 'document-drafting',
           icon: FileText,
           title: 'Document Drafting',
-          description: 'Generate professional legal documents in minutes with AI-powered drafting assistance. Customizable templates ensure accuracy and consistency.',
+          description:
+            'Generate professional legal documents in minutes with AI-powered drafting assistance. Customizable templates ensure accuracy and consistency.',
           status: 'stable',
           color: 'blue',
         },
@@ -80,7 +81,8 @@ const featuresPage = () => {
           id: 'legal-analysis',
           icon: Sparkles,
           title: 'Legal Analysis',
-          description: 'Deep analysis of legal documents with instant insights on risks, obligations, and opportunities. Understand complex documents faster.',
+          description:
+            'Deep analysis of legal documents with instant insights on risks, obligations, and opportunities. Understand complex documents faster.',
           status: 'stable',
           color: 'blue',
         },
@@ -88,7 +90,8 @@ const featuresPage = () => {
           id: 'ai-qa',
           icon: MessageSquare,
           title: 'AI Q&A',
-          description: 'Ask questions about your documents and get instant, accurate answers with source citations. Natural language interface makes legal research intuitive.',
+          description:
+            'Ask questions about your documents and get instant, accurate answers with source citations. Natural language interface makes legal research intuitive.',
           status: 'new',
           color: 'blue',
         },
@@ -104,7 +107,8 @@ const featuresPage = () => {
           id: 'smart-search',
           icon: Search,
           title: 'Smart Search',
-          description: 'Advanced semantic search across all your documents. Find relevant cases, clauses, and precedents instantly.',
+          description:
+            'Advanced semantic search across all your documents. Find relevant cases, clauses, and precedents instantly.',
           status: 'stable',
           color: 'purple',
         },
@@ -112,7 +116,8 @@ const featuresPage = () => {
           id: 'case-analysis',
           icon: BookOpen,
           title: 'Case Analysis',
-          description: 'Analyze case law and identify relevant precedents. AI-powered summarization and comparison tools.',
+          description:
+            'Analyze case law and identify relevant precedents. AI-powered summarization and comparison tools.',
           status: 'beta',
           color: 'purple',
         },
@@ -120,7 +125,8 @@ const featuresPage = () => {
           id: 'citation-finder',
           icon: GitBranch,
           title: 'Citation Finder',
-          description: 'Automatically find and validate legal citations. Ensure your references are accurate and up-to-date.',
+          description:
+            'Automatically find and validate legal citations. Ensure your references are accurate and up-to-date.',
           status: 'coming-soon',
           ctaAction: 'disabled',
           color: 'purple',
@@ -137,7 +143,8 @@ const featuresPage = () => {
           id: 'real-time-collaboration',
           icon: Users,
           title: 'Real-time Collaboration',
-          description: 'Work on documents simultaneously with your team. See changes in real-time and track contributions.',
+          description:
+            'Work on documents simultaneously with your team. See changes in real-time and track contributions.',
           status: 'stable',
           color: 'emerald',
         },
@@ -145,7 +152,8 @@ const featuresPage = () => {
           id: 'document-sharing',
           icon: Globe,
           title: 'Secure Document Sharing',
-          description: 'Share documents securely with clients and colleagues. Granular permissions and access controls.',
+          description:
+            'Share documents securely with clients and colleagues. Granular permissions and access controls.',
           status: 'stable',
           color: 'emerald',
         },
@@ -153,7 +161,8 @@ const featuresPage = () => {
           id: 'comments-annotations',
           icon: MessageSquare,
           title: 'Comments & Annotations',
-          description: 'Add contextual comments and annotations to documents. Threaded discussions keep everything organized.',
+          description:
+            'Add contextual comments and annotations to documents. Threaded discussions keep everything organized.',
           status: 'stable',
           color: 'emerald',
         },
@@ -169,7 +178,8 @@ const featuresPage = () => {
           id: 'security',
           icon: Shield,
           title: 'Enterprise Security',
-          description: 'Bank-level encryption, two-factor authentication, and compliance with data protection regulations.',
+          description:
+            'Bank-level encryption, two-factor authentication, and compliance with data protection regulations.',
           status: 'stable',
           color: 'amber',
         },
@@ -177,7 +187,8 @@ const featuresPage = () => {
           id: 'access-control',
           icon: Lock,
           title: 'Access Control',
-          description: 'Granular role-based access control. Manage permissions for team members and external collaborators.',
+          description:
+            'Granular role-based access control. Manage permissions for team members and external collaborators.',
           status: 'stable',
           color: 'amber',
         },
@@ -185,7 +196,8 @@ const featuresPage = () => {
           id: 'audit-logs',
           icon: CheckCircle,
           title: 'Audit Logs',
-          description: 'Complete audit trail of all document activities. Track changes, accesses, and sharing history.',
+          description:
+            'Complete audit trail of all document activities. Track changes, accesses, and sharing history.',
           status: 'stable',
           color: 'amber',
         },
@@ -193,7 +205,8 @@ const featuresPage = () => {
           id: 'notifications',
           icon: Bell,
           title: 'Smart Notifications',
-          description: 'Stay informed with customizable notifications. Get alerts for document changes, mentions, and deadlines.',
+          description:
+            'Stay informed with customizable notifications. Get alerts for document changes, mentions, and deadlines.',
           status: 'beta',
           color: 'amber',
         },
@@ -201,7 +214,8 @@ const featuresPage = () => {
           id: 'automated-workflows',
           icon: Zap,
           title: 'Automated Workflows',
-          description: 'Create custom workflows for document processing. Automate repetitive tasks and streamline your practice.',
+          description:
+            'Create custom workflows for document processing. Automate repetitive tasks and streamline your practice.',
           status: 'coming-soon',
           ctaAction: 'disabled',
           color: 'amber',
@@ -291,18 +305,9 @@ const featuresPage = () => {
         {/* Features Categories */}
         {isLoading ? (
           <>
-            <FeatureCategorySectionSkeleton
-              cardCount={3}
-              className=""
-            />
-            <FeatureCategorySectionSkeleton
-              cardCount={3}
-              className="bg-muted/30"
-            />
-            <FeatureCategorySectionSkeleton
-              cardCount={3}
-              className=""
-            />
+            <FeatureCategorySectionSkeleton cardCount={3} className="" />
+            <FeatureCategorySectionSkeleton cardCount={3} className="bg-muted/30" />
+            <FeatureCategorySectionSkeleton cardCount={3} className="" />
           </>
         ) : (
           filteredCategories.map((category, index) => (

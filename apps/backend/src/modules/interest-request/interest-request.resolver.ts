@@ -26,7 +26,9 @@ import { Public } from '../auth/decorators/public.decorator';
 export class InterestRequestResolver {
   private readonly logger = new Logger(InterestRequestResolver.name);
 
-  constructor(private readonly interestRequestService: InterestRequestService) {}
+  constructor(
+    private readonly interestRequestService: InterestRequestService,
+  ) {}
 
   /**
    * Mutation: Submit an early access interest request
@@ -57,7 +59,8 @@ export class InterestRequestResolver {
     );
 
     try {
-      const result = await this.interestRequestService.submitInterestRequest(input);
+      const result =
+        await this.interestRequestService.submitInterestRequest(input);
 
       return {
         success: result.success,

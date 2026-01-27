@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from 'react';
 import {
   CommentPanel,
   CommentComposer,
   CommentedText,
   CreateCommentInput,
   CommentPosition,
-} from "@/components/comments";
-import { useDocumentComments, CommentResolutionStatus } from "@/hooks";
-import { useTranslate } from "@refinedev/core";
+} from '@/components/comments';
+import { useDocumentComments, CommentResolutionStatus } from '@/hooks';
+import { useTranslate } from '@refinedev/core';
 
 interface DocumentWithCommentsProps {
   documentId: string | undefined;
@@ -36,7 +36,7 @@ export function DocumentWithComments({
   documentId,
   content,
   currentUserId,
-  className = "",
+  className = '',
 }: DocumentWithCommentsProps) {
   const translate = useTranslate();
   const { comments, createComment } = useDocumentComments(documentId);
@@ -52,7 +52,7 @@ export function DocumentWithComments({
   // Group open comments for display
   const openComments = useMemo(
     () => comments.filter((c) => c.resolutionStatus === CommentResolutionStatus.OPEN),
-    [comments]
+    [comments],
   );
 
   /**
@@ -123,7 +123,7 @@ export function DocumentWithComments({
       setIsComposing(false);
       setSelection(null);
     },
-    [documentId, selection, createComment]
+    [documentId, selection, createComment],
   );
 
   /**
@@ -144,7 +144,7 @@ export function DocumentWithComments({
     setTimeout(() => {
       const commentElement = document.getElementById(`comment-${commentId}`);
       if (commentElement) {
-        commentElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }, 100);
   }, []);
@@ -155,18 +155,16 @@ export function DocumentWithComments({
       <div className="lg:col-span-2">
         <div className="bg-white rounded-lg shadow p-6" onMouseUp={handleMouseUp}>
           <h2 className="text-xl font-semibold mb-4">
-            {translate("documents.fields.content", "Document Content")}
+            {translate('documents.fields.content', 'Document Content')}
           </h2>
 
           {/* Hint for selecting text */}
           {documentId && !isComposing && (
             <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-700">
-              <span className="font-medium">
-                {translate("comments.selectionHint", "Tip:")}
-              </span>{" "}
+              <span className="font-medium">{translate('comments.selectionHint', 'Tip:')}</span>{' '}
               {translate(
-                "comments.selectionHintText",
-                "Select any text in the document to add a comment"
+                'comments.selectionHintText',
+                'Select any text in the document to add a comment',
               )}
             </div>
           )}

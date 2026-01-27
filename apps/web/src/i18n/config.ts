@@ -1,11 +1,11 @@
-export const I18N_COOKIE_NAME = "NEXT_LOCALE";
-export const DEFAULT_LOCALE = "en";
+export const I18N_COOKIE_NAME = 'NEXT_LOCALE';
+export const DEFAULT_LOCALE = 'en';
 
 /**
  * Supported locales for the application
  * English is the default, with support for German and Polish
  */
-export const SUPPORTED_LOCALES = ["en", "de", "pl"] as const;
+export const SUPPORTED_LOCALES = ['en', 'de', 'pl'] as const;
 
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
@@ -17,18 +17,18 @@ export const LOCALE_METADATA: Record<
   { label: string; icon: string; nativeName: string }
 > = {
   en: {
-    label: "English",
-    icon: "🇬🇧",
-    nativeName: "English",
+    label: 'English',
+    icon: '🇬🇧',
+    nativeName: 'English',
   },
   de: {
-    label: "Deutsch",
-    icon: "🇩🇪",
-    nativeName: "Deutsch",
+    label: 'Deutsch',
+    icon: '🇩🇪',
+    nativeName: 'Deutsch',
   },
   pl: {
-    label: "Polski",
-    icon: "🇵🇱",
-    nativeName: "Polski",
+    label: 'Polski',
+    icon: '🇵🇱',
+    nativeName: 'Polski',
   },
 };

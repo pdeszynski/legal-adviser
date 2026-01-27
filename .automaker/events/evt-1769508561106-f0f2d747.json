@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769508561106-f0f2d747",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T10:09:21.106Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-langfuse-pydantic-ai-integration",
+  "featureName": "Fix Langfuse Integration with PydanticAI Following Official Documentation",
+  "error": "Feature completed in 285s - auto-verified",
+  "passes": true
+}

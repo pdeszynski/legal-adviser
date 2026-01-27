@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Implement streaming responses by allowing frontend to communicate directly with AI Engine. AI Engine will validate JWT tokens using the same authentication mechanism as the backend. This eliminates the backend proxy and enables real-time streaming from PydanticAI agents to frontend. Tasks: 1) Configure AI Engine to accept and validate JWT tokens from frontend requests, 2) Set up JWT verification using shared JWT_SECRET or backend public key, 3) Add user context extraction from validated tokens, 4) Configure CORS to allow frontend origin, 5) Implement Server-Sent Events (SSE) or streaming HTTP response from FastAPI endpoints (/api/v1/qa/ask-stream), 6) Update PydanticAI agents to yield partial responses as tokens generate, 7) Update frontend chat UI to consume streaming endpoint directly, 8) Remove backend GraphQL mutation askLegalQuestion for chat (keep for non-streaming if needed), 9) Update AI Client Service or create new streaming client, 10) Handle streaming errors and connection drops gracefully. This approach is simpler than GraphQL subscriptions and leverages FastAPI's native streaming capabilities.",
+  "id": "ai-streaming-auth-integration",
+  "title": "Direct AI Engine Streaming with JWT Auth",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Implement streaming responses by allowing frontend to communicate directly with AI Engine. AI Engine will validate JWT tokens using the same authentication mechanism as the backend. This eliminates the backend proxy and enables real-time streaming from PydanticAI agents to frontend. Tasks: 1) Configure AI Engine to accept and validate JWT tokens from frontend requests, 2) Set up JWT verification using shared JWT_SECRET or backend public key, 3) Add user context extraction from validated tokens, 4) Configure CORS to allow frontend origin, 5) Implement Server-Sent Events (SSE) or streaming HTTP response from FastAPI endpoints (/api/v1/qa/ask-stream), 6) Update PydanticAI agents to yield partial responses as tokens generate, 7) Update frontend chat UI to consume streaming endpoint directly, 8) Remove backend GraphQL mutation askLegalQuestion for chat (keep for non-streaming if needed), 9) Update AI Client Service or create new streaming client, 10) Handle streaming errors and connection drops gracefully. This approach is simpler than GraphQL subscriptions and leverages FastAPI's native streaming capabilities.",
+      "timestamp": "2026-01-27T09:03:50.798Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-27T09:03:58.369Z"
+}

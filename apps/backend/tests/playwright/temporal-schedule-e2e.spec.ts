@@ -15,7 +15,8 @@
 
 import { test, expect, APIRequestContext } from '@playwright/test';
 
-const GRAPHQL_ENDPOINT = process.env.GRAPHQL_URL || 'http://localhost:3333/graphql';
+const GRAPHQL_ENDPOINT =
+  process.env.GRAPHQL_URL || 'http://localhost:3333/graphql';
 
 // Admin credentials from seed data
 const ADMIN_EMAIL = 'admin@refine.dev';
@@ -107,13 +108,14 @@ async function createTestScheduleViaService(
   // Since createSchedule is not exposed via GraphQL, we use the backend's internal service
   // This test validates the full flow through the Temporal test environment
   // In a real scenario, you would need a createSchedule mutation exposed
-
   // For now, we'll describe the schedule to see if it exists
   // In a production test setup, you would seed a schedule before testing
 }
 
 test.describe('Temporal Schedule - Authentication & Authorization', () => {
-  test('should require authentication for schedule operations', async ({ request }) => {
+  test('should require authentication for schedule operations', async ({
+    request,
+  }) => {
     const describeQuery = `
       query DescribeSchedule($scheduleId: String!) {
         describeSchedule(scheduleId: $scheduleId) {
@@ -130,10 +132,14 @@ test.describe('Temporal Schedule - Authentication & Authorization', () => {
     expect(response.status()).toBe(200);
     const body = await response.json();
     expect(body.errors).toBeDefined();
-    expect(body.errors[0].message).toMatch(/unauthorized|authentication failed/i);
+    expect(body.errors[0].message).toMatch(
+      /unauthorized|authentication failed/i,
+    );
   });
 
-  test('should require admin role for schedule operations', async ({ request }) => {
+  test('should require admin role for schedule operations', async ({
+    request,
+  }) => {
     // First login as a regular user (not admin)
     const loginMutation = `
       mutation Login($input: LoginInput!) {
@@ -190,7 +196,9 @@ test.describe('Temporal Schedule - Authentication & Authorization', () => {
 });
 
 test.describe('Temporal Schedule - Describe Operations', () => {
-  test('should return exists: false for non-existent schedule', async ({ request }) => {
+  test('should return exists: false for non-existent schedule', async ({
+    request,
+  }) => {
     const accessToken = await getAccessToken(request);
 
     const describeQuery = `
@@ -213,7 +221,9 @@ test.describe('Temporal Schedule - Describe Operations', () => {
     const body = await response.json();
     expect(body.errors).toBeUndefined();
     expect(body.data.describeSchedule).toBeDefined();
-    expect(body.data.describeSchedule.scheduleId).toBe('non-existent-schedule-12345');
+    expect(body.data.describeSchedule.scheduleId).toBe(
+      'non-existent-schedule-12345',
+    );
     expect(body.data.describeSchedule.exists).toBe(false);
   });
 
@@ -231,7 +241,7 @@ test.describe('Temporal Schedule - Describe Operations', () => {
       request,
       describeQuery,
       { scheduleId: '' },
-      {} ,
+      {},
     );
 
     expect(response.status()).toBe(200);
@@ -240,7 +250,9 @@ test.describe('Temporal Schedule - Describe Operations', () => {
     expect(body.data !== undefined || body.errors !== undefined).toBeTruthy();
   });
 
-  test('should return all expected fields for schedule details type', async ({ request }) => {
+  test('should return all expected fields for schedule details type', async ({
+    request,
+  }) => {
     // Test schema introspection to verify all fields are present
     const introspectionQuery = `
       query {
@@ -256,12 +268,7 @@ test.describe('Temporal Schedule - Describe Operations', () => {
       }
     `;
 
-    const response = await graphqlRequest(
-      request,
-      introspectionQuery,
-      {},
-      {} ,
-    );
+    const response = await graphqlRequest(request, introspectionQuery, {}, {});
 
     expect(response.status()).toBe(200);
     const body = await response.json();
@@ -321,7 +328,9 @@ test.describe('Temporal Schedule - Pause Operations', () => {
     expect(body.data?.pauseSchedule === false || body.errors).toBeTruthy();
   });
 
-  test('should accept pause mutation with optional reason field', async ({ request }) => {
+  test('should accept pause mutation with optional reason field', async ({
+    request,
+  }) => {
     const accessToken = await getAccessToken(request);
 
     const pauseMutation = `
@@ -365,7 +374,9 @@ test.describe('Temporal Schedule - Pause Operations', () => {
     expect(body2.data !== undefined || body2.errors !== undefined).toBeTruthy();
   });
 
-  test('should validate pauseSchedule input type in schema', async ({ request }) => {
+  test('should validate pauseSchedule input type in schema', async ({
+    request,
+  }) => {
     const introspectionQuery = `
       query {
         __type(name: "PauseScheduleInput") {
@@ -383,12 +394,7 @@ test.describe('Temporal Schedule - Pause Operations', () => {
       }
     `;
 
-    const response = await graphqlRequest(
-      request,
-      introspectionQuery,
-      {},
-      {} ,
-    );
+    const response = await graphqlRequest(request, introspectionQuery, {}, {});
 
     expect(response.status()).toBe(200);
     const body = await response.json();
@@ -425,7 +431,7 @@ test.describe('Temporal Schedule - Resume Operations', () => {
           reason: 'Testing resume with non-existent schedule',
         },
       },
-      {} ,
+      {},
     );
 
     expect(response.status()).toBe(200);
@@ -434,7 +440,9 @@ test.describe('Temporal Schedule - Resume Operations', () => {
     expect(body.data?.resumeSchedule === false || body.errors).toBeTruthy();
   });
 
-  test('should accept resume mutation with optional reason field', async ({ request }) => {
+  test('should accept resume mutation with optional reason field', async ({
+    request,
+  }) => {
     const resumeMutation = `
       mutation ResumeSchedule($input: ResumeScheduleInput!) {
         resumeSchedule(input: $input)
@@ -451,7 +459,7 @@ test.describe('Temporal Schedule - Resume Operations', () => {
           reason: 'Maintenance complete',
         },
       },
-      {} ,
+      {},
     );
 
     expect(response.status()).toBe(200);
@@ -459,7 +467,9 @@ test.describe('Temporal Schedule - Resume Operations', () => {
     expect(body.data !== undefined || body.errors !== undefined).toBeTruthy();
   });
 
-  test('should validate resumeSchedule input type in schema', async ({ request }) => {
+  test('should validate resumeSchedule input type in schema', async ({
+    request,
+  }) => {
     const introspectionQuery = `
       query {
         __type(name: "ResumeScheduleInput") {
@@ -477,12 +487,7 @@ test.describe('Temporal Schedule - Resume Operations', () => {
       }
     `;
 
-    const response = await graphqlRequest(
-      request,
-      introspectionQuery,
-      {},
-      {} ,
-    );
+    const response = await graphqlRequest(request, introspectionQuery, {}, {});
 
     expect(response.status()).toBe(200);
     const body = await response.json();
@@ -524,15 +529,17 @@ test.describe('Temporal Schedule - Delete Operations', () => {
           confirm: false,
         },
       },
-      {} ,
+      {},
     );
 
     expect(response.status()).toBe(200);
     const body = await response.json();
 
     // Handle CSRF errors gracefully (may occur in test environment)
-    if (body.errors?.[0]?.extensions?.code === 'FORBIDDEN' &&
-        body.errors[0].message.includes('CSRF')) {
+    if (
+      body.errors?.[0]?.extensions?.code === 'FORBIDDEN' &&
+      body.errors[0].message.includes('CSRF')
+    ) {
       // Skip this test if CSRF is blocking
       test.skip(true, 'CSRF validation blocking test');
       return;
@@ -543,7 +550,9 @@ test.describe('Temporal Schedule - Delete Operations', () => {
     expect(body.data.deleteSchedule.message).toContain('Confirmation required');
   });
 
-  test('should accept optional reason field for deletion', async ({ request }) => {
+  test('should accept optional reason field for deletion', async ({
+    request,
+  }) => {
     const deleteMutation = `
       mutation DeleteSchedule($input: DeleteScheduleInput!) {
         deleteSchedule(input: $input) {
@@ -564,15 +573,17 @@ test.describe('Temporal Schedule - Delete Operations', () => {
           reason: 'Test cleanup',
         },
       },
-      {} ,
+      {},
     );
 
     expect(response.status()).toBe(200);
     const body = await response.json();
 
     // Handle CSRF errors gracefully (may occur in test environment)
-    if (body.errors?.[0]?.extensions?.code === 'FORBIDDEN' &&
-        body.errors[0].message.includes('CSRF')) {
+    if (
+      body.errors?.[0]?.extensions?.code === 'FORBIDDEN' &&
+      body.errors[0].message.includes('CSRF')
+    ) {
       // Skip this assertion if CSRF is blocking the test
       return;
     }
@@ -601,12 +612,7 @@ test.describe('Temporal Schedule - Delete Operations', () => {
       }
     `;
 
-    const response = await graphqlRequest(
-      request,
-      introspectionQuery,
-      {},
-      {} ,
-    );
+    const response = await graphqlRequest(request, introspectionQuery, {}, {});
 
     expect(response.status()).toBe(200);
     const body = await response.json();
@@ -620,7 +626,9 @@ test.describe('Temporal Schedule - Delete Operations', () => {
     expect(fieldNames).toContain('message');
   });
 
-  test('should validate deleteSchedule input type in schema', async ({ request }) => {
+  test('should validate deleteSchedule input type in schema', async ({
+    request,
+  }) => {
     // Schema introspection doesn't require authentication
     const introspectionQuery = `
       query {
@@ -659,7 +667,9 @@ test.describe('Temporal Schedule - Overlap Policies', () => {
     accessToken = await getAccessToken(request);
   });
 
-  test('should have ScheduleOverlapPolicy enum in schema', async ({ request }) => {
+  test('should have ScheduleOverlapPolicy enum in schema', async ({
+    request,
+  }) => {
     const introspectionQuery = `
       query {
         __type(name: "ScheduleOverlapPolicy") {
@@ -672,12 +682,7 @@ test.describe('Temporal Schedule - Overlap Policies', () => {
       }
     `;
 
-    const response = await graphqlRequest(
-      request,
-      introspectionQuery,
-      {},
-      {} ,
-    );
+    const response = await graphqlRequest(request, introspectionQuery, {}, {});
 
     expect(response.status()).toBe(200);
     const body = await response.json();
@@ -692,7 +697,9 @@ test.describe('Temporal Schedule - Overlap Policies', () => {
     expect(values).toContain('BUFFER_ONE');
   });
 
-  test('should include overlap field in ScheduleDetails type', async ({ request }) => {
+  test('should include overlap field in ScheduleDetails type', async ({
+    request,
+  }) => {
     const introspectionQuery = `
       query {
         __type(name: "ScheduleDetails") {
@@ -707,12 +714,7 @@ test.describe('Temporal Schedule - Overlap Policies', () => {
       }
     `;
 
-    const response = await graphqlRequest(
-      request,
-      introspectionQuery,
-      {},
-      {} ,
-    );
+    const response = await graphqlRequest(request, introspectionQuery, {}, {});
 
     expect(response.status()).toBe(200);
     const body = await response.json();
@@ -737,7 +739,9 @@ test.describe('Temporal Schedule - Cron Expression Validation', () => {
   // These tests validate the cron expression parsing logic in the service
   // Since we can't directly create schedules via GraphQL, we validate the schema
 
-  test('should have proper spec details type for cron expressions', async ({ request }) => {
+  test('should have proper spec details type for cron expressions', async ({
+    request,
+  }) => {
     const introspectionQuery = `
       query {
         __type(name: "ScheduleSpecDetails") {
@@ -755,12 +759,7 @@ test.describe('Temporal Schedule - Cron Expression Validation', () => {
       }
     `;
 
-    const response = await graphqlRequest(
-      request,
-      introspectionQuery,
-      {},
-      {} ,
-    );
+    const response = await graphqlRequest(request, introspectionQuery, {}, {});
 
     expect(response.status()).toBe(200);
     const body = await response.json();
@@ -791,12 +790,7 @@ test.describe('Temporal Schedule - Cron Expression Validation', () => {
       }
     `;
 
-    const response = await graphqlRequest(
-      request,
-      introspectionQuery,
-      {},
-      {} ,
-    );
+    const response = await graphqlRequest(request, introspectionQuery, {}, {});
 
     expect(response.status()).toBe(200);
     const body = await response.json();
@@ -819,7 +813,9 @@ test.describe('Temporal Schedule - State Information', () => {
     accessToken = await getAccessToken(request);
   });
 
-  test('should have ScheduleStateInfo type with execution statistics', async ({ request }) => {
+  test('should have ScheduleStateInfo type with execution statistics', async ({
+    request,
+  }) => {
     const introspectionQuery = `
       query {
         __type(name: "ScheduleStateInfo") {
@@ -837,12 +833,7 @@ test.describe('Temporal Schedule - State Information', () => {
       }
     `;
 
-    const response = await graphqlRequest(
-      request,
-      introspectionQuery,
-      {},
-      {} ,
-    );
+    const response = await graphqlRequest(request, introspectionQuery, {}, {});
 
     expect(response.status()).toBe(200);
     const body = await response.json();
@@ -876,12 +867,7 @@ test.describe('Temporal Schedule - State Information', () => {
       }
     `;
 
-    const response = await graphqlRequest(
-      request,
-      introspectionQuery,
-      {},
-      {} ,
-    );
+    const response = await graphqlRequest(request, introspectionQuery, {}, {});
 
     expect(response.status()).toBe(200);
     const body = await response.json();
@@ -917,12 +903,7 @@ test.describe('Temporal Schedule - Schema Integration', () => {
       }
     `;
 
-    const response = await graphqlRequest(
-      request,
-      introspectionQuery,
-      {},
-      {} ,
-    );
+    const response = await graphqlRequest(request, introspectionQuery, {}, {});
 
     expect(response.status()).toBe(200);
     const body = await response.json();
@@ -931,9 +912,15 @@ test.describe('Temporal Schedule - Schema Integration', () => {
     const mutations = body.data.__schema.mutationType.fields;
 
     // Verify all schedule mutations exist
-    expect(mutations.find((m: { name: string }) => m.name === 'deleteSchedule')).toBeDefined();
-    expect(mutations.find((m: { name: string }) => m.name === 'pauseSchedule')).toBeDefined();
-    expect(mutations.find((m: { name: string }) => m.name === 'resumeSchedule')).toBeDefined();
+    expect(
+      mutations.find((m: { name: string }) => m.name === 'deleteSchedule'),
+    ).toBeDefined();
+    expect(
+      mutations.find((m: { name: string }) => m.name === 'pauseSchedule'),
+    ).toBeDefined();
+    expect(
+      mutations.find((m: { name: string }) => m.name === 'resumeSchedule'),
+    ).toBeDefined();
   });
 
   test('should have describeSchedule query in schema', async ({ request }) => {
@@ -950,19 +937,16 @@ test.describe('Temporal Schedule - Schema Integration', () => {
       }
     `;
 
-    const response = await graphqlRequest(
-      request,
-      introspectionQuery,
-      {},
-      {} ,
-    );
+    const response = await graphqlRequest(request, introspectionQuery, {}, {});
 
     expect(response.status()).toBe(200);
     const body = await response.json();
     expect(body.errors).toBeUndefined();
 
     const queries = body.data.__schema.queryType.fields;
-    const describeQuery = queries.find((q: { name: string }) => q.name === 'describeSchedule');
+    const describeQuery = queries.find(
+      (q: { name: string }) => q.name === 'describeSchedule',
+    );
 
     expect(describeQuery).toBeDefined();
     expect(describeQuery.description).toContain('schedule');
@@ -976,7 +960,9 @@ test.describe('Temporal Schedule - Error Handling', () => {
     accessToken = await getAccessToken(request);
   });
 
-  test('should handle malformed schedule ID gracefully', async ({ request }) => {
+  test('should handle malformed schedule ID gracefully', async ({
+    request,
+  }) => {
     const describeQuery = `
       query DescribeSchedule($scheduleId: String!) {
         describeSchedule(scheduleId: $scheduleId) {
@@ -994,7 +980,7 @@ test.describe('Temporal Schedule - Error Handling', () => {
         request,
         describeQuery,
         { scheduleId: char },
-        {} ,
+        {},
       );
 
       expect(response.status()).toBe(200);
@@ -1020,7 +1006,7 @@ test.describe('Temporal Schedule - Error Handling', () => {
       request,
       describeQuery,
       { scheduleId: longId },
-      {} ,
+      {},
     );
 
     expect(response.status()).toBe(200);
@@ -1029,7 +1015,9 @@ test.describe('Temporal Schedule - Error Handling', () => {
     expect(body.data !== undefined || body.errors !== undefined).toBeTruthy();
   });
 
-  test('should provide descriptive error messages for invalid operations', async ({ request }) => {
+  test('should provide descriptive error messages for invalid operations', async ({
+    request,
+  }) => {
     // Test with missing required field
     const pauseMutation = `
       mutation PauseSchedule($input: PauseScheduleInput!) {
@@ -1041,7 +1029,7 @@ test.describe('Temporal Schedule - Error Handling', () => {
       request,
       pauseMutation,
       { input: {} }, // Missing scheduleId
-      {} ,
+      {},
     );
 
     // GraphQL validation errors return 400, not 200
@@ -1059,7 +1047,9 @@ test.describe('Temporal Schedule - Pause/Resume Flow', () => {
     accessToken = await getAccessToken(request);
   });
 
-  test('should maintain pause state through describe operations', async ({ request }) => {
+  test('should maintain pause state through describe operations', async ({
+    request,
+  }) => {
     // This test validates the state consistency between pause and describe operations
     const pauseMutation = `
       mutation PauseSchedule($input: PauseScheduleInput!) {
@@ -1089,7 +1079,7 @@ test.describe('Temporal Schedule - Pause/Resume Flow', () => {
           reason: 'Testing pause state',
         },
       },
-      {} ,
+      {},
     );
 
     const pauseBody = await pauseResponse.json();
@@ -1099,7 +1089,7 @@ test.describe('Temporal Schedule - Pause/Resume Flow', () => {
       request,
       describeQuery,
       { scheduleId: testScheduleId },
-      {} ,
+      {},
     );
 
     expect(describeResponse.status()).toBe(200);
@@ -1132,7 +1122,7 @@ test.describe('Temporal Schedule - Pause/Resume Flow', () => {
           reason: 'Testing pause before resume',
         },
       },
-      {} ,
+      {},
     );
 
     // Resume
@@ -1145,7 +1135,7 @@ test.describe('Temporal Schedule - Pause/Resume Flow', () => {
           reason: 'Testing resume after pause',
         },
       },
-      {} ,
+      {},
     );
 
     expect(resumeResponse.status()).toBe(200);
@@ -1173,7 +1163,7 @@ test.describe('Temporal Schedule - Pause/Resume Flow', () => {
           reason: 'First pause',
         },
       },
-      {} ,
+      {},
     );
 
     // Second pause (should not cause issues if already paused)
@@ -1186,7 +1176,7 @@ test.describe('Temporal Schedule - Pause/Resume Flow', () => {
           reason: 'Second pause',
         },
       },
-      {} ,
+      {},
     );
 
     expect(response2.status()).toBe(200);
@@ -1213,7 +1203,7 @@ test.describe('Temporal Schedule - Pause/Resume Flow', () => {
           reason: 'First resume',
         },
       },
-      {} ,
+      {},
     );
 
     // Second resume (should not cause issues if already running)
@@ -1226,7 +1216,7 @@ test.describe('Temporal Schedule - Pause/Resume Flow', () => {
           reason: 'Second resume',
         },
       },
-      {} ,
+      {},
     );
 
     expect(response2.status()).toBe(200);

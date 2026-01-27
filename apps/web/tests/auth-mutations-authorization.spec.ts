@@ -89,11 +89,7 @@ async function graphql(
 /**
  * Helper to execute GraphQL without CSRF (for login/register)
  */
-async function graphqlNoCsrf(
-  request: any,
-  query: string,
-  variables?: Record<string, unknown>,
-) {
+async function graphqlNoCsrf(request: any, query: string, variables?: Record<string, unknown>) {
   const response = await request.post(GRAPHQL_URL, {
     headers: {
       'Content-Type': 'application/json',
@@ -265,7 +261,9 @@ test.describe('Authorization Mutations E2E', () => {
       }
     });
 
-    test('should allow authenticated user to perform updateProfile mutation', async ({ request }) => {
+    test('should allow authenticated user to perform updateProfile mutation', async ({
+      request,
+    }) => {
       if (!userTokens) throw new Error('No user tokens');
 
       const mutation = `
@@ -1332,9 +1330,7 @@ test.describe('Authorization Mutations E2E', () => {
 
       // Should not be an auth error (may return empty array)
       const hasAuthError = result.errors?.some(
-        (e: any) =>
-          e.extensions?.code === 'UNAUTHORIZED' ||
-          e.extensions?.statusCode === 401,
+        (e: any) => e.extensions?.code === 'UNAUTHORIZED' || e.extensions?.statusCode === 401,
       );
       expect(hasAuthError).toBe(false);
     });
