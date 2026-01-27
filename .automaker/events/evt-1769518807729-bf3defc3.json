@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769518807729-bf3defc3",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T13:00:07.729Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "verify-streaming-response-works-immediately",
+  "featureName": "Verify Streaming Response Sends Data Immediately",
+  "error": "Feature completed in 290s - auto-verified",
+  "passes": true
+}

@@ -2,6 +2,39 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769519319976-a1873944",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-27T13:08:39.976Z"
+    },
+    {
+      "id": "evt-1769519311507-527817b2",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T13:08:31.507Z",
+      "featureName": "Create E2E Tests for Immediate Token Streaming",
+      "featureId": "streaming-response-e2e-tests"
+    },
+    {
+      "id": "evt-1769519204931-56633d84",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T13:06:44.931Z",
+      "featureName": "Fix Streaming Response Buffering Issue",
+      "featureId": "fix-streaming-buffering-issue"
+    },
+    {
+      "id": "evt-1769518894755-9c9e886f",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T13:01:34.755Z",
+      "featureName": "Verify Streaming Response Chunk Size Configuration",
+      "featureId": "verify-streaming-chunk-size"
+    },
+    {
+      "id": "evt-1769518807729-bf3defc3",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-27T13:00:07.729Z",
+      "featureName": "Verify Streaming Response Sends Data Immediately",
+      "featureId": "verify-streaming-response-works-immediately"
+    },
+    {
       "id": "evt-1769511558515-21f25d36",
       "trigger": "feature_success",
       "timestamp": "2026-01-27T10:59:18.515Z",

@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Create E2E tests that verify tokens are streamed immediately, not buffered. Test should: 1) Send a request to /ask endpoint with streaming enabled, 2) Measure time-to-first-token (should be < 1 second), 3) Verify tokens arrive incrementally over time (not all at once at end), 4) Record timestamps of each received token to prove streaming is real-time, 5) Test with a long-running query (5-10 seconds) to clearly see the streaming effect, 6) Verify the final 'done' event is received after all tokens. Use timing assertions to prove streaming works correctly.",
+  "id": "streaming-response-e2e-tests",
+  "title": "Create E2E Tests for Immediate Token Streaming",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Create E2E tests that verify tokens are streamed immediately, not buffered. Test should: 1) Send a request to /ask endpoint with streaming enabled, 2) Measure time-to-first-token (should be < 1 second), 3) Verify tokens arrive incrementally over time (not all at once at end), 4) Record timestamps of each received token to prove streaming is real-time, 5) Test with a long-running query (5-10 seconds) to clearly see the streaming effect, 6) Verify the final 'done' event is received after all tokens. Use timing assertions to prove streaming works correctly.",
+      "timestamp": "2026-01-27T12:55:09.394Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-27T13:08:31.496Z"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769518894755-9c9e886f",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T13:01:34.755Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "verify-streaming-chunk-size",
+  "featureName": "Verify Streaming Response Chunk Size Configuration",
+  "error": "Feature completed in 379s - auto-verified",
+  "passes": true
+}

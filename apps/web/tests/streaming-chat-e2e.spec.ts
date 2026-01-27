@@ -100,7 +100,7 @@ async function sendMessageAndWaitForStream(
   let streamComplete = false;
   let accumulatedContent = '';
 
-  await page.route(`${AI_ENGINE_URL}/api/v1/qa/stream`, async (route, request) => {
+  await page.route(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`, async (route, request) => {
     const startTime = measureLatency ? Date.now() : undefined;
 
     // Continue with the request to get real response
@@ -147,7 +147,7 @@ async function sendMessageAndWaitForStream(
   }
 
   // Clean up route
-  await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/stream`);
+  await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`);
 
   return {
     success: accumulatedContent.length >= minContentLength,
@@ -455,7 +455,7 @@ test.describe('Streaming Chat - JWT Authentication', () => {
     let authorizationValue = '';
 
     // Intercept the streaming request to check headers
-    await page.route(`${AI_ENGINE_URL}/api/v1/qa/stream`, async (route) => {
+    await page.route(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`, async (route) => {
       const request = route.request();
       const headers = request.headers();
 
@@ -476,7 +476,7 @@ test.describe('Streaming Chat - JWT Authentication', () => {
     await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 60000 });
 
     // Clean up
-    await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/stream`);
+    await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`);
 
     // Verify auth header was sent (may be empty for anonymous access)
     console.log('Authorization header:', authorizationValue ? 'Present' : 'Not present');
@@ -511,7 +511,7 @@ test.describe('Streaming Chat - Error Handling', () => {
 
   test('handles network errors gracefully', async ({ page }) => {
     // Mock a failed request
-    await page.route(`${AI_ENGINE_URL}/api/v1/qa/stream`, async (route) => {
+    await page.route(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`, async (route) => {
       await route.abort('failed');
     });
 
@@ -529,14 +529,14 @@ test.describe('Streaming Chat - Error Handling', () => {
     console.log('Error indicators found:', hasErrorContent);
 
     // Clean up
-    await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/stream`);
+    await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`);
 
     await page.screenshot({ path: 'test-results/streaming-network-error.png' });
   });
 
   test('handles timeout gracefully', async ({ page }) => {
     // Mock a timeout by never responding
-    await page.route(`${AI_ENGINE_URL}/api/v1/qa/stream`, async (route) => {
+    await page.route(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`, async (route) => {
       // Don't continue, simulating timeout
       await page.waitForTimeout(70000);
     });
@@ -555,14 +555,14 @@ test.describe('Streaming Chat - Error Handling', () => {
     console.log('Still streaming after timeout:', streamingIndicator > 0);
 
     // Clean up
-    await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/stream`);
+    await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`);
   });
 
   test('can retry after error', async ({ page }) => {
     let callCount = 0;
 
     // Mock first request to fail, second to succeed
-    await page.route(`${AI_ENGINE_URL}/api/v1/qa/stream`, async (route) => {
+    await page.route(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`, async (route) => {
       callCount++;
       if (callCount === 1) {
         await route.abort('failed');
@@ -584,7 +584,7 @@ test.describe('Streaming Chat - Error Handling', () => {
     await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 60000 });
 
     // Clean up
-    await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/stream`);
+    await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`);
 
     await page.screenshot({ path: 'test-results/streaming-retry-after-error.png' });
   });
@@ -696,7 +696,7 @@ test.describe('Streaming Chat - Latency Measurement', () => {
     let timeToFirstToken: number | undefined;
     let requestStartTime: number | undefined;
 
-    await page.route(`${AI_ENGINE_URL}/api/v1/qa/stream`, async (route) => {
+    await page.route(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`, async (route) => {
       requestStartTime = Date.now();
       await route.continue();
     });
@@ -720,7 +720,7 @@ test.describe('Streaming Chat - Latency Measurement', () => {
     await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 60000 });
 
     clearInterval(contentCheck);
-    await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/stream`);
+    await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`);
 
     if (requestStartTime && firstContentTime) {
       timeToFirstToken = firstContentTime - requestStartTime;
@@ -744,7 +744,7 @@ test.describe('Streaming Chat - Latency Measurement', () => {
     let streamStartTime: number | undefined;
     let streamEndTime: number | undefined;
 
-    await page.route(`${AI_ENGINE_URL}/api/v1/qa/stream`, async (route) => {
+    await page.route(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`, async (route) => {
       streamStartTime = Date.now();
       await route.continue();
     });
@@ -760,7 +760,7 @@ test.describe('Streaming Chat - Latency Measurement', () => {
     await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 60000 });
     streamEndTime = Date.now();
 
-    await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/stream`);
+    await page.unroute(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`);
 
     if (streamStartTime && streamEndTime) {
       const totalTime = streamEndTime - streamStartTime;

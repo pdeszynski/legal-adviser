@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Verify that the /ask endpoint streams data immediately without waiting for the entire LLM response. Currently, the endpoint waits for the model to complete before sending any data, which defeats the purpose of streaming. This needs to be fixed so tokens are sent as they are generated. Test with a query that takes several seconds to complete and verify that tokens appear in real-time, not all at once at the end.",
+  "id": "verify-streaming-response-works-immediately",
+  "title": "Verify Streaming Response Sends Data Immediately",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Verify that the /ask endpoint streams data immediately without waiting for the entire LLM response. Currently, the endpoint waits for the model to complete before sending any data, which defeats the purpose of streaming. This needs to be fixed so tokens are sent as they are generated. Test with a query that takes several seconds to complete and verify that tokens appear in real-time, not all at once at the end.",
+      "timestamp": "2026-01-27T12:55:09.392Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-27T13:00:07.712Z"
+}

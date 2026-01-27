@@ -1,0 +1,19 @@
+{
+  "category": "bug",
+  "description": "Check if there's an issue with how chunks are being yielded from the PydanticAI agent. Verify: 1) The agent is configured to stream tokens one at a time or in small chunks, 2) The async generator is not accumulating tokens before yielding, 3) The SSE event format is correct (data: {...}\\n\\n), 4) The response headers include 'Transfer-Encoding: chunked', 5) No middleware is buffering the response. May need to adjust how the agent streams - possibly need to access the underlying stream directly rather than waiting for complete response.",
+  "id": "verify-streaming-chunk-size",
+  "title": "Verify Streaming Response Chunk Size Configuration",
+  "dependencies": [
+    "ai-engine-pydantic-ai-agents-refactor"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "streaming-response",
+  "descriptionHistory": [
+    {
+      "description": "Check if there's an issue with how chunks are being yielded from the PydanticAI agent. Verify: 1) The agent is configured to stream tokens one at a time or in small chunks, 2) The async generator is not accumulating tokens before yielding, 3) The SSE event format is correct (data: {...}\\n\\n), 4) The response headers include 'Transfer-Encoding: chunked', 5) No middleware is buffering the response. May need to adjust how the agent streams - possibly need to access the underlying stream directly rather than waiting for complete response.",
+      "timestamp": "2026-01-27T12:55:09.395Z",
+      "source": "initial"
+    }
+  ]
+}

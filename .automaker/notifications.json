@@ -3739,6 +3739,50 @@
       "dismissed": false,
       "featureId": "feature-1769511081956-clfpcu1v7",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "77653349-31e4-4a54-9930-e77007a19263",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"verify-streaming-response-works-immediately\" has been verified and is complete.",
+      "createdAt": "2026-01-27T13:00:07.714Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "verify-streaming-response-works-immediately",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "57a344bf-eada-4a23-a7f2-606bef22a500",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"verify-streaming-chunk-size\" has been verified and is complete.",
+      "createdAt": "2026-01-27T13:01:34.741Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "verify-streaming-chunk-size",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "b564bf60-f427-4705-92a4-b3c985aff5a7",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-streaming-buffering-issue\" has been verified and is complete.",
+      "createdAt": "2026-01-27T13:06:44.923Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-streaming-buffering-issue",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "d7470add-c842-4bcc-98a5-3423a9f7ef27",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"streaming-response-e2e-tests\" has been verified and is complete.",
+      "createdAt": "2026-01-27T13:08:31.497Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "streaming-response-e2e-tests",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

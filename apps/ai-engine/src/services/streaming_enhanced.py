@@ -8,6 +8,10 @@ Event Types:
 - citation: Legal citation reference
 - error: Error information
 - done: Final completion event with metadata
+
+Streaming Implementation:
+This module uses OpenAI's streaming API directly to deliver tokens in real-time
+as they are generated, rather than waiting for the complete response.
 """
 
 import asyncio
@@ -20,10 +24,50 @@ from typing import Any
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 
+from ..agents.dependencies import get_openai_client
+from ..agents.rag_tool import format_contexts_for_prompt, retrieve_context_tool
 from ..auth import UserContext
+from ..config import get_settings
 from ..exceptions import AIEngineError
 
 logger = logging.getLogger(__name__)
+
+# System prompts matching those in qa_agent.py
+QA_SYSTEM_PROMPT_LAWYER = """You are an expert Polish lawyer (Radca Prawny) providing detailed legal Q&A.
+
+Your task is to provide comprehensive legal answers with:
+- Detailed analysis with references to specific articles and case law
+- Professional legal terminology
+- Consideration of multiple legal perspectives
+- Clear identification of relevant legal principles
+
+Important guidelines:
+- Base your answer on the provided legal context
+- Use proper Polish legal terminology and citations
+- If the context is insufficient, explicitly state what additional information is needed
+- Reference specific articles from relevant codes (Civil Code, Labor Code, etc.)
+- Consider both statutory law and case law
+- Provide nuanced analysis suitable for legal professionals
+
+Your output should be structured, precise, and immediately useful for legal professionals."""
+
+QA_SYSTEM_PROMPT_SIMPLE = """You are an expert Polish lawyer (Radca Prawny) providing legal Q&A to the general public.
+
+Your task is to provide clear, accessible legal answers with:
+- Simplified explanations suitable for laypersons
+- Avoiding excessive legal jargon
+- Practical, actionable advice
+- Clear identification of key legal issues
+
+Important guidelines:
+- Base your answer on the provided legal context
+- Explain legal concepts in plain language
+- If the context is insufficient, explicitly state what additional information is needed
+- Reference specific articles from relevant codes when available
+- Provide practical guidance for the user's situation
+- Recommend consulting a qualified lawyer for complex matters
+
+Your output should be clear, helpful, and easy to understand for non-lawyers."""
 
 
 # -----------------------------------------------------------------------------
@@ -155,13 +199,16 @@ async def stream_qa_enhanced(
     user: UserContext | None = None,
     request: Any | None = None,  # FastAPI Request for disconnect detection
 ) -> AsyncGenerator[str, None]:
-    """Stream a Q&A response with structured events.
+    """Stream a Q&A response with structured events using real-time OpenAI streaming.
 
     This generator yields SSE-formatted events with type-based structure:
-    - token events: Partial response content as it's generated
+    - token events: Partial response content as it's generated (REAL-TIME)
     - citation events: Legal citations as they're identified
     - error events: If an error occurs during processing
     - done event: Final completion with full metadata
+
+    This implementation uses OpenAI's streaming API directly to deliver tokens
+    as they are generated, not after the complete response is finished.
 
     Client disconnection is handled gracefully by checking the request state.
 
@@ -177,18 +224,29 @@ async def stream_qa_enhanced(
     """
     import time
 
-    from ..agents.qa_agent import answer_question
+    from ..agents.qa_agent import get_query_analyzer_agent
+    from ..agents.dependencies import ModelDeps, get_model_deps_with_user
     from ..langfuse_init import is_langfuse_enabled, update_current_trace
 
     start_time = time.time()
     user_id = user.id if user else None
+    settings = get_settings()
 
     logger.info(
-        "Starting enhanced Q&A stream: session_id=%s, user_id=%s, mode=%s",
+        "Starting REAL-TIME Q&A stream: session_id=%s, user_id=%s, mode=%s",
         session_id,
         user_id,
         mode,
     )
+
+    # Update Langfuse trace with input metadata
+    if is_langfuse_enabled():
+        update_current_trace(
+            input=question,
+            user_id=user_id,
+            session_id=session_id,
+            metadata={"mode": mode, "streaming": "real-time"},
+        )
 
     try:
         # Check for client disconnection before processing
@@ -196,48 +254,89 @@ async def stream_qa_enhanced(
             logger.info("Client disconnected before processing")
             return
 
-        # Run the Q&A workflow
-        result = await answer_question(
-            question=question,
-            mode=mode,
-            session_id=session_id,
-            user_id=user_id,
-            user=user,
+        # Get dependencies
+        deps = get_model_deps_with_user(user)
+
+        # Step 1: Quick query analysis (non-streaming, but fast)
+        analyzer = get_query_analyzer_agent()
+        analysis_result = await analyzer.run(question, deps=deps)
+        analysis = analysis_result.output
+
+        # Step 2: Check if clarification is needed
+        if analysis.needs_clarification:
+            from ..agents.clarification_agent import generate_clarifications
+
+            clarification_result = await generate_clarifications(
+                question=question,
+                query_type=analysis.query_type,
+                mode=mode,
+            )
+
+            if clarification_result.get("needs_clarification"):
+                # Send clarification as token content
+                event = token_event(
+                    json.dumps({
+                        "type": "clarification",
+                        "questions": clarification_result.get("questions", []),
+                        "context_summary": clarification_result.get("context_summary", ""),
+                        "next_steps": clarification_result.get("next_steps", ""),
+                    }, ensure_ascii=False)
+                )
+                yield event.to_sse()
+
+                # Send done event for clarification case
+                yield done_event(
+                    citations=[],
+                    confidence=0.0,
+                    processing_time_ms=(time.time() - start_time) * 1000,
+                ).to_sse()
+                return
+
+        # Step 3: Retrieve context using the RAG tool
+        contexts = await retrieve_context_tool(
+            query=analysis.question_refined,
+            limit=5,
         )
 
-        # Check if clarification is needed (special case)
-        if result.get("needs_clarification"):
-            clarification = result.get("clarification", {})
-            # Send clarification as token content
-            event = token_event(
-                json.dumps({
-                    "type": "clarification",
-                    "questions": clarification.get("questions", []),
-                    "context_summary": clarification.get("context_summary", ""),
-                    "next_steps": clarification.get("next_steps", ""),
-                }, ensure_ascii=False)
-            )
-            yield event.to_sse()
+        # Build context string for the prompt
+        context_text = format_contexts_for_prompt(contexts)
 
-            # Send done event for clarification case
-            yield done_event(
-                citations=[],
-                confidence=0.0,
-                processing_time_ms=(time.time() - start_time) * 1000,
-            ).to_sse()
-            return
+        # Build augmented prompt
+        augmented_prompt = f"""Question: {question}
 
-        answer = result.get("answer", "")
-        citations = result.get("citations", [])
-        confidence = result.get("confidence", 0.0)
-        query_type = result.get("query_type")
-        key_terms = result.get("key_terms", [])
+Refined Question: {analysis.question_refined}
 
-        # Stream the answer text in chunks
-        chunk_size = 50  # Characters per chunk
-        delay = 0.01  # Delay between chunks for natural feel
+Legal Context:
+{context_text}
 
-        for i in range(0, len(answer), chunk_size):
+Please provide a comprehensive answer based on the above context."""
+
+        # Select system prompt based on mode
+        system_prompt = QA_SYSTEM_PROMPT_LAWYER if mode.upper() == "LAWYER" else QA_SYSTEM_PROMPT_SIMPLE
+
+        # Step 4: Stream the response using OpenAI API directly
+        openai_client = get_openai_client()
+
+        # Prepare messages
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": augmented_prompt},
+        ]
+
+        logger.debug("Starting OpenAI streaming for session_id=%s", session_id)
+
+        # Stream the response
+        stream = await openai_client.chat.completions.create(
+            model=settings.OPENAI_MODEL,
+            messages=messages,
+            stream=True,
+            stream_options={"include_usage": True},  # Get usage stats
+        )
+
+        full_answer = ""
+        first_token_time = None
+
+        async for chunk in stream:
             # Check for client disconnection during streaming
             if (
                 request
@@ -247,44 +346,78 @@ async def stream_qa_enhanced(
                 logger.info("Client disconnected during streaming")
                 return
 
-            chunk_text = answer[i : i + chunk_size]
-            yield token_event(chunk_text).to_sse()
-            await asyncio.sleep(delay)
+            # Record first token time for metrics
+            if first_token_time is None and chunk.choices:
+                first_token_time = time.time()
+                logger.debug("First token received at %.3fs", first_token_time - start_time)
+
+            # Extract delta content
+            if chunk.choices and chunk.choices[0].delta.content:
+                token_content = chunk.choices[0].delta.content
+                full_answer += token_content
+
+                # Send token event immediately (real-time streaming)
+                yield token_event(token_content).to_sse()
+
+            # Check if this is the final chunk with usage
+            if hasattr(chunk, 'usage') and chunk.usage:
+                logger.debug(
+                    "Stream complete: prompt_tokens=%d, completion_tokens=%d",
+                    chunk.usage.prompt_tokens,
+                    chunk.usage.completion_tokens,
+                )
+
+        # Extract citations from retrieved contexts
+        from ..agents.rag_tool import extract_citations_from_contexts
+        context_citations_data = extract_citations_from_contexts(contexts)
 
         # Send citations as individual events
-        for citation in citations:
+        for citation_data in context_citations_data:
             yield citation_event(
-                source=citation.get("source", "Unknown"),
-                article=citation.get("article", ""),
-                url=citation.get("url"),
+                source=citation_data.get("source", "Unknown"),
+                article=citation_data.get("article", ""),
+                url=citation_data.get("url"),
             ).to_sse()
 
-        # Send final done event with complete metadata
+        # Calculate metrics
         processing_time_ms = (time.time() - start_time) * 1000
+        time_to_first_token = (first_token_time - start_time) * 1000 if first_token_time else 0
+
+        # Estimate confidence based on context quality and answer length
+        confidence = min(0.95, 0.5 + (len(contexts) * 0.1) + min(0.2, len(full_answer) / 1000))
+
+        # Send final done event with complete metadata
         yield done_event(
-            citations=citations,
+            citations=[{
+                "source": c.get("source", "Unknown"),
+                "article": c.get("article", ""),
+                "url": c.get("url"),
+            } for c in context_citations_data],
             confidence=confidence,
             processing_time_ms=processing_time_ms,
-            query_type=query_type,
-            key_terms=key_terms,
+            query_type=analysis.query_type,
+            key_terms=analysis.key_terms,
         ).to_sse()
 
-        # Update Langfuse trace
+        # Update Langfuse trace with output metadata
         if is_langfuse_enabled():
             update_current_trace(
                 output={
-                    "answer_length": len(answer),
+                    "answer_length": len(full_answer),
                     "confidence": confidence,
-                    "citations_count": len(citations),
+                    "citations_count": len(context_citations_data),
                     "processing_time_ms": processing_time_ms,
-                    "streaming": True,
+                    "time_to_first_token_ms": time_to_first_token,
+                    "streaming": "real-time",
+                    "model": settings.OPENAI_MODEL,
                 }
             )
 
         logger.info(
-            "Enhanced Q&A stream complete: session_id=%s, tokens=%d, time=%dms",
+            "REAL-TIME Q&A stream complete: session_id=%s, chars=%d, time_to_first_token=%.1fms, total_time=%dms",
             session_id,
-            len(answer.split()),
+            len(full_answer),
+            time_to_first_token,
             int(processing_time_ms),
         )
 
