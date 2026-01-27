@@ -29,7 +29,7 @@ services:
   # PostgreSQL - Primary Database for Temporal
   # --------------------------------------------------------------------------
   postgres-temporal:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg15
     container_name: temporal-postgres
     environment:
       POSTGRES_USER: ${TEMPORAL_POSTGRES_USER:-temporal}
@@ -40,6 +40,7 @@ services:
     volumes:
       - temporal_postgres_data:/var/lib/postgresql/data
       - ./apps/backend/src/modules/temporal/schema/temporal-postgres-init.sql:/docker-entrypoint-initdb.d/01-temporal.sql
+      - ./scripts/init-pgvector.sql:/docker-entrypoint-initdb.d/02-pgvector.sql
     restart: always
     healthcheck:
       test:

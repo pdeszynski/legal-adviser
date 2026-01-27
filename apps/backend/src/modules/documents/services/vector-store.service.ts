@@ -99,6 +99,7 @@ export class VectorStoreService {
     const embeddings = await this.aiClient.generateEmbeddings(chunks);
 
     // Create embedding records
+    // The VectorTransformer handles converting number[] to pgvector format
     const embeddingRecords = chunks.map((chunk, index) => {
       const record = this.embeddingRepository.create({
         documentId,
@@ -132,9 +133,11 @@ export class VectorStoreService {
     threshold: number = 0.7,
     documentId?: string,
   ): Promise<SearchResult[]> {
-    const embeddingJson = JSON.stringify(queryEmbedding);
+    // Format embedding array as vector literal: '[0.1,0.2,0.3,...]'
+    const vectorLiteral = `'[${queryEmbedding.join(',')}]'`;
 
     // Build the query with pgvector cosine similarity
+    // The <=> operator returns negative distance, so we negate it to get similarity
     let queryBuilder = this.embeddingRepository
       .createQueryBuilder('embedding')
       .select([
@@ -143,14 +146,11 @@ export class VectorStoreService {
         'embedding.contentChunk',
         'embedding.chunkIndex',
         'embedding.metadata',
-        `1 - (embedding.embedding <=> '${embeddingJson}'::vector) AS similarity`,
+        `1 - (embedding.embedding <=> ${vectorLiteral}) AS similarity`,
       ])
-      .where(
-        `1 - (embedding.embedding <=> '${embeddingJson}'::vector) >= :threshold`,
-        {
-          threshold,
-        },
-      )
+      .where(`1 - (embedding.embedding <=> ${vectorLiteral}) >= :threshold`, {
+        threshold,
+      })
       .orderBy('similarity', 'DESC')
       .limit(limit);
 
