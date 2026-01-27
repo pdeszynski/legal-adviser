@@ -5,10 +5,7 @@
   "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
   "branchName": null,
   "runningFeatureIds": [
-    "document-tracking",
-    "ai-engine-langfuse-trace-visualization",
-    "ai-engine-performance-optimization",
-    "ai-error-handling-with-langfuse"
+    "feature-1769151063866-n6s5466d9"
   ],
-  "savedAt": "2026-01-26T10:51:11.842Z"
+  "savedAt": "2026-01-27T07:56:03.483Z"
 }
