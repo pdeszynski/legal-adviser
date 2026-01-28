@@ -4,7 +4,7 @@
   "id": "ai-streaming-error-handling",
   "title": "Streaming Error Handling and Retry Logic",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-27T09:03:50.801Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T09:29:52.636Z"
 }

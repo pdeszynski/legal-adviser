@@ -5,7 +5,7 @@
   "title": "Investigate Root Cause of Empty Assistant Messages in Database",
   "dependencies": [],
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

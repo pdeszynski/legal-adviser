@@ -3,9 +3,6 @@
   "description": "Implement the complete clarification flow where users can answer AI's follow-up questions and continue the conversation. Frontend changes: 1) When clarification questions are displayed, collect user answers in form state, 2) Create 'Submit Answers' button that sends responses to backend, 3) Backend mutation submitClarificationAnswers(sessionId, answers: [{question, answer}]) should process answers and re-run AI with additional context, 4) AI should incorporate user answers into its response and provide final answer or ask more questions, 5) Update conversation history with both the clarification request and user answers, 6) Show loading state while AI re-processes with new context, 7) Display AI's final response in chat after clarification round. Backend changes: 1) Create submitClarificationAnswers GraphQL mutation, 2) Pass original query + clarification answers + full history to AI Engine, 3) AI Engine should append clarification answers to conversation context before re-running agent. Test multi-round clarification (AI asks, user answers, AI asks follow-up, user answers, AI responds).",
   "id": "implement-clarification-flow-user-answers",
   "title": "Implement User Answer Submission for Clarification Flow",
-  "dependencies": [
-    "fix-clarification-json-rendering-in-chat"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "store-chat",

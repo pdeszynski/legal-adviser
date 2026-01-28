@@ -4,7 +4,7 @@
   "id": "create-langfuse-trace-debugging-view",
   "title": "Create Admin Debugging View for Langfuse Traces",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

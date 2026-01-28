@@ -3,9 +3,6 @@
   "description": "Ensure chat messages are properly saved to database via backend, not localStorage. Backend verification: 1) Verify askLegalQuestion mutation creates ChatMessage records linked to ChatSession, 2) Ensure ChatMessage.sequenceOrder is properly incremented for each message, 3) Store both user messages and AI assistant responses in ChatMessage table, 4) Update ChatSession.lastMessageAt and messageCount on each new message, 5) Verify ChatSession.updatedAt is refreshed on each message. Frontend changes: 1) Update useStreamingChat to call backend mutation for each user message, 2) Remove any client-side message storage logic, 3) Ensure AI responses (from streaming or GraphQL) are persisted via backend, 4) Test that page refresh retrieves full conversation history from database, not localStorage.",
   "id": "fix-chat-message-persistence-flow",
   "title": "Fix Chat Message Persistence to Backend Database",
-  "dependencies": [
-    "chat-session-ownership-authorization-guard"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "store-chat",

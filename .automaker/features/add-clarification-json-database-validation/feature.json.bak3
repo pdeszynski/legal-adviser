@@ -1,0 +1,15 @@
+{
+  "category": "Uncategorized",
+  "description": "Add backend validation to ensure clarification JSON responses are not saved with empty content fields. Current issue: Messages with clarification data have content: \"\" when they should contain the JSON structure. Implementation: 1) In QueriesService.askQuestion() before saving ChatMessage, check if AI response is clarification JSON, 2) Detect JSON by checking if response has type field or can be parsed as JSON, 3) If clarification detected and content field is empty/missing, throw validation error, 4) Add check: if (isClarificationResponse && (!content || content.trim() === '')) throw BadRequestException('Clarification JSON content cannot be empty'), 5) Ensure rawContent is also populated with original JSON, 6) Add logging to capture clarification JSON being saved for debugging, 7) For streaming: verify 'done' event contains clarification data before finalizing ChatMessage save. This prevents saving empty messages and makes the data quality issue visible immediately. Combine with existing add-database-validation-to-prevent-empty-chat-messages feature.",
+  "id": "add-clarification-json-database-validation",
+  "title": "Add Validation for Clarification JSON Content in Database Saves",
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Add backend validation to ensure clarification JSON responses are not saved with empty content fields. Current issue: Messages with clarification data have content: \"\" when they should contain the JSON structure. Implementation: 1) In QueriesService.askQuestion() before saving ChatMessage, check if AI response is clarification JSON, 2) Detect JSON by checking if response has type field or can be parsed as JSON, 3) If clarification detected and content field is empty/missing, throw validation error, 4) Add check: if (isClarificationResponse && (!content || content.trim() === '')) throw BadRequestException('Clarification JSON content cannot be empty'), 5) Ensure rawContent is also populated with original JSON, 6) Add logging to capture clarification JSON being saved for debugging, 7) For streaming: verify 'done' event contains clarification data before finalizing ChatMessage save. This prevents saving empty messages and makes the data quality issue visible immediately. Combine with existing add-database-validation-to-prevent-empty-chat-messages feature.",
+      "timestamp": "2026-01-28T15:41:22.934Z",
+      "source": "initial"
+    }
+  ]
+}

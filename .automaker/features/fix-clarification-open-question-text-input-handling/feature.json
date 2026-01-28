@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Fix the clarification form handling for open-ended questions (questions without predefined options/buttons). Currently, open questions may be auto-submitting or not properly capturing user text input. Implementation tasks: 1) Ensure open questions render as text input fields (textarea for longer answers), 2) Text inputs should use controlled component pattern with value state, 3) onChange handler should ONLY update local state (no submission), 4) Prevent Enter key from submitting form in text inputs (unless Ctrl+Enter for submit), 5) Allow users to type multiple sentences/paragraphs without interruption, 6) Add character counter for open questions if length limits exist, 7) Ensure text input captures full user answer before 'Submit Answers' is clicked, 8) Test with various answer lengths: single word, sentence, paragraph, 9) Verify text input value is included in submitClarificationAnswers mutation payload, 10) Add visual feedback that text is being captured (character count, not-empty validation). Separate open question handling from button-based multiple choice questions.",
+  "id": "fix-clarification-open-question-text-input-handling",
+  "title": "Fix Clarification Open Questions to Allow Full Text Input Before Submit (Superseded)",
+  "priority": 1,
+  "status": "completed",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Fix the clarification form handling for open-ended questions (questions without predefined options/buttons). Currently, open questions may be auto-submitting or not properly capturing user text input. Implementation tasks: 1) Ensure open questions render as text input fields (textarea for longer answers), 2) Text inputs should use controlled component pattern with value state, 3) onChange handler should ONLY update local state (no submission), 4) Prevent Enter key from submitting form in text inputs (unless Ctrl+Enter for submit), 5) Allow users to type multiple sentences/paragraphs without interruption, 6) Add character counter for open questions if length limits exist, 7) Ensure text input captures full user answer before 'Submit Answers' is clicked, 8) Test with various answer lengths: single word, sentence, paragraph, 9) Verify text input value is included in submitClarificationAnswers mutation payload, 10) Add visual feedback that text is being captured (character count, not-empty validation). Separate open question handling from button-based multiple choice questions.",
+      "timestamp": "2026-01-28T16:28:30.354Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T16:40:12.285Z"
+}

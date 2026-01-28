@@ -4,7 +4,7 @@
   "id": "update-frontend-chat-to-use-backend-sessions",
   "title": "Update Frontend Chat to Use Backend-Generated Sessions",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-28T09:34:17.303Z"
+  "updatedAt": "2026-01-28T09:50:11.565Z"
 }

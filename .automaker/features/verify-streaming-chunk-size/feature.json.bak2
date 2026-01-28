@@ -4,7 +4,7 @@
   "id": "verify-streaming-chunk-size",
   "title": "Verify Streaming Response Chunk Size Configuration",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-27T12:55:09.395Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T12:55:15.865Z"
 }

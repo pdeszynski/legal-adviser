@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "After answering form questions, form shoudl be marked as answered, hidden and after page refresh it shoudl still stay this way.",
+  "title": "Mark form as answered and persist state",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "store-chat",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769621734351-9m1r6xvvw",
+  "descriptionHistory": [
+    {
+      "description": "After answering form questions, form shoudl be marked as answered, hidden and after page refresh it shoudl still stay this way.",
+      "timestamp": "2026-01-28T17:35:34.448Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-28T17:35:34.490Z",
+  "updatedAt": "2026-01-28T18:32:26.894Z"
+}

@@ -18,5 +18,8 @@
       "source": "edit"
     }
   ],
-  "updatedAt": "2026-01-27T21:21:49.171Z"
+  "updatedAt": "2026-01-27T21:21:49.171Z",
+  "dependencies": [
+    "chat-session-ownership-authorization-guard"
+  ]
 }

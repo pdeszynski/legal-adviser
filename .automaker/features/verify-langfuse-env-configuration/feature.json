@@ -4,7 +4,7 @@
   "id": "verify-langfuse-env-configuration",
   "title": "Verify Langfuse Environment Configuration",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {

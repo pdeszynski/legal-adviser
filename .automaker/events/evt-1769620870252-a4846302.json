@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769620870252-a4846302",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-28T17:21:10.252Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-clarification-enter-key-to-submit-answers",
+  "featureName": "Make Enter Key Submit Clarification Answers (Single-Line Inputs)",
+  "error": "Feature completed in 277s - auto-verified",
+  "passes": true
+}

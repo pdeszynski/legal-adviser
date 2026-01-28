@@ -1,4 +1,4 @@
-import { Resolver, ResolveProperty, Parent } from '@nestjs/graphql';
+import { Resolver, ResolveField, Parent } from '@nestjs/graphql';
 import { LegalDocument } from './entities/legal-document.entity';
 import { PdfUrlService } from './services/pdf-url.service';
 
@@ -40,7 +40,7 @@ export class PdfUrlResolver {
    * }
    * ```
    */
-  @ResolveProperty('pdfUrl', () => String, { nullable: true })
+  @ResolveField('pdfUrl', () => String, { nullable: true })
   async getPdfUrl(@Parent() document: LegalDocument): Promise<string | null> {
     return this.pdfUrlService.getDocumentPdfUrl(document.id);
   }

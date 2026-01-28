@@ -4,7 +4,7 @@
   "id": "test-langfuse-tracing-e2e",
   "title": "Create E2E Tests for Langfuse Tracing",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-27T10:04:34.555Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T10:10:56.297Z"
 }

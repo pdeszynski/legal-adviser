@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Button,
   Input,
@@ -14,9 +14,96 @@ import {
   Badge,
   Progress,
 } from '@legal/ui';
-import { AlertCircle, Loader2, ChevronRight, HelpCircle } from 'lucide-react';
+import { AlertCircle, Loader2, ChevronRight, HelpCircle, Check } from 'lucide-react';
 import { cn } from '@legal/ui';
 import type { ClarificationInfo } from '@/hooks/use-chat';
+
+/**
+ * Storage key for clarification form answers
+ * Uses sessionStorage to persist answers across page refreshes but clears when tab closes
+ */
+const CLARIFICATION_ANSWERS_KEY = 'clarification_form_answers';
+
+/**
+ * Generate a unique storage key for a specific clarification based on questions
+ * This ensures different clarification forms have separate stored answers
+ * The key is stable across page refreshes as it's based on question text content
+ */
+function getStorageKey(clarification: ClarificationInfo): string {
+  // Create a unique key based on the questions asked
+  // Sort questions to ensure consistent key regardless of order
+  const questionsHash = clarification.questions
+    .map((q) => q.question)
+    .sort()
+    .join('|')
+    .slice(0, 50); // Limit length for key
+  return `${CLARIFICATION_ANSWERS_KEY}_${btoa(questionsHash)}`;
+}
+
+/**
+ * Generate a stable key for tracking clarification changes
+ * This helps determine if the clarification content has actually changed
+ */
+function getClarificationSignature(clarification: ClarificationInfo): string {
+  return clarification.questions
+    .map((q) => `${q.question}:${q.options?.join(',') || ''}`)
+    .sort()
+    .join('|');
+}
+
+/**
+ * Load saved answers from sessionStorage for a specific clarification
+ */
+function loadSavedAnswers(clarification: ClarificationInfo): Record<string, string> {
+  if (typeof window === 'undefined') return {};
+
+  try {
+    const key = getStorageKey(clarification);
+    const saved = sessionStorage.getItem(key);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Only restore answers that match current questions
+      const validAnswers: Record<string, string> = {};
+      clarification.questions.forEach((q) => {
+        if (parsed[q.question]) {
+          validAnswers[q.question] = parsed[q.question];
+        }
+      });
+      return validAnswers;
+    }
+  } catch (e) {
+    console.warn('Failed to load saved clarification answers:', e);
+  }
+  return {};
+}
+
+/**
+ * Save answers to sessionStorage for a specific clarification
+ */
+function saveAnswers(clarification: ClarificationInfo, answers: Record<string, string>): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    const key = getStorageKey(clarification);
+    sessionStorage.setItem(key, JSON.stringify(answers));
+  } catch (e) {
+    console.warn('Failed to save clarification answers:', e);
+  }
+}
+
+/**
+ * Clear saved answers from sessionStorage for a specific clarification
+ */
+function clearSavedAnswers(clarification: ClarificationInfo): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    const key = getStorageKey(clarification);
+    sessionStorage.removeItem(key);
+  } catch (e) {
+    console.warn('Failed to clear saved clarification answers:', e);
+  }
+}
 
 interface ClarificationPromptProps {
   clarification: ClarificationInfo;
@@ -38,8 +125,38 @@ export function ClarificationPrompt({
   onCancel,
   isSubmitting = false,
 }: ClarificationPromptProps) {
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  // Initialize state from sessionStorage on mount, with empty default
+  const [answers, setAnswers] = useState<Record<string, string>>(() =>
+    loadSavedAnswers(clarification),
+  );
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
+  // Track the last clarification signature to detect when clarification content changes
+  const lastClarificationSignatureRef = useRef<string>(getClarificationSignature(clarification));
+
+  // When clarification prop changes (e.g., after page refresh with session restoration),
+  // try to restore saved answers if they exist for this clarification
+  useEffect(() => {
+    const currentSignature = getClarificationSignature(clarification);
+
+    // Only restore if the clarification content has changed
+    // This prevents unnecessary re-renders while allowing restoration after page refresh
+    if (currentSignature !== lastClarificationSignatureRef.current) {
+      const savedAnswers = loadSavedAnswers(clarification);
+      if (Object.keys(savedAnswers).length > 0) {
+        setAnswers(savedAnswers);
+      }
+      lastClarificationSignatureRef.current = currentSignature;
+    }
+  }, [clarification]);
+
+  // Save answers to sessionStorage whenever they change
+  useEffect(() => {
+    // Only save if we have actual answers (not on initial mount with empty state)
+    if (Object.keys(answers).length > 0) {
+      saveAnswers(clarification, answers);
+    }
+  }, [answers, clarification]);
 
   const handleInputChange = (question: string, value: string) => {
     setAnswers((prev) => ({
@@ -48,12 +165,32 @@ export function ClarificationPrompt({
     }));
   };
 
-  // Prevent Enter key from submitting form when typing in input fields
-  // This allows users to type multi-character answers without accidental submission
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  // Handle Enter key submission for single-line input fields
+  // Pressing Enter submits the form when all questions are answered
+  // Shift+Enter is ignored to prevent accidental submission
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, question: string) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      e.stopPropagation();
+      // Focus moves away, but we don't mark as answered immediately
+      // User must press Enter on the last question to submit all
+      handleSubmit();
+    }
+  };
+
+  // Handle individual answer submission for a specific question
+  // This marks the answer as confirmed and moves focus to next question
+  const handleConfirmAnswer = (question: string) => {
+    const answer = answers[question];
+    if (!answer || answer.trim().length === 0) {
+      return; // Don't confirm empty answers
+    }
+
+    // Find the current question index
+    const currentIndex = clarification.questions.findIndex((q) => q.question === question);
+
+    // Auto-advance to next question if available
+    if (currentIndex < clarification.questions.length - 1) {
+      setCurrentQuestionIndex(currentIndex + 1);
     }
   };
 
@@ -80,6 +217,8 @@ export function ClarificationPrompt({
     }
 
     await onSubmit(answers);
+    // Clear saved answers from sessionStorage after successful submission
+    clearSavedAnswers(clarification);
     // Reset for potential next round
     setAnswers({});
     setCurrentQuestionIndex(0);
@@ -220,16 +359,55 @@ export function ClarificationPrompt({
                       ))}
                     </div>
                   ) : (
-                    <Input
-                      id={`q-${idx}`}
-                      value={answers[q.question] || ''}
-                      onChange={(e) => handleInputChange(q.question, e.target.value)}
-                      onKeyDown={handleInputKeyDown}
-                      placeholder="Type your answer here..."
-                      className="bg-white dark:bg-gray-800 border-amber-300 dark:border-amber-700 focus-visible:ring-amber-500"
-                      disabled={isSubmitting || isAnswered}
-                      onFocus={() => setCurrentQuestionIndex(idx)}
-                    />
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <Input
+                          id={`q-${idx}`}
+                          type="text"
+                          value={answers[q.question] || ''}
+                          onChange={(e) => handleInputChange(q.question, e.target.value)}
+                          onKeyDown={(e) => handleInputKeyDown(e, q.question)}
+                          placeholder="Type your answer here..."
+                          className="bg-white dark:bg-gray-800 border-amber-300 dark:border-amber-700 focus-visible:ring-amber-500 flex-1"
+                          disabled={isSubmitting}
+                          onFocus={() => setCurrentQuestionIndex(idx)}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleConfirmAnswer(q.question)}
+                          disabled={
+                            !answers[q.question] ||
+                            answers[q.question].trim().length === 0 ||
+                            isSubmitting
+                          }
+                          className="shrink-0 border-amber-300 hover:border-amber-400 hover:bg-amber-100 dark:border-amber-700 dark:hover:bg-amber-900"
+                          title="Confirm answer and move to next question"
+                        >
+                          <Check className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      {/* Character counter with visual feedback and Enter hint */}
+                      <div className="flex items-center justify-between text-xs">
+                        <span
+                          className={cn(
+                            answers[q.question]?.trim().length > 0
+                              ? 'text-green-600 dark:text-green-400'
+                              : 'text-amber-600 dark:text-amber-400',
+                          )}
+                        >
+                          {answers[q.question]?.trim().length > 0 ? (
+                            <>Answer ready • Press Enter or click ✓ to confirm</>
+                          ) : (
+                            <>Type your answer above</>
+                          )}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {answers[q.question]?.length || 0} chars
+                        </span>
+                      </div>
+                    </div>
                   )}
 
                   {isAnswered && (

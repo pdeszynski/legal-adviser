@@ -4,7 +4,7 @@
   "id": "fix-clarification-form-premature-submission",
   "title": "Fix Clarification Form Submitting Immediately on Single Character Input",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

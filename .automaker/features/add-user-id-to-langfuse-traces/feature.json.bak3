@@ -3,10 +3,6 @@
   "description": "Include authenticated user ID in all Langfuse traces for user-level analytics and security auditing. Implementation: 1) Extract user.id from UserContext (already populated from JWT), 2) Pass user_id to Langfuse trace metadata using update_current_trace(), 3) Ensure user ID is included in all agent calls and workflow executions, 4) For unauthenticated requests, use 'anonymous' or omit user_id entirely, 5) Add user_id to trace metadata in official PydanticAI integration pattern, 6) Verify user ID appears in Langfuse dashboard for filtering by user, 7) Ensure user ID is PII-safe (it's already a UUID, not personally identifiable). This enables per-user usage analytics, debugging specific user issues, and security monitoring.",
   "id": "add-user-id-to-langfuse-traces",
   "title": "Add User ID to Langfuse Trace Metadata",
-  "dependencies": [
-    "fix-langfuse-pydantic-ai-integration",
-    "ai-engine-jwt-validation"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "store-chat",

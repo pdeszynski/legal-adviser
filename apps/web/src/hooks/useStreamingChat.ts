@@ -261,6 +261,8 @@ export interface StreamingChatResponse {
   partial?: boolean;
   fellBack?: boolean;
   suggestedTitle?: string;
+  /** Database message ID (if the message was persisted) */
+  dbMessageId?: string;
 }
 
 export interface UseStreamingChatOptions {
@@ -380,9 +382,11 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
   const [currentClarification, setCurrentClarification] = useState<ClarificationInfo | null>(null);
 
   const abortControllerRef = useRef<AbortController | null>(null);
-  const lastRequestRef = useRef<{ question: string; mode: 'LAWYER' | 'SIMPLE'; sessionId: string } | null>(
-    null,
-  );
+  const lastRequestRef = useRef<{
+    question: string;
+    mode: 'LAWYER' | 'SIMPLE';
+    sessionId: string;
+  } | null>(null);
   const activityTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startTimeRef = useRef<number>(0);
 
@@ -432,8 +436,10 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
    */
   const isClarificationJson = useCallback((content: string): boolean => {
     const trimmed = content.trim();
-    return trimmed.startsWith('{"type":"clarification"') ||
-           trimmed.startsWith('{"type": "clarification"');
+    return (
+      trimmed.startsWith('{"type":"clarification"') ||
+      trimmed.startsWith('{"type": "clarification"')
+    );
   }, []);
 
   /**
@@ -445,7 +451,14 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
       if (data.type === 'clarification' && Array.isArray(data.questions)) {
         return {
           needs_clarification: true,
-          questions: (data.questions as Array<{question: string; question_type?: string; options?: string[]; hint?: string}>).map(q => ({
+          questions: (
+            data.questions as Array<{
+              question: string;
+              question_type?: string;
+              options?: string[];
+              hint?: string;
+            }>
+          ).map((q) => ({
             question: q.question,
             question_type: q.question_type || 'text',
             options: q.options,
@@ -532,23 +545,24 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
   /**
    * Fetch conversation history from backend for a session
    */
-  const fetchConversationHistory = useCallback(async (sessionId: string): Promise<Array<{ role: string; content: string }> | null> => {
-    const accessToken = getAccessToken();
-    if (!accessToken) {
-      console.warn('[fetchConversationHistory] No access token available');
-      return null;
-    }
+  const fetchConversationHistory = useCallback(
+    async (sessionId: string): Promise<Array<{ role: string; content: string }> | null> => {
+      const accessToken = getAccessToken();
+      if (!accessToken) {
+        console.warn('[fetchConversationHistory] No access token available');
+        return null;
+      }
 
-    try {
-      const response = await fetch(GRAPHQL_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          query: `
+      try {
+        const response = await fetch(GRAPHQL_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            query: `
             query GetChatMessages($sessionId: ID!) {
               chatMessages(sessionId: $sessionId) {
                 role
@@ -557,44 +571,58 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
               }
             }
           `,
-          variables: { sessionId },
-        }),
-      });
+            variables: { sessionId },
+          }),
+        });
 
-      if (!response.ok) {
-        console.warn('[fetchConversationHistory] Response not OK:', response.status, response.statusText);
+        if (!response.ok) {
+          console.warn(
+            '[fetchConversationHistory] Response not OK:',
+            response.status,
+            response.statusText,
+          );
+          return null;
+        }
+
+        const result = await response.json();
+
+        if (result.errors && result.errors.length > 0) {
+          console.warn('[fetchConversationHistory] GraphQL errors:', result.errors);
+          return null;
+        }
+
+        const messages = result.data?.chatMessages;
+        if (!messages || !Array.isArray(messages)) {
+          console.warn('[fetchConversationHistory] No messages found in response');
+          return null;
+        }
+
+        // Transform to AI Engine format: {role, content}
+        // Map MessageRole enum (USER/ASSISTANT) to 'user'/'assistant'
+        const history = messages
+          .sort(
+            (a: { sequenceOrder: number }, b: { sequenceOrder: number }) =>
+              a.sequenceOrder - b.sequenceOrder,
+          )
+          .map((msg: { role: string; content: string }) => ({
+            role: msg.role === 'USER' ? 'user' : 'assistant',
+            content: msg.content,
+          }));
+
+        console.log(
+          '[fetchConversationHistory] Fetched',
+          history.length,
+          'messages for session',
+          sessionId,
+        );
+        return history;
+      } catch (error) {
+        console.error('[fetchConversationHistory] Error fetching conversation history:', error);
         return null;
       }
-
-      const result = await response.json();
-
-      if (result.errors && result.errors.length > 0) {
-        console.warn('[fetchConversationHistory] GraphQL errors:', result.errors);
-        return null;
-      }
-
-      const messages = result.data?.chatMessages;
-      if (!messages || !Array.isArray(messages)) {
-        console.warn('[fetchConversationHistory] No messages found in response');
-        return null;
-      }
-
-      // Transform to AI Engine format: {role, content}
-      // Map MessageRole enum (USER/ASSISTANT) to 'user'/'assistant'
-      const history = messages
-        .sort((a: { sequenceOrder: number }, b: { sequenceOrder: number }) => a.sequenceOrder - b.sequenceOrder)
-        .map((msg: { role: string; content: string }) => ({
-          role: msg.role === 'USER' ? 'user' : 'assistant',
-          content: msg.content,
-        }));
-
-      console.log('[fetchConversationHistory] Fetched', history.length, 'messages for session', sessionId);
-      return history;
-    } catch (error) {
-      console.error('[fetchConversationHistory] Error fetching conversation history:', error);
-      return null;
-    }
-  }, []);
+    },
+    [],
+  );
 
   /**
    * Fallback to GraphQL mutation when streaming fails
@@ -688,6 +716,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
         keyTerms: data.keyTerms,
         confidence: data.confidence,
         fellBack: true,
+        // Note: fallback doesn't return dbMessageId since it uses the old LegalQuery system
       };
     },
     [onFallback],
@@ -726,7 +755,9 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
           // (to avoid duplicating the current question)
           const lastMessage = conversationHistory[conversationHistory.length - 1];
           if (lastMessage && lastMessage.role === 'user' && lastMessage.content === question) {
-            console.log('[executeStreamRequest] Removing last message from history as it matches current question');
+            console.log(
+              '[executeStreamRequest] Removing last message from history as it matches current question',
+            );
             conversationHistory = conversationHistory.slice(0, -1);
           }
         }
@@ -819,7 +850,11 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
 
               if (processed) {
                 // Update accumulated content for tokens (but NOT for clarification JSON)
-                if (event.type === 'token' && processed.content && !isClarificationJson(processed.content)) {
+                if (
+                  event.type === 'token' &&
+                  processed.content &&
+                  !isClarificationJson(processed.content)
+                ) {
                   finalResponse.content += processed.content;
                   setCurrentContent(finalResponse.content);
                 }
@@ -830,10 +865,13 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
                 if (event.type === 'token' && isClarificationJson(event.content)) {
                   const clarification = parseClarificationFromToken(event.content);
                   if (clarification) {
-                    console.log('[executeStreamRequest] Clarification JSON captured from token event:', {
-                      questionsCount: clarification.questions?.length || 0,
-                      contextSummary: clarification.context_summary?.substring(0, 50) || '',
-                    });
+                    console.log(
+                      '[executeStreamRequest] Clarification JSON captured from token event:',
+                      {
+                        questionsCount: clarification.questions?.length || 0,
+                        contextSummary: clarification.context_summary?.substring(0, 50) || '',
+                      },
+                    );
                     finalResponse.clarification = clarification;
                     setCurrentClarification(clarification);
                   }
@@ -1001,8 +1039,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
 
       // CRITICAL: Session ID must be provided and valid
       // Session IDs are now ALWAYS generated server-side via backend GraphQL mutation
-      const uuidV4Regex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
       if (!sessionId || !uuidV4Regex.test(sessionId)) {
         const error = 'Invalid or missing session ID. Please start a new chat session.';
@@ -1088,12 +1125,17 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
             },
           );
           if (!assistantMessageResult.success) {
-            console.warn('Failed to save assistant message to backend:', assistantMessageResult.error);
+            console.warn(
+              'Failed to save assistant message to backend:',
+              assistantMessageResult.error,
+            );
             // Continue anyway - don't block the user experience
           } else {
             console.log('[sendMessage] Assistant message saved successfully:', {
               messageId: assistantMessageResult.messageId,
             });
+            // Include the database message ID in the response
+            response.dbMessageId = assistantMessageResult.messageId;
           }
         }
 
@@ -1204,8 +1246,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
       onStreamStart?.();
 
       // Validate session ID
-      const uuidV4Regex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
       if (!sessionId || !uuidV4Regex.test(sessionId)) {
         const error = 'Invalid or missing session ID. Please start a new chat session.';
@@ -1261,9 +1302,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
       });
 
       // Save user's clarification answers to backend before streaming
-      const answerText = answers
-        .map((a) => `${a.question}: ${a.answer}`)
-        .join('\n');
+      const answerText = answers.map((a) => `${a.question}: ${a.answer}`).join('\n');
       const userMessageResult = await saveUserMessageToBackend(sessionId, answerText);
       if (!userMessageResult.success) {
         console.warn('Failed to save clarification answers to backend:', userMessageResult.error);
@@ -1334,7 +1373,11 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
 
               if (processed) {
                 // Update accumulated content for tokens (but NOT for clarification JSON)
-                if (event.type === 'token' && processed.content && !isClarificationJson(processed.content)) {
+                if (
+                  event.type === 'token' &&
+                  processed.content &&
+                  !isClarificationJson(processed.content)
+                ) {
                   finalResponse.content += processed.content;
                   setCurrentContent(finalResponse.content);
                 }
@@ -1388,7 +1431,9 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
               context_summary: finalResponse.clarification.context_summary,
               next_steps: finalResponse.clarification.next_steps,
             });
-            console.log('[sendClarificationAnswers] Saving clarification message with JSON content');
+            console.log(
+              '[sendClarificationAnswers] Saving clarification message with JSON content',
+            );
           }
 
           const assistantMessageResult = await saveAssistantMessageToBackend(
@@ -1403,6 +1448,9 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
           );
           if (!assistantMessageResult.success) {
             console.warn('Failed to save assistant message:', assistantMessageResult.error);
+          } else {
+            // Include the database message ID in the response
+            finalResponse.dbMessageId = assistantMessageResult.messageId;
           }
         }
 
@@ -1415,7 +1463,8 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
         setIsStreaming(false);
         setIsReconnecting(false);
 
-        const errorMessage = err instanceof Error ? err.message : 'Failed to send clarification answers';
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to send clarification answers';
 
         // Handle abort
         if (err instanceof Error && err.name === 'AbortError') {

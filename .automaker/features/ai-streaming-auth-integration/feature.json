@@ -4,7 +4,7 @@
   "id": "ai-streaming-auth-integration",
   "title": "Streaming Chat with Session ID Context",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {

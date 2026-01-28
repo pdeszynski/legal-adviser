@@ -1255,14 +1255,14 @@ type ClarificationAnswer {
 }
 
 input ClarificationAnswerInput {
-  """The user's answer to the question"""
+  """The user answer"""
   answer: String!
 
-  """The question that was asked"""
+  """The question text"""
   question: String!
 
-  """The type of question (e.g., timeline, documents, parties)"""
-  question_type: String!
+  """Question type (text, timeline, etc.)"""
+  question_type: String
 }
 
 type ClarificationInfo {
@@ -1407,6 +1407,42 @@ type CleanupEmptyMessagesResult {
 
   """List of affected user IDs"""
   userIds: [String!]!
+}
+
+input CleanupEmptySessionsInput {
+  """Actually perform the cleanup (false = dry run)"""
+  execute: Boolean = false
+}
+
+type CleanupEmptySessionsResult {
+  """Number of affected users"""
+  affectedUsers: Int!
+
+  """Number of sessions that were deleted"""
+  deletedSessions: Int!
+
+  """List of errors that occurred during cleanup"""
+  errors: [CleanupErrorDetail!]!
+
+  """List of deleted session IDs"""
+  sessionIds: [String!]!
+
+  """Number of sessions skipped (had messages or other issues)"""
+  skippedSessions: Int!
+
+  """Total number of empty sessions found"""
+  totalEmptySessions: Int!
+
+  """List of affected user IDs"""
+  userIds: [String!]!
+}
+
+type CleanupErrorDetail {
+  """Error message"""
+  error: String!
+
+  """The session ID that failed"""
+  sessionId: ID!
 }
 
 type CommentPosition {
@@ -3135,6 +3171,37 @@ type EmptyMessagesSummary {
   withClarificationMetadata: Int!
 }
 
+type EmptySessionAnalysis {
+  """Timestamp when the session was created"""
+  createdAt: String!
+
+  """Chat mode (LAWYER or SIMPLE)"""
+  mode: String!
+
+  """The session ID"""
+  sessionId: ID!
+
+  """Session title (should be null for empty sessions)"""
+  title: String
+
+  """The user ID"""
+  userId: ID!
+}
+
+type EmptySessionsMetrics {
+  """Threshold for alerting (null = no threshold set)"""
+  alertThreshold: Int
+
+  """Current count of empty sessions in the database"""
+  count: Int!
+
+  """Whether the count exceeds the alert threshold"""
+  requiresAttention: Boolean!
+
+  """ISO timestamp of when this metric was collected"""
+  timestamp: String!
+}
+
 type EnableTwoFactorResponse {
   """Backup codes for account recovery (show only once)"""
   backupCodes: [String!]!
@@ -4522,6 +4589,9 @@ type Mutation {
   """Cleanup empty assistant messages in the database"""
   cleanupEmptyMessages(input: CleanupEmptyMessagesInput!): CleanupEmptyMessagesResult!
 
+  """Cleanup empty chat sessions (soft delete)"""
+  cleanupEmptySessions(input: CleanupEmptySessionsInput!): CleanupEmptySessionsResult!
+
   """Complete a clarification session with final answer reference"""
   completeClarificationSession(finalQueryId: String!, sessionId: String!): ClarificationSession!
 
@@ -4739,8 +4809,10 @@ type Mutation {
   """Share a document with a user"""
   shareDocument(input: ShareDocumentInput!): DocumentShare!
 
-  """Submit answers to clarification questions"""
-  submitClarificationAnswers(input: SubmitClarificationAnswersInput!): ClarificationSession!
+  """
+  Submit answers to clarification questions. Creates a user message and marks clarification as answered.
+  """
+  submitClarificationAnswers(input: SubmitClarificationAnswersInput!): SubmitClarificationAnswersResponse!
 
   """
   Submit a demo request. No authentication required. The request will be synced to HubSpot and the sales team will be notified via email.
@@ -5336,6 +5408,9 @@ type Query {
 
   """Analyze all empty assistant messages in the database"""
   analyzeEmptyMessages: EmptyMessagesSummary!
+
+  """Analyze all empty chat sessions (messageCount = 0)"""
+  analyzeEmptySessions: [EmptySessionAnalysis!]!
   auditLog(
     """The id of the record to find."""
     id: ID!
@@ -5540,6 +5615,9 @@ type Query {
 
   """Get empty assistant messages for a specific user"""
   emptyMessagesForUser(userId: ID!): [EmptyMessageAnalysis!]!
+
+  """Get empty sessions count for monitoring (alert if threshold exceeded)"""
+  emptySessionsMetrics(alertThreshold: Float = 100): EmptySessionsMetrics!
 
   """Filter legal rulings by multiple criteria"""
   filterLegalRulings(input: FilterLegalRulingsInput!): [LegalRuling!]!
@@ -6501,14 +6579,25 @@ input StringFilter {
 }
 
 input SubmitClarificationAnswersInput {
-  """Additional context to add to the session"""
-  additionalContext: [String!]
-
-  """Answers to the clarification questions"""
+  """Array of question-answer pairs"""
   answers: [ClarificationAnswerInput!]!
 
-  """ID of the clarification session"""
-  sessionId: String!
+  """The message ID containing the clarification questions"""
+  clarificationMessageId: ID!
+
+  """The session ID"""
+  sessionId: ID!
+}
+
+type SubmitClarificationAnswersResponse {
+  """The clarification message ID that was updated"""
+  clarificationMessageId: ID!
+
+  """Whether the submission was successful"""
+  success: Boolean!
+
+  """The created user message containing the answers"""
+  userMessage: SendChatMessageResponse
 }
 
 input SubmitLegalQueryInput {

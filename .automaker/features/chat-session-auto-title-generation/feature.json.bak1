@@ -13,5 +13,8 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-27T21:39:38.283Z"
+  "updatedAt": "2026-01-27T21:39:38.283Z",
+  "dependencies": [
+    "backend-chat-session-generation-graphql"
+  ]
 }

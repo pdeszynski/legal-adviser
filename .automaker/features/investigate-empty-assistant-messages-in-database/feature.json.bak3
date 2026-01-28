@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Investigate why assistant messages are being saved to the database with empty content fields. The example response shows multiple ASSISTANT messages with content: \"\" and rawContent: null, while user messages are properly saved. Investigation tasks: 1) Check backend logs when AI Engine returns responses - is the response content present when saving to database? 2) Verify ChatMessage entity creation logic in QueriesService.askQuestion() method, 3) Check if there's a conditional that skips saving content for certain message types (e.g., clarification messages), 4) Examine if rawContent field is populated but content field is left empty, 5) Check if there's a data transformation step that's incorrectly clearing the content, 6) Review the streaming response handling - is the final complete response being captured or just an initial empty response? 7) Check database schema constraints - is content field nullable? (it shouldn't be), 8) Add logging to track the exact content being saved to ChatMessage records. Determine if the issue is: AI Engine returning empty responses, backend not capturing response content correctly, or a race condition in streaming where empty partial response is saved before final response arrives.",
+  "id": "investigate-empty-assistant-messages-in-database",
+  "title": "Investigate Root Cause of Empty Assistant Messages in Database",
+  "dependencies": [],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Investigate why assistant messages are being saved to the database with empty content fields. The example response shows multiple ASSISTANT messages with content: \"\" and rawContent: null, while user messages are properly saved. Investigation tasks: 1) Check backend logs when AI Engine returns responses - is the response content present when saving to database? 2) Verify ChatMessage entity creation logic in QueriesService.askQuestion() method, 3) Check if there's a conditional that skips saving content for certain message types (e.g., clarification messages), 4) Examine if rawContent field is populated but content field is left empty, 5) Check if there's a data transformation step that's incorrectly clearing the content, 6) Review the streaming response handling - is the final complete response being captured or just an initial empty response? 7) Check database schema constraints - is content field nullable? (it shouldn't be), 8) Add logging to track the exact content being saved to ChatMessage records. Determine if the issue is: AI Engine returning empty responses, backend not capturing response content correctly, or a race condition in streaming where empty partial response is saved before final response arrives.",
+      "timestamp": "2026-01-28T15:32:05.545Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -4,7 +4,7 @@
   "id": "chat-session-auto-title-generation",
   "title": "Auto-Generate Chat Session Titles from First Message",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-27T21:01:05.092Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T21:26:53.125Z"
 }

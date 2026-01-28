@@ -4,7 +4,7 @@
   "id": "ai-engine-jwt-validation",
   "title": "AI Engine JWT Validation with Session ID Support",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {

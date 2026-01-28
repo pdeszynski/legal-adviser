@@ -4,7 +4,7 @@
   "id": "fix-streaming-buffering-issue",
   "title": "Fix Streaming Response Buffering Issue",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-27T12:55:09.393Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T12:55:20.077Z"
 }

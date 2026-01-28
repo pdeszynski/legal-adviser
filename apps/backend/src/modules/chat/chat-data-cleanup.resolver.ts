@@ -1,5 +1,4 @@
-import { Resolver, Query, Mutation, Args, Context, ID, Info } from '@nestjs/graphql';
-import type { GraphQLResolveInfo } from 'graphql';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
@@ -10,6 +9,10 @@ import {
   AffectedUsersReport,
   EmptyMessageAnalysis,
   CleanupEmptyMessagesInput,
+  EmptySessionAnalysis,
+  CleanupEmptySessionsResult,
+  CleanupEmptySessionsInput,
+  EmptySessionsMetrics,
 } from './dto/chat-data-cleanup.dto';
 
 /**
@@ -45,9 +48,7 @@ export class ChatDataCleanupResolver {
     name: 'analyzeEmptyMessages',
     description: 'Analyze all empty assistant messages in the database',
   })
-  async analyzeEmptyMessages(
-    @Info() _info: GraphQLResolveInfo,
-  ): Promise<EmptyMessagesSummary> {
+  async analyzeEmptyMessages(): Promise<EmptyMessagesSummary> {
     return this.chatDataCleanupService.analyzeEmptyMessages();
   }
 
@@ -99,9 +100,7 @@ export class ChatDataCleanupResolver {
     name: 'affectedUsersForEmptyMessages',
     description: 'Generate a report of users affected by empty messages',
   })
-  async affectedUsersReport(
-    @Info() _info: GraphQLResolveInfo,
-  ): Promise<AffectedUsersReport> {
+  async affectedUsersReport(): Promise<AffectedUsersReport> {
     return this.chatDataCleanupService.generateAffectedUsersReport();
   }
 
@@ -122,5 +121,76 @@ export class ChatDataCleanupResolver {
     @Args('input') input: CleanupEmptyMessagesInput,
   ): Promise<CleanupEmptyMessagesResult> {
     return this.chatDataCleanupService.cleanupEmptyMessages(input);
+  }
+
+  /**
+   * Query: Analyze all empty chat sessions
+   *
+   * Returns a list of sessions with messageCount = 0 that were created
+   * but never had any messages sent.
+   *
+   * @returns List of empty sessions found
+   */
+  @Query(() => [EmptySessionAnalysis], {
+    name: 'analyzeEmptySessions',
+    description: 'Analyze all empty chat sessions (messageCount = 0)',
+  })
+  async analyzeEmptySessions(): Promise<EmptySessionAnalysis[]> {
+    return this.chatDataCleanupService.findEmptySessions();
+  }
+
+  /**
+   * Mutation: Cleanup empty chat sessions
+   *
+   * Soft deletes sessions with messageCount = 0. Use execute=false for dry run
+   * to preview what will happen without making changes.
+   *
+   * @param input - Cleanup options
+   * @returns Cleanup result with statistics
+   */
+  @Mutation(() => CleanupEmptySessionsResult, {
+    name: 'cleanupEmptySessions',
+    description: 'Cleanup empty chat sessions (soft delete)',
+  })
+  async cleanupEmptySessions(
+    @Args('input') input: CleanupEmptySessionsInput,
+  ): Promise<CleanupEmptySessionsResult> {
+    const result = await this.chatDataCleanupService.deleteEmptySessionsBatched(
+      input.execute,
+    );
+
+    return {
+      totalEmptySessions: result.totalEmptySessions,
+      deletedSessions: result.deletedSessions,
+      skippedSessions: result.skippedSessions,
+      affectedUsers: result.affectedUsers,
+      sessionIds: result.sessionIds,
+      userIds: result.userIds,
+      errors: result.errors.map((e) => ({
+        sessionId: e.sessionId,
+        error: e.error,
+      })),
+    };
+  }
+
+  /**
+   * Query: Get empty sessions metrics for monitoring
+   *
+   * Returns current count of empty sessions with timestamp for monitoring dashboards.
+   * Can be used to track empty session count over time and set up alerts.
+   *
+   * @param alertThreshold - Optional threshold for alerting (default: 100)
+   * @returns Empty sessions metrics
+   */
+  @Query(() => EmptySessionsMetrics, {
+    name: 'emptySessionsMetrics',
+    description:
+      'Get empty sessions count for monitoring (alert if threshold exceeded)',
+  })
+  async getEmptySessionsMetrics(
+    @Args('alertThreshold', { nullable: true, defaultValue: 100 })
+    alertThreshold: number,
+  ): Promise<EmptySessionsMetrics> {
+    return this.chatDataCleanupService.getEmptySessionsMetrics(alertThreshold);
   }
 }

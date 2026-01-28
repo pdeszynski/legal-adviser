@@ -4,7 +4,7 @@
   "id": "add-session-id-to-langfuse-traces",
   "title": "Add Session ID to Langfuse Trace Metadata",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

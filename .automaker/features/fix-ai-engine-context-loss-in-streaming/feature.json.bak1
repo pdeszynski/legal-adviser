@@ -4,7 +4,7 @@
   "id": "fix-ai-engine-context-loss-in-streaming",
   "title": "Fix AI Engine Context Loss in Streaming Chat",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-28T11:40:30.422Z"
+  "updatedAt": "2026-01-28T11:47:41.354Z"
 }

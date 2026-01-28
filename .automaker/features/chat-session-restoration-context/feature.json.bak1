@@ -18,5 +18,9 @@
       "source": "edit"
     }
   ],
-  "updatedAt": "2026-01-27T21:25:44.796Z"
+  "updatedAt": "2026-01-27T21:25:44.796Z",
+  "dependencies": [
+    "chat-session-ownership-authorization-guard",
+    "chat-session-jwt-context-validation"
+  ]
 }

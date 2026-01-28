@@ -4,7 +4,7 @@
   "id": "verify-streaming-chunk-size",
   "title": "Verify Streaming Response Chunk Size Configuration",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {

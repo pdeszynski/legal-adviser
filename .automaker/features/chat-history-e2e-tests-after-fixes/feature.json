@@ -4,7 +4,7 @@
   "id": "chat-history-e2e-tests-after-fixes",
   "title": "Create E2E Tests for Chat History After Fixes",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

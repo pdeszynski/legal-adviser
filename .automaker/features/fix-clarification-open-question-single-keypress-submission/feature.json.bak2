@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Fix the critical bug where open-ended clarification questions submit immediately after typing just one character, instead of allowing users to type complete multi-word answers. Current issue: any keypress in text input fields triggers form submission, preventing users from providing complete responses. Root cause: onChange handler is incorrectly triggering submission logic instead of just updating local state. Implementation: 1) Audit ClarificationMessage component - identify where premature submission occurs in text input handlers, 2) Ensure text inputs use controlled component pattern with value state only, 3) Remove any onSubmit or form submission triggers from individual character input, 4) Ensure only 'Submit Answers' button (or Enter key) triggers submitClarificationAnswers mutation, 5) Add form validation preventing submission with empty/whitespace-only answers, 6) Test typing multi-word sentences - verify no submission occurs until Enter or Submit clicked, 7) Add visual feedback showing answer is being captured (character count, text preview), 8) Ensure all answer text is included in mutation payload. This is high-severity UX bug blocking clarification workflow.",
+  "id": "fix-clarification-open-question-single-keypress-submission",
+  "title": "Fix Clarification Open Questions Submitting on Single Keypress",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Fix the critical bug where open-ended clarification questions submit immediately after typing just one character, instead of allowing users to type complete multi-word answers. Current issue: any keypress in text input fields triggers form submission, preventing users from providing complete responses. Root cause: onChange handler is incorrectly triggering submission logic instead of just updating local state. Implementation: 1) Audit ClarificationMessage component - identify where premature submission occurs in text input handlers, 2) Ensure text inputs use controlled component pattern with value state only, 3) Remove any onSubmit or form submission triggers from individual character input, 4) Ensure only 'Submit Answers' button (or Enter key) triggers submitClarificationAnswers mutation, 5) Add form validation preventing submission with empty/whitespace-only answers, 6) Test typing multi-word sentences - verify no submission occurs until Enter or Submit clicked, 7) Add visual feedback showing answer is being captured (character count, text preview), 8) Ensure all answer text is included in mutation payload. This is high-severity UX bug blocking clarification workflow.",
+      "timestamp": "2026-01-28T17:16:30.282Z",
+      "source": "initial"
+    }
+  ]
+}

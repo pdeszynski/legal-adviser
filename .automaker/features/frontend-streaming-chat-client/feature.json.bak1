@@ -18,5 +18,9 @@
       "source": "edit"
     }
   ],
-  "updatedAt": "2026-01-27T09:33:44.349Z"
+  "updatedAt": "2026-01-27T09:33:44.349Z",
+  "dependencies": [
+    "backend-chat-session-generation-graphql",
+    "chat-session-jwt-context-validation"
+  ]
 }

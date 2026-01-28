@@ -4,7 +4,7 @@
   "id": "ai-engine-frontend-clarification-ui",
   "title": "Update Frontend Chat UI for Clarification Flows",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

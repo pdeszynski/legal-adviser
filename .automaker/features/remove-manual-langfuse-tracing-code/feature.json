@@ -4,7 +4,7 @@
   "id": "remove-manual-langfuse-tracing-code",
   "title": "Remove Manual Langfuse Tracing Code After Official Integration",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {

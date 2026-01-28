@@ -4,7 +4,7 @@
   "id": "document-langfuse-metadata-usage",
   "title": "Document Langfuse Trace Metadata and Usage Patterns",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

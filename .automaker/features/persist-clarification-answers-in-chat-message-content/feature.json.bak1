@@ -1,0 +1,18 @@
+{
+  "category": "bug",
+  "description": "Fix the broken clarification flow where user answers are not persisted to the database, causing the clarification form to reappear empty when users refresh or re-enter the page. Current issue: answers are sent directly to AI Engine but never saved, so no record exists that user already responded. Root cause: submitClarificationAnswers mutation likely doesn't create a ChatMessage record with the answers. Implementation: 1) Update ChatMessage entity to support clarification answer messages with role: 'user' and content containing structured JSON: {type: 'clarification_answer', questions: [...], answers: [{question, answer}]}, 2) Update submitClarificationAnswers mutation to create a new ChatMessage record when answers are submitted, 3) Store answers in ChatMessage.content as JSON string (not raw text), 4) Store original clarification questions in metadata for reference, 5) Frontend chat history loading should detect 'clarification_answer' type messages, 6) Render submitted answers in read-only state (show question and user's answer), 7) When rendering historical clarification questions, check if answers exist - if yes, show read-only view, if no, show interactive form, 8) Test flow: ask question → AI asks clarification → user answers → refresh page → see both AI's questions AND user's answers preserved. This ensures conversation continuity across page refreshes.",
+  "id": "persist-clarification-answers-in-chat-message-content",
+  "title": "Persist Clarification User Answers in Chat Message Content",
+  "dependencies": [],
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Fix the broken clarification flow where user answers are not persisted to the database, causing the clarification form to reappear empty when users refresh or re-enter the page. Current issue: answers are sent directly to AI Engine but never saved, so no record exists that user already responded. Root cause: submitClarificationAnswers mutation likely doesn't create a ChatMessage record with the answers. Implementation: 1) Update ChatMessage entity to support clarification answer messages with role: 'user' and content containing structured JSON: {type: 'clarification_answer', questions: [...], answers: [{question, answer}]}, 2) Update submitClarificationAnswers mutation to create a new ChatMessage record when answers are submitted, 3) Store answers in ChatMessage.content as JSON string (not raw text), 4) Store original clarification questions in metadata for reference, 5) Frontend chat history loading should detect 'clarification_answer' type messages, 6) Render submitted answers in read-only state (show question and user's answer), 7) When rendering historical clarification questions, check if answers exist - if yes, show read-only view, if no, show interactive form, 8) Test flow: ask question → AI asks clarification → user answers → refresh page → see both AI's questions AND user's answers preserved. This ensures conversation continuity across page refreshes.",
+      "timestamp": "2026-01-28T17:16:30.283Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T17:16:35.307Z"
+}

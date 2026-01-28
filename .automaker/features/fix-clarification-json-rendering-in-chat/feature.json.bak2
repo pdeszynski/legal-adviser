@@ -4,7 +4,7 @@
   "id": "fix-clarification-json-rendering-in-chat",
   "title": "Fix Clarification JSON Rendering in Chat UI",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-28T11:40:24.487Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-28T11:40:32.491Z"
 }

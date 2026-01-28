@@ -13,10 +13,12 @@ import { ChatMigrationService } from './services/chat-migration.service';
 import { TitleGenerationService } from './services/title-generation.service';
 import { ChatAuditService } from './services/chat-audit.service';
 import { ChatDataCleanupService } from './services/chat-data-cleanup.service';
+import { EmptySessionCleanupInitializerService } from './services/empty-session-cleanup-initializer.service';
 import { ChatSessionsResolver } from './chat-sessions.resolver';
 import { ChatMessagesResolver } from './chat-messages.resolver';
 import { ChatMigrationResolver } from './chat-migration.resolver';
 import { ChatDataCleanupResolver } from './chat-data-cleanup.resolver';
+import { ChatDataCleanupController } from './chat-data-cleanup.controller';
 import { ChatMessageRepository } from './repositories/chat-message.repository';
 import { ChatSessionRepository } from './repositories/chat-session.repository';
 import {
@@ -46,6 +48,8 @@ import { AiClientModule } from '../../shared/ai-client/ai-client.module';
  * - AI-powered title generation for new sessions
  * - localStorage to database migration
  * - Data cleanup for empty assistant messages
+ * - REST admin endpoints for debugging empty sessions
+ * - One-time empty session cleanup on deployment
  * - Authorization guards to ensure users can only access their own sessions
  */
 @Module({
@@ -94,6 +98,7 @@ import { AiClientModule } from '../../shared/ai-client/ai-client.module';
       ],
     }),
   ],
+  controllers: [ChatDataCleanupController],
   providers: [
     ChatSessionsService,
     ChatMessagesService,
@@ -103,6 +108,7 @@ import { AiClientModule } from '../../shared/ai-client/ai-client.module';
     TitleGenerationService,
     ChatAuditService,
     ChatDataCleanupService,
+    EmptySessionCleanupInitializerService,
     ChatSessionsResolver,
     ChatMessagesResolver,
     ChatMigrationResolver,

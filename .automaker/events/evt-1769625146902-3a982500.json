@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769625146902-3a982500",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-28T18:32:26.902Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769621734351-9m1r6xvvw",
+  "featureName": "Mark form as answered and persist state",
+  "error": "Feature completed in 55s - auto-verified",
+  "passes": true
+}

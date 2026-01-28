@@ -4,7 +4,7 @@
   "id": "langfuse-tracing-verification-dashboard",
   "title": "Create Langfuse Trace Verification Dashboard",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {

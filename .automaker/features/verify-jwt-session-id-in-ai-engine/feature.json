@@ -4,7 +4,7 @@
   "id": "verify-jwt-session-id-in-ai-engine",
   "title": "Verify JWT Session ID Handling Between Backend and AI Engine",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

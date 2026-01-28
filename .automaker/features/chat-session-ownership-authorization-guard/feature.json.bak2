@@ -4,7 +4,7 @@
   "id": "chat-session-ownership-authorization-guard",
   "title": "Add Chat Session Ownership Authorization Guard",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-28T09:15:56.563Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-28T09:25:11.223Z"
 }

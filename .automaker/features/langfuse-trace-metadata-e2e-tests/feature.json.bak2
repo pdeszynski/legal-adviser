@@ -4,7 +4,7 @@
   "id": "langfuse-trace-metadata-e2e-tests",
   "title": "Create E2E Tests for Langfuse Trace Metadata",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-28T11:46:53.421Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-28T12:02:44.853Z"
 }

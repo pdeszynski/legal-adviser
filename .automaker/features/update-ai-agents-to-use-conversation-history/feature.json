@@ -4,7 +4,7 @@
   "id": "update-ai-agents-to-use-conversation-history",
   "title": "Update AI Agents to Explicitly Use Conversation History",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

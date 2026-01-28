@@ -4,7 +4,7 @@
   "id": "verify-langfuse-env-configuration",
   "title": "Verify Langfuse Environment Configuration",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-27T10:04:34.555Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T10:04:38.502Z"
 }

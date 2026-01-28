@@ -4,7 +4,7 @@
   "id": "fix-langfuse-pydantic-ai-integration",
   "title": "Fix Langfuse Integration with PydanticAI Following Official Documentation",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-27T10:04:36.418Z"
+  "updatedAt": "2026-01-27T10:09:21.090Z"
 }

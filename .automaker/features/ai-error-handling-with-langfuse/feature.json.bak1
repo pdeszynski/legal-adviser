@@ -4,7 +4,7 @@
   "id": "ai-error-handling-with-langfuse",
   "title": "Enhance AI Error Handling with Langfuse Context",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-26T10:51:11.859Z"
+  "updatedAt": "2026-01-26T11:01:35.065Z"
 }

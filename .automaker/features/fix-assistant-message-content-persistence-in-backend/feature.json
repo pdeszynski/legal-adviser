@@ -4,7 +4,7 @@
   "id": "fix-assistant-message-content-persistence-in-backend",
   "title": "Fix JSON Clarification Response Content Persistence",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

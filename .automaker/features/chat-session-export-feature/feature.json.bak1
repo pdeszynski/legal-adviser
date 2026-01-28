@@ -4,7 +4,7 @@
   "id": "chat-session-export-feature",
   "title": "Export Chat Session to PDF/Markdown",
   "priority": 3,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-27T21:31:31.962Z"
+  "updatedAt": "2026-01-27T21:41:34.181Z"
 }

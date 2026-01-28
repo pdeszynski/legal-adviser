@@ -16,6 +16,8 @@ import {
   SaveChatMessageInput,
   UpdateClarificationStatusInput,
   UpdateClarificationStatusResponse,
+  SubmitClarificationAnswersInput,
+  SubmitClarificationAnswersResponse,
 } from './dto/chat-message.dto';
 import { AiClientService } from '../../shared/ai-client/ai-client.service';
 import { RequireQuota, QuotaType } from '../../shared';
@@ -246,10 +248,13 @@ export class ChatMessagesResolver {
           currentRound: clarificationInfo.currentRound,
           totalRounds: clarificationInfo.totalRounds,
         });
-        console.log('[sendChatMessageWithAI] Clarification detected, serializing to JSON:', {
-          questionsCount: clarificationInfo.questions?.length || 0,
-          contentLength: answerMarkdown.length,
-        });
+        console.log(
+          '[sendChatMessageWithAI] Clarification detected, serializing to JSON:',
+          {
+            questionsCount: clarificationInfo.questions?.length || 0,
+            contentLength: answerMarkdown.length,
+          },
+        );
       }
 
       // Log AI request for audit
@@ -441,6 +446,142 @@ export class ChatMessagesResolver {
         throw error;
       }
       throw new Error(`Failed to update clarification status: ${error}`);
+    }
+  }
+
+  /**
+   * Mutation: Submit clarification answers
+   *
+   * Creates a new user message with the clarification answers and marks the clarification as answered.
+   * This ensures the user's answers are persisted to the database and survive page refreshes.
+   *
+   * The user message contains:
+   * - content: JSON string with type 'clarification_answer' and the answers array
+   * - metadata: contains the original questions for reference
+   *
+   * @example
+   * ```graphql
+   * mutation {
+   *   submitClarificationAnswers(input: {
+   *     sessionId: "session-uuid"
+   *     clarificationMessageId: "message-uuid"
+   *     answers: [
+   *       { question: "When did the employment end?", answer: "2024-01-15", question_type: "timeline" }
+   *     ]
+   *   }) {
+   *     success
+   *     userMessage {
+   *       id
+   *       content
+   *       role
+   *       sequenceOrder
+   *     }
+   *     clarificationMessageId
+   *   }
+   * }
+   * ```
+   */
+  @Mutation(() => SubmitClarificationAnswersResponse, {
+    name: 'submitClarificationAnswers',
+    description:
+      'Submit answers to clarification questions. Creates a user message and marks clarification as answered.',
+  })
+  @UseGuards(ChatSessionOwnershipGuard)
+  async submitClarificationAnswers(
+    @Args('input') input: SubmitClarificationAnswersInput,
+    @Context() context: { req: { user?: { id?: string } } },
+  ): Promise<SubmitClarificationAnswersResponse> {
+    const userId = context.req?.user?.id;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+    const safeUserId: string = userId;
+
+    try {
+      // First, get the clarification message to extract the original questions
+      const clarificationMessage =
+        await this.chatMessagesService.getMessageById(
+          input.clarificationMessageId,
+          safeUserId,
+        );
+
+      if (!clarificationMessage) {
+        throw new Error('Clarification message not found');
+      }
+
+      const clarificationInfo = clarificationMessage.metadata?.clarification;
+      if (!clarificationInfo) {
+        throw new Error('Message does not contain clarification questions');
+      }
+
+      // Create the answer content as structured JSON
+      const answerContent = JSON.stringify({
+        type: 'clarification_answer',
+        answers: input.answers.map((a) => ({
+          question: a.question,
+          answer: a.answer,
+          question_type: a.question_type || 'text',
+        })),
+      });
+
+      // Store original questions in metadata for reference
+      const answerMetadata = {
+        custom: {
+          clarification_answers: {
+            original_questions: clarificationInfo.questions,
+            answered_at: new Date().toISOString(),
+            clarification_message_id: input.clarificationMessageId,
+          },
+        },
+      };
+
+      // Create a user message with the answers
+      const userMessage = await this.chatMessagesService.createUserMessage(
+        input.sessionId,
+        safeUserId,
+        {
+          content: answerContent,
+        },
+      );
+
+      // Update the clarification message's answered status
+      await this.chatMessagesService.updateClarificationStatus(
+        input.clarificationMessageId,
+        safeUserId,
+        true,
+        JSON.stringify(
+          input.answers.reduce(
+            (acc, a) => ({ ...acc, [a.question]: a.answer }),
+            {},
+          ),
+        ),
+      );
+
+      // Update the user message's metadata to include the original questions
+      userMessage.metadata = answerMetadata;
+      await this.chatMessagesService['chatMessageRepository'].save(userMessage);
+
+      console.log(
+        `[submitClarificationAnswers] Created answer message | sessionId=${input.sessionId} | messageId=${userMessage.messageId} | answersCount=${input.answers.length}`,
+      );
+
+      return {
+        success: true,
+        userMessage: {
+          messageId: userMessage.messageId,
+          sessionId: userMessage.sessionId,
+          role: userMessage.role,
+          content: userMessage.content,
+          sequenceOrder: userMessage.sequenceOrder,
+          createdAt: userMessage.createdAt.toISOString(),
+        },
+        clarificationMessageId: input.clarificationMessageId,
+      };
+    } catch (error) {
+      if (error instanceof Error && error.name === 'NotFoundException') {
+        throw error;
+      }
+      throw new Error(`Failed to submit clarification answers: ${error}`);
     }
   }
 }

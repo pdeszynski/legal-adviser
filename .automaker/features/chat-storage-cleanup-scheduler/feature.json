@@ -4,7 +4,7 @@
   "id": "chat-storage-cleanup-scheduler",
   "title": "Temporal Workflow for Cleaning Up Old Chat Sessions",
   "priority": 3,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

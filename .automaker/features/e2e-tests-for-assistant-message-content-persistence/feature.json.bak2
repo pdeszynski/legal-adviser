@@ -4,7 +4,7 @@
   "id": "e2e-tests-for-assistant-message-content-persistence",
   "title": "Create E2E Tests for Assistant Message Content Persistence",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-28T15:38:03.120Z"
+  "updatedAt": "2026-01-28T15:41:58.544Z"
 }

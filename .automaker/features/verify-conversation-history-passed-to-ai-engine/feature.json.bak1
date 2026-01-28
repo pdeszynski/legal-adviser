@@ -4,7 +4,7 @@
   "id": "verify-conversation-history-passed-to-ai-engine",
   "title": "Verify Conversation History is Correctly Passed to AI Engine",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-28T12:21:35.544Z"
+  "updatedAt": "2026-01-28T12:38:08.521Z"
 }

@@ -4,7 +4,7 @@
   "id": "ai-streaming-e2e-tests",
   "title": "E2E Tests for Streaming Chat",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-27T09:03:50.801Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T09:29:45.548Z"
 }

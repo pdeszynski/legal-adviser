@@ -144,6 +144,47 @@ export class MetadataInput { ... }
 
 - `apps/backend/src/modules/chat/dto/chat-message.dto.ts` - Correct ordering of `ChatMessageMetadataInput` before `CreateAssistantMessageInput`
 
+### GraphQL Field Resolver Decorators
+
+**The Rule:** Always use `@ResolveField`, never `@ResolveProperty`. The `@ResolveProperty` decorator is deprecated and will be removed in future versions.
+
+**Why:** NestJS GraphQL renamed `@ResolveProperty` to `@ResolveField` for consistency with GraphQL terminology.
+
+**Correct Pattern:**
+
+```typescript
+// ✅ CORRECT - Use @ResolveField
+import { Resolver, ResolveField, Parent } from '@nestjs/graphql';
+
+@Resolver(() => LegalDocument)
+export class PdfUrlResolver {
+  constructor(private readonly pdfUrlService: PdfUrlService) {}
+
+  @ResolveField('pdfUrl', () => String, { nullable: true })
+  async getPdfUrl(@Parent() document: LegalDocument): Promise<string | null> {
+    return this.pdfUrlService.getDocumentPdfUrl(document.id);
+  }
+}
+```
+
+**Incorrect Pattern:**
+
+```typescript
+// ❌ INCORRECT - Deprecated decorator
+import { Resolver, ResolveProperty, Parent } from '@nestjs/graphql';
+
+@ResolveProperty('pdfUrl', () => String, { nullable: true })  // Deprecated!
+async getPdfUrl(@Parent() document: LegalDocument): Promise<string | null> {
+  return this.pdfUrlService.getDocumentPdfUrl(document.id);
+}
+```
+
+**Lint Check:** When reviewing PRs or creating new resolvers, search for `ResolveProperty` to catch deprecated usage.
+
+**Related Files with Examples:**
+
+- `apps/backend/src/modules/documents/pdf-url.resolver.ts` - Correct usage of `@ResolveField`
+
 ## Database Seeding
 
 **Location:** `apps/backend/src/seeds/data/`
@@ -276,8 +317,8 @@ const response = await fetch(GRAPHQL_URL, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
-    ...getCsrfHeaders(),  // Include CSRF token
+    Authorization: `Bearer ${token}`,
+    ...getCsrfHeaders(), // Include CSRF token
   },
   credentials: 'include',
   body: JSON.stringify({ query, variables }),
@@ -316,6 +357,7 @@ async login() { ... }
 5. **Using CSRF on queries**: Only mutations need CSRF, queries are read-only
 
 **Constants:**
+
 - Cookie name: `csrf-token`
 - Header name: `x-csrf-token`
 - Cache duration: 1 hour
@@ -1329,62 +1371,62 @@ The AI Engine attaches comprehensive metadata to all Langfuse traces for debuggi
 
 ##### Input Metadata Fields
 
-| Field | Type | Description | Example |
-|-------|------|-------------|---------|
-| `question` | string | User's original question | "What are my employee rights?" |
-| `question_length` | integer | Character count of input | 45 |
-| `description_length` | integer | Case description character count | 250 |
-| `mode` | string | Response mode (LAWYER/SIMPLE) | "LAWYER" |
-| `query_type` | string | Classification category | "statute_interpretation" |
-| `document_type` | string | Document type being generated | "complaint" |
-| `language` | string | Response language | "pl" |
-| `model` | string | OpenAI model name | "gpt-4o" |
+| Field                | Type    | Description                      | Example                        |
+| -------------------- | ------- | -------------------------------- | ------------------------------ |
+| `question`           | string  | User's original question         | "What are my employee rights?" |
+| `question_length`    | integer | Character count of input         | 45                             |
+| `description_length` | integer | Case description character count | 250                            |
+| `mode`               | string  | Response mode (LAWYER/SIMPLE)    | "LAWYER"                       |
+| `query_type`         | string  | Classification category          | "statute_interpretation"       |
+| `document_type`      | string  | Document type being generated    | "complaint"                    |
+| `language`           | string  | Response language                | "pl"                           |
+| `model`              | string  | OpenAI model name                | "gpt-4o"                       |
 
 ##### Output Metadata Fields
 
-| Field | Type | Description | Example |
-|-------|------|-------------|---------|
-| `answer_length` | integer | Generated response character count | 1250 |
-| `confidence` | float | AI confidence score (0-1) | 0.87 |
-| `citations_count` | integer | Number of legal citations | 3 |
-| `grounds_count` | integer | Number of legal grounds identified | 2 |
-| `overall_confidence` | float | Classification confidence | 0.92 |
-| `questions_count` | integer | Number of clarification questions | 2 |
-| `processing_time_ms` | float | Total processing time | 2340 |
-| `time_to_first_token_ms` | float | Latency to first token (streaming) | 145 |
-| `suggested_title` | string | AI-generated session title | "Employment termination dispute" |
+| Field                    | Type    | Description                        | Example                          |
+| ------------------------ | ------- | ---------------------------------- | -------------------------------- |
+| `answer_length`          | integer | Generated response character count | 1250                             |
+| `confidence`             | float   | AI confidence score (0-1)          | 0.87                             |
+| `citations_count`        | integer | Number of legal citations          | 3                                |
+| `grounds_count`          | integer | Number of legal grounds identified | 2                                |
+| `overall_confidence`     | float   | Classification confidence          | 0.92                             |
+| `questions_count`        | integer | Number of clarification questions  | 2                                |
+| `processing_time_ms`     | float   | Total processing time              | 2340                             |
+| `time_to_first_token_ms` | float   | Latency to first token (streaming) | 145                              |
+| `suggested_title`        | string  | AI-generated session title         | "Employment termination dispute" |
 
 ##### User & Session Metadata
 
-| Field | Type | Description | Example |
-|-------|------|-------------|---------|
-| `user_id` | string | User UUID from JWT `sub` claim | "550e8400-e29b-41d4-a716-446655440000" |
-| `session_id` | string | Chat session UUID v4 | "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" |
-| `user_roles` | array | User roles from JWT | ["LAWYER", "ADMIN"] |
-| `user_role_level` | integer | User role level (0-5) | 3 |
+| Field             | Type    | Description                    | Example                                |
+| ----------------- | ------- | ------------------------------ | -------------------------------------- |
+| `user_id`         | string  | User UUID from JWT `sub` claim | "550e8400-e29b-41d4-a716-446655440000" |
+| `session_id`      | string  | Chat session UUID v4           | "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" |
+| `user_roles`      | array   | User roles from JWT            | ["LAWYER", "ADMIN"]                    |
+| `user_role_level` | integer | User role level (0-5)          | 3                                      |
 
 ##### Conversation Metadata
 
-| Field | Type | Description | Example |
-|-------|------|-------------|---------|
-| `message_count` | integer | Total messages in conversation | 5 |
-| `conversation_history_length` | integer | History character count | 5000 |
-| `is_first_message` | boolean | First message in session | true |
-| `conversation_start_time` | string | ISO timestamp of session start | "2025-01-28T10:30:00Z" |
-| `query_category` | string | Analytics category | "employment_law" |
-| `locale` | string | User locale | "pl-PL" |
+| Field                         | Type    | Description                    | Example                |
+| ----------------------------- | ------- | ------------------------------ | ---------------------- |
+| `message_count`               | integer | Total messages in conversation | 5                      |
+| `conversation_history_length` | integer | History character count        | 5000                   |
+| `is_first_message`            | boolean | First message in session       | true                   |
+| `conversation_start_time`     | string  | ISO timestamp of session start | "2025-01-28T10:30:00Z" |
+| `query_category`              | string  | Analytics category             | "employment_law"       |
+| `locale`                      | string  | User locale                    | "pl-PL"                |
 
 ##### Agent Names
 
 The following agent names are used in traces:
 
-| Agent Name | Purpose | Location |
-|------------|---------|----------|
-| `legal-query-analyzer` | Query analysis and routing | `src/agents/qa_agent.py` |
-| `legal-qa-lawyer` | Professional legal Q&A | `src/agents/qa_agent.py` |
-| `legal-qa-simple` | Simplified Q&A | `src/agents/qa_agent.py` |
-| `legal-classifier` | Case classification | `src/agents/classifier_agent.py` |
-| `legal-clarification` | Clarification questions | `src/agents/clarification_agent.py` |
+| Agent Name             | Purpose                    | Location                            |
+| ---------------------- | -------------------------- | ----------------------------------- |
+| `legal-query-analyzer` | Query analysis and routing | `src/agents/qa_agent.py`            |
+| `legal-qa-lawyer`      | Professional legal Q&A     | `src/agents/qa_agent.py`            |
+| `legal-qa-simple`      | Simplified Q&A             | `src/agents/qa_agent.py`            |
+| `legal-classifier`     | Case classification        | `src/agents/classifier_agent.py`    |
+| `legal-clarification`  | Clarification questions    | `src/agents/clarification_agent.py` |
 
 #### Adding Custom Metadata
 
@@ -1469,22 +1511,23 @@ Filter: metadata.streaming = "real-time"
 
 ##### Common Filter Queries
 
-| Use Case | Langfuse Query |
-|----------|----------------|
-| User session history | `user_id = "<uuid>"` |
-| Single conversation | `session_id = "<uuid>"` |
-| High latency traces | `latency_ms > 5000` |
-| Failed requests | `status = "error"` |
-| Streaming responses | `metadata.streaming = "real-time"` |
-| Lawyer mode only | `metadata.mode = "LAWYER"` |
-| Document generation | `metadata.workflow = "document_generation"` |
-| First messages only | `metadata.is_first_message = true` |
+| Use Case             | Langfuse Query                              |
+| -------------------- | ------------------------------------------- |
+| User session history | `user_id = "<uuid>"`                        |
+| Single conversation  | `session_id = "<uuid>"`                     |
+| High latency traces  | `latency_ms > 5000`                         |
+| Failed requests      | `status = "error"`                          |
+| Streaming responses  | `metadata.streaming = "real-time"`          |
+| Lawyer mode only     | `metadata.mode = "LAWYER"`                  |
+| Document generation  | `metadata.workflow = "document_generation"` |
+| First messages only  | `metadata.is_first_message = true`          |
 
 #### Debugging User Issues with Traces
 
 When a user reports an issue, follow these steps:
 
 **1. Obtain User Context**
+
 ```typescript
 // From frontend: get current session info
 const userId = await getUserId();
@@ -1492,6 +1535,7 @@ const sessionId = localStorage.getItem('chat_session_id');
 ```
 
 **2. Locate Traces in Langfuse**
+
 ```
 1. Go to https://cloud.langfuse.com/traces
 2. Filter: user_id = "<userId>"
@@ -1500,6 +1544,7 @@ const sessionId = localStorage.getItem('chat_session_id');
 ```
 
 **3. Analyze the Trace**
+
 - Check **trace status** (success/error)
 - Review **input/output** for unexpected content
 - Examine **latency breakdown** (which agent was slow)
@@ -1508,13 +1553,13 @@ const sessionId = localStorage.getItem('chat_session_id');
 
 **4. Common Issue Patterns**
 
-| Symptom | Likely Cause | How to Verify |
-|---------|--------------|---------------|
-| Empty response | LLM timeout | Check `latency_ms` > 30000 |
-| Wrong language | Missing `language` metadata | Filter by `user_id`, check metadata |
-| No citations | RAG failure | Check for `search` span errors |
-| High latency | Model overload | Check `model` field, compare traces |
-| Clarification loop | Low confidence | Check `confidence < 0.6` in metadata |
+| Symptom            | Likely Cause                | How to Verify                        |
+| ------------------ | --------------------------- | ------------------------------------ |
+| Empty response     | LLM timeout                 | Check `latency_ms` > 30000           |
+| Wrong language     | Missing `language` metadata | Filter by `user_id`, check metadata  |
+| No citations       | RAG failure                 | Check for `search` span errors       |
+| High latency       | Model overload              | Check `model` field, compare traces  |
+| Clarification loop | Low confidence              | Check `confidence < 0.6` in metadata |
 
 #### Privacy Considerations
 
@@ -1522,14 +1567,14 @@ const sessionId = localStorage.getItem('chat_session_id');
 
 All traces are automatically redacted for PII before sending to Langfuse:
 
-| Data Type | Pattern | Redaction |
-|-----------|---------|-----------|
-| Email addresses | `.*@.*\..*` | `[REDACTED_EMAIL]` |
-| Polish phone | `+48 [0-9]{9}` | `[REDACTED_PHONE]` |
-| PESEL | `[0-9]{11}` | `[REDACTED_PESEL]` |
-| NIP | `[0-9]{10}` | `[REDACTED_NIP]` |
-| Credit card | `[0-9]{13,19}` | `[REDACTED_CARD]` |
-| Polish names | Common names list | `[REDACTED_NAME]` |
+| Data Type       | Pattern           | Redaction          |
+| --------------- | ----------------- | ------------------ |
+| Email addresses | `.*@.*\..*`       | `[REDACTED_EMAIL]` |
+| Polish phone    | `+48 [0-9]{9}`    | `[REDACTED_PHONE]` |
+| PESEL           | `[0-9]{11}`       | `[REDACTED_PESEL]` |
+| NIP             | `[0-9]{10}`       | `[REDACTED_NIP]`   |
+| Credit card     | `[0-9]{13,19}`    | `[REDACTED_CARD]`  |
+| Polish names    | Common names list | `[REDACTED_NAME]`  |
 
 ##### Data Retention
 
@@ -1677,19 +1722,21 @@ GET /health/live     # Kubernetes liveness probe
 **Location:** `apps/ai-engine/`
 
 **Run mypy:**
+
 ```bash
 cd apps/ai-engine && uv run mypy src/
 ```
 
 **Common mypy errors and fixes:**
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `no-any-return` | Missing return type annotation on inner async function | Add explicit return type: `async def inner() -> ReturnType:` |
-| Duplicate `disable_error_code` for same module | Multiple `[[tool.mypy.overrides]]` sections for same module | Merge into single section with combined error codes |
-| Incompatible type from external library | Library type stubs incomplete | Use type cast with `# type: ignore` comment explaining limitation |
+| Error                                          | Cause                                                       | Fix                                                               |
+| ---------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------- |
+| `no-any-return`                                | Missing return type annotation on inner async function      | Add explicit return type: `async def inner() -> ReturnType:`      |
+| Duplicate `disable_error_code` for same module | Multiple `[[tool.mypy.overrides]]` sections for same module | Merge into single section with combined error codes               |
+| Incompatible type from external library        | Library type stubs incomplete                               | Use type cast with `# type: ignore` comment explaining limitation |
 
 **Example - Adding return type to inner function:**
+
 ```python
 # Before (causes no-any-return error)
 async def run_workflow():
@@ -1701,6 +1748,7 @@ async def run_workflow() -> dict[str, Any]:
 ```
 
 **Example - Type cast for external library limitations:**
+
 ```python
 # When external library (pydantic_ai) has incomplete type stubs
 output: GeneratedTitle = result.output  # type: ignore[assignment]

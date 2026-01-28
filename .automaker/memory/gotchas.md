@@ -5,9 +5,9 @@ relevantTo: [error, bug, fix, issue, problem]
 importance: 0.9
 relatedFiles: []
 usageStats:
-  loaded: 1232
-  referenced: 439
-  successfulFeatures: 439
+  loaded: 1250
+  referenced: 457
+  successfulFeatures: 457
 ---
 # Gotchas
 
@@ -302,3 +302,25 @@ Mistakes and edge cases to avoid. These are lessons learned from past issues.
   ```
 - **Documentation reminder:** When creating new DTO files, add a comment above leaf types referencing `CLAUDE.md "TypeScript Input/Output Type Declaration Order"` section
 - **Related files:** `apps/backend/src/modules/chat/dto/chat-message.dto.ts` - correct ordering of `ChatMessageMetadataInput` before `CreateAssistantMessageInput`
+
+#### [Gotcha] NestJS GraphQL @ResolveProperty decorator deprecated - use @ResolveField instead (2026-01-28)
+
+- **Situation:** Server startup warning: `The "@ResolveProperty()" decorator has been deprecated. Please, use the "@ResolveField()" decorator instead.`
+- **Root cause:** NestJS GraphQL renamed `@ResolveProperty` to `@ResolveField` for consistency with GraphQL terminology. The old decorator still works but is deprecated and will be removed in future versions
+- **How to avoid:**
+  1. **Never use `@ResolveProperty`** - Always use `@ResolveField` for field resolvers
+  2. **Import the correct decorator:**
+     ```typescript
+     // CORRECT
+     import { Resolver, ResolveField, Parent } from '@nestjs/graphql';
+
+     @Resolver(() => LegalDocument)
+     export class PdfUrlResolver {
+       @ResolveField('pdfUrl', () => String, { nullable: true })
+       async getPdfUrl(@Parent() document: LegalDocument): Promise<string | null> {
+         return this.pdfUrlService.getDocumentPdfUrl(document.id);
+       }
+     }
+     ```
+  3. **Check for deprecated imports:** When reviewing PRs or creating new resolvers, search for `ResolveProperty` to catch deprecated usage
+- **Related files:** `apps/backend/src/modules/documents/pdf-url.resolver.ts` - fixed to use `@ResolveField`

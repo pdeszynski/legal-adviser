@@ -4,7 +4,7 @@
   "id": "test-langfuse-tracing-e2e",
   "title": "Create E2E Tests for Langfuse Tracing",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {

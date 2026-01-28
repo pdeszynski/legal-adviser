@@ -4,7 +4,7 @@
   "id": "chat-session-ownership-authorization-guard",
   "title": "Add Chat Session Ownership Authorization Guard",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

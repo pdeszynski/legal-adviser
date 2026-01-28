@@ -4,7 +4,7 @@
   "id": "full-conversation-context-to-ai-engine",
   "title": "Send Full Conversation History to AI Engine on Chat Restore",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-27T21:01:05.090Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T21:21:51.660Z"
 }

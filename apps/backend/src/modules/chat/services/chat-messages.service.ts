@@ -298,6 +298,10 @@ export class ChatMessagesService {
    * Returns messages formatted for the AI Engine conversation_history parameter.
    * Maps MessageRole enum (USER/ASSISTANT) to 'user'/'assistant' strings.
    *
+   * Parses clarification_answer JSON messages into plain text for AI consumption.
+   * Example: {"type":"clarification_answer","answers":[...]}
+   *   becomes: "Based on your questions:\n1) When did...? - [answer]\n2) ..."
+   *
    * @param sessionId - The chat session ID
    * @param userId - The authenticated user ID
    * @param limit - Maximum number of recent exchanges to return (default: 10)
@@ -319,13 +323,123 @@ export class ChatMessagesService {
       .getMany();
 
     // Reverse to get chronological order and map to AI Engine format
-    return messages
-      .reverse()
-      .filter((msg) => msg.role !== MessageRole.SYSTEM)
-      .map((msg) => ({
-        role: msg.role === MessageRole.USER ? 'user' : 'assistant',
-        content: msg.content,
-      }));
+    const history: Array<{ role: 'user' | 'assistant'; content: string }> =
+      messages
+        .reverse()
+        .filter((msg) => msg.role !== MessageRole.SYSTEM)
+        .map((msg) => {
+          let content = msg.content;
+
+          // Parse clarification_answer JSON messages into plain text for AI
+          if (
+            msg.role === MessageRole.USER &&
+            this.isClarificationAnswerJson(msg.content)
+          ) {
+            const parsedContent = this.parseClarificationAnswerToText(
+              msg.content,
+            );
+            if (parsedContent) {
+              content = parsedContent;
+              this.logger.log(
+                `[CONVERSATION_HISTORY] Parsed clarification_answer JSON to plain text | ` +
+                  `sessionId=${sessionId} | messageId=${msg.messageId} | ` +
+                  `originalLength=${msg.content.length} | parsedLength=${content.length}`,
+              );
+            }
+          }
+
+          return {
+            role:
+              msg.role === MessageRole.USER
+                ? ('user' as const)
+                : ('assistant' as const),
+            content,
+          };
+        });
+
+    // Log summary for debugging
+    this.logger.log(
+      `[CONVERSATION_HISTORY] Retrieved ${history.length} messages for session ${sessionId} | ` +
+        `limit=${limit} | userCount=${history.filter((m) => m.role === 'user').length} | ` +
+        `assistantCount=${history.filter((m) => m.role === 'assistant').length}`,
+    );
+
+    return history;
+  }
+
+  /**
+   * Check if content is a clarification_answer JSON
+   *
+   * @param content - The message content to check
+   * @returns true if content contains clarification_answer JSON structure
+   */
+  private isClarificationAnswerJson(content: string): boolean {
+    if (!content || typeof content !== 'string') {
+      return false;
+    }
+
+    const trimmed = content.trim();
+    return (
+      trimmed.startsWith('{"type":"clarification_answer"') ||
+      trimmed.startsWith('{"type": "clarification_answer"')
+    );
+  }
+
+  /**
+   * Parse clarification_answer JSON to plain text for AI Engine
+   *
+   * Converts: {"type":"clarification_answer","answers":[{"question":"...","answer":"..."}]}
+   * To: "Based on your questions:\n1) [question] - [answer]\n2) [question] - [answer]\n..."
+   *
+   * @param content - The JSON string containing clarification_answer
+   * @returns Plain text representation or null if parsing fails
+   */
+  private parseClarificationAnswerToText(content: string): string | null {
+    if (!content || typeof content !== 'string') {
+      return null;
+    }
+
+    const trimmed = content.trim();
+
+    // Verify it's a clarification_answer JSON
+    if (
+      !trimmed.startsWith('{"type":"clarification_answer"') &&
+      !trimmed.startsWith('{"type": "clarification_answer"')
+    ) {
+      return null;
+    }
+
+    try {
+      const data = JSON.parse(trimmed);
+
+      if (
+        data.type !== 'clarification_answer' ||
+        !Array.isArray(data.answers)
+      ) {
+        return null;
+      }
+
+      // Format answers as natural language text for AI Engine
+      const answersText = data.answers
+        .map((a: { question: string; answer: string }, index: number) => {
+          return `${index + 1}) ${a.question} - ${a.answer}`;
+        })
+        .join('\n');
+
+      const formattedText = `Based on your questions:\n${answersText}`;
+
+      this.logger.debug(
+        `[parseClarificationAnswerToText] Converted ${data.answers.length} answers to plain text | ` +
+          `outputLength=${formattedText.length}`,
+      );
+
+      return formattedText;
+    } catch (err) {
+      this.logger.warn(
+        `[parseClarificationAnswerToText] Failed to parse JSON: ${err}`,
+      );
+      return null;
+    }
   }
 
   /**

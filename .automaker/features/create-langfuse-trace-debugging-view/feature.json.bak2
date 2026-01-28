@@ -4,7 +4,7 @@
   "id": "create-langfuse-trace-debugging-view",
   "title": "Create Admin Debugging View for Langfuse Traces",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-28T11:46:53.420Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-28T12:08:31.367Z"
 }

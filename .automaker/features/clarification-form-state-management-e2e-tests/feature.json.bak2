@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive Playwright E2E tests to verify clarification form state management and prevent regressions. Test scenarios: 1) Open clarification questions remain displayed when user types in text inputs, 2) Clicking outside form does NOT close or submit clarification, 3) Pressing Enter in text input does NOT submit (unless Ctrl+Enter), 4) Only 'Submit Answers' button triggers submitClarificationAnswers mutation, 5) Form with both text inputs and option buttons works correctly, 6) Multi-line text answers are captured completely without truncation, 7) Form validation prevents submission with empty text fields, 8) Loading state appears during submission and form cannot be closed, 9) After successful submission, clarification shows read-only state with user's answers, 10) Verify no empty chat sessions created when clarification is pending. Use Playwright to simulate realistic user interaction patterns: type slowly, click around, switch tabs, press Enter key, etc. Ensure tests catch the current bug where any interaction closes the form.",
+  "id": "clarification-form-state-management-e2e-tests",
+  "title": "Create E2E Tests for Clarification Form State Management",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive Playwright E2E tests to verify clarification form state management and prevent regressions. Test scenarios: 1) Open clarification questions remain displayed when user types in text inputs, 2) Clicking outside form does NOT close or submit clarification, 3) Pressing Enter in text input does NOT submit (unless Ctrl+Enter), 4) Only 'Submit Answers' button triggers submitClarificationAnswers mutation, 5) Form with both text inputs and option buttons works correctly, 6) Multi-line text answers are captured completely without truncation, 7) Form validation prevents submission with empty text fields, 8) Loading state appears during submission and form cannot be closed, 9) After successful submission, clarification shows read-only state with user's answers, 10) Verify no empty chat sessions created when clarification is pending. Use Playwright to simulate realistic user interaction patterns: type slowly, click around, switch tabs, press Enter key, etc. Ensure tests catch the current bug where any interaction closes the form.",
+      "timestamp": "2026-01-28T16:28:30.355Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T16:38:09.065Z"
+}

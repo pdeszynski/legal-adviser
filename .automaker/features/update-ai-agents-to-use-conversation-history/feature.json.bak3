@@ -3,10 +3,6 @@
   "description": "Update all PydanticAI agents (qa_agent.py, classifier_agent.py, drafting_agent.py, clarification_agent.py) to explicitly check for and use conversation history from the messages array. Implementation: 1) Update agent run() calls to pass messages parameter if provided, 2) In agent system prompts, add context that previous conversation history is available, 3) Ensure messages array format matches agent expectations: [{role: 'user', content: '...'}, {role: 'assistant', content: '...'}], 4) Add logging to verify agents receive history (log messages array length), 5) Test each agent type with multi-turn conversations, 6) For clarification agent, ensure it sees previous Q&A before asking follow-up questions, 7) For Q&A agent, ensure it references previous messages when answering, 8) Document in agent code how to use conversation history. Agents should default to answering based only on current message ONLY if messages array is empty or null.",
   "id": "update-ai-agents-to-use-conversation-history",
   "title": "Update AI Agents to Explicitly Use Conversation History",
-  "dependencies": [
-    "ai-engine-pydantic-ai-migration",
-    "ai-engine-langgraph-workflows-implementation"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "store-chat",

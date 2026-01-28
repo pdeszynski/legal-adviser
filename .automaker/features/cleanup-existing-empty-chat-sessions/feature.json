@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Create a one-time database cleanup operation to remove existing empty ChatSession records that were created before the fix. Implementation: 1) Create backend GraphQL mutation cleanupEmptySessions(adminKey: string!) for admin-only access, 2) Query all ChatSession records WHERE messageCount = 0 OR createdAt = updatedAt (never modified), 3) Verify no ChatMessage records exist for these sessions, 4) Delete confirmed empty sessions in batches (100 at a time) to avoid long-running transactions, 5) Log cleanup count and affected session IDs for audit trail, 6) Return cleanup summary: {deletedCount, skippedCount, errors[]}, 7) Add admin endpoint GET /api/admin/debug/empty-sessions to preview what would be deleted, 8) Create database migration script that runs cleanup once on deployment, 9) Add monitoring to track empty session count going forward. This cleans up technical debt from the previous implementation.",
+  "id": "cleanup-existing-empty-chat-sessions",
+  "title": "Clean Up Existing Empty Chat Sessions from Database",
+  "priority": 2,
+  "status": "completed",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Create a one-time database cleanup operation to remove existing empty ChatSession records that were created before the fix. Implementation: 1) Create backend GraphQL mutation cleanupEmptySessions(adminKey: string!) for admin-only access, 2) Query all ChatSession records WHERE messageCount = 0 OR createdAt = updatedAt (never modified), 3) Verify no ChatMessage records exist for these sessions, 4) Delete confirmed empty sessions in batches (100 at a time) to avoid long-running transactions, 5) Log cleanup count and affected session IDs for audit trail, 6) Return cleanup summary: {deletedCount, skippedCount, errors[]}, 7) Add admin endpoint GET /api/admin/debug/empty-sessions to preview what would be deleted, 8) Create database migration script that runs cleanup once on deployment, 9) Add monitoring to track empty session count going forward. This cleans up technical debt from the previous implementation.",
+      "timestamp": "2026-01-28T16:28:30.353Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T17:00:19.987Z"
+}

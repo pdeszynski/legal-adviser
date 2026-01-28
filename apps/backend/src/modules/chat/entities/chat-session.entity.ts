@@ -168,6 +168,9 @@ export class ChatSession {
   /**
    * Number of messages in the session
    * Maintained for quick access without loading all messages
+   *
+   * Database constraint: messageCount must be >= 0
+   * Empty sessions (messageCount = 0) are excluded from chat history queries
    */
   @Column({ type: 'int', default: 0 })
   @FilterableField(() => Number, {

@@ -4,7 +4,7 @@
   "id": "ai-engine-remove-langchain-direct-access",
   "title": "Remove Direct LangChain Usage",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-26T10:24:02.641Z"
+  "updatedAt": "2026-01-26T10:25:15.158Z"
 }

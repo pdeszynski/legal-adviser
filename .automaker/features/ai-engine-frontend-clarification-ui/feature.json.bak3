@@ -3,9 +3,6 @@
   "description": "Enhance the legal chat frontend to support multi-turn clarification interactions. Implement: 1) Display agent questions as interactive components (not just text), 2) Quick reply buttons for common clarification options, 3) Context preservation across clarification rounds, 4) Visual indication of clarification state vs. normal Q&A, 5) Progress indicator showing how many clarifications remain. Update the askLegalQuestion GraphQL mutation to support clarification state tracking. Ensure smooth UX transition from initial query -> clarification -> final answer.",
   "id": "ai-engine-frontend-clarification-ui",
   "title": "Update Frontend Chat UI for Clarification Flows",
-  "dependencies": [
-    "ai-engine-clarification-flow-refactor"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "two-factor",

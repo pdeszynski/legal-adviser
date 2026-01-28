@@ -1,0 +1,29 @@
+{
+  "category": "bug",
+  "description": "After refreshing page after submitting clarification form on /chat, these are empty again. fix it",
+  "title": "Fix clarification form data persistence after page refresh",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "store-chat",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "backlog",
+  "id": "feature-1769621676707-xvz14f3g3",
+  "descriptionHistory": [
+    {
+      "description": "After refreshing page after submitting clarification form on /chat, these are empty again. fix it",
+      "timestamp": "2026-01-28T17:34:36.800Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T17:38:20.073Z"
+}

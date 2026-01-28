@@ -1,7 +1,7 @@
 {
   "category": "bug",
   "description": "Fix the chat history handling when continuing conversation. Currenlty the chat is saved in the DB, but the ai-engine gets only the last message from whole chat history, so it looses the context",
-  "title": "",
+  "title": "Fix chat history context in AI engine",
   "images": [],
   "imagePaths": [],
   "textFilePaths": [],
@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "dependencies": [],
   "workMode": "current",
-  "titleGenerating": "Fix the chat history handling when continuing conversation. Currenlty the chat is saved in the DB, but the ai-engine gets only the last message from whole chat history, so it looses the context",
+  "titleGenerating": false,
   "status": "in_progress",
   "id": "feature-1769599119773-ba47y7elc",
   "descriptionHistory": [

@@ -4,7 +4,7 @@
   "id": "migrate-localstorage-to-database",
   "title": "Migrate Existing LocalStorage Chat Data to Database",
   "priority": 3,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

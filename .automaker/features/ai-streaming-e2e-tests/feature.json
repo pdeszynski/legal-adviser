@@ -4,7 +4,7 @@
   "id": "ai-streaming-e2e-tests",
   "title": "E2E Tests for Streaming Chat",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {

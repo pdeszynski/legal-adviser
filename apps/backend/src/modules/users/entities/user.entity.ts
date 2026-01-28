@@ -14,6 +14,7 @@ import {
   Relation,
 } from '@ptc-org/nestjs-query-graphql';
 import { UserSession } from './user-session.entity';
+import { UserRoleEntity } from '../../authorization/entities/user-role.entity';
 
 /**
  * User Entity
@@ -153,10 +154,9 @@ export class User {
 
   /**
    * User role assignments from the authorization module
-   * Using string reference to avoid circular dependency
    */
-  @OneToMany('user_roles', 'user')
-  roleAssignments: any[];
+  @OneToMany(() => UserRoleEntity, (roleAssignment) => roleAssignment.user)
+  roleAssignments: UserRoleEntity[];
 
   @CreateDateColumn({ type: 'timestamp' })
   @FilterableField(() => GraphQLISODateTime)

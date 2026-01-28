@@ -4,7 +4,7 @@
   "id": "update-ai-agents-to-use-conversation-history",
   "title": "Update AI Agents to Explicitly Use Conversation History",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-28T11:40:24.486Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-28T11:40:34.575Z"
 }

@@ -4,7 +4,7 @@
   "id": "ai-engine-documentation-update",
   "title": "Update AI Engine Documentation",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-26T09:49:24.181Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-26T10:25:20.050Z"
 }

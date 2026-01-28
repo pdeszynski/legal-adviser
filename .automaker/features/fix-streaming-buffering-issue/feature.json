@@ -4,7 +4,7 @@
   "id": "fix-streaming-buffering-issue",
   "title": "Fix Streaming Response Buffering Issue",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {

@@ -3,9 +3,6 @@
   "description": "Implement full-text search capability to find content within past chat conversations. Implementation: 1) Add PostgreSQL full-text search index on ChatMessage.content column, 2) Create GraphQL query searchChatContent(userId, query, paging), 3) Search across both user and assistant messages, 4) Return results with session context (session title, matching message preview, surrounding messages), 5) Highlight matching text in results, 6) Add search bar in chat history page, 7) Support filters: by date range, by mode, by session title. Use tsvector for efficient text search. Consider implementing RAG-style semantic search for finding related conversations.",
   "id": "chat-session-search-full-text",
   "title": "Full-Text Search Across Chat Sessions",
-  "dependencies": [
-    "chat-history-frontend-list-view"
-  ],
   "priority": 3,
   "status": "backlog",
   "branchName": "store-chat",

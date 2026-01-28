@@ -1,0 +1,32 @@
+{
+  "category": "Uncategorized",
+  "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix clarification form data persistence after page refresh\n\n**Description:** After refreshing page after submitting clarification form on /chat, these are empty again. fix it\n\n---\n\n## Task Description\n\nForm was fixed partially, it's allowing now providing more than one character, but still it's not being persisted, please fix it's persistence. Current behaviour - after providing all answers and questions are sent as a string as follows:\n\n{\n    \"data\": {\n        \"saveChatMessage\": {\n            \"messageId\": \"e09e2831-81cc-40fb-b9fa-f5dd8705cea7\",\n            \"sessionId\": \"e004f7c2-67d0-4d83-b845-f238442c9cdf\",\n            \"role\": \"user\",\n            \"content\": \"Czy zawarłeś/aś pisemną umowę dotyczącą świadczonych usług?: asdf\\nJaka jest dokładna kwota, której się domagasz i czy uwzględniasz odsetki?: fadsfadsf\\nKiedy upłynął termin płatności według umowy?: fadsfer\\nKim jest dłużnik? Czy to osoba fizyczna czy firma?: fffff\",\n            \"sequenceOrder\": 12,\n            \"createdAt\": \"2026-01-28T17:52:06.635Z\"\n        }\n    }\n}\n\n\nExpected behavior - a special message with form questions + answer is being sent (for e.g. a json) to backend instead, and persisted in a way, so we can restore form clarification form state ",
+  "title": "Fix form clarification persistence after submission",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "store-chat",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [
+    "feature-1769621676707-xvz14f3g3"
+  ],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769626547508-dy5tti0uo",
+  "descriptionHistory": [
+    {
+      "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Fix clarification form data persistence after page refresh\n\n**Description:** After refreshing page after submitting clarification form on /chat, these are empty again. fix it\n\n---\n\n## Task Description\n\nForm was fixed partially, it's allowing now providing more than one character, but still it's not being persisted, please fix it's persistence. Current behaviour - after providing all answers and questions are sent as a string as follows:\n\n{\n    \"data\": {\n        \"saveChatMessage\": {\n            \"messageId\": \"e09e2831-81cc-40fb-b9fa-f5dd8705cea7\",\n            \"sessionId\": \"e004f7c2-67d0-4d83-b845-f238442c9cdf\",\n            \"role\": \"user\",\n            \"content\": \"Czy zawarłeś/aś pisemną umowę dotyczącą świadczonych usług?: asdf\\nJaka jest dokładna kwota, której się domagasz i czy uwzględniasz odsetki?: fadsfadsf\\nKiedy upłynął termin płatności według umowy?: fadsfer\\nKim jest dłużnik? Czy to osoba fizyczna czy firma?: fffff\",\n            \"sequenceOrder\": 12,\n            \"createdAt\": \"2026-01-28T17:52:06.635Z\"\n        }\n    }\n}\n\n\nExpected behavior - a special message with form questions + answer is being sent (for e.g. a json) to backend instead, and persisted in a way, so we can restore form clarification form state ",
+      "timestamp": "2026-01-28T18:55:47.614Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-28T18:55:47.657Z",
+  "updatedAt": "2026-01-28T18:55:47.876Z"
+}

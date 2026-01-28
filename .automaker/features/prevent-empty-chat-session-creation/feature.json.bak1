@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Fix the issue where opening a new chat page creates a ChatSession record immediately even before the user sends any messages. This results in empty chat sessions appearing in chat history. Implementation: 1) Remove automatic ChatSession creation on page load, 2) Only create ChatSession when user sends first message via askLegalQuestion or streaming endpoint, 3) Backend should create session and first message atomically in single transaction, 4) If using frontend session state management, keep session ID in component state only (not localStorage/database), 5) Update chat history query to exclude sessions with messageCount = 0, 6) Add database constraint CHECK (message_count > 0) to prevent empty sessions, 7) Create cleanup migration to delete existing empty ChatSession records where messageCount = 0 OR no ChatMessage records exist, 8) Test that navigating to /chat without sending messages doesn't create database records, 9) Verify chat history list only shows conversations with at least one message. This prevents database clutter and improves UX.",
+  "id": "prevent-empty-chat-session-creation",
+  "title": "Prevent Empty Chat Sessions from Being Created or Displayed",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Fix the issue where opening a new chat page creates a ChatSession record immediately even before the user sends any messages. This results in empty chat sessions appearing in chat history. Implementation: 1) Remove automatic ChatSession creation on page load, 2) Only create ChatSession when user sends first message via askLegalQuestion or streaming endpoint, 3) Backend should create session and first message atomically in single transaction, 4) If using frontend session state management, keep session ID in component state only (not localStorage/database), 5) Update chat history query to exclude sessions with messageCount = 0, 6) Add database constraint CHECK (message_count > 0) to prevent empty sessions, 7) Create cleanup migration to delete existing empty ChatSession records where messageCount = 0 OR no ChatMessage records exist, 8) Test that navigating to /chat without sending messages doesn't create database records, 9) Verify chat history list only shows conversations with at least one message. This prevents database clutter and improves UX.",
+      "timestamp": "2026-01-28T16:28:30.352Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T16:39:07.954Z"
+}

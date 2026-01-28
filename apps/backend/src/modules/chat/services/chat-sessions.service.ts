@@ -57,7 +57,9 @@ export class ChatSessionsService {
 
     const queryBuilder = this.chatSessionRepository
       .createQueryBuilder('session')
-      .where('session.userId = :userId', { userId });
+      .where('session.userId = :userId', { userId })
+      // Exclude empty sessions (those with no messages)
+      .andWhere('session.messageCount > 0', {});
 
     // Filter by mode if specified
     if (mode) {

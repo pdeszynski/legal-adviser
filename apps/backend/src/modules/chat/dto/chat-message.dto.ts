@@ -466,6 +466,74 @@ export class UpdateClarificationStatusInput {
 }
 
 /**
+ * Input for a single clarification answer
+ */
+@InputType('ClarificationAnswerInput')
+export class ClarificationAnswerInput {
+  @Field(() => String, {
+    description: 'The question text',
+  })
+  question: string;
+
+  @Field(() => String, {
+    description: 'The user answer',
+  })
+  answer: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Question type (text, timeline, etc.)',
+  })
+  question_type?: string;
+}
+
+/**
+ * Input for submitting clarification answers
+ *
+ * Creates a new user message with the clarification answers and marks the clarification as answered.
+ */
+@InputType('SubmitClarificationAnswersInput')
+export class SubmitClarificationAnswersInput {
+  @Field(() => ID, {
+    description: 'The session ID',
+  })
+  sessionId: string;
+
+  @Field(() => ID, {
+    description: 'The message ID containing the clarification questions',
+  })
+  clarificationMessageId: string;
+
+  @Field(() => [ClarificationAnswerInput], {
+    description: 'Array of question-answer pairs',
+  })
+  @IsArray()
+  answers: ClarificationAnswerInput[];
+}
+
+/**
+ * Response type for submitting clarification answers
+ */
+@ObjectType('SubmitClarificationAnswersResponse')
+export class SubmitClarificationAnswersResponse {
+  @Field(() => Boolean, {
+    description: 'Whether the submission was successful',
+  })
+  success: boolean;
+
+  @Field(() => SendChatMessageResponse, {
+    nullable: true,
+    description: 'The created user message containing the answers',
+  })
+  userMessage: SendChatMessageResponse | null;
+
+  @Field(() => ID, {
+    description: 'The clarification message ID that was updated',
+  })
+  clarificationMessageId: string;
+}
+
+/**
  * Response type for updating clarification status
  */
 @ObjectType('UpdateClarificationStatusResponse')

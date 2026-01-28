@@ -4,7 +4,7 @@
   "id": "enhance-langfuse-agent-identification",
   "title": "Enhance Langfuse Agent Identification with Better Naming",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

@@ -18,7 +18,7 @@
   ],
   "workMode": "current",
   "titleGenerating": false,
-  "status": "in_progress",
+  "status": "verified",
   "id": "feature-1769511081956-clfpcu1v7",
   "descriptionHistory": [
     {
@@ -28,5 +28,5 @@
     }
   ],
   "startedAt": "2026-01-27T10:51:22.117Z",
-  "updatedAt": "2026-01-27T10:51:22.360Z"
+  "updatedAt": "2026-01-27T10:59:18.502Z"
 }

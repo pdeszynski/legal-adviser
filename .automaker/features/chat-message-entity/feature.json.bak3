@@ -4,7 +4,7 @@
   "id": "chat-message-entity",
   "title": "Chat Message Entity for Individual Messages",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-27T21:01:05.087Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T21:01:16.446Z"
 }

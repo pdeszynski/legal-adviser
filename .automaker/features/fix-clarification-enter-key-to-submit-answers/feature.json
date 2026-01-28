@@ -1,0 +1,32 @@
+{
+  "category": "enhancement",
+  "description": "Update clarification form to use single-line text inputs (not multiline textareas) where pressing Enter key submits the form. Current behavior: unclear what Enter key does, may be adding newlines or not working. Implementation: 1) Replace all textarea components with single-line input fields for clarification answers, 2) Add onKeyDown handler to input fields that detects Enter key press, 3) On Enter key press: validate form has non-empty answers, then trigger submitClarificationAnswers mutation, 4) Prevent Enter key from adding newline or submitting invalid/empty forms, 5) Ensure Shift+Enter (if needed) does NOT submit, only plain Enter, 6) Add visual hint 'Press Enter to submit' below input fields, 7) Keep Submit Answers button as alternative submission method, 8) Test that Enter works consistently across all open questions in the form. This provides intuitive form submission behavior matching standard web form patterns.\n\nVERY IMPORTANT - prevent keypress to make inputs immediately marked as answered, if they are free text inputs!!! Only Enter key (or pressing. abutton) should do that. Add additional button on free text inputs",
+  "id": "fix-clarification-enter-key-to-submit-answers",
+  "title": "Make Enter Key Submit Clarification Answers (Single-Line Inputs)",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Update clarification form to use single-line text inputs (not multiline textareas) where pressing Enter key submits the form. Current behavior: unclear what Enter key does, may be adding newlines or not working. Implementation: 1) Replace all textarea components with single-line input fields for clarification answers, 2) Add onKeyDown handler to input fields that detects Enter key press, 3) On Enter key press: validate form has non-empty answers, then trigger submitClarificationAnswers mutation, 4) Prevent Enter key from adding newline or submitting invalid/empty forms, 5) Ensure Shift+Enter (if needed) does NOT submit, only plain Enter, 6) Add visual hint 'Press Enter to submit' below input fields, 7) Keep Submit Answers button as alternative submission method, 8) Test that Enter works consistently across all open questions in the form. This provides intuitive form submission behavior matching standard web form patterns.",
+      "timestamp": "2026-01-28T17:16:30.283Z",
+      "source": "initial"
+    },
+    {
+      "description": "Update clarification form to use single-line text inputs (not multiline textareas) where pressing Enter key submits the form. Current behavior: unclear what Enter key does, may be adding newlines or not working. Implementation: 1) Replace all textarea components with single-line input fields for clarification answers, 2) Add onKeyDown handler to input fields that detects Enter key press, 3) On Enter key press: validate form has non-empty answers, then trigger submitClarificationAnswers mutation, 4) Prevent Enter key from adding newline or submitting invalid/empty forms, 5) Ensure Shift+Enter (if needed) does NOT submit, only plain Enter, 6) Add visual hint 'Press Enter to submit' below input fields, 7) Keep Submit Answers button as alternative submission method, 8) Test that Enter works consistently across all open questions in the form. This provides intuitive form submission behavior matching standard web form patterns.\n\nVERY IMPORTANT - prevent keypress to make inputs immediately marked as answered, if they are free text inputs!!! Only Enter key (or pressing. abutton) should do that. Add additional button on free text inputs",
+      "timestamp": "2026-01-28T17:29:57.515Z",
+      "source": "edit"
+    }
+  ],
+  "updatedAt": "2026-01-28T18:35:30.686Z",
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "custom",
+  "dependencies": []
+}

@@ -3,9 +3,6 @@
   "description": "After implementing the official PydanticAI-Langfuse integration, remove any manual tracing code that might conflict or be redundant. Tasks: 1) Search for manual Langfuse SDK usage (langfuse_sdk.create_span, langfuse_sdk.end_span, etc.), 2) Remove manual span creation in agent files, 3) Remove manual span creation in workflow files, 4) Keep only the official pydantic_ai.instrument_langfuse() call, 5) Ensure no duplicate tracing occurs, 6) Verify that all necessary context (user ID, session ID, metadata) is still captured through the official integration, 7) Clean up any unused Langfuse-related utility functions.",
   "id": "remove-manual-langfuse-tracing-code",
   "title": "Remove Manual Langfuse Tracing Code After Official Integration",
-  "dependencies": [
-    "fix-langfuse-pydantic-ai-integration"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "streaming-response",

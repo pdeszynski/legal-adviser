@@ -3,9 +3,6 @@
   "description": "Remove all client-side localStorage usage for chat history and session management. Tasks: 1) Search codebase for all localStorage.setItem/getItem calls related to chat, session_id, chat_session, chat_history keys, 2) Remove localStorage logic from chat components, 3) Remove session ID generation in frontend (crypto.randomUUID() calls), 4) Remove chat message persistence to localStorage, 5) Remove chat history retrieval from localStorage on app load, 6) Update useStreamingChat hook to not read/write from localStorage, 7) Ensure all chat data flows through backend GraphQL API only. Add code comments warning against localStorage use for chat data.",
   "id": "remove-frontend-localstorage-chat-dependencies",
   "title": "Remove All localStorage Dependencies from Chat System",
-  "dependencies": [
-    "analyze-chat-history-implementation"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "store-chat",

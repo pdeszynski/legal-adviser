@@ -4,7 +4,7 @@
   "id": "chat-session-entity",
   "title": "Chat Session Entity for Database Storage",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

@@ -3,9 +3,6 @@
   "description": "Ensure clarification questions and user answers persist correctly across page refreshes and navigation. Currently, the clarification state appears to be lost when users navigate away or refresh the page. Implementation tasks: 1) Store clarification questions in ChatMessage.content as structured JSON with type: 'clarification', 2) Store user answers in ChatMessage when submitted via submitClarificationAnswers mutation, 3) Update chat history loading to reconstruct clarification UI from stored message data, 4) For pending clarifications (not yet answered): show interactive form with original questions, 5) For answered clarifications: show read-only view with questions and user's answers, 6) Add visual indicator showing clarification status (pending, answered, completed), 7) Ensure page refresh maintains the correct clarification state, 8) Test scenario: user starts clarification, refreshes page, can still see and answer questions, 9) Test scenario: user answers clarification, refreshes page, sees their answers and AI's final response. This ensures robust UX for multi-turn conversations that may span multiple sessions.",
   "id": "clarification-message-state-persistence",
   "title": "Persist Clarification State Across Page Navigation and Refresh",
-  "dependencies": [
-    "fix-clarification-history-restoration"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "store-chat",

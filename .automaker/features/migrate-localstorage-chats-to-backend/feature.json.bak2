@@ -4,7 +4,7 @@
   "id": "migrate-localstorage-chats-to-backend",
   "title": "Migrate Existing localStorage Chats to Backend Database",
   "priority": 3,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-28T09:15:56.565Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-28T09:57:09.645Z"
 }

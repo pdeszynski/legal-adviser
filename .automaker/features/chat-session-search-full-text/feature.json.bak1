@@ -4,7 +4,7 @@
   "id": "chat-session-search-full-text",
   "title": "Full-Text Search Across Chat Sessions",
   "priority": 3,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-27T21:39:41.194Z"
+  "updatedAt": "2026-01-27T21:52:13.318Z"
 }

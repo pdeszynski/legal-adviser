@@ -1,7 +1,7 @@
 {
   "category": "Uncategorized",
   "description": "Langfuse integration is done bad, too manully, please follow the official instruction https://langfuse.com/integrations/frameworks/pydantic-ai",
-  "title": "",
+  "title": "Fix Langfuse integration to follow official guidelines",
   "images": [],
   "imagePaths": [],
   "textFilePaths": [],
@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "dependencies": [],
   "workMode": "current",
-  "titleGenerating": "Langfuse integration is done bad, too manully, please follow the official instruction https://langfuse.com/integrations/frameworks/pydantic-ai",
+  "titleGenerating": false,
   "status": "in_progress",
   "id": "feature-1769433556946-stcyssvod",
   "descriptionHistory": [

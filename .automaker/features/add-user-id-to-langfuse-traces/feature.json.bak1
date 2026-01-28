@@ -4,7 +4,7 @@
   "id": "add-user-id-to-langfuse-traces",
   "title": "Add User ID to Langfuse Trace Metadata",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-28T11:48:22.550Z"
+  "updatedAt": "2026-01-28T11:56:47.357Z"
 }

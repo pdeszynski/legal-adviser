@@ -4,7 +4,7 @@
   "id": "verify-streaming-response-works-immediately",
   "title": "Verify Streaming Response Sends Data Immediately",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-27T12:55:18.006Z"
+  "updatedAt": "2026-01-27T13:00:07.712Z"
 }

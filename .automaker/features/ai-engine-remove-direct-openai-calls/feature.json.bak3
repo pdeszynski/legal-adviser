@@ -3,9 +3,6 @@
   "description": "Audit and remove all direct OpenAI API usage from AI Engine codebase. Replace with PydanticAI agent patterns. Search for imports of 'openai', 'openai.AsyncOpenAI', direct client calls like 'client.chat.completions.create()'. Migrate classifier agent (classifier_agent.py), Q&A agent (qa_agent.py), and any document generation code to use PydanticAI's structured agent patterns with proper dependency injection for model configuration. Ensure environment variables (OPENAI_API_KEY) are passed through PydanticAI configuration, not direct OpenAI clients.",
   "id": "ai-engine-remove-direct-openai-calls",
   "title": "Remove All Direct OpenAI API Calls",
-  "dependencies": [
-    "ai-engine-pydantic-ai-migration"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "two-factor",

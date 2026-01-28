@@ -3,9 +3,6 @@
   "description": "Create Playwright E2E tests for streaming chat functionality. Test scenarios: 1) Streaming response renders token-by-token (verify content accumulation), 2) Citations appear during stream, 3) Stop button interrupts stream correctly, 4) Reconnection after stream failure works, 5) Fallback to GraphQL on stream error (if backend still exists), 6) JWT token is sent correctly (verify in network trace), 7) Stream timeout handling, 8) Multiple sequential queries maintain session context, 9) Error messages display on stream failures. Use Playwright's request interception to mock streaming responses or test against real AI Engine. Measure time-to-first-token latency in tests.",
   "id": "ai-streaming-e2e-tests",
   "title": "E2E Tests for Streaming Chat",
-  "dependencies": [
-    "frontend-streaming-chat-client"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "streaming-response",

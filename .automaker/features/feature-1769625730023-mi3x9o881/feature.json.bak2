@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "Clarification form is working invalid:\n1. It does not wait for giving answer in free text forms, first keypress marks as answered and does not allow writing answer\n2. After refreshing page, form is again empty, instead simple string message is shown - form should be filled instead, persisted as form, not as a separate message.",
+  "title": "",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "store-chat",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": "Clarification form is working invalid:\n1. It does not wait for giving answer in free text forms, first keypress marks as answered and does not allow writing answer\n2. After refreshing page, form is again empty, instead simple string message is shown - form should be filled instead, persisted as form, not as a separate message.",
+  "status": "in_progress",
+  "id": "feature-1769625730023-mi3x9o881",
+  "descriptionHistory": [
+    {
+      "description": "Clarification form is working invalid:\n1. It does not wait for giving answer in free text forms, first keypress marks as answered and does not allow writing answer\n2. After refreshing page, form is again empty, instead simple string message is shown - form should be filled instead, persisted as form, not as a separate message.",
+      "timestamp": "2026-01-28T18:42:10.117Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-28T18:42:10.157Z",
+  "updatedAt": "2026-01-28T18:42:10.321Z"
+}

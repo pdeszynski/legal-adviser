@@ -5,9 +5,9 @@
   "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
   "branchName": null,
   "runningFeatureIds": [
-    "fix-clarification-submission-triggers-ai-response",
-    "clarification-flow-e2e-tests",
-    "cleanup-existing-empty-assistant-messages-in-database"
+    "feature-1769621676707-xvz14f3g3",
+    "fix-clarification-enter-key-to-submit-answers",
+    "feature-1769621734351-9m1r6xvvw"
   ],
-  "savedAt": "2026-01-28T15:56:30.091Z"
+  "savedAt": "2026-01-28T18:31:31.596Z"
 }

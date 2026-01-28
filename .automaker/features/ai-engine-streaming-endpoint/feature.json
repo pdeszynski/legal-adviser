@@ -4,7 +4,7 @@
   "id": "ai-engine-streaming-endpoint",
   "title": "AI Engine Streaming Chat Endpoint",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {

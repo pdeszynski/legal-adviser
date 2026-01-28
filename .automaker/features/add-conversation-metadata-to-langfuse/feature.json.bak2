@@ -4,7 +4,7 @@
   "id": "add-conversation-metadata-to-langfuse",
   "title": "Add Additional Conversation Context to Langfuse Traces",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-28T11:46:53.420Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-28T12:01:37.403Z"
 }

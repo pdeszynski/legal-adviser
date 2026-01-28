@@ -3764,6 +3764,96 @@ Fix 2026-01-27 11:48:52,906 - src.main - DEBUG - Incoming request: POST /api/v1/
       <name>Create E2E Tests for Complete Clarification Flow</name>
       <description>Create comprehensive Playwright E2E tests for the clarification question flow to ensure it works end-to-end. Test scenarios: 1) AI returns clarification JSON response with questions, 2) Frontend correctly parses JSON and renders ClarificationMessage component, 3) Questions are displayed as bullet points with hints and optional answer fields, 4) User can type answers or select from options (if provided), 5) Submit Answers button sends answers to backend via submitClarificationAnswers mutation, 6) Backend processes answers and triggers new AI response, 7) AI incorporates answers and provides final response (text or document), 8) Conversation history includes both clarification round and final response, 9) Multi-round clarification works (ask → answer → ask follow-up → answer → respond), 10) Page refresh during pending clarification shows questions correctly, 11) Page refresh after completed clarification shows full conversation. Use Playwright to simulate full conversation flow requiring clarification. Verify database state after each step to ensure messages are saved with proper content.</description>
     </feature>
+    <feature>
+      <name>Fix Clarification Form Closing Prematurely on Any Button Press</name>
+      <description>Fix the critical bug where the clarification form submits or closes immediately when any button is pressed, instead of waiting for users to complete their answers. Current issue: clicking any button (not just submit) marks clarification as answered and removes the form, preventing users from providing complete responses. Root cause analysis needed: 1) Audit ClarificationMessage component event handlers - identify where premature close/submit occurs, 2) Check if all buttons have onClick handlers that trigger form submission, 3) Verify the &apos;Submit Answers&apos; button is the only one that should submit the form, 4) Ensure typing in text inputs does NOT trigger any submit/close handlers, 5) Check if there&apos;s a global click handler incorrectly capturing all button clicks, 6) Verify form state management - clarification should remain &apos;pending&apos; until submit is explicitly clicked, 7) Add debugging logs to track which handlers are firing on button clicks. Implementation tasks: 1) Remove any onSubmit handlers from non-submit buttons, 2) Ensure only the &apos;Submit Answers&apos; button triggers submitClarificationAnswers mutation, 3) Add form validation preventing submission with empty/invalid answers, 4) Ensure text inputs use onChange only (no onSubmit on input fields), 5) Test typing multi-character answers - verify form stays open, 6) Test that pressing Enter key in text input either focuses next field or does nothing (not submit), 7) Add visual loading state on submit button during submission, 8) Ensure form cannot be closed while user is actively typing answers. This is a high-severity UX bug blocking clarification workflow.</description>
+    </feature>
+    <feature>
+      <name>Prevent Empty Chat Sessions from Being Created or Displayed</name>
+      <description>Fix the issue where opening a new chat page creates a ChatSession record immediately even before the user sends any messages. This results in empty chat sessions appearing in chat history. Implementation: 1) Remove automatic ChatSession creation on page load, 2) Only create ChatSession when user sends first message via askLegalQuestion or streaming endpoint, 3) Backend should create session and first message atomically in single transaction, 4) If using frontend session state management, keep session ID in component state only (not localStorage/database), 5) Update chat history query to exclude sessions with messageCount = 0, 6) Add database constraint CHECK (message_count &gt; 0) to prevent empty sessions, 7) Create cleanup migration to delete existing empty ChatSession records where messageCount = 0 OR no ChatMessage records exist, 8) Test that navigating to /chat without sending messages doesn&apos;t create database records, 9) Verify chat history list only shows conversations with at least one message. This prevents database clutter and improves UX.</description>
+    </feature>
+    <feature>
+      <name>Fix Clarification Open Questions to Allow Full Text Input Before Submission</name>
+      <description>Fix the clarification form handling for open-ended questions (questions without predefined options/buttons). Currently, open questions may be auto-submitting or not properly capturing user text input. Implementation tasks: 1) Ensure open questions render as text input fields (textarea for longer answers), 2) Text inputs should use controlled component pattern with value state, 3) onChange handler should ONLY update local state (no submission), 4) Prevent Enter key from submitting form in text inputs (unless Ctrl+Enter for submit), 5) Allow users to type multiple sentences/paragraphs without interruption, 6) Add character counter for open questions if length limits exist, 7) Ensure text input captures full user answer before &apos;Submit Answers&apos; is clicked, 8) Test with various answer lengths: single word, sentence, paragraph, 9) Verify text input value is included in submitClarificationAnswers mutation payload, 10) Add visual feedback that text is being captured (character count, not-empty validation). Separate open question handling from button-based multiple choice questions.</description>
+    </feature>
+    <feature>
+      <name>Create E2E Tests for Clarification Form State Management</name>
+      <description>Create comprehensive Playwright E2E tests to verify clarification form state management and prevent regressions. Test scenarios: 1) Open clarification questions remain displayed when user types in text inputs, 2) Clicking outside form does NOT close or submit clarification, 3) Pressing Enter in text input does NOT submit (unless Ctrl+Enter), 4) Only &apos;Submit Answers&apos; button triggers submitClarificationAnswers mutation, 5) Form with both text inputs and option buttons works correctly, 6) Multi-line text answers are captured completely without truncation, 7) Form validation prevents submission with empty text fields, 8) Loading state appears during submission and form cannot be closed, 9) After successful submission, clarification shows read-only state with user&apos;s answers, 10) Verify no empty chat sessions created when clarification is pending. Use Playwright to simulate realistic user interaction patterns: type slowly, click around, switch tabs, press Enter key, etc. Ensure tests catch the current bug where any interaction closes the form.</description>
+    </feature>
+    <feature>
+      <name>Clean Up Existing Empty Chat Sessions from Database</name>
+      <description>Create a one-time database cleanup operation to remove existing empty ChatSession records that were created before the fix. Implementation: 1) Create backend GraphQL mutation cleanupEmptySessions(adminKey: string!) for admin-only access, 2) Query all ChatSession records WHERE messageCount = 0 OR createdAt = updatedAt (never modified), 3) Verify no ChatMessage records exist for these sessions, 4) Delete confirmed empty sessions in batches (100 at a time) to avoid long-running transactions, 5) Log cleanup count and affected session IDs for audit trail, 6) Return cleanup summary: {deletedCount, skippedCount, errors[]}, 7) Add admin endpoint GET /api/admin/debug/empty-sessions to preview what would be deleted, 8) Create database migration script that runs cleanup once on deployment, 9) Add monitoring to track empty session count going forward. This cleans up technical debt from the previous implementation.</description>
+    </feature>
+    <feature>
+      <name>AI Engine JWT Validation with Session ID Support</name>
+      <description>Update existing JWT validation middleware to extract and validate session ID from custom JWT claims. Add session ID to request context for use in AI Engine endpoints. Validate session ID format (UUID v4). Return 400 if session ID is invalid. Include session ID in Langfuse trace metadata.</description>
+    </feature>
+    <feature>
+      <name>Streaming Chat with Session ID Context</name>
+      <description>Update streaming endpoint to accept and validate session ID from JWT token. Pass session ID to LangGraph workflow for conversation history retrieval. Ensure full conversation context is included in AI responses when session ID is provided.</description>
+    </feature>
+    <feature>
+      <name>Fix Clarification Open Questions Submitting on Single Keypress</name>
+      <description>Fix the critical bug where open-ended clarification questions submit immediately after typing just one character, instead of allowing users to type complete multi-word answers. Current issue: any keypress in text input fields triggers form submission, preventing users from providing complete responses. Root cause: onChange handler is incorrectly triggering submission logic instead of just updating local state. Implementation: 1) Audit ClarificationMessage component - identify where premature submission occurs in text input handlers, 2) Ensure text inputs use controlled component pattern with value state only, 3) Remove any onSubmit or form submission triggers from individual character input, 4) Ensure only &apos;Submit Answers&apos; button (or Enter key) triggers submitClarificationAnswers mutation, 5) Add form validation preventing submission with empty/whitespace-only answers, 6) Test typing multi-word sentences - verify no submission occurs until Enter or Submit clicked, 7) Add visual feedback showing answer is being captured (character count, text preview), 8) Ensure all answer text is included in mutation payload. This is high-severity UX bug blocking clarification workflow.</description>
+    </feature>
+    <feature>
+      <name>Make Enter Key Submit Clarification Answers (Single-Line Inputs)</name>
+      <description>Update clarification form to use single-line text inputs (not multiline textareas) where pressing Enter key submits the form. Current behavior: unclear what Enter key does, may be adding newlines or not working. Implementation: 1) Replace all textarea components with single-line input fields for clarification answers, 2) Add onKeyDown handler to input fields that detects Enter key press, 3) On Enter key press: validate form has non-empty answers, then trigger submitClarificationAnswers mutation, 4) Prevent Enter key from adding newline or submitting invalid/empty forms, 5) Ensure Shift+Enter (if needed) does NOT submit, only plain Enter, 6) Add visual hint &apos;Press Enter to submit&apos; below input fields, 7) Keep Submit Answers button as alternative submission method, 8) Test that Enter works consistently across all open questions in the form. This provides intuitive form submission behavior matching standard web form patterns.</description>
+    </feature>
+    <feature>
+      <name>Persist Clarification User Answers in Chat Message Content</name>
+      <description>Fix the broken clarification flow where user answers are not persisted to the database, causing the clarification form to reappear empty when users refresh or re-enter the page. Current issue: answers are sent directly to AI Engine but never saved, so no record exists that user already responded. Root cause: submitClarificationAnswers mutation likely doesn&apos;t create a ChatMessage record with the answers. Implementation: 1) Update ChatMessage entity to support clarification answer messages with role: &apos;user&apos; and content containing structured JSON: {type: &apos;clarification_answer&apos;, questions: [...], answers: [{question, answer}]}, 2) Update submitClarificationAnswers mutation to create a new ChatMessage record when answers are submitted, 3) Store answers in ChatMessage.content as JSON string (not raw text), 4) Store original clarification questions in metadata for reference, 5) Frontend chat history loading should detect &apos;clarification_answer&apos; type messages, 6) Render submitted answers in read-only state (show question and user&apos;s answer), 7) When rendering historical clarification questions, check if answers exist - if yes, show read-only view, if no, show interactive form, 8) Test flow: ask question → AI asks clarification → user answers → refresh page → see both AI&apos;s questions AND user&apos;s answers preserved. This ensures conversation continuity across page refreshes.</description>
+    </feature>
+    <feature>
+      <name>Parse Clarification Answers JSON to Text for AI Engine</name>
+      <description>Update the backend logic to correctly parse stored clarification answers from JSON format and send them as plain text to AI Engine for processing. Current issue: answers are stored in database (after persist-clarification-answers fix) but may not be correctly extracted and sent to AI Engine in the expected format. Implementation: 1) In submitClarificationAnswers mutation or follow-up processing, retrieve the clarification answers ChatMessage record, 2) Parse the JSON content: {type: &apos;clarification_answer&apos;, answers: [{question, answer}]}, 3) Format answers as plain text for AI Engine: create natural language string like &apos;Based on your questions: 1) [question1] - [answer1], 2) [question2] - [answer2], etc.&apos;, 4) Send formatted text as part of conversation context to AI Engine /ask-stream endpoint, 5) Ensure conversation history includes: user&apos;s original query, AI&apos;s clarification questions, user&apos;s answers (all as messages), 6) AI Engine receives full context and can provide final response incorporating answers, 7) Test with multi-round clarification to ensure answers are correctly parsed each time, 8) Add logging to verify JSON parsing and text formatting are working correctly. This ensures AI receives clarification answers in usable format while maintaining structured storage in database.</description>
+    </feature>
+    <feature>
+      <name>Fix clarification form data persistence after page refresh</name>
+      <description>After refreshing page after submitting clarification form on /chat, these are empty again. fix it</description>
+    </feature>
+    <feature>
+      <name>Mark form as answered and persist state</name>
+      <description>After answering form questions, form shoudl be marked as answered, hidden and after page refresh it shoudl still stay this way.</description>
+    </feature>
+    <feature>
+      <name>Fix clarification form text input and persistence</name>
+      <description>Clarification form is working invalid:
+1. It does not wait for giving answer in free text forms, first keypress marks as answered and does not allow writing answer
+2. After refreshing page, form is again empty, instead simple string message is shown - form should be filled instead, persisted as form, not as a separate message.</description>
+    </feature>
+    <feature>
+      <name>Fix form clarification persistence after submission</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Fix clarification form data persistence after page refresh
+
+**Description:** After refreshing page after submitting clarification form on /chat, these are empty again. fix it
+
+---
+
+## Task Description
+
+Form was fixed partially, it&apos;s allowing now providing more than one character, but still it&apos;s not being persisted, please fix it&apos;s persistence. Current behaviour - after providing all answers and questions are sent as a string as follows:
+
+{
+    &quot;data&quot;: {
+        &quot;saveChatMessage&quot;: {
+            &quot;messageId&quot;: &quot;e09e2831-81cc-40fb-b9fa-f5dd8705cea7&quot;,
+            &quot;sessionId&quot;: &quot;e004f7c2-67d0-4d83-b845-f238442c9cdf&quot;,
+            &quot;role&quot;: &quot;user&quot;,
+            &quot;content&quot;: &quot;Czy zawarłeś/aś pisemną umowę dotyczącą świadczonych usług?: asdf\nJaka jest dokładna kwota, której się domagasz i czy uwzględniasz odsetki?: fadsfadsf\nKiedy upłynął termin płatności według umowy?: fadsfer\nKim jest dłużnik? Czy to osoba fizyczna czy firma?: fffff&quot;,
+            &quot;sequenceOrder&quot;: 12,
+            &quot;createdAt&quot;: &quot;2026-01-28T17:52:06.635Z&quot;
+        }
+    }
+}
+
+
+Expected behavior - a special message with form questions + answer is being sent (for e.g. a json) to backend instead, and persisted in a way, so we can restore form clarification form state </description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

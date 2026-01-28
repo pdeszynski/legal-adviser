@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID, Int, Float, InputType } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Int, InputType } from '@nestjs/graphql';
 import { MessageRole } from '../entities/chat-message.entity';
 
 /**
@@ -84,7 +84,8 @@ export class EmptyMessagesSummary {
   withClarificationMetadata: number;
 
   @Field(() => Int, {
-    description: 'Number of messages that are truly empty (both content and rawContent)',
+    description:
+      'Number of messages that are truly empty (both content and rawContent)',
   })
   trulyEmpty: number;
 
@@ -239,4 +240,141 @@ export class CleanupEmptyMessagesInput {
     description: 'Mark truly empty messages for deletion',
   })
   markForDeletion: boolean;
+}
+
+/**
+ * Empty session analysis result
+ *
+ * Represents a single empty session found during analysis
+ */
+@ObjectType('EmptySessionAnalysis')
+export class EmptySessionAnalysis {
+  @Field(() => ID, {
+    description: 'The session ID',
+  })
+  sessionId: string;
+
+  @Field(() => ID, {
+    description: 'The user ID',
+  })
+  userId: string;
+
+  @Field(() => String, {
+    description: 'Chat mode (LAWYER or SIMPLE)',
+  })
+  mode: string;
+
+  @Field(() => String, {
+    description: 'Timestamp when the session was created',
+  })
+  createdAt: Date;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Session title (should be null for empty sessions)',
+  })
+  title: string | null;
+}
+
+/**
+ * Error detail for cleanup operations
+ *
+ * Represents a single error that occurred during cleanup
+ */
+@ObjectType('CleanupErrorDetail')
+export class CleanupErrorDetail {
+  @Field(() => ID, {
+    description: 'The session ID that failed',
+  })
+  sessionId: string;
+
+  @Field(() => String, {
+    description: 'Error message',
+  })
+  error: string;
+}
+
+/**
+ * Result of empty session cleanup operation
+ *
+ * Returns statistics about empty sessions that were deleted
+ */
+@ObjectType('CleanupEmptySessionsResult')
+export class CleanupEmptySessionsResult {
+  @Field(() => Int, {
+    description: 'Total number of empty sessions found',
+  })
+  totalEmptySessions: number;
+
+  @Field(() => Int, {
+    description: 'Number of sessions that were deleted',
+  })
+  deletedSessions: number;
+
+  @Field(() => Int, {
+    description: 'Number of sessions skipped (had messages or other issues)',
+  })
+  skippedSessions: number;
+
+  @Field(() => Int, {
+    description: 'Number of affected users',
+  })
+  affectedUsers: number;
+
+  @Field(() => [String], {
+    description: 'List of deleted session IDs',
+  })
+  sessionIds: string[];
+
+  @Field(() => [String], {
+    description: 'List of affected user IDs',
+  })
+  userIds: string[];
+
+  @Field(() => [CleanupErrorDetail], {
+    description: 'List of errors that occurred during cleanup',
+  })
+  errors: CleanupErrorDetail[];
+}
+
+/**
+ * Input for empty session cleanup operation
+ */
+@InputType('CleanupEmptySessionsInput')
+export class CleanupEmptySessionsInput {
+  @Field(() => Boolean, {
+    nullable: true,
+    defaultValue: false,
+    description: 'Actually perform the cleanup (false = dry run)',
+  })
+  execute: boolean;
+}
+
+/**
+ * Empty sessions monitoring metrics
+ *
+ * Used for monitoring dashboard to track empty session count over time
+ */
+@ObjectType('EmptySessionsMetrics')
+export class EmptySessionsMetrics {
+  @Field(() => Int, {
+    description: 'Current count of empty sessions in the database',
+  })
+  count: number;
+
+  @Field(() => String, {
+    description: 'ISO timestamp of when this metric was collected',
+  })
+  timestamp: string;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Threshold for alerting (null = no threshold set)',
+  })
+  alertThreshold: number | null;
+
+  @Field(() => Boolean, {
+    description: 'Whether the count exceeds the alert threshold',
+  })
+  requiresAttention: boolean;
 }

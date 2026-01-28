@@ -4,7 +4,7 @@
   "id": "streaming-response-e2e-tests",
   "title": "Create E2E Tests for Immediate Token Streaming",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {

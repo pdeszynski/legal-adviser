@@ -4,7 +4,7 @@
   "id": "ai-engine-e2e-tests-refactor",
   "title": "Update E2E Tests for Refactored AI Engine",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

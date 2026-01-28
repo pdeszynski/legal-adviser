@@ -4,7 +4,7 @@
   "id": "fix-streaming-response-content-capture-for-database-save",
   "title": "Fix Clarification JSON Streaming Response Capture",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -18,5 +18,5 @@
       "source": "edit"
     }
   ],
-  "updatedAt": "2026-01-28T15:38:04.591Z"
+  "updatedAt": "2026-01-28T15:41:29.043Z"
 }

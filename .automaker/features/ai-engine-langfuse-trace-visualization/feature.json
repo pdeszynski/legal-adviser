@@ -4,7 +4,7 @@
   "id": "ai-engine-langfuse-trace-visualization",
   "title": "Create Langfuse Trace Visualization Dashboard",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {

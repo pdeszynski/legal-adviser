@@ -4,7 +4,7 @@
   "id": "ai-engine-rag-pydantic-ai-tool",
   "title": "Refactor RAG as PydanticAI Tool",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "two-factor",
   "descriptionHistory": [
     {
