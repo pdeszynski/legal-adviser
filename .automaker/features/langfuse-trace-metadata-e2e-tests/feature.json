@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive E2E tests verifying that all Langfuse traces include proper metadata (session ID, user ID, agent name, additional context). Test scenarios: 1) Submit chat query and verify trace includes user_id from JWT, 2) Verify trace includes session_id (new session format), 3) Verify trace includes correct agent_name (e.g., 'legal-qa'), 4) Continue conversation and verify same session_id appears in second trace, 5) Verify mode (LAWYER/SIMPLE) appears in trace metadata, 6) Verify language preference appears in trace, 7) Test unauthenticated query - verify no user_id or 'anonymous' marker, 8) Test different agents (classifier, clarification) - verify correct agent names, 9) Use Langfuse public API to fetch and validate trace content, 10) Mock Langfuse API for CI/CD if needed. Ensure metadata consistency across all agent types.",
+  "id": "langfuse-trace-metadata-e2e-tests",
+  "title": "Create E2E Tests for Langfuse Trace Metadata",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive E2E tests verifying that all Langfuse traces include proper metadata (session ID, user ID, agent name, additional context). Test scenarios: 1) Submit chat query and verify trace includes user_id from JWT, 2) Verify trace includes session_id (new session format), 3) Verify trace includes correct agent_name (e.g., 'legal-qa'), 4) Continue conversation and verify same session_id appears in second trace, 5) Verify mode (LAWYER/SIMPLE) appears in trace metadata, 6) Verify language preference appears in trace, 7) Test unauthenticated query - verify no user_id or 'anonymous' marker, 8) Test different agents (classifier, clarification) - verify correct agent names, 9) Use Langfuse public API to fetch and validate trace content, 10) Mock Langfuse API for CI/CD if needed. Ensure metadata consistency across all agent types.",
+      "timestamp": "2026-01-28T11:46:53.421Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T12:10:21.728Z"
+}

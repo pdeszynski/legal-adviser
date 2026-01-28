@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { getAccessToken } from '@/providers/auth-provider/auth-provider.client';
 import type { ChatCitation, ClarificationInfo } from './use-chat';
+import type { ClarificationQuestion } from './use-chat';
 import { getCsrfHeaders } from '@/lib/csrf';
 import {
   detectStreamErrorType,
@@ -29,6 +30,49 @@ export type { StreamErrorResponse } from './streaming/streaming-error-handler';
 
 const AI_ENGINE_URL = process.env.NEXT_PUBLIC_AI_ENGINE_URL || 'http://localhost:8000';
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
+
+/**
+ * Build conversation metadata for Langfuse observability
+ */
+function buildConversationMetadata(
+  conversationHistory: Array<{ role: string; content: string }> | null,
+): {
+  message_count: number;
+  is_first_message: boolean;
+  language: string;
+  locale: string;
+  user_agent: string;
+  platform: string;
+} {
+  const messageCount = (conversationHistory?.length || 0) + 1; // +1 for current message
+  const isFirstMessage = !conversationHistory || conversationHistory.length === 0;
+
+  // Detect language from browser
+  const language = navigator.language.split('-')[0] || 'en';
+  const locale = navigator.language || 'en-US';
+
+  // Get user agent
+  const userAgent = navigator.userAgent;
+
+  // Detect platform
+  let platform = 'web';
+  if (/Mobile|Android|iPhone|iPad/i.test(userAgent)) {
+    platform = 'mobile';
+  } else if (/Tablet|iPad/i.test(userAgent)) {
+    platform = 'tablet';
+  } else if (/Win|Mac|Linux/i.test(userAgent)) {
+    platform = 'desktop';
+  }
+
+  return {
+    message_count: messageCount,
+    is_first_message: isFirstMessage,
+    language,
+    locale,
+    user_agent: userAgent,
+    platform,
+  };
+}
 
 /**
  * Save a user message to the backend via GraphQL mutation
@@ -238,6 +282,8 @@ export interface UseStreamingChatOptions {
   onStreamEnd?: (response: StreamingChatResponse) => void;
   /** Callback when stream errors */
   onStreamError?: (error: string, errorResponse: StreamErrorResponse) => void;
+  /** Callback when clarification is received */
+  onClarification?: (clarification: ClarificationInfo) => void;
   /** Callback when retrying */
   onRetry?: (attempt: number, delayMs: number) => void;
   /** Callback when connection is lost */
@@ -252,6 +298,13 @@ export interface UseStreamingChatReturn {
     question: string,
     mode: 'LAWYER' | 'SIMPLE',
     sessionId?: string,
+  ) => Promise<StreamingChatResponse>;
+  /** Send clarification answers with streaming response */
+  sendClarificationAnswers: (
+    originalQuestion: string,
+    answers: Array<{ question: string; question_type: string; answer: string }>,
+    mode: 'LAWYER' | 'SIMPLE',
+    sessionId: string,
   ) => Promise<StreamingChatResponse>;
   /** Abort the current stream */
   abortStream: () => void;
@@ -273,6 +326,8 @@ export interface UseStreamingChatReturn {
   wasFallback: boolean;
   /** Reconnection state */
   reconnectionState: ReconnectionState | null;
+  /** Current clarification being received */
+  currentClarification: ClarificationInfo | null;
 }
 
 /**
@@ -309,6 +364,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
     onRetry,
     onConnectionLost,
     onFallback,
+    onClarification,
   } = options;
 
   const retryConfig: RetryConfig = { ...DEFAULT_RETRY_CONFIG, ...partialRetryConfig, maxRetries };
@@ -321,6 +377,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
   const [currentCitations, setCurrentCitations] = useState<StreamCitation[]>([]);
   const [wasFallback, setWasFallback] = useState(false);
   const [reconnectionState, setReconnectionState] = useState<ReconnectionState | null>(null);
+  const [currentClarification, setCurrentClarification] = useState<ClarificationInfo | null>(null);
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const lastRequestRef = useRef<{ question: string; mode: 'LAWYER' | 'SIMPLE'; sessionId: string } | null>(
@@ -370,6 +427,41 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
   }, []);
 
   /**
+   * Detect if token content contains a clarification JSON
+   * Clarification JSON has format: {"type":"clarification","questions":[...],...}
+   */
+  const isClarificationJson = useCallback((content: string): boolean => {
+    const trimmed = content.trim();
+    return trimmed.startsWith('{"type":"clarification"') ||
+           trimmed.startsWith('{"type": "clarification"');
+  }, []);
+
+  /**
+   * Parse clarification JSON from token content
+   */
+  const parseClarificationFromToken = useCallback((content: string): ClarificationInfo | null => {
+    try {
+      const data = JSON.parse(content);
+      if (data.type === 'clarification' && Array.isArray(data.questions)) {
+        return {
+          needs_clarification: true,
+          questions: (data.questions as Array<{question: string; question_type?: string; options?: string[]; hint?: string}>).map(q => ({
+            question: q.question,
+            question_type: q.question_type || 'text',
+            options: q.options,
+            hint: q.hint,
+          })),
+          context_summary: data.context_summary || '',
+          next_steps: data.next_steps || '',
+        };
+      }
+    } catch {
+      // Not valid JSON or not a clarification object
+    }
+    return null;
+  }, []);
+
+  /**
    * Process a single stream event
    */
   const processEvent = useCallback(
@@ -377,6 +469,17 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
       switch (event.type) {
         case 'token':
           const tokenContent = event.content;
+
+          // Check if this token contains clarification JSON
+          if (isClarificationJson(tokenContent)) {
+            const clarification = parseClarificationFromToken(tokenContent);
+            if (clarification) {
+              // Trigger callback and return clarification, NOT as content
+              onClarification?.(clarification);
+              return { clarification };
+            }
+          }
+
           onToken?.(tokenContent);
           return { content: tokenContent };
 
@@ -423,7 +526,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
           return null;
       }
     },
-    [onToken, onCitation],
+    [onToken, onCitation, onClarification, isClarificationJson, parseClarificationFromToken],
   );
 
   /**
@@ -432,6 +535,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
   const fetchConversationHistory = useCallback(async (sessionId: string): Promise<Array<{ role: string; content: string }> | null> => {
     const accessToken = getAccessToken();
     if (!accessToken) {
+      console.warn('[fetchConversationHistory] No access token available');
       return null;
     }
 
@@ -458,29 +562,36 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
       });
 
       if (!response.ok) {
+        console.warn('[fetchConversationHistory] Response not OK:', response.status, response.statusText);
         return null;
       }
 
       const result = await response.json();
 
       if (result.errors && result.errors.length > 0) {
+        console.warn('[fetchConversationHistory] GraphQL errors:', result.errors);
         return null;
       }
 
       const messages = result.data?.chatMessages;
       if (!messages || !Array.isArray(messages)) {
+        console.warn('[fetchConversationHistory] No messages found in response');
         return null;
       }
 
       // Transform to AI Engine format: {role, content}
       // Map MessageRole enum (USER/ASSISTANT) to 'user'/'assistant'
-      return messages
+      const history = messages
         .sort((a: { sequenceOrder: number }, b: { sequenceOrder: number }) => a.sequenceOrder - b.sequenceOrder)
         .map((msg: { role: string; content: string }) => ({
           role: msg.role === 'USER' ? 'user' : 'assistant',
           content: msg.content,
         }));
-    } catch {
+
+      console.log('[fetchConversationHistory] Fetched', history.length, 'messages for session', sessionId);
+      return history;
+    } catch (error) {
+      console.error('[fetchConversationHistory] Error fetching conversation history:', error);
       return null;
     }
   }, []);
@@ -615,6 +726,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
           // (to avoid duplicating the current question)
           const lastMessage = conversationHistory[conversationHistory.length - 1];
           if (lastMessage && lastMessage.role === 'user' && lastMessage.content === question) {
+            console.log('[executeStreamRequest] Removing last message from history as it matches current question');
             conversationHistory = conversationHistory.slice(0, -1);
           }
         }
@@ -628,7 +740,17 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
         ...(conversationHistory && conversationHistory.length > 0
           ? { conversation_history: conversationHistory }
           : {}),
+        // Add conversation metadata for Langfuse observability
+        conversation_metadata: buildConversationMetadata(conversationHistory),
       };
+
+      console.log('[executeStreamRequest] Sending request to AI Engine:', {
+        sessionId,
+        questionLength: question.length,
+        conversationHistoryLength: conversationHistory?.length || 0,
+        hasConversationHistory: !!conversationHistory && conversationHistory.length > 0,
+        conversationMetadata: requestBody.conversation_metadata,
+      });
 
       // Create abort controller for this attempt
       abortControllerRef.current = new AbortController();
@@ -696,10 +818,19 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
               const processed = processEvent(event);
 
               if (processed) {
-                // Update accumulated content for tokens
-                if (event.type === 'token') {
-                  finalResponse.content += processed.content || '';
+                // Update accumulated content for tokens (but NOT for clarification JSON)
+                if (event.type === 'token' && processed.content && !isClarificationJson(processed.content)) {
+                  finalResponse.content += processed.content;
                   setCurrentContent(finalResponse.content);
+                }
+
+                // Handle clarification from token events
+                if (event.type === 'token' && isClarificationJson(processed.content || '')) {
+                  const clarification = parseClarificationFromToken(processed.content || '');
+                  if (clarification) {
+                    finalResponse.clarification = clarification;
+                    setCurrentClarification(clarification);
+                  }
                 }
 
                 // Add citations
@@ -711,9 +842,10 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
                   setCurrentCitations(finalResponse.citations as StreamCitation[]);
                 }
 
-                // Handle clarification
+                // Handle clarification from clarification events (legacy)
                 if (event.type === 'clarification' && processed.clarification) {
                   finalResponse.clarification = processed.clarification;
+                  setCurrentClarification(processed.clarification);
                 }
 
                 // Handle done event
@@ -831,6 +963,8 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
       setupActivityTimeout,
       clearActivityTimeout,
       fetchConversationHistory,
+      isClarificationJson,
+      parseClarificationFromToken,
     ],
   );
 
@@ -856,6 +990,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
       setCurrentCitations([]);
       setWasFallback(false);
       setReconnectionState(null);
+      setCurrentClarification(null);
       onStreamStart?.();
 
       // CRITICAL: Session ID must be provided and valid
@@ -908,9 +1043,26 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
 
         // Save assistant message to backend after streaming completes
         if (!response.error) {
+          // For clarification responses, the content field is empty but we need to store
+          // the clarification JSON so the backend can parse it and store in metadata.
+          // The backend's parseClarificationFromContent() expects the JSON in content.
+          let contentToSave = response.content;
+
+          if (!contentToSave && response.clarification) {
+            // Serialize the clarification to JSON for storage
+            // The backend will parse this and store it in metadata.clarification
+            contentToSave = JSON.stringify({
+              type: 'clarification',
+              questions: response.clarification.questions,
+              context_summary: response.clarification.context_summary,
+              next_steps: response.clarification.next_steps,
+            });
+            console.log('[sendMessage] Saving clarification message with JSON content');
+          }
+
           const assistantMessageResult = await saveAssistantMessageToBackend(
             sessionId,
-            response.content,
+            contentToSave,
             response.citations || null,
             {
               confidence: response.confidence,
@@ -1005,6 +1157,277 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
     }
   }, [executeStreamRequest]);
 
+  /**
+   * Send clarification answers with streaming response
+   *
+   * This function sends the user's answers to clarification questions
+   * and streams the AI's response in real-time.
+   */
+  const sendClarificationAnswers = useCallback(
+    async (
+      originalQuestion: string,
+      answers: Array<{ question: string; question_type: string; answer: string }>,
+      mode: 'LAWYER' | 'SIMPLE',
+      sessionId: string,
+    ): Promise<StreamingChatResponse> => {
+      // Reset state
+      setIsStreaming(true);
+      setIsReconnecting(false);
+      setError(null);
+      setErrorResponse(null);
+      setCurrentContent('');
+      setCurrentCitations([]);
+      setWasFallback(false);
+      setReconnectionState(null);
+      setCurrentClarification(null);
+      onStreamStart?.();
+
+      // Validate session ID
+      const uuidV4Regex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+      if (!sessionId || !uuidV4Regex.test(sessionId)) {
+        const error = 'Invalid or missing session ID. Please start a new chat session.';
+        setIsStreaming(false);
+        setError(error);
+        const errorResp: StreamErrorResponse = {
+          type: 'INVALID_SESSION_ID',
+          message: error,
+          userMessage: 'Chat session not found. Please refresh the page.',
+          retryable: false,
+          fallbackAvailable: false,
+          canRecover: false,
+          severity: 'high',
+        };
+        setErrorResponse(errorResp);
+        onStreamError?.(error, errorResp);
+        throw new Error(error);
+      }
+
+      // Get JWT token for authentication
+      const accessToken = getAccessToken();
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+
+      // Fetch conversation history for context
+      const conversationHistory = await fetchConversationHistory(sessionId);
+
+      // Build request body
+      const requestBody = {
+        original_question: originalQuestion,
+        answers: answers,
+        mode,
+        session_id: sessionId,
+        ...(conversationHistory && conversationHistory.length > 0
+          ? { conversation_history: conversationHistory }
+          : {}),
+        // Add conversation metadata for Langfuse observability
+        conversation_metadata: buildConversationMetadata(conversationHistory),
+      };
+
+      console.log('[sendClarificationAnswers] Sending request to AI Engine:', {
+        sessionId,
+        originalQuestionLength: originalQuestion.length,
+        answersCount: answers.length,
+        conversationHistoryLength: conversationHistory?.length || 0,
+        conversationMetadata: requestBody.conversation_metadata,
+      });
+
+      // Save user's clarification answers to backend before streaming
+      const answerText = answers
+        .map((a) => `${a.question}: ${a.answer}`)
+        .join('\n');
+      const userMessageResult = await saveUserMessageToBackend(sessionId, answerText);
+      if (!userMessageResult.success) {
+        console.warn('Failed to save clarification answers to backend:', userMessageResult.error);
+        // Continue anyway - don't block the user experience
+      }
+
+      // Create abort controller for this request
+      abortControllerRef.current = new AbortController();
+
+      try {
+        if (!enabled) {
+          throw new Error('Streaming disabled');
+        }
+
+        const response = await fetch(`${AI_ENGINE_URL}/api/v1/qa/clarification-answer-stream`, {
+          method: 'POST',
+          headers,
+          signal: abortControllerRef.current.signal,
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType?.includes('text/event-stream')) {
+          throw new Error('Invalid response type: expected text/event-stream');
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error('No response body reader available');
+        }
+
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let finalResponse: StreamingChatResponse = {
+          content: '',
+          citations: [],
+        };
+
+        setupActivityTimeout();
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+
+            if (done) break;
+
+            setupActivityTimeout();
+
+            buffer += decoder.decode(value, { stream: true });
+
+            const lines = buffer.split('\n\n');
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+              if (!line.trim()) continue;
+
+              const eventLine = line.split('\n').find((l) => l.startsWith('data: '));
+              if (!eventLine) continue;
+
+              const event = parseEventLine(eventLine);
+              if (!event) continue;
+
+              const processed = processEvent(event);
+
+              if (processed) {
+                // Update accumulated content for tokens (but NOT for clarification JSON)
+                if (event.type === 'token' && processed.content && !isClarificationJson(processed.content)) {
+                  finalResponse.content += processed.content;
+                  setCurrentContent(finalResponse.content);
+                }
+
+                // Add citations
+                if (event.type === 'citation' && processed.citations) {
+                  finalResponse.citations = [
+                    ...finalResponse.citations,
+                    ...processed.citations,
+                  ] as ChatCitation[];
+                  setCurrentCitations(finalResponse.citations as StreamCitation[]);
+                }
+
+                // Handle done event
+                if (event.type === 'done') {
+                  finalResponse = {
+                    ...finalResponse,
+                    citations: processed.citations as ChatCitation[],
+                    confidence: processed.confidence,
+                    queryType: processed.queryType,
+                    keyTerms: processed.keyTerms,
+                    suggestedTitle: processed.suggestedTitle,
+                  };
+                }
+
+                // Handle error event from server
+                if (event.type === 'error' && processed.error) {
+                  finalResponse.error = processed.error;
+                  return finalResponse;
+                }
+              }
+            }
+          }
+        } finally {
+          reader.releaseLock();
+          clearActivityTimeout();
+        }
+
+        // Save assistant message to backend after streaming completes
+        if (!finalResponse.error) {
+          // For clarification responses, the content field is empty but we need to store
+          // the clarification JSON so the backend can parse it and store in metadata.
+          let contentToSave = finalResponse.content;
+
+          if (!contentToSave && finalResponse.clarification) {
+            // Serialize the clarification to JSON for storage
+            // The backend will parse this and store it in metadata.clarification
+            contentToSave = JSON.stringify({
+              type: 'clarification',
+              questions: finalResponse.clarification.questions,
+              context_summary: finalResponse.clarification.context_summary,
+              next_steps: finalResponse.clarification.next_steps,
+            });
+            console.log('[sendClarificationAnswers] Saving clarification message with JSON content');
+          }
+
+          const assistantMessageResult = await saveAssistantMessageToBackend(
+            sessionId,
+            contentToSave,
+            finalResponse.citations || null,
+            {
+              confidence: finalResponse.confidence,
+              queryType: finalResponse.queryType,
+              keyTerms: finalResponse.keyTerms,
+            },
+          );
+          if (!assistantMessageResult.success) {
+            console.warn('Failed to save assistant message:', assistantMessageResult.error);
+          }
+        }
+
+        setIsStreaming(false);
+        setIsReconnecting(false);
+        onStreamEnd?.(finalResponse);
+
+        return finalResponse;
+      } catch (err) {
+        setIsStreaming(false);
+        setIsReconnecting(false);
+
+        const errorMessage = err instanceof Error ? err.message : 'Failed to send clarification answers';
+
+        // Handle abort
+        if (err instanceof Error && err.name === 'AbortError') {
+          return {
+            content: currentContent,
+            citations: currentCitations as ChatCitation[],
+            error: 'Stream aborted by user',
+            partial: currentContent.length > 0,
+          };
+        }
+
+        setError(errorMessage);
+
+        // No fallback for clarification answers - the user needs to see the error
+        throw err;
+      }
+    },
+    [
+      enabled,
+      onStreamStart,
+      onStreamEnd,
+      onStreamError,
+      parseEventLine,
+      processEvent,
+      setupActivityTimeout,
+      clearActivityTimeout,
+      fetchConversationHistory,
+      isClarificationJson,
+      currentContent,
+      currentCitations,
+    ],
+  );
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -1017,6 +1440,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
 
   return {
     sendMessage,
+    sendClarificationAnswers,
     abortStream,
     retryLastRequest,
     isStreaming,
@@ -1027,6 +1451,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
     currentCitations,
     wasFallback,
     reconnectionState,
+    currentClarification,
   };
 }
 

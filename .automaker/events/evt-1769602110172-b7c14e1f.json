@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769602110172-b7c14e1f",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-28T12:08:30.172Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "add-conversation-metadata-to-langfuse",
+  "featureName": "Add Additional Conversation Context to Langfuse Traces",
+  "error": "Feature completed in 413s - auto-verified",
+  "passes": true
+}

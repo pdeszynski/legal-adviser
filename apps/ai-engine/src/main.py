@@ -46,6 +46,7 @@ from .langfuse_init import flush
 from .models.requests import (
     AskQuestionRequest,
     ClassifyCaseRequest,
+    ClarificationAnswerRequest,
     GenerateDocumentRequest,
     GenerateEmbeddingsRequest,
     GenerateTitleRequest,
@@ -76,6 +77,7 @@ from .services.cost_monitoring import get_cost_summary_dict
 from .services.streaming import create_streaming_response, stream_qa_response
 from .services.streaming_enhanced import (
     create_enhanced_streaming_response,
+    stream_clarification_answer,
     stream_qa_enhanced,
 )
 
@@ -270,6 +272,39 @@ async def validation_exception_handler(request: Request, exc: HTTPException):
     )
 
 
+# Helper function to extract user_id from JWT for error handlers
+def _extract_user_id_from_request(request: Request) -> str | None:
+    """Extract user_id from JWT token in Authorization header.
+
+    This is used by exception handlers which don't have access to
+    FastAPI's dependency injection system.
+
+    Args:
+        request: FastAPI Request object
+
+    Returns:
+        User ID (UUID) if token is valid, None otherwise
+    """
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        return None
+
+    # Extract token from "Bearer <token>" format
+    parts = auth_header.split()
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        return None
+
+    token = parts[1]
+
+    try:
+        from .auth import validate_jwt_token
+        user_context = validate_jwt_token(token)
+        return user_context.id
+    except Exception:
+        # Token validation failed - return None for anonymous/invalid
+        return None
+
+
 # Custom exception handlers for AI Engine errors
 @app.exception_handler(AIEngineError)
 async def ai_engine_exception_handler(request: Request, exc: AIEngineError):
@@ -284,13 +319,18 @@ async def ai_engine_exception_handler(request: Request, exc: AIEngineError):
         exc_info=True,
     )
 
+    # Extract user_id from JWT for Langfuse tracking
+    user_id = _extract_user_id_from_request(request)
+
     # Track error in Langfuse using the new pattern
+    # Note: session_id is in request body, not accessible in global error handlers.
+    # Use placeholder for error traces - actual requests will have proper session_id in agent traces.
     from .langfuse_init import create_trace, is_langfuse_enabled
     if is_langfuse_enabled():
         trace = create_trace(
             name=f"error:{exc.error_code}",
-            session_id=request.headers.get("x-session-id"),
-            user_id=request.headers.get("x-user-id"),
+            session_id="error-handler",  # Placeholder: session_id only in request body
+            user_id=user_id,
             metadata={
                 "path": request.url.path,
                 "method": request.method,
@@ -418,13 +458,18 @@ async def global_exception_handler(request: Request, exc: Exception):
         exc,
     )
 
+    # Extract user_id from JWT for Langfuse tracking
+    user_id = _extract_user_id_from_request(request)
+
     # Track in Langfuse using the new pattern
+    # Note: session_id is in request body, not accessible in global error handlers.
+    # Use placeholder for error traces - actual requests will have proper session_id in agent traces.
     from .langfuse_init import create_trace, is_langfuse_enabled
     if is_langfuse_enabled():
         trace = create_trace(
             name="error:unhandled",
-            session_id=request.headers.get("x-session-id"),
-            user_id=request.headers.get("x-user-id"),
+            session_id="error-handler",  # Placeholder: session_id only in request body
+            user_id=user_id,
             metadata={
                 "path": request.url.path,
                 "method": request.method,
@@ -746,6 +791,65 @@ async def get_cost_metrics():
     return get_cost_summary_dict()
 
 
+# Global conversation history metrics storage
+_conv_history_metrics: dict[str, dict[str, int | float]] = {}
+
+
+@app.get("/api/v1/metrics/conversation-history")
+async def get_conversation_history_metrics():
+    """Get conversation history metrics for monitoring.
+
+    Returns aggregated statistics about conversation history
+    being processed by the AI Engine. Useful for monitoring:
+    - Average conversation length
+    - Message count distribution
+    - Total characters processed
+    - Empty content detection
+    - Role distribution
+
+    Metrics are reset periodically and represent recent activity.
+
+    Returns:
+        - total_requests: Total number of requests processed
+        - total_messages: Total number of history messages processed
+        - total_characters: Total characters in conversation history
+        - avg_messages_per_request: Average messages per request
+        - avg_characters_per_request: Average characters per request
+        - empty_content_count: Number of requests with empty content detected
+        - message_count_distribution: Distribution of message counts
+        - role_distribution: Distribution of message roles
+        - truncated_count: Number of requests with history truncated (>10 messages)
+    """
+    from .services.metrics import get_conversation_history_metrics
+
+    return get_conversation_history_metrics()
+
+
+@app.get("/api/v1/metrics")
+async def get_all_metrics():
+    """Get all metrics in one endpoint for monitoring systems.
+
+    Combines cost and conversation history metrics for
+    simplified monitoring dashboard integration.
+
+    Returns:
+        - costs: Cost and usage metrics
+        - conversation_history: Conversation history metrics
+        - uptime: Service uptime in seconds
+    """
+    import psutil
+    from .services.metrics import get_conversation_history_metrics
+
+    process = psutil.Process()
+    uptime_seconds = time.time() - process.create_time()
+
+    return {
+        "costs": get_cost_summary_dict(),
+        "conversation_history": get_conversation_history_metrics(),
+        "uptime_seconds": uptime_seconds,
+    }
+
+
 @app.get("/api/v1/debug/langfuse-status")
 async def get_langfuse_status(
     user: UserContext = Depends(get_current_user),
@@ -844,6 +948,90 @@ async def get_langfuse_status(
         "langfuse_available": langfuse_available,
         "langfuse_enabled": is_langfuse_enabled(),
         "debug_log": get_debug_log(),  # Include initialization debug log
+    }
+
+
+@app.get("/api/v1/debug/session-history/{session_id}")
+async def get_session_history_debug(
+    session_id: str,
+    user: UserContext | None = Depends(get_current_user_optional),
+):
+    """Debug endpoint to inspect conversation history for a session.
+
+    This endpoint returns detailed information about the conversation history
+    that was received for a specific session ID. Useful for troubleshooting
+    conversation history flow issues.
+
+    Note: This is an AI Engine endpoint that shows what the AI Engine receives.
+    For actual stored conversation history in the database, use the backend
+    GraphQL API's chatMessages query.
+
+    Authentication:
+    - Optional: accepts JWT tokens for user context
+    - Returns information about the session from AI Engine's perspective
+
+    Returns:
+        - session_id: The session ID being queried
+        - user_id: User ID if authenticated
+        - received_at: Timestamp when this debug query was made
+        - notes: Information about the session from AI Engine logs
+        - disclaimer: This endpoint only shows current request info, not stored history
+
+    For actual stored conversation history:
+    - Use GraphQL query: { chatMessages(sessionId: "uuid") { role content sequenceOrder } }
+    - Or use the backend's getConversationHistory service method
+    """
+    import logging
+    from .auth import is_valid_uuid_v4
+
+    # Validate session ID format
+    if not is_valid_uuid_v4(session_id):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "error_code": "INVALID_SESSION_ID",
+                "message": "Session ID must be a valid UUID v4",
+                "session_id": session_id,
+            },
+        )
+
+    # Get user info
+    user_id = user.id if user else None
+
+    logger.info(
+        "[DEBUG] Session history lookup: session_id=%s, user_id=%s",
+        session_id,
+        user_id or "anonymous",
+    )
+
+    return {
+        "session_id": session_id,
+        "user_id": user_id,
+        "authenticated": user is not None,
+        "received_at": time.time(),
+        "notes": [
+            "This is an AI Engine debug endpoint.",
+            "It shows the session ID format validation.",
+            "For actual stored conversation history, use the backend GraphQL API:",
+            "  query { chatMessages(sessionId: \"" + session_id + "\") { role content sequenceOrder } }",
+            "Or call the backend's getConversationHistory service method.",
+        ],
+        "session_id_valid": True,
+        "session_id_format": "UUID v4",
+        "disclaimer": "The AI Engine does not store conversation history.",
+        "storage_location": "Conversation history is stored in the backend database (ChatMessage table).",
+        "flow_explanation": [
+            "1. Frontend sends message with sessionId to backend GraphQL mutation",
+            "2. Backend fetches conversation history from database via getConversationHistory()",
+            "3. Backend calls AI Engine with conversation_history in request body",
+            "4. AI Engine logs received conversation history (see logs for [CONV_HISTORY])",
+            "5. AI Engine uses conversation history for context in LLM calls",
+        ],
+        "logging_keywords": [
+            "[CONV_HISTORY] - Search for this in AI Engine logs",
+            "[CONVERSATION_HISTORY] - Search for this in backend logs",
+            "CONV_HISTORY_METRIC - Search for metrics in logs",
+        ],
     }
 
 
@@ -969,7 +1157,72 @@ async def ask_question_stream_enhanced(
     # This ensures session_id is a valid UUID v4 and is attached to UserContext
     user_with_session = set_user_session_id(user, request.session_id)
 
+    # Log conversation history details for verification
+    conversation_history = request.conversation_history or []
+    history_size = len(conversation_history)
+
+    logger.info(
+        "[CONV_HISTORY] Received request: session_id=%s, user_id=%s, history_count=%d, question_length=%d",
+        request.session_id,
+        user_with_session.id if user_with_session else "anonymous",
+        history_size,
+        len(request.question),
+    )
+
+    if history_size > 0:
+        # Log detailed conversation history structure
+        total_chars = sum(len(msg.get("content", "")) for msg in conversation_history)
+        roles = [msg.get("role") for msg in conversation_history]
+        user_count = sum(1 for r in roles if r == "user")
+        assistant_count = sum(1 for r in roles if r == "assistant")
+
+        logger.info(
+            "[CONV_HISTORY] Structure: session_id=%s, total_chars=%d, user_msgs=%d, assistant_msgs=%d, first_role=%s, last_role=%s",
+            request.session_id,
+            total_chars,
+            user_count,
+            assistant_count,
+            roles[0] if roles else None,
+            roles[-1] if roles else None,
+        )
+
+        # Verify message order and log preview
+        message_previews = []
+        for i, msg in enumerate(conversation_history[:5]):  # Log first 5 messages
+            role = msg.get("role", "unknown")
+            content = msg.get("content", "")
+            preview = content[:50] + "..." if len(content) > 50 else content
+            message_previews.append(f"{i}:{role}:{preview}")
+
+        if len(conversation_history) > 5:
+            message_previews.append(f"...({len(conversation_history) - 5} more)")
+
+        logger.debug("[CONV_HISTORY] Messages preview: %s", ", ".join(message_previews))
+
+        # Emit conversation history metric for monitoring
+        logger.info(
+            "[CONV_HISTORY_METRIC] %s",
+            {
+                "session_id": request.session_id,
+                "message_count": history_size,
+                "total_chars": total_chars,
+                "user_count": user_count,
+                "assistant_count": assistant_count,
+                "has_empty_content": any(
+                    not msg.get("content") or len(msg.get("content", "").strip()) == 0
+                    for msg in conversation_history
+                ),
+            },
+        )
+    else:
+        logger.info("[CONV_HISTORY] No history for session_id=%s (new chat)", request.session_id)
+
     async def generate() -> AsyncGenerator[str, None]:
+        # Extract conversation metadata for Langfuse observability
+        conversation_metadata = None
+        if request.conversation_metadata:
+            conversation_metadata = request.conversation_metadata.model_dump()
+
         async for event in stream_qa_enhanced(
             question=request.question,
             mode=mode,
@@ -977,6 +1230,7 @@ async def ask_question_stream_enhanced(
             user=user_with_session,
             request=http_request,
             messages=request.conversation_history,
+            conversation_metadata=conversation_metadata,
         ):
             yield event
 
@@ -1112,12 +1366,15 @@ async def ask_question(request: AskQuestionRequest, http_request: Request):
         # Extract user ID from headers for observability
         user_id = http_request.headers.get("x-user-id")
 
+        # Log conversation history for debugging
+        conversation_history = request.conversation_history or []
         logger.info(
-            "Received Q&A request: question_length=%d, mode=%s, session_id=%s, user_id=%s",
+            "Received Q&A request: question_length=%d, mode=%s, session_id=%s, user_id=%s, conversation_messages=%d",
             len(request.question),
             request.mode,
             request.session_id,
             user_id,
+            len(conversation_history),
         )
         logger.debug("Q&A request body: %s", request.model_dump())
 
@@ -1126,6 +1383,7 @@ async def ask_question(request: AskQuestionRequest, http_request: Request):
             mode=request.mode,
             session_id=request.session_id,
             user_id=user_id,
+            conversation_history=conversation_history,
         )
 
         logger.debug("Q&A result: answer_length=%d, citations=%d", len(result.get("answer", "")), len(result.get("citations", [])))
@@ -1612,3 +1870,98 @@ async def generate_chat_title(request: GenerateTitleRequest):
             title=fallback_title,
             session_id=request.session_id,
         )
+
+
+# -----------------------------------------------------------------------------
+# Clarification Answer Streaming Endpoint
+# -----------------------------------------------------------------------------
+
+
+@app.post("/api/v1/qa/clarification-answer-stream")
+async def clarification_answer_stream(
+    request: ClarificationAnswerRequest,
+    http_request: Request,
+    user: UserContext | None = Depends(get_current_user_optional),
+):
+    """Stream an AI response after receiving clarification answers from the user.
+
+    This endpoint processes the user's answers to clarification questions
+    and provides a comprehensive response with real-time streaming.
+
+    The user's answers are incorporated into the context to provide a more
+    accurate legal response based on the additional information provided.
+
+    Authentication:
+    - Accepts JWT tokens from frontend (signed by backend)
+    - Optional: works without auth for anonymous requests
+    - Pass Authorization: Bearer <token> header
+
+    Request Body (JSON):
+        original_question: The original question that prompted clarification
+        answers: List of {question, question_type, answer} objects
+        mode: Response mode - LAWYER (detailed) or SIMPLE (layperson)
+        session_id: User session ID for tracking (must be valid UUID v4)
+        conversation_history: Optional conversation history as array of {role, content} objects
+
+    SSE Event Format:
+        data: {"type": "token", "content": "text chunk", "metadata": {}}
+        data: {"type": "citation", "content": "", "metadata": {"source": "...", "article": "...", "url": "..."}}
+        data: {"type": "error", "content": "", "metadata": {"error": "..."}}
+        data: {"type": "done", "content": "", "metadata": {"citations": [...], "confidence": 0.0, "processing_time_ms": 123}}
+
+    Event Types:
+    - token: Partial response content as it's generated (REAL-TIME)
+    - citation: Legal citation reference when identified
+    - error: Error information if processing fails
+    - done: Final completion event with full metadata
+
+    The clarification Q&A is automatically included in the conversation history
+    for context in subsequent messages.
+    """
+    from .auth import set_user_session_id
+
+    # Validate inputs
+    if not request.original_question or len(request.original_question.strip()) < 3:
+        raise HTTPException(
+            status_code=400,
+            detail={"error_code": "INVALID_INPUT", "message": "Original question must be at least 3 characters long"},
+        )
+
+    if not request.answers or len(request.answers) == 0:
+        raise HTTPException(
+            status_code=400,
+            detail={"error_code": "INVALID_INPUT", "message": "At least one answer is required"},
+        )
+
+    mode = request.mode or "SIMPLE"
+    if mode not in ("LAWYER", "SIMPLE"):
+        mode = "SIMPLE"
+
+    # Set and validate session_id from request body on the user context
+    user_with_session = set_user_session_id(user, request.session_id)
+
+    async def generate() -> AsyncGenerator[str, None]:
+        # Convert answers to dicts for the streaming function
+        answers_dicts = [
+            {"question": a.question, "question_type": a.question_type, "answer": a.answer}
+            for a in request.answers
+        ]
+
+        # Extract conversation metadata for Langfuse observability
+        conversation_metadata = None
+        if request.conversation_metadata:
+            conversation_metadata = request.conversation_metadata.model_dump()
+
+        async for event in stream_clarification_answer(
+            original_question=request.original_question,
+            answers=answers_dicts,
+            mode=mode,
+            session_id=request.session_id,
+            user=user_with_session,
+            request=http_request,
+            messages=request.conversation_history,
+            conversation_metadata=conversation_metadata,
+        ):
+            yield event
+
+    return create_enhanced_streaming_response(generate())

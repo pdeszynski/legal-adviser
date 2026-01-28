@@ -1323,6 +1323,69 @@ def get_my_agent() -> Agent:
     )
 ```
 
+#### Trace Metadata Schema
+
+The AI Engine attaches comprehensive metadata to all Langfuse traces for debugging, analytics, and monitoring.
+
+##### Input Metadata Fields
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `question` | string | User's original question | "What are my employee rights?" |
+| `question_length` | integer | Character count of input | 45 |
+| `description_length` | integer | Case description character count | 250 |
+| `mode` | string | Response mode (LAWYER/SIMPLE) | "LAWYER" |
+| `query_type` | string | Classification category | "statute_interpretation" |
+| `document_type` | string | Document type being generated | "complaint" |
+| `language` | string | Response language | "pl" |
+| `model` | string | OpenAI model name | "gpt-4o" |
+
+##### Output Metadata Fields
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `answer_length` | integer | Generated response character count | 1250 |
+| `confidence` | float | AI confidence score (0-1) | 0.87 |
+| `citations_count` | integer | Number of legal citations | 3 |
+| `grounds_count` | integer | Number of legal grounds identified | 2 |
+| `overall_confidence` | float | Classification confidence | 0.92 |
+| `questions_count` | integer | Number of clarification questions | 2 |
+| `processing_time_ms` | float | Total processing time | 2340 |
+| `time_to_first_token_ms` | float | Latency to first token (streaming) | 145 |
+| `suggested_title` | string | AI-generated session title | "Employment termination dispute" |
+
+##### User & Session Metadata
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `user_id` | string | User UUID from JWT `sub` claim | "550e8400-e29b-41d4-a716-446655440000" |
+| `session_id` | string | Chat session UUID v4 | "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" |
+| `user_roles` | array | User roles from JWT | ["LAWYER", "ADMIN"] |
+| `user_role_level` | integer | User role level (0-5) | 3 |
+
+##### Conversation Metadata
+
+| Field | Type | Description | Example |
+|-------|------|-------------|---------|
+| `message_count` | integer | Total messages in conversation | 5 |
+| `conversation_history_length` | integer | History character count | 5000 |
+| `is_first_message` | boolean | First message in session | true |
+| `conversation_start_time` | string | ISO timestamp of session start | "2025-01-28T10:30:00Z" |
+| `query_category` | string | Analytics category | "employment_law" |
+| `locale` | string | User locale | "pl-PL" |
+
+##### Agent Names
+
+The following agent names are used in traces:
+
+| Agent Name | Purpose | Location |
+|------------|---------|----------|
+| `legal-query-analyzer` | Query analysis and routing | `src/agents/qa_agent.py` |
+| `legal-qa-lawyer` | Professional legal Q&A | `src/agents/qa_agent.py` |
+| `legal-qa-simple` | Simplified Q&A | `src/agents/qa_agent.py` |
+| `legal-classifier` | Case classification | `src/agents/classifier_agent.py` |
+| `legal-clarification` | Clarification questions | `src/agents/clarification_agent.py` |
+
 #### Adding Custom Metadata
 
 Use `update_current_trace()` to add additional metadata to the auto-created traces:
@@ -1350,23 +1413,196 @@ async def my_workflow(question: str, user_id: str, session_id: str):
         )
 ```
 
+#### Langfuse UI Filtering Guide
+
+##### Filtering by User ID
+
+To view all traces for a specific user:
+
+1. Navigate to **Traces** in Langfuse
+2. Click the filter icon
+3. Select **User ID** from the dropdown
+4. Enter the user's UUID (from JWT `sub` claim)
+5. Click **Apply**
+
+```
+Filter: user_id = "550e8400-e29b-41d4-a716-446655440000"
+```
+
+##### Filtering by Session ID
+
+To debug a specific conversation:
+
+1. Navigate to **Sessions** in Langfuse
+2. Search by session UUID
+3. View all traces grouped by conversation
+
+```
+Filter: session_id = "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"
+```
+
+##### Filtering by Agent Name
+
+To analyze a specific agent's performance:
+
+1. Navigate to **Traces**
+2. Filter by **Agent Name**
+3. Select agent (e.g., `legal-qa-lawyer`)
+
+```
+Filter: agent_name = "legal-qa-lawyer"
+```
+
+##### Filtering by Metadata
+
+To filter by custom metadata fields:
+
+1. Navigate to **Traces**
+2. Click **Advanced Filters**
+3. Add metadata key-value pairs
+
+```
+Filter: metadata.mode = "LAWYER"
+Filter: metadata.query_type = "statute_interpretation"
+Filter: metadata.streaming = "real-time"
+```
+
+##### Common Filter Queries
+
+| Use Case | Langfuse Query |
+|----------|----------------|
+| User session history | `user_id = "<uuid>"` |
+| Single conversation | `session_id = "<uuid>"` |
+| High latency traces | `latency_ms > 5000` |
+| Failed requests | `status = "error"` |
+| Streaming responses | `metadata.streaming = "real-time"` |
+| Lawyer mode only | `metadata.mode = "LAWYER"` |
+| Document generation | `metadata.workflow = "document_generation"` |
+| First messages only | `metadata.is_first_message = true` |
+
+#### Debugging User Issues with Traces
+
+When a user reports an issue, follow these steps:
+
+**1. Obtain User Context**
+```typescript
+// From frontend: get current session info
+const userId = await getUserId();
+const sessionId = localStorage.getItem('chat_session_id');
+```
+
+**2. Locate Traces in Langfuse**
+```
+1. Go to https://cloud.langfuse.com/traces
+2. Filter: user_id = "<userId>"
+3. Sort by: Latest (desc)
+4. Identify the problematic trace by timestamp
+```
+
+**3. Analyze the Trace**
+- Check **trace status** (success/error)
+- Review **input/output** for unexpected content
+- Examine **latency breakdown** (which agent was slow)
+- Look for **error messages** in child spans
+- Verify **metadata fields** are populated correctly
+
+**4. Common Issue Patterns**
+
+| Symptom | Likely Cause | How to Verify |
+|---------|--------------|---------------|
+| Empty response | LLM timeout | Check `latency_ms` > 30000 |
+| Wrong language | Missing `language` metadata | Filter by `user_id`, check metadata |
+| No citations | RAG failure | Check for `search` span errors |
+| High latency | Model overload | Check `model` field, compare traces |
+| Clarification loop | Low confidence | Check `confidence < 0.6` in metadata |
+
+#### Privacy Considerations
+
+##### PII Redaction
+
+All traces are automatically redacted for PII before sending to Langfuse:
+
+| Data Type | Pattern | Redaction |
+|-----------|---------|-----------|
+| Email addresses | `.*@.*\..*` | `[REDACTED_EMAIL]` |
+| Polish phone | `+48 [0-9]{9}` | `[REDACTED_PHONE]` |
+| PESEL | `[0-9]{11}` | `[REDACTED_PESEL]` |
+| NIP | `[0-9]{10}` | `[REDACTED_NIP]` |
+| Credit card | `[0-9]{13,19}` | `[REDACTED_CARD]` |
+| Polish names | Common names list | `[REDACTED_NAME]` |
+
+##### Data Retention
+
+- **Production traces**: 90 days
+- **Development traces**: 30 days
+- **Error traces**: 180 days (for debugging)
+
+##### Compliance Notes
+
+- User IDs are hashed before storage
+- Session IDs are non-reversible UUIDs
+- Input/output content is redacted
+- No IP addresses logged
+
+#### Best Practices
+
+##### Trace Naming
+
+Use descriptive, consistent agent names:
+
+```python
+# ✅ Good - descriptive and consistent
+Agent("legal-qa-lawyer", system_prompt="...")
+Agent("legal-clarification", system_prompt="...")
+
+# ❌ Bad - generic names
+Agent("agent1", system_prompt="...")
+Agent("helper", system_prompt="...")
+```
+
+##### Metadata Structure
+
+Follow these conventions:
+
+```python
+# ✅ Good - structured, queryable
+metadata = {
+    "workflow": "case_analysis",
+    "mode": "LAWYER",
+    "query_type": "employment_dispute",
+    "user_role_level": 3,
+}
+
+# ❌ Bad - unstructured strings
+metadata = {
+    "info": "case_analysis_lawyer_employment",
+    "data": "mode=lawyer&type=employment",
+}
+```
+
+##### Adding New Metadata
+
+When adding new metadata fields:
+
+1. **Use snake_case** for key names
+2. **Document in this section** of CLAUDE.md
+3. **Include type information**
+4. **Provide example values**
+
+```python
+# Example: Adding a new field
+metadata = {
+    "new_field_name": "value",  # 1. snake_case
+    # 2-4. Document in CLAUDE.md Trace Metadata Schema section
+}
+```
+
 #### What Gets Traced Automatically
 
 - **LLM calls**: Model name, tokens used, latency, cost
 - **Agent runs**: Input, output, system prompt
 - **Tools**: Tool calls and results
 - **HTTP requests**: Via middleware in `src/langfuse_middleware.py`
-
-#### PII Redaction
-
-The `langfuse_init.py` module provides automatic PII redaction for all traces:
-
-- Email addresses → `[REDACTED_EMAIL]`
-- Polish phone numbers → `[REDACTED_PHONE]`
-- PESEL numbers (11 digits) → `[REDACTED_PESEL]`
-- NIP numbers (10 digits) → `[REDACTED_NIP]`
-- Credit card numbers → `[REDACTED_CARD]`
-- Common Polish names → `[REDACTED_NAME]`
 
 #### Viewing Traces
 
@@ -1392,6 +1628,13 @@ Go to `https://cloud.langfuse.com` to view:
 1. Ensure `instrument=True` is set on agent creation
 2. Verify `Agent.instrument_all()` is called after `init_langfuse()`
 3. Agents created before `init_langfuse()` won't be traced - use lazy loading pattern
+
+**Missing metadata in traces:**
+
+1. Check that `update_current_trace()` is called with proper metadata
+2. Verify metadata dictionary keys are strings
+3. Ensure metadata values are JSON-serializable
+4. Check that `is_langfuse_enabled()` returns `True`
 
 ### API Endpoints
 

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769602993732-071d03bd",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-28T12:23:13.732Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "create-langfuse-trace-debugging-view",
+  "featureName": "Create Admin Debugging View for Langfuse Traces",
+  "error": "Feature completed in 882s - auto-verified",
+  "passes": true
+}

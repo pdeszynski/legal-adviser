@@ -1,0 +1,16 @@
+{
+  "category": "enhancement",
+  "description": "Include session ID in all Langfuse traces to enable grouping and filtering of traces by conversation session. Implementation: 1) Update all agent calls to pass session_id as metadata to Langfuse, 2) Ensure session ID is attached to both the top-level trace and individual spans, 3) Use the existing session ID from UserContext (already validated as UUID v4), 4) Add session_id to Langfuse trace metadata using update_current_trace() or official PydanticAI integration, 5) Verify session ID appears in Langfuse UI for each trace, 6) Handle cases where session ID might be null (anonymous queries) with 'anonymous-session' placeholder. This enables correlating all AI operations within a single chat session.",
+  "id": "add-session-id-to-langfuse-traces",
+  "title": "Add Session ID to Langfuse Trace Metadata",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Include session ID in all Langfuse traces to enable grouping and filtering of traces by conversation session. Implementation: 1) Update all agent calls to pass session_id as metadata to Langfuse, 2) Ensure session ID is attached to both the top-level trace and individual spans, 3) Use the existing session ID from UserContext (already validated as UUID v4), 4) Add session_id to Langfuse trace metadata using update_current_trace() or official PydanticAI integration, 5) Verify session ID appears in Langfuse UI for each trace, 6) Handle cases where session ID might be null (anonymous queries) with 'anonymous-session' placeholder. This enables correlating all AI operations within a single chat session.",
+      "timestamp": "2026-01-28T11:46:53.419Z",
+      "source": "initial"
+    }
+  ]
+}

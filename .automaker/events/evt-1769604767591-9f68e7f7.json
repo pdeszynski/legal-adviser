@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769604767591-9f68e7f7",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-28T12:52:47.591Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-clarification-history-restoration",
+  "featureName": "Fix Clarification Questions Not Displaying on Conversation History Restoration",
+  "error": "Feature completed in 606s - auto-verified",
+  "passes": true
+}

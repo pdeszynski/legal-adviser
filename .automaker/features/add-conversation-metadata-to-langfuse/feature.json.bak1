@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Enrich Langfuse traces with additional conversation metadata for better observability and debugging. Implementation: 1) Add mode (LAWYER/SIMPLE) to trace metadata, 2) Add message count (conversation length) to trace, 3) Add query type/category if available (e.g., 'EMPLOYMENT_LAW', 'CONTRACT_REVIEW'), 4) Add language/locale preference (en/pl/de) to trace, 5) Add timestamp of conversation start to trace metadata, 6) Include whether this is a new conversation or continuation, 7) Add client-side information (user agent, platform) if available, 8) Ensure all metadata is properly typed and structured in Langfuse. This richer context will help analyze usage patterns, debug issues, and understand user behavior.",
+  "id": "add-conversation-metadata-to-langfuse",
+  "title": "Add Additional Conversation Context to Langfuse Traces",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Enrich Langfuse traces with additional conversation metadata for better observability and debugging. Implementation: 1) Add mode (LAWYER/SIMPLE) to trace metadata, 2) Add message count (conversation length) to trace, 3) Add query type/category if available (e.g., 'EMPLOYMENT_LAW', 'CONTRACT_REVIEW'), 4) Add language/locale preference (en/pl/de) to trace, 5) Add timestamp of conversation start to trace metadata, 6) Include whether this is a new conversation or continuation, 7) Add client-side information (user agent, platform) if available, 8) Ensure all metadata is properly typed and structured in Langfuse. This richer context will help analyze usage patterns, debug issues, and understand user behavior.",
+      "timestamp": "2026-01-28T11:46:53.420Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T12:01:37.403Z"
+}

@@ -1,0 +1,19 @@
+{
+  "category": "enhancement",
+  "description": "Add logging and verification to ensure the full conversation history is correctly passed from backend through to AI Engine in all scenarios. Implementation: 1) Add structured logging in QueriesService.askQuestion() showing messages array being sent to AI Engine, 2) Log the number of messages being passed, 3) In AI Engine /ask-stream endpoint, log received messages array on every request, 4) Verify session ID is correctly used to fetch history, 5) Test scenarios: new chat (no history), 2nd message (1 previous), 10th message (9 previous), 6) Verify message order is correct (oldest first, newest last), 7) Verify role field is correct (user vs assistant), 8) Check for any message truncation or data loss, 9) Add metrics/monitoring for conversation history size. Create debug endpoint GET /api/v1/debug/session-history/:sessionId to inspect stored conversation history for troubleshooting.",
+  "id": "verify-conversation-history-passed-to-ai-engine",
+  "title": "Verify Conversation History is Correctly Passed to AI Engine",
+  "dependencies": [
+    "fix-ai-engine-context-loss-in-streaming"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Add logging and verification to ensure the full conversation history is correctly passed from backend through to AI Engine in all scenarios. Implementation: 1) Add structured logging in QueriesService.askQuestion() showing messages array being sent to AI Engine, 2) Log the number of messages being passed, 3) In AI Engine /ask-stream endpoint, log received messages array on every request, 4) Verify session ID is correctly used to fetch history, 5) Test scenarios: new chat (no history), 2nd message (1 previous), 10th message (9 previous), 6) Verify message order is correct (oldest first, newest last), 7) Verify role field is correct (user vs assistant), 8) Check for any message truncation or data loss, 9) Add metrics/monitoring for conversation history size. Create debug endpoint GET /api/v1/debug/session-history/:sessionId to inspect stored conversation history for troubleshooting.",
+      "timestamp": "2026-01-28T11:40:24.488Z",
+      "source": "initial"
+    }
+  ]
+}

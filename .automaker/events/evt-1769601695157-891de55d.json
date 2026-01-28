@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769601695157-891de55d",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-28T12:01:35.157Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "enhance-langfuse-agent-identification",
+  "featureName": "Enhance Langfuse Agent Identification with Better Naming",
+  "error": "Feature completed in 283s - auto-verified",
+  "passes": true
+}

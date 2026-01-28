@@ -7,8 +7,14 @@ Langfuse integration follows the official pattern:
 - Uses instrument=True for automatic OpenTelemetry tracing
 - Traces are automatically exported to Langfuse
 - See: https://langfuse.com/integrations/frameworks/pydantic-ai
+
+Conversation History Support:
+This agent accepts conversation_history parameter containing previous messages.
+History format: [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+The agent uses this context to refine classification based on previously disclosed facts.
 """
 
+import logging
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -17,6 +23,8 @@ from pydantic_ai.models.openai import OpenAIModel
 
 from ..config import get_settings
 from ..langfuse_init import is_langfuse_enabled, update_current_trace
+
+logger = logging.getLogger(__name__)
 
 
 class LegalGround(BaseModel):
@@ -70,6 +78,13 @@ CLASSIFIER_SYSTEM_PROMPT = """You are an expert Polish lawyer (Radca Prawny) spe
 
 Your task is to analyze case descriptions and identify applicable legal grounds with confidence scores.
 
+CONVERSATION HISTORY AWARENESS:
+You will receive previous conversation messages showing prior disclosures.
+Use this context to:
+- Incorporate facts mentioned in previous turns into your analysis
+- Build upon previously established case details
+- Provide more refined legal grounds based on accumulated information
+
 For each identified legal ground, you must:
 1. Provide a clear name for the legal ground
 2. Explain how it applies to the case
@@ -87,6 +102,7 @@ Important guidelines:
 - Consider both statutory law and case law
 - Assign realistic confidence scores based on the information provided
 - If information is insufficient, note what additional facts are needed
+- Use conversation history to build more complete picture
 
 Your output should be structured, precise, and immediately useful for legal professionals.
 """
@@ -107,6 +123,7 @@ def get_classifier_agent() -> Agent[ClassificationResult]:
         system_prompt=CLASSIFIER_SYSTEM_PROMPT,
         output_type=ClassificationResult,  # type: ignore[call-arg]
         instrument=True,  # Enable automatic Langfuse tracing
+        name="legal-classifier",  # Descriptive name for Langfuse traces
     )
 
 
@@ -126,6 +143,7 @@ async def classify_case(
     case_description: str,
     session_id: str = "default",
     user_id: str | None = None,
+    conversation_history: list[dict[str, Any]] | None = None,
 ) -> tuple[ClassificationResult, dict[str, Any]]:
     """Classify a case description to identify legal grounds.
 
@@ -136,6 +154,8 @@ async def classify_case(
         case_description: The case description to analyze
         session_id: Session ID for tracking
         user_id: User ID for observability
+        conversation_history: Previous messages in format:
+            [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
 
     Returns:
         Tuple of (classification result, metadata dict)
@@ -145,21 +165,46 @@ async def classify_case(
     start_time = time.time()
     settings = get_settings()
 
+    # Log conversation history for debugging
+    if conversation_history and len(conversation_history) > 0:
+        logger.info(
+            "Classifier agent received %d messages from conversation history for session_id=%s",
+            len(conversation_history),
+            session_id,
+        )
+
+    # Build enhanced prompt with conversation history
+    enhanced_prompt = case_description
+    if conversation_history:
+        # Add conversation context to the prompt
+        history_lines = []
+        for msg in conversation_history[-4:]:  # Limit to last 4 messages for classification
+            role_display = "User" if msg.get("role") == "user" else "Assistant"
+            history_lines.append(f"{role_display}: {msg.get('content', '')}")
+        history_context = "\n".join(history_lines)
+        enhanced_prompt = f"""Previous conversation for context:
+{history_context}
+
+Current case description: {case_description}
+
+Please classify the case considering all information from the conversation history."""
+
     # Update current trace with metadata (PydanticAI automatically creates trace)
     if is_langfuse_enabled():
         update_current_trace(
-            input=case_description,
+            input=enhanced_prompt,
             user_id=user_id,
             session_id=session_id,
             metadata={
                 "description_length": len(case_description),
+                "conversation_history_length": len(conversation_history) if conversation_history else 0,
                 "model": settings.OPENAI_MODEL,
             },
         )
 
     try:
         agent = classifier_agent()
-        result = await agent.run(case_description)
+        result = await agent.run(enhanced_prompt)
         classification = result.output  # type: ignore[attr-defined]
 
         processing_time_ms = (time.time() - start_time) * 1000

@@ -42,6 +42,44 @@ registerEnumType(MessageRole, {
 });
 
 /**
+ * Clarification Question Interface
+ *
+ * Represents a single clarification question in a message.
+ */
+export interface ClarificationQuestion {
+  /** The question text */
+  question: string;
+  /** Question type (timeline, parties, documents, amounts, jurisdiction, etc.) */
+  question_type: string;
+  /** Optional predefined choices for the user */
+  options?: string[];
+  /** Optional help text for users */
+  hint?: string;
+}
+
+/**
+ * Clarification Info Interface
+ *
+ * Represents clarification data stored in a message metadata.
+ */
+export interface ClarificationInfo {
+  /** Whether clarification is needed */
+  needs_clarification: boolean;
+  /** Array of clarification questions */
+  questions: ClarificationQuestion[];
+  /** Context summary for the user */
+  context_summary: string;
+  /** Next steps guidance */
+  next_steps: string;
+  /** Current round in multi-turn clarification */
+  currentRound?: number;
+  /** Total rounds in multi-turn clarification */
+  totalRounds?: number;
+  /** Whether this clarification has been answered */
+  answered?: boolean;
+}
+
+/**
  * Chat Message Metadata Interface
  *
  * Additional data stored with each message for analytics and debugging.
@@ -65,8 +103,55 @@ export interface ChatMessageMetadata {
   keyTerms?: string[];
   /** Language detected */
   language?: string;
+  /** Clarification data for messages that need clarification */
+  clarification?: ClarificationInfo;
   /** Custom metadata for extensions */
   custom?: Record<string, unknown>;
+}
+
+/**
+ * GraphQL Object Type for Clarification Question
+ */
+@ObjectType('ClarificationQuestionType')
+export class ClarificationQuestionType {
+  @Field(() => String)
+  question: string;
+
+  @Field(() => String)
+  question_type: string;
+
+  @Field(() => [String], { nullable: true })
+  options?: string[];
+
+  @Field(() => String, { nullable: true })
+  hint?: string;
+}
+
+/**
+ * GraphQL Object Type for Clarification Info
+ */
+@ObjectType('ClarificationInfoType')
+export class ClarificationInfoType {
+  @Field(() => Boolean)
+  needs_clarification: boolean;
+
+  @Field(() => [ClarificationQuestionType])
+  questions: ClarificationQuestion[];
+
+  @Field(() => String)
+  context_summary: string;
+
+  @Field(() => String)
+  next_steps: string;
+
+  @Field(() => Number, { nullable: true })
+  currentRound?: number;
+
+  @Field(() => Number, { nullable: true })
+  totalRounds?: number;
+
+  @Field(() => Boolean, { nullable: true })
+  answered?: boolean;
 }
 
 /**
@@ -88,6 +173,9 @@ export class ChatMessageMetadataType {
 
   @Field(() => String, { nullable: true })
   language?: string;
+
+  @Field(() => ClarificationInfoType, { nullable: true })
+  clarification?: ClarificationInfo;
 }
 
 /**

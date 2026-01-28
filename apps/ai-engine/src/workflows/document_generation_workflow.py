@@ -364,6 +364,18 @@ class DocumentGenerationWorkflow:
 
         start_time = time.time()
 
+        # Update Langfuse trace with workflow input metadata
+        if is_langfuse_enabled():
+            update_current_trace(
+                input={
+                    "document_type": document_type,
+                    "description": description[:200] if description else "",
+                },
+                user_id=user_id,
+                session_id=session_id,
+                metadata={"workflow": "document_generation"},
+            )
+
         # Create initial state
         state = create_document_generation_state(
             document_type=document_type,

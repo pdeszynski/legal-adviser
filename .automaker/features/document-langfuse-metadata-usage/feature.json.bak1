@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Update CLAUDE.md and AI Engine documentation to reflect the enhanced Langfuse integration with session ID, user ID, and improved agent naming. Documentation should include: 1) List of all trace metadata fields (agent_name, session_id, user_id, mode, language, message_count, query_type), 2) How to filter traces in Langfuse UI by these fields, 3) Common use cases: debugging user session, analyzing agent performance, tracking token usage per session, 4) Example queries for finding specific traces, 5) How trace metadata links to frontend user sessions, 6) Privacy considerations for user data in traces, 7) Best practices for trace naming and metadata structure, 8) How to use traces for troubleshooting user-reported issues. Include screenshots of Langfuse UI showing properly labeled traces.",
+  "id": "document-langfuse-metadata-usage",
+  "title": "Document Langfuse Trace Metadata and Usage Patterns",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Update CLAUDE.md and AI Engine documentation to reflect the enhanced Langfuse integration with session ID, user ID, and improved agent naming. Documentation should include: 1) List of all trace metadata fields (agent_name, session_id, user_id, mode, language, message_count, query_type), 2) How to filter traces in Langfuse UI by these fields, 3) Common use cases: debugging user session, analyzing agent performance, tracking token usage per session, 4) Example queries for finding specific traces, 5) How trace metadata links to frontend user sessions, 6) Privacy considerations for user data in traces, 7) Best practices for trace naming and metadata structure, 8) How to use traces for troubleshooting user-reported issues. Include screenshots of Langfuse UI showing properly labeled traces.",
+      "timestamp": "2026-01-28T11:46:53.421Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T12:10:23.858Z"
+}

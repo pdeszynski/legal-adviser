@@ -4,6 +4,7 @@ import {
   Args,
   Context,
   ID,
+  Query,
 } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,6 +21,8 @@ import {
   SendChatMessageWithAIResponse,
   SendChatMessageResponse,
   SaveChatMessageInput,
+  UpdateClarificationStatusInput,
+  UpdateClarificationStatusResponse,
 } from './dto/chat-message.dto';
 import { AiClientService } from '../../shared/ai-client/ai-client.service';
 import { RequireQuota, QuotaType } from '../../shared';
@@ -162,6 +165,36 @@ export class ChatMessagesResolver {
     // Get conversation history for AI context
     const conversationHistory =
       await this.chatMessagesService.getConversationHistory(finalSessionId, safeUserId);
+
+    // Log conversation history details for verification
+    const historySize = conversationHistory.length;
+    const historyLogContext: Record<string, unknown> = {
+      sessionId: finalSessionId,
+      userId: safeUserId,
+      messageCount: historySize,
+      totalChars: conversationHistory.reduce((sum, msg) => sum + (msg.content?.length || 0), 0),
+    };
+
+    if (historySize > 0) {
+      // Log message distribution and order
+      const roles = conversationHistory.map((msg) => msg.role);
+      historyLogContext.roleDistribution = {
+        user: roles.filter((r) => r === 'user').length,
+        assistant: roles.filter((r) => r === 'assistant').length,
+      };
+      historyLogContext.firstRole = roles[0];
+      historyLogContext.lastRole = roles[roles.length - 1];
+      historyLogContext.messagePreview = conversationHistory.map((msg, i) => ({
+        index: i,
+        role: msg.role,
+        contentLength: msg.content?.length || 0,
+        contentPreview: msg.content?.substring(0, 50) || '',
+      }));
+
+      console.log(`[CONVERSATION_HISTORY] Session ${finalSessionId}: ${JSON.stringify(historyLogContext)}`);
+    } else {
+      console.log(`[CONVERSATION_HISTORY] Session ${finalSessionId}: No history (new chat)`);
+    }
 
     // Call AI Engine
     let assistantMessage: ChatMessage | null = null;
@@ -318,5 +351,61 @@ export class ChatMessagesResolver {
       sequenceOrder: message.sequenceOrder,
       createdAt: message.createdAt.toISOString(),
     };
+  }
+
+  /**
+   * Mutation: Update clarification answered status
+   *
+   * Marks a clarification message as answered and optionally stores the user's answers.
+   * This is called when the user submits answers to clarification questions.
+   *
+   * @example
+   * ```graphql
+   * mutation {
+   *   updateClarificationStatus(input: {
+   *     messageId: "message-uuid"
+   *     answered: true
+   *     answers: "{\"When did the employment end?\":\"2024-01-15\"}"
+   *   }) {
+   *     success
+   *     messageId
+   *     status
+   *   }
+   * }
+   * ```
+   */
+  @Mutation(() => UpdateClarificationStatusResponse, {
+    name: 'updateClarificationStatus',
+    description: 'Update the answered status of a clarification message',
+  })
+  async updateClarificationStatus(
+    @Args('input') input: UpdateClarificationStatusInput,
+    @Context() context: { req: { user?: { id?: string } } },
+  ): Promise<UpdateClarificationStatusResponse> {
+    const userId = context.req?.user?.id;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+    const safeUserId: string = userId;
+
+    try {
+      const message = await this.chatMessagesService.updateClarificationStatus(
+        input.messageId,
+        safeUserId,
+        input.answered,
+        input.answers,
+      );
+
+      return {
+        success: true,
+        messageId: message.messageId,
+        status: input.answered ? 'answered' : 'pending',
+      };
+    } catch (error) {
+      if (error instanceof Error && error.name === 'NotFoundException') {
+        throw error;
+      }
+      throw new Error(`Failed to update clarification status: ${error}`);
+    }
   }
 }

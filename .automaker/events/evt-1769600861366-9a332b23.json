@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769600861366-9a332b23",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-28T11:47:41.366Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-ai-engine-context-loss-in-streaming",
+  "featureName": "Fix AI Engine Context Loss in Streaming Chat",
+  "error": "Feature completed in 431s - auto-verified",
+  "passes": true
+}

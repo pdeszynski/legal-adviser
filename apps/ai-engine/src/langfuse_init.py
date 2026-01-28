@@ -391,7 +391,7 @@ def update_current_trace(
     Args:
         input: Input data (will be PII-redacted if string/dict)
         output: Output data (will be PII-redacted if string/dict)
-        user_id: User ID for user-level analytics
+        user_id: User ID for user-level analytics (PII-safe UUID)
         session_id: Session ID for grouping related traces
         tags: List of tags for filtering
         metadata: Additional metadata (will be PII-redacted)
@@ -415,24 +415,41 @@ def update_current_trace(
         if metadata:
             metadata = _redact_dict_pii(metadata)
 
-        # Use the new Langfuse SDK API - update_current_trace via OpenTelemetry context
+        # Use the new Langfuse SDK API - update trace via OpenTelemetry context
         # The new SDK uses OpenTelemetry for automatic context propagation
         try:
             from langfuse.decorators import observe
         except ImportError:
             return
 
-        @observe()
-        def _update_trace() -> None:
-            pass
+        # Build observe kwargs with supported parameters
+        observe_kwargs: dict[str, Any] = {}
+        if user_id:
+            observe_kwargs["user_id"] = user_id
+        if session_id:
+            observe_kwargs["session_id"] = session_id
+        if metadata:
+            observe_kwargs["metadata"] = metadata
+        if tags:
+            observe_kwargs["tags"] = tags
 
-        # Create a dummy trace to update the current context
-        # The @observe decorator will link this to the current OpenTelemetry trace
+        @observe(**observe_kwargs)
+        def _update_trace() -> dict[str, Any]:
+            """Update trace with input/output and return context."""
+            result: dict[str, Any] = {}
+            if input is not None:
+                result["input"] = input
+            if output is not None:
+                result["output"] = output
+            if version:
+                result["version"] = version
+            return result
+
+        # Execute the trace update - this links to the current OpenTelemetry trace
         _update_trace()
 
-        # Note: In the new SDK, manual trace updates are done through the OpenTelemetry API
+        # Note: In the new SDK, user_id and session_id are set via @observe decorator
         # The automatic instrumentation via Agent.instrument_all() handles most tracing
-        # For manual updates, we rely on the OpenTelemetry context that's automatically propagated
     except Exception:
         # Silently fail to avoid breaking the main application
         pass
@@ -491,7 +508,7 @@ def create_trace(
     Args:
         name: Trace name
         input: Input data (will be PII-redacted)
-        user_id: User ID for analytics
+        user_id: User ID for analytics (PII-safe UUID)
         session_id: Session ID for grouping
         tags: List of tags
         metadata: Additional metadata (will be PII-redacted)
@@ -515,10 +532,30 @@ def create_trace(
         # Use the new Langfuse SDK API with observe decorator
         from langfuse.decorators import observe
 
-        @observe(name=name)
+        # Build observe kwargs with supported parameters
+        observe_kwargs: dict[str, Any] = {"name": name}
+        if user_id:
+            observe_kwargs["user_id"] = user_id
+        if session_id:
+            observe_kwargs["session_id"] = session_id
+        if tags:
+            observe_kwargs["tags"] = tags
+        if metadata:
+            observe_kwargs["metadata"] = metadata
+
+        @observe(**observe_kwargs)
         def _error_trace() -> dict[str, Any]:
             # The trace is automatically created and linked to OpenTelemetry context
-            return {"input": input, "user_id": user_id, "session_id": session_id, "metadata": metadata}
+            result: dict[str, Any] = {}
+            if input is not None:
+                result["input"] = input
+            if user_id:
+                result["user_id"] = user_id
+            if session_id:
+                result["session_id"] = session_id
+            if metadata:
+                result["metadata"] = metadata
+            return result
 
         _error_trace()
         # Return a dummy trace object for compatibility with error handlers

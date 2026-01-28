@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Fix the critical bug where the clarification form submits automatically after typing just one character, instead of waiting for users to complete their answers and click the submit button. Current issue: form input onChange handler is likely triggering submission instead of just updating state. Implementation tasks: 1) Audit ClarificationMessage component form handling - identify where premature submission occurs, 2) Ensure form uses controlled inputs with state updates only (no submission on change), 3) Remove any onSubmit handlers from individual input fields, 4) Ensure only the 'Submit Answers' button triggers form submission, 5) Add form validation preventing submission with empty answers, 6) Test typing multi-character answers - verify no submission occurs, 7) Test that pressing Enter key in input field focuses next field (if multiple questions) or does nothing (if single question), 8) Ensure form properly collects all answers before submission, 9) Add loading state to submit button during submission to prevent double-submit, 10) Verify answers are sent to backend submitClarificationAnswers mutation correctly. This is a high-severity UX bug preventing users from providing complete clarification answers.",
+  "id": "fix-clarification-form-premature-submission",
+  "title": "Fix Clarification Form Submitting Immediately on Single Character Input",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Fix the critical bug where the clarification form submits automatically after typing just one character, instead of waiting for users to complete their answers and click the submit button. Current issue: form input onChange handler is likely triggering submission instead of just updating state. Implementation tasks: 1) Audit ClarificationMessage component form handling - identify where premature submission occurs, 2) Ensure form uses controlled inputs with state updates only (no submission on change), 3) Remove any onSubmit handlers from individual input fields, 4) Ensure only the 'Submit Answers' button triggers form submission, 5) Add form validation preventing submission with empty answers, 6) Test typing multi-character answers - verify no submission occurs, 7) Test that pressing Enter key in input field focuses next field (if multiple questions) or does nothing (if single question), 8) Ensure form properly collects all answers before submission, 9) Add loading state to submit button during submission to prevent double-submit, 10) Verify answers are sent to backend submitClarificationAnswers mutation correctly. This is a high-severity UX bug preventing users from providing complete clarification answers.",
+      "timestamp": "2026-01-28T12:42:38.992Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T12:42:39.935Z"
+}

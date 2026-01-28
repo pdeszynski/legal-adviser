@@ -1,0 +1,19 @@
+{
+  "category": "feature",
+  "description": "Create admin interface or debug endpoint for viewing Langfuse traces with proper filtering and context. Implementation: 1) Add backend endpoint GET /api/admin/debug/langfuse/traces with query parameters: userId, sessionId, agentName, dateRange, 2) Use Langfuse public API or SDK to fetch filtered traces, 3) Return simplified trace data: trace_id, agent name, user ID, session ID, timestamp, token usage, latency, status, 4) Add frontend admin page at /admin/debug/langfuse-traces for viewing traces, 5) Implement filters: by user, by session ID, by agent type, by date range, 6) Show trace details on click: span tree, token counts, error messages, metadata, 7) Add 'View in Langfuse' link to open full trace in Langfuse dashboard, 8) Apply admin-only access control. This provides operational visibility without logging into Langfuse directly.",
+  "id": "create-langfuse-trace-debugging-view",
+  "title": "Create Admin Debugging View for Langfuse Traces",
+  "dependencies": [
+    "add-user-id-to-langfuse-traces"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Create admin interface or debug endpoint for viewing Langfuse traces with proper filtering and context. Implementation: 1) Add backend endpoint GET /api/admin/debug/langfuse/traces with query parameters: userId, sessionId, agentName, dateRange, 2) Use Langfuse public API or SDK to fetch filtered traces, 3) Return simplified trace data: trace_id, agent name, user ID, session ID, timestamp, token usage, latency, status, 4) Add frontend admin page at /admin/debug/langfuse-traces for viewing traces, 5) Implement filters: by user, by session ID, by agent type, by date range, 6) Show trace details on click: span tree, token counts, error messages, metadata, 7) Add 'View in Langfuse' link to open full trace in Langfuse dashboard, 8) Apply admin-only access control. This provides operational visibility without logging into Langfuse directly.",
+      "timestamp": "2026-01-28T11:46:53.420Z",
+      "source": "initial"
+    }
+  ]
+}

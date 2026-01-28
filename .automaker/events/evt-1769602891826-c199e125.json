@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769602891826-c199e125",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-28T12:21:31.826Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "document-langfuse-metadata-usage",
+  "featureName": "Document Langfuse Trace Metadata and Usage Patterns",
+  "error": "Feature completed in 668s - auto-verified",
+  "passes": true
+}

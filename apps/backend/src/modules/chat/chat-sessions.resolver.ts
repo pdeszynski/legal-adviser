@@ -34,6 +34,10 @@ import {
   ChatContentSearchArgs,
   ChatContentSearchResponse,
 } from './dto/chat-search.dto';
+import {
+  ChatSessionDebugInfo,
+} from './dto/chat-message.dto';
+import { ChatMessagesService } from './services/chat-messages.service';
 
 /**
  * PubSub instance for real-time updates
@@ -99,6 +103,7 @@ export class ChatSessionsResolver {
     private readonly chatExportService: ChatExportService,
     private readonly chatSearchService: ChatSearchService,
     private readonly auditService: ChatAuditService,
+    private readonly chatMessagesService: ChatMessagesService,
   ) {}
 
   /**
@@ -349,6 +354,125 @@ export class ChatSessionsResolver {
     );
 
     return result;
+  }
+
+  /**
+   * Query: Debug conversation history for a session
+   *
+   * This debug endpoint provides detailed information about the conversation
+   * history stored in the database for a specific session. Useful for
+   * troubleshooting conversation history flow issues.
+   *
+   * Returns detailed metrics and verification information including:
+   * - Message count and role distribution
+   * - Message order verification
+   * - Total characters in conversation
+   * - Individual message previews
+   * - Format verification for AI Engine
+   *
+   * @param sessionId - The session ID to inspect
+   * @param context - GraphQL context with authenticated user
+   * @returns Detailed conversation history debug information
+   *
+   * @example
+   * ```graphql
+   * query {
+   *   debugConversationHistory(sessionId: "session-uuid") {
+   *     sessionId
+   *     messageCount
+   *     totalCharacters
+   *     roleDistribution { user assistant }
+   *     messages { role content sequenceOrder createdAt }
+   *     aiEngineFormat { role content }[]
+   *     verification { orderValid hasEmptyContent firstRole lastRole }
+   *   }
+   * }
+   * ```
+   */
+  @Query(() => ChatSessionDebugInfo, {
+    name: 'debugConversationHistory',
+    description: 'Debug endpoint to inspect conversation history for a session',
+  })
+  @UseGuards(ChatSessionOwnershipGuard)
+  async debugConversationHistory(
+    @Args('sessionId', { type: () => ID }) sessionId: string,
+    @Context() context: { req: { user?: { id?: string } } },
+  ): Promise<ChatSessionDebugInfo> {
+    const userId = context.req?.user?.id;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+
+    // Get conversation history in the format sent to AI Engine
+    const conversationHistory =
+      await this.chatMessagesService.getConversationHistory(sessionId, userId);
+
+    // Get full messages for detailed inspection
+    const { messages } = await this.chatSessionsService.getSessionDetail(
+      sessionId,
+      userId,
+    );
+
+    // Calculate metrics
+    const messageCount = conversationHistory.length;
+    const totalCharacters = conversationHistory.reduce(
+      (sum, msg) => sum + (msg.content?.length || 0),
+      0,
+    );
+    const userCount = conversationHistory.filter((m) => m.role === 'user').length;
+    const assistantCount = conversationHistory.filter((m) => m.role === 'assistant').length;
+
+    // Verify message order
+    const roles = conversationHistory.map((m) => m.role);
+    const firstRole = roles[0] || null;
+    const lastRole = roles[roles.length - 1] || null;
+    const hasEmptyContent = conversationHistory.some(
+      (m) => !m.content || m.content.trim().length === 0,
+    );
+
+    // Check for alternating pattern (user -> assistant -> user -> ...)
+    let orderValid = true;
+    for (let i = 0; i < roles.length; i++) {
+      if (roles[i] !== 'user' && roles[i] !== 'assistant') {
+        orderValid = false;
+        break;
+      }
+    }
+
+    // Build AI Engine format preview
+    const aiEngineFormat = conversationHistory.map((msg) => ({
+      role: msg.role,
+      content: msg.content,
+    }));
+
+    // Build message preview
+    const messagePreviews = messages.map((msg) => ({
+      messageId: msg.messageId,
+      role: msg.role,
+      content: msg.content,
+      contentPreview: msg.content?.substring(0, 100) + (msg.content?.length > 100 ? '...' : ''),
+      sequenceOrder: msg.sequenceOrder,
+      createdAt: msg.createdAt.toISOString(),
+    }));
+
+    return {
+      sessionId,
+      messageCount,
+      totalCharacters,
+      roleDistribution: {
+        user: userCount,
+        assistant: assistantCount,
+      },
+      messages: messagePreviews,
+      aiEngineFormat,
+      verification: {
+        orderValid,
+        hasEmptyContent,
+        firstRole,
+        lastRole,
+        messageCountMatches: messageCount === messages.length,
+      },
+    };
   }
 
   /**

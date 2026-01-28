@@ -19,6 +19,7 @@ import {
   Layers,
   FileText,
   DollarSign,
+  ExternalLink,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@legal/ui';
 import { Button } from '@legal/ui';
@@ -32,6 +33,13 @@ interface TokenUsage {
   promptTokens: number;
   completionTokens: number;
   totalCost: number;
+}
+
+interface LangfuseDebugConfig {
+  enabled: boolean;
+  hostUrl?: string;
+  traceUrlTemplate?: string;
+  dashboardUrl?: string;
 }
 
 interface TraceObservation {
@@ -159,6 +167,25 @@ export default function TraceDetailPage({ params }: TraceDetailPageProps) {
   const [expandedObservations, setExpandedObservations] = useState<Set<string>>(new Set());
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
 
+  // Fetch Langfuse debug config
+  const { result: configResult } = useCustom<{ langfuseDebugConfig: LangfuseDebugConfig | null }>({
+    url: '',
+    method: 'get',
+    config: {
+      query: {
+        operation: 'langfuseDebugConfig',
+        args: {},
+        fields: [
+          'langfuseDebugConfig { enabled hostUrl traceUrlTemplate dashboardUrl }',
+        ],
+      },
+    },
+    queryOptions: {
+      enabled: true,
+      refetchOnWindowFocus: false,
+    },
+  });
+
   // Fetch trace detail
   const { query, result } = useCustom<{ langfuseTraceDetail: LangfuseTraceDetail | null }>({
     url: '',
@@ -180,7 +207,13 @@ export default function TraceDetailPage({ params }: TraceDetailPageProps) {
   });
 
   const traceData = result?.data?.langfuseTraceDetail;
+  const langfuseConfig = configResult?.data?.langfuseDebugConfig;
   const { refetch, isLoading } = query;
+
+  // Generate Langfuse trace URL
+  const langfuseTraceUrl = langfuseConfig?.enabled && traceData
+    ? `${langfuseConfig.hostUrl}/trace/${traceData.id}`
+    : null;
 
   useEffect(() => {
     if (traceData) {
@@ -427,6 +460,23 @@ export default function TraceDetailPage({ params }: TraceDetailPageProps) {
             <Copy className="h-4 w-4 mr-2" />
             Copy ID
           </Button>
+          {langfuseTraceUrl && (
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+            >
+              <a
+                href={langfuseTraceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                View in Langfuse
+              </a>
+            </Button>
+          )}
           <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh

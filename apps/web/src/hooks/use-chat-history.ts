@@ -306,6 +306,20 @@ export function useChatSession(sessionId: string | null) {
                       queryType
                       keyTerms
                       language
+                      clarification {
+                        needs_clarification
+                        questions {
+                          question
+                          question_type
+                          options
+                          hint
+                        }
+                        context_summary
+                        next_steps
+                        currentRound
+                        totalRounds
+                        answered
+                      }
                     }
                     sequenceOrder
                     createdAt

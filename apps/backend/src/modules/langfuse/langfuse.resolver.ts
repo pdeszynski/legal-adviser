@@ -8,6 +8,7 @@ import {
   TokenUsageByAgent,
   AgentLatencyMetrics,
   UserTraceAttribution,
+  LangfuseDebugConfig,
 } from './dto/langfuse.dto';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
@@ -127,5 +128,35 @@ export class LangfuseResolver {
       endDate ? new Date(endDate) : undefined,
       limit,
     );
+  }
+
+  /**
+   * Get Langfuse debug configuration
+   * Admin-only access
+   * Returns URLs for linking to Langfuse dashboard
+   */
+  @Query(() => LangfuseDebugConfig, {
+    name: 'langfuseDebugConfig',
+    nullable: true,
+  })
+  @UseGuards(GqlAuthGuard, AdminGuard)
+  getDebugConfig(): LangfuseDebugConfig | null {
+    return this.langfuseService.getDebugConfig();
+  }
+
+  /**
+   * Get Langfuse trace URL for viewing in dashboard
+   * Admin-only access
+   */
+  @Query(() => String, {
+    name: 'langfuseTraceUrl',
+    nullable: true,
+    description: 'Get the URL to view a specific trace in Langfuse dashboard',
+  })
+  @UseGuards(GqlAuthGuard, AdminGuard)
+  getTraceUrl(
+    @Args('traceId', { type: () => String }) traceId: string,
+  ): string | null {
+    return this.langfuseService.getTraceUrl(traceId);
   }
 }

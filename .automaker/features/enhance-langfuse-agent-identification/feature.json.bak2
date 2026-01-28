@@ -1,0 +1,16 @@
+{
+  "category": "enhancement",
+  "description": "Improve agent identification in Langfuse traces by adding more descriptive agent names instead of generic identifiers. Update all PydanticAI agents (classifier_agent, qa_agent, drafting_agent, clarification_agent) to have clear, human-readable names that appear in Langfuse dashboard. Format: 'legal-classifier', 'legal-qa', 'legal-drafter', 'legal-clarification'. Update agent initialization to set explicit names that align with business domain. Ensure agent names are consistent across traces for filtering and grouping in Langfuse UI.",
+  "id": "enhance-langfuse-agent-identification",
+  "title": "Enhance Langfuse Agent Identification with Better Naming",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Improve agent identification in Langfuse traces by adding more descriptive agent names instead of generic identifiers. Update all PydanticAI agents (classifier_agent, qa_agent, drafting_agent, clarification_agent) to have clear, human-readable names that appear in Langfuse dashboard. Format: 'legal-classifier', 'legal-qa', 'legal-drafter', 'legal-clarification'. Update agent initialization to set explicit names that align with business domain. Ensure agent names are consistent across traces for filtering and grouping in Langfuse UI.",
+      "timestamp": "2026-01-28T11:46:53.418Z",
+      "source": "initial"
+    }
+  ]
+}

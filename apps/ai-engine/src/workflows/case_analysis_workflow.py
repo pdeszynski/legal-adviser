@@ -428,6 +428,15 @@ class CaseAnalysisWorkflow:
 
         start_time = time.time()
 
+        # Update Langfuse trace with workflow input metadata
+        if is_langfuse_enabled():
+            update_current_trace(
+                input=case_description,
+                user_id=user_id,
+                session_id=session_id,
+                metadata={"workflow": "case_analysis"},
+            )
+
         # Create initial state
         state = create_case_analysis_state(
             case_description=case_description,

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769601407527-e8ac57e6",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-28T11:56:47.527Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "add-user-id-to-langfuse-traces",
+  "featureName": "Add User ID to Langfuse Trace Metadata",
+  "error": "Feature completed in 505s - auto-verified",
+  "passes": true
+}

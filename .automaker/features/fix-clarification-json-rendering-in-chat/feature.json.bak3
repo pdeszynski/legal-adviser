@@ -1,0 +1,20 @@
+{
+  "category": "bug",
+  "description": "Fix the chat UI to properly render clarification responses from the AI. When the AI returns a clarification JSON with type: 'clarification' and questions array, the frontend currently displays the raw JSON string instead of formatted UI. Frontend changes: 1) Parse SSE token events to detect when content is a JSON object with type: 'clarification', 2) Create ClarificationMessage component that renders: context_summary as bold text, questions as bullet points with question text, hint as smaller text below each question, next_steps as italic paragraph, 3) Show interactive UI for answering questions: each question should have text input or buttons if options are provided, 4) Add 'Submit Answers' button that sends user responses back to AI Engine, 5) Ensure component handles both clarification flow and normal Q&A responses, 6) Add loading state while waiting for AI to process clarification answers, 7) Style to match existing chat message bubbles. Backend verification: 1) Verify AI Engine returns clarification JSON in proper SSE event format, 2) Ensure JSON is valid and parseable, 3) Test with various clarification scenarios (missing dates, document types, party names).",
+  "id": "fix-clarification-json-rendering-in-chat",
+  "title": "Fix Clarification JSON Rendering in Chat UI",
+  "dependencies": [
+    "ai-engine-frontend-clarification-ui",
+    "chat-ui-component"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Fix the chat UI to properly render clarification responses from the AI. When the AI returns a clarification JSON with type: 'clarification' and questions array, the frontend currently displays the raw JSON string instead of formatted UI. Frontend changes: 1) Parse SSE token events to detect when content is a JSON object with type: 'clarification', 2) Create ClarificationMessage component that renders: context_summary as bold text, questions as bullet points with question text, hint as smaller text below each question, next_steps as italic paragraph, 3) Show interactive UI for answering questions: each question should have text input or buttons if options are provided, 4) Add 'Submit Answers' button that sends user responses back to AI Engine, 5) Ensure component handles both clarification flow and normal Q&A responses, 6) Add loading state while waiting for AI to process clarification answers, 7) Style to match existing chat message bubbles. Backend verification: 1) Verify AI Engine returns clarification JSON in proper SSE event format, 2) Ensure JSON is valid and parseable, 3) Test with various clarification scenarios (missing dates, document types, party names).",
+      "timestamp": "2026-01-28T11:40:24.487Z",
+      "source": "initial"
+    }
+  ]
+}

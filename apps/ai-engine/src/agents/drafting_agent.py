@@ -7,8 +7,14 @@ Langfuse integration follows the official pattern:
 - Uses instrument=True for automatic OpenTelemetry tracing
 - Traces are automatically exported to Langfuse
 - See: https://langfuse.com/integrations/frameworks/pydantic-ai
+
+Conversation History Support:
+This agent accepts conversation_history parameter containing previous messages.
+History format: [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+The agent uses this context to refine document generation based on previously provided details.
 """
 
+import logging
 import time
 from typing import Any
 
@@ -18,6 +24,8 @@ from pydantic_ai.models.openai import OpenAIModel
 
 from ..config import get_settings
 from ..langfuse_init import is_langfuse_enabled, update_current_trace
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentSection(BaseModel):
@@ -170,6 +178,13 @@ Your response must include:
 3. Metadata about the document (type, word count, placeholders)
 4. A quality assessment score
 
+## Conversation Context
+When provided with conversation history, use it to:
+- Incorporate details mentioned in previous exchanges
+- Maintain consistency with previously established facts
+- Reference prior discussions about the document
+- Build upon accumulated information
+
 When generating documents, be thorough but practical. Focus on creating documents that are legally sound and ready for use after filling in placeholders."""
 
 
@@ -187,6 +202,7 @@ def get_drafting_agent() -> Agent:
         OpenAIModel(settings.OPENAI_MODEL),
         system_prompt=SYSTEM_PROMPT,
         instrument=True,  # Enable automatic Langfuse tracing
+        name="legal-drafter",  # Descriptive name for Langfuse traces
     )
 
 
@@ -208,6 +224,7 @@ async def generate_document(
     context: dict[str, Any] | None = None,
     session_id: str = "default",
     user_id: str | None = None,
+    conversation_history: list[dict[str, Any]] | None = None,
 ) -> tuple[DraftResult, dict[str, Any]]:
     """Generate a legal document from natural language description.
 
@@ -220,12 +237,22 @@ async def generate_document(
         context: Additional context variables
         session_id: Session ID for tracking
         user_id: User ID for observability
+        conversation_history: Previous messages in format:
+            [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
 
     Returns:
         Tuple of (draft result, metadata dict)
     """
     start_time = time.time()
     settings = get_settings()
+
+    # Log conversation history for debugging
+    if conversation_history and len(conversation_history) > 0:
+        logger.info(
+            "Drafting agent received %d messages from conversation history for session_id=%s",
+            len(conversation_history),
+            session_id,
+        )
 
     # Update current trace with metadata
     if is_langfuse_enabled():
@@ -238,6 +265,7 @@ async def generate_document(
             session_id=session_id,
             metadata={
                 "description_length": len(description),
+                "conversation_history_length": len(conversation_history) if conversation_history else 0,
                 "model": settings.OPENAI_MODEL,
             },
         )
@@ -253,6 +281,15 @@ async def generate_document(
             f"- {section}" for section in template_info["required_sections"]
         )
 
+        # Build conversation history context
+        history_context = ""
+        if conversation_history:
+            history_lines = []
+            for msg in conversation_history[-6:]:  # Limit to last 6 messages
+                role_display = "User" if msg.get("role") == "user" else "Assistant"
+                history_lines.append(f"{role_display}: {msg.get('content', '')}")
+            history_context = f"\n\n## Previous Conversation\n{chr(10).join(history_lines)}"
+
         user_prompt = f"""Please draft a legal document with the following specifications:
 
 ## Document Type
@@ -263,6 +300,7 @@ Required sections for this document type:
 {template_sections}
 
 {template_info['structure_hint']}
+{history_context}
 
 ## Description
 {description}
@@ -276,6 +314,7 @@ Required sections for this document type:
 3. Mark all missing information with clear placeholders in brackets (e.g., [NAZWISKO], [DATA], [KWOTA])
 4. Format the document in Markdown
 5. Provide a quality assessment based on completeness and legal soundness
+6. If conversation history is provided, incorporate relevant details into the document
 
 Generate the complete document with all requested metadata."""
 

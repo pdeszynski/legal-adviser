@@ -3,11 +3,12 @@ import {
   NotFoundException,
   ForbiddenException,
   Logger,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ChatSession, ChatCitation } from '../entities/chat-session.entity';
-import { ChatMessage, MessageRole } from '../entities/chat-message.entity';
+import { ChatMessage, MessageRole, ClarificationInfo } from '../entities/chat-message.entity';
 import { ChatSessionsService } from './chat-sessions.service';
 import {
   CreateChatMessageInput,
@@ -37,6 +38,20 @@ export class ChatMessagesService {
   ) {}
 
   /**
+   * Validate message content is not empty
+   *
+   * @param content - The message content to validate
+   * @throws BadRequestException if content is empty or only whitespace
+   */
+  private validateContent(content: string): void {
+    if (!content || typeof content !== 'string' || content.trim().length === 0) {
+      throw new BadRequestException(
+        'Message content cannot be empty. Please provide a valid message.',
+      );
+    }
+  }
+
+  /**
    * Create a user message in a session
    *
    * Creates a message with role USER, assigns sequence order,
@@ -52,6 +67,9 @@ export class ChatMessagesService {
     userId: string,
     input: CreateChatMessageInput,
   ): Promise<ChatMessage> {
+    // Validate content is not empty
+    this.validateContent(input.content);
+
     // Verify session ownership
     await this.chatSessionsService.verifyOwnership(sessionId, userId);
 
@@ -70,6 +88,11 @@ export class ChatMessagesService {
     });
 
     const savedMessage = await this.chatMessageRepository.save(message);
+
+    // Log content length for verification
+    this.logger.log(
+      `[CHAT_MESSAGE_SAVE] USER message saved | sessionId=${sessionId} | messageId=${savedMessage.messageId} | contentLength=${input.content.length} | sequenceOrder=${nextOrder}`,
+    );
 
     // Update session metadata
     await this.updateSessionOnNewMessage(sessionId);
@@ -98,6 +121,7 @@ export class ChatMessagesService {
    *
    * Creates a message with role ASSISTANT, assigns sequence order,
    * stores citations and metadata, and updates session metadata.
+   * Automatically detects and parses clarification JSON from content.
    *
    * @param sessionId - The chat session ID
    * @param userId - The authenticated user ID
@@ -109,24 +133,44 @@ export class ChatMessagesService {
     userId: string,
     input: CreateAssistantMessageInput,
   ): Promise<ChatMessage> {
+    // Validate content is not empty
+    this.validateContent(input.content);
+
     // Verify session ownership
     await this.chatSessionsService.verifyOwnership(sessionId, userId);
 
     // Get next sequence order
     const nextOrder = await this.getNextSequenceOrder(sessionId);
 
+    // Check if content contains clarification JSON and parse it
+    const clarificationFromContent = this.parseClarificationFromContent(input.content);
+
+    // Merge clarification from content with provided metadata
+    const metadata = input.metadata ?? {};
+    if (clarificationFromContent) {
+      metadata.clarification = clarificationFromContent;
+      this.logger.debug(
+        `Detected clarification JSON in message for session ${sessionId}, stored in metadata`,
+      );
+    }
+
     // Create assistant message
     const message = this.chatMessageRepository.create({
       sessionId,
       role: MessageRole.ASSISTANT,
       content: input.content,
-      rawContent: null, // AI responses don't need raw content
+      rawContent: input.content, // Store AI response for audit purposes
       sequenceOrder: nextOrder,
       citations: input.citations ?? null,
-      metadata: input.metadata ?? null,
+      metadata: Object.keys(metadata).length > 0 ? metadata : null,
     });
 
     const savedMessage = await this.chatMessageRepository.save(message);
+
+    // Log content length for verification
+    this.logger.log(
+      `[CHAT_MESSAGE_SAVE] ASSISTANT message saved | sessionId=${sessionId} | messageId=${savedMessage.messageId} | contentLength=${input.content.length} | sequenceOrder=${nextOrder} | hasCitations=${!!input.citations?.length}`,
+    );
 
     // Update session metadata
     await this.updateSessionOnNewMessage(sessionId);
@@ -306,6 +350,97 @@ export class ChatMessagesService {
   }
 
   /**
+   * Update clarification answered status for a message
+   *
+   * Marks a clarification message as answered and optionally stores the user's answers.
+   *
+   * @param messageId - The message ID containing the clarification
+   * @param userId - The authenticated user ID
+   * @param answered - Whether the clarification has been answered
+   * @param answers - Optional JSON string of question-answer pairs
+   * @returns The updated message
+   */
+  async updateClarificationStatus(
+    messageId: string,
+    userId: string,
+    answered: boolean,
+    answers?: string,
+  ): Promise<ChatMessage> {
+    const message = await this.getMessageById(messageId, userId);
+
+    if (!message) {
+      throw new NotFoundException(`Message ${messageId} not found`);
+    }
+
+    // Update the clarification status in metadata
+    const currentMetadata = message.metadata ?? {};
+    const currentClarification = currentMetadata.clarification;
+
+    // If there's no existing clarification, we can't update it
+    if (!currentClarification) {
+      throw new NotFoundException(`Message ${messageId} does not contain a clarification`);
+    }
+
+    const updatedMetadata = {
+      ...currentMetadata,
+      clarification: {
+        needs_clarification: currentClarification.needs_clarification ?? true,
+        questions: currentClarification.questions ?? [],
+        context_summary: currentClarification.context_summary ?? '',
+        next_steps: currentClarification.next_steps ?? '',
+        currentRound: currentClarification.currentRound,
+        totalRounds: currentClarification.totalRounds,
+        answered,
+        ...(answers && { answers }),
+        ...(answered && { answeredAt: new Date().toISOString() }),
+      },
+    };
+
+    message.metadata = updatedMetadata;
+    const savedMessage = await this.chatMessageRepository.save(message);
+
+    this.logger.debug(
+      `Updated clarification status for message ${messageId}: answered=${answered}`,
+    );
+
+    return savedMessage;
+  }
+
+  /**
+   * Find the most recent pending clarification message in a session
+   *
+   * @param sessionId - The chat session ID
+   * @param userId - The authenticated user ID
+   * @returns The pending clarification message or null
+   */
+  async findPendingClarification(
+    sessionId: string,
+    userId: string,
+  ): Promise<ChatMessage | null> {
+    // Verify session ownership
+    await this.chatSessionsService.verifyOwnership(sessionId, userId);
+
+    const messages = await this.chatMessageRepository
+      .createQueryBuilder('message')
+      .where('message.sessionId = :sessionId', { sessionId })
+      .andWhere('message.role = :role', { role: MessageRole.ASSISTANT })
+      .orderBy('message.sequenceOrder', 'DESC')
+      .getMany();
+
+    // Find the most recent message with clarification that hasn't been answered
+    for (const message of messages) {
+      if (
+        message.metadata?.clarification?.needs_clarification &&
+        !message.metadata.clarification.answered
+      ) {
+        return message;
+      }
+    }
+
+    return null;
+  }
+
+  /**
    * Count messages in a session
    *
    * @param sessionId - The chat session ID
@@ -315,5 +450,59 @@ export class ChatMessagesService {
     return this.chatMessageRepository.count({
       where: { sessionId },
     });
+  }
+
+  /**
+   * Parse clarification JSON from content string
+   *
+   * Detects if the content contains a clarification JSON structure
+   * and parses it into a ClarificationInfo object.
+   *
+   * @param content - The message content
+   * @returns Parsed clarification info or null if not a clarification message
+   */
+  private parseClarificationFromContent(content: string): ClarificationInfo | null {
+    if (!content || typeof content !== 'string') {
+      return null;
+    }
+
+    const trimmed = content.trim();
+
+    // Check if content starts with clarification JSON
+    if (
+      !trimmed.startsWith('{"type":"clarification"') &&
+      !trimmed.startsWith('{"type": "clarification"')
+    ) {
+      return null;
+    }
+
+    try {
+      const data = JSON.parse(trimmed);
+      if (data.type === 'clarification' && Array.isArray(data.questions)) {
+        return {
+          needs_clarification: true,
+          questions: (data.questions as Array<{
+            question: string;
+            question_type?: string;
+            options?: string[];
+            hint?: string;
+          }>).map((q) => ({
+            question: q.question,
+            question_type: q.question_type || 'text',
+            options: q.options,
+            hint: q.hint,
+          })),
+          context_summary: data.context_summary || '',
+          next_steps: data.next_steps || '',
+          currentRound: data.currentRound,
+          totalRounds: data.totalRounds,
+          answered: false,
+        };
+      }
+    } catch (err) {
+      this.logger.debug(`Failed to parse clarification JSON: ${err}`);
+    }
+
+    return null;
   }
 }

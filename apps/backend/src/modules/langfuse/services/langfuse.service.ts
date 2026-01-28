@@ -16,6 +16,7 @@ import {
   TokenUsageByAgent,
   AgentLatencyMetrics,
   UserTraceAttribution,
+  LangfuseDebugConfig,
 } from '../dto/langfuse.dto';
 
 /**
@@ -813,5 +814,33 @@ export class LangfuseService {
       this.logger.error(`Failed to fetch user attribution: ${error}`);
       return [];
     }
+  }
+
+  /**
+   * Get Langfuse debug configuration
+   * Returns URLs and configuration for the Langfuse dashboard
+   */
+  getDebugConfig(): LangfuseDebugConfig {
+    const config: LangfuseDebugConfig = {
+      enabled: this.enabled,
+    };
+
+    if (this.enabled) {
+      config.hostUrl = this.baseUrl;
+      config.dashboardUrl = `${this.baseUrl}/trace`;
+      config.traceUrlTemplate = `${this.baseUrl}/trace/{traceId}`;
+    }
+
+    return config;
+  }
+
+  /**
+   * Get the Langfuse dashboard URL for a specific trace
+   */
+  getTraceUrl(traceId: string): string | null {
+    if (!this.enabled) {
+      return null;
+    }
+    return `${this.baseUrl}/trace/${traceId}`;
   }
 }

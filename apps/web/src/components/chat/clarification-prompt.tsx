@@ -48,6 +48,15 @@ export function ClarificationPrompt({
     }));
   };
 
+  // Prevent Enter key from submitting form when typing in input fields
+  // This allows users to type multi-character answers without accidental submission
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
   const handleOptionSelect = (question: string, option: string) => {
     setAnswers((prev) => ({
       ...prev,
@@ -60,8 +69,16 @@ export function ClarificationPrompt({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    // Validate that all questions are answered before submitting
+    const allQuestionsAnswered = clarification.questions.every(
+      (q) => answers[q.question] && answers[q.question].trim().length > 0,
+    );
+
+    if (!allQuestionsAnswered) {
+      return; // Don't submit if not all questions are answered
+    }
+
     await onSubmit(answers);
     // Reset for potential next round
     setAnswers({});
@@ -84,7 +101,10 @@ export function ClarificationPrompt({
   const isMultiRound = totalRounds > 1;
 
   return (
-    <Card className="border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/20 shadow-sm">
+    <Card
+      className="border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/20 shadow-sm"
+      data-testid="clarification-prompt"
+    >
       <CardHeader className="pb-4">
         <div className="flex items-start gap-3">
           <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center shrink-0">
@@ -204,6 +224,7 @@ export function ClarificationPrompt({
                       id={`q-${idx}`}
                       value={answers[q.question] || ''}
                       onChange={(e) => handleInputChange(q.question, e.target.value)}
+                      onKeyDown={handleInputKeyDown}
                       placeholder="Type your answer here..."
                       className="bg-white dark:bg-gray-800 border-amber-300 dark:border-amber-700 focus-visible:ring-amber-500"
                       disabled={isSubmitting || isAnswered}

@@ -203,6 +203,7 @@ async def stream_qa_enhanced(
     user: UserContext | None = None,
     request: Any | None = None,  # FastAPI Request for disconnect detection
     messages: list[dict[str, Any]] | None = None,  # Conversation history
+    conversation_metadata: dict[str, Any] | None = None,  # Additional conversation metadata
 ) -> AsyncGenerator[str, None]:
     """Stream a Q&A response with structured events using real-time OpenAI streaming.
 
@@ -252,13 +253,40 @@ async def stream_qa_enhanced(
         is_first_message,
     )
 
+    # Build Langfuse metadata from conversation metadata
+    langfuse_metadata: dict[str, Any] = {
+        "mode": mode,
+        "streaming": "real-time",
+        "message_count": len(messages) + 1 if messages else 1,
+        "is_first_message": is_first_message,
+    }
+
+    # Add conversation metadata if provided
+    if conversation_metadata:
+        if conversation_metadata.get("message_count") is not None:
+            langfuse_metadata["message_count"] = conversation_metadata["message_count"]
+        if conversation_metadata.get("is_first_message") is not None:
+            langfuse_metadata["is_first_message"] = conversation_metadata["is_first_message"]
+        if conversation_metadata.get("language"):
+            langfuse_metadata["language"] = conversation_metadata["language"]
+        if conversation_metadata.get("locale"):
+            langfuse_metadata["locale"] = conversation_metadata["locale"]
+        if conversation_metadata.get("user_agent"):
+            langfuse_metadata["user_agent"] = conversation_metadata["user_agent"]
+        if conversation_metadata.get("platform"):
+            langfuse_metadata["platform"] = conversation_metadata["platform"]
+        if conversation_metadata.get("query_category"):
+            langfuse_metadata["query_category"] = conversation_metadata["query_category"]
+        if conversation_metadata.get("conversation_start_time"):
+            langfuse_metadata["conversation_start_time"] = conversation_metadata["conversation_start_time"]
+
     # Update Langfuse trace with input metadata
     if is_langfuse_enabled():
         update_current_trace(
             input=question,
             user_id=user_id,
             session_id=effective_session_id,
-            metadata={"mode": mode, "streaming": "real-time"},
+            metadata=langfuse_metadata,
         )
 
     try:
@@ -283,6 +311,16 @@ async def stream_qa_enhanced(
                 question=question,
                 query_type=analysis.query_type,
                 mode=mode,
+                conversation_history=messages,
+                session_id=effective_session_id,
+                user_id=user_id,
+            )
+
+            logger.info(
+                "Clarification result for session_id=%s: needs_clarification=%s, questions_count=%d",
+                effective_session_id,
+                clarification_result.get("needs_clarification", False),
+                len(clarification_result.get("questions", [])),
             )
 
             if clarification_result.get("needs_clarification"):
@@ -346,16 +384,70 @@ Please provide a comprehensive answer based on the above context."""
                 if msg.get("role") in ("user", "assistant")
             ]
 
+            # Verify message roles and content before adding
+            valid_roles = {"user", "assistant"}
+            for i, msg in enumerate(history_messages):
+                if msg["role"] not in valid_roles:
+                    logger.warning(
+                        "Invalid message role at index %d: %s (session_id=%s)",
+                        i,
+                        msg.get("role"),
+                        effective_session_id,
+                    )
+                if not msg.get("content") or len(msg["content"].strip()) == 0:
+                    logger.warning(
+                        "Empty message content at index %d (session_id=%s)",
+                        i,
+                        effective_session_id,
+                    )
+
             # Limit history to last 10 messages to manage token usage
+            original_count = len(history_messages)
             if len(history_messages) > 10:
                 history_messages = history_messages[-10:]
 
             api_messages.extend(history_messages)
-            logger.debug(
-                "Added %d messages from conversation history to session_id=%s",
-                len(history_messages),
-                effective_session_id,
+
+            # Log detailed conversation history integration
+            total_history_chars = sum(len(msg.get("content", "")) for msg in history_messages)
+
+            # Calculate role counts for metrics
+            user_count = sum(1 for msg in history_messages if msg.get("role") == "user")
+            assistant_count = sum(1 for msg in history_messages if msg.get("role") == "assistant")
+            has_empty_content = any(
+                not msg.get("content") or len(msg.get("content", "").strip()) == 0
+                for msg in history_messages
             )
+            was_truncated = original_count > 10
+
+            logger.info(
+                "Conversation history integrated: session_id=%s, messages_added=%d, original_count=%d, total_chars=%d, truncated=%s",
+                effective_session_id,
+                len(history_messages),
+                original_count,
+                total_history_chars,
+                was_truncated,
+            )
+
+            # Record metrics for monitoring
+            from .metrics import record_conversation_history
+            record_conversation_history(
+                message_count=original_count,
+                total_chars=total_history_chars,
+                user_count=user_count,
+                assistant_count=assistant_count,
+                has_empty_content=has_empty_content,
+                was_truncated=was_truncated,
+            )
+
+            # Log message order for verification
+            if history_messages:
+                role_sequence = "->".join(msg["role"][:1] for msg in history_messages)
+                logger.debug(
+                    "Message order for session_id=%s: %s",
+                    effective_session_id,
+                    role_sequence,
+                )
 
         # Add current question with context
         api_messages.append({"role": "user", "content": augmented_prompt})
@@ -511,3 +603,288 @@ def create_enhanced_streaming_response(
             "X-Accel-Buffering": "no",  # Disable nginx buffering
         },
     )
+
+
+async def stream_clarification_answer(
+    original_question: str,
+    answers: list[dict[str, Any]],
+    mode: str,
+    session_id: str,
+    user: UserContext | None = None,
+    request: Any | None = None,  # FastAPI Request for disconnect detection
+    messages: list[dict[str, Any]] | None = None,  # Conversation history
+    conversation_metadata: dict[str, Any] | None = None,  # Additional conversation metadata
+) -> AsyncGenerator[str, None]:
+    """Stream an AI response after receiving clarification answers from the user.
+
+    This generator processes the user's answers to clarification questions
+    and provides a comprehensive response with the additional context.
+
+    The user's answers are incorporated into the conversation history and
+    used to provide a more accurate legal response.
+
+    Args:
+        original_question: The original question that prompted clarification
+        answers: List of {question, question_type, answer} objects from user
+        mode: Response mode (LAWYER or SIMPLE)
+        session_id: Session ID for tracking (validated UUID v4)
+        user: Optional authenticated user context
+        request: FastAPI Request for detecting client disconnection
+        messages: Optional conversation history as list of {role, content} dicts
+        conversation_metadata: Optional additional conversation metadata for Langfuse
+
+    Yields:
+        SSE-formatted JSON events
+    """
+    import time
+
+    from ..agents.dependencies import get_model_deps_with_user
+    from ..agents.rag_tool import extract_citations_from_contexts, format_contexts_for_prompt, retrieve_context_tool
+    from ..langfuse_init import is_langfuse_enabled, update_current_trace
+
+    start_time = time.time()
+    user_id = user.id if user else None
+    effective_session_id = user.session_id if user and user.session_id else session_id
+    settings = get_settings()
+
+    logger.info(
+        "Starting clarification answer stream: session_id=%s, user_id=%s, mode=%s, answers_count=%d",
+        effective_session_id,
+        user_id,
+        mode,
+        len(answers),
+    )
+
+    # Build Langfuse metadata from conversation metadata
+    langfuse_metadata: dict[str, Any] = {
+        "mode": mode,
+        "streaming": "clarification-answer",
+        "clarification_answers_count": len(answers),
+    }
+
+    # Add conversation metadata if provided
+    if conversation_metadata:
+        if conversation_metadata.get("message_count") is not None:
+            langfuse_metadata["message_count"] = conversation_metadata["message_count"]
+        if conversation_metadata.get("language"):
+            langfuse_metadata["language"] = conversation_metadata["language"]
+        if conversation_metadata.get("locale"):
+            langfuse_metadata["locale"] = conversation_metadata["locale"]
+        if conversation_metadata.get("user_agent"):
+            langfuse_metadata["user_agent"] = conversation_metadata["user_agent"]
+        if conversation_metadata.get("platform"):
+            langfuse_metadata["platform"] = conversation_metadata["platform"]
+        if conversation_metadata.get("query_category"):
+            langfuse_metadata["query_category"] = conversation_metadata["query_category"]
+
+    # Update Langfuse trace with input metadata
+    if is_langfuse_enabled():
+        update_current_trace(
+            input=original_question,
+            user_id=user_id,
+            session_id=effective_session_id,
+            metadata=langfuse_metadata,
+        )
+
+    try:
+        # Check for client disconnection before processing
+        if request and getattr(request, "is_disconnected", None) and await request.is_disconnected():
+            logger.info("Client disconnected before processing")
+            return
+
+        # Step 1: Format clarification answers into context
+        answers_text = "\n\n".join([
+            f"Q: {ans['question']}\nA: {ans['answer']}"
+            for ans in answers
+        ])
+
+        # Step 2: Build the enhanced prompt with clarification context
+        clarification_context = f"""
+Original Question: {original_question}
+
+Additional Information Provided:
+{answers_text}
+
+Please provide a comprehensive answer based on the original question and the additional information provided above."""
+
+        # Step 3: Retrieve relevant legal context using RAG
+        # Use the original question combined with answers for better retrieval
+        combined_query = f"{original_question} {answers_text}"
+        contexts = await retrieve_context_tool(
+            query=combined_query,
+            limit=5,
+        )
+
+        # Build context string for the prompt
+        context_text = format_contexts_for_prompt(contexts)
+
+        # Build augmented prompt with legal context
+        augmented_prompt = f"""{clarification_context}
+
+Legal Context:
+{context_text}
+
+Please provide a comprehensive answer based on the above information."""
+
+        # Select system prompt based on mode
+        system_prompt = QA_SYSTEM_PROMPT_LAWYER if mode.upper() == "LAWYER" else QA_SYSTEM_PROMPT_SIMPLE
+
+        # Step 4: Prepare messages with conversation history
+        # Start with system prompt
+        api_messages = [
+            {"role": "system", "content": system_prompt},
+        ]
+
+        # Add conversation history if provided (exclude system messages)
+        if messages:
+            history_messages = [
+                {"role": msg["role"], "content": msg["content"]}
+                for msg in messages
+                if msg.get("role") in ("user", "assistant")
+            ]
+
+            # Limit history to last 10 messages
+            if len(history_messages) > 10:
+                history_messages = history_messages[-10:]
+
+            api_messages.extend(history_messages)
+            logger.info(
+                "Added %d messages from conversation history to clarification stream for session_id=%s",
+                len(history_messages),
+                effective_session_id,
+            )
+
+        # Add a user message representing the clarification round
+        # This ensures the conversation history includes the clarification Q&A
+        clarification_message = f"""I need help with: {original_question}
+
+Your follow-up questions:
+{chr(10).join([f"- {q['question']}" for q in answers])}
+
+My answers:
+{chr(10).join([f"- {q['answer']}" for q in answers])}"""
+
+        api_messages.append({"role": "user", "content": clarification_message})
+        api_messages.append({"role": "user", "content": augmented_prompt})
+
+        logger.debug("Starting OpenAI streaming for clarification answer, session_id=%s", effective_session_id)
+
+        # Step 5: Stream the response using OpenAI API directly
+        openai_client = get_openai_client()
+
+        stream = await openai_client.chat.completions.create(
+            model=settings.OPENAI_MODEL,
+            messages=api_messages,
+            stream=True,
+            stream_options={"include_usage": True},
+        )
+
+        full_answer = ""
+        first_token_time = None
+
+        async for chunk in stream:
+            # Check for client disconnection during streaming
+            if (
+                request
+                and getattr(request, "is_disconnected", None)
+                and await request.is_disconnected()
+            ):
+                logger.info("Client disconnected during clarification answer streaming")
+                return
+
+            # Record first token time for metrics
+            if first_token_time is None and chunk.choices:
+                first_token_time = time.time()
+                logger.debug("First token received at %.3fs", first_token_time - start_time)
+
+            # Extract delta content
+            if chunk.choices and chunk.choices[0].delta.content:
+                token_content = chunk.choices[0].delta.content
+                full_answer += token_content
+
+                # Send token event immediately (real-time streaming)
+                yield token_event(token_content).to_sse()
+
+            # Check if this is the final chunk with usage
+            if hasattr(chunk, 'usage') and chunk.usage:
+                logger.debug(
+                    "Clarification answer stream complete: prompt_tokens=%d, completion_tokens=%d",
+                    chunk.usage.prompt_tokens,
+                    chunk.usage.completion_tokens,
+                )
+
+        # Extract citations from retrieved contexts
+        context_citations_data = extract_citations_from_contexts(contexts)
+
+        # Send citations as individual events
+        for citation_data in context_citations_data:
+            yield citation_event(
+                source=citation_data.get("source", "Unknown"),
+                article=citation_data.get("article", ""),
+                url=citation_data.get("url"),
+            ).to_sse()
+
+        # Calculate metrics
+        processing_time_ms = (time.time() - start_time) * 1000
+        time_to_first_token = (first_token_time - start_time) * 1000 if first_token_time else 0
+
+        # Estimate confidence based on context quality and answer length
+        confidence = min(0.95, 0.6 + (len(contexts) * 0.1) + min(0.2, len(full_answer) / 1000))
+
+        # Determine query type based on the content
+        query_type = "clarification_response"
+
+        # Send final done event with complete metadata
+        yield done_event(
+            citations=[{
+                "source": c.get("source", "Unknown"),
+                "article": c.get("article", ""),
+                "url": c.get("url"),
+            } for c in context_citations_data],
+            confidence=confidence,
+            processing_time_ms=processing_time_ms,
+            query_type=query_type,
+        ).to_sse()
+
+        # Update Langfuse trace with output metadata
+        if is_langfuse_enabled():
+            update_current_trace(
+                output={
+                    "answer_length": len(full_answer),
+                    "confidence": confidence,
+                    "citations_count": len(context_citations_data),
+                    "processing_time_ms": processing_time_ms,
+                    "time_to_first_token_ms": time_to_first_token,
+                    "streaming": "clarification-answer",
+                    "model": settings.OPENAI_MODEL,
+                    "clarification_answers_processed": len(answers),
+                }
+            )
+
+        logger.info(
+            "Clarification answer stream complete: session_id=%s, chars=%d, time_to_first_token=%.1fms, total_time=%dms",
+            effective_session_id,
+            len(full_answer),
+            time_to_first_token,
+            int(processing_time_ms),
+        )
+
+    except AIEngineError as e:
+        # Send structured error for known AI Engine errors
+        logger.exception("AI Engine error in clarification answer streaming: %s - %s", e.error_code, e.message)
+        yield error_event(str(e), error_code=e.error_code).to_sse()
+
+    except HTTPException as e:
+        # Send error for HTTP exceptions (auth, validation)
+        logger.exception("HTTP error in clarification answer streaming: %s", e.detail)
+        error_msg = (
+            e.detail
+            if isinstance(e.detail, str)
+            else str(e.detail.get("message", "Unknown error"))
+        )
+        yield error_event(error_msg).to_sse()
+
+    except Exception:
+        # Send generic error for unexpected exceptions
+        logger.exception("Unexpected error in clarification answer streaming")
+        yield error_event("An unexpected error occurred while processing your answers").to_sse()

@@ -2,6 +2,14 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AIEngineMessageFormat {
+  """Message content"""
+  content: String!
+
+  """Message role (user or assistant)"""
+  role: String!
+}
+
 input ActivateUserInput {
   userId: ID!
 }
@@ -920,6 +928,7 @@ type ChatMessage {
 }
 
 type ChatMessageMetadata {
+  clarification: ClarificationInfoType
   confidence: Float
   keyTerms: [String!]
   language: String
@@ -928,6 +937,9 @@ type ChatMessageMetadata {
 }
 
 input ChatMessageMetadataInput {
+  """Clarification data for messages that need clarification"""
+  clarification: ClarificationInfoInput
+
   """Confidence score of AI response (0-1)"""
   confidence: Float
 
@@ -1056,6 +1068,29 @@ type ChatSessionCountAggregate {
   title: Int
   updatedAt: Int
   userId: Int
+}
+
+type ChatSessionDebugInfo {
+  """Messages in AI Engine format (what gets sent to AI)"""
+  aiEngineFormat: [AIEngineMessageFormat!]!
+
+  """Total number of messages in history"""
+  messageCount: Float!
+
+  """Message previews with full details"""
+  messages: [ConversationMessagePreview!]!
+
+  """Role distribution in conversation"""
+  roleDistribution: ConversationRoleDistribution!
+
+  """Session ID"""
+  sessionId: String!
+
+  """Total characters across all messages"""
+  totalCharacters: Float!
+
+  """Verification information"""
+  verification: ConversationHistoryVerification!
 }
 
 type ChatSessionDeleteResponse {
@@ -1209,7 +1244,41 @@ type ClarificationInfo {
   questions: [ClarificationQuestion!]!
 }
 
+input ClarificationInfoInput {
+  answered: Boolean
+  context_summary: String!
+  currentRound: Float
+  needs_clarification: Boolean!
+  next_steps: String!
+  questions: [ClarificationQuestionInput!]!
+  totalRounds: Float
+}
+
+type ClarificationInfoType {
+  answered: Boolean
+  context_summary: String!
+  currentRound: Float
+  needs_clarification: Boolean!
+  next_steps: String!
+  questions: [ClarificationQuestionType!]!
+  totalRounds: Float
+}
+
 type ClarificationQuestion {
+  hint: String
+  options: [String!]
+  question: String!
+  question_type: String!
+}
+
+input ClarificationQuestionInput {
+  hint: String
+  options: [String!]
+  question: String!
+  question_type: String!
+}
+
+type ClarificationQuestionType {
   hint: String
   options: [String!]
   question: String!
@@ -1340,6 +1409,51 @@ input ConditionalSectionInput {
 
 """Cursor for paging through collections"""
 scalar ConnectionCursor
+
+type ConversationHistoryVerification {
+  """First message role"""
+  firstRole: String
+
+  """Whether any messages have empty content"""
+  hasEmptyContent: Boolean!
+
+  """Last message role"""
+  lastRole: String
+
+  """Whether message count matches between different queries"""
+  messageCountMatches: Boolean!
+
+  """Whether message order is valid"""
+  orderValid: Boolean!
+}
+
+type ConversationMessagePreview {
+  """Full message content"""
+  content: String!
+
+  """Content preview (first 100 chars)"""
+  contentPreview: String!
+
+  """Creation timestamp"""
+  createdAt: String!
+
+  """Message ID"""
+  messageId: String!
+
+  """Message role (USER or ASSISTANT)"""
+  role: String!
+
+  """Sequence order in conversation"""
+  sequenceOrder: Float!
+}
+
+type ConversationRoleDistribution {
+  """Number of assistant messages"""
+  assistant: Float!
+
+  """Number of user messages"""
+  user: Float!
+}
 
 """Type/level of court that issued the ruling"""
 enum CourtType {
@@ -3249,6 +3363,20 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
+type LangfuseDebugConfig {
+  """Base URL for Langfuse dashboard"""
+  dashboardUrl: String
+
+  """Whether Langfuse integration is enabled"""
+  enabled: Boolean!
+
+  """Langfuse host URL"""
+  hostUrl: String
+
+  """Langfuse trace URL template (use {traceId} as placeholder)"""
+  traceUrlTemplate: String
+}
+
 type LangfuseTrace {
   """Type of agent or workflow"""
   agentType: AgentType!
@@ -4516,6 +4644,9 @@ type Mutation {
   """Update the title of a chat session"""
   updateChatSessionTitle(input: UpdateChatSessionTitleInput!): ChatSession!
 
+  """Update the answered status of a clarification message"""
+  updateClarificationStatus(input: UpdateClarificationStatusInput!): UpdateClarificationStatusResponse!
+
   """Update demo request status (admin only)"""
   updateDemoRequestStatus(input: UpdateDemoRequestStatusInput!): DemoRequest!
   updateDocument(id: ID!, input: UpdateDocumentInput!): LegalDocument!
@@ -5169,6 +5300,9 @@ type Query {
 
   """Count legal rulings matching filter criteria"""
   countLegalRulings(input: FilterLegalRulingsInput): Int!
+
+  """Debug endpoint to inspect conversation history for a session"""
+  debugConversationHistory(sessionId: ID!): ChatSessionDebugInfo!
   demoRequest(
     """The id of the record to find."""
     id: ID!
@@ -5301,9 +5435,13 @@ type Query {
     """Specify to sort results."""
     sorting: [InAppNotificationSort!]! = []
   ): InAppNotificationConnection!
+  langfuseDebugConfig: LangfuseDebugConfig
   langfuseLatencyMetrics(endDate: String, startDate: String): [AgentLatencyMetrics!]
   langfuseTokenUsageByAgent(endDate: String, startDate: String): [TokenUsageByAgent!]
   langfuseTraceDetail(traceId: String!): LangfuseTraceDetail
+
+  """Get the URL to view a specific trace in Langfuse dashboard"""
+  langfuseTraceUrl(traceId: String!): String
   langfuseTraces(input: TracesListInput): TracesListResponse
   langfuseUserAttribution(endDate: String, limit: Float = 20, startDate: String): [UserTraceAttribution!]
   legalAnalyses(
@@ -6741,6 +6879,28 @@ input UpdateChatSessionTitleInput {
 
   """New title for the session"""
   title: String!
+}
+
+input UpdateClarificationStatusInput {
+  """Whether the clarification has been answered"""
+  answered: Boolean!
+
+  """JSON string of question-answer pairs"""
+  answers: String
+
+  """The message ID containing the clarification"""
+  messageId: ID!
+}
+
+type UpdateClarificationStatusResponse {
+  """The message ID that was updated"""
+  messageId: ID!
+
+  """The updated clarification status"""
+  status: String
+
+  """Whether the update was successful"""
+  success: Boolean!
 }
 
 input UpdateDemoRequestStatusInput {

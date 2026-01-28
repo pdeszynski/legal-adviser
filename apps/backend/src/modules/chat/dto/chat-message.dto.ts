@@ -1,5 +1,5 @@
 import { InputType, Field, ID, ObjectType } from '@nestjs/graphql';
-import { IsString, IsOptional, IsArray, ValidateNested } from 'class-validator';
+import { IsString, IsOptional, IsArray, ValidateNested, IsNotEmpty } from 'class-validator';
 import { ChatCitationType } from '../entities/chat-session.entity';
 import { ChatMessageMetadataType } from '../entities/chat-message.entity';
 
@@ -19,6 +19,51 @@ export class ChatCitationInput {
 
   @Field(() => String, { nullable: true })
   excerpt?: string;
+}
+
+/**
+ * Input type for Clarification Question
+ */
+@InputType('ClarificationQuestionInput')
+export class ClarificationQuestionInput {
+  @Field(() => String)
+  question: string;
+
+  @Field(() => String)
+  question_type: string;
+
+  @Field(() => [String], { nullable: true })
+  options?: string[];
+
+  @Field(() => String, { nullable: true })
+  hint?: string;
+}
+
+/**
+ * Input type for Clarification Info
+ */
+@InputType('ClarificationInfoInput')
+export class ClarificationInfoInput {
+  @Field(() => Boolean)
+  needs_clarification: boolean;
+
+  @Field(() => [ClarificationQuestionInput])
+  questions: ClarificationQuestionInput[];
+
+  @Field(() => String)
+  context_summary: string;
+
+  @Field(() => String)
+  next_steps: string;
+
+  @Field(() => Number, { nullable: true })
+  currentRound?: number;
+
+  @Field(() => Number, { nullable: true })
+  totalRounds?: number;
+
+  @Field(() => Boolean, { nullable: true })
+  answered?: boolean;
 }
 
 /**
@@ -65,6 +110,14 @@ export class ChatMessageMetadataInput {
   })
   @IsOptional()
   language?: string;
+
+  @Field(() => ClarificationInfoInput, {
+    nullable: true,
+    description: 'Clarification data for messages that need clarification',
+  })
+  @IsOptional()
+  @ValidateNested()
+  clarification?: ClarificationInfoInput;
 }
 
 /**
@@ -79,6 +132,7 @@ export class CreateChatMessageInput {
     description: 'Message content (user question or AI response)',
   })
   @IsString()
+  @IsNotEmpty()
   content: string;
 }
 
@@ -93,6 +147,7 @@ export class CreateAssistantMessageInput {
     description: 'AI response content (markdown formatted)',
   })
   @IsString()
+  @IsNotEmpty()
   content: string;
 
   @Field(() => [ChatCitationInput], {
@@ -251,6 +306,7 @@ export class SaveChatMessageInput {
     description: 'Message content',
   })
   @IsString()
+  @IsNotEmpty()
   content: string;
 
   @Field(() => String, {
@@ -274,4 +330,197 @@ export class SaveChatMessageInput {
   @IsOptional()
   @ValidateNested()
   metadata?: ChatMessageMetadataInput;
+}
+
+/**
+ * Role distribution in conversation history
+ */
+@ObjectType('ConversationRoleDistribution')
+export class ConversationRoleDistribution {
+  @Field(() => Number, {
+    description: 'Number of user messages',
+  })
+  user: number;
+
+  @Field(() => Number, {
+    description: 'Number of assistant messages',
+  })
+  assistant: number;
+}
+
+/**
+ * Message preview for debug output
+ */
+@ObjectType('ConversationMessagePreview')
+export class ConversationMessagePreview {
+  @Field(() => String, {
+    description: 'Message ID',
+  })
+  messageId: string;
+
+  @Field(() => String, {
+    description: 'Message role (USER or ASSISTANT)',
+  })
+  role: string;
+
+  @Field(() => String, {
+    description: 'Full message content',
+  })
+  content: string;
+
+  @Field(() => String, {
+    description: 'Content preview (first 100 chars)',
+  })
+  contentPreview: string;
+
+  @Field(() => Number, {
+    description: 'Sequence order in conversation',
+  })
+  sequenceOrder: number;
+
+  @Field(() => String, {
+    description: 'Creation timestamp',
+  })
+  createdAt: string;
+}
+
+/**
+ * AI Engine format message (role + content)
+ */
+@ObjectType('AIEngineMessageFormat')
+export class AIEngineMessageFormat {
+  @Field(() => String, {
+    description: 'Message role (user or assistant)',
+  })
+  role: string;
+
+  @Field(() => String, {
+    description: 'Message content',
+  })
+  content: string;
+}
+
+/**
+ * Verification info for conversation history
+ */
+@ObjectType('ConversationHistoryVerification')
+export class ConversationHistoryVerification {
+  @Field(() => Boolean, {
+    description: 'Whether message order is valid',
+  })
+  orderValid: boolean;
+
+  @Field(() => Boolean, {
+    description: 'Whether any messages have empty content',
+  })
+  hasEmptyContent: boolean;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'First message role',
+  })
+  firstRole: string | null;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Last message role',
+  })
+  lastRole: string | null;
+
+  @Field(() => Boolean, {
+    description: 'Whether message count matches between different queries',
+  })
+  messageCountMatches: boolean;
+}
+
+/**
+ * Input for updating clarification answered status
+ *
+ * Used when user submits answers to clarification questions.
+ */
+@InputType('UpdateClarificationStatusInput')
+export class UpdateClarificationStatusInput {
+  @Field(() => ID, {
+    description: 'The message ID containing the clarification',
+  })
+  @IsString()
+  messageId: string;
+
+  @Field(() => Boolean, {
+    description: 'Whether the clarification has been answered',
+  })
+  answered: boolean;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'JSON string of question-answer pairs',
+  })
+  @IsOptional()
+  answers?: string;
+}
+
+/**
+ * Response type for updating clarification status
+ */
+@ObjectType('UpdateClarificationStatusResponse')
+export class UpdateClarificationStatusResponse {
+  @Field(() => Boolean, {
+    description: 'Whether the update was successful',
+  })
+  success: boolean;
+
+  @Field(() => ID, {
+    description: 'The message ID that was updated',
+  })
+  messageId: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'The updated clarification status',
+  })
+  status?: string | null;
+}
+
+/**
+ * Debug info for conversation history
+ *
+ * Returned by the debugConversationHistory query to help
+ * troubleshoot conversation history flow issues.
+ */
+@ObjectType('ChatSessionDebugInfo')
+export class ChatSessionDebugInfo {
+  @Field(() => String, {
+    description: 'Session ID',
+  })
+  sessionId: string;
+
+  @Field(() => Number, {
+    description: 'Total number of messages in history',
+  })
+  messageCount: number;
+
+  @Field(() => Number, {
+    description: 'Total characters across all messages',
+  })
+  totalCharacters: number;
+
+  @Field(() => ConversationRoleDistribution, {
+    description: 'Role distribution in conversation',
+  })
+  roleDistribution: ConversationRoleDistribution;
+
+  @Field(() => [ConversationMessagePreview], {
+    description: 'Message previews with full details',
+  })
+  messages: ConversationMessagePreview[];
+
+  @Field(() => [AIEngineMessageFormat], {
+    description: 'Messages in AI Engine format (what gets sent to AI)',
+  })
+  aiEngineFormat: AIEngineMessageFormat[];
+
+  @Field(() => ConversationHistoryVerification, {
+    description: 'Verification information',
+  })
+  verification: ConversationHistoryVerification;
 }

@@ -2,6 +2,135 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769604850311-3431824b",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-28T12:54:10.311Z"
+    },
+    {
+      "id": "evt-1769604849790-2135fc6c",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T12:54:09.790Z",
+      "featureName": "Persist Clarification State Across Page Navigation and Refresh",
+      "featureId": "clarification-message-state-persistence"
+    },
+    {
+      "id": "evt-1769604767591-9f68e7f7",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T12:52:47.591Z",
+      "featureName": "Fix Clarification Questions Not Displaying on Conversation History Restoration",
+      "featureId": "fix-clarification-history-restoration"
+    },
+    {
+      "id": "evt-1769604677516-374735ff",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T12:51:17.516Z",
+      "featureName": "Fix Clarification Form Submitting Immediately on Single Character Input",
+      "featureId": "fix-clarification-form-premature-submission"
+    },
+    {
+      "id": "evt-1769603928222-4ff2cc18",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-28T12:38:48.222Z"
+    },
+    {
+      "id": "evt-1769603922675-03b9b75e",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T12:38:42.675Z",
+      "featureName": "Add E2E Tests for Clarification Flow",
+      "featureId": "add-clarification-e2e-tests"
+    },
+    {
+      "id": "evt-1769603888569-c672aa61",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T12:38:08.569Z",
+      "featureName": "Verify Conversation History is Correctly Passed to AI Engine",
+      "featureId": "verify-conversation-history-passed-to-ai-engine"
+    },
+    {
+      "id": "evt-1769602993732-071d03bd",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T12:23:13.732Z",
+      "featureName": "Create Admin Debugging View for Langfuse Traces",
+      "featureId": "create-langfuse-trace-debugging-view"
+    },
+    {
+      "id": "evt-1769602891826-c199e125",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T12:21:31.826Z",
+      "featureName": "Document Langfuse Trace Metadata and Usage Patterns",
+      "featureId": "document-langfuse-metadata-usage"
+    },
+    {
+      "id": "evt-1769602221745-59a7f731",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T12:10:21.746Z",
+      "featureName": "Create E2E Tests for Langfuse Trace Metadata",
+      "featureId": "langfuse-trace-metadata-e2e-tests"
+    },
+    {
+      "id": "evt-1769602110172-b7c14e1f",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T12:08:30.172Z",
+      "featureName": "Add Additional Conversation Context to Langfuse Traces",
+      "featureId": "add-conversation-metadata-to-langfuse"
+    },
+    {
+      "id": "evt-1769601761443-b479b5b5",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T12:02:41.443Z",
+      "featureName": "Add Session ID to Langfuse Trace Metadata",
+      "featureId": "add-session-id-to-langfuse-traces"
+    },
+    {
+      "id": "evt-1769601695157-891de55d",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T12:01:35.157Z",
+      "featureName": "Enhance Langfuse Agent Identification with Better Naming",
+      "featureId": "enhance-langfuse-agent-identification"
+    },
+    {
+      "id": "evt-1769601443369-9e77aced",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T11:57:23.369Z",
+      "featureName": "Implement User Answer Submission for Clarification Flow",
+      "featureId": "implement-clarification-flow-user-answers"
+    },
+    {
+      "id": "evt-1769601407527-e8ac57e6",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T11:56:47.527Z",
+      "featureName": "Add User ID to Langfuse Trace Metadata",
+      "featureId": "add-user-id-to-langfuse-traces"
+    },
+    {
+      "id": "evt-1769600900714-dfb4f908",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T11:48:20.714Z",
+      "featureName": "Update AI Agents to Explicitly Use Conversation History",
+      "featureId": "update-ai-agents-to-use-conversation-history"
+    },
+    {
+      "id": "evt-1769600861366-9a332b23",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T11:47:41.366Z",
+      "featureName": "Fix AI Engine Context Loss in Streaming Chat",
+      "featureId": "fix-ai-engine-context-loss-in-streaming"
+    },
+    {
+      "id": "evt-1769600781147-1e8c3017",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T11:46:21.147Z",
+      "featureName": "Fix Clarification JSON Rendering in Chat UI",
+      "featureId": "fix-clarification-json-rendering-in-chat"
+    },
+    {
+      "id": "evt-1769599720068-c89dccdb",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-28T11:28:40.068Z",
+      "featureName": "",
+      "featureId": "feature-1769599119773-ba47y7elc"
+    },
+    {
       "id": "evt-1769599119887-27f3940a",
       "trigger": "feature_created",
       "timestamp": "2026-01-28T11:18:39.887Z",

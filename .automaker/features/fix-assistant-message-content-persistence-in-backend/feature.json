@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Fix the backend logic that saves assistant messages to ensure content is properly captured and stored. Based on investigation findings from investigate-empty-assistant-messages-in-database, implement fixes such as: 1) Ensure streaming response handler waits for complete response before saving to database (not just first token), 2) Update QueriesService.askQuestion() to capture final response content, not intermediate chunks, 3) For streaming: accumulate full response in buffer, then save complete content to ChatMessage, 4) For GraphQL mutations: ensure response.content is extracted from AI Engine response before saving, 5) Add validation that rejects saving ChatMessage with empty content (throw error if content is null/empty string), 6) Ensure rawContent is populated with the original AI response for audit purposes, 7) Update database schema to make content field NOT NULL if it's currently nullable, 8) Add unit tests verifying assistant messages are saved with non-empty content, 9) Add logging at save point to record content length being saved. The fix must ensure that every ASSISTANT message saved to database has meaningful content in the content field.",
+  "id": "fix-assistant-message-content-persistence-in-backend",
+  "title": "Fix Assistant Message Content Persistence in Backend",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Fix the backend logic that saves assistant messages to ensure content is properly captured and stored. Based on investigation findings from investigate-empty-assistant-messages-in-database, implement fixes such as: 1) Ensure streaming response handler waits for complete response before saving to database (not just first token), 2) Update QueriesService.askQuestion() to capture final response content, not intermediate chunks, 3) For streaming: accumulate full response in buffer, then save complete content to ChatMessage, 4) For GraphQL mutations: ensure response.content is extracted from AI Engine response before saving, 5) Add validation that rejects saving ChatMessage with empty content (throw error if content is null/empty string), 6) Ensure rawContent is populated with the original AI response for audit purposes, 7) Update database schema to make content field NOT NULL if it's currently nullable, 8) Add unit tests verifying assistant messages are saved with non-empty content, 9) Add logging at save point to record content length being saved. The fix must ensure that every ASSISTANT message saved to database has meaningful content in the content field.",
+      "timestamp": "2026-01-28T15:32:05.547Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T15:32:11.068Z"
+}

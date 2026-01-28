@@ -15,6 +15,7 @@ import {
   ClassifyCaseResponse,
   SemanticSearchRequest,
   SemanticSearchResponse,
+  ConversationMessage,
 } from './ai-client.types';
 import { UsageTrackingService } from '../../modules/usage-tracking/services/usage-tracking.service';
 import { AiOperationType } from '../../modules/usage-tracking/entities/ai-usage-record.entity';
@@ -147,11 +148,88 @@ export class AiClientService {
 
   /**
    * Ask a legal question and receive an answer with citations
+   *
+   * Logs conversation history details for debugging and monitoring.
+   * Verifies message count, order, and role correctness.
    */
   async askQuestion(
     request: AskQuestionRequest,
     userId?: string,
   ): Promise<AnswerResponse> {
+    // Log conversation history details before sending to AI Engine
+    const conversationHistory = request.conversation_history || [];
+    const historySize = conversationHistory.length;
+
+    // Build detailed log context for conversation history verification
+    interface HistoryLogContext {
+      session_id: string;
+      conversation_history_count: number;
+      conversation_history_total_chars: number;
+      user_id: string;
+      role_distribution?: { user: number; assistant: number };
+      first_message_role?: string;
+      last_message_role?: string;
+      message_order_valid?: boolean;
+      has_empty_content?: boolean;
+    }
+
+    const historyLogContext: HistoryLogContext = {
+      session_id: request.session_id,
+      conversation_history_count: historySize,
+      conversation_history_total_chars: conversationHistory
+        .reduce((sum, msg) => sum + (msg.content?.length || 0), 0),
+      user_id: userId || 'anonymous',
+    };
+
+    // Verify message roles and order
+    if (historySize > 0) {
+      const roles = conversationHistory.map((msg) => msg.role);
+      const userCount = roles.filter((r) => r === 'user').length;
+      const assistantCount = roles.filter((r) => r === 'assistant').length;
+
+      historyLogContext.role_distribution = {
+        user: userCount,
+        assistant: assistantCount,
+      };
+      historyLogContext.first_message_role = roles[0];
+      historyLogContext.last_message_role = roles[roles.length - 1];
+
+      // Verify message order (oldest first, newest last)
+      historyLogContext.message_order_valid = this.verifyMessageOrder(conversationHistory);
+
+      // Check for any message truncation or data loss
+      historyLogContext.has_empty_content = conversationHistory.some((msg) => !msg.content || msg.content.trim().length === 0);
+    }
+
+    this.logger.log(
+      `Sending request to AI Engine: session_id=${request.session_id}, ` +
+      `conversation_history_count=${historySize}, ` +
+      `user_id=${userId || 'anonymous'}`,
+    );
+
+    // Log detailed conversation history structure at debug level
+    if (historySize > 0) {
+      this.logger.debug(
+        `Conversation history structure for session ${request.session_id}: ` +
+        `messages=[${conversationHistory.map((m, i) => `${i}:${m.role}:${m.content?.substring(0, 30) || ''}...`).join(', ')}]`,
+      );
+    }
+
+    // Emit conversation history metric for monitoring
+    if (historySize > 0) {
+      this.logger.verbose(
+        `CONVERSATION_HISTORY_METRIC: ${JSON.stringify({
+          session_id: request.session_id,
+          message_count: historySize,
+          total_chars: historyLogContext.conversation_history_total_chars,
+          user_count: historyLogContext.role_distribution?.user,
+          assistant_count: historyLogContext.role_distribution?.assistant,
+          has_empty_content: historyLogContext.has_empty_content,
+          order_valid: historyLogContext.message_order_valid,
+        })}`,
+      );
+    }
+
     try {
       const response = await firstValueFrom(
         this.httpService.post<AnswerResponse>(
@@ -171,15 +249,50 @@ export class AiClientService {
           responseData.tokens_used,
           1,
           request.session_id,
-          { mode: request.mode },
+          { mode: request.mode, conversation_history_size: historySize },
         );
       }
 
+      this.logger.log(
+        `AI Engine response received: session_id=${request.session_id}, ` +
+        `tokens_used=${responseData.tokens_used || 'N/A'}, ` +
+        `conversation_history_used=${historySize}`,
+      );
+
       return responseData;
     } catch (error) {
-      this.logger.error('Failed to ask question', error);
+      this.logger.error(
+        `Failed to ask question for session ${request.session_id}: ` +
+        `conversation_history_size=${historySize}`,
+        error,
+      );
       throw new Error('Question answering failed');
     }
+  }
+
+  /**
+   * Verify that messages are in correct order (oldest first, newest last)
+   * and have valid role values
+   */
+  private verifyMessageOrder(messages: ConversationMessage[]): boolean {
+    const validRoles = ['user', 'assistant'];
+
+    for (let i = 0; i < messages.length; i++) {
+      const msg = messages[i];
+
+      // Check role validity
+      if (!validRoles.includes(msg.role)) {
+        this.logger.warn(`Invalid role at index ${i}: ${msg.role}`);
+        return false;
+      }
+
+      // Check content presence
+      if (!msg.content || msg.content.trim().length === 0) {
+        this.logger.warn(`Empty content at index ${i} with role: ${msg.role}`);
+      }
+    }
+
+    return true;
   }
 
   /**

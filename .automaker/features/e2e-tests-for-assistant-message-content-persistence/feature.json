@@ -1,0 +1,20 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive E2E tests to verify that assistant messages are properly saved to the database with non-empty content. Test scenarios: 1) Send simple query, verify assistant message is saved with content in database, 2) Send query requiring clarification, verify clarification message is saved (as JSON in content field), 3) Send multi-turn conversation, verify all assistant messages have content, 4) Test streaming responses specifically - verify complete response is saved, not just partial, 5) Test long queries (10+ seconds) to ensure full response is captured, 6) Verify via direct database query that ChatMessage.content field is not empty/null, 7) Test that empty responses are rejected with error, 8) Verify rawContent field is populated for audit trail, 9) Test with Polish language queries, 10) Test document generation queries. Use Playwright to interact with chat, then query GraphQL API or database directly to verify message content persistence. Add tests to apps/web/tests/chat-messages-persistence.spec.ts.",
+  "id": "e2e-tests-for-assistant-message-content-persistence",
+  "title": "Create E2E Tests for Assistant Message Content Persistence",
+  "dependencies": [
+    "fix-assistant-message-content-persistence-in-backend",
+    "fix-streaming-response-content-capture-for-database-save"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive E2E tests to verify that assistant messages are properly saved to the database with non-empty content. Test scenarios: 1) Send simple query, verify assistant message is saved with content in database, 2) Send query requiring clarification, verify clarification message is saved (as JSON in content field), 3) Send multi-turn conversation, verify all assistant messages have content, 4) Test streaming responses specifically - verify complete response is saved, not just partial, 5) Test long queries (10+ seconds) to ensure full response is captured, 6) Verify via direct database query that ChatMessage.content field is not empty/null, 7) Test that empty responses are rejected with error, 8) Verify rawContent field is populated for audit trail, 9) Test with Polish language queries, 10) Test document generation queries. Use Playwright to interact with chat, then query GraphQL API or database directly to verify message content persistence. Add tests to apps/web/tests/chat-messages-persistence.spec.ts.",
+      "timestamp": "2026-01-28T15:32:05.548Z",
+      "source": "initial"
+    }
+  ]
+}

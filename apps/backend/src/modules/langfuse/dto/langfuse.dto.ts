@@ -509,3 +509,22 @@ export class UserTraceAttribution {
   @Field(() => GraphQLTimestamp, { description: 'Last trace timestamp' })
   lastTraceAt!: Date;
 }
+
+/**
+ * Langfuse debug configuration
+ * Provides URLs and configuration for the Langfuse dashboard
+ */
+@ObjectType()
+export class LangfuseDebugConfig {
+  @Field({ description: 'Whether Langfuse integration is enabled' })
+  enabled!: boolean;
+
+  @Field({ nullable: true, description: 'Langfuse host URL' })
+  hostUrl?: string;
+
+  @Field({ nullable: true, description: 'Langfuse trace URL template (use {traceId} as placeholder)' })
+  traceUrlTemplate?: string;
+
+  @Field({ nullable: true, description: 'Base URL for Langfuse dashboard' })
+  dashboardUrl?: string;
+}

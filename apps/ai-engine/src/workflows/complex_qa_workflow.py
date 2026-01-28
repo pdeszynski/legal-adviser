@@ -90,10 +90,13 @@ async def clarify_node(state: ComplexQAState) -> ComplexQAState:
     targeted follow-up questions.
     """
     try:
+        metadata = state.get("metadata", {})
         result = await generate_clarifications(
             question=state["question"],
             query_type=state.get("query_type", "general"),
             mode=state.get("mode", "SIMPLE"),
+            session_id=metadata.get("session_id", "default"),
+            user_id=metadata.get("user_id"),
         )
 
         state["clarification_questions"] = result.get("questions", [])
@@ -388,6 +391,15 @@ class ComplexQAWorkflow:
         """
 
         start_time = time.time()
+
+        # Update Langfuse trace with workflow input metadata
+        if is_langfuse_enabled():
+            update_current_trace(
+                input=question,
+                user_id=user_id,
+                session_id=session_id,
+                metadata={"workflow": "complex_qa", "mode": mode},
+            )
 
         # Create initial state
         state = create_complex_qa_state(

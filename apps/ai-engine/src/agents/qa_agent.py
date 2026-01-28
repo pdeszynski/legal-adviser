@@ -9,8 +9,14 @@ Langfuse integration follows the official pattern:
 - See: https://langfuse.com/integrations/frameworks/pydantic-ai
 
 Enhanced with structured error handling and retry logic.
+
+Conversation History Support:
+This agent accepts conversation_history parameter containing previous messages.
+History format: [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+The agent uses this context to provide answers that reference previous exchanges.
 """
 
+import logging
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -19,6 +25,8 @@ from pydantic_ai.models.openai import OpenAIModel
 
 from ..auth import UserContext
 from ..config import get_settings
+
+logger = logging.getLogger(__name__)
 from ..exceptions import (
     AgentExecutionError,
     LLMContextLengthExceededError,
@@ -31,7 +39,7 @@ from ..langfuse_init import (
     update_current_trace,
 )
 from .clarification_agent import generate_clarifications
-from .dependencies import ModelDeps, get_model_deps_with_user
+from .dependencies import ModelDeps, get_model_deps_with_user, get_openai_client
 from .rag_tool import (
     extract_citations_from_contexts,
     format_contexts_for_prompt,
@@ -176,6 +184,7 @@ def get_query_analyzer_agent() -> Agent[QueryAnalysis, ModelDeps]:
             deps_type=ModelDeps,
             output_type=QueryAnalysis,
             instrument=True,  # Enable automatic Langfuse tracing
+            name="legal-query-analyzer",  # Descriptive name for Langfuse traces
         )
     return _query_analyzer_agent
 
@@ -201,6 +210,7 @@ def get_qa_agent(mode: str = "SIMPLE") -> Agent[QAResult, ModelDeps]:
                 deps_type=ModelDeps,
                 output_type=QAResult,
                 instrument=True,  # Enable automatic Langfuse tracing
+                name="legal-qa-lawyer",  # Descriptive name for Langfuse traces
             )
         return _qa_agent_lawyer
     if _qa_agent_simple is None:
@@ -211,6 +221,7 @@ def get_qa_agent(mode: str = "SIMPLE") -> Agent[QAResult, ModelDeps]:
             deps_type=ModelDeps,
             output_type=QAResult,
             instrument=True,  # Enable automatic Langfuse tracing
+            name="legal-qa-simple",  # Descriptive name for Langfuse traces
         )
     return _qa_agent_simple
 
@@ -281,6 +292,14 @@ async def answer_question(
         analysis_result = await analyzer.run(question, deps=deps)
         analysis = analysis_result.output
 
+        # Log conversation history for debugging
+        if conversation_history and len(conversation_history) > 0:
+            logger.info(
+                "Q&A agent received %d messages from conversation history for session_id=%s",
+                len(conversation_history),
+                session_id,
+            )
+
         # Step 2: Check if clarification is needed
         if analysis.needs_clarification:
             # Use the clarification agent to generate structured questions
@@ -288,6 +307,9 @@ async def answer_question(
                 question=question,
                 query_type=analysis.query_type,
                 mode=mode,
+                conversation_history=conversation_history,
+                session_id=session_id,
+                user_id=effective_user_id,
             )
 
             if clarification_result.get("needs_clarification"):
@@ -318,24 +340,45 @@ async def answer_question(
             limit=5,
         )
 
-        # Step 4: Generate answer with context (automatically traced via instrument=True)
-        qa_agent = get_qa_agent(mode)
+        # Step 4: Generate answer with context using OpenAI API directly
+        # This ensures conversation history is properly formatted in the messages array
+        openai_client = get_openai_client()
 
-        # Build context string for the prompt using helper
+        # Select system prompt based on mode
+        system_prompt = QA_SYSTEM_PROMPT_LAWYER if mode.upper() == "LAWYER" else QA_SYSTEM_PROMPT_SIMPLE
+
+        # Build context string for the prompt
         context_text = format_contexts_for_prompt(contexts)
 
-        # Build augmented prompt with conversation history if available
-        history_context = ""
+        # Prepare messages with conversation history
+        # Start with system prompt
+        api_messages = [
+            {"role": "system", "content": system_prompt},
+        ]
+
+        # Add conversation history if provided (exclude system messages)
         if conversation_history:
-            history_context = "\n\nPrevious conversation:\n" + "\n".join(
-                [
-                    f"{m.get('role', 'user')}: {m.get('content', '')}"
-                    for m in conversation_history[-5:]
-                ]
+            # Filter out system messages from history and limit to recent messages
+            # to avoid token limits while maintaining context
+            history_messages = [
+                {"role": msg["role"], "content": msg["content"]}
+                for msg in conversation_history
+                if msg.get("role") in ("user", "assistant")
+            ]
+
+            # Limit history to last 10 messages to manage token usage
+            if len(history_messages) > 10:
+                history_messages = history_messages[-10:]
+
+            api_messages.extend(history_messages)
+            logger.info(
+                "Added %d messages from conversation history to session_id=%s",
+                len(history_messages),
+                session_id,
             )
 
-        augmented_prompt = f"""Question: {question}
-{history_context}
+        # Build the current user message with question and context
+        user_message = f"""Question: {question}
 
 Refined Question: {analysis.question_refined}
 
@@ -344,10 +387,21 @@ Legal Context:
 
 Please provide a comprehensive answer based on the above context."""
 
-        result = await qa_agent.run(augmented_prompt, deps=deps)
-        qa_result = result.output
+        api_messages.append({"role": "user", "content": user_message})
 
-        # Extract citations from retrieved contexts using helper
+        # Call OpenAI API directly (non-streaming)
+        llm_response = await openai_client.chat.completions.create(
+            model=settings.OPENAI_MODEL,
+            messages=api_messages,
+        )
+
+        # Extract answer from response
+        full_answer = llm_response.choices[0].message.content or ""
+
+        # Estimate confidence based on context quality and answer length
+        confidence = min(0.95, 0.5 + (len(contexts) * 0.1) + min(0.2, len(full_answer) / 1000))
+
+        # Extract citations from retrieved contexts
         context_citations_data = extract_citations_from_contexts(contexts)
         context_citations = [
             LegalCitation(
@@ -358,23 +412,20 @@ Please provide a comprehensive answer based on the above context."""
             for c in context_citations_data
         ]
 
-        # Combine citations (agent-generated + context-based)
-        all_citations = qa_result.citations + context_citations
-
         response = {
-            "answer": qa_result.answer,
+            "answer": full_answer,
             "citations": [
                 {
                     "source": c.source,
                     "article": c.article,
                     "url": c.url,
                 }
-                for c in all_citations
+                for c in context_citations
             ],
-            "confidence": qa_result.confidence,
+            "confidence": confidence,
             "clarification": None,
-            "query_type": qa_result.query_type,
-            "key_terms": qa_result.key_terms,
+            "query_type": analysis.query_type,
+            "key_terms": analysis.key_terms,
             "needs_clarification": False,
         }
 
@@ -385,9 +436,9 @@ Please provide a comprehensive answer based on the above context."""
         if is_langfuse_enabled():
             update_current_trace(
                 output={
-                    "answer_length": len(qa_result.answer),
-                    "confidence": qa_result.confidence,
-                    "citations_count": len(all_citations),
+                    "answer_length": len(full_answer),
+                    "confidence": confidence,
+                    "citations_count": len(context_citations),
                     "processing_time_ms": processing_time_ms,
                     "model": settings.OPENAI_MODEL,
                 }

@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Investigate and fix why the AI Engine loses conversation context even when the full chat history is sent to the /ask-stream endpoint. The issue occurs when users continue a conversation - the AI responds as if it's the first message, ignoring previous context. Backend verification: 1) Verify that backend fetches all previous ChatMessage records for the session ID, 2) Ensure conversation history array is correctly constructed with role and content for each message, 3) Verify the messages array is passed to AI Engine streaming endpoint in correct format, 4) Check AI Engine logs to verify messages array is received, 5) Update AI Engine agents to explicitly check for messages array and use it for context, 6) Ensure PydanticAI agent's run() method receives the full conversation history, 7) Test multi-turn conversations to verify context persists across messages. This is critical for chat UX - users expect the AI to remember previous messages in the conversation.",
+  "id": "fix-ai-engine-context-loss-in-streaming",
+  "title": "Fix AI Engine Context Loss in Streaming Chat",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Investigate and fix why the AI Engine loses conversation context even when the full chat history is sent to the /ask-stream endpoint. The issue occurs when users continue a conversation - the AI responds as if it's the first message, ignoring previous context. Backend verification: 1) Verify that backend fetches all previous ChatMessage records for the session ID, 2) Ensure conversation history array is correctly constructed with role and content for each message, 3) Verify the messages array is passed to AI Engine streaming endpoint in correct format, 4) Check AI Engine logs to verify messages array is received, 5) Update AI Engine agents to explicitly check for messages array and use it for context, 6) Ensure PydanticAI agent's run() method receives the full conversation history, 7) Test multi-turn conversations to verify context persists across messages. This is critical for chat UX - users expect the AI to remember previous messages in the conversation.",
+      "timestamp": "2026-01-28T11:40:24.485Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T11:47:41.354Z"
+}
