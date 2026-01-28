@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769549490972-25ceb0b1",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T21:31:30.972Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "full-conversation-context-to-ai-engine",
+  "featureName": "Send Full Conversation History to AI Engine on Chat Restore",
+  "error": "Feature completed in 579s - auto-verified",
+  "passes": true
+}

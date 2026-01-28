@@ -3,11 +3,8 @@
   "description": "Update legal chat frontend to consume streaming endpoint directly. Create: 1) StreamingChatService hook using fetch with TextDecoder or EventSource for SSE, 2) Token-by-token message bubble updates (append tokens to current message), 3) Citation rendering when citation events received, 4) Loading state during streaming (pulsing indicator or stop button), 5) Error handling for stream failures, 6) Session ID management (reuse existing or generate UUID v4), 7) JWT token inclusion from authProvider storage, 8) Abort controller for stopping mid-stream. Replace askLegalQuestion GraphQL mutation with direct streaming call. Maintain backward compatibility - fallback to GraphQL if streaming fails or for non-streaming queries. Update chat-ui-component to render streaming messages smoothly.",
   "id": "frontend-streaming-chat-client",
   "title": "Frontend Streaming Chat UI Integration",
-  "dependencies": [
-    "ai-engine-streaming-endpoint"
-  ],
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {
@@ -15,5 +12,6 @@
       "timestamp": "2026-01-27T09:03:50.800Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T09:18:10.415Z"
 }

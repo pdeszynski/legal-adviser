@@ -71,6 +71,79 @@ await (dp as any).custom<GraphQLMutationConfig<UpdateInputType>>({
 });
 ```
 
+### TypeScript Input/Output Type Declaration Order
+
+**The Problem:** NestJS GraphQL decorators (`@InputType`, `@ObjectType`, `@Field`) are executed at class definition time, not at runtime. When a class references another type in its `@Field()` decorator, that referenced type **must already be declared** in the file.
+
+**Error Pattern:**
+
+```
+ReferenceError: Cannot access 'SomeType' before initialization
+```
+
+**The Fix:** Always declare types **before** they are referenced. Arrange classes in dependency order - leaf types first, composite types last.
+
+**Correct Pattern:**
+
+```typescript
+// ✅ CORRECT - Dependency order: leaf types before composite types
+@InputType('AddressInput')
+export class AddressInput {
+  @Field(() => String)
+  street: string;
+}
+
+@InputType('UserInput')
+export class UserInput {
+  @Field(() => String)
+  name: string;
+
+  @Field(() => AddressInput) // AddressInput is already declared
+  address: AddressInput;
+}
+
+@ObjectType('UserResponse')
+export class UserResponse {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => UserInput) // UserInput is already declared
+  user: UserInput;
+}
+```
+
+**Incorrect Pattern:**
+
+```typescript
+// ❌ INCORRECT - References types before declaration
+@InputType('UserInput')
+export class UserInput {
+  @Field(() => AddressInput) // ERROR: AddressInput not yet declared
+  address: AddressInput;
+}
+
+@InputType('AddressInput')
+export class AddressInput {
+  @Field(() => String)
+  street: string;
+}
+```
+
+**Documentation Reminder:** When creating new DTO files, add a comment above leaf types:
+
+```typescript
+/**
+ * Leaf type - must be declared before composite types
+ * See CLAUDE.md "TypeScript Input/Output Type Declaration Order" section.
+ */
+@InputType('MetadataInput')
+export class MetadataInput { ... }
+```
+
+**Related Files with Examples:**
+
+- `apps/backend/src/modules/chat/dto/chat-message.dto.ts` - Correct ordering of `ChatMessageMetadataInput` before `CreateAssistantMessageInput`
+
 ## Database Seeding
 
 **Location:** `apps/backend/src/seeds/data/`
@@ -180,6 +253,73 @@ if (!userId) throw new UnauthorizedException('User not authenticated');
 3. Forgetting null check: `context.req.user?.id`
 4. Missing `@Public()` on login/register
 5. Class-level guards don't work with `@Public()` - use method-level
+
+## CSRF Protection
+
+**Overview:** The application implements CSRF (Cross-Site Request Forgery) protection using the double-submit cookie pattern. All GraphQL mutations require a valid CSRF token.
+
+**How It Works:**
+
+1. Frontend calls `GET /api/csrf-token` to obtain a token
+2. Server sets a signed `csrf-token` cookie and returns the raw token in response body
+3. Frontend reads the token from the cookie and stores it (with localStorage fallback)
+4. For mutations, frontend includes the token in `X-CSRF-Token` header
+5. Server validates that header token matches the cookie token
+
+**Frontend Usage:**
+
+```tsx
+import { getCsrfHeaders } from '@/lib/csrf';
+
+// For GraphQL mutations
+const response = await fetch(GRAPHQL_URL, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+    ...getCsrfHeaders(),  // Include CSRF token
+  },
+  credentials: 'include',
+  body: JSON.stringify({ query, variables }),
+});
+```
+
+**CSRF Utility Functions:** (`apps/web/src/lib/csrf.ts`)
+
+- `getCsrfToken()` - Get the current CSRF token from cookie/cache
+- `fetchCsrfToken()` - Fetch a new token from server
+- `ensureCsrfToken()` - Ensure token exists, fetch if needed
+- `getCsrfHeaders()` - Get headers object with `X-CSRF-Token` for spreading
+- `clearCsrfToken()` - Clear cached token (call on logout)
+
+**Backend Usage:**
+
+```typescript
+import { SkipCsrf } from '@/shared/csrf';
+
+// Most mutations require CSRF by default
+@Mutation(() => MyResponse)
+async myMutation() { ... }
+
+// Skip CSRF for public mutations (login, register)
+@Mutation(() => AuthResponse)
+@SkipCsrf()
+async login() { ... }
+```
+
+**Common Pitfalls:**
+
+1. **Missing CSRF headers in fetch calls**: Always spread `getCsrfHeaders()` into mutation headers
+2. **Token not fetched on app init**: Call `ensureCsrfToken()` during app initialization
+3. **Stale cached tokens**: The utility reads from cookie first, cache is only fallback
+4. **Forgetting to skip CSRF on login**: Login mutations need `@SkipCsrf()` decorator
+5. **Using CSRF on queries**: Only mutations need CSRF, queries are read-only
+
+**Constants:**
+- Cookie name: `csrf-token`
+- Header name: `x-csrf-token`
+- Cache duration: 1 hour
+- Token endpoint: `GET /api/csrf-token`
 
 ## Two-Factor Authentication
 
@@ -478,26 +618,202 @@ curl -X OPTIONS http://localhost:8000/api/v1/qa/ask \
 The frontend includes JWT tokens from the backend in AI Engine requests:
 
 **Token Claims:**
+
 ```json
 {
-  "sub": "user-uuid",           // User ID
-  "username": "johndoe",        // Username
-  "email": "user@example.com",  // Email
-  "roles": ["LAWYER"],          // User roles
-  "type": "access",             // Token type (must NOT be "refresh" or "2fa-temp")
-  "exp": 1234567890             // Expiration timestamp
+  "sub": "user-uuid", // User ID
+  "username": "johndoe", // Username
+  "email": "user@example.com", // Email
+  "roles": ["LAWYER"], // User roles
+  "type": "access", // Token type (must NOT be "refresh" or "2fa-temp")
+  "exp": 1234567890 // Expiration timestamp
 }
 ```
 
 **Validation in AI Engine:**
+
 - Algorithm: HS256
 - Secret: `JWT_SECRET` environment variable (shared with backend)
 - Required claims: `sub`, `email`
 - Token type validation: Rejects `refresh` and `2fa-temp` tokens
 
+#### Session ID Authentication Pattern
+
+**Overview:** Session IDs are used to track chat conversations across multiple requests. They are NOT stored in JWT tokens (to avoid token invalidation when sessions change) but are validated as UUID v4 in request bodies.
+
+**Session ID Flow:**
+
+```
+Frontend                Backend                AI Engine
+│                       │                      │
+├── Login              ──▶│                      │
+│                      │── Generate JWT        │
+│                      │   (no sessionId)       │
+│◄── Return JWT        ──│                      │
+│                      │                      │
+├── Generate sessionId │                      │
+│   (UUID v4)          │                      │
+│                      │                      │
+├── POST /api/v1/qa/ask-stream              │
+│   Authorization: Bearer <jwt>             │
+│   Body: { session_id, question, mode }   │
+│                      ├─────────────────────▶│
+│                      │                     │
+│                      │                    ├── Validate JWT
+│                      │                    ├── Validate sessionId (UUID v4)
+│                      │                    ├── Extract user from JWT
+│                      │                    ├── Attach sessionId to UserContext
+│                      │                    └── Use sessionId in Langfuse traces
+│                      │                     │
+│◄── SSE Stream       ──┴─────────────────────│
+```
+
+**Frontend Session ID Management:**
+
+```typescript
+// apps/web/src/hooks/useStreamingChat.ts
+
+// UUID v4 regex for validation
+const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+// Get or generate session ID from localStorage
+let sessionId = localStorage.getItem('chat_session_id');
+if (!sessionId || !uuidV4Regex.test(sessionId)) {
+  sessionId = crypto.randomUUID(); // Browser native UUID v4 generation
+  localStorage.setItem('chat_session_id', sessionId);
+}
+
+// Send request with JWT and sessionId
+await fetch(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`, {
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${getAccessToken()}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    question: 'What are my rights?',
+    mode: 'LAWYER',
+    session_id: sessionId, // Validated as UUID v4 in AI Engine
+  }),
+});
+```
+
+**AI Engine Session ID Validation:**
+
+```python
+# apps/ai-engine/src/auth/jwt.py
+
+import re
+
+# UUID v4 regex pattern
+UUID_V4_PATTERN = re.compile(
+    r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
+    re.IGNORECASE
+)
+
+def is_valid_uuid_v4(session_id: str) -> bool:
+    """Validate that a string is a valid UUID v4."""
+    if not session_id or not isinstance(session_id, str):
+        return False
+    return UUID_V4_PATTERN.match(session_id) is not None
+
+def set_user_session_id(user: UserContext | None, session_id: str) -> UserContext | None:
+    """Set and validate session_id on a UserContext."""
+    if user is None:
+        return None
+
+    if not is_valid_uuid_v4(session_id):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "error_code": "INVALID_SESSION_ID",
+                "message": "Session ID must be a valid UUID v4",
+            },
+        )
+
+    return replace(user, session_id=session_id)
+```
+
+**AI Engine Endpoint Usage:**
+
+```python
+# apps/ai-engine/src/main.py
+
+@app.post("/api/v1/qa/ask-stream")
+async def ask_question_stream_enhanced(
+    request: AskQuestionRequest,
+    http_request: Request,
+    user: UserContext | None = Depends(get_current_user_optional),
+):
+    from .auth import set_user_session_id
+
+    # Set and validate session_id from request body on the user context
+    user_with_session = set_user_session_id(user, request.session_id)
+
+    async for event in stream_qa_enhanced(
+        question=request.question,
+        mode=request.mode,
+        session_id=request.session_id,
+        user=user_with_session,  # Now includes validated session_id
+        request=http_request,
+    ):
+        yield event
+```
+
+**Langfuse Integration with Session ID:**
+
+```python
+# apps/ai-engine/src/services/streaming_enhanced.py
+
+async def stream_qa_enhanced(
+    question: str,
+    mode: str,
+    session_id: str,
+    user: UserContext | None = None,
+    ...
+):
+    # Use session_id from UserContext if available (validated), otherwise from parameter
+    effective_session_id = user.session_id if user and user.session_id else session_id
+
+    if is_langfuse_enabled():
+        update_current_trace(
+            input=question,
+            user_id=user.id if user else None,
+            session_id=effective_session_id,  # Traces grouped by session in Langfuse
+            metadata={"mode": mode, "streaming": "real-time"},
+        )
+```
+
+**Error Response for Invalid Session ID:**
+
+```json
+{
+  "detail": {
+    "error_code": "INVALID_SESSION_ID",
+    "message": "Session ID must be a valid UUID v4"
+  }
+}
+```
+
+**Why Session ID in Request Body (Not JWT):**
+
+1. **Flexibility**: Session IDs can change without requiring token refresh
+2. **Multiple Sessions**: Users can have multiple chat sessions with the same token
+3. **Anonymous Access**: Unauthenticated users can still have session tracking
+4. **Security**: Session validation happens server-side, preventing tampering
+
+**UUID v4 Format:**
+
+- Pattern: `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx`
+- `x`: Any hex digit (0-9, a-f)
+- `4`: Version indicator (always `4`)
+- `y`: Variant indicator (8, 9, a, or b)
+- Example: `550e8400-e29b-41d4-a716-446655440000`
+
 #### Streaming Endpoint: `/api/v1/qa/ask-stream`
 
 **Request:**
+
 ```bash
 POST /api/v1/qa/ask-stream
 Authorization: Bearer <jwt_token>
@@ -519,13 +835,13 @@ X-Accel-Buffering: no
 
 #### SSE Event Types
 
-| Event Type | Structure | Description |
-|------------|-----------|-------------|
-| `token` | Partial response content | Streaming text chunks |
-| `citation` | Legal citation reference | Source, article, URL |
-| `clarification` | Follow-up questions needed | Questions array |
-| `error` | Error information | Error message and code |
-| `done` | Final completion | Metadata and stats |
+| Event Type      | Structure                  | Description            |
+| --------------- | -------------------------- | ---------------------- |
+| `token`         | Partial response content   | Streaming text chunks  |
+| `citation`      | Legal citation reference   | Source, article, URL   |
+| `clarification` | Follow-up questions needed | Questions array        |
+| `error`         | Error information          | Error message and code |
+| `done`          | Final completion           | Metadata and stats     |
 
 **Event Format Examples:**
 
@@ -562,10 +878,7 @@ function ChatInterface() {
   });
 
   const handleSend = async () => {
-    const response = await sendMessage(
-      'What are my rights as an employee?',
-      'LAWYER'
-    );
+    const response = await sendMessage('What are my rights as an employee?', 'LAWYER');
     console.log('Final response:', response);
   };
 
@@ -582,6 +895,7 @@ function ChatInterface() {
 ```
 
 **Hook Return Values:**
+
 - `sendMessage(question, mode, sessionId?)` - Send a streaming request
 - `abortStream()` - Cancel the current stream
 - `isStreaming` - Whether a stream is active
@@ -590,6 +904,7 @@ function ChatInterface() {
 - `currentCitations` - Citations received so far
 
 **Hook Options:**
+
 - `enabled` - Enable/disable streaming (default: `true`)
 - `fallbackToGraphQL` - Fallback to GraphQL on error (default: `true`)
 - `onStreamStart` - Callback when stream starts
@@ -606,7 +921,7 @@ If streaming fails, the hook automatically falls back to GraphQL mutation:
 
 ```tsx
 const { sendMessage } = useStreamingChat({
-  fallbackToGraphQL: true,  // Default behavior
+  fallbackToGraphQL: true, // Default behavior
   onStreamError: (error) => {
     // User sees: "Falling back to GraphQL: <error>"
   },
@@ -615,21 +930,21 @@ const { sendMessage } = useStreamingChat({
 
 **Common Error Codes:**
 
-| Error Code | Description | Retry Strategy |
-|------------|-------------|----------------|
-| `MISSING_TOKEN` | No Authorization header | Prompt user to login |
-| `INVALID_TOKEN` | Token validation failed | Refresh token or re-login |
-| `TOKEN_EXPIRED` | Token expired | Refresh token |
-| `INVALID_TOKEN_TYPE` | Refresh token used for API | Use access token instead |
-| `INCOMPLETE_AUTH` | 2FA not completed | Complete 2FA flow |
-| `LLM_API_ERROR` | OpenAI API error | Retry with backoff |
-| `RATE_LIMIT_EXCEEDED` | Too many requests | Wait and retry |
+| Error Code            | Description                | Retry Strategy            |
+| --------------------- | -------------------------- | ------------------------- |
+| `MISSING_TOKEN`       | No Authorization header    | Prompt user to login      |
+| `INVALID_TOKEN`       | Token validation failed    | Refresh token or re-login |
+| `TOKEN_EXPIRED`       | Token expired              | Refresh token             |
+| `INVALID_TOKEN_TYPE`  | Refresh token used for API | Use access token instead  |
+| `INCOMPLETE_AUTH`     | 2FA not completed          | Complete 2FA flow         |
+| `LLM_API_ERROR`       | OpenAI API error           | Retry with backoff        |
+| `RATE_LIMIT_EXCEEDED` | Too many requests          | Wait and retry            |
 
 **Manual Error Handling:**
 
 ```tsx
 const { sendMessage } = useStreamingChat({
-  fallbackToGraphQL: false,  // Disable auto-fallback
+  fallbackToGraphQL: false, // Disable auto-fallback
   onStreamError: async (error) => {
     if (error.includes('TOKEN_EXPIRED')) {
       // Trigger token refresh
@@ -693,6 +1008,7 @@ curl -N -X POST "http://localhost:8000/api/v1/qa/ask-stream?question=Test&mode=S
 **Langfuse Observability:**
 
 Streaming requests are automatically traced in Langfuse with:
+
 - `streaming: true` flag
 - Token count and processing time
 - User ID and session ID from JWT
@@ -705,8 +1021,8 @@ Streaming requests are automatically traced in Langfuse with:
 const { data } = await graphqlClient.mutation({
   operation: 'askLegalQuestion',
   variables: {
-    input: { question: '...', mode: 'LAWYER' }
-  }
+    input: { question: '...', mode: 'LAWYER' },
+  },
 });
 // Wait for complete response...
 const answer = data.askLegalQuestion.answerMarkdown;
@@ -723,13 +1039,13 @@ const answer = response.content;
 
 **Key Differences:**
 
-| Aspect | GraphQL | Streaming |
-|--------|---------|-----------|
-| Latency | Full generation time | First token ~100ms |
-| UX | Loading spinner | Progressive text |
-| Abort | Not supported | Built-in |
-| Citations | At end only | As received |
-| Fallback | N/A | Automatic |
+| Aspect    | GraphQL              | Streaming          |
+| --------- | -------------------- | ------------------ |
+| Latency   | Full generation time | First token ~100ms |
+| UX        | Loading spinner      | Progressive text   |
+| Abort     | Not supported        | Built-in           |
+| Citations | At end only          | As received        |
+| Fallback  | N/A                  | Automatic          |
 
 #### Troubleshooting
 
@@ -741,6 +1057,7 @@ from origin 'http://localhost:3000' has been blocked by CORS policy
 ```
 
 **Solutions:**
+
 1. Verify `FRONTEND_URL` matches exactly (no trailing slash)
 2. Check CORS middleware is added before routes
 3. Ensure `allow_credentials=True` is set
@@ -753,6 +1070,7 @@ from origin 'http://localhost:3000' has been blocked by CORS policy
 ```
 
 **Solutions:**
+
 1. Check `getAccessToken()` returns a valid token
 2. Verify header format: `Authorization: Bearer <token>`
 3. Ensure token hasn't expired
@@ -765,6 +1083,7 @@ Stream stops mid-response without 'done' event
 ```
 
 **Solutions:**
+
 1. Check AI Engine logs for errors
 2. Verify `keep-alive` headers
 3. Disable nginx buffering: `X-Accel-Buffering: no`
@@ -774,6 +1093,7 @@ Stream stops mid-response without 'done' event
 **No Events Received:**
 
 **Solutions:**
+
 1. Verify `Content-Type: text/event-stream` in response
 2. Check browser supports EventSource (most do)
 3. Ensure query parameters are URL-encoded

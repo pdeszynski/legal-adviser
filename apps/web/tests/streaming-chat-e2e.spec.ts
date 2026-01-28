@@ -598,89 +598,67 @@ test.describe('Streaming Chat - Session Context', () => {
     await page.waitForLoadState('networkidle');
   });
 
-  test('session ID is stored in localStorage', async ({ page }) => {
-    const sessionId = await page.evaluate(() => {
-      return localStorage.getItem('chat_session_id');
-    });
-
-    expect(sessionId).toBeTruthy();
-    expect(sessionId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
-  });
-
-  test('multiple queries maintain same session', async ({ page }) => {
-    // Get initial session ID
-    const initialSessionId = await page.evaluate(() => {
-      return localStorage.getItem('chat_session_id');
-    });
-
+  test('multiple queries maintain conversation context', async ({ page }) => {
     // Send first message
     await page.fill('textarea[placeholder*="Ask"]', 'First question about contracts');
     await page.press('textarea[placeholder*="Ask"]', 'Enter');
     await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 60000 });
+
+    // Verify first response appeared
+    const firstResponse = await page.locator('.message.assistant').first().textContent();
+    expect(firstResponse?.length).toBeGreaterThan(0);
 
     // Send second message
     await page.fill('textarea[placeholder*="Ask"]', 'Follow-up question');
     await page.press('textarea[placeholder*="Ask"]', 'Enter');
     await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 60000 });
 
-    // Check session ID hasn't changed
-    const currentSessionId = await page.evaluate(() => {
-      return localStorage.getItem('chat_session_id');
-    });
-
-    expect(currentSessionId).toBe(initialSessionId);
+    // Verify both messages are visible in conversation
+    const messages = await page.locator('.message').count();
+    expect(messages).toBeGreaterThanOrEqual(4); // 2 user + 2 assistant messages
 
     await page.screenshot({ path: 'test-results/streaming-session-context.png' });
   });
 
-  test('new chat button creates new session', async ({ page }) => {
-    const initialSessionId = await page.evaluate(() => {
-      return localStorage.getItem('chat_session_id');
-    });
-
+  test('new chat button creates fresh conversation', async ({ page }) => {
     // Send a message
     await page.fill('textarea[placeholder*="Ask"]', 'Test message');
     await page.press('textarea[placeholder*="Ask"]', 'Enter');
     await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 60000 });
 
+    // Verify messages are present
+    const messagesBefore = await page.locator('.message').count();
+    expect(messagesBefore).toBeGreaterThan(0);
+
     // Click new chat
     await page.click('button[title="New Chat"]');
-
-    // Check for new session ID
-    const newSessionId = await page.evaluate(() => {
-      return localStorage.getItem('chat_session_id');
-    });
-
-    expect(newSessionId).toBeTruthy();
-    expect(newSessionId).not.toBe(initialSessionId);
 
     // Messages should be cleared
     const emptyStateText = await page.locator('text=How can I help you today?').isVisible();
     expect(emptyStateText).toBeTruthy();
+
+    // Verify URL is clean (no session parameter)
+    expect(page.url()).not.toContain('?session=');
   });
 
-  test('conversation history is saved to localStorage', async ({ page }) => {
-    const sessionId = await page.evaluate(() => {
-      return localStorage.getItem('chat_session_id');
-    });
-
-    expect(sessionId).toBeTruthy();
-
+  test('localStorage is NOT used for chat data', async ({ page }) => {
     // Send a message
-    await page.fill('textarea[placeholder*="Ask"]', 'Test history saving');
+    await page.fill('textarea[placeholder*="Ask"]', 'Test message for localStorage check');
     await page.press('textarea[placeholder*="Ask"]', 'Enter');
     await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 60000 });
 
-    // Check history was saved
-    const history = await page.evaluate((id) => {
-      return localStorage.getItem(`chat_history_${id}`);
-    }, sessionId);
+    // Verify localStorage does NOT contain chat_session_id
+    const sessionId = await page.evaluate(() => {
+      return localStorage.getItem('chat_session_id');
+    });
+    expect(sessionId).toBeNull();
 
-    expect(history).toBeTruthy();
-
-    const historyData = JSON.parse(history || '{}');
-    expect(Array.isArray(historyData)).toBeTruthy();
-    expect(historyData.length).toBeGreaterThan(0);
+    // Verify localStorage does NOT contain chat_history
+    const allKeys = await page.evaluate(() => {
+      return Object.keys(localStorage);
+    });
+    const chatHistoryKeys = allKeys.filter(key => key.startsWith('chat_history_'));
+    expect(chatHistoryKeys.length).toBe(0);
   });
 });
 
@@ -890,20 +868,16 @@ test.describe('Streaming Chat - Sequential Queries', () => {
     await page.press('textarea[placeholder*="Ask"]', 'Enter');
     await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 60000 });
 
-    // Check that session ID remained constant
-    const sessionId = await page.evaluate(() => {
-      return localStorage.getItem('chat_session_id');
+    // Check that UI shows both questions and responses (conversation maintained in component state)
+    const messages = await page.locator('.message').count();
+    expect(messages).toBeGreaterThanOrEqual(4); // 2 user + 2 assistant messages
+
+    // Verify localStorage is NOT used for chat data
+    const allKeys = await page.evaluate(() => {
+      return Object.keys(localStorage);
     });
-
-    expect(sessionId).toBeTruthy();
-
-    // Check that history contains both questions
-    const history = await page.evaluate((id) => {
-      const data = localStorage.getItem(`chat_history_${id}`);
-      return data ? JSON.parse(data) : [];
-    }, sessionId);
-
-    expect(history.length).toBeGreaterThanOrEqual(4); // 2 user + 2 assistant messages
+    const chatKeys = allKeys.filter(key => key.startsWith('chat_'));
+    expect(chatKeys.length).toBe(0);
   });
 });
 

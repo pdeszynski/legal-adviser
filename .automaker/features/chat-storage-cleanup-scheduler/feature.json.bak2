@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Create Temporal scheduled workflow to archive or delete old chat sessions based on retention policy. Implementation: 1) Create ChatCleanupWorkflow with activities: findOldSessions(daysThreshold), archiveSessions(sessionIds), deleteSessions(sessionIds), sendCleanupReport, 2) Configure cron schedule (e.g., weekly on Sunday at 2 AM), 3) Implement retention policy: archive sessions older than 90 days, delete archived sessions older than 1 year, 4) Add user preference opt-out for users who want to keep all chats, 5) Send notification to users before deletion (7 days prior), 6) Log all cleanup operations to audit trail. This prevents database bloat while preserving important conversations.",
+  "id": "chat-storage-cleanup-scheduler",
+  "title": "Temporal Workflow for Cleaning Up Old Chat Sessions",
+  "priority": 3,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Create Temporal scheduled workflow to archive or delete old chat sessions based on retention policy. Implementation: 1) Create ChatCleanupWorkflow with activities: findOldSessions(daysThreshold), archiveSessions(sessionIds), deleteSessions(sessionIds), sendCleanupReport, 2) Configure cron schedule (e.g., weekly on Sunday at 2 AM), 3) Implement retention policy: archive sessions older than 90 days, delete archived sessions older than 1 year, 4) Add user preference opt-out for users who want to keep all chats, 5) Send notification to users before deletion (7 days prior), 6) Log all cleanup operations to audit trail. This prevents database bloat while preserving important conversations.",
+      "timestamp": "2026-01-27T21:01:05.094Z",
+      "source": "initial"
+    }
+  ]
+}

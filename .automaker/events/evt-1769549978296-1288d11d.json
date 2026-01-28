@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769549978296-1288d11d",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T21:39:38.296Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "chat-session-auto-title-generation",
+  "featureName": "Auto-Generate Chat Session Titles from First Message",
+  "error": "Feature completed in 765s - auto-verified",
+  "passes": true
+}

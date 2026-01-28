@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Create ChatSession entity in infrastructure layer to store conversation history. Include fields: sessionId (UUID v4 primary key), userId (FK to User), title (nullable string, auto-generated from first message), mode ('LAWYER'|'SIMPLE'), createdAt (timestamp), updatedAt (timestamp), lastMessageAt (timestamp for sorting), messageCount (integer), isPinned (boolean for user favorites). Add repository interface in domain layer (ChatSessionRepository) with methods: findByUserId(userId), findBySessionId(sessionId), create(sessionData), update(sessionId, data), delete(sessionId). Implement soft delete to preserve conversation history. Add index on userId and lastMessageAt for efficient querying.",
+  "id": "chat-session-entity",
+  "title": "Chat Session Entity for Database Storage",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Create ChatSession entity in infrastructure layer to store conversation history. Include fields: sessionId (UUID v4 primary key), userId (FK to User), title (nullable string, auto-generated from first message), mode ('LAWYER'|'SIMPLE'), createdAt (timestamp), updatedAt (timestamp), lastMessageAt (timestamp for sorting), messageCount (integer), isPinned (boolean for user favorites). Add repository interface in domain layer (ChatSessionRepository) with methods: findByUserId(userId), findBySessionId(sessionId), create(sessionData), update(sessionId, data), delete(sessionId). Implement soft delete to preserve conversation history. Add index on userId and lastMessageAt for efficient querying.",
+      "timestamp": "2026-01-27T21:01:05.086Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-27T21:14:26.545Z"
+}

@@ -8,10 +8,11 @@ Updated for Langfuse SDK 3.x which uses OpenTelemetry and @observe decorator.
 
 import time
 import uuid
+from collections.abc import Callable, Awaitable
 from typing import Any, ClassVar
 
 from fastapi import Request
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import Response
 
 from .langfuse_init import _redact_dict_pii, is_langfuse_enabled
@@ -42,7 +43,18 @@ class LangfuseMiddleware(BaseHTTPMiddleware):
         "/openapi.json",
     }
 
-    async def dispatch(self, request: Request, call_next) -> Response:
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        """Process request with Langfuse tracing.
+
+        Args:
+            request: Incoming HTTP request
+            call_next: Next middleware/handler in chain
+
+        Returns:
+            HTTP response
+        """
         """Process request with Langfuse tracing.
 
         Args:

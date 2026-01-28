@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769550094204-dc06b00b",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T21:41:34.204Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "chat-session-export-feature",
+  "featureName": "Export Chat Session to PDF/Markdown",
+  "error": "Feature completed in 602s - auto-verified",
+  "passes": true
+}

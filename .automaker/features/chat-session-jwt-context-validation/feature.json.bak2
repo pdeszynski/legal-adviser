@@ -1,0 +1,16 @@
+{
+  "category": "Security",
+  "description": "Ensure JWT context is properly validated in all chat session operations. Backend verification: 1) Verify GqlAuthGuard is applied to all chat resolvers (chatSessions, chatSessionDetail, askLegalQuestion), 2) Ensure JWT context includes user.id, user.email, user.roles, 3) Validate that session ID passed in mutation args belongs to the authenticated user (via ChatSessionOwnershipGuard), 4) Reject requests with mismatched session ownership with 403 Forbidden, 5) Log all chat operations with user ID from JWT for audit trail, 6) Test with different JWT tokens to ensure isolation works. AI Engine integration: 1) Verify JWT is passed from backend to AI Engine for session validation, 2) Ensure AI Engine validates JWT and extracts user context for authorization.",
+  "id": "chat-session-jwt-context-validation",
+  "title": "Validate JWT Context in Chat Session Operations",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Ensure JWT context is properly validated in all chat session operations. Backend verification: 1) Verify GqlAuthGuard is applied to all chat resolvers (chatSessions, chatSessionDetail, askLegalQuestion), 2) Ensure JWT context includes user.id, user.email, user.roles, 3) Validate that session ID passed in mutation args belongs to the authenticated user (via ChatSessionOwnershipGuard), 4) Reject requests with mismatched session ownership with 403 Forbidden, 5) Log all chat operations with user ID from JWT for audit trail, 6) Test with different JWT tokens to ensure isolation works. AI Engine integration: 1) Verify JWT is passed from backend to AI Engine for session validation, 2) Ensure AI Engine validates JWT and extracts user context for authorization.",
+      "timestamp": "2026-01-28T09:15:56.565Z",
+      "source": "initial"
+    }
+  ]
+}

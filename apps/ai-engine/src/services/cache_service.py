@@ -10,7 +10,7 @@ Cache keys are based on hashed query parameters with configurable TTL.
 
 import hashlib
 import json
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from typing import Any, TypeVar
 
 from ..config import get_settings
@@ -167,7 +167,7 @@ class RedisCache(CacheBackend):
                 decode_responses=True,
             )
             # Test connection
-            await self._client.ping()  # type: ignore
+            await self._client.ping()
             self._available = True
         except Exception:
             self._available = False

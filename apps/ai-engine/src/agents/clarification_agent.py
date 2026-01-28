@@ -10,6 +10,8 @@ Langfuse integration follows the official pattern:
 - See: https://langfuse.com/integrations/frameworks/pydantic-ai
 """
 
+from typing import Any
+
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
@@ -20,9 +22,7 @@ from ..config import get_settings
 class ClarificationQuestion(BaseModel):
     """A single clarification question."""
 
-    question: str = Field(
-        ..., description="The specific question to ask the user"
-    )
+    question: str = Field(..., description="The specific question to ask the user")
     question_type: str = Field(
         ...,
         description="Type of information needed (e.g., 'timeline', 'documents', 'parties', 'specific_amount')",
@@ -97,10 +97,10 @@ def get_clarification_agent() -> Agent[ClarificationResponse]:
         Agent with instrument=True for automatic Langfuse tracing
     """
     settings = get_settings()
-    return Agent(
+    return Agent(  # type: ignore[call-arg]
         OpenAIModel(settings.OPENAI_MODEL),
         system_prompt=CLARIFICATION_SYSTEM_PROMPT,
-        output_type=ClarificationResponse,
+        output_type=ClarificationResponse,  # type: ignore[call-arg]
         instrument=True,  # Enable automatic Langfuse tracing
     )
 
@@ -121,7 +121,7 @@ async def generate_clarifications(
     question: str,
     query_type: str = "general",
     mode: str = "SIMPLE",
-) -> dict:
+) -> dict[str, Any]:  # type: ignore[name-defined]
     """Generate clarification questions for an incomplete query.
 
     Args:
@@ -145,7 +145,7 @@ If clarification is needed, provide specific follow-up questions.
 If the question is clear enough for a general response, indicate no clarification is needed."""
 
     result = await agent.run(prompt)
-    response = result.output
+    response = result.output  # type: ignore[attr-defined]
 
     return {
         "needs_clarification": response.needs_clarification,
@@ -156,8 +156,8 @@ If the question is clear enough for a general response, indicate no clarificatio
                 "options": q.options,
                 "hint": q.hint,
             }
-            for q in response.questions
+            for q in response.questions  # type: ignore[attr-defined]
         ],
-        "context_summary": response.context_summary,
-        "next_steps": response.next_steps,
+        "context_summary": response.context_summary,  # type: ignore[attr-defined]
+        "next_steps": response.next_steps,  # type: ignore[attr-defined]
     }

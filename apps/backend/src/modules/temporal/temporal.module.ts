@@ -26,6 +26,8 @@ import { RulingBackfillStarter } from './workflows/billing/ruling-backfill.start
 import { RulingIndexingSchedulerService } from './workflows/billing/ruling-scheduler.service';
 import { WebhookDeliveryStarter } from './workflows/webhook/webhook-delivery.starter';
 import { WebhookReplayStarter } from './workflows/webhook/webhook-replay.starter';
+import { ChatCleanupStarter } from './workflows/chat/chat-cleanup.starter';
+import { ChatCleanupSchedulerService } from './workflows/chat/chat-cleanup-scheduler.service';
 import { AuditLogModule } from '../audit-log/audit-log.module';
 import type {
   TemporalModuleAsyncOptions,
@@ -150,6 +152,8 @@ export class TemporalModule {
         RulingIndexingSchedulerService,
         WebhookDeliveryStarter,
         WebhookReplayStarter,
+        ChatCleanupStarter,
+        ChatCleanupSchedulerService,
       ],
       exports: [
         TemporalService,
@@ -165,6 +169,8 @@ export class TemporalModule {
         RulingIndexingSchedulerService,
         WebhookDeliveryStarter,
         WebhookReplayStarter,
+        ChatCleanupStarter,
+        ChatCleanupSchedulerService,
       ],
       global: true,
     };
@@ -198,6 +204,8 @@ export class TemporalModule {
         RulingIndexingSchedulerService,
         WebhookDeliveryStarter,
         WebhookReplayStarter,
+        ChatCleanupStarter,
+        ChatCleanupSchedulerService,
       ],
       exports: [
         TemporalService,
@@ -213,6 +221,8 @@ export class TemporalModule {
         RulingIndexingSchedulerService,
         WebhookDeliveryStarter,
         WebhookReplayStarter,
+        ChatCleanupStarter,
+        ChatCleanupSchedulerService,
       ],
       global: true,
     };
@@ -243,6 +253,8 @@ export class TemporalModule {
         RulingIndexingSchedulerService,
         WebhookDeliveryStarter,
         WebhookReplayStarter,
+        ChatCleanupStarter,
+        ChatCleanupSchedulerService,
       ],
       exports: [
         TemporalService,
@@ -258,6 +270,8 @@ export class TemporalModule {
         RulingIndexingSchedulerService,
         WebhookDeliveryStarter,
         WebhookReplayStarter,
+        ChatCleanupStarter,
+        ChatCleanupSchedulerService,
       ],
       global: true,
     };

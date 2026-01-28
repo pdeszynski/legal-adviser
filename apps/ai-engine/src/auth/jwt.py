@@ -11,7 +11,8 @@ Backend JWT Configuration (for reference):
 """
 
 import logging
-from dataclasses import dataclass
+import re
+from dataclasses import dataclass, replace
 from typing import Any
 
 from fastapi import Depends, Header, HTTPException, status
@@ -20,6 +21,27 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from ..config import get_settings
 
 logger = logging.getLogger(__name__)
+
+# UUID v4 regex pattern
+# Format: 8-4-4-4-12 hex digits, with version 4 in the 3rd group
+UUID_V4_PATTERN = re.compile(
+    r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
+    re.IGNORECASE
+)
+
+
+def is_valid_uuid_v4(session_id: str) -> bool:
+    """Validate that a string is a valid UUID v4.
+
+    Args:
+        session_id: The session ID string to validate
+
+    Returns:
+        True if the session ID is a valid UUID v4, False otherwise
+    """
+    if not session_id or not isinstance(session_id, str):
+        return False
+    return UUID_V4_PATTERN.match(session_id) is not None
 
 
 # -----------------------------------------------------------------------------
@@ -58,12 +80,16 @@ class UserContext:
     """User information extracted from validated JWT token.
 
     This matches the ValidatedUser interface from the backend's jwt.strategy.ts.
+
+    The session_id is NOT extracted from the JWT token (which would be inflexible),
+    but is set from the request body for proper session tracking.
     """
 
     id: str  # User UUID (from 'sub' claim)
     username: str
     email: str
     roles: list[str]
+    session_id: str | None = None  # Chat session ID from request body (UUID v4)
 
     @property
     def role_level(self) -> int:
@@ -132,7 +158,7 @@ def _decode_jwt(token: str) -> dict[str, Any]:
 
     try:
         # Decode and verify the token
-        payload = jwt.decode(
+        payload: dict[str, Any] = jwt.decode(
             token,
             secret,
             algorithms=["HS256"],
@@ -165,7 +191,7 @@ def _decode_jwt(token: str) -> dict[str, Any]:
         ) from e
 
 
-def validate_jwt_token(token: str) -> UserContext:
+def validate_jwt_token(token: str, session_id: str | None = None) -> UserContext:
     """Validate a JWT token and extract user context.
 
     This is the main JWT validation function. It:
@@ -173,9 +199,11 @@ def validate_jwt_token(token: str) -> UserContext:
     2. Validates required claims (sub, email)
     3. Checks token expiration
     4. Validates token type (must be 'access' or omitted)
+    5. Optionally validates and includes session_id
 
     Args:
         token: The JWT token string (typically from Authorization header)
+        session_id: Optional session ID to include in UserContext (must be UUID v4)
 
     Returns:
         UserContext with user information extracted from token claims
@@ -184,6 +212,7 @@ def validate_jwt_token(token: str) -> UserContext:
         JWTValidationError: If token is invalid
         JWTExpiredError: If token has expired
         HTTPException: With 401 status for all validation failures
+        HTTPException: With 400 status if session_id is invalid format
     """
     try:
         payload = _decode_jwt(token)
@@ -200,6 +229,17 @@ def validate_jwt_token(token: str) -> UserContext:
                 "message": "JWT validation not configured",
             },
         ) from e
+
+    # Validate session_id format if provided
+    if session_id is not None and session_id != "":
+        if not is_valid_uuid_v4(session_id):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "error_code": "INVALID_SESSION_ID",
+                    "message": "Session ID must be a valid UUID v4",
+                },
+            )
 
     # Validate token type (reject refresh tokens)
     token_type = payload.get("type")
@@ -248,6 +288,7 @@ def validate_jwt_token(token: str) -> UserContext:
         username=username,
         email=email,
         roles=roles,
+        session_id=session_id,
     )
 
 
@@ -419,3 +460,35 @@ def get_token_from_header(authorization: str | None) -> str | None:
         return parts[1]
 
     return None
+
+
+def set_user_session_id(user: UserContext | None, session_id: str) -> UserContext | None:
+    """Set or validate session_id on a UserContext.
+
+    This helper function is used to add session_id to the UserContext after
+    authentication. The session_id is validated to ensure it's a proper UUID v4.
+
+    Args:
+        user: The UserContext from JWT authentication (can be None)
+        session_id: The session ID from request body
+
+    Returns:
+        Updated UserContext with session_id set, or None if user was None
+
+    Raises:
+        HTTPException: With 400 status if session_id is invalid format
+    """
+    if user is None:
+        return None
+
+    if not is_valid_uuid_v4(session_id):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "error_code": "INVALID_SESSION_ID",
+                "message": "Session ID must be a valid UUID v4",
+            },
+        )
+
+    # Use dataclass replace to create a new UserContext with session_id
+    return replace(user, session_id=session_id)

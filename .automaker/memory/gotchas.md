@@ -5,9 +5,9 @@ relevantTo: [error, bug, fix, issue, problem]
 importance: 0.9
 relatedFiles: []
 usageStats:
-  loaded: 1180
-  referenced: 391
-  successfulFeatures: 391
+  loaded: 1202
+  referenced: 412
+  successfulFeatures: 412
 ---
 # Gotchas
 
@@ -264,3 +264,41 @@ Mistakes and edge cases to avoid. These are lessons learned from past issues.
     };
   }
   ```
+
+#### [Gotcha] GraphQL InputType/ObjectType decorators require declaration order - types must be declared before they are referenced (2026-01-28)
+
+- **Situation:** `ReferenceError: Cannot access 'ChatMessageMetadataInput' before initialization` when starting NestJS server
+- **Root cause:** NestJS GraphQL decorators (`@InputType`, `@ObjectType`, `@Field`) execute at class definition time, not at runtime. When a class uses another type in its `@Field()` decorator (e.g., `@Field(() => ChatMessageMetadataInput)`), that referenced type **must already be declared** earlier in the file. This is a temporal dead zone issue where TypeScript cannot access a class before initialization
+- **How to avoid:** Always declare types in **dependency order** - leaf types (no dependencies on other types) first, composite types last:
+  ```typescript
+  // CORRECT - Leaf type declared first
+  @InputType('MetadataInput')
+  export class MetadataInput {
+    @Field(() => Number, { nullable: true })
+    confidence?: number;
+  }
+
+  // CORRECT - Composite type declared after its dependency
+  @InputType('MessageInput')
+  export class MessageInput {
+    @Field(() => String)
+    content: string;
+
+    @Field(() => MetadataInput, { nullable: true })  // MetadataInput already declared
+    metadata?: MetadataInput;
+  }
+  ```
+  **Wrong order causes error:**
+  ```typescript
+  // WRONG - References type before declaration
+  @InputType('MessageInput')
+  export class MessageInput {
+    @Field(() => MetadataInput, { nullable: true })  // ERROR: MetadataInput not yet declared!
+    metadata?: MetadataInput;
+  }
+
+  @InputType('MetadataInput')
+  export class MetadataInput { ... }
+  ```
+- **Documentation reminder:** When creating new DTO files, add a comment above leaf types referencing `CLAUDE.md "TypeScript Input/Output Type Declaration Order"` section
+- **Related files:** `apps/backend/src/modules/chat/dto/chat-message.dto.ts` - correct ordering of `ChatMessageMetadataInput` before `CreateAssistantMessageInput`

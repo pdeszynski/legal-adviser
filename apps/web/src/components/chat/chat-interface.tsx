@@ -1,12 +1,16 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { MessageList } from './message-list';
 import { MessageInput } from './message-input';
 import { ClarificationPrompt } from './clarification-prompt';
 import { StreamErrorMessage } from './stream-error-message';
+import { ChatExportButton } from './chat-export-button';
 import { useStreamingChat, type StreamErrorResponse } from '@/hooks/useStreamingChat';
 import { useChat, type ChatCitation, type ClarificationInfo } from '@/hooks/use-chat';
+import { useChatSession } from '@/hooks/use-chat-history';
+import { useChatSessionManagement } from '@/hooks/use-chat-session-management';
 import {
   Bot,
   Plus,
@@ -16,8 +20,9 @@ import {
   ShieldQuestion,
   HelpCircle,
   WifiOff,
-  AlertCircle,
-  Wifi,
+  History,
+  Loader2,
+  AlertTriangle,
 } from 'lucide-react';
 import { cn } from '@legal/ui';
 
@@ -58,23 +63,89 @@ const STARTER_PROMPTS = [
  * Main chat container for Q&A functionality.
  * Displays conversation history and handles user input.
  * Supports real-time streaming of AI responses and multi-turn clarification.
+ * Supports session restoration via ?session= URL parameter.
+ *
+ * Session Management:
+ * - Session IDs are ALWAYS generated server-side via backend GraphQL mutation
+ * - NO crypto.randomUUID() calls on frontend
+ * - NO localStorage for session IDs - stored in component state only
+ * - New chats: create session via backend before first message
+ * - Restored chats: use session ID from URL parameter
  */
 export function ChatInterface() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const sessionParam = searchParams.get('session');
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [sessionId, setSessionId] = useState(() => {
-    // Get or create session ID (must be valid UUID v4 for backend validation)
-    const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    let id = localStorage.getItem('chat_session_id');
-    if (!id || !uuidV4Regex.test(id)) {
-      id = crypto.randomUUID();
-      localStorage.setItem('chat_session_id', id);
-    }
-    return id;
-  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const streamingMessageIdRef = useRef<string | null>(null);
   const [showErrorBanner, setShowErrorBanner] = useState(false);
   const [currentError, setCurrentError] = useState<StreamErrorResponse | null>(null);
+
+  // Keep non-streaming chat for clarification responses - declared early for use in session restoration
+  const {
+    sendClarificationResponse,
+    isLoading: chatLoading,
+    mode,
+    setMode,
+    isInClarificationMode,
+  } = useChat();
+
+  // Session management: backend-generated IDs only, never localStorage
+  // For new chats, autoCreate=true creates a session on mount
+  // For restored chats, initialSessionId is provided via URL parameter
+  const {
+    sessionId,
+    isCreatingSession,
+    sessionError,
+    createSession,
+  } = useChatSessionManagement({
+    initialSessionId: sessionParam,
+    defaultMode: 'LAWYER',
+    autoCreate: !sessionParam, // Auto-create session only for new chats (no session param)
+  });
+
+  // Fetch session data when session ID changes (for restoration)
+  const effectiveSessionIdForFetch = sessionParam || sessionId;
+  const { session: sessionData, isLoading: isLoadingSession, error: sessionFetchError } =
+    useChatSession(effectiveSessionIdForFetch);
+
+  // Handle session restoration from URL
+  useEffect(() => {
+    if (sessionParam && sessionData) {
+      // Set mode from session
+      if (sessionData.mode) {
+        setMode(sessionData.mode);
+      }
+
+      // Load messages from session data with full support for citations
+      if (sessionData.messages && sessionData.messages.length > 0) {
+        const loadedMessages: ChatMessage[] = sessionData.messages
+          .sort((a: any, b: any) => a.sequenceOrder - b.sequenceOrder)
+          .map((msg: any) => ({
+            id: msg.messageId,
+            role: msg.role === 'USER' ? 'user' : 'assistant',
+            content: msg.content,
+            citations: msg.citations?.map((c: any) => ({
+              source: c.source,
+              url: c.url || undefined,
+              article: c.article || undefined,
+              excerpt: c.excerpt || '',
+            })),
+            timestamp: new Date(msg.createdAt),
+            isStreaming: false,
+          }));
+        setMessages(loadedMessages);
+      }
+    }
+
+    // Handle session not found or error
+    if (sessionParam && sessionFetchError) {
+      console.error('Failed to load session:', sessionFetchError);
+      // Continue with empty state - user can start a new conversation
+    }
+  }, [sessionParam, sessionData, sessionFetchError, setMode]);
 
   // Use streaming chat for real-time responses
   const {
@@ -143,6 +214,12 @@ export function ChatInterface() {
           ),
         );
       }
+
+      // Update session title if suggested title is provided
+      if (response.suggestedTitle) {
+        updateSessionTitle(response.suggestedTitle);
+      }
+
       streamingMessageIdRef.current = null;
     },
     onStreamError: (error, response) => {
@@ -186,49 +263,87 @@ export function ChatInterface() {
     },
   });
 
-  // Keep non-streaming chat for clarification responses
-  const {
-    sendClarificationResponse,
-    isLoading: chatLoading,
-    mode,
-    setMode,
-    isInClarificationMode,
-  } = useChat();
-
-  const isLoading = isStreamingActive || chatLoading || isReconnecting;
+  const isLoading = isStreamingActive || chatLoading || isReconnecting || isCreatingSession;
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Load conversation history from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(`chat_history_${sessionId}`);
-    if (stored) {
-      try {
-        const history = JSON.parse(stored);
-        setMessages(history);
-      } catch {
-        // Ignore corrupt history
-      }
-    }
-  }, [sessionId]);
-
-  // Start a new chat session
-  const handleNewChat = () => {
-    const newSessionId = crypto.randomUUID();
-    setSessionId(newSessionId);
-    localStorage.setItem('chat_session_id', newSessionId);
+  // Start a new chat session - creates a new backend session
+  const handleNewChat = useCallback(async () => {
+    // Clear current messages
     setMessages([]);
-  };
 
-  // Save conversation history to localStorage whenever messages change
-  useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem(`chat_history_${sessionId}`, JSON.stringify(messages));
+    // Create a new session via backend (ID is server-generated)
+    const newSessionId = await createSession(mode);
+
+    // Navigate to clean URL without session parameter
+    // The new session ID will be used for subsequent messages
+    if (newSessionId) {
+      router.push('/chat');
     }
-  }, [messages, sessionId]);
+  }, [createSession, mode, router]);
+
+  // Update session title via GraphQL mutation
+  const updateSessionTitle = useCallback(
+    async (title: string) => {
+      if (!sessionId) {
+        console.warn('Cannot update session title: no session ID');
+        return;
+      }
+
+      const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
+
+      // Get auth token from auth provider (NOT localStorage)
+      // Import and use getAccessToken to ensure proper auth flow
+      const { getAccessToken } = await import('@/providers/auth-provider/auth-provider.client');
+      const token = getAccessToken();
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      try {
+        const response = await fetch(GRAPHQL_URL, {
+          method: 'POST',
+          headers,
+          credentials: 'include',
+          body: JSON.stringify({
+            query: `
+              mutation UpdateChatSessionTitle($input: UpdateChatSessionTitleInput!) {
+                updateChatSessionTitle(input: $input) {
+                  id
+                  title
+                  updatedAt
+                }
+              }
+            `,
+            variables: {
+              input: {
+                sessionId: sessionId,
+                title: title,
+              },
+            },
+          }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.data?.updateChatSessionTitle) {
+            console.log('Session title updated:', result.data.updateChatSessionTitle.title);
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to update session title:', error);
+        // Silently fail - title generation is not critical
+      }
+    },
+    [sessionId],
+  );
 
   // Handle aborting the stream
   const handleAbortStream = useCallback(() => {
@@ -297,6 +412,28 @@ export function ChatInterface() {
     // Hide any existing error banner
     setShowErrorBanner(false);
 
+    // Ensure we have a session ID from backend
+    let effectiveSessionId = sessionId;
+    if (!effectiveSessionId) {
+      // Create a new session via backend if we don't have one
+      // Session ID is ALWAYS generated server-side
+      effectiveSessionId = await createSession(mode);
+      if (!effectiveSessionId) {
+        // Failed to create session - show error
+        setCurrentError({
+          type: 'SESSION_ERROR',
+          message: 'Failed to create chat session',
+          userMessage: 'Could not start a new chat session. Please try again.',
+          retryable: true,
+          fallbackAvailable: false,
+          canRecover: true,
+          severity: 'high',
+        });
+        setShowErrorBanner(true);
+        return;
+      }
+    }
+
     // Add user message to chat
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
@@ -322,8 +459,8 @@ export function ChatInterface() {
     setMessages((prev) => [...prev, initialAssistantMessage]);
 
     try {
-      // Send streaming message to AI Engine
-      const response = await sendStreamingMessage(content, mode, sessionId);
+      // Send streaming message to AI Engine with backend-generated session ID
+      const response = await sendStreamingMessage(content, mode, effectiveSessionId);
 
       // Finalize is handled in onStreamEnd callback
       // This is just a fallback in case callbacks don't fire
@@ -505,6 +642,24 @@ export function ChatInterface() {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* History Button */}
+          <button
+            onClick={() => router.push('/chat/history')}
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+            title="Chat History"
+          >
+            <History className="h-5 w-5" />
+          </button>
+
+          {/* Export Button - only show when there are messages AND we have a session ID */}
+          {messages.length > 0 && sessionId && (
+            <ChatExportButton
+              sessionId={sessionId}
+              title={sessionData?.title ?? undefined}
+              variant="menu"
+            />
+          )}
+
           {/* Mode Toggle */}
           <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
             <button
@@ -543,7 +698,33 @@ export function ChatInterface() {
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6 scroll-smooth">
-        {messages.length === 0 ? (
+        {isLoadingSession || isCreatingSession ? (
+          <div className="flex flex-col items-center justify-center h-full animate-in fade-in duration-300">
+            <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
+            <h2 className="text-xl font-semibold mb-2">
+              {isCreatingSession ? 'Starting new conversation...' : 'Loading conversation...'}
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              {sessionParam
+                ? 'Restoring your chat session'
+                : isCreatingSession
+                  ? 'Creating a new session'
+                  : 'Preparing a new conversation'}
+            </p>
+          </div>
+        ) : sessionError ? (
+          <div className="flex flex-col items-center justify-center h-full animate-in fade-in duration-300">
+            <AlertTriangle className="h-12 w-12 text-orange-500 mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Session Error</h2>
+            <p className="text-muted-foreground text-sm mb-4">{sessionError}</p>
+            <button
+              onClick={() => createSession(mode)}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full max-w-2xl mx-auto animate-in fade-in zoom-in-95 duration-500">
             <div className="text-center mb-10">
               <div className="h-24 w-24 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6 text-primary">

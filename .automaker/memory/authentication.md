@@ -5,9 +5,9 @@ relevantTo: [authentication]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 131
-  referenced: 65
-  successfulFeatures: 65
+  loaded: 135
+  referenced: 69
+  successfulFeatures: 69
 ---
 # authentication
 

@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Create migration utility to transfer existing chat history from browser localStorage to database. Implementation: 1) Add backend endpoint POST /api/migrate-chat accepting {sessionId, messages, title, mode} payload, 2) Frontend utility: on user login, check localStorage for existing chat data, 3) If data exists and not yet migrated, POST to migration endpoint, 4) Create ChatSession and ChatMessage records from localStorage data, 5) On success, clear localStorage entries, 6) Set migration flag in user preferences to prevent re-migration, 7) Handle edge cases: duplicate session IDs, corrupted data, very long message histories. Make migration optional with user prompt: 'We found 5 chat conversations from previous version. Would you like to restore them?'. Display migration progress with count of migrated sessions.",
+  "id": "migrate-localstorage-to-database",
+  "title": "Migrate Existing LocalStorage Chat Data to Database",
+  "priority": 3,
+  "status": "verified",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Create migration utility to transfer existing chat history from browser localStorage to database. Implementation: 1) Add backend endpoint POST /api/migrate-chat accepting {sessionId, messages, title, mode} payload, 2) Frontend utility: on user login, check localStorage for existing chat data, 3) If data exists and not yet migrated, POST to migration endpoint, 4) Create ChatSession and ChatMessage records from localStorage data, 5) On success, clear localStorage entries, 6) Set migration flag in user preferences to prevent re-migration, 7) Handle edge cases: duplicate session IDs, corrupted data, very long message histories. Make migration optional with user prompt: 'We found 5 chat conversations from previous version. Would you like to restore them?'. Display migration progress with count of migrated sessions.",
+      "timestamp": "2026-01-27T21:01:05.093Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-27T22:03:40.152Z"
+}

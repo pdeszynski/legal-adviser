@@ -48,6 +48,7 @@ from .models.requests import (
     ClassifyCaseRequest,
     GenerateDocumentRequest,
     GenerateEmbeddingsRequest,
+    GenerateTitleRequest,
     QARequest,
     SearchRulingsRequest,
     SemanticSearchRequest,
@@ -60,6 +61,7 @@ from .models.responses import (
     ErrorResponse,
     GenerateDocumentResponse,
     GenerateEmbeddingsResponse,
+    GenerateTitleResponse,
     QAResponse,
     RateLimitErrorResponse,
     Ruling,
@@ -867,6 +869,11 @@ async def ask_question_stream(
     - Optional: works without auth for anonymous requests
     - Pass Authorization: Bearer <token> header
 
+    Request Body (JSON):
+        question: The legal question to answer (required)
+        mode: Response mode - LAWYER (detailed) or SIMPLE (layperson), default: SIMPLE
+        session_id: User session ID for tracking (must be valid UUID v4)
+
     SSE Format:
         data: {"content": "text chunk", "done": false, "metadata": {...}}
 
@@ -881,8 +888,13 @@ async def ask_question_stream(
     - Context retrieval from vector store
     - Streaming answer generation with RAG
     """
+    from .auth import set_user_session_id
+
+    # Set and validate session_id from request body on the user context
+    user_with_session = set_user_session_id(user, request.session_id)
+
     # Use authenticated user ID if available, otherwise fall back to header
-    user_id = user.id if user else http_request.headers.get("x-user-id")
+    user_id = user_with_session.id if user_with_session else http_request.headers.get("x-user-id")
 
     async def generate() -> AsyncGenerator[str, None]:
         async for chunk in stream_qa_response(
@@ -898,10 +910,8 @@ async def ask_question_stream(
 
 @app.post("/api/v1/qa/ask-stream")
 async def ask_question_stream_enhanced(
-    question: str,
-    mode: str = "SIMPLE",
-    session_id: str = "default",
-    http_request: Request = Request,
+    request: AskQuestionRequest,
+    http_request: Request,
     user: UserContext | None = Depends(get_current_user_optional),
 ):
     """Stream a legal Q&A response with structured SSE events.
@@ -914,10 +924,11 @@ async def ask_question_stream_enhanced(
     - Optional: works without auth for anonymous requests
     - Pass Authorization: Bearer <token> header
 
-    Request Parameters (as query string or form data):
+    Request Body (JSON):
         question: The legal question to answer (required)
         mode: Response mode - LAWYER (detailed) or SIMPLE (layperson), default: SIMPLE
-        session_id: User session ID for tracking, default: "default"
+        session_id: User session ID for tracking (must be valid UUID v4)
+        messages: Optional conversation history as array of {role, content} objects
 
     SSE Event Format:
         data: {"type": "token", "content": "text chunk", "metadata": {}}
@@ -938,25 +949,34 @@ async def ask_question_stream_enhanced(
     - Query analysis and classification
     - Context retrieval from vector store (RAG)
     - Answer generation with citations
+    - Conversation history for context-aware responses
     - LangGraph workflow orchestration
     """
+    from .auth import set_user_session_id
+
     # Validate inputs
-    if not question or len(question.strip()) < 3:
+    if not request.question or len(request.question.strip()) < 3:
         raise HTTPException(
             status_code=400,
             detail={"error_code": "INVALID_INPUT", "message": "Question must be at least 3 characters long"},
         )
 
+    mode = request.mode or "SIMPLE"
     if mode not in ("LAWYER", "SIMPLE"):
         mode = "SIMPLE"
 
+    # Set and validate session_id from request body on the user context
+    # This ensures session_id is a valid UUID v4 and is attached to UserContext
+    user_with_session = set_user_session_id(user, request.session_id)
+
     async def generate() -> AsyncGenerator[str, None]:
         async for event in stream_qa_enhanced(
-            question=question,
+            question=request.question,
             mode=mode,
-            session_id=session_id,
-            user=user,
+            session_id=request.session_id,
+            user=user_with_session,
             request=http_request,
+            messages=request.conversation_history,
         ):
             yield event
 
@@ -1068,9 +1088,9 @@ async def get_document_status(task_id: str):
     return DocumentGenerationStatus(
         task_id=task_id,
         status=str(task["status"]),
-        content=task.get("content"),  # type: ignore
-        metadata=task.get("request"),  # type: ignore
-        error=task.get("error"),  # type: ignore
+        content=task.get("content"),
+        metadata=task.get("request"),
+        error=task.get("error"),
     )
 
 
@@ -1509,3 +1529,86 @@ async def workflow_complex_qa(request: AskQuestionRequest, http_request: Request
             status_code=500,
             detail=f"Complex Q&A workflow failed: {e!s}",
         ) from e
+
+
+# -----------------------------------------------------------------------------
+# Chat Session Title Generation Endpoint
+# -----------------------------------------------------------------------------
+
+
+@app.post("/api/v1/chat/generate-title", response_model=GenerateTitleResponse)
+async def generate_chat_title(request: GenerateTitleRequest):
+    """Generate a title for a chat session based on the first message.
+
+    This endpoint creates a concise, descriptive title (3-6 words) that captures
+    the main topic of the user's first message. Uses a lightweight model (gpt-4o-mini)
+    for fast, cost-effective title generation.
+
+    The title is used to help users identify and organize their chat sessions
+    in the chat history view.
+
+    Authentication:
+    - Optional: works without auth for title generation
+    - Can be called from backend service with internal auth
+
+    Args:
+        first_message: The first user message in the chat session (min 5 chars)
+        session_id: Session ID for tracking and observability
+
+    Returns:
+        GenerateTitleResponse with:
+        - title: A 3-6 word title describing the conversation topic
+        - session_id: The provided session ID for tracking
+
+    Examples:
+        "Employment Contract Review"
+        "Lease Agreement Questions"
+        "Unpaid Wages Claim"
+        "Tenancy Rights Inquiry"
+
+    Fallback:
+        If AI generation fails, returns a truncated version of the first message
+        (first 50 characters with "..." suffix).
+    """
+    from .agents.title_agent import generate_fallback_title
+
+    try:
+        from .agents.title_agent import generate_title
+
+        logger.info(
+            "Title generation request: message_length=%d, session_id=%s",
+            len(request.first_message),
+            request.session_id,
+        )
+
+        # Generate title using AI agent
+        title = await generate_title(
+            first_message=request.first_message,
+            session_id=request.session_id,
+        )
+
+        logger.info(
+            "Title generated successfully: title='%s', session_id=%s",
+            title,
+            request.session_id,
+        )
+
+        return GenerateTitleResponse(
+            title=title,
+            session_id=request.session_id,
+        )
+
+    except Exception as e:
+        logger.warning(
+            "AI title generation failed, using fallback: error=%s, session_id=%s",
+            str(e),
+            request.session_id,
+        )
+
+        # Fallback to simple truncation
+        fallback_title = generate_fallback_title(request.first_message)
+
+        return GenerateTitleResponse(
+            title=fallback_title,
+            session_id=request.session_id,
+        )

@@ -101,7 +101,7 @@ class DocumentGenerationStatus(BaseModel):
     content: str | None = Field(
         default=None, description="Generated document content (markdown)"
     )
-    metadata: dict | None = Field(
+    metadata: dict[str, Any] | None = Field(
         default=None, description="Additional metadata about the generation"
     )
     error: str | None = Field(default=None, description="Error message if failed")
@@ -225,7 +225,7 @@ class SemanticSearchResult(BaseModel):
     content_chunk: str = Field(..., description="Relevant text chunk")
     chunk_index: int = Field(..., description="Index of the chunk in the document")
     similarity: float = Field(..., ge=0.0, le=1.0, description="Similarity score")
-    metadata: dict | None = Field(
+    metadata: dict[str, Any] | None = Field(
         default=None, description="Additional metadata about the chunk"
     )
 
@@ -247,3 +247,15 @@ class QAResponse(BaseModel):
     citations: list[Citation] = Field(
         default_factory=list, description="Legal citations supporting the answer"
     )
+
+
+class GenerateTitleResponse(BaseModel):
+    """Response from title generation endpoint."""
+
+    title: str = Field(
+        ...,
+        description="Generated title for the chat session (3-6 words)",
+        min_length=3,
+        max_length=50,
+    )
+    session_id: str = Field(..., description="Session ID for tracking")

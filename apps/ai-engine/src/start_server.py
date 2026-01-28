@@ -32,7 +32,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def handle_signal(signum: int, _frame) -> None:
+from types import FrameType
+
+def handle_signal(signum: int, _frame: FrameType | None) -> None:
     """Handle shutdown signals."""
     logger.info("Received signal %s, shutting down...", signum)
     signal.raise_signal(signal.SIGINT)

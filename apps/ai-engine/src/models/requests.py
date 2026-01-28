@@ -1,6 +1,7 @@
 """Request models for AI Engine API."""
 
 from enum import Enum
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -25,7 +26,7 @@ class GenerateDocumentRequest(BaseModel):
     document_type: DocumentType = Field(
         ..., description="Type of legal document to generate"
     )
-    context: dict | None = Field(
+    context: dict[str, Any] | None = Field(
         default=None,
         description="Additional context variables (e.g., defendant name, amounts)",
     )
@@ -41,13 +42,17 @@ class AskQuestionRequest(BaseModel):
         default="SIMPLE",
         description="Response mode: LAWYER (detailed) or SIMPLE (layperson)",
     )
+    conversation_history: list[dict[str, str]] | None = Field(
+        default=None,
+        description="Conversation history as list of {role, content} messages for context",
+    )
 
 
 class SearchRulingsRequest(BaseModel):
     """Request to search for legal rulings."""
 
     query: str = Field(..., description="Search query", min_length=3)
-    filters: dict | None = Field(
+    filters: dict[str, Any] | None = Field(
         default=None,
         description="Search filters (date range, court type, etc.)",
     )
@@ -63,7 +68,7 @@ class ClassifyCaseRequest(BaseModel):
         min_length=20,
     )
     session_id: str = Field(..., description="User session ID for tracking")
-    context: dict | None = Field(
+    context: dict[str, Any] | None = Field(
         default=None,
         description="Additional context (e.g., document types, parties involved)",
     )
@@ -98,3 +103,17 @@ class QARequest(BaseModel):
     """Request to ask a legal question (simplified API)."""
 
     question: str = Field(..., description="Legal question to answer", min_length=5)
+
+
+class GenerateTitleRequest(BaseModel):
+    """Request to generate a chat session title."""
+
+    first_message: str = Field(
+        ...,
+        description="First user message in the chat session",
+        min_length=5,
+    )
+    session_id: str = Field(
+        ...,
+        description="Session ID for tracking",
+    )

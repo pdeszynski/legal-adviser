@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Comprehensive E2E tests validating the fixed chat history implementation. Test scenarios: 1) Create new chat session via backend mutation, 2) Verify session ID is returned from backend (not generated frontend), 3) Send multiple messages and verify they persist in database, 4) Refresh page and verify conversation history loads from backend, 5) Verify no localStorage calls for chat data (check browser storage), 6) Test session ownership: user A cannot access user B's session, 7) Test JWT validation: expired token cannot send messages, 8) Test session isolation: different users have separate chat histories, 9) Verify session ID is passed correctly to AI Engine in streaming endpoint, 10) Test that deleting local storage doesn't affect chat (proves backend-only persistence). Use Playwright with network interception to verify GraphQL mutations.",
+  "id": "chat-history-e2e-tests-after-fixes",
+  "title": "Create E2E Tests for Chat History After Fixes",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Comprehensive E2E tests validating the fixed chat history implementation. Test scenarios: 1) Create new chat session via backend mutation, 2) Verify session ID is returned from backend (not generated frontend), 3) Send multiple messages and verify they persist in database, 4) Refresh page and verify conversation history loads from backend, 5) Verify no localStorage calls for chat data (check browser storage), 6) Test session ownership: user A cannot access user B's session, 7) Test JWT validation: expired token cannot send messages, 8) Test session isolation: different users have separate chat histories, 9) Verify session ID is passed correctly to AI Engine in streaming endpoint, 10) Test that deleting local storage doesn't affect chat (proves backend-only persistence). Use Playwright with network interception to verify GraphQL mutations.",
+      "timestamp": "2026-01-28T09:15:56.565Z",
+      "source": "initial"
+    }
+  ]
+}

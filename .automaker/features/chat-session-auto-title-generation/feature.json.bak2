@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Implement automatic title generation for chat sessions based on the first user message. Backend logic: 1) When first message is sent in a session, call title generation service, 2) Use AI Engine or simple summarization to create 3-6 word title (e.g., 'Employment Contract Review', 'Lease Agreement Questions'), 3) Store generated title in ChatSession.title field, 4) Allow user to manually edit title later via updateChatSessionTitle mutation, 5) If title generation fails, use first 50 characters of message truncated with '...'. Frontend: 1) Display 'New Chat' as placeholder until title is generated, 2) Show loading indicator while generating title, 3) Update UI in real-time when title is generated via GraphQL subscription. Consider using cheaper/faster model (GPT-3.5) for title generation to reduce cost.",
+  "id": "chat-session-auto-title-generation",
+  "title": "Auto-Generate Chat Session Titles from First Message",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Implement automatic title generation for chat sessions based on the first user message. Backend logic: 1) When first message is sent in a session, call title generation service, 2) Use AI Engine or simple summarization to create 3-6 word title (e.g., 'Employment Contract Review', 'Lease Agreement Questions'), 3) Store generated title in ChatSession.title field, 4) Allow user to manually edit title later via updateChatSessionTitle mutation, 5) If title generation fails, use first 50 characters of message truncated with '...'. Frontend: 1) Display 'New Chat' as placeholder until title is generated, 2) Show loading indicator while generating title, 3) Update UI in real-time when title is generated via GraphQL subscription. Consider using cheaper/faster model (GPT-3.5) for title generation to reduce cost.",
+      "timestamp": "2026-01-27T21:01:05.092Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-27T21:26:53.125Z"
+}

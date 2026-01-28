@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769550733342-293a53a6",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T21:52:13.342Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "chat-session-search-full-text",
+  "featureName": "Full-Text Search Across Chat Sessions",
+  "error": "Feature completed in 752s - auto-verified",
+  "passes": true
+}

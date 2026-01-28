@@ -3783,6 +3783,237 @@
       "dismissed": false,
       "featureId": "streaming-response-e2e-tests",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "3c2fdd98-630a-404a-ab04-863d81b03783",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-message-entity\" has been verified and is complete.",
+      "createdAt": "2026-01-27T21:12:01.970Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-message-entity",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "a035164c-7979-487a-8781-965e0b961e0c",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-session-entity\" has been verified and is complete.",
+      "createdAt": "2026-01-27T21:14:26.547Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-session-entity",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "4c59b7e0-b70c-4a0f-8fca-b2247c1b2e74",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-session-graphql-resolvers\" has been verified and is complete.",
+      "createdAt": "2026-01-27T21:21:49.197Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-session-graphql-resolvers",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "d2ff9b72-8d16-4ef8-86e2-2affe8a41865",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-session-restoration-context\" has been verified and is complete.",
+      "createdAt": "2026-01-27T21:25:44.799Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-session-restoration-context",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "f52ec72a-b2fc-4b7c-96d0-ae6313bbac92",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-history-frontend-list-view\" has been verified and is complete.",
+      "createdAt": "2026-01-27T21:26:50.742Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-history-frontend-list-view",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "5379b203-c440-4525-b5eb-aec232b6846e",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"full-conversation-context-to-ai-engine\" has been verified and is complete.",
+      "createdAt": "2026-01-27T21:31:30.958Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "full-conversation-context-to-ai-engine",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "9d8787ae-1c8b-4f60-85ff-bbda04fe1d99",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-session-auto-title-generation\" has been verified and is complete.",
+      "createdAt": "2026-01-27T21:39:38.285Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-session-auto-title-generation",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "2e7dfb6a-51f1-465a-bf81-8f49f63d8089",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-session-export-feature\" has been verified and is complete.",
+      "createdAt": "2026-01-27T21:41:34.183Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-session-export-feature",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "8d5e607a-1b15-42a3-94ff-fd4fe3a3cb14",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-storage-cleanup-scheduler\" has been verified and is complete.",
+      "createdAt": "2026-01-27T21:51:30.360Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-storage-cleanup-scheduler",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "59f68630-5401-4084-a168-51f7c92a22bf",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"verify-jwt-session-id-in-ai-engine\" has been verified and is complete.",
+      "createdAt": "2026-01-27T21:52:06.194Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "verify-jwt-session-id-in-ai-engine",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "afb6672a-37f5-42ce-9da6-6c4078b7ce35",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-session-search-full-text\" has been verified and is complete.",
+      "createdAt": "2026-01-27T21:52:13.319Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-session-search-full-text",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "efe34fae-8bbf-4f4a-9b88-7a02bf2de1f1",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"migrate-localstorage-to-database\" has been verified and is complete.",
+      "createdAt": "2026-01-27T22:03:40.154Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "migrate-localstorage-to-database",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "92b7d22b-4609-49a4-9930-77fe61d6e672",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"remove-frontend-localstorage-chat-dependencies\" has been verified and is complete.",
+      "createdAt": "2026-01-28T09:25:06.178Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "remove-frontend-localstorage-chat-dependencies",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "01948675-f8c1-40e9-8659-9c7b2f7eb777",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"backend-chat-session-generation-graphql\" has been verified and is complete.",
+      "createdAt": "2026-01-28T09:29:31.854Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "backend-chat-session-generation-graphql",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "cc2c310e-bf28-4be2-8f5b-8dfd6152b391",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"analyze-chat-history-implementation\" has been verified and is complete.",
+      "createdAt": "2026-01-28T09:34:17.011Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "analyze-chat-history-implementation",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "46a2ed25-e42c-4581-adb4-4ce51ca51b5a",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-session-ownership-authorization-guard\" has been verified and is complete.",
+      "createdAt": "2026-01-28T09:47:16.374Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-session-ownership-authorization-guard",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "f309b2fa-bebc-401c-a747-9c01f4ec2546",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-frontend-chat-to-use-backend-sessions\" has been verified and is complete.",
+      "createdAt": "2026-01-28T09:50:11.568Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-frontend-chat-to-use-backend-sessions",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "b580c524-065c-4a3f-8bcd-33970d2c67ce",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-chat-message-persistence-flow\" has been verified and is complete.",
+      "createdAt": "2026-01-28T09:57:08.923Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-chat-message-persistence-flow",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "443d8610-65c3-4275-8f3d-aaecc375e79f",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-session-jwt-context-validation\" has been verified and is complete.",
+      "createdAt": "2026-01-28T10:03:18.294Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-session-jwt-context-validation",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "b383eb28-4f28-4139-bceb-bc160fda6dc8",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"migrate-localstorage-chats-to-backend\" has been verified and is complete.",
+      "createdAt": "2026-01-28T10:04:55.918Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "migrate-localstorage-chats-to-backend",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "23ca0b07-f155-46bc-bbd8-5f5336df9f6d",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-history-e2e-tests-after-fixes\" has been verified and is complete.",
+      "createdAt": "2026-01-28T10:05:31.076Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-history-e2e-tests-after-fixes",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

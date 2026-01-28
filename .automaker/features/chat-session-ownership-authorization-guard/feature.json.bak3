@@ -1,0 +1,19 @@
+{
+  "category": "Security",
+  "description": "Implement authorization to verify users can only access their own chat sessions. Backend changes: 1) Create ChatSessionOwnershipGuard in NestJS, 2) Guard extracts user ID from JWT context and session ID from request parameters/args, 3) Query ChatSession entity to verify session.userId === context.user.id, 4) Throw ForbiddenException if ownership check fails, 5) Apply guard to all chat-related resolvers: chatSessionDetail, chatSessions, askLegalQuestion, 6) Add explicit error message: 'You do not have permission to access this chat session', 7) Log unauthorized access attempts to audit logs. Frontend changes: 1) Remove any client-side ownership checks (security must be server-side), 2) Ensure JWT is always sent in Authorization header for chat requests.",
+  "id": "chat-session-ownership-authorization-guard",
+  "title": "Add Chat Session Ownership Authorization Guard",
+  "dependencies": [
+    "backend-chat-session-generation-graphql"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Implement authorization to verify users can only access their own chat sessions. Backend changes: 1) Create ChatSessionOwnershipGuard in NestJS, 2) Guard extracts user ID from JWT context and session ID from request parameters/args, 3) Query ChatSession entity to verify session.userId === context.user.id, 4) Throw ForbiddenException if ownership check fails, 5) Apply guard to all chat-related resolvers: chatSessionDetail, chatSessions, askLegalQuestion, 6) Add explicit error message: 'You do not have permission to access this chat session', 7) Log unauthorized access attempts to audit logs. Frontend changes: 1) Remove any client-side ownership checks (security must be server-side), 2) Ensure JWT is always sent in Authorization header for chat requests.",
+      "timestamp": "2026-01-28T09:15:56.563Z",
+      "source": "initial"
+    }
+  ]
+}

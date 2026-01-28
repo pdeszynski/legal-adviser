@@ -1,8 +1,8 @@
 {
   "id": "chat-page",
   "category": "UI",
-  "title": "Legal Q&A Chat Page",
-  "description": "Implement dedicated Q&A page with chat interface. Include session management, conversation history, and mode toggle for Pro/Simple chat modes.",
+  "title": "Legal Q&A Chat Page with Session Management",
+  "description": "Update chat page to support both new conversations and session restoration. Add URL parameter handling (?session={sessionId}) for restoring past chats. Implement loading state for session history fetch. Display full conversation history when restoring session. Add 'New Chat' button to start fresh conversation.",
   "status": "completed",
   "priority": 1,
   "complexity": "simple",
@@ -11,5 +11,11 @@
   "model": "sonnet",
   "thinkingLevel": "none",
   "reasoningEffort": "none",
-  "descriptionHistory": []
+  "descriptionHistory": [
+    {
+      "description": "Update chat page to support both new conversations and session restoration. Add URL parameter handling (?session={sessionId}) for restoring past chats. Implement loading state for session history fetch. Display full conversation history when restoring session. Add 'New Chat' button to start fresh conversation.",
+      "timestamp": "2026-01-27T21:01:05.097Z",
+      "source": "edit"
+    }
+  ]
 }

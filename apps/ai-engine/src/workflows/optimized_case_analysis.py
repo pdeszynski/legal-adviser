@@ -371,7 +371,7 @@ class OptimizedCaseAnalysisWorkflow:
                 responses=user_responses,
             )
 
-            async def run_workflow():
+            async def run_workflow() -> dict[str, Any]:
                 return await self._execute_workflow(
                     case_description=case_description,
                     session_id=session_id,

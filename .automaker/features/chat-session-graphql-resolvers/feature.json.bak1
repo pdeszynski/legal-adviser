@@ -1,0 +1,22 @@
+{
+  "category": "feature",
+  "description": "Update GraphQL resolvers to apply ChatSessionOwnershipGuard and ensure all session operations validate JWT context. Remove any logic that accepts client-generated session IDs.",
+  "id": "chat-session-graphql-resolvers",
+  "title": "GraphQL Resolvers for Chat Session Management",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Add nestjs-query decorators to ChatSession entity for auto-generated CRUD resolvers. Implement custom resolvers: 1) chatSessions(userId, paging, filters) - query user's chat history with sorting by lastMessageAt, 2) chatSessionDetail(sessionId) - fetch session with all messages, 3) createChatSession(title, mode) - create new session, 4) updateChatSessionTitle(sessionId, title) - rename session, 5) deleteChatSession(sessionId) - soft delete session, 6) pinChatSession(sessionId, isPinned) - toggle pin status. Apply @UseGuards(GqlAuthGuard) to ensure authenticated access. Implement filtering by mode and search by title. Add subscription chatSessionUpdated for real-time updates when messages are added.",
+      "timestamp": "2026-01-27T21:01:05.088Z",
+      "source": "initial"
+    },
+    {
+      "description": "Update GraphQL resolvers to apply ChatSessionOwnershipGuard and ensure all session operations validate JWT context. Remove any logic that accepts client-generated session IDs.",
+      "timestamp": "2026-01-28T09:15:56.568Z",
+      "source": "edit"
+    }
+  ],
+  "updatedAt": "2026-01-27T21:21:49.171Z"
+}

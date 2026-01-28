@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "One-time migration utility to transfer any existing chat history from localStorage to backend database. Implementation: 1) Create backend endpoint POST /api/migrate-legacy-chats accepting { sessions: [{sessionId, messages, title, mode, createdAt}] }, 2) Frontend utility: on user login after migration deployment, check localStorage for legacy chat data, 3) If found, POST to migration endpoint, 4) Backend creates ChatSession and ChatMessage records from migrated data, 5) Associate migrated sessions with authenticated user from JWT, 6) On success, clear localStorage entries, 7) Set migration flag in user preferences to prevent re-migration, 8) Handle edge cases: duplicate session IDs, corrupted data, very long histories. Show user notification: 'We migrated 3 chat conversations from the previous version. Your chats are now stored securely on our servers.' Make migration optional with user opt-out.",
+  "id": "migrate-localstorage-chats-to-backend",
+  "title": "Migrate Existing localStorage Chats to Backend Database",
+  "priority": 3,
+  "status": "verified",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "One-time migration utility to transfer any existing chat history from localStorage to backend database. Implementation: 1) Create backend endpoint POST /api/migrate-legacy-chats accepting { sessions: [{sessionId, messages, title, mode, createdAt}] }, 2) Frontend utility: on user login after migration deployment, check localStorage for legacy chat data, 3) If found, POST to migration endpoint, 4) Backend creates ChatSession and ChatMessage records from migrated data, 5) Associate migrated sessions with authenticated user from JWT, 6) On success, clear localStorage entries, 7) Set migration flag in user preferences to prevent re-migration, 8) Handle edge cases: duplicate session IDs, corrupted data, very long histories. Show user notification: 'We migrated 3 chat conversations from the previous version. Your chats are now stored securely on our servers.' Make migration optional with user opt-out.",
+      "timestamp": "2026-01-28T09:15:56.565Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T10:04:55.915Z"
+}

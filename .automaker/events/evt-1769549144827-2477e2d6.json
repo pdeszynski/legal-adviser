@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769549144827-2477e2d6",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T21:25:44.827Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "chat-session-restoration-context",
+  "featureName": "Chat Session Restoration with Full Conversation History",
+  "error": "Feature completed in 676s - auto-verified",
+  "passes": true
+}

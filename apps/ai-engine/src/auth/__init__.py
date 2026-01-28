@@ -14,7 +14,9 @@ from .jwt import (
     get_current_user,
     get_current_user_optional,
     get_token_from_header,
+    is_valid_uuid_v4,
     jwt_dependency,
+    set_user_session_id,
     validate_jwt_token,
 )
 
@@ -26,6 +28,8 @@ __all__ = [
     "get_current_user",
     "get_current_user_optional",
     "get_token_from_header",
+    "is_valid_uuid_v4",
     "jwt_dependency",
+    "set_user_session_id",
     "validate_jwt_token",
 ]

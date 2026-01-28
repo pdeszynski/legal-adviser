@@ -1,0 +1,19 @@
+{
+  "category": "feature",
+  "description": "Create backend-only chat session creation logic. Backend changes: 1) Add GraphQL mutation createChatSession(mode: 'LAWYER'|'SIMPLE') returning { sessionId, createdAt, mode }, 2) Generate session ID server-side using UUID v4 in backend service, 3) Associate session with authenticated user from JWT context, 4) Store initial ChatSession record in database with userId, mode, createdAt, 5) Return new session ID to frontend, 6) Apply @UseGuards(GqlAuthGuard) to ensure only authenticated users can create sessions, 7) Set session title to null initially (will be auto-generated from first message per chat-session-auto-title-generation). Ensure no session ID is ever accepted from frontend - always generated server-side.",
+  "id": "backend-chat-session-generation-graphql",
+  "title": "Implement Backend Chat Session Generation with GraphQL",
+  "dependencies": [
+    "remove-frontend-localstorage-chat-dependencies"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Create backend-only chat session creation logic. Backend changes: 1) Add GraphQL mutation createChatSession(mode: 'LAWYER'|'SIMPLE') returning { sessionId, createdAt, mode }, 2) Generate session ID server-side using UUID v4 in backend service, 3) Associate session with authenticated user from JWT context, 4) Store initial ChatSession record in database with userId, mode, createdAt, 5) Return new session ID to frontend, 6) Apply @UseGuards(GqlAuthGuard) to ensure only authenticated users can create sessions, 7) Set session title to null initially (will be auto-generated from first message per chat-session-auto-title-generation). Ensure no session ID is ever accepted from frontend - always generated server-side.",
+      "timestamp": "2026-01-28T09:15:56.563Z",
+      "source": "initial"
+    }
+  ]
+}

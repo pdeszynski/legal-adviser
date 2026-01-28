@@ -122,7 +122,9 @@ export function useChat(): UseChatReturn {
           headers['Authorization'] = `Bearer ${accessToken}`;
         }
 
-        let sessionId = localStorage.getItem('chat_session_id');
+        // WARNING: Do NOT use localStorage for chat session management.
+        // Session IDs must be managed by the backend only to ensure data consistency.
+        // All chat data is persisted via the backend GraphQL API.
 
         const inputVariables: AskLegalQuestionMutationVariables = {
           input: {
@@ -130,10 +132,6 @@ export function useChat(): UseChatReturn {
             mode: selectedMode || mode,
           },
         };
-
-        if (sessionId) {
-          inputVariables.input.sessionId = sessionId;
-        }
 
         const response = await fetch(GRAPHQL_URL, {
           method: 'POST',
@@ -161,10 +159,7 @@ export function useChat(): UseChatReturn {
           throw new Error('No data returned from server');
         }
 
-        if (data.sessionId) {
-          localStorage.setItem('chat_session_id', data.sessionId);
-        }
-
+        // WARNING: Session ID is managed by backend only - do NOT store in localStorage
         const chatResponse: ChatResponse = {
           answerMarkdown: data.answerMarkdown || '',
           citations: data.citations || [],
@@ -212,7 +207,8 @@ export function useChat(): UseChatReturn {
           headers['Authorization'] = `Bearer ${accessToken}`;
         }
 
-        let sessionId = localStorage.getItem('chat_session_id');
+        // WARNING: Do NOT use localStorage for chat session management.
+        // Session IDs must be managed by the backend only.
 
         // Build a follow-up message with the clarification answers
         const answerText = Object.entries(clarificationAnswers)
@@ -226,10 +222,6 @@ export function useChat(): UseChatReturn {
             mode,
           },
         };
-
-        if (sessionId) {
-          inputVariables.input.sessionId = sessionId;
-        }
 
         const response = await fetch(GRAPHQL_URL, {
           method: 'POST',

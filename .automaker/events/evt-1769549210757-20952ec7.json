@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769549210757-20952ec7",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T21:26:50.757Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "chat-history-frontend-list-view",
+  "featureName": "Chat History List View Component",
+  "error": "Feature completed in 886s - auto-verified",
+  "passes": true
+}

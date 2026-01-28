@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769550690392-4cdf1398",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-27T21:51:30.392Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "chat-storage-cleanup-scheduler",
+  "featureName": "Temporal Workflow for Cleaning Up Old Chat Sessions",
+  "error": "Feature completed in 592s - auto-verified",
+  "passes": true
+}

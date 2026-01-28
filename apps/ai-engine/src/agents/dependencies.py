@@ -24,7 +24,7 @@ from ..config import get_settings
 
 
 @lru_cache
-def get_openai_client():
+def get_openai_client() -> "AsyncOpenAI":  # type: ignore[name-defined]
     """Get or create the OpenAI client singleton.
 
     This client is used for embeddings generation only, as PydanticAI v1.31

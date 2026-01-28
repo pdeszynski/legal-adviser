@@ -4,7 +4,7 @@
   "id": "frontend-streaming-chat-client",
   "title": "Frontend Streaming Chat UI Integration",
   "priority": 1,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-27T09:03:50.800Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T09:33:44.349Z"
 }

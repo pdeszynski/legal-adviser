@@ -792,6 +792,367 @@ input ChangeUserRoleInput {
   userId: ID!
 }
 
+type ChatCitation {
+  article: String
+  excerpt: String
+  source: String!
+  url: String
+}
+
+input ChatCitationInput {
+  article: String
+  excerpt: String
+  source: String!
+  url: String
+}
+
+type ChatContentSearchResponse {
+  """Number of results returned"""
+  count: Int!
+
+  """Whether there are more results"""
+  hasMore: Boolean!
+
+  """Current offset"""
+  offset: Int!
+
+  """List of search results"""
+  results: [ChatContentSearchResult!]!
+
+  """Total count of matching messages"""
+  totalCount: Int!
+}
+
+type ChatContentSearchResult {
+  """Original message content"""
+  content: String!
+
+  """Context preview with highlighted match"""
+  contextPreview: String
+
+  """Message creation timestamp"""
+  createdAt: DateTime!
+
+  """Message content with highlighted matching text"""
+  highlightedContent: String!
+
+  """List of matched terms"""
+  matchedTerms: [String!]!
+
+  """Message ID"""
+  messageId: ID!
+
+  """Relevance ranking score (higher is more relevant)"""
+  rank: Float!
+
+  """Role of the message sender"""
+  role: MessageRole!
+
+  """Sequence order in the session"""
+  sequenceOrder: Float!
+
+  """Session ID"""
+  sessionId: ID!
+
+  """Total number of messages in the session"""
+  sessionMessageCount: Int!
+
+  """AI mode of the session"""
+  sessionMode: ChatMode!
+
+  """Session title"""
+  sessionTitle: String
+}
+
+"""Export format for chat sessions"""
+enum ChatExportFormat {
+  JSON
+  MARKDOWN
+  PDF
+}
+
+type ChatExportResult {
+  """Base64-encoded content of the export"""
+  contentBase64: String!
+
+  """Timestamp when the export was generated"""
+  exportedAt: DateTime!
+
+  """Size of the export in bytes"""
+  fileSizeBytes: Float!
+
+  """Filename for the export"""
+  filename: String!
+
+  """Format of the export"""
+  format: ChatExportFormat!
+
+  """MIME type of the export"""
+  mimeType: String!
+
+  """Session ID that was exported"""
+  sessionId: ID!
+}
+
+type ChatMessage {
+  """Legal citations/references in assistant responses"""
+  citations: [ChatCitation!]
+
+  """Message content (markdown for assistant responses)"""
+  content: String!
+  createdAt: DateTime!
+  messageId: ID!
+
+  """Additional message metadata"""
+  metadata: ChatMessageMetadata
+
+  """Original content before AI processing"""
+  rawContent: String
+
+  """Role of the message sender"""
+  role: MessageRole!
+
+  """Sequence order of the message within the session"""
+  sequenceOrder: Float!
+
+  """ID of the chat session this message belongs to"""
+  sessionId: ID!
+}
+
+type ChatMessageMetadata {
+  confidence: Float
+  keyTerms: [String!]
+  language: String
+  model: String
+  queryType: String
+}
+
+input ChatMessageMetadataInput {
+  """Confidence score of AI response (0-1)"""
+  confidence: Float
+
+  """Key legal terms extracted"""
+  keyTerms: [String!]
+
+  """Language detected"""
+  language: String
+
+  """Model used for generation (e.g., gpt-4o)"""
+  model: String
+
+  """Query type classification"""
+  queryType: String
+}
+
+"""The AI response mode for chat messages"""
+enum ChatMode {
+  LAWYER
+  SIMPLE
+}
+
+input ChatModeFilterComparison {
+  eq: ChatMode
+  gt: ChatMode
+  gte: ChatMode
+  iLike: ChatMode
+  in: [ChatMode!]
+  is: Boolean
+  isNot: Boolean
+  like: ChatMode
+  lt: ChatMode
+  lte: ChatMode
+  neq: ChatMode
+  notILike: ChatMode
+  notIn: [ChatMode!]
+  notLike: ChatMode
+}
+
+type ChatSession {
+  createdAt: DateTime!
+
+  """Soft delete timestamp, null if not deleted"""
+  deletedAt: DateTime
+  id: ID!
+
+  """Whether the session is pinned by the user"""
+  isPinned: Boolean!
+
+  """Timestamp of the last message for sorting"""
+  lastMessageAt: DateTime
+
+  """Number of messages in the session"""
+  messageCount: Float!
+
+  """AI response mode for this session"""
+  mode: ChatMode!
+
+  """Session title, auto-generated from first message if not provided"""
+  title: String
+  updatedAt: DateTime!
+  user: User!
+  userId: ID!
+}
+
+input ChatSessionAggregateFilter {
+  and: [ChatSessionAggregateFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  id: IDFilterComparison
+  isPinned: BooleanFieldComparison
+  lastMessageAt: DateFieldComparison
+  messageCount: NumberFieldComparison
+  mode: ChatModeFilterComparison
+  or: [ChatSessionAggregateFilter!]
+  title: StringFieldComparison
+  updatedAt: DateFieldComparison
+  userId: IDFilterComparison
+}
+
+type ChatSessionAggregateGroupBy {
+  createdAt(by: GroupBy! = DAY): DateTime
+  deletedAt: DateTime
+  id: ID
+  isPinned: Boolean
+  lastMessageAt: DateTime
+  messageCount: Float
+  mode: ChatMode
+  title: String
+  updatedAt(by: GroupBy! = DAY): DateTime
+  userId: ID
+}
+
+type ChatSessionAggregateResponse {
+  avg: ChatSessionAvgAggregate
+  count: ChatSessionCountAggregate
+  groupBy: ChatSessionAggregateGroupBy
+  max: ChatSessionMaxAggregate
+  min: ChatSessionMinAggregate
+  sum: ChatSessionSumAggregate
+}
+
+type ChatSessionAvgAggregate {
+  messageCount: Float
+}
+
+type ChatSessionConnection {
+  """Array of edges."""
+  edges: [ChatSessionEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type ChatSessionCountAggregate {
+  createdAt: Int
+  deletedAt: Int
+  id: Int
+  isPinned: Int
+  lastMessageAt: Int
+  messageCount: Int
+  mode: Int
+  title: Int
+  updatedAt: Int
+  userId: Int
+}
+
+type ChatSessionDeleteResponse {
+  createdAt: DateTime
+
+  """Soft delete timestamp, null if not deleted"""
+  deletedAt: DateTime
+  id: ID
+
+  """Whether the session is pinned by the user"""
+  isPinned: Boolean
+
+  """Timestamp of the last message for sorting"""
+  lastMessageAt: DateTime
+
+  """Number of messages in the session"""
+  messageCount: Float
+
+  """AI response mode for this session"""
+  mode: ChatMode
+
+  """Session title, auto-generated from first message if not provided"""
+  title: String
+  updatedAt: DateTime
+  userId: ID
+}
+
+type ChatSessionEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the ChatSession"""
+  node: ChatSession!
+}
+
+input ChatSessionFilter {
+  and: [ChatSessionFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  id: IDFilterComparison
+  isPinned: BooleanFieldComparison
+  lastMessageAt: DateFieldComparison
+  messageCount: NumberFieldComparison
+  mode: ChatModeFilterComparison
+  or: [ChatSessionFilter!]
+  title: StringFieldComparison
+  updatedAt: DateFieldComparison
+  userId: IDFilterComparison
+}
+
+type ChatSessionMaxAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  id: ID
+  lastMessageAt: DateTime
+  messageCount: Float
+  mode: ChatMode
+  title: String
+  updatedAt: DateTime
+  userId: ID
+}
+
+type ChatSessionMinAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  id: ID
+  lastMessageAt: DateTime
+  messageCount: Float
+  mode: ChatMode
+  title: String
+  updatedAt: DateTime
+  userId: ID
+}
+
+input ChatSessionSort {
+  direction: SortDirection!
+  field: ChatSessionSortFields!
+  nulls: SortNulls
+}
+
+enum ChatSessionSortFields {
+  createdAt
+  deletedAt
+  id
+  isPinned
+  lastMessageAt
+  messageCount
+  mode
+  title
+  updatedAt
+  userId
+}
+
+type ChatSessionSumAggregate {
+  messageCount: Float
+}
+
 type CheckEmailExistsResult {
   exists: Boolean!
   userId: String
@@ -1049,6 +1410,11 @@ input CreateBackupInput {
   tags: [String!]
 }
 
+input CreateChatSessionInput {
+  """AI response mode for the session (LAWYER or SIMPLE)"""
+  mode: ChatMode!
+}
+
 input CreateCitationInput {
   article: String
   excerpt: String
@@ -1248,6 +1614,11 @@ input CreateNotificationInput {
 
   """User ID (if notification is for a registered user)"""
   userId: String
+}
+
+input CreateOneChatSessionInput {
+  """The record to create"""
+  chatSession: CreateChatSessionInput!
 }
 
 input CreateOneDocumentCommentInput {
@@ -1495,10 +1866,20 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input DeleteChatSessionInput {
+  """Session ID to delete (soft delete)"""
+  sessionId: ID!
+}
+
 input DeleteDocumentInputV2 {
   deletedBy: ID!
   documentId: ID!
   reason: String
+}
+
+input DeleteOneChatSessionInput {
+  """The id of the record to delete."""
+  id: ID!
 }
 
 input DeleteOneDocumentCommentInput {
@@ -2540,6 +2921,17 @@ type ErrorTrackingStatus {
   lastError: ErrorSummary
   recentErrors: Float!
   totalErrors: Float!
+}
+
+input ExportChatSessionInput {
+  """Optional custom filename (without extension)"""
+  filename: String
+
+  """Export format (PDF, MARKDOWN, or JSON)"""
+  format: ChatExportFormat!
+
+  """ID of the chat session to export"""
+  sessionId: ID!
 }
 
 input ExportDocumentToPdfInput {
@@ -3649,6 +4041,17 @@ enum LegalRulingSortFields {
   updatedAt
 }
 
+type LocalStorageMigrationStatus {
+  """Whether the user has completed migration"""
+  hasMigrated: Boolean!
+
+  """Timestamp of last migration attempt"""
+  lastMigrationAt: String
+
+  """Number of sessions migrated"""
+  sessionsMigrated: Int!
+}
+
 input LoginInput {
   """Backup code for account recovery (alternative to TOTP token)"""
   backupCode: String
@@ -3661,6 +4064,97 @@ input LoginInput {
 
   """Username or email address"""
   username: String!
+}
+
+"""The role of the message sender"""
+enum MessageRole {
+  ASSISTANT
+  SYSTEM
+  USER
+}
+
+input MigrateChatBulkInput {
+  """Sessions to migrate"""
+  sessions: [MigrateChatSessionInput!]!
+
+  """Skip sessions that already exist in the database"""
+  skipDuplicates: Boolean = false
+}
+
+type MigrateChatBulkResult {
+  """Number of failed migrations"""
+  failedCount: Int!
+
+  """Results for each session migration attempt"""
+  results: [MigrateChatSessionResult!]!
+
+  """Number of successfully migrated sessions"""
+  successfulCount: Int!
+
+  """Total number of messages migrated"""
+  totalMessagesMigrated: Int!
+
+  """Total number of sessions processed"""
+  totalProcessed: Int!
+}
+
+input MigrateChatCitationInput {
+  """Article or section reference"""
+  article: String
+
+  """Brief excerpt or description"""
+  excerpt: String
+
+  """Source of the citation"""
+  source: String!
+
+  """URL to the source document"""
+  url: String
+}
+
+input MigrateChatMessageWithCitationsInput {
+  """Citations for assistant messages"""
+  citations: [MigrateChatCitationInput!]
+
+  """Message content"""
+  content: String!
+
+  """Original content before AI processing"""
+  rawContent: String
+
+  """Role of the message sender"""
+  role: MessageRole!
+
+  """ISO timestamp of when the message was created"""
+  timestamp: String
+}
+
+input MigrateChatSessionInput {
+  """Messages to migrate"""
+  messages: [MigrateChatMessageWithCitationsInput!]!
+
+  """AI mode used for this session"""
+  mode: ChatMode! = SIMPLE
+
+  """Session ID from localStorage (UUID v4)"""
+  sessionId: String!
+
+  """Optional title for the session"""
+  title: String
+}
+
+type MigrateChatSessionResult {
+  """Error message if migration failed"""
+  error: String
+
+  """Number of messages migrated"""
+  messageCount: Int!
+
+  """The session ID in the database"""
+  sessionId: ID!
+
+  """Whether migration was successful"""
+  success: Boolean!
 }
 
 type ModerationActionResult {
@@ -3785,6 +4279,9 @@ type Mutation {
   """Create a new API key. The raw key is only shown once."""
   createApiKey(input: CreateApiKeyInput!): CreateApiKeyResponse!
 
+  """Create a new chat session. Session ID is generated server-side."""
+  createChatSession(input: CreateChatSessionInput!): ChatSession!
+
   """Create a new clarification session for a query"""
   createClarificationSession(input: CreateClarificationSessionInput!): ClarificationSession!
   createDocumentTemplate(input: CreateTemplateInput!): DocumentTemplate!
@@ -3795,6 +4292,7 @@ type Mutation {
 
   """Create a new subscription for the current user"""
   createMySubscription(input: CreateUserSubscriptionInput!): UserSubscription!
+  createOneChatSession(input: CreateOneChatSessionInput!): ChatSession!
   createOneDocumentComment(input: CreateOneDocumentCommentInput!): DocumentComment!
   createOneDocumentTemplate(input: CreateOneDocumentTemplateInput!): DocumentTemplate!
   createOneDocumentVersion(input: CreateOneDocumentVersionInput!): DocumentVersion!
@@ -3827,12 +4325,16 @@ type Mutation {
 
   """Delete an API key permanently. This action cannot be undone."""
   deleteApiKey(id: String!): Boolean!
+
+  """Soft delete a chat session"""
+  deleteChatSession(input: DeleteChatSessionInput!): ChatSession!
   deleteDocument(id: ID!): Boolean! @deprecated(reason: "Use deleteOneLegalDocument instead")
   deleteDocumentTemplate(id: ID!): Boolean!
   deleteDocumentV2(input: DeleteDocumentInputV2!): Boolean!
 
   """Delete a legal query (deprecated)"""
   deleteLegalQuery(id: ID!): Boolean! @deprecated(reason: "Use deleteOneLegalQuery instead")
+  deleteOneChatSession(input: DeleteOneChatSessionInput!): ChatSessionDeleteResponse!
   deleteOneDocumentComment(input: DeleteOneDocumentCommentInput!): DocumentCommentDeleteResponse!
   deleteOneDocumentTemplate(input: DeleteOneDocumentTemplateInput!): DocumentTemplateDeleteResponse!
   deleteOneInAppNotification(input: DeleteOneInAppNotificationInput!): InAppNotificationDeleteResponse!
@@ -3868,6 +4370,9 @@ type Mutation {
   """Generate TOTP secret and QR code for 2FA setup"""
   enableTwoFactorAuth: EnableTwoFactorResponse!
 
+  """Export a chat session to PDF, Markdown, or JSON format"""
+  exportChatSession(input: ExportChatSessionInput!): ChatExportResult!
+
   """Queue a document for PDF export"""
   exportDocumentToPdf(input: ExportDocumentToPdfInput!): PdfExportJob!
 
@@ -3887,11 +4392,23 @@ type Mutation {
   """Mark all notifications as read for a user"""
   markAllNotificationsAsRead(userId: String!): Int!
 
+  """Mark localStorage migration as complete for the current user"""
+  markLocalStorageMigrated: LocalStorageMigrationStatus!
+
   """Mark a notification as read"""
   markNotificationAsRead(notificationId: String!, userId: String!): String!
 
+  """Migrate a single chat session from localStorage to the database"""
+  migrateChatSession(input: MigrateChatSessionInput!): MigrateChatSessionResult!
+
+  """Migrate multiple chat sessions from localStorage to the database"""
+  migrateChatSessionsBulk(input: MigrateChatBulkInput!): MigrateChatBulkResult!
+
   """Pause a running Temporal schedule"""
   pauseSchedule(input: PauseScheduleInput!): Boolean!
+
+  """Pin or unpin a chat session"""
+  pinChatSession(input: PinChatSessionInput!): ChatSession!
   publishDocumentV2(input: PublishDocumentInputV2!): LegalDocumentV2!
 
   """Check if a lead qualifies for deal creation"""
@@ -3919,6 +4436,9 @@ type Mutation {
   Render a template with variable substitution without creating a document
   """
   renderTemplate(input: RenderTemplateInput!): String!
+
+  """Reset the localStorage migration flag to allow re-migration"""
+  resetLocalStorageMigration: LocalStorageMigrationStatus!
   resetMyPreferences: UserPreferences!
 
   """Reset a user password (admin only)"""
@@ -3944,12 +4464,20 @@ type Mutation {
   """Rotate webhook secret. The old secret will no longer work."""
   rotateWebhookSecret(id: String!): String!
 
+  """Save a chat message to the database (used for streaming responses)"""
+  saveChatMessage(input: SaveChatMessageInput!): SendChatMessageResponse!
+
   """Schedule a demo time (admin only)"""
   scheduleDemo(input: ScheduleDemoInput!): DemoRequest!
   seedSystemSettings: Boolean!
 
   """Send bulk notifications to multiple users"""
   sendBulkNotifications(input: BulkSendNotificationInput!): BulkSendNotificationResponse!
+
+  """
+  Send a chat message and get AI response. Stores both messages in the database.
+  """
+  sendChatMessageWithAI(input: SendChatMessageWithAIInput!): SendChatMessageWithAIResponse!
 
   """Send a notification to a user across specified channels"""
   sendNotification(input: SendNotificationInput!): SendNotificationResponse!
@@ -3985,6 +4513,9 @@ type Mutation {
   """Update an existing API key (name, scopes, rate limit, expiration)"""
   updateApiKey(id: String!, input: UpdateApiKeyInput!): ApiKey!
 
+  """Update the title of a chat session"""
+  updateChatSessionTitle(input: UpdateChatSessionTitleInput!): ChatSession!
+
   """Update demo request status (admin only)"""
   updateDemoRequestStatus(input: UpdateDemoRequestStatusInput!): DemoRequest!
   updateDocument(id: ID!, input: UpdateDocumentInput!): LegalDocument!
@@ -3997,6 +4528,7 @@ type Mutation {
 
   """Update notification preferences for a user"""
   updateNotificationPreferences(input: NotificationDeliveryPreferencesInput!): String!
+  updateOneChatSession(input: UpdateOneChatSessionInput!): ChatSession!
   updateOneDocumentComment(input: UpdateOneDocumentCommentInput!): DocumentComment!
   updateOneDocumentTemplate(input: UpdateOneDocumentTemplateInput!): DocumentTemplate!
   updateOneDocumentVersion(input: UpdateOneDocumentVersionInput!): DocumentVersion!
@@ -4484,6 +5016,14 @@ type PermissionCheckResult {
   permissions: [String!]
 }
 
+input PinChatSessionInput {
+  """True to pin, false to unpin"""
+  isPinned: Boolean!
+
+  """Session ID to pin/unpin"""
+  sessionId: ID!
+}
+
 """Subscription plan tiers"""
 enum PlanTier {
   BASIC
@@ -4554,6 +5094,63 @@ type Query {
 
   """Check if the current user can access a specific feature"""
   canAccessFeature(featureKey: String!): Boolean!
+
+  """Get all messages for a chat session in sequence order"""
+  chatMessages(sessionId: ID!): [ChatMessage!]!
+  chatSessionAggregate(
+    """Filter to find records to aggregate on"""
+    filter: ChatSessionAggregateFilter
+  ): [ChatSessionAggregateResponse!]!
+  chatSessionById(
+    """The id of the record to find."""
+    id: ID!
+  ): ChatSession!
+
+  """Get a chat session with all its messages"""
+  chatSessionDetail(
+    """Session ID to fetch"""
+    sessionId: ID!
+  ): ChatSession
+
+  """Get chat sessions for a user with filtering and sorting"""
+  chatSessions(
+    """Include soft deleted sessions"""
+    includeDeleted: Boolean = false
+
+    """Filter by pinned status"""
+    isPinned: Boolean
+
+    """Number of sessions to return"""
+    limit: Int = 20
+
+    """Filter by AI mode"""
+    mode: ChatMode
+
+    """Number of sessions to skip"""
+    offset: Int = 0
+
+    """Search in session titles"""
+    search: String
+
+    """Sort field (createdAt, lastMessageAt, title, messageCount)"""
+    sortBy: String = "lastMessageAt"
+
+    """Sort order (ASC, DESC)"""
+    sortOrder: String = "DESC"
+
+    """User ID to filter sessions (defaults to authenticated user)"""
+    userId: ID
+  ): [ChatSession!]!
+  chatSessionsList(
+    """Specify to filter the records returned."""
+    filter: ChatSessionFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [ChatSessionSort!]! = []
+  ): ChatSessionConnection!
 
   """Check if email is already registered (admin only)"""
   checkEmailExists(email: String!): CheckEmailExistsResult
@@ -4793,6 +5390,9 @@ type Query {
   """
   legalRulingsFromHigherCourts(limit: Int = 20): [LegalRuling!]!
 
+  """Check the status of localStorage migration for the current user"""
+  localStorageMigrationStatus: LocalStorageMigrationStatus!
+
   """Get current authenticated user information"""
   me: AuthUser
 
@@ -4867,6 +5467,41 @@ type Query {
 
   """Get all roles in the system"""
   roles: [Role!]!
+
+  """
+  Full-text search across chat messages with relevance ranking and highlighting
+  """
+  searchChatContent(
+    """Context window: number of characters before/after match"""
+    contextLength: Int = 150
+
+    """Date range start (ISO 8601 format)"""
+    dateFrom: String
+
+    """Date range end (ISO 8601 format)"""
+    dateTo: String
+
+    """Number of results to return"""
+    limit: Int = 20
+
+    """Filter by AI mode"""
+    mode: ChatMode
+
+    """Number of results to skip"""
+    offset: Int = 0
+
+    """Search query for full-text search in message content"""
+    query: String!
+
+    """Filter by message role (USER, ASSISTANT, SYSTEM)"""
+    role: MessageRole
+
+    """Filter by session title"""
+    sessionTitle: String
+
+    """User ID to filter messages (defaults to authenticated user)"""
+    userId: ID
+  ): ChatContentSearchResponse!
 
   """Full-text search across documents with relevance ranking"""
   searchLegalDocuments(input: SearchLegalDocumentsInput!): LegalDocumentSearchResponse!
@@ -5098,6 +5733,23 @@ type RulingMetadata {
   legalArea: String
   relatedCases: [String!]
   sourceReference: String
+}
+
+input SaveChatMessageInput {
+  """Citations (for assistant messages)"""
+  citations: [ChatCitationInput!]
+
+  """Message content"""
+  content: String!
+
+  """Additional metadata (for assistant messages)"""
+  metadata: ChatMessageMetadataInput
+
+  """Message role (USER or ASSISTANT)"""
+  role: String!
+
+  """The session ID"""
+  sessionId: ID!
 }
 
 type ScheduleActionDetails {
@@ -5359,6 +6011,63 @@ enum SearchSource {
   SAOS
 }
 
+type SendChatMessageResponse {
+  """Message content"""
+  content: String!
+
+  """Timestamp when the message was created"""
+  createdAt: String!
+
+  """The created message ID"""
+  messageId: ID!
+
+  """Message role (USER or ASSISTANT)"""
+  role: String!
+
+  """Sequence order in the conversation"""
+  sequenceOrder: Float!
+
+  """The session ID"""
+  sessionId: ID!
+}
+
+input SendChatMessageWithAIInput {
+  """AI response mode (LAWYER or SIMPLE)"""
+  mode: String!
+
+  """The user question/message"""
+  question: String!
+
+  """Session ID (creates new session if not provided)"""
+  sessionId: ID
+}
+
+type SendChatMessageWithAIResponse {
+  """AI response content (for streaming compatibility)"""
+  answerMarkdown: String
+
+  """The AI assistant response"""
+  assistantMessage: SendChatMessageResponse
+
+  """Citations from the AI response"""
+  citations: [ChatCitation!]
+
+  """Confidence score of the AI response"""
+  confidence: Float
+
+  """Key legal terms extracted"""
+  keyTerms: [String!]
+
+  """Query type classification"""
+  queryType: String
+
+  """The session ID"""
+  sessionId: ID!
+
+  """The user message that was sent"""
+  userMessage: SendChatMessageResponse!
+}
+
 input SendNotificationInput {
   """Optional action label for the action link button"""
   actionLabel: String
@@ -5537,6 +6246,12 @@ input SubmitLegalQueryInput {
 }
 
 type Subscription {
+  """Real-time notifications when a new message is added"""
+  chatMessageAdded(sessionId: ID!): ChatMessage!
+
+  """Real-time updates when a chat session is modified"""
+  chatSessionUpdated(sessionId: ID!): ChatSession!
+
   """Subscribe to cursor position updates for a document"""
   cursorUpdated(
     """Document ID to receive cursor updates for"""
@@ -6009,6 +6724,25 @@ input UpdateApiKeyInput {
   scopes: [ApiKeyScope!]
 }
 
+input UpdateChatSessionInput {
+  """Update pinned status"""
+  isPinned: Boolean
+
+  """Update AI response mode"""
+  mode: ChatMode
+
+  """Update session title"""
+  title: String
+}
+
+input UpdateChatSessionTitleInput {
+  """Session ID to update"""
+  sessionId: ID!
+
+  """New title for the session"""
+  title: String!
+}
+
 input UpdateDemoRequestStatusInput {
   demoRequestId: ID!
   status: String!
@@ -6138,6 +6872,14 @@ input UpdateNotificationInput {
 
   """User ID"""
   userId: String
+}
+
+input UpdateOneChatSessionInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateChatSessionInput!
 }
 
 input UpdateOneDocumentCommentInput {

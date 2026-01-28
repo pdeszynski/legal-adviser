@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Refactor frontend chat components to rely entirely on backend for session management. Frontend changes: 1) On chat page load, if no active session exists, call createChatSession mutation to get new session ID from backend, 2) Store only session ID in component state (never localStorage), 3) Pass session ID as variable to askLegalQuestion mutation or streaming endpoint, 4) Remove all crypto.randomUUID() calls from frontend code, 5) Remove localStorage.getItem('chat_session_id') logic, 6) Ensure JWT from authProvider is attached to all chat requests, 7) Handle session creation failures gracefully with user-friendly error, 8) Add loading state while session is being created. Verify session ID is never generated or stored client-side.",
+  "id": "update-frontend-chat-to-use-backend-sessions",
+  "title": "Update Frontend Chat to Use Backend-Generated Sessions",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Refactor frontend chat components to rely entirely on backend for session management. Frontend changes: 1) On chat page load, if no active session exists, call createChatSession mutation to get new session ID from backend, 2) Store only session ID in component state (never localStorage), 3) Pass session ID as variable to askLegalQuestion mutation or streaming endpoint, 4) Remove all crypto.randomUUID() calls from frontend code, 5) Remove localStorage.getItem('chat_session_id') logic, 6) Ensure JWT from authProvider is attached to all chat requests, 7) Handle session creation failures gracefully with user-friendly error, 8) Add loading state while session is being created. Verify session ID is never generated or stored client-side.",
+      "timestamp": "2026-01-28T09:15:56.564Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T09:34:17.303Z"
+}

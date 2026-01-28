@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Create ChatMessage entity in infrastructure layer to store individual messages within sessions. Include fields: messageId (UUID v4 primary key), sessionId (FK to ChatSession), role ('user'|'assistant'|'system'), content (text), rawContent (original text before AI processing), citations (JSONB array of citation objects), metadata (JSONB for additional data like confidence scores, model used), timestamp (created at), sequenceOrder (integer for ordering messages). Add repository interface in domain layer (ChatMessageRepository) with methods: findBySessionId(sessionId, pagination), create(messageData), deleteBySessionId(sessionId). Add index on sessionId and sequenceOrder for efficient querying. Ensure cascade delete when ChatSession is deleted.",
+  "id": "chat-message-entity",
+  "title": "Chat Message Entity for Individual Messages",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Create ChatMessage entity in infrastructure layer to store individual messages within sessions. Include fields: messageId (UUID v4 primary key), sessionId (FK to ChatSession), role ('user'|'assistant'|'system'), content (text), rawContent (original text before AI processing), citations (JSONB array of citation objects), metadata (JSONB for additional data like confidence scores, model used), timestamp (created at), sequenceOrder (integer for ordering messages). Add repository interface in domain layer (ChatMessageRepository) with methods: findBySessionId(sessionId, pagination), create(messageData), deleteBySessionId(sessionId). Add index on sessionId and sequenceOrder for efficient querying. Ensure cascade delete when ChatSession is deleted.",
+      "timestamp": "2026-01-27T21:01:05.087Z",
+      "source": "initial"
+    }
+  ]
+}

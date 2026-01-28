@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Update backend and AI Engine integration to send complete conversation history when processing chat requests, not just the last message. Backend changes: 1) Modify QueriesService.askQuestion() to accept sessionId parameter, 2) Fetch all previous messages in session from ChatMessage entity, 3) Construct conversation context array: [{role: 'user', content: '...'}, {role: 'assistant', content: '...'}, ...], 4) Pass conversation history to AI Engine /api/v1/qa/ask-stream endpoint as messages parameter, 5) AI Engine should use conversation history in LangGraph workflow for context-aware responses. AI Engine changes: 1) Update streaming endpoint to accept messages array (full conversation) in addition to single question, 2) Pass messages to PydanticAI agent's run() method as conversation history, 3) Ensure agent maintains context across conversation turns. Verify that session ID is properly passed through JWT token claims for authorization.",
+  "id": "full-conversation-context-to-ai-engine",
+  "title": "Send Full Conversation History to AI Engine on Chat Restore",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Update backend and AI Engine integration to send complete conversation history when processing chat requests, not just the last message. Backend changes: 1) Modify QueriesService.askQuestion() to accept sessionId parameter, 2) Fetch all previous messages in session from ChatMessage entity, 3) Construct conversation context array: [{role: 'user', content: '...'}, {role: 'assistant', content: '...'}, ...], 4) Pass conversation history to AI Engine /api/v1/qa/ask-stream endpoint as messages parameter, 5) AI Engine should use conversation history in LangGraph workflow for context-aware responses. AI Engine changes: 1) Update streaming endpoint to accept messages array (full conversation) in addition to single question, 2) Pass messages to PydanticAI agent's run() method as conversation history, 3) Ensure agent maintains context across conversation turns. Verify that session ID is properly passed through JWT token claims for authorization.",
+      "timestamp": "2026-01-27T21:01:05.090Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-27T21:21:51.660Z"
+}

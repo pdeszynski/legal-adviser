@@ -26,6 +26,7 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
       {messages.map((message) => (
         <div
           key={message.id}
+          data-testid={message.role === 'user' ? 'user-message' : 'assistant-message'}
           className={cn(
             'flex gap-4 w-full',
             message.role === 'user' ? 'justify-end' : 'justify-start',

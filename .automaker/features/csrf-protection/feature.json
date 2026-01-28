@@ -2,7 +2,7 @@
   "id": "csrf-protection",
   "category": "Security",
   "title": "CSRF Protection",
-  "description": "Implement CSRF token validation for state-changing GraphQL mutations. Use double-submit cookie pattern with SameSite flag.",
+  "description": "Implement CSRF token validation for state-changing GraphQL mutations. Use double-submit cookie pattern with SameSite flag. IMPORTANT: Frontend must include X-CSRF-Token header in all GraphQL mutations - use getCsrfHeaders() from lib/csrf.ts",
   "status": "completed",
   "priority": 1,
   "complexity": "moderate",
@@ -20,7 +20,7 @@
     ],
     "emits": [],
     "listensTo": [],
-    "notes": "Infrastructure layer security middleware. Protects GraphQL mutations. Applied globally per modular monolith architecture."
+    "notes": "Infrastructure layer security middleware. Protects GraphQL mutations. Applied globally per modular monolith architecture. FRONTEND INTEGRATION REQUIRED: All GraphQL mutation calls MUST include ...getCsrfHeaders() from lib/csrf.ts in their headers. This includes direct fetch() calls and GraphQL client calls. See CLAUDE.md 'CSRF Protection' section for examples."
   },
   "createdAt": "2026-01-12T10:31:20.840Z",
   "updatedAt": "2026-01-20T07:09:03.868Z",

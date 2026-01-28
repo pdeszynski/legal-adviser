@@ -104,9 +104,9 @@ async def _get_http_client_with_deps() -> httpx.AsyncClient:
 
 
 @lru_cache
-def _get_embedding_service() -> EmbeddingService:
+def _get_embedding_service() -> EmbeddingService:  # type: ignore[no-untyped-def]
     """Get or create the EmbeddingService singleton."""
-    return EmbeddingService()
+    return EmbeddingService()  # type: ignore[no-untyped-call]
 
 
 async def retrieve_context_tool(

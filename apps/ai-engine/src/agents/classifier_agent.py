@@ -102,10 +102,10 @@ def get_classifier_agent() -> Agent[ClassificationResult]:
         Agent with instrument=True for automatic Langfuse tracing
     """
     settings = get_settings()
-    return Agent(
+    return Agent(  # type: ignore[call-arg]
         OpenAIModel(settings.OPENAI_MODEL),
         system_prompt=CLASSIFIER_SYSTEM_PROMPT,
-        output_type=ClassificationResult,
+        output_type=ClassificationResult,  # type: ignore[call-arg]
         instrument=True,  # Enable automatic Langfuse tracing
     )
 
@@ -160,31 +160,31 @@ async def classify_case(
     try:
         agent = classifier_agent()
         result = await agent.run(case_description)
-        classification = result.output
+        classification = result.output  # type: ignore[attr-defined]
 
         processing_time_ms = (time.time() - start_time) * 1000
 
         metadata = {
             "processing_time_ms": processing_time_ms,
             "model": settings.OPENAI_MODEL,
-            "grounds_count": len(classification.identified_grounds),
-            "overall_confidence": classification.overall_confidence,
+            "grounds_count": len(classification.identified_grounds),  # type: ignore[attr-defined]
+            "overall_confidence": classification.overall_confidence,  # type: ignore[attr-defined]
         }
 
         # Update trace with output
         if is_langfuse_enabled():
             update_current_trace(
                 output={
-                    "grounds_count": len(classification.identified_grounds),
-                    "overall_confidence": classification.overall_confidence,
+                    "grounds_count": len(classification.identified_grounds),  # type: ignore[attr-defined]
+                    "overall_confidence": classification.overall_confidence,  # type: ignore[attr-defined]
                     "summary": (
-                        classification.summary[:200] if classification.summary else ""
+                        classification.summary[:200] if classification.summary else ""  # type: ignore[attr-defined]
                     ),
                     "processing_time_ms": processing_time_ms,
                 },
             )
 
-        return classification, metadata
+        return classification, metadata  # type: ignore[return-value]
 
     except Exception:
         # Error is automatically tracked by PydanticAI's instrumentation

@@ -5,10 +5,9 @@
   "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
   "branchName": null,
   "runningFeatureIds": [
-    "update-nestjs-ai-integration",
-    "verify-streaming-chunk-size",
-    "fix-streaming-buffering-issue",
-    "streaming-response-e2e-tests"
+    "chat-session-jwt-context-validation",
+    "chat-history-e2e-tests-after-fixes",
+    "migrate-localstorage-chats-to-backend"
   ],
-  "savedAt": "2026-01-27T13:00:08.393Z"
+  "savedAt": "2026-01-28T09:57:09.628Z"
 }

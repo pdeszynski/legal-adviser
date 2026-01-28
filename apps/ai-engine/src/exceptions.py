@@ -98,9 +98,9 @@ class RateLimitError(LLMError):
         provider: str = "openai",
     ) -> None:
         message = f"Rate limit exceeded for {provider}. Please try again later."
-        details = {"provider": provider}
-        if limit:
-            details["limit"] = limit
+        details: dict[str, Any] = {"provider": provider}
+        if limit is not None:
+            details["limit"] = str(limit)
         if reset_time:
             details["reset_time"] = reset_time
             message = f"Rate limit exceeded for {provider}. Resets at {reset_time}."
@@ -126,11 +126,11 @@ class QuotaExceededError(LLMError):
         provider: str = "openai",
     ) -> None:
         message = f"API quota exceeded for {provider}."
-        details = {"provider": provider, "quota_type": quota_type}
+        details: dict[str, Any] = {"provider": provider, "quota_type": quota_type}
         if current_usage is not None:
-            details["current_usage"] = current_usage
+            details["current_usage"] = str(current_usage)
         if limit is not None:
-            details["limit"] = limit
+            details["limit"] = str(limit)
 
         super().__init__(
             message,

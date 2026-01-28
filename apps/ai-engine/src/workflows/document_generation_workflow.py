@@ -148,19 +148,28 @@ async def review_node(state: DocumentGenerationState) -> DocumentGenerationState
             issues.append("Document appears too short for the requested type")
 
         # Check for document structure based on type
-        doc_type = state.get("document_type", "").lower()
-        if "pozew" in doc_type or "allow" in doc_type:
-            required_sections = ["Strona", "Wnioskodawca", "Wnioskowany"]
-            missing = [s for s in required_sections if s.lower() not in draft.lower()]
-            if missing:
-                issues.append(f"Missing required sections for lawsuit: {', '.join(missing)}")
+        doc_type = state.get("document_type", "")
+        if doc_type:
+            doc_type_lower = doc_type.lower()
+            if "pozew" in doc_type_lower or "allow" in doc_type_lower:
+                required_sections = ["Strona", "Wnioskodawca", "Wnioskowany"]
+                draft_lower = draft.lower()
+                missing = [s for s in required_sections if s.lower() not in draft_lower]
+                if missing:
+                    issues.append(f"Missing required sections for lawsuit: {', '.join(missing)}")
 
         # Check for legal basis if classification was done
-        if state.get("legal_grounds"):
-            has_legal_basis = any(
-                "podstawa prawna" in draft.lower() or
-                any(basis.lower() in draft.lower() for ground in state["legal_grounds"]
-                    for basis in ground.get("legal_basis", []))
+        legal_grounds = state.get("legal_grounds")
+        if legal_grounds:
+            draft_lower = draft.lower()
+            has_legal_basis = (
+                "podstawa prawna" in draft_lower or
+                any(
+                    isinstance(ground, dict) and
+                    any(basis.lower() in draft_lower for basis in ground.get("legal_basis", []) if isinstance(basis, str))
+                    for ground in legal_grounds
+                    if isinstance(ground, dict)
+                )
             )
             if not has_legal_basis:
                 suggestions.append("Consider adding explicit legal basis references")

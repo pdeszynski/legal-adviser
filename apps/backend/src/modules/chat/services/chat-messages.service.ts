@@ -1,0 +1,319 @@
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  Logger,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ChatSession, ChatCitation } from '../entities/chat-session.entity';
+import { ChatMessage, MessageRole } from '../entities/chat-message.entity';
+import { ChatSessionsService } from './chat-sessions.service';
+import {
+  CreateChatMessageInput,
+  CreateAssistantMessageInput,
+} from '../dto/chat-message.dto';
+
+/**
+ * Service for managing chat messages within sessions
+ *
+ * Handles message creation, retrieval, and session updates:
+ * - Creating user and assistant messages
+ * - Managing sequence order for proper conversation flow
+ * - Updating session metadata (lastMessageAt, messageCount, updatedAt)
+ * - Triggering title generation for first message
+ * - Fetching conversation history for AI context
+ */
+@Injectable()
+export class ChatMessagesService {
+  private readonly logger = new Logger(ChatMessagesService.name);
+
+  constructor(
+    @InjectRepository(ChatMessage)
+    private readonly chatMessageRepository: Repository<ChatMessage>,
+    @InjectRepository(ChatSession)
+    private readonly chatSessionRepository: Repository<ChatSession>,
+    private readonly chatSessionsService: ChatSessionsService,
+  ) {}
+
+  /**
+   * Create a user message in a session
+   *
+   * Creates a message with role USER, assigns sequence order,
+   * updates session metadata, and triggers title generation if needed.
+   *
+   * @param sessionId - The chat session ID
+   * @param userId - The authenticated user ID
+   * @param input - Message creation input
+   * @returns The created message
+   */
+  async createUserMessage(
+    sessionId: string,
+    userId: string,
+    input: CreateChatMessageInput,
+  ): Promise<ChatMessage> {
+    // Verify session ownership
+    await this.chatSessionsService.verifyOwnership(sessionId, userId);
+
+    // Get next sequence order
+    const nextOrder = await this.getNextSequenceOrder(sessionId);
+
+    // Create user message
+    const message = this.chatMessageRepository.create({
+      sessionId,
+      role: MessageRole.USER,
+      content: input.content,
+      rawContent: input.content, // User messages store raw content as-is
+      sequenceOrder: nextOrder,
+      citations: null,
+      metadata: null,
+    });
+
+    const savedMessage = await this.chatMessageRepository.save(message);
+
+    // Update session metadata
+    await this.updateSessionOnNewMessage(sessionId);
+
+    // Trigger title generation if this is the first message
+    if (nextOrder === 0) {
+      // Run asynchronously to avoid blocking the response
+      this.chatSessionsService
+        .generateTitleFromFirstMessage(sessionId, input.content)
+        .catch((err) => {
+          this.logger.warn(
+            `Failed to generate title for session ${sessionId}: ${err.message}`,
+          );
+        });
+    }
+
+    this.logger.debug(
+      `Created user message ${savedMessage.messageId} in session ${sessionId} at order ${nextOrder}`,
+    );
+
+    return savedMessage;
+  }
+
+  /**
+   * Create an assistant message in a session
+   *
+   * Creates a message with role ASSISTANT, assigns sequence order,
+   * stores citations and metadata, and updates session metadata.
+   *
+   * @param sessionId - The chat session ID
+   * @param userId - The authenticated user ID
+   * @param input - Assistant message creation input
+   * @returns The created message
+   */
+  async createAssistantMessage(
+    sessionId: string,
+    userId: string,
+    input: CreateAssistantMessageInput,
+  ): Promise<ChatMessage> {
+    // Verify session ownership
+    await this.chatSessionsService.verifyOwnership(sessionId, userId);
+
+    // Get next sequence order
+    const nextOrder = await this.getNextSequenceOrder(sessionId);
+
+    // Create assistant message
+    const message = this.chatMessageRepository.create({
+      sessionId,
+      role: MessageRole.ASSISTANT,
+      content: input.content,
+      rawContent: null, // AI responses don't need raw content
+      sequenceOrder: nextOrder,
+      citations: input.citations ?? null,
+      metadata: input.metadata ?? null,
+    });
+
+    const savedMessage = await this.chatMessageRepository.save(message);
+
+    // Update session metadata
+    await this.updateSessionOnNewMessage(sessionId);
+
+    this.logger.debug(
+      `Created assistant message ${savedMessage.messageId} in session ${sessionId} at order ${nextOrder}`,
+    );
+
+    return savedMessage;
+  }
+
+  /**
+   * Get messages for a session in sequence order
+   *
+   * @param sessionId - The chat session ID
+   * @param userId - The authenticated user ID
+   * @returns Array of messages sorted by sequenceOrder
+   */
+  async getMessagesBySession(
+    sessionId: string,
+    userId: string,
+  ): Promise<ChatMessage[]> {
+    // Verify session ownership
+    await this.chatSessionsService.verifyOwnership(sessionId, userId);
+
+    const messages = await this.chatMessageRepository
+      .createQueryBuilder('message')
+      .where('message.sessionId = :sessionId', { sessionId })
+      .orderBy('message.sequenceOrder', 'ASC')
+      .getMany();
+
+    return messages;
+  }
+
+  /**
+   * Get conversation history in AI Engine format
+   *
+   * Returns messages formatted for the AI Engine conversation_history parameter.
+   * Maps MessageRole enum (USER/ASSISTANT) to 'user'/'assistant' strings.
+   *
+   * @param sessionId - The chat session ID
+   * @param userId - The authenticated user ID
+   * @param limit - Maximum number of recent exchanges to return (default: 10)
+   * @returns Array of {role, content} objects for AI context
+   */
+  async getConversationHistory(
+    sessionId: string,
+    userId: string,
+    limit = 10,
+  ): Promise<Array<{ role: 'user' | 'assistant'; content: string }>> {
+    // Verify session ownership
+    await this.chatSessionsService.verifyOwnership(sessionId, userId);
+
+    const messages = await this.chatMessageRepository
+      .createQueryBuilder('message')
+      .where('message.sessionId = :sessionId', { sessionId })
+      .orderBy('message.sequenceOrder', 'DESC')
+      .limit(limit * 2) // Get pairs of messages
+      .getMany();
+
+    // Reverse to get chronological order and map to AI Engine format
+    return messages
+      .reverse()
+      .filter((msg) => msg.role !== MessageRole.SYSTEM)
+      .map((msg) => ({
+        role: msg.role === MessageRole.USER ? 'user' : 'assistant',
+        content: msg.content,
+      }));
+  }
+
+  /**
+   * Get a single message by ID
+   *
+   * @param messageId - The message ID
+   * @param userId - The authenticated user ID
+   * @returns The message or null if not found
+   */
+  async getMessageById(
+    messageId: string,
+    userId: string,
+  ): Promise<ChatMessage | null> {
+    const message = await this.chatMessageRepository.findOne({
+      where: { messageId },
+    });
+
+    if (!message) {
+      return null;
+    }
+
+    // Verify session ownership
+    await this.chatSessionsService.verifyOwnership(message.sessionId, userId);
+
+    return message;
+  }
+
+  /**
+   * Get the next sequence order for a session
+   *
+   * @param sessionId - The chat session ID
+   * @returns The next sequence order number
+   */
+  private async getNextSequenceOrder(sessionId: string): Promise<number> {
+    const result = await this.chatMessageRepository
+      .createQueryBuilder('message')
+      .select('MAX(message.sequenceOrder)', 'maxOrder')
+      .where('message.sessionId = :sessionId', { sessionId })
+      .getRawOne();
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    return (result?.maxOrder ?? -1) + 1;
+  }
+
+  /**
+   * Update session metadata when a new message is added
+   *
+   * Updates:
+   * - lastMessageAt: Set to current time
+   * - messageCount: Increment by 1
+   * - updatedAt: Automatically updated by TypeORM
+   *
+   * @param sessionId - The chat session ID
+   */
+  private async updateSessionOnNewMessage(sessionId: string): Promise<void> {
+    const session = await this.chatSessionRepository.findOne({
+      where: { id: sessionId },
+    });
+
+    if (!session) {
+      this.logger.warn(`Session ${sessionId} not found for message update`);
+      return;
+    }
+
+    session.updateLastMessage();
+    await this.chatSessionRepository.save(session);
+
+    this.logger.debug(
+      `Updated session ${sessionId}: lastMessageAt=${session.lastMessageAt}, messageCount=${session.messageCount}`,
+    );
+  }
+
+  /**
+   * Delete a message
+   *
+   * Note: This does not resequence remaining messages.
+   * Messages keep their original sequenceOrder for consistency.
+   *
+   * @param messageId - The message ID
+   * @param userId - The authenticated user ID
+   */
+  async deleteMessage(messageId: string, userId: string): Promise<void> {
+    const message = await this.chatMessageRepository.findOne({
+      where: { messageId },
+    });
+
+    if (!message) {
+      throw new NotFoundException(`Message ${messageId} not found`);
+    }
+
+    // Verify session ownership
+    await this.chatSessionsService.verifyOwnership(message.sessionId, userId);
+
+    await this.chatMessageRepository.remove(message);
+
+    this.logger.debug(`Deleted message ${messageId}`);
+  }
+
+  /**
+   * Delete all messages in a session
+   *
+   * Used when a session is permanently deleted.
+   *
+   * @param sessionId - The chat session ID
+   */
+  async deleteMessagesBySession(sessionId: string): Promise<void> {
+    await this.chatMessageRepository.delete({ sessionId });
+    this.logger.debug(`Deleted all messages in session ${sessionId}`);
+  }
+
+  /**
+   * Count messages in a session
+   *
+   * @param sessionId - The chat session ID
+   * @returns The message count
+   */
+  async countMessages(sessionId: string): Promise<number> {
+    return this.chatMessageRepository.count({
+      where: { sessionId },
+    });
+  }
+}

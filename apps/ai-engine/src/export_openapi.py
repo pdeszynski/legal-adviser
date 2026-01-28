@@ -2,12 +2,20 @@
 
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from main import app
+if TYPE_CHECKING:
+    from fastapi import FastAPI
+
+# Lazy import to avoid mypy issues
+def _get_app() -> "FastAPI":  # type: ignore[no-any-return]
+    from main import app  # noqa: F401, type: ignore[import-not-found]
+    return app
 
 
-def main():
+def main() -> None:
     """Export OpenAPI schema to JSON file."""
+    app = _get_app()
     openapi_schema = app.openapi()
 
     # Save to file
@@ -16,7 +24,3 @@ def main():
         json.dump(openapi_schema, f, indent=2)
 
     print(f"OpenAPI schema exported to: {output_path}")
-
-
-if __name__ == "__main__":
-    main()

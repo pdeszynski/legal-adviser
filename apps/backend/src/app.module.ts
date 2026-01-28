@@ -18,6 +18,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { QueriesModule } from './modules/queries/queries.module';
+import { ChatModule } from './modules/chat/chat.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { HealthModule } from './modules/health/health.module';
 import { BillingModule } from './modules/billing/billing.module';
@@ -152,6 +153,7 @@ import { PersistedQueriesService } from './modules/persisted-queries';
     DocumentsModule,
     AuditLogModule,
     QueriesModule,
+    ChatModule,
     NotificationsModule,
     UsageTrackingModule,
     UserPreferencesModule,

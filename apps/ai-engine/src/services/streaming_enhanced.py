@@ -161,6 +161,7 @@ def done_event(
     processing_time_ms: float = 0.0,
     query_type: str | None = None,
     key_terms: list[str] | None = None,
+    suggested_title: str | None = None,
 ) -> StreamEvent:
     """Create a completion event with final metadata.
 
@@ -170,6 +171,7 @@ def done_event(
         processing_time_ms: Processing time in milliseconds
         query_type: Type of query
         key_terms: Key legal terms extracted
+        suggested_title: Optional AI-generated title for the session
 
     Returns:
         StreamEvent with type='done'
@@ -183,6 +185,8 @@ def done_event(
         metadata["query_type"] = query_type
     if key_terms:
         metadata["key_terms"] = key_terms
+    if suggested_title:
+        metadata["suggested_title"] = suggested_title
 
     return StreamEvent(type="done", metadata=metadata)
 
@@ -198,6 +202,7 @@ async def stream_qa_enhanced(
     session_id: str,
     user: UserContext | None = None,
     request: Any | None = None,  # FastAPI Request for disconnect detection
+    messages: list[dict[str, Any]] | None = None,  # Conversation history
 ) -> AsyncGenerator[str, None]:
     """Stream a Q&A response with structured events using real-time OpenAI streaming.
 
@@ -215,9 +220,10 @@ async def stream_qa_enhanced(
     Args:
         question: The legal question
         mode: Response mode (LAWYER or SIMPLE)
-        session_id: Session ID for tracking
-        user: Optional authenticated user context
+        session_id: Session ID for tracking (validated UUID v4)
+        user: Optional authenticated user context (may include session_id)
         request: FastAPI Request for detecting client disconnection
+        messages: Optional conversation history as list of {role, content} dicts
 
     Yields:
         SSE-formatted JSON events
@@ -230,13 +236,20 @@ async def stream_qa_enhanced(
 
     start_time = time.time()
     user_id = user.id if user else None
+    # Use session_id from UserContext if available (validated), otherwise from parameter
+    effective_session_id = user.session_id if user and user.session_id else session_id
     settings = get_settings()
 
+    # Check if this is the first message (no conversation history)
+    # If so, we'll generate a title for the session
+    is_first_message = not messages or len(messages) == 0
+
     logger.info(
-        "Starting REAL-TIME Q&A stream: session_id=%s, user_id=%s, mode=%s",
-        session_id,
+        "Starting REAL-TIME Q&A stream: session_id=%s, user_id=%s, mode=%s, first_message=%s",
+        effective_session_id,
         user_id,
         mode,
+        is_first_message,
     )
 
     # Update Langfuse trace with input metadata
@@ -244,7 +257,7 @@ async def stream_qa_enhanced(
         update_current_trace(
             input=question,
             user_id=user_id,
-            session_id=session_id,
+            session_id=effective_session_id,
             metadata={"mode": mode, "streaming": "real-time"},
         )
 
@@ -317,18 +330,42 @@ Please provide a comprehensive answer based on the above context."""
         # Step 4: Stream the response using OpenAI API directly
         openai_client = get_openai_client()
 
-        # Prepare messages
-        messages = [
+        # Prepare messages with conversation history
+        # Start with system prompt
+        api_messages = [
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": augmented_prompt},
         ]
 
-        logger.debug("Starting OpenAI streaming for session_id=%s", session_id)
+        # Add conversation history if provided (exclude system messages)
+        if messages:
+            # Filter out system messages from history and limit to recent messages
+            # to avoid token limits while maintaining context
+            history_messages = [
+                {"role": msg["role"], "content": msg["content"]}
+                for msg in messages
+                if msg.get("role") in ("user", "assistant")
+            ]
+
+            # Limit history to last 10 messages to manage token usage
+            if len(history_messages) > 10:
+                history_messages = history_messages[-10:]
+
+            api_messages.extend(history_messages)
+            logger.debug(
+                "Added %d messages from conversation history to session_id=%s",
+                len(history_messages),
+                effective_session_id,
+            )
+
+        # Add current question with context
+        api_messages.append({"role": "user", "content": augmented_prompt})
+
+        logger.debug("Starting OpenAI streaming for session_id=%s", effective_session_id)
 
         # Stream the response
         stream = await openai_client.chat.completions.create(
             model=settings.OPENAI_MODEL,
-            messages=messages,
+            messages=api_messages,
             stream=True,
             stream_options={"include_usage": True},  # Get usage stats
         )
@@ -386,6 +423,17 @@ Please provide a comprehensive answer based on the above context."""
         # Estimate confidence based on context quality and answer length
         confidence = min(0.95, 0.5 + (len(contexts) * 0.1) + min(0.2, len(full_answer) / 1000))
 
+        # Generate suggested title if this is the first message
+        suggested_title = None
+        if is_first_message:
+            try:
+                from ..agents.title_agent import generate_title
+                suggested_title = await generate_title(question, effective_session_id)
+                logger.debug(f"Generated title for session {effective_session_id}: {suggested_title}")
+            except Exception as e:
+                logger.warning(f"Failed to generate title for session {effective_session_id}: {e}")
+                # Fallback title will be generated on the frontend/backend
+
         # Send final done event with complete metadata
         yield done_event(
             citations=[{
@@ -397,6 +445,7 @@ Please provide a comprehensive answer based on the above context."""
             processing_time_ms=processing_time_ms,
             query_type=analysis.query_type,
             key_terms=analysis.key_terms,
+            suggested_title=suggested_title,
         ).to_sse()
 
         # Update Langfuse trace with output metadata
@@ -415,7 +464,7 @@ Please provide a comprehensive answer based on the above context."""
 
         logger.info(
             "REAL-TIME Q&A stream complete: session_id=%s, chars=%d, time_to_first_token=%.1fms, total_time=%dms",
-            session_id,
+            effective_session_id,
             len(full_answer),
             time_to_first_token,
             int(processing_time_ms),

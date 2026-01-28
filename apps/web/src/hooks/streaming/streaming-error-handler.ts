@@ -18,6 +18,8 @@ export type StreamErrorType =
   | 'PARSE_ERROR'
   | 'AUTH_ERROR'
   | 'RATE_LIMIT'
+  | 'INVALID_SESSION_ID'
+  | 'SESSION_ERROR'
   | 'UNKNOWN';
 
 export type StreamErrorSeverity = 'low' | 'medium' | 'high';
@@ -102,6 +104,8 @@ export function getUserErrorMessage(errorType: StreamErrorType): string {
     PARSE_ERROR: 'Received invalid response from server.',
     AUTH_ERROR: 'Authentication failed. Please refresh the page.',
     RATE_LIMIT: 'Too many requests. Please wait a moment before trying again.',
+    INVALID_SESSION_ID: 'Chat session not found. Please refresh the page.',
+    SESSION_ERROR: 'Could not start a new chat session. Please try again.',
     UNKNOWN: 'Something went wrong. Please try again.',
   };
 

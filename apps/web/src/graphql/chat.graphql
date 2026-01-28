@@ -86,3 +86,79 @@ query GetClarificationSessionByQuery($queryId: ID!) {
     ...ClarificationSessionFragment
   }
 }
+
+# Fragment for ChatMessage fields
+fragment ChatMessageFragment on ChatMessage {
+  messageId
+  sessionId
+  role
+  content
+  rawContent
+  citations {
+    source
+    url
+    article
+    excerpt
+  }
+  metadata {
+    confidence
+    model
+    queryType
+    keyTerms
+    language
+  }
+  sequenceOrder
+  createdAt
+}
+
+# Fragment for ChatSession fields
+fragment ChatSessionFragment on ChatSession {
+  id
+  title
+  mode
+  messageCount
+  lastMessageAt
+  createdAt
+  updatedAt
+  isPinned
+  deletedAt
+}
+
+# Query: Get chat messages for a session (for message restoration)
+query GetChatMessages($sessionId: ID!) {
+  chatMessages(sessionId: $sessionId) {
+    ...ChatMessageFragment
+  }
+}
+
+# Query: Get chat session detail (without messages - use chatMessages for that)
+query GetChatSession($sessionId: ID!) {
+  chatSessionDetail(sessionId: $sessionId) {
+    ...ChatSessionFragment
+  }
+}
+
+# Query: Get chat sessions list for the current user
+query GetChatSessions(
+  $limit: Int = 20
+  $offset: Int = 0
+  $sortBy: String = "lastMessageAt"
+  $sortOrder: String = "DESC"
+  $mode: ChatMode
+  $isPinned: Boolean
+  $search: String
+  $includeDeleted: Boolean = false
+) {
+  chatSessions(
+    limit: $limit
+    offset: $offset
+    sortBy: $sortBy
+    sortOrder: $sortOrder
+    mode: $mode
+    isPinned: $isPinned
+    search: $search
+    includeDeleted: $includeDeleted
+  ) {
+    ...ChatSessionFragment
+  }
+}

@@ -27,7 +27,9 @@ logger = logging.getLogger(__name__)
 GRACEFUL_SHUTDOWN_TIMEOUT = 5
 
 
-def handle_signal(signum: int, _frame) -> None:
+from types import FrameType
+
+def handle_signal(signum: int, _frame: FrameType | None) -> None:
     """Handle shutdown signals from turbo."""
     logger.info("Received signal %s, shutting down...", signum)
     # Send SIGINT to current process group to ensure all subprocesses exit

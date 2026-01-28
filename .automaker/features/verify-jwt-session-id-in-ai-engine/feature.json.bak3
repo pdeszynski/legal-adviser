@@ -1,0 +1,19 @@
+{
+  "category": "bug",
+  "description": "Audit and fix JWT token validation and session ID handling in AI Engine authentication. Tasks: 1) Verify JWT token from frontend includes session ID claim (custom claim 'sessionId' or similar), 2) Ensure AI Engine JWT validation middleware extracts session ID from token, 3) Update ai-engine-jwt-validation feature to properly store and pass session ID to request context, 4) Add session ID to Langfuse trace metadata for observability, 5) Verify session ID is a valid UUID v4 before accepting it, 6) Return 400 error if session ID is invalid format, 7) Update AI Engine endpoints to require session ID in JWT (not as query param for security), 8) Document session ID flow: frontend includes in authProvider token → backend validates → AI Engine extracts from JWT. Update CLAUDE.md with session ID authentication pattern.",
+  "id": "verify-jwt-session-id-in-ai-engine",
+  "title": "Verify JWT Session ID Handling Between Backend and AI Engine",
+  "dependencies": [
+    "full-conversation-context-to-ai-engine"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Audit and fix JWT token validation and session ID handling in AI Engine authentication. Tasks: 1) Verify JWT token from frontend includes session ID claim (custom claim 'sessionId' or similar), 2) Ensure AI Engine JWT validation middleware extracts session ID from token, 3) Update ai-engine-jwt-validation feature to properly store and pass session ID to request context, 4) Add session ID to Langfuse trace metadata for observability, 5) Verify session ID is a valid UUID v4 before accepting it, 6) Return 400 error if session ID is invalid format, 7) Update AI Engine endpoints to require session ID in JWT (not as query param for security), 8) Document session ID flow: frontend includes in authProvider token → backend validates → AI Engine extracts from JWT. Update CLAUDE.md with session ID authentication pattern.",
+      "timestamp": "2026-01-27T21:01:05.090Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -211,7 +211,9 @@ class _LangfuseClientWrapper:
 
     def auth_check(self) -> bool:
         """Proxy auth_check to the underlying client."""
-        return self._client.auth_check()
+        result = self._client.auth_check()
+        # Type narrowing - auth_check returns bool on success
+        return bool(result)  # type: ignore[no-any-return]
 
     def trace(self, name: str, **kwargs: Any) -> _TraceWrapper:
         """Create a trace wrapper for compatibility with old API."""
@@ -257,10 +259,12 @@ def init_langfuse() -> None:
     _debug("=" * 60)
 
     settings = get_settings()
-    _debug(f"Settings loaded:")
+    _debug("Settings loaded:")
     _debug(f"  LANGFUSE_ENABLED: {settings.LANGFUSE_ENABLED}")
-    _debug(f"  LANGFUSE_PUBLIC_KEY: {'SET (' + settings.LANGFUSE_PUBLIC_KEY[:10] + '...)' if settings.LANGFUSE_PUBLIC_KEY else 'NOT SET'}")
-    _debug(f"  LANGFUSE_SECRET_KEY: {'SET (' + settings.LANGFUSE_SECRET_KEY[:10] + '...)' if settings.LANGFUSE_SECRET_KEY else 'NOT SET'}")
+    public_key_preview: str = f"SET ({settings.LANGFUSE_PUBLIC_KEY[:10]}...)" if settings.LANGFUSE_PUBLIC_KEY else "NOT SET"
+    secret_key_preview: str = f"SET ({settings.LANGFUSE_SECRET_KEY[:10]}...)" if settings.LANGFUSE_SECRET_KEY else "NOT SET"
+    _debug(f"  LANGFUSE_PUBLIC_KEY: {public_key_preview}")
+    _debug(f"  LANGFUSE_SECRET_KEY: {secret_key_preview}")
     _debug(f"  LANGFUSE_HOST: {settings.LANGFUSE_HOST or '(default)'}")
 
     # Check if Langfuse is available (Python 3.14 compatibility)
@@ -413,10 +417,13 @@ def update_current_trace(
 
         # Use the new Langfuse SDK API - update_current_trace via OpenTelemetry context
         # The new SDK uses OpenTelemetry for automatic context propagation
-        from langfuse.decorators import observe
+        try:
+            from langfuse.decorators import observe
+        except ImportError:
+            return
 
         @observe()
-        def _update_trace():
+        def _update_trace() -> None:
             pass
 
         # Create a dummy trace to update the current context
@@ -509,7 +516,7 @@ def create_trace(
         from langfuse.decorators import observe
 
         @observe(name=name)
-        def _error_trace():
+        def _error_trace() -> dict[str, Any]:
             # The trace is automatically created and linked to OpenTelemetry context
             return {"input": input, "user_id": user_id, "session_id": session_id, "metadata": metadata}
 

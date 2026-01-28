@@ -5,17 +5,28 @@ It should be imported and called at application startup.
 """
 
 import os
+from typing import Any, TYPE_CHECKING
 
 try:
     import sentry_sdk
     from sentry_sdk.integrations.fastapi import FastApiIntegration
     from sentry_sdk.integrations.starlette import StarletteIntegration
-    from sentry_sdk.tracing import Span
 
     SENTRY_AVAILABLE = True
 except ImportError:
     SENTRY_AVAILABLE = False
-    Span = None  # type: ignore[misc,assignment]
+    sentry_sdk = None  # type: ignore[assignment]
+
+# Type alias for Span - use conditional import
+if TYPE_CHECKING:
+    if SENTRY_AVAILABLE:
+        from sentry_sdk.tracing import Span  # type: ignore[import-not-found]
+    else:
+        Span = Any  # type: ignore[no-redef]
+elif SENTRY_AVAILABLE:
+    from sentry_sdk.tracing import Span  # type: ignore[import-not-found]
+else:
+    Span = Any  # type: ignore[no-redef, misc]
 
 
 def init_sentry() -> None:
@@ -77,7 +88,7 @@ def init_sentry() -> None:
             StarletteIntegration(),
         ],
         # Custom tags for better filtering in Sentry
-        initial_scope={
+        initial_scope={  # type: ignore[call-arg]
             "tags": {
                 "service": "ai-engine",
                 "runtime": "python",
@@ -88,7 +99,7 @@ def init_sentry() -> None:
     print(f"Sentry initialized with APM features (environment: {environment})")
 
 
-def _filter_development_events(event, _hint):
+def _filter_development_events(event: Any, _hint: Any) -> Any | None:
     """Filter out events from development environment.
 
     Args:
@@ -106,7 +117,7 @@ def _filter_development_events(event, _hint):
     return event
 
 
-def capture_exception(error: Exception, context: dict | None = None) -> None:
+def capture_exception(error: Exception, context: dict[str, Any] | None = None) -> None:
     """Capture an exception in Sentry.
 
     Args:
@@ -133,6 +144,23 @@ def capture_message(message: str, level: str = "info") -> None:
 
     Args:
         message: The message to send
+        level: Log level (fatal, critical, error, warning, info, debug)
+    """
+    if not SENTRY_AVAILABLE:
+        return
+
+    environment = os.getenv("NODE_ENV", os.getenv("ENVIRONMENT", "development"))
+
+    # Don't send in development
+    if environment == "development":
+        return
+
+    # Type: ignore for level - sentry_sdk expects specific Literal values
+    sentry_sdk.capture_message(message, level=level)  # type: ignore[arg-type]
+    """Capture a message in Sentry.
+
+    Args:
+        message: The message to send
         level: Log level (info, warning, error)
     """
     if not SENTRY_AVAILABLE:
@@ -147,7 +175,7 @@ def capture_message(message: str, level: str = "info") -> None:
     sentry_sdk.capture_message(message, level=level)
 
 
-def set_user(user_id: str, email: str | None = None, **kwargs) -> None:
+def set_user(user_id: str, email: str | None = None, **kwargs: Any) -> None:
     """Set user context for Sentry events.
 
     Args:
@@ -165,7 +193,7 @@ def set_user(user_id: str, email: str | None = None, **kwargs) -> None:
     sentry_sdk.set_user(user_data)
 
 
-def set_context(name: str, data: dict) -> None:
+def set_context(name: str, data: dict[str, Any]) -> None:
     """Set additional context for Sentry events.
 
     Args:
@@ -178,7 +206,7 @@ def set_context(name: str, data: dict) -> None:
     sentry_sdk.set_context(name, data)
 
 
-def start_ai_span(operation: str, **kwargs) -> Span | None:
+def start_ai_span(operation: str, **kwargs: Any) -> Span | None:
     """Start a custom span for AI operations tracking.
 
     Use this to track specific AI operations like PydanticAI agent runs,
@@ -211,7 +239,7 @@ def start_ai_span(operation: str, **kwargs) -> Span | None:
     return span
 
 
-def start_db_span(operation: str, table: str | None = None, **kwargs) -> Span | None:
+def start_db_span(operation: str, table: str | None = None, **kwargs: Any) -> Span | None:
     """Start a custom span for database operations tracking.
 
     Args:
@@ -245,7 +273,7 @@ def start_db_span(operation: str, table: str | None = None, **kwargs) -> Span | 
     return span
 
 
-def start_http_span(method: str, url: str, **kwargs) -> Span | None:
+def start_http_span(method: str, url: str, **kwargs: Any) -> Span | None:
     """Start a custom span for HTTP client requests.
 
     Args:
@@ -316,4 +344,7 @@ def set_measurement(name: str, value: float, unit: str = "") -> None:
     if not SENTRY_AVAILABLE:
         return
 
-    sentry_sdk.get_current_scope().add_measurement(name, value, unit)
+    scope = sentry_sdk.get_current_scope()
+    # Type: ignore - add_measurement may not be in all sentry_sdk versions
+    if hasattr(scope, "add_measurement"):  # type: ignore[attr-defined]
+        scope.add_measurement(name, value, unit)  # type: ignore[attr-defined]

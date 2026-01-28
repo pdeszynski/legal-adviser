@@ -9,6 +9,8 @@ directly through the centralized client in dependencies.py. This abstraction all
 easy migration when PydanticAI adds embedder support.
 """
 
+from typing import Any
+
 from ..agents.dependencies import get_openai_client
 from ..config import get_settings
 
@@ -21,13 +23,13 @@ class EmbeddingService:
     native embedder support, this class can be updated to use it.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the embedding service."""
-        self._client = None
+        self._client: Any = None
         self._default_model = "text-embedding-3-small"
 
     @property
-    def client(self):
+    def client(self) -> Any:  # type: ignore[no-any-return]
         """Lazy-load the OpenAI client."""
         if self._client is None:
             self._client = get_openai_client()

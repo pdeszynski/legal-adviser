@@ -67,6 +67,9 @@ interface UseStreamingChatReturn {
  * Custom hook for managing streaming chat interactions with the AI Engine.
  * Communicates directly with AI Engine using Server-Sent Events (SSE).
  * Supports JWT authentication for user identification.
+ *
+ * DEPRECATED: This is a simplified streaming hook for temporary use.
+ * For proper chat session persistence, use the main useStreamingChat hook instead.
  */
 export function useStreamingChat(): UseStreamingChatReturn {
   const [isLoading, setIsLoading] = useState(false);
@@ -91,24 +94,22 @@ export function useStreamingChat(): UseStreamingChatReturn {
       setIsLoading(true);
       setError(null);
 
+      // CRITICAL: Session ID management
+      // This is a simplified streaming hook that doesn't support persistent sessions.
+      // For proper chat session persistence, use the main useStreamingChat hook instead.
+      // This hook is deprecated for use in the main chat interface.
+
+      // Prepare headers with JWT token
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      const accessToken = getAccessToken();
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+
       try {
-        // Get or create session ID
-        let sessionId = localStorage.getItem('chat_session_id');
-        if (!sessionId) {
-          sessionId = crypto.randomUUID();
-          localStorage.setItem('chat_session_id', sessionId);
-        }
-
-        // Prepare headers with JWT token
-        const headers: Record<string, string> = {
-          'Content-Type': 'application/json',
-        };
-
-        const accessToken = getAccessToken();
-        if (accessToken) {
-          headers['Authorization'] = `Bearer ${accessToken}`;
-        }
-
         // Make streaming request to AI Engine
         const response = await fetch(`${AI_ENGINE_URL}/api/v1/qa/stream`, {
           method: 'POST',
@@ -116,7 +117,6 @@ export function useStreamingChat(): UseStreamingChatReturn {
           signal: abortController.signal,
           body: JSON.stringify({
             question,
-            session_id: sessionId,
             mode: selectedMode,
           }),
         });
@@ -206,8 +206,8 @@ export function useStreamingChat(): UseStreamingChatReturn {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
-      setIsLoading(false);
     }
+    setIsLoading(false);
   }, []);
 
   return {

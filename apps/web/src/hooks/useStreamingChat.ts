@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { getAccessToken } from '@/providers/auth-provider/auth-provider.client';
 import type { ChatCitation, ClarificationInfo } from './use-chat';
+import { getCsrfHeaders } from '@/lib/csrf';
 import {
   detectStreamErrorType,
   isRetryableError,
@@ -27,6 +28,153 @@ import type {
 export type { StreamErrorResponse } from './streaming/streaming-error-handler';
 
 const AI_ENGINE_URL = process.env.NEXT_PUBLIC_AI_ENGINE_URL || 'http://localhost:8000';
+const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
+
+/**
+ * Save a user message to the backend via GraphQL mutation
+ */
+async function saveUserMessageToBackend(
+  sessionId: string,
+  content: string,
+): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  const accessToken = getAccessToken();
+  if (!accessToken) {
+    return { success: false, error: 'No authentication token' };
+  }
+
+  try {
+    const response = await fetch(GRAPHQL_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+        ...getCsrfHeaders(),
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        query: `
+          mutation SaveUserMessage($input: SaveChatMessageInput!) {
+            saveChatMessage(input: $input) {
+              messageId
+              sessionId
+              role
+              content
+              sequenceOrder
+              createdAt
+            }
+          }
+        `,
+        variables: {
+          input: {
+            sessionId,
+            content,
+            role: 'USER',
+          },
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Failed to save user message:', response.status);
+      return { success: false, error: `HTTP ${response.status}` };
+    }
+
+    const result = await response.json();
+
+    if (result.errors && result.errors.length > 0) {
+      console.error('GraphQL errors saving user message:', result.errors);
+      return { success: false, error: result.errors[0].message };
+    }
+
+    return {
+      success: true,
+      messageId: result.data?.saveChatMessage?.messageId,
+    };
+  } catch (error) {
+    console.error('Error saving user message:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Save an assistant message to the backend via GraphQL mutation
+ */
+async function saveAssistantMessageToBackend(
+  sessionId: string,
+  content: string,
+  citations: ChatCitation[] | null,
+  metadata: {
+    confidence?: number;
+    queryType?: string;
+    keyTerms?: string[];
+  } | null,
+): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  const accessToken = getAccessToken();
+  if (!accessToken) {
+    return { success: false, error: 'No authentication token' };
+  }
+
+  try {
+    const response = await fetch(GRAPHQL_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+        ...getCsrfHeaders(),
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        query: `
+          mutation SaveAssistantMessage($input: SaveChatMessageInput!) {
+            saveChatMessage(input: $input) {
+              messageId
+              sessionId
+              role
+              content
+              sequenceOrder
+              createdAt
+            }
+          }
+        `,
+        variables: {
+          input: {
+            sessionId,
+            content,
+            role: 'ASSISTANT',
+            citations: citations || [],
+            metadata: metadata || {},
+          },
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Failed to save assistant message:', response.status);
+      return { success: false, error: `HTTP ${response.status}` };
+    }
+
+    const result = await response.json();
+
+    if (result.errors && result.errors.length > 0) {
+      console.error('GraphQL errors saving assistant message:', result.errors);
+      return { success: false, error: result.errors[0].message };
+    }
+
+    return {
+      success: true,
+      messageId: result.data?.saveChatMessage?.messageId,
+    };
+  } catch (error) {
+    console.error('Error saving assistant message:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
 
 // Stream event types from AI Engine
 type StreamEventType = 'token' | 'citation' | 'error' | 'done' | 'clarification';
@@ -49,6 +197,7 @@ interface DoneMetadata {
   processing_time_ms: number;
   query_type?: string;
   key_terms?: string[];
+  suggested_title?: string;
 }
 
 interface StreamError {
@@ -67,6 +216,7 @@ export interface StreamingChatResponse {
   errorResponse?: StreamErrorResponse;
   partial?: boolean;
   fellBack?: boolean;
+  suggestedTitle?: string;
 }
 
 export interface UseStreamingChatOptions {
@@ -266,6 +416,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
             confidence: metadata.confidence,
             queryType: metadata.query_type,
             keyTerms: metadata.key_terms,
+            suggestedTitle: metadata.suggested_title,
           };
 
         default:
@@ -274,6 +425,65 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
     },
     [onToken, onCitation],
   );
+
+  /**
+   * Fetch conversation history from backend for a session
+   */
+  const fetchConversationHistory = useCallback(async (sessionId: string): Promise<Array<{ role: string; content: string }> | null> => {
+    const accessToken = getAccessToken();
+    if (!accessToken) {
+      return null;
+    }
+
+    try {
+      const response = await fetch(GRAPHQL_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          query: `
+            query GetChatMessages($sessionId: ID!) {
+              chatMessages(sessionId: $sessionId) {
+                role
+                content
+                sequenceOrder
+              }
+            }
+          `,
+          variables: { sessionId },
+        }),
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const result = await response.json();
+
+      if (result.errors && result.errors.length > 0) {
+        return null;
+      }
+
+      const messages = result.data?.chatMessages;
+      if (!messages || !Array.isArray(messages)) {
+        return null;
+      }
+
+      // Transform to AI Engine format: {role, content}
+      // Map MessageRole enum (USER/ASSISTANT) to 'user'/'assistant'
+      return messages
+        .sort((a: { sequenceOrder: number }, b: { sequenceOrder: number }) => a.sequenceOrder - b.sequenceOrder)
+        .map((msg: { role: string; content: string }) => ({
+          role: msg.role === 'USER' ? 'user' : 'assistant',
+          content: msg.content,
+        }));
+    } catch {
+      return null;
+    }
+  }, []);
 
   /**
    * Fallback to GraphQL mutation when streaming fails
@@ -291,6 +501,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
 
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
+        ...getCsrfHeaders(),
       };
 
       const accessToken = getAccessToken();
@@ -356,9 +567,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
         throw new Error('No data returned from server');
       }
 
-      if (data.sessionId) {
-        localStorage.setItem('chat_session_id', data.sessionId);
-      }
+      // WARNING: Session ID is managed by backend only - do NOT store in localStorage
 
       return {
         content: data.answerMarkdown || '',
@@ -397,21 +606,40 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
         headers['Authorization'] = `Bearer ${accessToken}`;
       }
 
-      // Build URL with query parameters
-      const url = new URL(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`);
-      url.searchParams.set('question', question);
-      url.searchParams.set('mode', mode);
-      url.searchParams.set('session_id', sessionId);
+      // Fetch conversation history from backend (only on first attempt, not retries)
+      let conversationHistory: Array<{ role: string; content: string }> | null = null;
+      if (retryAttempt === 0) {
+        conversationHistory = await fetchConversationHistory(sessionId);
+        if (conversationHistory && conversationHistory.length > 0) {
+          // Exclude the last message if it's a user message with the same content
+          // (to avoid duplicating the current question)
+          const lastMessage = conversationHistory[conversationHistory.length - 1];
+          if (lastMessage && lastMessage.role === 'user' && lastMessage.content === question) {
+            conversationHistory = conversationHistory.slice(0, -1);
+          }
+        }
+      }
+
+      // Build request body with conversation history
+      const requestBody = {
+        question,
+        mode,
+        session_id: sessionId,
+        ...(conversationHistory && conversationHistory.length > 0
+          ? { conversation_history: conversationHistory }
+          : {}),
+      };
 
       // Create abort controller for this attempt
       abortControllerRef.current = new AbortController();
 
       try {
-        // Fetch with streaming
-        const response = await fetch(url.toString(), {
+        // Fetch with streaming (using POST with JSON body)
+        const response = await fetch(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`, {
           method: 'POST',
           headers,
           signal: abortControllerRef.current.signal,
+          body: JSON.stringify(requestBody),
         });
 
         if (!response.ok) {
@@ -496,6 +724,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
                     confidence: processed.confidence,
                     queryType: processed.queryType,
                     keyTerms: processed.keyTerms,
+                    suggestedTitle: processed.suggestedTitle,
                   };
                 }
 
@@ -601,11 +830,16 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
       fallbackSendMessage,
       setupActivityTimeout,
       clearActivityTimeout,
+      fetchConversationHistory,
     ],
   );
 
   /**
    * Send a message with streaming response
+   *
+   * IMPORTANT: Session ID must be provided and must be a valid UUID v4.
+   * This hook no longer generates session IDs - they must come from the backend.
+   * Use the useChatSessionManagement hook to create sessions before calling this.
    */
   const sendMessage = useCallback(
     async (
@@ -624,16 +858,44 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
       setReconnectionState(null);
       onStreamStart?.();
 
-      // Store request for potential retry
+      // CRITICAL: Session ID must be provided and valid
+      // Session IDs are now ALWAYS generated server-side via backend GraphQL mutation
       const uuidV4Regex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-      let id = sessionId || localStorage.getItem('chat_session_id');
-      if (!id || !uuidV4Regex.test(id)) {
-        id = crypto.randomUUID();
-        localStorage.setItem('chat_session_id', id);
+
+      if (!sessionId || !uuidV4Regex.test(sessionId)) {
+        const error = 'Invalid or missing session ID. Please start a new chat session.';
+        setIsStreaming(false);
+        setError(error);
+        setErrorResponse({
+          type: 'INVALID_SESSION_ID',
+          message: error,
+          userMessage: 'Chat session not found. Please refresh the page.',
+          retryable: false,
+          fallbackAvailable: false,
+          canRecover: false,
+          severity: 'high',
+        });
+        onStreamError?.(error, {
+          type: 'INVALID_SESSION_ID',
+          message: error,
+          userMessage: 'Chat session not found. Please refresh the page.',
+          retryable: false,
+          fallbackAvailable: false,
+          canRecover: false,
+          severity: 'high',
+        });
+        throw new Error(error);
       }
 
-      lastRequestRef.current = { question, mode, sessionId: id };
+      lastRequestRef.current = { question, mode, sessionId };
+
+      // Save user message to backend before streaming
+      const userMessageResult = await saveUserMessageToBackend(sessionId, question);
+      if (!userMessageResult.success) {
+        console.warn('Failed to save user message to backend:', userMessageResult.error);
+        // Continue anyway - don't block the user experience
+      }
 
       try {
         // If streaming is disabled, fallback immediately
@@ -642,7 +904,25 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
         }
 
         // Execute streaming request (includes retry logic)
-        const response = await executeStreamRequest(question, mode, id);
+        const response = await executeStreamRequest(question, mode, sessionId);
+
+        // Save assistant message to backend after streaming completes
+        if (!response.error) {
+          const assistantMessageResult = await saveAssistantMessageToBackend(
+            sessionId,
+            response.content,
+            response.citations || null,
+            {
+              confidence: response.confidence,
+              queryType: response.queryType,
+              keyTerms: response.keyTerms,
+            },
+          );
+          if (!assistantMessageResult.success) {
+            console.warn('Failed to save assistant message to backend:', assistantMessageResult.error);
+            // Continue anyway - don't block the user experience
+          }
+        }
 
         setIsStreaming(false);
         setIsReconnecting(false);
@@ -669,7 +949,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
 
         // Final fallback attempt
         if (fallbackToGraphQL) {
-          return fallbackSendMessage(question, mode, id);
+          return fallbackSendMessage(question, mode, sessionId);
         }
 
         throw err;
@@ -680,6 +960,7 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
       fallbackToGraphQL,
       onStreamStart,
       onStreamEnd,
+      onStreamError,
       executeStreamRequest,
       currentContent,
       currentCitations,

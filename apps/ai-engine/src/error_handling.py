@@ -12,7 +12,7 @@ import functools
 import logging
 import time
 import traceback
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from typing import Any, TypeVar
 
 from .config import get_settings
@@ -221,7 +221,7 @@ def with_retry(
     operation_name: str | None = None,
     session_id: str | None = None,
     user_id: str | None = None,
-):
+) -> Callable[[Callable[..., T]], Callable[..., T]]:
     """Decorator for automatic retry with exponential backoff.
 
     Args:
@@ -374,7 +374,23 @@ def with_error_tracking(
     session_id: str | None = None,
     user_id: str | None = None,
     reraise: bool = True,
-):
+) -> Callable[[Callable[..., T]], Callable[..., T]]:
+    """Decorator for automatic error tracking with Langfuse.
+
+    Args:
+        operation: Operation name for tracking
+        session_id: Session ID for Langfuse
+        user_id: User ID for Langfuse
+        reraise: Whether to reraise the exception
+
+    Example:
+        ```python
+        @with_error_tracking(operation_name="qa_agent.run")
+        async def my_function():
+            # Errors will be tracked in Langfuse
+            pass
+        ```
+    """
     """Decorator for automatic error tracking with Langfuse.
 
     Args:
@@ -556,7 +572,25 @@ def with_fallback(
     *,
     fallback_config: FallbackConfig,
     operation: str | None = None,
-):
+) -> Callable[[Callable[..., T]], Callable[..., T]]:
+    """Decorator for fallback behavior on agent failure.
+
+    Args:
+        fallback_config: Fallback configuration
+        operation: Operation name for logging
+
+    Example:
+        ```python
+        @with_fallback(
+            fallback_config=FallbackConfig(
+                fallback_message="I apologize, but I'm having trouble processing your request right now. Please try again."
+            ),
+            operation="qa_agent.run"
+        )
+        async def my_agent_function():
+            pass
+        ```
+    """
     """Decorator for fallback behavior on agent failure.
 
     Args:
@@ -695,7 +729,7 @@ def build_error_response(
 
 
 async def safe_agent_run(
-    agent_func: Callable[..., T],
+    agent_func: Callable[..., Awaitable[T]],
     *args: Any,
     agent_name: str,
     session_id: str | None = None,

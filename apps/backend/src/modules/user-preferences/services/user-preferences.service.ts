@@ -121,6 +121,14 @@ export class UserPreferencesService {
   }
 
   /**
+   * Save user preferences entity
+   * Used by other services that need to directly save a preferences entity
+   */
+  async save(preferences: UserPreferences): Promise<UserPreferences> {
+    return this.preferencesRepository.save(preferences);
+  }
+
+  /**
    * Get all preferences (admin only)
    */
   async findAll(): Promise<UserPreferences[]> {

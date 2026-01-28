@@ -1,0 +1,19 @@
+{
+  "category": "feature",
+  "description": "Create chat history page/panel at /chat/history showing user's past conversations. Display list of chat sessions with: session title (truncated if long), last message preview, timestamp (relative time like '2 hours ago'), message count badge, mode indicator (LAWYER/SIMPLE icon), pinned status indicator. Implement filtering: all sessions, pinned only, by mode. Add search functionality to find sessions by title or content. Sort by lastMessageAt descending (most recent first). Support swipe/pull-to-refresh on mobile. Use Refine's useTable hook or custom list component with GraphQL queries. Add skeleton loading for session list. Implement infinite scroll or pagination (20 sessions per page). On session click, navigate to /chat?session={sessionId} to restore conversation.",
+  "id": "chat-history-frontend-list-view",
+  "title": "Chat History List View Component",
+  "dependencies": [
+    "chat-session-graphql-resolvers"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Create chat history page/panel at /chat/history showing user's past conversations. Display list of chat sessions with: session title (truncated if long), last message preview, timestamp (relative time like '2 hours ago'), message count badge, mode indicator (LAWYER/SIMPLE icon), pinned status indicator. Implement filtering: all sessions, pinned only, by mode. Add search functionality to find sessions by title or content. Sort by lastMessageAt descending (most recent first). Support swipe/pull-to-refresh on mobile. Use Refine's useTable hook or custom list component with GraphQL queries. Add skeleton loading for session list. Implement infinite scroll or pagination (20 sessions per page). On session click, navigate to /chat?session={sessionId} to restore conversation.",
+      "timestamp": "2026-01-27T21:01:05.088Z",
+      "source": "initial"
+    }
+  ]
+}

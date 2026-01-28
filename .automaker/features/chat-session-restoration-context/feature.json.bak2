@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Update the legal chat frontend to restore full conversation history when users revisit an existing session. Implementation: 1) On /chat page load, check URL param ?session={sessionId}, 2) If sessionId exists, fetch session details and all messages via GraphQL query (chatSessionDetail), 3) Display messages in reverse chronological order (oldest to newest) in chat UI, 4) Scroll to bottom of conversation, 5) Set current session ID in chat state, 6) When sending new message, include sessionId in request to append to existing conversation, 7) Auto-generate session title from first user message if title is null, 8) Update session's lastMessageAt and messageCount on each new message. Ensure UI handles restored sessions exactly like new sessions, with all message features (citations, markdown, timestamps) preserved. Add loading state while fetching session history.",
+  "id": "chat-session-restoration-context",
+  "title": "Chat Session Restoration with Full Conversation History",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Update the legal chat frontend to restore full conversation history when users revisit an existing session. Implementation: 1) On /chat page load, check URL param ?session={sessionId}, 2) If sessionId exists, fetch session details and all messages via GraphQL query (chatSessionDetail), 3) Display messages in reverse chronological order (oldest to newest) in chat UI, 4) Scroll to bottom of conversation, 5) Set current session ID in chat state, 6) When sending new message, include sessionId in request to append to existing conversation, 7) Auto-generate session title from first user message if title is null, 8) Update session's lastMessageAt and messageCount on each new message. Ensure UI handles restored sessions exactly like new sessions, with all message features (citations, markdown, timestamps) preserved. Add loading state while fetching session history.",
+      "timestamp": "2026-01-27T21:01:05.089Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-27T21:25:44.796Z"
+}
