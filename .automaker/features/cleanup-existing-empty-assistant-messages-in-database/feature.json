@@ -3,11 +3,8 @@
   "description": "Create a database migration script to identify and clean up existing empty assistant messages. After fixing the root cause, address the data quality issue. Implementation: 1) Create migration script to find all ChatMessage records where role='ASSISTANT' AND (content IS NULL OR content=''), 2) For each empty message, check if rawContent has data - if yes, copy rawContent to content, 3) If both content and rawContent are empty, mark for deletion (add flag for admin review), 4) Create report of affected sessions and users, 5) For messages that are part of clarification flow, check if clarification data exists in metadata - if yes, serialize to JSON and store in content field, 6) Add script to identify users affected by this bug for potential notification, 7) Create admin endpoint GET /api/admin/debug/empty-messages to list empty messages for review, 8) Add option to recover messages from AI Engine logs if available (unlikely), 9) Document the data cleanup process in runbook. Run migration in staging first, verify data integrity, then apply to production.",
   "id": "cleanup-existing-empty-assistant-messages-in-database",
   "title": "Clean Up Existing Empty Assistant Messages in Database",
-  "dependencies": [
-    "fix-assistant-message-content-persistence-in-backend"
-  ],
   "priority": 3,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -15,5 +12,6 @@
       "timestamp": "2026-01-28T15:32:05.549Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-28T16:08:02.918Z"
 }

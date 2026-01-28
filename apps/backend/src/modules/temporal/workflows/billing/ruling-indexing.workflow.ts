@@ -153,7 +153,6 @@ export function generateWorkflowId(source: RulingSource): string {
  * @returns Current workflow info
  */
 export function workflowInfoGetter() {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return workflowInfo;
 }
 
@@ -231,7 +230,6 @@ export async function rulingIndexing(
         updateExisting,
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       batchResults.push(batchResult);
       totalProcessed += batchResult.processed;
       totalIndexed += batchResult.indexed;

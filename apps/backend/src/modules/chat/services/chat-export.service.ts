@@ -55,10 +55,8 @@ export class ChatExportService {
     await this.chatSessionsService.verifyOwnership(sessionId, userId);
 
     // Get session with all messages
-    const { session, messages } = await this.chatSessionsService.getSessionDetail(
-      sessionId,
-      userId,
-    );
+    const { session, messages } =
+      await this.chatSessionsService.getSessionDetail(sessionId, userId);
 
     // Generate filename
     const filename = this.generateFilename(session, format, customFilename);
@@ -84,7 +82,8 @@ export class ChatExportService {
     format: ChatExportFormat,
     customFilename?: string,
   ): string {
-    const baseName = customFilename || this.sanitizeFilename(session.title || 'chat-session');
+    const baseName =
+      customFilename || this.sanitizeFilename(session.title || 'chat-session');
     const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
     const extensionMap = {
@@ -121,7 +120,7 @@ export class ChatExportService {
     const lines: string[] = [];
 
     // Header
-    lines.push('=' .repeat(80));
+    lines.push('='.repeat(80));
     lines.push(`CHAT SESSION EXPORT: ${session.title || 'Untitled Chat'}`);
     lines.push(`Exported: ${new Date().toLocaleString('pl-PL')}`);
     lines.push(`Mode: ${session.mode}`);
@@ -135,7 +134,9 @@ export class ChatExportService {
     lines.push(`Session ID: ${session.id}`);
     lines.push(`Created: ${session.createdAt.toLocaleString('pl-PL')}`);
     lines.push(`Last Updated: ${session.updatedAt.toLocaleString('pl-PL')}`);
-    lines.push(`Last Message: ${session.lastMessageAt?.toLocaleString('pl-PL') || 'N/A'}`);
+    lines.push(
+      `Last Message: ${session.lastMessageAt?.toLocaleString('pl-PL') || 'N/A'}`,
+    );
     lines.push('');
 
     // Messages
@@ -273,7 +274,9 @@ export class ChatExportService {
     lines.push('| Property | Value |');
     lines.push('|----------|-------|');
     lines.push(`| Created | ${session.createdAt.toLocaleString('pl-PL')} |`);
-    lines.push(`| Last Updated | ${session.updatedAt.toLocaleString('pl-PL')} |`);
+    lines.push(
+      `| Last Updated | ${session.updatedAt.toLocaleString('pl-PL')} |`,
+    );
     lines.push(`| Mode | ${session.mode} |`);
     lines.push(`| Messages | ${session.messageCount} |`);
     lines.push('');
@@ -326,7 +329,9 @@ export class ChatExportService {
         const metadataItems: string[] = [];
 
         if (metadata.confidence !== undefined) {
-          metadataItems.push(`Confidence: ${(metadata.confidence * 100).toFixed(1)}%`);
+          metadataItems.push(
+            `Confidence: ${(metadata.confidence * 100).toFixed(1)}%`,
+          );
         }
         if (metadata.model) {
           metadataItems.push(`Model: ${metadata.model}`);
@@ -335,7 +340,9 @@ export class ChatExportService {
           metadataItems.push(`Type: ${metadata.queryType}`);
         }
         if (metadata.keyTerms && metadata.keyTerms.length > 0) {
-          metadataItems.push(`Terms: ${metadata.keyTerms.map((t) => `\`${t}\``).join(', ')}`);
+          metadataItems.push(
+            `Terms: ${metadata.keyTerms.map((t) => `\`${t}\``).join(', ')}`,
+          );
         }
 
         if (metadataItems.length > 0) {

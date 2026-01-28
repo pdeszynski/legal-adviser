@@ -18,7 +18,10 @@ import { Repository, In, LessThan, IsNull } from 'typeorm';
 import { ChatSession } from '../../../chat/entities/chat-session.entity';
 import { User } from '../../../users/entities/user.entity';
 import { AuditLogService } from '../../../audit-log/audit-log.service';
-import { AuditActionType, AuditResourceType } from '../../../audit-log/entities/audit-log.entity';
+import {
+  AuditActionType,
+  AuditResourceType,
+} from '../../../audit-log/entities/audit-log.entity';
 import type {
   FindOldSessionsInput,
   FindOldSessionsOutput,
@@ -64,8 +67,12 @@ export class ChatCleanupActivities {
   async findOldSessions(
     input: FindOldSessionsInput,
   ): Promise<FindOldSessionsOutput> {
-    const { daysThreshold, includeArchived = false, limit = 100, offset = 0 } =
-      input;
+    const {
+      daysThreshold,
+      includeArchived = false,
+      limit = 100,
+      offset = 0,
+    } = input;
 
     this.logger.log(
       `Finding ${includeArchived ? 'archived' : 'active'} sessions older than ${daysThreshold} days`,
@@ -161,7 +168,10 @@ export class ChatCleanupActivities {
               resourceId: session.id,
               userId: session.userId,
               changeDetails: {
-                before: { deletedAt: null } as unknown as Record<string, unknown>,
+                before: { deletedAt: null } as unknown as Record<
+                  string,
+                  unknown
+                >,
                 after: { deletedAt: session.deletedAt },
                 context: { jobId, reason: 'chat-cleanup-archive' },
               },
@@ -302,7 +312,9 @@ export class ChatCleanupActivities {
         // Opt-out is determined by a user preference setting
         // For now, we'll use a simple check - this can be extended
         // to use a dedicated user preferences table when available
-        const hasOptedOut = Boolean(user && (user as any).chatCleanupOptOut === true);
+        const hasOptedOut = Boolean(
+          user && (user as any).chatCleanupOptOut === true,
+        );
 
         optOutStatus[userId] = hasOptedOut;
 

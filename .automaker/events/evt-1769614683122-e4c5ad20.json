@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769614683122-e4c5ad20",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-28T15:38:03.122Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "e2e-tests-for-assistant-message-content-persistence",
+  "featureName": "Create E2E Tests for Assistant Message Content Persistence",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

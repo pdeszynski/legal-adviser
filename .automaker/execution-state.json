@@ -5,9 +5,9 @@
   "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
   "branchName": null,
   "runningFeatureIds": [
-    "investigate-empty-assistant-messages-in-database",
-    "add-database-validation-to-prevent-empty-chat-messages",
-    "fix-assistant-message-content-persistence-in-backend"
+    "fix-clarification-submission-triggers-ai-response",
+    "clarification-flow-e2e-tests",
+    "cleanup-existing-empty-assistant-messages-in-database"
   ],
-  "savedAt": "2026-01-28T15:32:11.051Z"
+  "savedAt": "2026-01-28T15:56:30.091Z"
 }

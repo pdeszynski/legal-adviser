@@ -1,5 +1,11 @@
 import { InputType, Field, ID, ObjectType } from '@nestjs/graphql';
-import { IsString, IsOptional, IsArray, ValidateNested, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsArray,
+  ValidateNested,
+  IsNotEmpty,
+} from 'class-validator';
 import { ChatCitationType } from '../entities/chat-session.entity';
 import { ChatMessageMetadataType } from '../entities/chat-message.entity';
 

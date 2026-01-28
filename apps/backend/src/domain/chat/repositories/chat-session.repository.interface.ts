@@ -130,7 +130,10 @@ export interface IChatSessionRepository extends IRepository<
    * @param limit - Maximum number of sessions to return
    * @returns Array of recently active sessions
    */
-  findRecentlyActive(userId: string, limit?: number): Promise<ChatSessionAggregate[]>;
+  findRecentlyActive(
+    userId: string,
+    limit?: number,
+  ): Promise<ChatSessionAggregate[]>;
 
   /**
    * Create a new chat session

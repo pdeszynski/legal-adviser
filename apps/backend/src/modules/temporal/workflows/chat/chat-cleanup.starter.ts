@@ -217,9 +217,7 @@ export class ChatCleanupStarter {
    * @param workflowId - Workflow ID to check
    * @returns Workflow status or null if not found
    */
-  async getWorkflowStatus(
-    workflowId: string,
-  ): Promise<{
+  async getWorkflowStatus(workflowId: string): Promise<{
     workflowId: string;
     status: string;
     isRunning: boolean;
@@ -254,9 +252,7 @@ export class ChatCleanupStarter {
     workflowId: string,
   ): Promise<ChatCleanupOutput | null> {
     try {
-      const result = await this.temporalService.getWorkflowResult(
-        workflowId,
-      );
+      const result = await this.temporalService.getWorkflowResult(workflowId);
 
       return result as ChatCleanupOutput;
     } catch (error) {

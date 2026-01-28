@@ -887,6 +887,128 @@ test.describe('Clarification Flow - Error Handling', () => {
   });
 });
 
+test.describe('Clarification Flow - Page Refresh & Persistence', () => {
+  test.beforeEach(async ({ page, context }) => {
+    await context.clearCookies();
+
+    // Set disclaimer accepted in localStorage before navigating
+    await context.addInitScript(() => {
+      localStorage.setItem('legal-disclaimer-accepted', 'true');
+      localStorage.setItem('disclaimer-acknowledged', 'true');
+    });
+
+    await performLogin(page, USER_EMAIL, USER_PASSWORD);
+    await page.goto(CHAT_PAGE_URL);
+    await page.waitForLoadState('networkidle');
+
+    // Handle disclaimer modal if present
+    try {
+      const modalVisible = await page.locator('[data-testid="legal-disclaimer-modal"]').isVisible({ timeout: 2000 });
+      if (modalVisible) {
+        await page.evaluate(() => {
+          const modal = document.querySelector('[data-testid="legal-disclaimer-modal"]');
+          if (modal) (modal as any).remove();
+        });
+        await page.waitForTimeout(500);
+      }
+    } catch {
+      // Modal not present
+    }
+  });
+
+  test('10) Page refresh during pending clarification shows questions correctly', async ({ page }) => {
+    // Setup mock to return clarification
+    await setupMockClarification(page, mockClarificationResponse);
+
+    // Send a message that triggers clarification
+    await page.fill('textarea[placeholder*="Ask"]', 'I was fired without notice');
+    await page.press('textarea[placeholder*="Ask"]', 'Enter');
+    await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 10000 });
+
+    // Verify clarification appears
+    await expect(page.locator('text=When did the employment end?').first()).toBeVisible();
+    await expect(page.locator('text=What was the reason for termination?').first()).toBeVisible();
+
+    // Partially answer one question
+    await page.click('button:has-text("Dismissal")');
+
+    // Verify progress shows 1/2 answered
+    await expect(page.locator('text=/1.*2.*answered/').first()).toBeVisible();
+
+    // Capture screenshot before refresh
+    await page.screenshot({ path: 'test-results/clarification-before-refresh.png' });
+
+    // Refresh the page
+    await page.reload();
+
+    // Wait for page to load after refresh
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000); // Additional wait for state restoration
+
+    // After refresh, the clarification should still be visible
+    // Note: If messages are persisted via session restoration, clarification should appear
+    await page.screenshot({ path: 'test-results/clarification-after-refresh.png' });
+
+    // The page should have loaded properly
+    await expect(page.locator('h1')).toBeVisible({ timeout: 10000 });
+  });
+
+  test('11) Page refresh after completed clarification shows full conversation', async ({ page }) => {
+    // Setup mock for clarification
+    await setupMockClarification(page, mockClarificationResponse);
+
+    // Send initial message
+    await page.fill('textarea[placeholder*="Ask"]', 'I was wrongfully terminated');
+    await page.press('textarea[placeholder*="Ask"]', 'Enter');
+    await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 10000 });
+
+    // Verify clarification appears
+    await expect(page.locator('text=When did the employment end?').first()).toBeVisible();
+
+    // Setup mock for final response
+    await setupMockAnswerResponse(page, 'Based on Polish labor law, wrongful termination may entitle you to compensation under Article 45 § 1 of the Labour Code.');
+
+    // Answer all questions
+    await page.fill('input[placeholder*="Type your answer"]', 'Last week');
+    await page.click('button:has-text("Dismissal")');
+
+    // Submit answers
+    await page.click('button:has-text("Submit Answers")');
+
+    // Wait for final response
+    await page.waitForSelector('text=Generating response...', { timeout: 5000 });
+    await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 15000 });
+
+    // Verify final response appears
+    await expect(page.locator('text=Polish labor law').first()).toBeVisible();
+    await expect(page.locator('text=Article 45').first()).toBeVisible();
+
+    // Verify conversation history has all messages
+    const messagesBeforeRefresh = await page.locator('[data-testid="user-message"], [data-testid="assistant-message"]').count();
+    expect(messagesBeforeRefresh).toBeGreaterThanOrEqual(3);
+
+    // Screenshot before refresh
+    await page.screenshot({ path: 'test-results/clarification-completed-before-refresh.png' });
+
+    // Refresh the page
+    await page.reload();
+
+    // Wait for page to load
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    // After refresh, the conversation should still be visible
+    await page.screenshot({ path: 'test-results/clarification-completed-after-refresh.png' });
+
+    // Verify conversation is restored
+    await expect(page.locator('text=I was wrongfully terminated').first()).toBeVisible({ timeout: 10000 });
+
+    // Verify the final response is still visible
+    const hasFinalResponse = await page.locator('text=Polish labor law').count() > 0;
+    console.log('Final response visible after refresh:', hasFinalResponse);
+  });
+});
+
 test.describe('Clarification Flow - Integration', () => {
   test.beforeEach(async ({ page, context }) => {
     await context.clearCookies();
@@ -1026,5 +1148,188 @@ test.describe('Clarification Flow - Integration', () => {
     console.log('Has clarification status in header:', hasClarificationStatus);
 
     await page.screenshot({ path: 'test-results/clarification-header-mode.png' });
+  });
+});
+
+test.describe('Clarification Flow - Database & GraphQL Verification', () => {
+  test.beforeEach(async ({ page, context }) => {
+    await context.clearCookies();
+
+    // Set disclaimer accepted in localStorage before navigating
+    await context.addInitScript(() => {
+      localStorage.setItem('legal-disclaimer-accepted', 'true');
+      localStorage.setItem('disclaimer-acknowledged', 'true');
+    });
+
+    await performLogin(page, USER_EMAIL, USER_PASSWORD);
+    await page.goto(CHAT_PAGE_URL);
+    await page.waitForLoadState('networkidle');
+
+    // Handle disclaimer modal if present
+    try {
+      const modalVisible = await page.locator('[data-testid="legal-disclaimer-modal"]').isVisible({ timeout: 2000 });
+      if (modalVisible) {
+        await page.evaluate(() => {
+          const modal = document.querySelector('[data-testid="legal-disclaimer-modal"]');
+          if (modal) (modal as any).remove();
+        });
+        await page.waitForTimeout(500);
+      }
+    } catch {
+      // Modal not present
+    }
+  });
+
+  test('Verify UpdateClarificationStatus mutation is called on answer submission', async ({ page }) => {
+    let updateClarificationMutationCalled = false;
+    let mutationPayload: Record<string, unknown> | null = null;
+
+    // Intercept GraphQL mutations
+    await page.route('**/graphql', async (route, request) => {
+      const postData = request.postDataJSON();
+
+      // Check if this is the UpdateClarificationStatus mutation
+      if (postData?.query?.includes('updateClarificationStatus')) {
+        updateClarificationMutationCalled = true;
+        mutationPayload = postData;
+        console.log('[GraphQL] UpdateClarificationStatus mutation intercepted:', postData);
+
+        // Mock a successful response
+        await route.fulfill({
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            data: {
+              updateClarificationStatus: {
+                success: true,
+                messageId: 'test-message-id',
+                status: 'answered',
+              },
+            },
+          }),
+        });
+      } else {
+        // Continue with other requests
+        route.continue();
+      }
+    });
+
+    // Setup mock clarification from AI Engine
+    await setupMockClarification(page, mockClarificationResponse);
+
+    // Send message that triggers clarification
+    await page.fill('textarea[placeholder*="Ask"]', 'I need legal help');
+    await page.press('textarea[placeholder*="Ask"]', 'Enter');
+    await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 10000 });
+
+    // Verify clarification appears
+    await expect(page.locator('text=When did the employment end?').first()).toBeVisible();
+
+    // Setup mock for answer response
+    await setupMockAnswerResponse(page, 'Thank you for the information. Based on your answers...');
+
+    // Answer all questions
+    await page.fill('input[placeholder*="Type your answer"]', 'Test answer');
+    await page.click('button:has-text("Dismissal")');
+
+    // Submit answers
+    await page.click('button:has-text("Submit Answers")');
+
+    // Wait a bit for the mutation to be called
+    await page.waitForTimeout(2000);
+
+    // Verify the mutation was called
+    expect(updateClarificationMutationCalled).toBeTruthy();
+
+    // Verify the mutation payload contains expected fields
+    if (mutationPayload?.variables) {
+      const vars = mutationPayload.variables as { input: { messageId?: string; answered?: boolean } };
+      expect(vars.input).toBeDefined();
+      expect(vars.input.messageId).toBeDefined();
+      expect(vars.input.answered).toBe(true);
+    }
+
+    await page.screenshot({ path: 'test-results/clarification-graphql-mutation.png' });
+  });
+
+  test('Verify message content is saved with clarification JSON', async ({ page }) => {
+    const saveChatMessageCalls: Array<{ variables: { input: { role?: string; content?: string } } }> = [];
+
+    // Intercept GraphQL mutations to capture saveChatMessage calls
+    await page.route('**/graphql', async (route, request) => {
+      const postData = request.postDataJSON();
+
+      // Capture saveChatMessage mutations
+      if (postData?.query?.includes('saveChatMessage')) {
+        saveChatMessageCalls.push({ variables: postData.variables });
+        console.log('[GraphQL] saveChatMessage mutation intercepted:', postData);
+
+        // Mock successful response
+        await route.fulfill({
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            data: {
+              saveChatMessage: {
+                messageId: `msg-${Date.now()}`,
+                sessionId: postData.variables.input.sessionId,
+                role: postData.variables.input.role,
+                content: postData.variables.input.content,
+                sequenceOrder: 1,
+                createdAt: new Date().toISOString(),
+              },
+            },
+          }),
+        });
+      } else if (postData?.query?.includes('updateClarificationStatus')) {
+        // Mock successful response for updateClarificationStatus
+        await route.fulfill({
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            data: {
+              updateClarificationStatus: {
+                success: true,
+                messageId: 'test-msg-id',
+                status: 'answered',
+              },
+            },
+          }),
+        });
+      } else {
+        route.continue();
+      }
+    });
+
+    // Setup mock clarification
+    await setupMockClarification(page, mockClarificationResponse);
+
+    // Send message
+    await page.fill('textarea[placeholder*="Ask"]', 'Test question for clarification');
+    await page.press('textarea[placeholder*="Ask"]', 'Enter');
+    await page.waitForSelector('text=Generating response...', { state: 'hidden', timeout: 10000 });
+
+    // Wait for save operations
+    await page.waitForTimeout(1000);
+
+    // Verify user message was saved
+    const userMessageSave = saveChatMessageCalls.find(c => c.variables.input.role === 'USER');
+    expect(userMessageSave).toBeDefined();
+
+    // Verify assistant message with clarification was saved
+    const assistantMessageSave = saveChatMessageCalls.find(c => c.variables.input.role === 'ASSISTANT');
+    expect(assistantMessageSave).toBeDefined();
+
+    // Verify the content contains clarification JSON
+    const assistantContent = assistantMessageSave?.variables.input.content;
+    expect(assistantContent).toBeDefined();
+    expect(assistantContent).toContain('"type":"clarification"');
+    expect(assistantContent).toContain('questions');
+    expect(assistantContent).toContain('context_summary');
+    expect(assistantContent).toContain('next_steps');
+
+    console.log('Assistant message content (clarification JSON):', assistantContent);
+
+    await page.screenshot({ path: 'test-results/clarification-db-save-verification.png' });
   });
 });

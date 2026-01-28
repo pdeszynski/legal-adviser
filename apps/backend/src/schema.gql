@@ -115,6 +115,34 @@ input AdvancedSearchTermInput {
   term: String!
 }
 
+type AffectedUserInfo {
+  """Number of affected sessions"""
+  affectedSessionCount: Int!
+
+  """User email (if available)"""
+  email: String
+
+  """Number of empty messages for this user"""
+  emptyMessageCount: Int!
+
+  """List of affected session IDs"""
+  sessionIds: [String!]!
+
+  """The user ID"""
+  userId: ID!
+}
+
+type AffectedUsersReport {
+  """Total number of affected users"""
+  totalAffectedUsers: Int!
+
+  """Total number of empty messages across all users"""
+  totalEmptyMessages: Int!
+
+  """List of affected users with details"""
+  users: [AffectedUserInfo!]!
+}
+
 type AgentLatencyMetrics {
   """Agent type"""
   agentType: AgentType!
@@ -1339,6 +1367,46 @@ input ClassifyCaseInput {
 
   """Title or brief summary of the analysis"""
   title: String!
+}
+
+input CleanupEmptyMessagesInput {
+  """Actually perform the cleanup (false = dry run)"""
+  execute: Boolean = false
+
+  """Mark truly empty messages for deletion"""
+  markForDeletion: Boolean = false
+
+  """Recover messages from clarification metadata"""
+  recoverFromClarification: Boolean = true
+
+  """Recover messages from rawContent if available"""
+  recoverFromRawContent: Boolean = true
+}
+
+type CleanupEmptyMessagesResult {
+  """Number of affected sessions"""
+  affectedSessions: Int!
+
+  """Number of affected users"""
+  affectedUsers: Int!
+
+  """Number of messages marked for deletion (truly empty)"""
+  markedForDeletion: Int!
+
+  """Number of messages recovered from clarification metadata"""
+  recoveredFromClarification: Int!
+
+  """Number of messages recovered from rawContent"""
+  recoveredFromRawContent: Int!
+
+  """List of affected session IDs"""
+  sessionIds: [String!]!
+
+  """Number of messages that could not be recovered"""
+  unrecoverable: Int!
+
+  """List of affected user IDs"""
+  userIds: [String!]!
 }
 
 type CommentPosition {
@@ -3012,6 +3080,61 @@ input EmailTemplateTypeFilterComparison {
   notLike: EmailTemplateType
 }
 
+type EmptyMessageAnalysis {
+  """Content field value (should be empty)"""
+  content: String
+
+  """Timestamp when the message was created"""
+  createdAt: String!
+
+  """Whether metadata contains clarification data"""
+  hasClarificationMetadata: Boolean!
+
+  """Whether rawContent has data that can be recovered"""
+  hasRecoverableRawContent: Boolean!
+
+  """The message ID"""
+  messageId: ID!
+
+  """Raw content field value (may have data)"""
+  rawContent: String
+
+  """Message role"""
+  role: MessageRole!
+
+  """Sequence order in the conversation"""
+  sequenceOrder: Int!
+
+  """The session ID"""
+  sessionId: ID!
+
+  """The user ID"""
+  userId: ID!
+}
+
+type EmptyMessagesSummary {
+  """Number of affected sessions"""
+  affectedSessions: Int!
+
+  """Number of affected users"""
+  affectedUsers: Int!
+
+  """List of empty messages found"""
+  messages: [EmptyMessageAnalysis!]!
+
+  """Number of messages with recoverable rawContent"""
+  recoverableFromRawContent: Int!
+
+  """Total number of empty assistant messages found"""
+  totalEmptyMessages: Int!
+
+  """Number of messages that are truly empty (both content and rawContent)"""
+  trulyEmpty: Int!
+
+  """Number of messages with clarification metadata"""
+  withClarificationMetadata: Int!
+}
+
 type EnableTwoFactorResponse {
   """Backup codes for account recovery (show only once)"""
   backupCodes: [String!]!
@@ -4396,6 +4519,9 @@ type Mutation {
   """
   classifyCase(input: ClassifyCaseInput!): LegalAnalysis!
 
+  """Cleanup empty assistant messages in the database"""
+  cleanupEmptyMessages(input: CleanupEmptyMessagesInput!): CleanupEmptyMessagesResult!
+
   """Complete a clarification session with final answer reference"""
   completeClarificationSession(finalQueryId: String!, sessionId: String!): ClarificationSession!
 
@@ -5198,12 +5324,18 @@ type Query {
   """
   advancedSearchLegalRulings(input: AdvancedSearchLegalRulingsInput!): AdvancedLegalRulingSearchResponse!
 
+  """Generate a report of users affected by empty messages"""
+  affectedUsersForEmptyMessages: AffectedUsersReport!
+
   """
   Search legal rulings across multiple sources (LOCAL, SAOS, ISAP) with relevance ranking
   """
   aggregatedSearchLegalRulings(input: AggregatedSearchLegalRulingsInput!): AggregatedLegalRulingSearchResponse!
   aiUsageMetrics(input: DashboardAnalyticsInput): AiUsageMetrics!
   analyticsDashboard(input: DashboardAnalyticsInput): AnalyticsDashboard!
+
+  """Analyze all empty assistant messages in the database"""
+  analyzeEmptyMessages: EmptyMessagesSummary!
   auditLog(
     """The id of the record to find."""
     id: ID!
@@ -5402,6 +5534,12 @@ type Query {
 
   """Get all documents shared with the current user"""
   documentsSharedWithMe(permission: SharePermission): [DocumentShare!]!
+
+  """Get empty assistant messages for a specific session"""
+  emptyMessagesForSession(sessionId: ID!): [EmptyMessageAnalysis!]!
+
+  """Get empty assistant messages for a specific user"""
+  emptyMessagesForUser(userId: ID!): [EmptyMessageAnalysis!]!
 
   """Filter legal rulings by multiple criteria"""
   filterLegalRulings(input: FilterLegalRulingsInput!): [LegalRuling!]!

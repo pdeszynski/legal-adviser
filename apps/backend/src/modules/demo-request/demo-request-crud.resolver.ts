@@ -126,7 +126,7 @@ export class DemoRequestsAdminResolver {
     demoRequest.status = DemoRequestStatusEnum.SCHEDULED;
 
     // Store scheduled time in metadata
-    const metadata = (demoRequest.metadata || {}) as Record<string, unknown>;
+    const metadata = demoRequest.metadata || {};
     metadata.scheduledAt = new Date().toISOString();
     demoRequest.metadata = metadata;
 

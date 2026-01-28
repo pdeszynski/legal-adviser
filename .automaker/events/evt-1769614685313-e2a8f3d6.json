@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769614685313-e2a8f3d6",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-28T15:38:05.313Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-assistant-message-content-persistence-in-backend",
+  "featureName": "Fix Assistant Message Content Persistence in Backend",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

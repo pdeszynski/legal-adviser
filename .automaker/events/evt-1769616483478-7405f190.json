@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769616483478-7405f190",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-28T16:08:03.478Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "cleanup-existing-empty-assistant-messages-in-database",
+  "featureName": "Clean Up Existing Empty Assistant Messages in Database",
+  "error": "Feature completed in 693s - auto-verified",
+  "passes": true
+}

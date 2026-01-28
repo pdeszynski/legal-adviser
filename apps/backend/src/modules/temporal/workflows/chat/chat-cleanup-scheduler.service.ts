@@ -202,8 +202,7 @@ export class ChatCleanupSchedulerService implements OnModuleInit {
       cronExpression = DEFAULT_CRON_EXPRESSIONS.WEEKLY_SUNDAY_2AM,
       archiveAfterDays = DEFAULT_RETENTION_POLICY.archiveAfterDays,
       deleteAfterDays = DEFAULT_RETENTION_POLICY.deleteAfterDays,
-      notificationDaysBeforeDeletion =
-        DEFAULT_RETENTION_POLICY.notificationDaysBeforeDeletion,
+      notificationDaysBeforeDeletion = DEFAULT_RETENTION_POLICY.notificationDaysBeforeDeletion,
       sendNotifications = true,
       description,
     } = options;

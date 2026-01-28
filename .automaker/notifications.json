@@ -4201,6 +4201,116 @@
       "dismissed": false,
       "featureId": "clarification-message-state-persistence",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "eed5dc91-85af-41db-8ba6-9abc1cb7f010",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"investigate-empty-assistant-messages-in-database\" has been verified and is complete.",
+      "createdAt": "2026-01-28T15:35:49.088Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "investigate-empty-assistant-messages-in-database",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "c92f5b59-cd14-4f28-a41e-1ecaa2ef2fd6",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"add-database-validation-to-prevent-empty-chat-messages\" has been verified and is complete.",
+      "createdAt": "2026-01-28T15:36:48.740Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "add-database-validation-to-prevent-empty-chat-messages",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "b97a7152-e85a-43b9-adbd-03e1c2bb81d5",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-assistant-message-content-persistence-in-backend\" has been verified and is complete.",
+      "createdAt": "2026-01-28T15:41:56.271Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-assistant-message-content-persistence-in-backend",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "535a9746-405c-4eb4-b233-265ec77c78fd",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-streaming-response-content-capture-for-database-save\" has been verified and is complete.",
+      "createdAt": "2026-01-28T15:46:38.245Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-streaming-response-content-capture-for-database-save",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "5c17eb2b-80d4-4b4e-a5a6-0667c508e56d",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-clarification-json-frontend-rendering-from-content\" has been verified and is complete.",
+      "createdAt": "2026-01-28T15:55:52.166Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-clarification-json-frontend-rendering-from-content",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "684fdce7-f739-40fb-9d93-b8d1cfd12a69",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"e2e-tests-for-assistant-message-content-persistence\" has been verified and is complete.",
+      "createdAt": "2026-01-28T15:56:04.746Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "e2e-tests-for-assistant-message-content-persistence",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "87fd2010-bfb3-4d6e-bcd2-e16f7db8bb14",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"add-clarification-json-database-validation\" has been verified and is complete.",
+      "createdAt": "2026-01-28T15:56:20.862Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "add-clarification-json-database-validation",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "bb729cdb-20bd-4720-a9ce-58a5f6531e08",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-clarification-submission-triggers-ai-response\" has been verified and is complete.",
+      "createdAt": "2026-01-28T16:02:51.899Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-clarification-submission-triggers-ai-response",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "0c7a6f4a-e247-4f65-b593-af3af111a22b",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"cleanup-existing-empty-assistant-messages-in-database\" has been verified and is complete.",
+      "createdAt": "2026-01-28T16:08:03.136Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "cleanup-existing-empty-assistant-messages-in-database",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "a20940ad-5f59-426d-af27-443c6166d985",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"clarification-flow-e2e-tests\" has been verified and is complete.",
+      "createdAt": "2026-01-28T16:10:17.897Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "clarification-flow-e2e-tests",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

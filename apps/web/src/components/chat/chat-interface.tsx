@@ -135,10 +135,54 @@ export function ChatInterface() {
         const loadedMessages: ChatMessage[] = sessionData.messages
           .sort((a: any, b: any) => a.sequenceOrder - b.sequenceOrder)
           .map((msg: any) => {
+            // Parse clarification from content field if it's a JSON string
+            // This handles messages where the backend stored clarification JSON in content
+            let parsedClarificationFromContent: ClarificationInfo | null = null;
+            let displayContent = msg.content;
+
+            if (msg.content && typeof msg.content === 'string' && msg.role === 'ASSISTANT') {
+              const trimmed = msg.content.trim();
+              // Check if content contains clarification JSON
+              if (
+                trimmed.startsWith('{"type":"clarification"') ||
+                trimmed.startsWith('{"type": "clarification"')
+              ) {
+                try {
+                  const parsed = JSON.parse(trimmed);
+                  if (parsed.type === 'clarification' && Array.isArray(parsed.questions)) {
+                    parsedClarificationFromContent = {
+                      needs_clarification: true,
+                      questions: parsed.questions.map((q: any) => ({
+                        question: q.question,
+                        question_type: q.question_type || 'text',
+                        options: q.options,
+                        hint: q.hint,
+                      })),
+                      context_summary: parsed.context_summary || '',
+                      next_steps: parsed.next_steps || '',
+                      currentRound: parsed.currentRound,
+                      totalRounds: parsed.totalRounds,
+                    };
+                    // Clear content for clarification messages so we don't display raw JSON
+                    displayContent = '';
+                  }
+                } catch (e) {
+                  console.warn('Failed to parse clarification JSON from content:', e);
+                }
+              }
+            }
+
+            // Use clarification from metadata first, fallback to parsed content
+            const clarificationFromMetadata = msg.metadata?.clarification?.needs_clarification
+              ? msg.metadata.clarification
+              : null;
+
+            const clarification = clarificationFromMetadata || parsedClarificationFromContent;
+
             const message: ChatMessage = {
               id: msg.messageId,
               role: msg.role === 'USER' ? 'user' : 'assistant',
-              content: msg.content,
+              content: displayContent,
               citations: msg.citations?.map((c: any) => ({
                 source: c.source,
                 url: c.url || undefined,
@@ -149,18 +193,18 @@ export function ChatInterface() {
               isStreaming: false,
             };
 
-            // Check if message has clarification in metadata
-            if (msg.metadata?.clarification && msg.metadata.clarification.needs_clarification) {
+            // Attach clarification data from either metadata or parsed content
+            if (clarification) {
               message.clarification = {
                 needs_clarification: true,
-                questions: msg.metadata.clarification.questions || [],
-                context_summary: msg.metadata.clarification.context_summary || '',
-                next_steps: msg.metadata.clarification.next_steps || '',
-                currentRound: msg.metadata.clarification.currentRound,
-                totalRounds: msg.metadata.clarification.totalRounds,
+                questions: clarification.questions || [],
+                context_summary: clarification.context_summary || '',
+                next_steps: clarification.next_steps || '',
+                currentRound: clarification.currentRound,
+                totalRounds: clarification.totalRounds,
               };
               // Store whether this clarification was already answered
-              message.clarificationAnswered = msg.metadata.clarification.answered || false;
+              message.clarificationAnswered = clarification.answered || msg.metadata?.clarification?.answered || false;
             }
 
             return message;

@@ -5,9 +5,9 @@ relevantTo: [validation]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 132
-  referenced: 63
-  successfulFeatures: 63
+  loaded: 134
+  referenced: 66
+  successfulFeatures: 66
 ---
 # validation
 
@@ -56,6 +56,7 @@ usageStats:
   2. **ESLint:** `pnpm lint` must pass without errors (or run via lint-staged on commit)
   3. **Unit Tests:** `pnpm test` must pass
   4. **E2E Tests:** `pnpm test:e2e` must pass for relevant features
+  5. **AI Engine Type Checks:** `cd apps/ai-engine && uv run mypy src/` must pass without errors
 - **How to Run:**
   ```bash
   # Run all checks (recommended before committing)
@@ -66,6 +67,10 @@ usageStats:
   pnpm lint           # ESLint
   pnpm test           # Unit tests
   pnpm test:e2e       # E2E tests
+
+  # AI Engine type checking
+  cd apps/ai-engine && uv run mypy src/    # Python type checking
+  cd apps/ai-engine && uv run pytest tests/unit/  # Unit tests
   ```
 - **Validation Agent:** A dedicated subagent (`validate-feature`) should be invoked after each feature completion to ensure all checks pass.
 - **Breaking if changed:** Skipping validation allows type errors and broken code to enter the codebase, causing build failures for other developers.

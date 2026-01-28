@@ -12,9 +12,11 @@ import { ChatSearchService } from './services/chat-search.service';
 import { ChatMigrationService } from './services/chat-migration.service';
 import { TitleGenerationService } from './services/title-generation.service';
 import { ChatAuditService } from './services/chat-audit.service';
+import { ChatDataCleanupService } from './services/chat-data-cleanup.service';
 import { ChatSessionsResolver } from './chat-sessions.resolver';
 import { ChatMessagesResolver } from './chat-messages.resolver';
 import { ChatMigrationResolver } from './chat-migration.resolver';
+import { ChatDataCleanupResolver } from './chat-data-cleanup.resolver';
 import { ChatMessageRepository } from './repositories/chat-message.repository';
 import { ChatSessionRepository } from './repositories/chat-session.repository';
 import {
@@ -43,6 +45,7 @@ import { AiClientModule } from '../../shared/ai-client/ai-client.module';
  * - Auto-generated nestjs-query CRUD resolvers
  * - AI-powered title generation for new sessions
  * - localStorage to database migration
+ * - Data cleanup for empty assistant messages
  * - Authorization guards to ensure users can only access their own sessions
  */
 @Module({
@@ -99,9 +102,11 @@ import { AiClientModule } from '../../shared/ai-client/ai-client.module';
     ChatMigrationService,
     TitleGenerationService,
     ChatAuditService,
+    ChatDataCleanupService,
     ChatSessionsResolver,
     ChatMessagesResolver,
     ChatMigrationResolver,
+    ChatDataCleanupResolver,
     ChatMessageRepository,
     ChatSessionRepository,
     ChatSessionOwnershipGuard,
@@ -114,6 +119,7 @@ import { AiClientModule } from '../../shared/ai-client/ai-client.module';
     ChatMigrationService,
     TitleGenerationService,
     ChatAuditService,
+    ChatDataCleanupService,
     ChatMessageRepository,
     ChatSessionRepository,
     TypeOrmModule,

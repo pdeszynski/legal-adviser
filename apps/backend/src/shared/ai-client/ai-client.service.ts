@@ -176,8 +176,10 @@ export class AiClientService {
     const historyLogContext: HistoryLogContext = {
       session_id: request.session_id,
       conversation_history_count: historySize,
-      conversation_history_total_chars: conversationHistory
-        .reduce((sum, msg) => sum + (msg.content?.length || 0), 0),
+      conversation_history_total_chars: conversationHistory.reduce(
+        (sum, msg) => sum + (msg.content?.length || 0),
+        0,
+      ),
       user_id: userId || 'anonymous',
     };
 
@@ -195,23 +197,26 @@ export class AiClientService {
       historyLogContext.last_message_role = roles[roles.length - 1];
 
       // Verify message order (oldest first, newest last)
-      historyLogContext.message_order_valid = this.verifyMessageOrder(conversationHistory);
+      historyLogContext.message_order_valid =
+        this.verifyMessageOrder(conversationHistory);
 
       // Check for any message truncation or data loss
-      historyLogContext.has_empty_content = conversationHistory.some((msg) => !msg.content || msg.content.trim().length === 0);
+      historyLogContext.has_empty_content = conversationHistory.some(
+        (msg) => !msg.content || msg.content.trim().length === 0,
+      );
     }
 
     this.logger.log(
       `Sending request to AI Engine: session_id=${request.session_id}, ` +
-      `conversation_history_count=${historySize}, ` +
-      `user_id=${userId || 'anonymous'}`,
+        `conversation_history_count=${historySize}, ` +
+        `user_id=${userId || 'anonymous'}`,
     );
 
     // Log detailed conversation history structure at debug level
     if (historySize > 0) {
       this.logger.debug(
         `Conversation history structure for session ${request.session_id}: ` +
-        `messages=[${conversationHistory.map((m, i) => `${i}:${m.role}:${m.content?.substring(0, 30) || ''}...`).join(', ')}]`,
+          `messages=[${conversationHistory.map((m, i) => `${i}:${m.role}:${m.content?.substring(0, 30) || ''}...`).join(', ')}]`,
       );
     }
 
@@ -255,15 +260,15 @@ export class AiClientService {
 
       this.logger.log(
         `AI Engine response received: session_id=${request.session_id}, ` +
-        `tokens_used=${responseData.tokens_used || 'N/A'}, ` +
-        `conversation_history_used=${historySize}`,
+          `tokens_used=${responseData.tokens_used || 'N/A'}, ` +
+          `conversation_history_used=${historySize}`,
       );
 
       return responseData;
     } catch (error) {
       this.logger.error(
         `Failed to ask question for session ${request.session_id}: ` +
-        `conversation_history_size=${historySize}`,
+          `conversation_history_size=${historySize}`,
         error,
       );
       throw new Error('Question answering failed');

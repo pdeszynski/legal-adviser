@@ -205,10 +205,7 @@ export class ChatMigrationService {
         failedCount++;
 
         // If error is "already exists" and skipDuplicates is true, don't count as failure
-        if (
-          input.skipDuplicates &&
-          result.error?.includes('already exists')
-        ) {
+        if (input.skipDuplicates && result.error?.includes('already exists')) {
           failedCount--;
         }
       }
@@ -234,10 +231,7 @@ export class ChatMigrationService {
    * @param sessionId - The session ID to check
    * @returns True if session exists
    */
-  async sessionExists(
-    userId: string,
-    sessionId: string,
-  ): Promise<boolean> {
+  async sessionExists(userId: string, sessionId: string): Promise<boolean> {
     const count = await this.chatSessionRepository.count({
       where: { id: sessionId, userId },
     });

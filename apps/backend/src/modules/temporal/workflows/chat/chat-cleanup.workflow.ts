@@ -248,7 +248,9 @@ interface ChatCleanupActivities {
   sendCleanupNotification(
     input: SendCleanupNotificationInput,
   ): Promise<SendCleanupNotificationOutput>;
-  logCleanupReport(input: LogCleanupReportInput): Promise<LogCleanupReportOutput>;
+  logCleanupReport(
+    input: LogCleanupReportInput,
+  ): Promise<LogCleanupReportOutput>;
 }
 
 /**
@@ -257,7 +259,9 @@ interface ChatCleanupActivities {
  * @param jobType - Type of cleanup job (archive, delete, notify)
  * @returns Unique workflow ID
  */
-export function generateWorkflowId(jobType: 'archive' | 'delete' | 'full'): string {
+export function generateWorkflowId(
+  jobType: 'archive' | 'delete' | 'full',
+): string {
   const timestamp = Date.now();
   return `chat-cleanup-${jobType}-${timestamp}`;
 }
@@ -361,13 +365,17 @@ export async function chatCleanup(
     }
 
     // Phase 2: Send pre-deletion notifications
-    if (sendNotifications && retentionPolicy.notificationDaysBeforeDeletion > 0) {
+    if (
+      sendNotifications &&
+      retentionPolicy.notificationDaysBeforeDeletion > 0
+    ) {
       offset = 0;
       hasMore = true;
 
       // Find sessions that will be deleted soon
       const deletionThreshold =
-        retentionPolicy.deleteAfterDays - retentionPolicy.notificationDaysBeforeDeletion;
+        retentionPolicy.deleteAfterDays -
+        retentionPolicy.notificationDaysBeforeDeletion;
 
       while (hasMore) {
         const sessionsToNotifyResult = await activities.findOldSessions({
@@ -460,8 +468,7 @@ export async function chatCleanup(
       errors,
     };
 
-    const status =
-      errorCount > 0 ? 'PARTIALLY_COMPLETED' : 'COMPLETED';
+    const status = errorCount > 0 ? 'PARTIALLY_COMPLETED' : 'COMPLETED';
 
     // Log the cleanup report
     await activities.logCleanupReport({

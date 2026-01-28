@@ -350,9 +350,7 @@ export class NotificationManagerService {
       },
     });
 
-    const saved = (await this.inAppNotificationRepository.save(
-      notification,
-    )) as InAppNotification;
+    const saved = await this.inAppNotificationRepository.save(notification);
 
     // Publish GraphQL subscription event
     await this.pubSubService.publishInAppNotificationCreated({

@@ -44,7 +44,7 @@ cd apps/web && npm test | playwright test
 **Post-Feature Checklist:**
 
 1. Lint: `eslint .`
-2. Type check: `tsc --noEmit`
+2. Type check: `tsc --noEmit` (TypeScript) / `cd apps/ai-engine && uv run mypy src/` (Python)
 3. Unit tests: `jest` / `npm test` / `uv run pytest`
 4. E2E tests: `npm run test:e2e` / `playwright test`
 
@@ -1671,6 +1671,54 @@ GET /health/live     # Kubernetes liveness probe
 ```
 
 ### Testing
+
+#### Type Checking with mypy
+
+**Location:** `apps/ai-engine/`
+
+**Run mypy:**
+```bash
+cd apps/ai-engine && uv run mypy src/
+```
+
+**Common mypy errors and fixes:**
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `no-any-return` | Missing return type annotation on inner async function | Add explicit return type: `async def inner() -> ReturnType:` |
+| Duplicate `disable_error_code` for same module | Multiple `[[tool.mypy.overrides]]` sections for same module | Merge into single section with combined error codes |
+| Incompatible type from external library | Library type stubs incomplete | Use type cast with `# type: ignore` comment explaining limitation |
+
+**Example - Adding return type to inner function:**
+```python
+# Before (causes no-any-return error)
+async def run_workflow():
+    return await self._execute_workflow(...)
+
+# After (fixed)
+async def run_workflow() -> dict[str, Any]:
+    return await self._execute_workflow(...)
+```
+
+**Example - Type cast for external library limitations:**
+```python
+# When external library (pydantic_ai) has incomplete type stubs
+output: GeneratedTitle = result.output  # type: ignore[assignment]
+# ^ Add comment explaining why type: ignore is needed
+```
+
+**Mypy configuration in `pyproject.toml`:**
+
+```toml
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+# For modules with external library limitations, merge disable_error_code lists
+[[tool.mypy.overrides]]
+module = "src.services.streaming_enhanced"
+disable_error_code = ["call-overload", "arg-type"]  # Single entry, not duplicates
+```
 
 #### Test Locations
 

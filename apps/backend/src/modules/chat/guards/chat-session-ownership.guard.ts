@@ -101,7 +101,7 @@ export class ChatSessionOwnershipGuard {
    */
   private extractIpAddress(ctx: GqlExecutionContext): string | undefined {
     const req = ctx.getContext().req;
-    return req?.ip || req?.headers?.['x-forwarded-for'] as string | undefined;
+    return req?.ip || (req?.headers?.['x-forwarded-for'] as string | undefined);
   }
 
   /**

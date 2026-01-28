@@ -825,9 +825,15 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
                 }
 
                 // Handle clarification from token events
-                if (event.type === 'token' && isClarificationJson(processed.content || '')) {
-                  const clarification = parseClarificationFromToken(processed.content || '');
+                // IMPORTANT: Check event.content directly, not processed.content, because
+                // processEvent returns { clarification } for clarification tokens without content
+                if (event.type === 'token' && isClarificationJson(event.content)) {
+                  const clarification = parseClarificationFromToken(event.content);
                   if (clarification) {
+                    console.log('[executeStreamRequest] Clarification JSON captured from token event:', {
+                      questionsCount: clarification.questions?.length || 0,
+                      contextSummary: clarification.context_summary?.substring(0, 50) || '',
+                    });
                     finalResponse.clarification = clarification;
                     setCurrentClarification(clarification);
                   }
@@ -1057,8 +1063,19 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
               context_summary: response.clarification.context_summary,
               next_steps: response.clarification.next_steps,
             });
-            console.log('[sendMessage] Saving clarification message with JSON content');
+            console.log('[sendMessage] Saving clarification message with JSON content:', {
+              contentLength: contentToSave.length,
+              questionsCount: response.clarification.questions?.length || 0,
+            });
           }
+
+          // Log what we're about to save (for debugging empty content issues)
+          console.log('[sendMessage] Saving assistant message to backend:', {
+            contentLength: contentToSave.length,
+            hasContent: !!contentToSave,
+            hasClarification: !!response.clarification,
+            isClarificationJson: isClarificationJson(contentToSave),
+          });
 
           const assistantMessageResult = await saveAssistantMessageToBackend(
             sessionId,
@@ -1073,6 +1090,10 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
           if (!assistantMessageResult.success) {
             console.warn('Failed to save assistant message to backend:', assistantMessageResult.error);
             // Continue anyway - don't block the user experience
+          } else {
+            console.log('[sendMessage] Assistant message saved successfully:', {
+              messageId: assistantMessageResult.messageId,
+            });
           }
         }
 

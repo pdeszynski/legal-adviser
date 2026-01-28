@@ -522,7 +522,10 @@ export class LangfuseDebugConfig {
   @Field({ nullable: true, description: 'Langfuse host URL' })
   hostUrl?: string;
 
-  @Field({ nullable: true, description: 'Langfuse trace URL template (use {traceId} as placeholder)' })
+  @Field({
+    nullable: true,
+    description: 'Langfuse trace URL template (use {traceId} as placeholder)',
+  })
   traceUrlTemplate?: string;
 
   @Field({ nullable: true, description: 'Base URL for Langfuse dashboard' })

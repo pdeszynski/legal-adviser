@@ -8,7 +8,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ChatSession, ChatCitation } from '../entities/chat-session.entity';
-import { ChatMessage, MessageRole, ClarificationInfo } from '../entities/chat-message.entity';
+import {
+  ChatMessage,
+  MessageRole,
+  ClarificationInfo,
+} from '../entities/chat-message.entity';
 import { ChatSessionsService } from './chat-sessions.service';
 import {
   CreateChatMessageInput,
@@ -41,14 +45,56 @@ export class ChatMessagesService {
    * Validate message content is not empty
    *
    * @param content - The message content to validate
+   * @param role - Optional message role for better error messages
+   * @param hasClarificationMetadata - Whether clarification metadata is present
    * @throws BadRequestException if content is empty or only whitespace
    */
-  private validateContent(content: string): void {
-    if (!content || typeof content !== 'string' || content.trim().length === 0) {
+  private validateContent(
+    content: string,
+    role?: MessageRole,
+    hasClarificationMetadata = false,
+  ): void {
+    if (
+      !content ||
+      typeof content !== 'string' ||
+      content.trim().length === 0
+    ) {
+      // Special error for clarification responses with empty content
+      if (hasClarificationMetadata) {
+        this.logger.error(
+          `[CLARIFICATION_VALIDATION_ERROR] Clarification message has empty content. ` +
+            `For clarification responses, the content field must contain the JSON structure. ` +
+            `Expected format: {"type":"clarification","questions":[...],"context_summary":"...","next_steps":"..."}`,
+        );
+        throw new BadRequestException(
+          'Clarification JSON content cannot be empty. ' +
+            'For clarification responses, the content field must contain the JSON structure: ' +
+            '{"type":"clarification","questions":[...],"context_summary":"...","next_steps":"..."}',
+        );
+      }
+
       throw new BadRequestException(
         'Message content cannot be empty. Please provide a valid message.',
       );
     }
+  }
+
+  /**
+   * Check if content is a clarification JSON
+   *
+   * @param content - The message content to check
+   * @returns true if content contains clarification JSON structure
+   */
+  private isClarificationJson(content: string): boolean {
+    if (!content || typeof content !== 'string') {
+      return false;
+    }
+
+    const trimmed = content.trim();
+    return (
+      trimmed.startsWith('{"type":"clarification"') ||
+      trimmed.startsWith('{"type": "clarification"')
+    );
   }
 
   /**
@@ -133,8 +179,27 @@ export class ChatMessagesService {
     userId: string,
     input: CreateAssistantMessageInput,
   ): Promise<ChatMessage> {
+    // Check if content contains clarification JSON
+    const isClarification = this.isClarificationJson(input.content);
+    const hasClarificationMetadata =
+      isClarification || !!input.metadata?.clarification;
+
+    // Log clarification detection for debugging
+    if (isClarification) {
+      this.logger.log(
+        `[CLARIFICATION_DETECTED] Session ${sessionId} | Content starts with clarification JSON | ` +
+          `contentLength=${input.content.length} | ` +
+          `hasMetadataClarification=${!!input.metadata?.clarification}`,
+      );
+    }
+
     // Validate content is not empty
-    this.validateContent(input.content);
+    // If metadata contains clarification but content is empty, that's a data quality issue
+    this.validateContent(
+      input.content,
+      MessageRole.ASSISTANT,
+      hasClarificationMetadata,
+    );
 
     // Verify session ownership
     await this.chatSessionsService.verifyOwnership(sessionId, userId);
@@ -143,14 +208,26 @@ export class ChatMessagesService {
     const nextOrder = await this.getNextSequenceOrder(sessionId);
 
     // Check if content contains clarification JSON and parse it
-    const clarificationFromContent = this.parseClarificationFromContent(input.content);
+    const clarificationFromContent = this.parseClarificationFromContent(
+      input.content,
+    );
 
     // Merge clarification from content with provided metadata
     const metadata = input.metadata ?? {};
     if (clarificationFromContent) {
       metadata.clarification = clarificationFromContent;
-      this.logger.debug(
-        `Detected clarification JSON in message for session ${sessionId}, stored in metadata`,
+      this.logger.log(
+        `[CLARIFICATION_PARSED] Session ${sessionId} | Parsed clarification from content | ` +
+          `questionsCount=${clarificationFromContent.questions?.length || 0} | ` +
+          `context_summary="${clarificationFromContent.context_summary?.substring(0, 50) || ''}..."`,
+      );
+    }
+
+    // Additional validation: if metadata has clarification but content doesn't contain it
+    if (metadata.clarification && !clarificationFromContent) {
+      this.logger.warn(
+        `[CLARIFICATION_METADATA_MISMATCH] Session ${sessionId} | Metadata has clarification but content doesn't contain JSON | ` +
+          `This may indicate frontend didn't serialize clarification to content field`,
       );
     }
 
@@ -167,10 +244,20 @@ export class ChatMessagesService {
 
     const savedMessage = await this.chatMessageRepository.save(message);
 
-    // Log content length for verification
-    this.logger.log(
-      `[CHAT_MESSAGE_SAVE] ASSISTANT message saved | sessionId=${sessionId} | messageId=${savedMessage.messageId} | contentLength=${input.content.length} | sequenceOrder=${nextOrder} | hasCitations=${!!input.citations?.length}`,
-    );
+    // Log content length for verification with clarification details
+    if (clarificationFromContent) {
+      this.logger.log(
+        `[CHAT_MESSAGE_SAVE] ASSISTANT message saved (CLARIFICATION) | ` +
+          `sessionId=${sessionId} | messageId=${savedMessage.messageId} | ` +
+          `contentLength=${input.content.length} | sequenceOrder=${nextOrder} | ` +
+          `hasClarification=true | questionsCount=${clarificationFromContent.questions?.length || 0} | ` +
+          `contextSummary="${clarificationFromContent.context_summary?.substring(0, 50) || ''}..."`,
+      );
+    } else {
+      this.logger.log(
+        `[CHAT_MESSAGE_SAVE] ASSISTANT message saved | sessionId=${sessionId} | messageId=${savedMessage.messageId} | contentLength=${input.content.length} | sequenceOrder=${nextOrder} | hasCitations=${!!input.citations?.length}`,
+      );
+    }
 
     // Update session metadata
     await this.updateSessionOnNewMessage(sessionId);
@@ -279,7 +366,7 @@ export class ChatMessagesService {
       .where('message.sessionId = :sessionId', { sessionId })
       .getRawOne();
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return (result?.maxOrder ?? -1) + 1;
   }
 
@@ -378,7 +465,9 @@ export class ChatMessagesService {
 
     // If there's no existing clarification, we can't update it
     if (!currentClarification) {
-      throw new NotFoundException(`Message ${messageId} does not contain a clarification`);
+      throw new NotFoundException(
+        `Message ${messageId} does not contain a clarification`,
+      );
     }
 
     const updatedMetadata = {
@@ -461,7 +550,9 @@ export class ChatMessagesService {
    * @param content - The message content
    * @returns Parsed clarification info or null if not a clarification message
    */
-  private parseClarificationFromContent(content: string): ClarificationInfo | null {
+  private parseClarificationFromContent(
+    content: string,
+  ): ClarificationInfo | null {
     if (!content || typeof content !== 'string') {
       return null;
     }
@@ -481,12 +572,14 @@ export class ChatMessagesService {
       if (data.type === 'clarification' && Array.isArray(data.questions)) {
         return {
           needs_clarification: true,
-          questions: (data.questions as Array<{
-            question: string;
-            question_type?: string;
-            options?: string[];
-            hint?: string;
-          }>).map((q) => ({
+          questions: (
+            data.questions as Array<{
+              question: string;
+              question_type?: string;
+              options?: string[];
+              hint?: string;
+            }>
+          ).map((q) => ({
             question: q.question,
             question_type: q.question_type || 'text',
             options: q.options,

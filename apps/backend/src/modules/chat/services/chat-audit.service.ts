@@ -54,9 +54,7 @@ export class ChatAuditService {
         `[AUDIT] Chat operation failed: ${JSON.stringify(auditLog)}`,
       );
     } else {
-      this.logger.log(
-        `[AUDIT] Chat operation: ${JSON.stringify(auditLog)}`,
-      );
+      this.logger.log(`[AUDIT] Chat operation: ${JSON.stringify(auditLog)}`);
     }
   }
 

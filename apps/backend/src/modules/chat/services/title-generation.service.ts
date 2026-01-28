@@ -19,8 +19,14 @@ export class TitleGenerationService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.aiEngineUrl = this.configService.get<string>('AI_ENGINE_URL', 'http://localhost:8000');
-    this.timeout = this.configService.get<number>('TITLE_GENERATION_TIMEOUT_MS', 5000);
+    this.aiEngineUrl = this.configService.get<string>(
+      'AI_ENGINE_URL',
+      'http://localhost:8000',
+    );
+    this.timeout = this.configService.get<number>(
+      'TITLE_GENERATION_TIMEOUT_MS',
+      5000,
+    );
   }
 
   /**
@@ -94,7 +100,10 @@ export class TitleGenerationService {
   private generateFallbackTitle(message: string): string {
     // Remove common greetings and prefixes (Polish and English)
     const cleaned = message
-      .replace(/^(hi|hello|hey|cz[\s]*e[\s]*ść|dzi[\- ]?eki[\- ]?dobry|dobry|dzień dobry|good morning)[,!\s]*/i, '')
+      .replace(
+        /^(hi|hello|hey|cz[\s]*e[\s]*ść|dzi[\- ]?eki[\- ]?dobry|dobry|dzień dobry|good morning)[,!\s]*/i,
+        '',
+      )
       .trim();
 
     // Extract first few meaningful words (skip articles, prepositions)
@@ -102,8 +111,29 @@ export class TitleGenerationService {
 
     // Filter out short words and common filler words
     const skipWords = new Set([
-      'i', 'a', 'w', 'z', 'na', 'do', 'o', 'u', 'za', 'przez', 'oraz', 'lub',
-      'the', 'a', 'an', 'is', 'are', 'for', 'to', 'of', 'in', 'at', 'on',
+      'i',
+      'a',
+      'w',
+      'z',
+      'na',
+      'do',
+      'o',
+      'u',
+      'za',
+      'przez',
+      'oraz',
+      'lub',
+      'the',
+      'a',
+      'an',
+      'is',
+      'are',
+      'for',
+      'to',
+      'of',
+      'in',
+      'at',
+      'on',
     ]);
 
     const meaningfulWords = words.filter(

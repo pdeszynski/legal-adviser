@@ -114,7 +114,7 @@ export class ChatMessageRepository implements IChatMessageRepository {
       .where('message.sessionId = :sessionId', { sessionId })
       .getRawOne();
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return (result?.maxOrder ?? -1) + 1;
   }
 

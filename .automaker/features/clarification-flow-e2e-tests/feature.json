@@ -1,0 +1,16 @@
+{
+  "category": "Uncategorized",
+  "description": "Create comprehensive Playwright E2E tests for the clarification question flow to ensure it works end-to-end. Test scenarios: 1) AI returns clarification JSON response with questions, 2) Frontend correctly parses JSON and renders ClarificationMessage component, 3) Questions are displayed as bullet points with hints and optional answer fields, 4) User can type answers or select from options (if provided), 5) Submit Answers button sends answers to backend via submitClarificationAnswers mutation, 6) Backend processes answers and triggers new AI response, 7) AI incorporates answers and provides final response (text or document), 8) Conversation history includes both clarification round and final response, 9) Multi-round clarification works (ask → answer → ask follow-up → answer → respond), 10) Page refresh during pending clarification shows questions correctly, 11) Page refresh after completed clarification shows full conversation. Use Playwright to simulate full conversation flow requiring clarification. Verify database state after each step to ensure messages are saved with proper content.",
+  "id": "clarification-flow-e2e-tests",
+  "title": "Create E2E Tests for Complete Clarification Flow",
+  "status": "verified",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive Playwright E2E tests for the clarification question flow to ensure it works end-to-end. Test scenarios: 1) AI returns clarification JSON response with questions, 2) Frontend correctly parses JSON and renders ClarificationMessage component, 3) Questions are displayed as bullet points with hints and optional answer fields, 4) User can type answers or select from options (if provided), 5) Submit Answers button sends answers to backend via submitClarificationAnswers mutation, 6) Backend processes answers and triggers new AI response, 7) AI incorporates answers and provides final response (text or document), 8) Conversation history includes both clarification round and final response, 9) Multi-round clarification works (ask → answer → ask follow-up → answer → respond), 10) Page refresh during pending clarification shows questions correctly, 11) Page refresh after completed clarification shows full conversation. Use Playwright to simulate full conversation flow requiring clarification. Verify database state after each step to ensure messages are saved with proper content.",
+      "timestamp": "2026-01-28T15:41:22.935Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T16:10:17.879Z"
+}

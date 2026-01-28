@@ -480,7 +480,6 @@ export class TemporalMetricsService {
     const metrics = await register.getMetricsAsJSON();
 
     const findMetric = (name: string) =>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       metrics.find((m) => m.name === `${this.prefix}${name}`);
 
     const workflowsStarted = findMetric('workflows_started_total');
@@ -536,7 +535,6 @@ export class TemporalMetricsService {
    * Get Prometheus metrics as text
    */
   async getMetrics(): Promise<string> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return register.metrics();
   }
 

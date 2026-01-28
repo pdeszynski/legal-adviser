@@ -166,7 +166,6 @@ export function generateWorkflowId(documentId: string): string {
  * @returns Current workflow info
  */
 export function workflowInfoGetter() {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return workflowInfo;
 }
 

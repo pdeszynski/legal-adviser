@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769614684594-f588705c",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-28T15:38:04.594Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-streaming-response-content-capture-for-database-save",
+  "featureName": "Fix Streaming Response Content Capture for Database Save",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

@@ -1,11 +1,4 @@
-import {
-  Resolver,
-  Mutation,
-  Args,
-  Context,
-  ID,
-  Query,
-} from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Context, ID, Query } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -54,8 +47,14 @@ export class ChatMessagesResolver {
   /**
    * Extract client IP address from request context
    */
-  private extractIpAddress(context: { req: { ip?: string; headers?: Record<string, unknown> } }): string | undefined {
-    return context.req?.ip || context.req?.headers?.['x-forwarded-for'] as string || undefined;
+  private extractIpAddress(context: {
+    req: { ip?: string; headers?: Record<string, unknown> };
+  }): string | undefined {
+    return (
+      context.req?.ip ||
+      (context.req?.headers?.['x-forwarded-for'] as string) ||
+      undefined
+    );
   }
 
   /**
@@ -108,7 +107,8 @@ export class ChatMessagesResolver {
   @RequireQuota(QuotaType.QUERY)
   @Mutation(() => SendChatMessageWithAIResponse, {
     name: 'sendChatMessageWithAI',
-    description: 'Send a chat message and get AI response. Stores both messages in the database.',
+    description:
+      'Send a chat message and get AI response. Stores both messages in the database.',
   })
   async sendMessageWithAI(
     @Args('input') input: SendChatMessageWithAIInput,
@@ -122,7 +122,8 @@ export class ChatMessagesResolver {
     const safeUserId: string = userId;
 
     // Validate mode
-    const mode = input.mode.toUpperCase() === 'LAWYER' ? ChatMode.LAWYER : ChatMode.SIMPLE;
+    const mode =
+      input.mode.toUpperCase() === 'LAWYER' ? ChatMode.LAWYER : ChatMode.SIMPLE;
 
     // Get or create session
     let sessionId = input.sessionId;
@@ -164,7 +165,10 @@ export class ChatMessagesResolver {
 
     // Get conversation history for AI context
     const conversationHistory =
-      await this.chatMessagesService.getConversationHistory(finalSessionId, safeUserId);
+      await this.chatMessagesService.getConversationHistory(
+        finalSessionId,
+        safeUserId,
+      );
 
     // Log conversation history details for verification
     const historySize = conversationHistory.length;
@@ -172,7 +176,10 @@ export class ChatMessagesResolver {
       sessionId: finalSessionId,
       userId: safeUserId,
       messageCount: historySize,
-      totalChars: conversationHistory.reduce((sum, msg) => sum + (msg.content?.length || 0), 0),
+      totalChars: conversationHistory.reduce(
+        (sum, msg) => sum + (msg.content?.length || 0),
+        0,
+      ),
     };
 
     if (historySize > 0) {
@@ -191,9 +198,13 @@ export class ChatMessagesResolver {
         contentPreview: msg.content?.substring(0, 50) || '',
       }));
 
-      console.log(`[CONVERSATION_HISTORY] Session ${finalSessionId}: ${JSON.stringify(historyLogContext)}`);
+      console.log(
+        `[CONVERSATION_HISTORY] Session ${finalSessionId}: ${JSON.stringify(historyLogContext)}`,
+      );
     } else {
-      console.log(`[CONVERSATION_HISTORY] Session ${finalSessionId}: No history (new chat)`);
+      console.log(
+        `[CONVERSATION_HISTORY] Session ${finalSessionId}: No history (new chat)`,
+      );
     }
 
     // Call AI Engine
@@ -203,6 +214,7 @@ export class ChatMessagesResolver {
     let queryType: string | null = null;
     let keyTerms: string[] | null = null;
     let confidence: number | null = null;
+    let clarificationInfo: any = null;
 
     try {
       const aiResponse = await this.aiClientService.askQuestion(
@@ -220,13 +232,36 @@ export class ChatMessagesResolver {
       queryType = aiResponse.query_type || null;
       keyTerms = aiResponse.key_terms || null;
       confidence = aiResponse.confidence || null;
+      clarificationInfo = aiResponse.clarification || null;
+
+      // Handle clarification response: serialize to JSON for content field
+      if (clarificationInfo?.needs_clarification) {
+        // For clarification responses, the content should contain the JSON structure
+        // so the backend can parse it and store it in metadata
+        answerMarkdown = JSON.stringify({
+          type: 'clarification',
+          questions: clarificationInfo.questions || [],
+          context_summary: clarificationInfo.context_summary || '',
+          next_steps: clarificationInfo.next_steps || '',
+          currentRound: clarificationInfo.currentRound,
+          totalRounds: clarificationInfo.totalRounds,
+        });
+        console.log('[sendChatMessageWithAI] Clarification detected, serializing to JSON:', {
+          questionsCount: clarificationInfo.questions?.length || 0,
+          contentLength: answerMarkdown.length,
+        });
+      }
 
       // Log AI request for audit
       this.auditService.logAIRequest(
         safeUserId,
         finalSessionId,
         'ASK',
-        this.extractIpAddress(context as { req: { ip?: string; headers?: Record<string, unknown> } }),
+        this.extractIpAddress(
+          context as {
+            req: { ip?: string; headers?: Record<string, unknown> };
+          },
+        ),
         {
           mode: input.mode,
           queryType,
@@ -235,21 +270,20 @@ export class ChatMessagesResolver {
       );
 
       // Create assistant message
-      assistantMessage =
-        await this.chatMessagesService.createAssistantMessage(
-          finalSessionId,
-          safeUserId,
-          {
-            content: answerMarkdown,
-            citations: citations || undefined,
-            metadata: {
-              confidence: confidence ?? undefined,
-              queryType: queryType ?? undefined,
-              keyTerms: keyTerms ?? undefined,
-              model: 'gpt-4o',
-            },
+      assistantMessage = await this.chatMessagesService.createAssistantMessage(
+        finalSessionId,
+        safeUserId,
+        {
+          content: answerMarkdown,
+          citations: citations || undefined,
+          metadata: {
+            confidence: confidence ?? undefined,
+            queryType: queryType ?? undefined,
+            keyTerms: keyTerms ?? undefined,
+            model: 'gpt-4o',
           },
-        );
+        },
+      );
     } catch (error) {
       // Log error but don't fail - return user message without assistant response
       console.error('AI Engine error:', error);
@@ -310,7 +344,8 @@ export class ChatMessagesResolver {
    */
   @Mutation(() => SendChatMessageResponse, {
     name: 'saveChatMessage',
-    description: 'Save a chat message to the database (used for streaming responses)',
+    description:
+      'Save a chat message to the database (used for streaming responses)',
   })
   @UseGuards(ChatSessionOwnershipGuard)
   async saveMessage(

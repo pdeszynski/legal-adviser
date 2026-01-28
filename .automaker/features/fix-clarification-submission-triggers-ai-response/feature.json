@@ -1,0 +1,16 @@
+{
+  "category": "Uncategorized",
+  "description": "Fix the broken clarification flow where submitting answers does not generate a follow-up AI response. Evidence from chat history: User submitted clarification answers in messageId 14c3d2fe but no assistant response followed (conversation ended). Implementation tasks: 1) Verify submitClarificationAnswers mutation exists in backend, 2) Ensure mutation takes sessionId and answers array parameters, 3) Backend should re-run AI agent with original query + clarification answers + full conversation history, 4) AI should generate final response (text or document) incorporating the answers, 5) Save new assistant message to database with proper content, 6) Return new message to frontend for display, 7) Frontend should show loading state during re-processing, 8) Update UI to display AI's final response after clarification round. Debugging: 1) Check if submitClarificationAnswers mutation is being called from frontend, 2) Verify mutation sends answers to AI Engine, 3) Check AI Engine logs to see if agent is re-run with answers, 4) Verify response is saved to ChatMessage table, 5) Check if frontend refetches chat history after submission. The flow should be: AI asks questions -> user answers -> AI processes answers -> AI provides final response incorporating answers.",
+  "id": "fix-clarification-submission-triggers-ai-response",
+  "title": "Fix Clarification Submission to Trigger New AI Response",
+  "status": "verified",
+  "branchName": "store-chat",
+  "descriptionHistory": [
+    {
+      "description": "Fix the broken clarification flow where submitting answers does not generate a follow-up AI response. Evidence from chat history: User submitted clarification answers in messageId 14c3d2fe but no assistant response followed (conversation ended). Implementation tasks: 1) Verify submitClarificationAnswers mutation exists in backend, 2) Ensure mutation takes sessionId and answers array parameters, 3) Backend should re-run AI agent with original query + clarification answers + full conversation history, 4) AI should generate final response (text or document) incorporating the answers, 5) Save new assistant message to database with proper content, 6) Return new message to frontend for display, 7) Frontend should show loading state during re-processing, 8) Update UI to display AI's final response after clarification round. Debugging: 1) Check if submitClarificationAnswers mutation is being called from frontend, 2) Verify mutation sends answers to AI Engine, 3) Check AI Engine logs to see if agent is re-run with answers, 4) Verify response is saved to ChatMessage table, 5) Check if frontend refetches chat history after submission. The flow should be: AI asks questions -> user answers -> AI processes answers -> AI provides final response incorporating answers.",
+      "timestamp": "2026-01-28T15:41:22.934Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-28T16:02:51.891Z"
+}

@@ -34,9 +34,7 @@ import {
   ChatContentSearchArgs,
   ChatContentSearchResponse,
 } from './dto/chat-search.dto';
-import {
-  ChatSessionDebugInfo,
-} from './dto/chat-message.dto';
+import { ChatSessionDebugInfo } from './dto/chat-message.dto';
 import { ChatMessagesService } from './services/chat-messages.service';
 
 /**
@@ -109,8 +107,14 @@ export class ChatSessionsResolver {
   /**
    * Extract client IP address from request context
    */
-  private extractIpAddress(context: { req: { ip?: string; headers?: Record<string, unknown> } }): string | undefined {
-    return context.req?.ip || context.req?.headers?.['x-forwarded-for'] as string || undefined;
+  private extractIpAddress(context: {
+    req: { ip?: string; headers?: Record<string, unknown> };
+  }): string | undefined {
+    return (
+      context.req?.ip ||
+      (context.req?.headers?.['x-forwarded-for'] as string) ||
+      undefined
+    );
   }
 
   /**
@@ -325,7 +329,8 @@ export class ChatSessionsResolver {
    */
   @Query(() => ChatContentSearchResponse, {
     name: 'searchChatContent',
-    description: 'Full-text search across chat messages with relevance ranking and highlighting',
+    description:
+      'Full-text search across chat messages with relevance ranking and highlighting',
   })
   async searchChatContent(
     @Args() args: ChatContentSearchArgs,
@@ -350,7 +355,9 @@ export class ChatSessionsResolver {
       userId,
       args.query,
       result.totalCount,
-      this.extractIpAddress(context as { req: { ip?: string; headers?: Record<string, unknown> } }),
+      this.extractIpAddress(
+        context as { req: { ip?: string; headers?: Record<string, unknown> } },
+      ),
     );
 
     return result;
@@ -419,8 +426,12 @@ export class ChatSessionsResolver {
       (sum, msg) => sum + (msg.content?.length || 0),
       0,
     );
-    const userCount = conversationHistory.filter((m) => m.role === 'user').length;
-    const assistantCount = conversationHistory.filter((m) => m.role === 'assistant').length;
+    const userCount = conversationHistory.filter(
+      (m) => m.role === 'user',
+    ).length;
+    const assistantCount = conversationHistory.filter(
+      (m) => m.role === 'assistant',
+    ).length;
 
     // Verify message order
     const roles = conversationHistory.map((m) => m.role);
@@ -450,7 +461,9 @@ export class ChatSessionsResolver {
       messageId: msg.messageId,
       role: msg.role,
       content: msg.content,
-      contentPreview: msg.content?.substring(0, 100) + (msg.content?.length > 100 ? '...' : ''),
+      contentPreview:
+        msg.content?.substring(0, 100) +
+        (msg.content?.length > 100 ? '...' : ''),
       sequenceOrder: msg.sequenceOrder,
       createdAt: msg.createdAt.toISOString(),
     }));
@@ -505,7 +518,8 @@ export class ChatSessionsResolver {
    */
   @Mutation(() => ChatSession, {
     name: 'createChatSession',
-    description: 'Create a new chat session. Session ID is generated server-side.',
+    description:
+      'Create a new chat session. Session ID is generated server-side.',
   })
   async createChatSession(
     @Args('input') input: CreateChatSessionInput,
@@ -523,7 +537,9 @@ export class ChatSessionsResolver {
       userId,
       'CREATE',
       session.id,
-      this.extractIpAddress(context as { req: { ip?: string; headers?: Record<string, unknown> } }),
+      this.extractIpAddress(
+        context as { req: { ip?: string; headers?: Record<string, unknown> } },
+      ),
       { mode: input.mode },
     );
 
@@ -736,7 +752,9 @@ export class ChatSessionsResolver {
       userId,
       input.sessionId,
       input.format,
-      this.extractIpAddress(context as { req: { ip?: string; headers?: Record<string, unknown> } }),
+      this.extractIpAddress(
+        context as { req: { ip?: string; headers?: Record<string, unknown> } },
+      ),
     );
 
     return this.chatExportService.exportSession(

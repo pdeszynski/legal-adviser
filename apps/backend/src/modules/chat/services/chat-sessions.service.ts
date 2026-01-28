@@ -290,9 +290,7 @@ export class ChatSessionsService {
       session.updateTitle(title);
       await this.chatSessionRepository.save(session);
 
-      this.logger.debug(
-        `Generated title for session ${sessionId}: "${title}"`,
-      );
+      this.logger.debug(`Generated title for session ${sessionId}: "${title}"`);
     } catch (error) {
       this.logger.warn(
         `Failed to generate title for session ${sessionId}: ${error.message}`,

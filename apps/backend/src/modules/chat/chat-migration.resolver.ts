@@ -1,11 +1,4 @@
-import {
-  Resolver,
-  Mutation,
-  Query,
-  Args,
-  Context,
-  ID,
-} from '@nestjs/graphql';
+import { Resolver, Mutation, Query, Args, Context, ID } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/guards';
 import { ChatMigrationService } from './services/chat-migration.service';
@@ -48,7 +41,8 @@ export class ChatMigrationResolver {
    */
   @Mutation(() => MigrateChatSessionResult, {
     name: 'migrateChatSession',
-    description: 'Migrate a single chat session from localStorage to the database',
+    description:
+      'Migrate a single chat session from localStorage to the database',
   })
   async migrateChatSession(
     @Args('input') input: MigrateChatSessionInput,
@@ -81,7 +75,8 @@ export class ChatMigrationResolver {
    */
   @Mutation(() => MigrateChatBulkResult, {
     name: 'migrateChatSessionsBulk',
-    description: 'Migrate multiple chat sessions from localStorage to the database',
+    description:
+      'Migrate multiple chat sessions from localStorage to the database',
   })
   async migrateChatSessionsBulk(
     @Args('input') input: MigrateChatBulkInput,
@@ -96,10 +91,7 @@ export class ChatMigrationResolver {
 
     // Update migration preference if any sessions were migrated
     if (result.successfulCount > 0) {
-      await this.updateMigrationPreferences(
-        userId,
-        result.successfulCount,
-      );
+      await this.updateMigrationPreferences(userId, result.successfulCount);
     }
 
     return result;
@@ -113,7 +105,8 @@ export class ChatMigrationResolver {
    */
   @Query(() => LocalStorageMigrationStatus, {
     name: 'localStorageMigrationStatus',
-    description: 'Check the status of localStorage migration for the current user',
+    description:
+      'Check the status of localStorage migration for the current user',
   })
   async getMigrationStatus(
     @Context() context: { req: { user?: { id?: string } } },
@@ -123,8 +116,7 @@ export class ChatMigrationResolver {
       throw new Error('User not authenticated');
     }
 
-    const preferences =
-      await this.userPreferencesService.findByUserId(userId);
+    const preferences = await this.userPreferencesService.findByUserId(userId);
 
     const notificationPrefs = preferences.notificationPreferences || {};
     const hasMigrated = notificationPrefs[MIGRATION_FLAG_KEY] === true;
@@ -177,7 +169,9 @@ export class ChatMigrationResolver {
       hasMigrated: true,
       lastMigrationAt: new Date().toISOString(),
       sessionsMigrated:
-        (preferences.notificationPreferences?.[MIGRATION_COUNT_KEY] as number) || 0,
+        (preferences.notificationPreferences?.[
+          MIGRATION_COUNT_KEY
+        ] as number) || 0,
     };
   }
 
@@ -206,8 +200,12 @@ export class ChatMigrationResolver {
 
     // Clear migration flags from notificationPreferences JSONB field
     const currentNotificationPrefs = preferences.notificationPreferences || {};
-    const { [MIGRATION_FLAG_KEY]: _, [MIGRATION_TIMESTAMP_KEY]: __, [MIGRATION_COUNT_KEY]: ___, ...rest } =
-      currentNotificationPrefs as Record<string, unknown>;
+    const {
+      [MIGRATION_FLAG_KEY]: _,
+      [MIGRATION_TIMESTAMP_KEY]: __,
+      [MIGRATION_COUNT_KEY]: ___,
+      ...rest
+    } = currentNotificationPrefs as Record<string, unknown>;
 
     preferences.notificationPreferences = rest;
 
@@ -228,11 +226,9 @@ export class ChatMigrationResolver {
     userId: string,
     additionalCount: number,
   ): Promise<void> {
-    const preferences =
-      await this.userPreferencesService.getOrCreate(userId);
+    const preferences = await this.userPreferencesService.getOrCreate(userId);
 
-    const currentNotificationPrefs =
-      preferences.notificationPreferences || {};
+    const currentNotificationPrefs = preferences.notificationPreferences || {};
     const currentCount =
       (currentNotificationPrefs[MIGRATION_COUNT_KEY] as number) || 0;
 

@@ -5,7 +5,11 @@ import { ChatMessage } from '../entities/chat-message.entity';
 import { ChatSession } from '../entities/chat-session.entity';
 import { ChatMode } from '../entities/chat-session.entity';
 import { MessageRole } from '../entities/chat-message.entity';
-import { ChatContentSearchArgs, ChatContentSearchResult, ChatContentSearchResponse } from '../dto/chat-search.dto';
+import {
+  ChatContentSearchArgs,
+  ChatContentSearchResult,
+  ChatContentSearchResponse,
+} from '../dto/chat-search.dto';
 
 /**
  * Service for full-text search across chat messages
@@ -82,9 +86,12 @@ export class ChatSearchService {
       ])
       .innerJoin('message.session', 'session')
       .where('session.userId = :userId', { userId })
-      .andWhere(`to_tsvector('simple', message.content) @@ to_tsquery('simple', :tsQuery)`, {
-        tsQuery,
-      })
+      .andWhere(
+        `to_tsvector('simple', message.content) @@ to_tsquery('simple', :tsQuery)`,
+        {
+          tsQuery,
+        },
+      )
       .orderBy('rank', 'DESC')
       .addOrderBy('message.createdAt', 'DESC')
       .limit(limit)
@@ -118,9 +125,12 @@ export class ChatSearchService {
       .createQueryBuilder('message')
       .innerJoin('message.session', 'session')
       .where('session.userId = :userId', { userId })
-      .andWhere(`to_tsvector('simple', message.content) @@ to_tsquery('simple', :tsQuery)`, {
-        tsQuery,
-      });
+      .andWhere(
+        `to_tsvector('simple', message.content) @@ to_tsquery('simple', :tsQuery)`,
+        {
+          tsQuery,
+        },
+      );
 
     // Apply same filters to count query
     if (mode) {
@@ -138,7 +148,9 @@ export class ChatSearchService {
     }
 
     if (dateFrom) {
-      countQueryBuilder.andWhere('message.createdAt >= :dateFrom', { dateFrom });
+      countQueryBuilder.andWhere('message.createdAt >= :dateFrom', {
+        dateFrom,
+      });
     }
 
     if (dateTo) {
@@ -153,8 +165,15 @@ export class ChatSearchService {
 
     // Process results with highlighting
     const results: ChatContentSearchResult[] = rawResults.map((row: any) => {
-      const highlightedContent = this.highlightMatches(row.content, matchedTerms);
-      const contextPreview = this.getContextPreview(row.content, matchedTerms, contextLength);
+      const highlightedContent = this.highlightMatches(
+        row.content,
+        matchedTerms,
+      );
+      const contextPreview = this.getContextPreview(
+        row.content,
+        matchedTerms,
+        contextLength,
+      );
 
       return {
         messageId: row.messageId,
@@ -317,7 +336,10 @@ export class ChatSearchService {
 
     // Calculate window around the match
     const start = Math.max(0, firstMatchPos - contextLength);
-    const end = Math.min(content.length, firstMatchPos + firstMatchTerm.length + contextLength);
+    const end = Math.min(
+      content.length,
+      firstMatchPos + firstMatchTerm.length + contextLength,
+    );
 
     let preview = content.substring(start, end);
 
