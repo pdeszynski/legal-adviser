@@ -13,6 +13,7 @@ import {
   MessageRole,
   ClarificationInfo,
   ChatMessageMetadata,
+  ChatMessageType,
 } from '../entities/chat-message.entity';
 import { ChatSessionsService } from './chat-sessions.service';
 import {
@@ -123,6 +124,17 @@ export class ChatMessagesService {
     // Get next sequence order
     const nextOrder = await this.getNextSequenceOrder(sessionId);
 
+    // Auto-detect message type if not provided
+    let messageType: ChatMessageType | null =
+      input.type ?? ChatMessageType.TEXT;
+    if (!input.type) {
+      const detectedType = this.detectMessageType(
+        input.content,
+        MessageRole.USER,
+      );
+      messageType = detectedType ?? ChatMessageType.TEXT;
+    }
+
     // Create user message
     const message = this.chatMessageRepository.create({
       sessionId,
@@ -132,13 +144,14 @@ export class ChatMessagesService {
       sequenceOrder: nextOrder,
       citations: null,
       metadata: null, // User messages don't have metadata by default
+      type: messageType,
     });
 
     const savedMessage = await this.chatMessageRepository.save(message);
 
     // Log content length for verification
     this.logger.log(
-      `[CHAT_MESSAGE_SAVE] USER message saved | sessionId=${sessionId} | messageId=${savedMessage.messageId} | contentLength=${input.content.length} | sequenceOrder=${nextOrder}`,
+      `[CHAT_MESSAGE_SAVE] USER message saved | sessionId=${sessionId} | messageId=${savedMessage.messageId} | contentLength=${input.content.length} | sequenceOrder=${nextOrder} | type=${messageType}`,
     );
 
     // Update session metadata
@@ -208,6 +221,17 @@ export class ChatMessagesService {
     // Get next sequence order
     const nextOrder = await this.getNextSequenceOrder(sessionId);
 
+    // Auto-detect message type if not provided
+    let messageType: ChatMessageType | null =
+      input.type ?? ChatMessageType.TEXT;
+    if (!input.type) {
+      const detectedType = this.detectMessageType(
+        input.content,
+        MessageRole.ASSISTANT,
+      );
+      messageType = detectedType ?? ChatMessageType.TEXT;
+    }
+
     // Check if content contains clarification JSON and parse it
     const clarificationFromContent = this.parseClarificationFromContent(
       input.content,
@@ -243,6 +267,7 @@ export class ChatMessagesService {
       sequenceOrder: nextOrder,
       citations: input.citations ?? null,
       metadata: Object.keys(metadata).length > 0 ? metadata : null,
+      type: messageType,
     });
 
     const savedMessage = await this.chatMessageRepository.save(message);
@@ -252,13 +277,13 @@ export class ChatMessagesService {
       this.logger.log(
         `[CHAT_MESSAGE_SAVE] ASSISTANT message saved (CLARIFICATION) | ` +
           `sessionId=${sessionId} | messageId=${savedMessage.messageId} | ` +
-          `contentLength=${input.content.length} | sequenceOrder=${nextOrder} | ` +
+          `contentLength=${input.content.length} | sequenceOrder=${nextOrder} | type=${messageType} | ` +
           `hasClarification=true | questionsCount=${clarificationFromContent.questions?.length || 0} | ` +
           `contextSummary="${clarificationFromContent.context_summary?.substring(0, 50) || ''}..."`,
       );
     } else {
       this.logger.log(
-        `[CHAT_MESSAGE_SAVE] ASSISTANT message saved | sessionId=${sessionId} | messageId=${savedMessage.messageId} | contentLength=${input.content.length} | sequenceOrder=${nextOrder} | hasCitations=${!!input.citations?.length}`,
+        `[CHAT_MESSAGE_SAVE] ASSISTANT message saved | sessionId=${sessionId} | messageId=${savedMessage.messageId} | contentLength=${input.content.length} | sequenceOrder=${nextOrder} | type=${messageType} | hasCitations=${!!input.citations?.length}`,
       );
     }
 
@@ -741,5 +766,58 @@ export class ChatMessagesService {
     }
 
     return null;
+  }
+
+  /**
+   * Auto-detect message type from content and role
+   *
+   * Analyzes the content to determine the message type.
+   * This provides backward compatibility for messages created before the type field existed.
+   *
+   * @param content - The message content
+   * @param role - The message role
+   * @returns The detected message type
+   */
+  private detectMessageType(
+    content: string,
+    role: MessageRole,
+  ): ChatMessageType {
+    if (!content || typeof content !== 'string') {
+      return ChatMessageType.TEXT;
+    }
+
+    const trimmed = content.trim();
+
+    // Check for clarification question (assistant messages with clarification JSON)
+    if (role === MessageRole.ASSISTANT) {
+      if (
+        trimmed.startsWith('{"type":"clarification"') ||
+        trimmed.startsWith('{"type": "clarification"')
+      ) {
+        return ChatMessageType.CLARIFICATION_QUESTION;
+      }
+    }
+
+    // Check for clarification answer (user messages with clarification_answer JSON)
+    if (role === MessageRole.USER) {
+      if (
+        trimmed.startsWith('{"type":"clarification_answer"') ||
+        trimmed.startsWith('{"type": "clarification_answer"')
+      ) {
+        return ChatMessageType.CLARIFICATION_ANSWER;
+      }
+    }
+
+    // Check for error type
+    if (
+      trimmed.startsWith('{"type":"error"') ||
+      trimmed.startsWith('{"type": "error"') ||
+      trimmed.startsWith('{"error":')
+    ) {
+      return ChatMessageType.ERROR;
+    }
+
+    // Default to TEXT for standard messages
+    return ChatMessageType.TEXT;
   }
 }

@@ -85,14 +85,61 @@ class GenerateDocumentRequest(BaseModel):
     session_id: str = Field(..., description="User session ID for tracking")
 
 
+class MessageType(str, Enum):
+    """Types of messages that can be sent to the ask-stream endpoint."""
+
+    QUESTION = "QUESTION"  # Standard user question
+    CLARIFICATION_ANSWER = "CLARIFICATION_ANSWER"  # User's answers to clarification questions
+
+
+class ResponseType(str, Enum):
+    """Types of responses in SSE events.
+
+    Indicates the type of content being streamed back to the client.
+    This is included in the metadata of all SSE events.
+    """
+
+    TEXT = "TEXT"  # Normal text response
+    CLARIFICATION_QUESTION = "CLARIFICATION_QUESTION"  # Response contains clarification questions
+
+
+class ClarificationAnswer(BaseModel):
+    """A single clarification answer from the user.
+
+    Leaf type - must be declared before composite types.
+    """
+
+    question: str = Field(..., description="The question that was asked")
+    question_type: str = Field(..., description="Type of question (e.g., timeline, parties)")
+    answer: str = Field(..., description="The user's answer to the question")
+
+
 class AskQuestionRequest(BaseModel):
-    """Request to ask a legal question."""
+    """Request to ask a legal question or submit clarification answers.
+
+    This unified request model handles both:
+    1. Standard questions (message_type=QUESTION)
+    2. Clarification answers (message_type=CLARIFICATION_ANSWER)
+    """
 
     question: str = Field(..., description="Legal question to answer", min_length=5)
     session_id: str = Field(..., description="User session ID for tracking")
     mode: str = Field(
         default="SIMPLE",
         description="Response mode: LAWYER (detailed) or SIMPLE (layperson)",
+    )
+    message_type: MessageType = Field(
+        default=MessageType.QUESTION,
+        description="Type of message: QUESTION or CLARIFICATION_ANSWER",
+    )
+    # For CLARIFICATION_ANSWER messages, these fields are required
+    original_question: str | None = Field(
+        default=None,
+        description="Original question that prompted clarification (required for CLARIFICATION_ANSWER)",
+    )
+    clarification_answers: list[ClarificationAnswer] | None = Field(
+        default=None,
+        description="User's answers to clarification questions (required for CLARIFICATION_ANSWER)",
     )
     conversation_history: list[dict[str, str]] | None = Field(
         default=None,
@@ -173,14 +220,6 @@ class GenerateTitleRequest(BaseModel):
         ...,
         description="Session ID for tracking",
     )
-
-
-class ClarificationAnswer(BaseModel):
-    """A single clarification answer from the user."""
-
-    question: str = Field(..., description="The question that was asked")
-    question_type: str = Field(..., description="Type of question (e.g., timeline, parties)")
-    answer: str = Field(..., description="The user's answer to the question")
 
 
 class ClarificationAnswerRequest(BaseModel):

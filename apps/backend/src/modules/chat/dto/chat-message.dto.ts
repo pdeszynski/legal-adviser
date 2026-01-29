@@ -1,13 +1,30 @@
-import { InputType, Field, ID, ObjectType } from '@nestjs/graphql';
+import {
+  InputType,
+  Field,
+  ID,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import {
   IsString,
   IsOptional,
   IsArray,
   ValidateNested,
   IsNotEmpty,
+  IsEnum,
 } from 'class-validator';
 import { ChatCitationType } from '../entities/chat-session.entity';
-import { ChatMessageMetadataType } from '../entities/chat-message.entity';
+import {
+  ChatMessageMetadataType,
+  ChatMessageType,
+} from '../entities/chat-message.entity';
+
+// Re-export the enum for GraphQL
+registerEnumType(ChatMessageType, {
+  name: 'ChatMessageType',
+  description:
+    'The type of message content (text, clarification_question, clarification_answer, citation, error)',
+});
 
 /**
  * Input type for ChatCitation
@@ -28,10 +45,13 @@ export class ChatCitationInput {
 }
 
 /**
- * Input type for Clarification Question
+ * Input type for Clarification Question (Legacy)
+ *
+ * @deprecated Use ClarificationQuestionInput from clarification-question.dto.ts instead.
+ * This legacy type uses string for question_type instead of enum, and lacks questionId and required fields.
  */
-@InputType('ClarificationQuestionInput')
-export class ClarificationQuestionInput {
+@InputType('LegacyClarificationQuestionInput')
+export class LegacyClarificationQuestionInput {
   @Field(() => String)
   question: string;
 
@@ -53,8 +73,8 @@ export class ClarificationInfoInput {
   @Field(() => Boolean)
   needs_clarification: boolean;
 
-  @Field(() => [ClarificationQuestionInput])
-  questions: ClarificationQuestionInput[];
+  @Field(() => [LegacyClarificationQuestionInput])
+  questions: LegacyClarificationQuestionInput[];
 
   @Field(() => String)
   context_summary: string;
@@ -141,6 +161,15 @@ export class CreateChatMessageInput {
   @IsNotEmpty()
   content: string;
 
+  @Field(() => ChatMessageType, {
+    nullable: true,
+    description:
+      'Type of message (text, clarification_question, clarification_answer, citation, error)',
+  })
+  @IsOptional()
+  @IsEnum(ChatMessageType)
+  type?: ChatMessageType | null;
+
   @Field(() => ChatMessageMetadataInput, {
     nullable: true,
     description: 'Optional metadata for the message',
@@ -163,6 +192,15 @@ export class CreateAssistantMessageInput {
   @IsString()
   @IsNotEmpty()
   content: string;
+
+  @Field(() => ChatMessageType, {
+    nullable: true,
+    description:
+      'Type of message (text, clarification_question, clarification_answer, citation, error)',
+  })
+  @IsOptional()
+  @IsEnum(ChatMessageType)
+  type?: ChatMessageType | null;
 
   @Field(() => [ChatCitationInput], {
     nullable: true,
@@ -202,6 +240,13 @@ export class SendChatMessageResponse {
     description: 'Message role (USER or ASSISTANT)',
   })
   role: string;
+
+  @Field(() => ChatMessageType, {
+    nullable: true,
+    description:
+      'Type of message (text, clarification_question, clarification_answer, citation, error)',
+  })
+  type: ChatMessageType | null;
 
   @Field(() => String, {
     description: 'Message content',
@@ -328,6 +373,15 @@ export class SaveChatMessageInput {
   })
   @IsString()
   role: string;
+
+  @Field(() => ChatMessageType, {
+    nullable: true,
+    description:
+      'Type of message (text, clarification_question, clarification_answer, citation, error)',
+  })
+  @IsOptional()
+  @IsEnum(ChatMessageType)
+  type?: ChatMessageType | null;
 
   @Field(() => [ChatCitationInput], {
     nullable: true,
@@ -475,24 +529,24 @@ export class UpdateClarificationStatusInput {
 
 /**
  * Input for a single clarification answer
+ *
+ * Maps user answers to clarification questions by questionId.
  */
 @InputType('ClarificationAnswerInput')
 export class ClarificationAnswerInput {
   @Field(() => String, {
-    description: 'The question text',
+    description: 'Unique identifier of the question being answered',
   })
-  question: string;
+  @IsString()
+  @IsNotEmpty()
+  questionId: string;
 
   @Field(() => String, {
     description: 'The user answer',
   })
+  @IsString()
+  @IsNotEmpty()
   answer: string;
-
-  @Field(() => String, {
-    nullable: true,
-    description: 'Question type (text, timeline, etc.)',
-  })
-  question_type?: string;
 }
 
 /**
@@ -522,6 +576,27 @@ export class SubmitClarificationAnswersInput {
 }
 
 /**
+ * Validation error for a specific clarification answer
+ */
+@ObjectType('ClarificationValidationError')
+export class ClarificationValidationError {
+  @Field(() => String, {
+    description: 'The question ID that has validation errors',
+  })
+  questionId: string;
+
+  @Field(() => String, {
+    description: 'Error message describing what went wrong',
+  })
+  message: string;
+
+  @Field(() => String, {
+    description: 'Error code for programmatic handling',
+  })
+  code: string;
+}
+
+/**
  * Response type for submitting clarification answers
  */
 @ObjectType('SubmitClarificationAnswersResponse')
@@ -541,6 +616,12 @@ export class SubmitClarificationAnswersResponse {
     description: 'The clarification message ID that was updated',
   })
   clarificationMessageId: string;
+
+  @Field(() => [ClarificationValidationError], {
+    nullable: true,
+    description: 'Validation errors if submission failed',
+  })
+  validationErrors?: ClarificationValidationError[] | null;
 }
 
 /**

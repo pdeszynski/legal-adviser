@@ -2,7 +2,7 @@
   "id": "chat-ui-component",
   "category": "UI",
   "title": "Chat Interface Component",
-  "description": "Update chat UI component to support streaming message rendering. Add token-by-token text appending instead of waiting for full response. Implement streaming state management (isStreaming, stopStream handler). Add visual indicator during streaming (pulsing dot or 'Stop generating' button). Ensure smooth UI updates without layout shift. Handle partial markdown rendering during stream.",
+  "description": "Refactor chat UI to render message components based on message.type field instead of trying to parse JSON. Create separate components: TextMessage (default), ClarificationQuestionMessage, ClarificationAnswerMessage, CitationMessage. Use a message component registry or switch statement to render the correct component based on type. Remove all JSON.parse try/catch blocks from frontend chat code.",
   "status": "completed",
   "priority": 1,
   "complexity": "moderate",
@@ -29,6 +29,11 @@
     {
       "description": "Update chat UI component to support streaming message rendering. Add token-by-token text appending instead of waiting for full response. Implement streaming state management (isStreaming, stopStream handler). Add visual indicator during streaming (pulsing dot or 'Stop generating' button). Ensure smooth UI updates without layout shift. Handle partial markdown rendering during stream.",
       "timestamp": "2026-01-27T09:03:50.804Z",
+      "source": "edit"
+    },
+    {
+      "description": "Refactor chat UI to render message components based on message.type field instead of trying to parse JSON. Create separate components: TextMessage (default), ClarificationQuestionMessage, ClarificationAnswerMessage, CitationMessage. Use a message component registry or switch statement to render the correct component based on type. Remove all JSON.parse try/catch blocks from frontend chat code.",
+      "timestamp": "2026-01-29T07:24:16.616Z",
       "source": "edit"
     }
   ]

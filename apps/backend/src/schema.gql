@@ -436,6 +436,11 @@ input AskLegalQuestionInput {
   Session ID for the user asking the question (optional - will be auto-created if not provided)
   """
   sessionId: String
+
+  """
+  Message type: TEXT (default question), CLARIFICATION_ANSWER (answers to clarification questions)
+  """
+  type: String
 }
 
 """Type of action performed"""
@@ -953,6 +958,32 @@ type ChatMessage {
 
   """ID of the chat session this message belongs to"""
   sessionId: ID!
+
+  """Type of message content"""
+  type: ChatMessageType
+}
+
+interface ChatMessageInterface {
+  """Message content"""
+  content: String!
+
+  """Creation timestamp"""
+  createdAt: DateTime!
+
+  """Unique message identifier"""
+  messageId: ID!
+
+  """Role of the message sender"""
+  role: MessageRole!
+
+  """Sequence order in conversation"""
+  sequenceOrder: Float!
+
+  """Session ID"""
+  sessionId: ID!
+
+  """Message type discriminator for resolving concrete types"""
+  type: ChatMessageType
 }
 
 type ChatMessageMetadata {
@@ -982,6 +1013,15 @@ input ChatMessageMetadataInput {
 
   """Query type classification"""
   queryType: String
+}
+
+"""The type of message content"""
+enum ChatMessageType {
+  CITATION
+  CLARIFICATION_ANSWER
+  CLARIFICATION_QUESTION
+  ERROR
+  TEXT
 }
 
 """The AI response mode for chat messages"""
@@ -1247,6 +1287,35 @@ type Citation {
   url: String
 }
 
+"""Message focused on legal citations and references"""
+type CitationMessage implements ChatMessageInterface {
+  citationCount: Float!
+  citations: [ChatCitation!]!
+  confidence: Float
+
+  """Message content"""
+  content: String!
+
+  """Creation timestamp"""
+  createdAt: DateTime!
+
+  """Unique message identifier"""
+  messageId: ID!
+  queryType: String
+
+  """Role of the message sender"""
+  role: MessageRole!
+
+  """Sequence order in conversation"""
+  sequenceOrder: Float!
+
+  """Session ID"""
+  sessionId: ID!
+
+  """Message type discriminator for resolving concrete types"""
+  type: ChatMessageType
+}
+
 type ClarificationAnswer {
   answer: String!
   answered_at: DateTime
@@ -1258,11 +1327,43 @@ input ClarificationAnswerInput {
   """The user answer"""
   answer: String!
 
-  """The question text"""
-  question: String!
+  """Unique identifier of the question being answered"""
+  questionId: String!
+}
 
-  """Question type (text, timeline, etc.)"""
+type ClarificationAnswerItemType {
+  answer: String!
+  question: String!
   question_type: String
+}
+
+"""User's answers to clarification questions"""
+type ClarificationAnswerMessage implements ChatMessageInterface {
+  """When the answers were submitted"""
+  answeredAt: DateTime
+  answers: [ClarificationAnswerItemType!]!
+  clarificationMessageId: ID
+
+  """Message content"""
+  content: String!
+
+  """Creation timestamp"""
+  createdAt: DateTime!
+
+  """Unique message identifier"""
+  messageId: ID!
+
+  """Role of the message sender"""
+  role: MessageRole!
+
+  """Sequence order in conversation"""
+  sequenceOrder: Float!
+
+  """Session ID"""
+  sessionId: ID!
+
+  """Message type discriminator for resolving concrete types"""
+  type: ChatMessageType
 }
 
 type ClarificationInfo {
@@ -1278,7 +1379,7 @@ input ClarificationInfoInput {
   currentRound: Float
   needs_clarification: Boolean!
   next_steps: String!
-  questions: [ClarificationQuestionInput!]!
+  questions: [LegacyClarificationQuestionInput!]!
   totalRounds: Float
 }
 
@@ -1299,18 +1400,57 @@ type ClarificationQuestion {
   question_type: String!
 }
 
-input ClarificationQuestionInput {
+type ClarificationQuestionItemType {
   hint: String
   options: [String!]
   question: String!
   question_type: String!
 }
 
+"""Message from AI asking follow-up clarification questions to the user"""
+type ClarificationQuestionMessage implements ChatMessageInterface {
+  """Whether the clarification has been answered"""
+  answered: Boolean
+
+  """Message content"""
+  content: String!
+  context_summary: String!
+
+  """Creation timestamp"""
+  createdAt: DateTime!
+
+  """Current clarification round"""
+  currentRound: Float
+
+  """Unique message identifier"""
+  messageId: ID!
+  next_steps: String!
+  questions: [ClarificationQuestionItemType!]!
+
+  """Role of the message sender"""
+  role: MessageRole!
+
+  """Sequence order in conversation"""
+  sequenceOrder: Float!
+
+  """Session ID"""
+  sessionId: ID!
+
+  """Total clarification rounds"""
+  totalRounds: Float
+
+  """Message type discriminator for resolving concrete types"""
+  type: ChatMessageType
+}
+
 type ClarificationQuestionType {
   hint: String
   options: [String!]
   question: String!
-  question_type: String!
+  questionId: String
+  questionType: String
+  question_type: String
+  required: Boolean
 }
 
 type ClarificationSession {
@@ -1353,6 +1493,17 @@ enum ClarificationState {
   COMPLETE
   EXPIRED
   PENDING
+}
+
+type ClarificationValidationError {
+  """Error code for programmatic handling"""
+  code: String!
+
+  """Error message describing what went wrong"""
+  message: String!
+
+  """The question ID that has validation errors"""
+  questionId: String!
 }
 
 input ClassifyCaseInput {
@@ -3692,6 +3843,13 @@ enum LeadTimeline {
   WITHIN_QUARTER
 }
 
+input LegacyClarificationQuestionInput {
+  hint: String
+  options: [String!]
+  question: String!
+  question_type: String!
+}
+
 type LegalAnalysis {
   createdAt: DateTime!
   errorMessage: String
@@ -4810,7 +4968,7 @@ type Mutation {
   shareDocument(input: ShareDocumentInput!): DocumentShare!
 
   """
-  Submit answers to clarification questions. Creates a user message and marks clarification as answered.
+  Submit answers to clarification questions. Validates answers and creates a user message.
   """
   submitClarificationAnswers(input: SubmitClarificationAnswersInput!): SubmitClarificationAnswersResponse!
 
@@ -5433,8 +5591,16 @@ type Query {
   """Check if the current user can access a specific feature"""
   canAccessFeature(featureKey: String!): Boolean!
 
+  """Get a single chat message by ID with proper type resolution"""
+  chatMessageById(messageId: ID!): ChatMessageInterface
+
   """Get all messages for a chat session in sequence order"""
   chatMessages(sessionId: ID!): [ChatMessage!]!
+
+  """
+  Get chat messages for a session with proper type resolution based on message type
+  """
+  chatMessagesBySession(sessionId: ID!): [ChatMessageInterface!]!
   chatSessionAggregate(
     """Filter to find records to aggregate on"""
     filter: ChatSessionAggregateFilter
@@ -6104,6 +6270,11 @@ input SaveChatMessageInput {
 
   """The session ID"""
   sessionId: ID!
+
+  """
+  Type of message (text, clarification_question, clarification_answer, citation, error)
+  """
+  type: ChatMessageType
 }
 
 type ScheduleActionDetails {
@@ -6383,6 +6554,11 @@ type SendChatMessageResponse {
 
   """The session ID"""
   sessionId: ID!
+
+  """
+  Type of message (text, clarification_question, clarification_answer, citation, error)
+  """
+  type: ChatMessageType
 }
 
 input SendChatMessageWithAIInput {
@@ -6598,6 +6774,9 @@ type SubmitClarificationAnswersResponse {
 
   """The created user message containing the answers"""
   userMessage: SendChatMessageResponse
+
+  """Validation errors if submission failed"""
+  validationErrors: [ClarificationValidationError!]
 }
 
 input SubmitLegalQueryInput {
@@ -6789,6 +6968,32 @@ type TestWebhookResponse {
   response: String
   statusCode: Int
   success: Boolean!
+}
+
+"""Standard text message from user or assistant"""
+type TextChatMessage implements ChatMessageInterface {
+  citations: [ChatCitation!]
+
+  """Message content"""
+  content: String!
+
+  """Creation timestamp"""
+  createdAt: DateTime!
+
+  """Unique message identifier"""
+  messageId: ID!
+
+  """Role of the message sender"""
+  role: MessageRole!
+
+  """Sequence order in conversation"""
+  sequenceOrder: Float!
+
+  """Session ID"""
+  sessionId: ID!
+
+  """Message type discriminator for resolving concrete types"""
+  type: ChatMessageType
 }
 
 """Available theme options for the UI"""

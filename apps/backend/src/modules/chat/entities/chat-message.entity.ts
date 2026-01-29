@@ -42,19 +42,50 @@ registerEnumType(MessageRole, {
 });
 
 /**
+ * Message Type Enum
+ *
+ * Distinguishes between different message types for proper rendering.
+ * This eliminates the need for frontend JSON parsing and defensive programming.
+ */
+export enum ChatMessageType {
+  /** Standard text message */
+  TEXT = 'text',
+  /** Clarification questions from AI */
+  CLARIFICATION_QUESTION = 'clarification_question',
+  /** User's answers to clarification questions */
+  CLARIFICATION_ANSWER = 'clarification_answer',
+  /** Message containing citation references */
+  CITATION = 'citation',
+  /** Error message */
+  ERROR = 'error',
+}
+
+registerEnumType(ChatMessageType, {
+  name: 'ChatMessageType',
+  description: 'The type of message content',
+});
+
+/**
  * Clarification Question Interface
  *
  * Represents a single clarification question in a message.
+ * Supports both legacy format (question text) and new format (questionId).
  */
 export interface ClarificationQuestion {
+  /** Unique identifier for the question (new format) */
+  questionId?: string;
   /** The question text */
   question: string;
   /** Question type (timeline, parties, documents, amounts, jurisdiction, etc.) */
-  question_type: string;
+  question_type?: string;
+  /** Question type enum (TEXT, OPTIONS, DATE) - new format */
+  questionType?: string;
   /** Optional predefined choices for the user */
   options?: string[];
   /** Optional help text for users */
   hint?: string;
+  /** Whether this question is required (new format) */
+  required?: boolean;
 }
 
 /**
@@ -114,17 +145,26 @@ export interface ChatMessageMetadata {
  */
 @ObjectType('ClarificationQuestionType')
 export class ClarificationQuestionType {
+  @Field(() => String, { nullable: true })
+  questionId?: string;
+
   @Field(() => String)
   question: string;
 
-  @Field(() => String)
-  question_type: string;
+  @Field(() => String, { nullable: true })
+  question_type?: string;
+
+  @Field(() => String, { nullable: true })
+  questionType?: string;
 
   @Field(() => [String], { nullable: true })
   options?: string[];
 
   @Field(() => String, { nullable: true })
   hint?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  required?: boolean;
 }
 
 /**
@@ -238,6 +278,23 @@ export class ChatMessage {
   role: MessageRole;
 
   /**
+   * Type of message content
+   * Distinguishes between TEXT, CLARIFICATION_QUESTION, CLARIFICATION_ANSWER, CITATION, ERROR
+   * This field helps the frontend render messages correctly without JSON parsing
+   */
+  @Column({
+    type: 'enum',
+    enum: ChatMessageType,
+    default: ChatMessageType.TEXT,
+    nullable: true, // Nullable for backward compatibility with existing data
+  })
+  @FilterableField(() => ChatMessageType, {
+    description: 'Type of message content',
+    nullable: true,
+  })
+  type: ChatMessageType | null;
+
+  /**
    * Processed message content (after AI processing, markdown formatted)
    * For user messages: the original question
    * For assistant messages: the formatted answer
@@ -317,6 +374,48 @@ export class ChatMessage {
    */
   isSystemMessage(): boolean {
     return this.role === MessageRole.SYSTEM;
+  }
+
+  /**
+   * Check if this is a text message
+   */
+  isTextMessage(): boolean {
+    return this.type === ChatMessageType.TEXT || this.type === null;
+  }
+
+  /**
+   * Check if this is a clarification question message
+   */
+  isClarificationQuestion(): boolean {
+    return this.type === ChatMessageType.CLARIFICATION_QUESTION;
+  }
+
+  /**
+   * Check if this is a clarification answer message
+   */
+  isClarificationAnswer(): boolean {
+    return this.type === ChatMessageType.CLARIFICATION_ANSWER;
+  }
+
+  /**
+   * Check if this is a citation message
+   */
+  isCitationMessage(): boolean {
+    return this.type === ChatMessageType.CITATION;
+  }
+
+  /**
+   * Check if this is an error message
+   */
+  isErrorMessage(): boolean {
+    return this.type === ChatMessageType.ERROR;
+  }
+
+  /**
+   * Set the message type
+   */
+  setType(type: ChatMessageType): void {
+    this.type = type;
   }
 
   /**

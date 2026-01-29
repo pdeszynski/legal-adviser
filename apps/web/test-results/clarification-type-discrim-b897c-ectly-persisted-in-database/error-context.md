@@ -1,0 +1,133 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+    - generic [ref=e2]:
+        - banner [ref=e3]:
+            - generic [ref=e4]:
+                - link "Legal AI" [ref=e5] [cursor=pointer]:
+                    - /url: /
+                - navigation [ref=e6]:
+                    - link "Features" [ref=e7] [cursor=pointer]:
+                        - /url: /features
+                    - link "Pricing" [ref=e8] [cursor=pointer]:
+                        - /url: /about/pricing
+                    - link "About" [ref=e9] [cursor=pointer]:
+                        - /url: /about
+                    - link "Get Early Access New" [ref=e10] [cursor=pointer]:
+                        - /url: /early-access
+                        - text: Get Early Access
+                        - generic [ref=e11]: New
+                - generic [ref=e12]:
+                    - button "🇬🇧 English" [ref=e14] [cursor=pointer]:
+                        - img [ref=e15]
+                        - generic [ref=e18]: 🇬🇧 English
+                    - link "Get Early Access" [ref=e19] [cursor=pointer]:
+                        - /url: /early-access
+                        - button "Get Early Access" [ref=e20]:
+                            - text: Get Early Access
+                            - img [ref=e21]
+                    - link "Sign In" [ref=e24] [cursor=pointer]:
+                        - /url: /login
+        - main [ref=e25]:
+            - generic [ref=e28]:
+                - generic [ref=e29]:
+                    - img [ref=e31]
+                    - generic [ref=e35]:
+                        - heading "Welcome Back" [level=3] [ref=e36]
+                        - paragraph [ref=e37]: Sign in to your legal workspace
+                - generic [ref=e38]:
+                    - generic [ref=e39]:
+                        - generic [ref=e40]:
+                            - text: Email
+                            - textbox "Email" [ref=e41]:
+                                - /placeholder: name@example.com
+                                - text: user@example.com
+                        - generic [ref=e42]:
+                            - generic [ref=e43]:
+                                - generic [ref=e44]: Password
+                                - generic [ref=e45] [cursor=pointer]: Forgot password?
+                            - textbox "Password" [active] [ref=e46]:
+                                - /placeholder: Enter your password
+                                - text: password123
+                        - generic [ref=e48]:
+                            - img [ref=e49]
+                            - generic [ref=e51]: 'ThrottlerException: Too Many Requests'
+                    - generic [ref=e52]:
+                        - button "Sign In" [ref=e53] [cursor=pointer]
+                        - generic [ref=e54]: Don't have an account? Request access
+        - contentinfo [ref=e55]:
+            - generic [ref=e56]:
+                - generic [ref=e57]:
+                    - generic [ref=e58]:
+                        - heading "Legal AI" [level=4] [ref=e59]
+                        - paragraph [ref=e60]: Empowering legal professionals with next-generation AI tools. Secure, accurate, and efficient.
+                    - generic [ref=e61]:
+                        - heading "Product" [level=4] [ref=e62]
+                        - list [ref=e63]:
+                            - listitem [ref=e64]:
+                                - link "Features" [ref=e65] [cursor=pointer]:
+                                    - /url: /features
+                            - listitem [ref=e66]:
+                                - link "Pricing" [ref=e67] [cursor=pointer]:
+                                    - /url: /about/pricing
+                            - listitem [ref=e68]:
+                                - link "Get Early Access" [ref=e69] [cursor=pointer]:
+                                    - /url: /early-access
+                            - listitem [ref=e70]:
+                                - link "Security" [ref=e71] [cursor=pointer]:
+                                    - /url: '#'
+                    - generic [ref=e72]:
+                        - heading "Company" [level=4] [ref=e73]
+                        - list [ref=e74]:
+                            - listitem [ref=e75]:
+                                - link "About Us" [ref=e76] [cursor=pointer]:
+                                    - /url: /about
+                            - listitem [ref=e77]:
+                                - link "Careers" [ref=e78] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e79]:
+                                - link "Contact" [ref=e80] [cursor=pointer]:
+                                    - /url: '#'
+                    - generic [ref=e81]:
+                        - heading "Legal" [level=4] [ref=e82]
+                        - list [ref=e83]:
+                            - listitem [ref=e84]:
+                                - link "Privacy Policy" [ref=e85] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e86]:
+                                - link "Terms of Service" [ref=e87] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e88]:
+                                - link "Cookie Policy" [ref=e89] [cursor=pointer]:
+                                    - /url: '#'
+                - generic [ref=e90]:
+                    - paragraph [ref=e91]: © 2026 Legal AI. All rights reserved.
+                    - generic [ref=e92]:
+                        - link "Twitter" [ref=e93] [cursor=pointer]:
+                            - /url: '#'
+                        - link "LinkedIn" [ref=e94] [cursor=pointer]:
+                            - /url: '#'
+                        - link "GitHub" [ref=e95] [cursor=pointer]:
+                            - /url: '#'
+    - generic [ref=e96]:
+        - button [ref=e97] [cursor=pointer]:
+            - img [ref=e98]
+            - button "Element Selector" [ref=e106]:
+                - img
+        - generic:
+            - iframe
+            - generic:
+                - img
+            - generic:
+                - img
+            - generic:
+                - img
+            - generic:
+                - img
+    - region "Notifications (F8)":
+        - list
+    - button "Open Next.js Dev Tools" [ref=e112] [cursor=pointer]:
+        - img [ref=e113]
+    - alert [ref=e116]
+```

@@ -854,16 +854,49 @@ async def stream_qa_enhanced(
 
 #### Streaming Endpoint: `/api/v1/qa/ask-stream`
 
-**Request:**
+This is the **UNIFIED** streaming endpoint for both:
+
+1. Standard user questions (`message_type=QUESTION`)
+2. Clarification answers (`message_type=CLARIFICATION_ANSWER`)
+
+**Request (Standard Question):**
 
 ```bash
 POST /api/v1/qa/ask-stream
 Authorization: Bearer <jwt_token>
+Content-Type: application/json
 
-# Query parameters:
-question=What are my rights?
-mode=LAWYER|SIMPLE
-session_id=uuid-v4
+# Request body:
+{
+  "question": "What are my rights?",
+  "mode": "LAWYER",  // or "SIMPLE"
+  "session_id": "uuid-v4",
+  "message_type": "QUESTION",  // optional, default is QUESTION
+  "conversation_history": [...],  // optional
+  "conversation_metadata": {...}  // optional
+}
+```
+
+**Request (Clarification Answers):**
+
+```bash
+POST /api/v1/qa/ask-stream
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+# Request body:
+{
+  "question": "What are my rights?",  // original question (required)
+  "message_type": "CLARIFICATION_ANSWER",
+  "original_question": "What are my rights?",  // for clarification processing
+  "clarification_answers": [
+    {"question": "When did employment end?", "question_type": "timeline", "answer": "Last week"}
+  ],
+  "mode": "LAWYER",
+  "session_id": "uuid-v4",
+  "conversation_history": [...],  // optional
+  "conversation_metadata": {...}  // optional
+}
 ```
 
 **Response Format:** Server-Sent Events (SSE)

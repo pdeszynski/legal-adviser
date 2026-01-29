@@ -4,7 +4,7 @@
   "id": "ai-engine-streaming-endpoint",
   "title": "AI Engine Streaming Chat Endpoint",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "streaming-response",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-27T09:03:50.799Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T09:10:41.232Z"
 }

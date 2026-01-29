@@ -1,0 +1,54 @@
+{
+  "savedAt": "2026-01-29T08:19:45.525Z",
+  "prompt": "When opening temporal UI that schedules/checks tasks I'm getting an info:\n\n```\nNo Workers Running\n\nThere are no Workers polling the legal-ai-task-queue Task Queue.\n```\n\nPlease check whether this correctly starts workers (when run pnpm dlx turbo dev), Make sure to fix issues.",
+  "model": "claude-opus",
+  "result": {
+    "changes": [
+      {
+        "type": "add",
+        "feature": {
+          "id": "fix-temporal-worker-registration-in-dev",
+          "title": "Fix Temporal Worker Registration in Development Mode",
+          "description": "Investigate and fix why Temporal workers are not being registered when running 'pnpm dlx turbo dev'. The Temporal UI shows 'No Workers Running' for the legal-ai-task-queue. Implementation tasks: 1) Verify Temporal worker initialization code in backend is being executed during dev mode, 2) Check if TemporalModule is properly imported in app.module.ts, 3) Verify TEMPORAL_TASK_QUEUE environment variable is set to 'legal-ai-task-queue', 4) Check if worker connection to Temporal server is successful (logs should show 'Worker connected' or similar), 5) Ensure worker run loop is not being blocked or exiting early, 6) Verify workflow and activity registration happens before worker starts polling, 7) Check for any errors in backend logs during startup related to Temporal, 8) Ensure docker-compose services (Temporal server) are fully started before backend attempts worker connection, 9) Add startup logs showing registered workflows and activities, 10) Add health check endpoint GET /api/temporal/worker-status that returns worker polling status. Test by: starting services with docker compose, running pnpm dlx turbo dev, checking Temporal UI at http://localhost:8088, verifying workers appear in the Task Queues tab.",
+          "category": "bug",
+          "dependencies": [
+            "temporal-nestjs-integration",
+            "temporal-local-development-docker-compose"
+          ],
+          "priority": 1
+        },
+        "reason": "The Temporal UI indicates no workers are polling the legal-ai-task-queue, which means background workflows (document generation, email queue, etc.) cannot execute. This is a critical infrastructure issue preventing Temporal-based features from working in development mode."
+      },
+      {
+        "type": "add",
+        "feature": {
+          "id": "verify-temporal-worker-connection-and-logging",
+          "title": "Verify Temporal Worker Connection and Add Logging",
+          "description": "Add comprehensive logging to Temporal worker initialization and connection process to diagnose the 'No Workers Running' issue. Implementation: 1) Add console.log statements in TemporalModule onModuleInit showing connection attempt, 2) Log successful worker registration with worker ID and task queue name, 3) Log all registered workflow and activity names, 4) Add error logging if worker connection fails, 5) Log when worker starts polling the task queue, 6) Add periodic heartbeat log (every 60 seconds) confirming worker is still polling, 7) Verify backend logs show these messages when 'pnpm dlx turbo dev' is run, 8) Check if there are any silent exceptions preventing worker start, 9) Ensure Temporal server URL is correctly configured (TEMPORAL_CLUSTER_URL), 10) Add startup validation that fails fast if worker cannot connect. These logs will help identify whether the issue is: connection failure, missing workflow/activity registration, worker not starting, or worker crashing after start.",
+          "category": "enhancement",
+          "dependencies": [
+            "fix-temporal-worker-registration-in-dev"
+          ],
+          "priority": 2
+        },
+        "reason": "Currently there's no visibility into whether the Temporal worker is starting up correctly. Adding logging will help diagnose whether the issue is connection-related, configuration-related, or a code bug preventing worker initialization."
+      },
+      {
+        "type": "add",
+        "feature": {
+          "id": "verify-temporal-workflow-activity-registration",
+          "title": "Verify Workflows and Activities Are Properly Registered",
+          "description": "Ensure all Temporal workflows and activities are correctly registered with the worker. Investigation tasks: 1) List all workflows that should be registered: DocumentGenerationWorkflow, EmailWorkflow, PdfExportWorkflow, RulingIndexingWorkflow, WebhookDeliveryWorkflow, ChatCleanupWorkflow, 2) Verify each workflow file exports the workflow function, 3) Check activities are defined and exported in each workflow, 4) Verify TemporalModule.register() calls include all workflows, 5) Check worker connection options match what Temporal server expects, 6) Verify workflow names and task queue names match between backend and Temporal UI, 7) Test with minimal worker: create a simple 'HelloWorld' workflow to verify basic registration works, 8) Check if there are circular dependencies preventing workflow imports, 9) Verify @Injectable() decorator is on workflow classes if using NestJS dependency injection, 10) Add unit test that verifies worker.options.workflows and worker.options.activities are non-empty. If workflows are not being registered, the worker will start but have nothing to execute.",
+          "category": "bug",
+          "dependencies": [
+            "fix-temporal-worker-registration-in-dev"
+          ],
+          "priority": 1
+        },
+        "reason": "Even if the worker connects to Temporal, it won't process jobs unless workflows and activities are properly registered. This verification ensures the worker has actual work to do when it polls the task queue."
+      }
+    ],
+    "summary": "Three new features added to fix the Temporal worker 'No Workers Running' issue. The primary fix task investigates and resolves the worker registration problem in dev mode. Two supporting tasks add logging for diagnostics and verify workflow/activity registration. All features depend on existing Temporal integration infrastructure.",
+    "dependencyUpdates": []
+  }
+}

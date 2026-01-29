@@ -1105,7 +1105,8 @@ async def ask_question_stream_enhanced(
     """Stream a legal Q&A response with structured SSE events.
 
     Enhanced streaming endpoint that sends typed events for better client-side
-    handling of real-time AI responses.
+    handling of real-time AI responses. This is the UNIFIED streaming endpoint
+    that handles both standard questions and clarification answers.
 
     Authentication:
     - Accepts JWT tokens from frontend (signed by backend)
@@ -1116,7 +1117,11 @@ async def ask_question_stream_enhanced(
         question: The legal question to answer (required)
         mode: Response mode - LAWYER (detailed) or SIMPLE (layperson), default: SIMPLE
         session_id: User session ID for tracking (must be valid UUID v4)
-        messages: Optional conversation history as array of {role, content} objects
+        message_type: Type of message - QUESTION or CLARIFICATION_ANSWER, default: QUESTION
+        original_question: Original question (required for CLARIFICATION_ANSWER)
+        clarification_answers: User's answers to clarification questions (required for CLARIFICATION_ANSWER)
+        conversation_history: Optional conversation history as array of {role, content} objects
+        conversation_metadata: Optional metadata for Langfuse observability
 
     SSE Event Format:
         data: {"type": "token", "content": "text chunk", "metadata": {}}
@@ -1141,6 +1146,7 @@ async def ask_question_stream_enhanced(
     - LangGraph workflow orchestration
     """
     from .auth import set_user_session_id
+    from .models.requests import MessageType
 
     # Validate inputs
     if not request.question or len(request.question.strip()) < 3:
@@ -1161,61 +1167,37 @@ async def ask_question_stream_enhanced(
     conversation_history = request.conversation_history or []
     history_size = len(conversation_history)
 
+    message_type_str = request.message_type.value if hasattr(request.message_type, 'value') else str(request.message_type)
     logger.info(
-        "[CONV_HISTORY] Received request: session_id=%s, user_id=%s, history_count=%d, question_length=%d",
+        "[ASK_STREAM] Received request: session_id=%s, user_id=%s, message_type=%s, history_count=%d, question_length=%d",
         request.session_id,
         user_with_session.id if user_with_session else "anonymous",
+        message_type_str,
         history_size,
         len(request.question),
     )
 
-    if history_size > 0:
-        # Log detailed conversation history structure
-        total_chars = sum(len(msg.get("content", "")) for msg in conversation_history)
-        roles = [msg.get("role") for msg in conversation_history]
-        user_count = sum(1 for r in roles if r == "user")
-        assistant_count = sum(1 for r in roles if r == "assistant")
+    # Check if this is a clarification answer request
+    is_clarification_answer = request.message_type == MessageType.CLARIFICATION_ANSWER
+
+    if is_clarification_answer:
+        # Validate required fields for clarification answers
+        if not request.original_question:
+            raise HTTPException(
+                status_code=400,
+                detail={"error_code": "MISSING_ORIGINAL_QUESTION", "message": "original_question is required for CLARIFICATION_ANSWER message type"},
+            )
+        if not request.clarification_answers or len(request.clarification_answers) == 0:
+            raise HTTPException(
+                status_code=400,
+                detail={"error_code": "MISSING_CLARIFICATION_ANSWERS", "message": "clarification_answers is required for CLARIFICATION_ANSWER message type"},
+            )
 
         logger.info(
-            "[CONV_HISTORY] Structure: session_id=%s, total_chars=%d, user_msgs=%d, assistant_msgs=%d, first_role=%s, last_role=%s",
+            "[ASK_STREAM] Processing CLARIFICATION_ANSWER: session_id=%s, answers_count=%d",
             request.session_id,
-            total_chars,
-            user_count,
-            assistant_count,
-            roles[0] if roles else None,
-            roles[-1] if roles else None,
+            len(request.clarification_answers),
         )
-
-        # Verify message order and log preview
-        message_previews = []
-        for i, msg in enumerate(conversation_history[:5]):  # Log first 5 messages
-            role = msg.get("role", "unknown")
-            content = msg.get("content", "")
-            preview = content[:50] + "..." if len(content) > 50 else content
-            message_previews.append(f"{i}:{role}:{preview}")
-
-        if len(conversation_history) > 5:
-            message_previews.append(f"...({len(conversation_history) - 5} more)")
-
-        logger.debug("[CONV_HISTORY] Messages preview: %s", ", ".join(message_previews))
-
-        # Emit conversation history metric for monitoring
-        logger.info(
-            "[CONV_HISTORY_METRIC] %s",
-            {
-                "session_id": request.session_id,
-                "message_count": history_size,
-                "total_chars": total_chars,
-                "user_count": user_count,
-                "assistant_count": assistant_count,
-                "has_empty_content": any(
-                    not msg.get("content") or len(msg.get("content", "").strip()) == 0
-                    for msg in conversation_history
-                ),
-            },
-        )
-    else:
-        logger.info("[CONV_HISTORY] No history for session_id=%s (new chat)", request.session_id)
 
     async def generate() -> AsyncGenerator[str, None]:
         # Extract conversation metadata for Langfuse observability
@@ -1223,16 +1205,42 @@ async def ask_question_stream_enhanced(
         if request.conversation_metadata:
             conversation_metadata = request.conversation_metadata.model_dump()
 
-        async for event in stream_qa_enhanced(
-            question=request.question,
-            mode=mode,
-            session_id=request.session_id,
-            user=user_with_session,
-            request=http_request,
-            messages=request.conversation_history,
-            conversation_metadata=conversation_metadata,
-        ):
-            yield event
+        if is_clarification_answer:
+            # Convert ClarificationAnswer objects to dicts for the streaming function
+            # We've already validated that clarification_answers is not None above
+            answers_list = request.clarification_answers or []
+            answers_dicts = [
+                {
+                    "question_id": a.question,  # Use question text as ID for compatibility
+                    "question": a.question,
+                    "question_type": a.question_type,
+                    "answer": a.answer,
+                }
+                for a in answers_list
+            ]
+
+            async for event in stream_clarification_answer(
+                original_question=request.original_question,
+                answers=answers_dicts,
+                mode=mode,
+                session_id=request.session_id,
+                user=user_with_session,
+                request=http_request,
+                messages=request.conversation_history,
+                conversation_metadata=conversation_metadata,
+            ):
+                yield event
+        else:
+            async for event in stream_qa_enhanced(
+                question=request.question,
+                mode=mode,
+                session_id=request.session_id,
+                user=user_with_session,
+                request=http_request,
+                messages=request.conversation_history,
+                conversation_metadata=conversation_metadata,
+            ):
+                yield event
 
     return create_enhanced_streaming_response(generate())
 
@@ -1870,98 +1878,3 @@ async def generate_chat_title(request: GenerateTitleRequest):
             title=fallback_title,
             session_id=request.session_id,
         )
-
-
-# -----------------------------------------------------------------------------
-# Clarification Answer Streaming Endpoint
-# -----------------------------------------------------------------------------
-
-
-@app.post("/api/v1/qa/clarification-answer-stream")
-async def clarification_answer_stream(
-    request: ClarificationAnswerRequest,
-    http_request: Request,
-    user: UserContext | None = Depends(get_current_user_optional),
-):
-    """Stream an AI response after receiving clarification answers from the user.
-
-    This endpoint processes the user's answers to clarification questions
-    and provides a comprehensive response with real-time streaming.
-
-    The user's answers are incorporated into the context to provide a more
-    accurate legal response based on the additional information provided.
-
-    Authentication:
-    - Accepts JWT tokens from frontend (signed by backend)
-    - Optional: works without auth for anonymous requests
-    - Pass Authorization: Bearer <token> header
-
-    Request Body (JSON):
-        original_question: The original question that prompted clarification
-        answers: List of {question, question_type, answer} objects
-        mode: Response mode - LAWYER (detailed) or SIMPLE (layperson)
-        session_id: User session ID for tracking (must be valid UUID v4)
-        conversation_history: Optional conversation history as array of {role, content} objects
-
-    SSE Event Format:
-        data: {"type": "token", "content": "text chunk", "metadata": {}}
-        data: {"type": "citation", "content": "", "metadata": {"source": "...", "article": "...", "url": "..."}}
-        data: {"type": "error", "content": "", "metadata": {"error": "..."}}
-        data: {"type": "done", "content": "", "metadata": {"citations": [...], "confidence": 0.0, "processing_time_ms": 123}}
-
-    Event Types:
-    - token: Partial response content as it's generated (REAL-TIME)
-    - citation: Legal citation reference when identified
-    - error: Error information if processing fails
-    - done: Final completion event with full metadata
-
-    The clarification Q&A is automatically included in the conversation history
-    for context in subsequent messages.
-    """
-    from .auth import set_user_session_id
-
-    # Validate inputs
-    if not request.original_question or len(request.original_question.strip()) < 3:
-        raise HTTPException(
-            status_code=400,
-            detail={"error_code": "INVALID_INPUT", "message": "Original question must be at least 3 characters long"},
-        )
-
-    if not request.answers or len(request.answers) == 0:
-        raise HTTPException(
-            status_code=400,
-            detail={"error_code": "INVALID_INPUT", "message": "At least one answer is required"},
-        )
-
-    mode = request.mode or "SIMPLE"
-    if mode not in ("LAWYER", "SIMPLE"):
-        mode = "SIMPLE"
-
-    # Set and validate session_id from request body on the user context
-    user_with_session = set_user_session_id(user, request.session_id)
-
-    async def generate() -> AsyncGenerator[str, None]:
-        # Convert answers to dicts for the streaming function
-        answers_dicts = [
-            {"question": a.question, "question_type": a.question_type, "answer": a.answer}
-            for a in request.answers
-        ]
-
-        # Extract conversation metadata for Langfuse observability
-        conversation_metadata = None
-        if request.conversation_metadata:
-            conversation_metadata = request.conversation_metadata.model_dump()
-
-        async for event in stream_clarification_answer(
-            original_question=request.original_question,
-            answers=answers_dicts,
-            mode=mode,
-            session_id=request.session_id,
-            user=user_with_session,
-            request=http_request,
-            messages=request.conversation_history,
-            conversation_metadata=conversation_metadata,
-        ):
-            yield event
-
-    return create_enhanced_streaming_response(generate())

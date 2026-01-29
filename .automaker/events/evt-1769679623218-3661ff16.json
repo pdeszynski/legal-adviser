@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769679623218-3661ff16",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T09:40:23.218Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "create-clarification-e2e-tests-with-type-discriminator",
+  "featureName": "Create E2E Tests for Clarification Flow with Type Discriminator",
+  "error": "Feature completed in 2854s - auto-verified",
+  "passes": true
+}

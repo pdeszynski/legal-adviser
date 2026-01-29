@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769672493691-90a8dea3",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T07:41:33.691Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "chat-message-type-discriminator",
+  "featureName": "Add Message Type Discriminator to ChatMessage Entity",
+  "error": "Feature completed in 1030s - auto-verified",
+  "passes": true
+}

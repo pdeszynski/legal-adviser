@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Define ClarificationQuestion GraphQL input type with: questionId (string), questionText (string), questionType (enum: TEXT, OPTIONS, DATE), hint (string), options (string array if applicable), required (boolean). Define ClarificationQuestionMessage type containing: contextSummary (string), questions ([ClarificationQuestion]), nextSteps (string). Add validation using class-validator.",
+  "id": "clarification-question-graphql-type",
+  "title": "Create GraphQL Type for Clarification Questions",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "refactor-chat-messaging",
+  "descriptionHistory": [
+    {
+      "description": "Define ClarificationQuestion GraphQL input type with: questionId (string), questionText (string), questionType (enum: TEXT, OPTIONS, DATE), hint (string), options (string array if applicable), required (boolean). Define ClarificationQuestionMessage type containing: contextSummary (string), questions ([ClarificationQuestion]), nextSteps (string). Add validation using class-validator.",
+      "timestamp": "2026-01-29T07:24:16.613Z",
+      "source": "initial"
+    }
+  ]
+}

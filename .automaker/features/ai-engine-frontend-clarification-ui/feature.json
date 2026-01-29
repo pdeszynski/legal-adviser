@@ -13,5 +13,9 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-26T10:45:19.988Z"
+  "updatedAt": "2026-01-26T10:45:19.988Z",
+  "dependencies": [
+    "clarification-question-graphql-type",
+    "chat-message-graphql-interface"
+  ]
 }

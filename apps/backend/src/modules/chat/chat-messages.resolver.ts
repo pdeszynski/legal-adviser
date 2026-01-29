@@ -8,7 +8,11 @@ import { ChatSessionsService } from './services/chat-sessions.service';
 import { ChatMessagesService } from './services/chat-messages.service';
 import { ChatAuditService } from './services/chat-audit.service';
 import { ChatSession, ChatMode } from './entities/chat-session.entity';
-import { ChatMessage, MessageRole } from './entities/chat-message.entity';
+import {
+  ChatMessage,
+  MessageRole,
+  ChatMessageType,
+} from './entities/chat-message.entity';
 import {
   SendChatMessageWithAIInput,
   SendChatMessageWithAIResponse,
@@ -18,6 +22,7 @@ import {
   UpdateClarificationStatusResponse,
   SubmitClarificationAnswersInput,
   SubmitClarificationAnswersResponse,
+  ClarificationValidationError,
 } from './dto/chat-message.dto';
 import { AiClientService } from '../../shared/ai-client/ai-client.service';
 import { RequireQuota, QuotaType } from '../../shared';
@@ -299,6 +304,7 @@ export class ChatMessagesResolver {
         messageId: userMessage.messageId,
         sessionId: userMessage.sessionId,
         role: userMessage.role,
+        type: userMessage.type,
         content: userMessage.content,
         sequenceOrder: userMessage.sequenceOrder,
         createdAt: userMessage.createdAt.toISOString(),
@@ -308,6 +314,7 @@ export class ChatMessagesResolver {
             messageId: assistantMessage.messageId,
             sessionId: assistantMessage.sessionId,
             role: assistantMessage.role,
+            type: assistantMessage.type,
             content: assistantMessage.content,
             sequenceOrder: assistantMessage.sequenceOrder,
             createdAt: assistantMessage.createdAt.toISOString(),
@@ -369,7 +376,7 @@ export class ChatMessagesResolver {
       message = await this.chatMessagesService.createUserMessage(
         input.sessionId,
         safeUserId,
-        { content: input.content },
+        { content: input.content, type: input.type },
       );
     } else {
       message = await this.chatMessagesService.createAssistantMessage(
@@ -377,6 +384,7 @@ export class ChatMessagesResolver {
         safeUserId,
         {
           content: input.content,
+          type: input.type,
           citations: input.citations,
           metadata: input.metadata,
         },
@@ -387,6 +395,7 @@ export class ChatMessagesResolver {
       messageId: message.messageId,
       sessionId: message.sessionId,
       role: message.role,
+      type: message.type,
       content: message.content,
       sequenceOrder: message.sequenceOrder,
       createdAt: message.createdAt.toISOString(),
@@ -450,6 +459,85 @@ export class ChatMessagesResolver {
   }
 
   /**
+   * Validate clarification answers
+   *
+   * Checks that:
+   * 1. All required questions are answered
+   * 2. Answer formats match question types (OPTIONS must be one of the predefined options)
+   *
+   * @param questions - The clarification questions to validate against
+   * @param answers - The user's answers
+   * @returns Array of validation errors (empty if validation passes)
+   */
+  private validateClarificationAnswers(
+    questions: any[],
+    answers: { questionId: string; answer: string }[],
+  ): ClarificationValidationError[] {
+    const errors: ClarificationValidationError[] = [];
+    const answersMap = new Map(answers.map((a) => [a.questionId, a.answer]));
+
+    // Check for missing required questions and validate answer formats
+    for (const question of questions) {
+      const questionId = question.questionId || question.question;
+      const isRequired = question.required !== false; // Default to true
+      const questionType =
+        question.questionType || question.question_type || 'TEXT';
+      const options = question.options || [];
+
+      if (isRequired && !answersMap.has(questionId)) {
+        errors.push({
+          questionId,
+          message: `This question is required`,
+          code: 'REQUIRED_QUESTION_MISSING',
+        });
+        continue;
+      }
+
+      // Validate answer format if present
+      if (answersMap.has(questionId)) {
+        const answer = answersMap.get(questionId);
+
+        // For OPTIONS type, validate the answer is one of the predefined options
+        if (questionType === 'OPTIONS' && options.length > 0) {
+          const isOptionValid = options.some((opt: string) => opt === answer);
+          if (!isOptionValid) {
+            errors.push({
+              questionId,
+              message: `Answer must be one of the predefined options: ${options.join(', ')}`,
+              code: 'INVALID_OPTION',
+            });
+          }
+        }
+
+        // Check for empty answers
+        if (!answer || answer.trim().length === 0) {
+          errors.push({
+            questionId,
+            message: `Answer cannot be empty`,
+            code: 'EMPTY_ANSWER',
+          });
+        }
+      }
+    }
+
+    // Check for unknown question IDs in answers
+    const validQuestionIds = new Set(
+      questions.map((q) => q.questionId || q.question),
+    );
+    for (const answer of answers) {
+      if (!validQuestionIds.has(answer.questionId)) {
+        errors.push({
+          questionId: answer.questionId,
+          message: `Unknown question ID`,
+          code: 'UNKNOWN_QUESTION_ID',
+        });
+      }
+    }
+
+    return errors;
+  }
+
+  /**
    * Mutation: Submit clarification answers
    *
    * Creates a new user message with the clarification answers and marks the clarification as answered.
@@ -484,7 +572,7 @@ export class ChatMessagesResolver {
   @Mutation(() => SubmitClarificationAnswersResponse, {
     name: 'submitClarificationAnswers',
     description:
-      'Submit answers to clarification questions. Creates a user message and marks clarification as answered.',
+      'Submit answers to clarification questions. Validates answers and creates a user message.',
   })
   @UseGuards(ChatSessionOwnershipGuard)
   async submitClarificationAnswers(
@@ -506,22 +594,77 @@ export class ChatMessagesResolver {
         );
 
       if (!clarificationMessage) {
-        throw new Error('Clarification message not found');
+        return {
+          success: false,
+          userMessage: null,
+          clarificationMessageId: input.clarificationMessageId,
+          validationErrors: [
+            {
+              questionId: '',
+              message: 'Clarification message not found',
+              code: 'MESSAGE_NOT_FOUND',
+            },
+          ],
+        };
       }
 
       const clarificationInfo = clarificationMessage.metadata?.clarification;
-      if (!clarificationInfo) {
-        throw new Error('Message does not contain clarification questions');
+      if (!clarificationInfo || !clarificationInfo.questions) {
+        return {
+          success: false,
+          userMessage: null,
+          clarificationMessageId: input.clarificationMessageId,
+          validationErrors: [
+            {
+              questionId: '',
+              message: 'Message does not contain clarification questions',
+              code: 'NO_QUESTIONS_FOUND',
+            },
+          ],
+        };
       }
 
+      // Validate answers against questions
+      const validationErrors = this.validateClarificationAnswers(
+        clarificationInfo.questions,
+        input.answers,
+      );
+
+      if (validationErrors.length > 0) {
+        console.log(
+          `[submitClarificationAnswers] Validation failed | errors=${JSON.stringify(validationErrors)}`,
+        );
+        return {
+          success: false,
+          userMessage: null,
+          clarificationMessageId: input.clarificationMessageId,
+          validationErrors,
+        };
+      }
+
+      // Build answers with question text for reference
+      const questionsMap = new Map(
+        clarificationInfo.questions.map((q: any) => [
+          q.questionId || q.question,
+          q,
+        ]),
+      );
+
       // Create the answer content as structured JSON
+      const enrichedAnswers = input.answers.map((a) => {
+        const question = questionsMap.get(a.questionId);
+        return {
+          questionId: a.questionId,
+          question: question?.question || a.questionId,
+          answer: a.answer,
+          question_type:
+            question?.question_type || question?.questionType || 'text',
+        };
+      });
+
       const answerContent = JSON.stringify({
         type: 'clarification_answer',
-        answers: input.answers.map((a) => ({
-          question: a.question,
-          answer: a.answer,
-          question_type: a.question_type || 'text',
-        })),
+        answers: enrichedAnswers,
       });
 
       // Create a user message with the answers
@@ -554,7 +697,7 @@ export class ChatMessagesResolver {
         true,
         JSON.stringify(
           input.answers.reduce(
-            (acc, a) => ({ ...acc, [a.question]: a.answer }),
+            (acc, a) => ({ ...acc, [a.questionId]: a.answer }),
             {},
           ),
         ),
@@ -570,11 +713,13 @@ export class ChatMessagesResolver {
           messageId: userMessage.messageId,
           sessionId: userMessage.sessionId,
           role: userMessage.role,
+          type: userMessage.type,
           content: userMessage.content,
           sequenceOrder: userMessage.sequenceOrder,
           createdAt: userMessage.createdAt.toISOString(),
         },
         clarificationMessageId: input.clarificationMessageId,
+        validationErrors: null,
       };
     } catch (error) {
       if (error instanceof Error && error.name === 'NotFoundException') {

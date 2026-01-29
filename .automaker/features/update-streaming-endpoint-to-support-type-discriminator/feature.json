@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Update the AI Engine streaming endpoint to accept and process the message type field. Implementation: 1) Update AskQuestionRequest model to include `type: MessageType` field (enum: TEXT, CLARIFICATION_ANSWER), 2) When type is CLARIFICATION_ANSWER, parse the content field as JSON containing user's answers, 3) Pass both the original query, clarification answers, and conversation history to the agent, 4) When AI returns clarification questions, set type=CLARIFICATION_QUESTION in the SSE event, 5) For normal responses, set type=TEXT, 6) Ensure type field is included in all SSE events (token, citation, done events), 7) Update frontend useStreamingChat hook to include type in all requests. The endpoint should handle both new queries and clarification answers seamlessly.",
+  "id": "update-streaming-endpoint-to-support-type-discriminator",
+  "title": "Update /ask-stream Endpoint to Handle Message Type Discriminator",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "refactor-chat-messaging",
+  "descriptionHistory": [
+    {
+      "description": "Update the AI Engine streaming endpoint to accept and process the message type field. Implementation: 1) Update AskQuestionRequest model to include `type: MessageType` field (enum: TEXT, CLARIFICATION_ANSWER), 2) When type is CLARIFICATION_ANSWER, parse the content field as JSON containing user's answers, 3) Pass both the original query, clarification answers, and conversation history to the agent, 4) When AI returns clarification questions, set type=CLARIFICATION_QUESTION in the SSE event, 5) For normal responses, set type=TEXT, 6) Ensure type field is included in all SSE events (token, citation, done events), 7) Update frontend useStreamingChat hook to include type in all requests. The endpoint should handle both new queries and clarification answers seamlessly.",
+      "timestamp": "2026-01-29T08:01:26.919Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T08:56:05.167Z"
+}

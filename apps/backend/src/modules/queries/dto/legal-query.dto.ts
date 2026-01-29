@@ -10,8 +10,10 @@ import {
   IsArray,
   IsUrl,
   IsIn,
+  IsEnum,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
+import { ChatMessageType } from '../../chat/entities/chat-message.entity';
 
 /**
  * Sanitize string input by trimming whitespace and removing potentially dangerous characters
@@ -259,4 +261,16 @@ export class AskLegalQuestionInput {
     message: 'Mode must be either LAWYER or SIMPLE',
   })
   mode?: string;
+
+  @Field(() => String, {
+    nullable: true,
+    description:
+      'Message type: TEXT (default question), CLARIFICATION_ANSWER (answers to clarification questions)',
+  })
+  @IsOptional()
+  @IsEnum(ChatMessageType, {
+    message:
+      'Type must be one of: TEXT, CLARIFICATION_QUESTION, CLARIFICATION_ANSWER, CITATION, ERROR',
+  })
+  type?: ChatMessageType;
 }

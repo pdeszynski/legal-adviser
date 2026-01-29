@@ -4,7 +4,7 @@
   "id": "chat-history-frontend-list-view",
   "title": "Chat History List View Component",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-27T21:01:05.088Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-27T21:12:04.963Z"
 }

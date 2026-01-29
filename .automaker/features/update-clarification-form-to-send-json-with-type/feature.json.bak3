@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Refactor the ClarificationMessage component to prepare data correctly before sending to backend. Implementation: 1) When user clicks 'Submit Answers', collect all answers into an object: `{questionId: answer, ...}`, 2) Stringify the object using JSON.stringify(), 3) Set message type to 'CLARIFICATION_ANSWER', 4) Include both type and stringified content in the mutation/streaming request, 5) Remove any manual JSON construction in message content, 6) Ensure form validation prevents submission of empty answers, 7) Add loading state during submission. The key change: frontend now treats answers as structured data (JSON object) that gets stringified for transmission, not as a formatted string.",
+  "id": "update-clarification-form-to-send-json-with-type",
+  "title": "Update Clarification Form to Stringify Answers and Set Type",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "refactor-chat-messaging",
+  "descriptionHistory": [
+    {
+      "description": "Refactor the ClarificationMessage component to prepare data correctly before sending to backend. Implementation: 1) When user clicks 'Submit Answers', collect all answers into an object: `{questionId: answer, ...}`, 2) Stringify the object using JSON.stringify(), 3) Set message type to 'CLARIFICATION_ANSWER', 4) Include both type and stringified content in the mutation/streaming request, 5) Remove any manual JSON construction in message content, 6) Ensure form validation prevents submission of empty answers, 7) Add loading state during submission. The key change: frontend now treats answers as structured data (JSON object) that gets stringified for transmission, not as a formatted string.",
+      "timestamp": "2026-01-29T08:01:26.925Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T08:20:41.034Z"
+}

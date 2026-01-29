@@ -19,6 +19,13 @@ import { ChatMessagesResolver } from './chat-messages.resolver';
 import { ChatMigrationResolver } from './chat-migration.resolver';
 import { ChatDataCleanupResolver } from './chat-data-cleanup.resolver';
 import { ChatDataCleanupController } from './chat-data-cleanup.controller';
+import {
+  ChatMessageInterfaceResolver,
+  TextChatMessageResolver,
+  ClarificationQuestionMessageResolver,
+  ClarificationAnswerMessageResolver,
+  CitationMessageResolver,
+} from './resolvers/chat-message-interface.resolver';
 import { ChatMessageRepository } from './repositories/chat-message.repository';
 import { ChatSessionRepository } from './repositories/chat-session.repository';
 import {
@@ -113,6 +120,11 @@ import { AiClientModule } from '../../shared/ai-client/ai-client.module';
     ChatMessagesResolver,
     ChatMigrationResolver,
     ChatDataCleanupResolver,
+    ChatMessageInterfaceResolver,
+    TextChatMessageResolver,
+    ClarificationQuestionMessageResolver,
+    ClarificationAnswerMessageResolver,
+    CitationMessageResolver,
     ChatMessageRepository,
     ChatSessionRepository,
     ChatSessionOwnershipGuard,

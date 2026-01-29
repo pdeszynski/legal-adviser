@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Remove the dedicated /api/v1/qa/ask-clarification-stream endpoint from AI Engine. The functionality should be handled by the standard /api/v1/qa/ask-stream endpoint. Frontend will send clarification answers by: 1) Stringifying the answers object to JSON, 2) Setting message.type to 'CLARIFICATION_ANSWER', 3) Including the JSON string in the content field, 4) Backend will detect the type and process accordingly. This simplifies the AI Engine API by removing redundant endpoints. Update CLAUDE.md documentation to reflect that only /ask-stream endpoint exists.",
+  "id": "remove-ask-clarification-stream-endpoint",
+  "title": "Remove ask-clarification-stream Endpoint from AI Engine",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "refactor-chat-messaging",
+  "descriptionHistory": [
+    {
+      "description": "Remove the dedicated /api/v1/qa/ask-clarification-stream endpoint from AI Engine. The functionality should be handled by the standard /api/v1/qa/ask-stream endpoint. Frontend will send clarification answers by: 1) Stringifying the answers object to JSON, 2) Setting message.type to 'CLARIFICATION_ANSWER', 3) Including the JSON string in the content field, 4) Backend will detect the type and process accordingly. This simplifies the AI Engine API by removing redundant endpoints. Update CLAUDE.md documentation to reflect that only /ask-stream endpoint exists.",
+      "timestamp": "2026-01-29T08:01:26.918Z",
+      "source": "initial"
+    }
+  ]
+}

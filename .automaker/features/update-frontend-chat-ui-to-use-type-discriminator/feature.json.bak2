@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Refactor chat UI components to render messages based on type field instead of content inspection. Implementation: 1) Create ClarificationQuestionMessage component that renders when message.type === 'CLARIFICATION_QUESTION', 2) Create ClarificationAnswerMessage component for type === 'CLARIFICATION_ANSWER', 3) Create TextMessage component for type === 'TEXT', 4) Update chat history loading to pass type to each message component, 5) Remove all JSON.parse() and try/catch blocks from message rendering logic, 6) Remove content inspection (if (content.includes('type'))) checks, 7) Use a simple switch statement or component registry based on message.type. Components will receive parsed JSON data as props if needed (backend can provide both raw content and parsed metadata fields).",
+  "id": "update-frontend-chat-ui-to-use-type-discriminator",
+  "title": "Update Frontend Chat UI to Use Message Type Discriminator",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "refactor-chat-messaging",
+  "descriptionHistory": [
+    {
+      "description": "Refactor chat UI components to render messages based on type field instead of content inspection. Implementation: 1) Create ClarificationQuestionMessage component that renders when message.type === 'CLARIFICATION_QUESTION', 2) Create ClarificationAnswerMessage component for type === 'CLARIFICATION_ANSWER', 3) Create TextMessage component for type === 'TEXT', 4) Update chat history loading to pass type to each message component, 5) Remove all JSON.parse() and try/catch blocks from message rendering logic, 6) Remove content inspection (if (content.includes('type'))) checks, 7) Use a simple switch statement or component registry based on message.type. Components will receive parsed JSON data as props if needed (backend can provide both raw content and parsed metadata fields).",
+      "timestamp": "2026-01-29T08:01:26.919Z",
+      "source": "initial"
+    }
+  ]
+}

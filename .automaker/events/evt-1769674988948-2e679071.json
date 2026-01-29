@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769674988948-2e679071",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T08:23:08.948Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "remove-ask-clarification-stream-endpoint",
+  "featureName": "Remove ask-clarification-stream Endpoint from AI Engine",
+  "error": "Feature completed in 1294s - auto-verified",
+  "passes": true
+}

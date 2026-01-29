@@ -4509,6 +4509,160 @@
       "dismissed": false,
       "featureId": "feature-1769626547508-dy5tti0uo",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "d8ae0d69-387d-4b12-ad27-eefbdbac2307",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"ai-engine-clarification-request-dto\" has been verified and is complete.",
+      "createdAt": "2026-01-29T07:40:34.429Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "ai-engine-clarification-request-dto",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "81f95178-2f88-49a0-8864-beea855d9f29",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-message-type-discriminator\" has been verified and is complete.",
+      "createdAt": "2026-01-29T07:41:33.639Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-message-type-discriminator",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "47316e7f-3184-4955-87d4-43cd06f8c818",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-message-graphql-interface\" has been verified and is complete.",
+      "createdAt": "2026-01-29T07:46:56.143Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-message-graphql-interface",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "7180a2a2-f469-48be-bf41-a2af268929ca",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"clarification-question-graphql-type\" has been verified and is complete.",
+      "createdAt": "2026-01-29T07:55:06.846Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "clarification-question-graphql-type",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "34d6b428-fb52-4962-93d4-7f29b9298137",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"clarification-answer-graphql-mutation\" has been verified and is complete.",
+      "createdAt": "2026-01-29T07:57:46.432Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "clarification-answer-graphql-mutation",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "a96e6e38-6677-4fe4-bf36-7c583a4084e8",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-message-type-discriminator-for-clarification\" has been verified and is complete.",
+      "createdAt": "2026-01-29T08:13:48.175Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-message-type-discriminator-for-clarification",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "1a0b86c7-904e-479f-8a7f-db6551601834",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"add-message-type-enum-to-graphql-schema\" has been verified and is complete.",
+      "createdAt": "2026-01-29T08:20:16.797Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "add-message-type-enum-to-graphql-schema",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "8f042452-18d9-4a2e-ae17-22fcb288693a",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-backend-chat-mutation-to-support-type-discriminator\" has been verified and is complete.",
+      "createdAt": "2026-01-29T08:20:39.278Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-backend-chat-mutation-to-support-type-discriminator",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "8fe2d3ae-8ea7-440d-89c2-a549959e2ca8",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"remove-ask-clarification-stream-endpoint\" has been verified and is complete.",
+      "createdAt": "2026-01-29T08:23:08.925Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "remove-ask-clarification-stream-endpoint",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "80e7ed62-8f10-411f-9108-f1fd93a191e6",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-frontend-chat-ui-to-use-type-discriminator\" has been verified and is complete.",
+      "createdAt": "2026-01-29T08:52:46.309Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-frontend-chat-ui-to-use-type-discriminator",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "7604ba0a-2b93-4c26-b728-6eb55034fd79",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-streaming-endpoint-to-support-type-discriminator\" has been verified and is complete.",
+      "createdAt": "2026-01-29T08:56:05.169Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-streaming-endpoint-to-support-type-discriminator",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "9655c310-4575-47c0-9779-86a272e3b9cb",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769677046030-jt99erji3\" has been verified and is complete.",
+      "createdAt": "2026-01-29T09:05:01.559Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769677046030-jt99erji3",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "e967a8b0-4b02-45c1-97b1-2d54f827778c",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-clarification-form-to-send-json-with-type\" has been verified and is complete.",
+      "createdAt": "2026-01-29T09:05:43.284Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-clarification-form-to-send-json-with-type",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "b0074c99-d1e3-444e-9764-d91da0de686f",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"create-clarification-e2e-tests-with-type-discriminator\" has been verified and is complete.",
+      "createdAt": "2026-01-29T09:40:23.198Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "create-clarification-e2e-tests-with-type-discriminator",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

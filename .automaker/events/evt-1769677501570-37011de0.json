@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769677501570-37011de0",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T09:05:01.570Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769677046030-jt99erji3",
+  "featureName": "Fix undefined ClarificationAnswer import error",
+  "error": "Feature completed in 292s - auto-verified",
+  "passes": true
+}

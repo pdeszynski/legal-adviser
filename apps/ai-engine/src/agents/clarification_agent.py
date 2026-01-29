@@ -17,6 +17,7 @@ The agent uses this context to avoid asking questions already answered in previo
 
 import logging
 import time
+import uuid
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -25,6 +26,11 @@ from pydantic_ai.models.openai import OpenAIModel
 
 from ..config import get_settings
 from ..langfuse_init import is_langfuse_enabled, update_current_trace
+from ..models.dto import (
+    ClarificationQuestionDto,
+    ClarificationQuestionType,
+    ClarificationRequestDto,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -238,4 +244,112 @@ If the question is clear enough for a general response, indicate no clarificatio
         ],
         "context_summary": response.context_summary,  # type: ignore[attr-defined]
         "next_steps": response.next_steps,  # type: ignore[attr-defined]
+    }
+
+
+# -----------------------------------------------------------------------------
+# DTO Conversion Helpers
+# -----------------------------------------------------------------------------
+
+
+def _question_type_to_enum(question_type: str) -> ClarificationQuestionType:
+    """Convert a string question type to ClarificationQuestionType enum.
+
+    Args:
+        question_type: String question type from the agent
+
+    Returns:
+        ClarificationQuestionType enum value
+    """
+    # Normalize the question_type for matching
+    normalized = question_type.lower().replace("-", "_").replace(" ", "_")
+
+    # Map common variations to enum values
+    type_mapping = {
+        "timeline": ClarificationQuestionType.TIMELINE,
+        "parties": ClarificationQuestionType.PARTIES,
+        "documents": ClarificationQuestionType.DOCUMENTS,
+        "amounts": ClarificationQuestionType.AMOUNTS,
+        "specific_amount": ClarificationQuestionType.AMOUNTS,
+        "jurisdiction": ClarificationQuestionType.JURISDICTION,
+        "previous_actions": ClarificationQuestionType.PREVIOUS_ACTIONS,
+        "contract_details": ClarificationQuestionType.CONTRACT_DETAILS,
+        "employment_details": ClarificationQuestionType.EMPLOYMENT_DETAILS,
+        "damages": ClarificationQuestionType.DAMAGES,
+    }
+
+    return type_mapping.get(normalized, ClarificationQuestionType.OTHER)
+
+
+def to_clarification_request_dto(
+    internal_response: dict[str, Any],
+) -> ClarificationRequestDto:
+    """Convert internal clarification response to ClarificationRequestDto.
+
+    This function converts the internal dictionary format returned by
+    generate_clarifications into a structured DTO with proper UUIDs
+    and validation.
+
+    Args:
+        internal_response: Dictionary from generate_clarifications with keys:
+            - needs_clarification: bool
+            - questions: list of question dicts
+            - context_summary: str
+            - next_steps: str
+
+    Returns:
+        ClarificationRequestDto with structured question data
+    """
+    questions_dto: list[ClarificationQuestionDto] = []
+
+    for q in internal_response.get("questions", []):
+        # Generate UUID v4 for each question
+        question_id = str(uuid.uuid4())
+
+        # Convert question_type to enum
+        question_type = _question_type_to_enum(q.get("question_type", "other"))
+
+        questions_dto.append(
+            ClarificationQuestionDto(
+                question_id=question_id,
+                question_text=q.get("question", ""),
+                question_type=question_type,
+                hint=q.get("hint"),
+                options=q.get("options"),
+            )
+        )
+
+    return ClarificationRequestDto(
+        context_summary=internal_response.get("context_summary", ""),
+        questions=questions_dto,
+        next_steps=internal_response.get("next_steps", ""),
+    )
+
+
+def to_legacy_dict(dto: ClarificationRequestDto) -> dict[str, Any]:
+    """Convert ClarificationRequestDto to legacy dictionary format.
+
+    This maintains backward compatibility with existing code that expects
+    the old dictionary format.
+
+    Args:
+        dto: ClarificationRequestDto to convert
+
+    Returns:
+        Dictionary in the legacy format
+    """
+    return {
+        "type": "clarification",
+        "questions": [
+            {
+                "question_id": q.question_id,
+                "question": q.question_text,
+                "question_type": q.question_type.value,
+                "hint": q.hint,
+                "options": q.options,
+            }
+            for q in dto.questions
+        ],
+        "context_summary": dto.context_summary,
+        "next_steps": dto.next_steps,
     }

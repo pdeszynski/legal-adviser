@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Define MessageType enum in GraphQL schema with values: TEXT, CLARIFICATION_QUESTION, CLARIFICATION_ANSWER, CITATION, ERROR. Update ChatMessage type to include `type: MessageType!` field. Ensure the enum is properly exported and can be used in mutations and queries. Update all GraphQL operations that create or query messages to include the type field.",
+  "id": "add-message-type-enum-to-graphql-schema",
+  "title": "Add MessageType Enum to GraphQL Schema",
+  "dependencies": [
+    "chat-message-type-discriminator-for-clarification"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "refactor-chat-messaging",
+  "descriptionHistory": [
+    {
+      "description": "Define MessageType enum in GraphQL schema with values: TEXT, CLARIFICATION_QUESTION, CLARIFICATION_ANSWER, CITATION, ERROR. Update ChatMessage type to include `type: MessageType!` field. Ensure the enum is properly exported and can be used in mutations and queries. Update all GraphQL operations that create or query messages to include the type field.",
+      "timestamp": "2026-01-29T08:01:26.922Z",
+      "source": "initial"
+    }
+  ]
+}

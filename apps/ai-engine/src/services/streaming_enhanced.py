@@ -24,6 +24,7 @@ from typing import Any
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 
+from ..agents.clarification_agent import to_clarification_request_dto, to_legacy_dict
 from ..agents.dependencies import get_openai_client
 from ..agents.rag_tool import format_contexts_for_prompt, retrieve_context_tool
 from ..auth import UserContext
@@ -86,11 +87,13 @@ class StreamEvent:
         type: Event type (token, citation, error, done)
         content: Text content (for token events)
         metadata: Additional data (varies by event type)
+        response_type: Response type (TEXT or CLARIFICATION_QUESTION)
     """
 
     type: str  # 'token', 'citation', 'error', 'done'
     content: str = ""  # Text content for token events
     metadata: dict[str, Any] = field(default_factory=dict)
+    response_type: str = "TEXT"  # 'TEXT' or 'CLARIFICATION_QUESTION'
 
     def to_sse(self) -> str:
         """Convert event to Server-Sent Events format.
@@ -102,29 +105,32 @@ class StreamEvent:
             "type": self.type,
             "content": self.content,
             "metadata": self.metadata,
+            "response_type": self.response_type,
         }
         return f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
-def token_event(content: str) -> StreamEvent:
+def token_event(content: str, response_type: str = "TEXT") -> StreamEvent:
     """Create a token event with partial content.
 
     Args:
         content: Partial text content
+        response_type: Response type (TEXT or CLARIFICATION_QUESTION)
 
     Returns:
         StreamEvent with type='token'
     """
-    return StreamEvent(type="token", content=content)
+    return StreamEvent(type="token", content=content, response_type=response_type)
 
 
-def citation_event(source: str, article: str, url: str | None = None) -> StreamEvent:
+def citation_event(source: str, article: str, url: str | None = None, response_type: str = "TEXT") -> StreamEvent:
     """Create a citation event.
 
     Args:
         source: Citation source (e.g., "Civil Code")
         article: Article or section number
         url: Optional URL to the source
+        response_type: Response type (TEXT or CLARIFICATION_QUESTION)
 
     Returns:
         StreamEvent with type='citation'
@@ -136,15 +142,17 @@ def citation_event(source: str, article: str, url: str | None = None) -> StreamE
             "article": article,
             "url": url,
         },
+        response_type=response_type,
     )
 
 
-def error_event(error: str, error_code: str | None = None) -> StreamEvent:
+def error_event(error: str, error_code: str | None = None, response_type: str = "TEXT") -> StreamEvent:
     """Create an error event.
 
     Args:
         error: Error message
         error_code: Optional error code
+        response_type: Response type (TEXT or CLARIFICATION_QUESTION)
 
     Returns:
         StreamEvent with type='error'
@@ -152,7 +160,7 @@ def error_event(error: str, error_code: str | None = None) -> StreamEvent:
     metadata = {"error": error}
     if error_code:
         metadata["error_code"] = error_code
-    return StreamEvent(type="error", metadata=metadata)
+    return StreamEvent(type="error", metadata=metadata, response_type=response_type)
 
 
 def done_event(
@@ -162,6 +170,7 @@ def done_event(
     query_type: str | None = None,
     key_terms: list[str] | None = None,
     suggested_title: str | None = None,
+    response_type: str = "TEXT",
 ) -> StreamEvent:
     """Create a completion event with final metadata.
 
@@ -172,6 +181,7 @@ def done_event(
         query_type: Type of query
         key_terms: Key legal terms extracted
         suggested_title: Optional AI-generated title for the session
+        response_type: Response type (TEXT or CLARIFICATION_QUESTION)
 
     Returns:
         StreamEvent with type='done'
@@ -188,7 +198,7 @@ def done_event(
     if suggested_title:
         metadata["suggested_title"] = suggested_title
 
-    return StreamEvent(type="done", metadata=metadata)
+    return StreamEvent(type="done", metadata=metadata, response_type=response_type)
 
 
 # -----------------------------------------------------------------------------
@@ -324,22 +334,23 @@ async def stream_qa_enhanced(
             )
 
             if clarification_result.get("needs_clarification"):
-                # Send clarification as token content
+                # Convert to DTO for structured format
+                clarification_dto = to_clarification_request_dto(clarification_result)
+
+                # Send clarification as token content using structured DTO
+                # with CLARIFICATION_QUESTION response type
                 event = token_event(
-                    json.dumps({
-                        "type": "clarification",
-                        "questions": clarification_result.get("questions", []),
-                        "context_summary": clarification_result.get("context_summary", ""),
-                        "next_steps": clarification_result.get("next_steps", ""),
-                    }, ensure_ascii=False)
+                    json.dumps(to_legacy_dict(clarification_dto), ensure_ascii=False),
+                    response_type="CLARIFICATION_QUESTION"
                 )
                 yield event.to_sse()
 
-                # Send done event for clarification case
+                # Send done event for clarification case with CLARIFICATION_QUESTION response type
                 yield done_event(
                     citations=[],
                     confidence=0.0,
                     processing_time_ms=(time.time() - start_time) * 1000,
+                    response_type="CLARIFICATION_QUESTION",
                 ).to_sse()
                 return
 

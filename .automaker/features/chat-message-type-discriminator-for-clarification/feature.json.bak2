@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Add a `type` field to the ChatMessage entity to distinguish between different message types (TEXT, CLARIFICATION_QUESTION, CLARIFICATION_ANSWER, CITATION, ERROR). This eliminates the need for frontend JSON parsing and defensive programming. The type field will be an enum stored in the database and exposed via GraphQL. Frontend will render different message components based on type field value, not content inspection. Type field will be set by backend when saving messages. Clarification questions from AI will have type=CLARIFICATION_QUESTION, user answers will have type=CLARIFICATION_ANSWER, regular chat messages will have type=TEXT.",
+  "id": "chat-message-type-discriminator-for-clarification",
+  "title": "Add Message Type Discriminator for Clarification Flow",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "refactor-chat-messaging",
+  "descriptionHistory": [
+    {
+      "description": "Add a `type` field to the ChatMessage entity to distinguish between different message types (TEXT, CLARIFICATION_QUESTION, CLARIFICATION_ANSWER, CITATION, ERROR). This eliminates the need for frontend JSON parsing and defensive programming. The type field will be an enum stored in the database and exposed via GraphQL. Frontend will render different message components based on type field value, not content inspection. Type field will be set by backend when saving messages. Clarification questions from AI will have type=CLARIFICATION_QUESTION, user answers will have type=CLARIFICATION_ANSWER, regular chat messages will have type=TEXT.",
+      "timestamp": "2026-01-29T08:01:26.916Z",
+      "source": "initial"
+    }
+  ]
+}

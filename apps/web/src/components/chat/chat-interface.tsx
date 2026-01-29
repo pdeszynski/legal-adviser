@@ -143,40 +143,45 @@ export function ChatInterface() {
       }
 
       // Load messages from session data with full support for citations and clarification
+      // Uses message type discriminator from backend instead of parsing JSON from content
       if (sessionData.messages && sessionData.messages.length > 0) {
         // First pass: collect all clarification answers and their target message IDs
+        // Uses the CLARIFICATION_ANSWER type discriminator with fallback to content check
         const clarificationAnswersMap = new Map<string, Record<string, string>>();
         const nonAnswerMessages = sessionData.messages.filter((msg: any) => {
-          if (msg.content && typeof msg.content === 'string' && msg.role === 'USER') {
-            const trimmed = msg.content.trim();
-            if (
-              trimmed.startsWith('{"type":"clarification_answer"') ||
-              trimmed.startsWith('{"type": "clarification_answer"')
-            ) {
-              try {
-                const parsed = JSON.parse(trimmed);
-                if (parsed.type === 'clarification_answer' && Array.isArray(parsed.answers)) {
-                  // Get the clarification message ID from metadata (backend stores it in custom.clarification_answers)
-                  const clarificationMessageId =
-                    msg.metadata?.custom?.clarification_answers?.clarification_message_id;
-                  if (clarificationMessageId) {
-                    // Convert answers array to a record
-                    const answersRecord = parsed.answers.reduce(
-                      (acc: Record<string, string>, a: any) => {
-                        acc[a.question] = a.answer;
-                        return acc;
-                      },
-                      {},
-                    );
-                    clarificationAnswersMap.set(clarificationMessageId, answersRecord);
-                  }
-                  // Filter out this message - don't display it
-                  return false;
-                }
-              } catch (e) {
-                console.warn('[Message Loading] Failed to parse clarification_answer JSON:', e);
+          // Use type discriminator OR content check to identify clarification answer messages
+          const isClarificationAnswerType = msg.type === 'CLARIFICATION_ANSWER';
+          const isClarificationAnswerContent =
+            msg.content && typeof msg.content === 'string' && msg.role === 'USER'
+              ? (() => {
+                  const trimmed = msg.content.trim();
+                  return (
+                    trimmed.startsWith('{"type":"clarification_answer"') ||
+                    trimmed.startsWith('{"type": "clarification_answer"')
+                  );
+                })()
+              : false;
+
+          if (isClarificationAnswerType || isClarificationAnswerContent) {
+            // Parse the JSON content from clarification_answer messages
+            // Format: {"type":"clarification_answer","answers":[...],"clarification_message_id":"..."}
+            const parsed = JSON.parse(msg.content);
+            if (parsed.type === 'clarification_answer' && Array.isArray(parsed.answers)) {
+              const clarificationMessageId = parsed.clarification_message_id;
+              if (clarificationMessageId) {
+                // Convert answers array to a record keyed by question text
+                const answersRecord = parsed.answers.reduce(
+                  (acc: Record<string, string>, a: any) => {
+                    acc[a.question] = a.answer;
+                    return acc;
+                  },
+                  {},
+                );
+                clarificationAnswersMap.set(clarificationMessageId, answersRecord);
               }
             }
+            // Filter out this message - don't display it
+            return false;
           }
           return true;
         });
@@ -194,54 +199,20 @@ export function ChatInterface() {
                 answers: answersForThis,
               });
             }
-            // Default display content
-            let displayContent = msg.content;
-            let parsedClarificationFromContent: ClarificationInfo | null = null;
 
-            // Parse assistant messages for clarification JSON
-            if (msg.content && typeof msg.content === 'string' && msg.role === 'ASSISTANT') {
-              const trimmed = msg.content.trim();
-              // Check if content contains clarification JSON
-              if (
-                trimmed.startsWith('{"type":"clarification"') ||
-                trimmed.startsWith('{"type": "clarification"')
-              ) {
-                try {
-                  const parsed = JSON.parse(trimmed);
-                  if (parsed.type === 'clarification' && Array.isArray(parsed.questions)) {
-                    parsedClarificationFromContent = {
-                      needs_clarification: true,
-                      questions: parsed.questions.map((q: any) => ({
-                        question: q.question,
-                        question_type: q.question_type || 'text',
-                        options: q.options,
-                        hint: q.hint,
-                      })),
-                      context_summary: parsed.context_summary || '',
-                      next_steps: parsed.next_steps || '',
-                      currentRound: parsed.currentRound,
-                      totalRounds: parsed.totalRounds,
-                    };
-                    // Clear content for clarification messages so we don't display raw JSON
-                    displayContent = '';
-                  }
-                } catch (e) {
-                  console.warn('Failed to parse clarification JSON from content:', e);
-                }
-              }
-            }
-
-            // Use clarification from metadata first, fallback to parsed content
-            const clarificationFromMetadata = msg.metadata?.clarification?.needs_clarification
-              ? msg.metadata.clarification
-              : null;
-
-            const clarification = clarificationFromMetadata || parsedClarificationFromContent;
+            // Use clarification from metadata for CLARIFICATION_QUESTION type messages
+            // Check both type discriminator (new messages) and metadata (old messages with null type)
+            const hasValidClarificationType =
+              msg.type === 'CLARIFICATION_QUESTION' || msg.type === null;
+            const clarificationFromMetadata =
+              hasValidClarificationType && msg.metadata?.clarification?.needs_clarification
+                ? msg.metadata.clarification
+                : null;
 
             const message: ChatMessage = {
               id: msg.messageId,
               role: msg.role === 'USER' ? 'user' : 'assistant',
-              content: displayContent,
+              content: msg.content,
               citations: msg.citations?.map((c: any) => ({
                 source: c.source,
                 url: c.url || undefined,
@@ -252,19 +223,21 @@ export function ChatInterface() {
               isStreaming: false,
             };
 
-            // Attach clarification data from either metadata or parsed content
-            if (clarification) {
+            // Attach clarification data from metadata (for CLARIFICATION_QUESTION type messages)
+            if (clarificationFromMetadata) {
               message.clarification = {
                 needs_clarification: true,
-                questions: clarification.questions || [],
-                context_summary: clarification.context_summary || '',
-                next_steps: clarification.next_steps || '',
-                currentRound: clarification.currentRound,
-                totalRounds: clarification.totalRounds,
+                questions: clarificationFromMetadata.questions || [],
+                context_summary: clarificationFromMetadata.context_summary || '',
+                next_steps: clarificationFromMetadata.next_steps || '',
+                currentRound: clarificationFromMetadata.currentRound,
+                totalRounds: clarificationFromMetadata.totalRounds,
               };
               // Store whether this clarification was already answered
               message.clarificationAnswered =
-                clarification.answered || msg.metadata?.clarification?.answered || false;
+                clarificationFromMetadata.answered ||
+                msg.metadata?.clarification?.answered ||
+                false;
 
               // Check if we have answers for this clarification message from the map
               const answersForThis = clarificationAnswersMap.get(msg.messageId);
@@ -797,7 +770,10 @@ export function ChatInterface() {
 
   /**
    * Helper function to submit clarification answers to the backend
-   * This creates a new user message with the answers and marks the clarification as answered
+   * This creates a new user message with the answers as JSON content with type CLARIFICATION_ANSWER
+   *
+   * The answers are stringified as JSON and sent with message_type: CLARIFICATION_ANSWER
+   * Format: {"type":"clarification_answer","answers":{"question1":"answer1",...}}
    */
   const submitClarificationAnswersToBackend = useCallback(
     async (
@@ -814,7 +790,7 @@ export function ChatInterface() {
       }
 
       try {
-        // Convert answers to the format expected by the mutation
+        // Build answers array with question types for structured data
         const answersArray = Object.entries(answers).map(([question, answer]) => {
           const questionObj = clarificationQuestions.find((q) => q.question === question);
           return {
@@ -824,10 +800,19 @@ export function ChatInterface() {
           };
         });
 
-        console.log('[submitClarificationAnswersToBackend] Calling mutation with:', {
+        // Create the structured JSON object for the message content
+        // This is the key change: answers are now structured data, not a formatted string
+        const clarificationAnswerContent = JSON.stringify({
+          type: 'clarification_answer',
+          answers: answersArray,
+          clarification_message_id: clarificationMessageId,
+        });
+
+        console.log('[submitClarificationAnswersToBackend] Saving clarification answers as JSON:', {
           sessionId,
           clarificationMessageId,
-          answersArray,
+          answersCount: answersArray.length,
+          contentPreview: clarificationAnswerContent.substring(0, 100) + '...',
         });
 
         const response = await fetch(GRAPHQL_URL, {
@@ -840,25 +825,23 @@ export function ChatInterface() {
           credentials: 'include',
           body: JSON.stringify({
             query: `
-              mutation SubmitClarificationAnswers($input: SubmitClarificationAnswersInput!) {
-                submitClarificationAnswers(input: $input) {
-                  success
-                  userMessage {
-                    messageId
-                    content
-                    role
-                    sequenceOrder
-                    createdAt
-                  }
-                  clarificationMessageId
+              mutation SaveClarificationAnswerMessage($input: SaveChatMessageInput!) {
+                saveChatMessage(input: $input) {
+                  messageId
+                  sessionId
+                  role
+                  content
+                  sequenceOrder
+                  createdAt
                 }
               }
             `,
             variables: {
               input: {
                 sessionId,
-                clarificationMessageId,
-                answers: answersArray,
+                content: clarificationAnswerContent,
+                role: 'USER',
+                type: 'CLARIFICATION_ANSWER',
               },
             },
           }),
@@ -875,7 +858,7 @@ export function ChatInterface() {
           return false;
         }
 
-        const success = result.data?.submitClarificationAnswers?.success || false;
+        const success = !!result.data?.saveChatMessage?.messageId;
 
         // If successful, update the clarification message's answered status and store answers
         if (success) {

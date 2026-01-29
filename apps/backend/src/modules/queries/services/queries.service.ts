@@ -6,6 +6,7 @@ import { LegalQuery, Citation } from '../entities/legal-query.entity';
 import { EVENT_PATTERNS } from '../../../shared/events/base/event-patterns';
 import { UsersService } from '../../users/users.service';
 import { SessionMode } from '../../users/entities/user-session.entity';
+import { ChatMessageType } from '../../chat/entities/chat-message.entity';
 
 /**
  * Submit Query DTO
@@ -14,6 +15,7 @@ export interface SubmitQueryDto {
   sessionId?: string | null;
   question: string;
   citations?: Citation[];
+  type?: ChatMessageType;
 }
 
 /**
@@ -352,7 +354,7 @@ export class QueriesService {
    *
    * If sessionId is not provided or invalid, creates a new session for the user.
    *
-   * @param dto - Question data with optional mode and conversation history
+   * @param dto - Question data with optional mode, type, and conversation history
    * @param askQuestionFn - Function to call the AI engine (injected for testability)
    * @param userId - Optional user ID for session auto-creation
    * @returns The query with the AI-generated answer, citations, or clarification info
@@ -373,6 +375,7 @@ export class QueriesService {
         role: 'user' | 'assistant';
         content: string;
       }>,
+      messageType?: ChatMessageType,
     ) => Promise<{
       answer: string;
       citations: Array<{ source: string; article: string; url?: string }>;

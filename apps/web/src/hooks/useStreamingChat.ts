@@ -227,6 +227,7 @@ interface StreamEvent {
   type: StreamEventType;
   content: string;
   metadata: Record<string, unknown>;
+  response_type?: 'TEXT' | 'CLARIFICATION_QUESTION';
 }
 
 interface StreamCitation {
@@ -1229,6 +1230,8 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
    * IMPORTANT: This function does NOT save a user message to the backend.
    * The caller is responsible for calling submitClarificationAnswers mutation
    * to persist the user's answers before calling this function.
+   *
+   * Uses the UNIFIED /api/v1/qa/ask-stream endpoint with message_type: CLARIFICATION_ANSWER.
    */
   const sendClarificationAnswers = useCallback(
     async (
@@ -1284,10 +1287,13 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
       // Fetch conversation history for context
       const conversationHistory = await fetchConversationHistory(sessionId);
 
-      // Build request body
+      // Build request body for the UNIFIED ask-stream endpoint
+      // The question field is required (use original question as the base question)
       const requestBody = {
-        original_question: originalQuestion,
-        answers: answers,
+        question: originalQuestion, // Required for AskQuestionRequest validation
+        message_type: 'CLARIFICATION_ANSWER', // Indicates this is a clarification answer
+        original_question: originalQuestion, // Original question for clarification processing
+        clarification_answers: answers, // User's answers to clarification questions
         mode,
         session_id: sessionId,
         ...(conversationHistory && conversationHistory.length > 0
@@ -1297,12 +1303,13 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
         conversation_metadata: buildConversationMetadata(conversationHistory),
       };
 
-      console.log('[sendClarificationAnswers] Sending request to AI Engine:', {
+      console.log('[sendClarificationAnswers] Sending request to UNIFIED ask-stream endpoint:', {
         sessionId,
         originalQuestionLength: originalQuestion.length,
         answersCount: answers.length,
         conversationHistoryLength: conversationHistory?.length || 0,
         conversationMetadata: requestBody.conversation_metadata,
+        messageType: 'CLARIFICATION_ANSWER',
       });
 
       // NOTE: User message is saved by submitClarificationAnswers mutation
@@ -1317,7 +1324,8 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
           throw new Error('Streaming disabled');
         }
 
-        const response = await fetch(`${AI_ENGINE_URL}/api/v1/qa/clarification-answer-stream`, {
+        // Use the UNIFIED /api/v1/qa/ask-stream endpoint
+        const response = await fetch(`${AI_ENGINE_URL}/api/v1/qa/ask-stream`, {
           method: 'POST',
           headers,
           signal: abortControllerRef.current.signal,

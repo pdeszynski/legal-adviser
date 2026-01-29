@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769676965189-b5423339",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T08:56:05.189Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "update-streaming-endpoint-to-support-type-discriminator",
+  "featureName": "Update /ask-stream Endpoint to Handle Message Type Discriminator",
+  "error": "Feature completed in 1972s - auto-verified",
+  "passes": true
+}

@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Define a ChatMessageInterface in GraphQL with common fields (id, role, sequenceOrder, createdAt, type). Create concrete types implementing this interface: TextChatMessage, ClarificationQuestionMessage, ClarificationAnswerMessage, CitationMessage. Use GraphQL union or interface based on type field to return properly typed responses.",
+  "id": "chat-message-graphql-interface",
+  "title": "Create GraphQL Interface for Chat Messages",
+  "dependencies": [
+    "chat-message-type-discriminator"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "refactor-chat-messaging",
+  "descriptionHistory": [
+    {
+      "description": "Define a ChatMessageInterface in GraphQL with common fields (id, role, sequenceOrder, createdAt, type). Create concrete types implementing this interface: TextChatMessage, ClarificationQuestionMessage, ClarificationAnswerMessage, CitationMessage. Use GraphQL union or interface based on type field to return properly typed responses.",
+      "timestamp": "2026-01-29T07:24:16.612Z",
+      "source": "initial"
+    }
+  ]
+}

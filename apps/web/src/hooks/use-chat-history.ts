@@ -163,8 +163,7 @@ export function useChatHistory(
         hasMoreRef.current = newSessions.length === limit;
         setTotalCount((prev) => (append ? prev : newSessions.length));
       } catch (err) {
-        const errorObj =
-          err instanceof Error ? err : new Error('Failed to fetch chat sessions');
+        const errorObj = err instanceof Error ? err : new Error('Failed to fetch chat sessions');
         setError(errorObj);
       } finally {
         isLoadingRef.current = false;
@@ -200,12 +199,20 @@ export function useChatHistory(
   };
 }
 
+export type ChatMessageType =
+  | 'TEXT'
+  | 'CLARIFICATION_QUESTION'
+  | 'CLARIFICATION_ANSWER'
+  | 'CITATION'
+  | 'ERROR';
+
 export interface ChatMessage {
   messageId: string;
   sessionId: string;
   role: 'USER' | 'ASSISTANT' | 'SYSTEM';
   content: string;
   rawContent: string | null;
+  type: ChatMessageType | null;
   citations: Array<{
     source: string;
     url: string | null;
@@ -218,6 +225,20 @@ export interface ChatMessage {
     queryType: string | null;
     keyTerms: string[] | null;
     language: string | null;
+    clarification?: {
+      needs_clarification: boolean;
+      questions: Array<{
+        question: string;
+        question_type?: string;
+        options?: string[];
+        hint?: string;
+      }>;
+      context_summary: string;
+      next_steps: string;
+      currentRound?: number;
+      totalRounds?: number;
+      answered?: boolean;
+    };
   } | null;
   sequenceOrder: number;
   createdAt: string;
@@ -294,6 +315,7 @@ export function useChatSession(sessionId: string | null) {
                     role
                     content
                     rawContent
+                    type
                     citations {
                       source
                       url
@@ -332,7 +354,9 @@ export function useChatSession(sessionId: string | null) {
         ]);
 
         if (!sessionResponse.ok || !messagesResponse.ok) {
-          throw new Error(`HTTP error! status: ${sessionResponse.status || messagesResponse.status}`);
+          throw new Error(
+            `HTTP error! status: ${sessionResponse.status || messagesResponse.status}`,
+          );
         }
 
         const sessionResult = await sessionResponse.json();
@@ -356,11 +380,12 @@ export function useChatSession(sessionId: string | null) {
         // Combine session with messages
         setSession({
           ...sessionData,
-          messages: messagesData.sort((a: ChatMessage, b: ChatMessage) => a.sequenceOrder - b.sequenceOrder),
+          messages: messagesData.sort(
+            (a: ChatMessage, b: ChatMessage) => a.sequenceOrder - b.sequenceOrder,
+          ),
         });
       } catch (err) {
-        const errorObj =
-          err instanceof Error ? err : new Error('Failed to fetch chat session');
+        const errorObj = err instanceof Error ? err : new Error('Failed to fetch chat session');
         setError(errorObj);
       } finally {
         setIsLoading(false);
