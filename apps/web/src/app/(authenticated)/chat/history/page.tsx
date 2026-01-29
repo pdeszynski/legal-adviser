@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import { ChatHistoryList } from '@/components/chat/chat-history-list';
 import { ChatHistoryFilters } from '@/components/chat/chat-history-filters';
 import { ChatContentSearchResults } from '@/components/chat/chat-content-search-results';
-import { useChatHistory } from '@/hooks/use-chat-history';
+import { useChatHistory, type ChatSession } from '@/hooks/use-chat-history';
 import { useChatContentSearch } from '@/hooks/use-chat-content-search';
 import type { ChatSessionFilters } from '@/hooks/use-chat-history';
 import type { ChatContentSearchFilters } from '@/hooks/use-chat-content-search';
@@ -36,13 +36,35 @@ export default function ChatHistoryPage() {
     search: '',
   });
 
+  // Optimistic updates for sessions
+  const [optimisticSessions, setOptimisticSessions] = useState<ChatSession[]>([]);
+
   // Content search filters
   const [contentFilters, setContentFilters] = useState<ChatContentSearchFilters>({
     query: '',
   });
 
-  const { sessions, isLoading, error, hasNextPage, fetchNextPage, totalCount } =
+  const { sessions, isLoading, error, hasNextPage, fetchNextPage, totalCount, refetch } =
     useChatHistory(sessionFilters);
+
+  // Compute sessions with optimistic updates applied
+  const sessionsWithUpdates = useMemo((): ChatSession[] => {
+    if (optimisticSessions.length === 0) {
+      return sessions;
+    }
+
+    // Create a map of optimistic updates
+    const optimisticMap = new Map(optimisticSessions.map((s) => [s.id, s]));
+
+    // Apply updates to sessions
+    return sessions.map((session) => {
+      const optimistic = optimisticMap.get(session.id);
+      if (optimistic) {
+        return optimistic;
+      }
+      return session;
+    });
+  }, [sessions, optimisticSessions]);
 
   const {
     results: searchResults,
@@ -92,6 +114,39 @@ export default function ChatHistoryPage() {
   const handleNewChat = useCallback(() => {
     router.push('/chat');
   }, [router]);
+
+  // Handle session deleted - refetch the session list
+  const handleSessionDeleted = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  // Handle session pinned - optimistically update UI
+  const handleSessionPinned = useCallback(
+    (sessionId: string, isPinned: boolean) => {
+      // Store optimistic update - just the changed session
+      setOptimisticSessions((prev) => {
+        // Find if we already have an optimistic update for this session
+        const existing = prev.find((s) => s.id === sessionId);
+        if (existing) {
+          return prev.map((s) => (s.id === sessionId ? { ...s, isPinned } : s));
+        }
+        // Find the session in the main list to create optimistic update
+        const session = sessions.find((s) => s.id === sessionId);
+        if (session) {
+          return [...prev, { ...session, isPinned }];
+        }
+        return prev;
+      });
+
+      // Clear optimistic updates after backend confirms (via refetch)
+      // Use a longer delay to let the mutation complete
+      setTimeout(() => {
+        setOptimisticSessions([]);
+        refetch();
+      }, 500);
+    },
+    [sessions, refetch],
+  );
 
   return (
     <div className="container mx-auto h-[calc(100vh-8rem)] py-6 px-4">
@@ -166,11 +221,13 @@ export default function ChatHistoryPage() {
               )}
 
               <ChatHistoryList
-                sessions={sessions}
+                sessions={sessionsWithUpdates}
                 isLoading={isLoading}
                 onSessionClick={handleSessionClick}
                 hasNextPage={hasNextPage}
                 onLoadMore={fetchNextPage}
+                onSessionDeleted={handleSessionDeleted}
+                onSessionPinned={handleSessionPinned}
               />
             </>
           ) : (

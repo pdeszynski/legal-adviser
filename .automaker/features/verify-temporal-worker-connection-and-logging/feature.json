@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Add comprehensive logging to Temporal worker initialization and connection process to diagnose the 'No Workers Running' issue. Implementation: 1) Add console.log statements in TemporalModule onModuleInit showing connection attempt, 2) Log successful worker registration with worker ID and task queue name, 3) Log all registered workflow and activity names, 4) Add error logging if worker connection fails, 5) Log when worker starts polling the task queue, 6) Add periodic heartbeat log (every 60 seconds) confirming worker is still polling, 7) Verify backend logs show these messages when 'pnpm dlx turbo dev' is run, 8) Check if there are any silent exceptions preventing worker start, 9) Ensure Temporal server URL is correctly configured (TEMPORAL_CLUSTER_URL), 10) Add startup validation that fails fast if worker cannot connect. These logs will help identify whether the issue is: connection failure, missing workflow/activity registration, worker not starting, or worker crashing after start.",
+  "id": "verify-temporal-worker-connection-and-logging",
+  "title": "Verify Temporal Worker Connection and Add Logging",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Add comprehensive logging to Temporal worker initialization and connection process to diagnose the 'No Workers Running' issue. Implementation: 1) Add console.log statements in TemporalModule onModuleInit showing connection attempt, 2) Log successful worker registration with worker ID and task queue name, 3) Log all registered workflow and activity names, 4) Add error logging if worker connection fails, 5) Log when worker starts polling the task queue, 6) Add periodic heartbeat log (every 60 seconds) confirming worker is still polling, 7) Verify backend logs show these messages when 'pnpm dlx turbo dev' is run, 8) Check if there are any silent exceptions preventing worker start, 9) Ensure Temporal server URL is correctly configured (TEMPORAL_CLUSTER_URL), 10) Add startup validation that fails fast if worker cannot connect. These logs will help identify whether the issue is: connection failure, missing workflow/activity registration, worker not starting, or worker crashing after start.",
+      "timestamp": "2026-01-29T10:01:38.703Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T10:08:48.000Z"
+}

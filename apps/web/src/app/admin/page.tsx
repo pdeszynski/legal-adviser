@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useCustom } from '@refinedev/core';
 import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
   PieChart,
@@ -31,7 +29,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@legal/ui';
 import { useDocumentMonitoring } from '@/hooks';
 import { DocumentQueueMonitor, DocumentActivityFeed } from '@/components/admin';
-import type { AnalyticsDashboard, DashboardAnalyticsInput } from '@/generated/graphql';
+import type { AnalyticsDashboard } from '@/generated/graphql';
 
 // Import additional types for chart data
 import type { DocumentTypeDistribution, AiOperationBreakdown } from '@/generated/graphql';
@@ -122,8 +120,8 @@ export default function AdminDashboardPage() {
     },
   });
 
-  const { data: dashboard, isLoading } = result;
-  const { refetch } = query;
+  const { data: dashboard } = result;
+  const { refetch, isLoading } = query;
 
   // Update last refresh time when data changes
   useEffect(() => {
@@ -138,7 +136,7 @@ export default function AdminDashboardPage() {
     refetchMonitoring();
   };
 
-  const analytics = dashboard?.data;
+  const analytics = dashboard;
 
   // Transform document type distribution for pie chart
   const documentTypeChartData =

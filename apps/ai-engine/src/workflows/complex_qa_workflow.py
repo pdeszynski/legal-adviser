@@ -105,7 +105,7 @@ async def clarify_node(state: ComplexQAState) -> ComplexQAState:
 
         return state
 
-    except Exception as e:
+    except Exception:
         # Clarification failure is not fatal - proceed to research
         state["clarification_questions"] = []
         state["next_step"] = "research"
@@ -149,7 +149,7 @@ async def research_node(state: ComplexQAState) -> ComplexQAState:
 
         return state
 
-    except Exception as e:
+    except Exception:
         # Research failure is not fatal - proceed with empty context
         state["retrieved_contexts"] = []
         state["statute_references"] = []
@@ -259,7 +259,7 @@ async def format_citations_node(state: ComplexQAState) -> ComplexQAState:
 
         return state
 
-    except Exception as e:
+    except Exception:
         # Citation formatting failure is not fatal
         state["formatted_citations"] = state.get("raw_citations", [])
         state["final_answer"] = state.get("answer", "")
@@ -446,7 +446,7 @@ class ComplexQAWorkflow:
 
             return output
 
-        except Exception as e:
+        except Exception:
             raise
 
 

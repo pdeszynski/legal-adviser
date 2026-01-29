@@ -17,31 +17,28 @@ external API calls, making them suitable for CI/CD.
 """
 
 import os
-import time
 from unittest.mock import AsyncMock, MagicMock, patch
-from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
 
-from src.main import app
-from src.agents.classifier_agent import classify_case, ClassificationResult, LegalGround
-from src.agents.qa_agent import answer_question
 from src import langfuse_init
+from src.agents.classifier_agent import ClassificationResult, LegalGround, classify_case
+from src.agents.qa_agent import answer_question
 from src.langfuse_init import (
+    _redact_dict_pii,
+    _redact_pii,
     flush,
     get_langfuse,
     is_langfuse_enabled,
     update_current_trace,
-    _redact_pii,
-    _redact_dict_pii,
 )
+from src.main import app
 
 # create_trace is not in __all__ so import it directly from the module
 create_trace = getattr(langfuse_init, "create_trace", None)
 from src.services.langfuse_tracker import get_langfuse_tracker
-
 
 # -----------------------------------------------------------------------------
 # Test Fixtures
@@ -308,7 +305,6 @@ class TestClassifierAgentTracing:
             mock_agent_getter.return_value = mock_agent
 
             # Mock update_current_trace to record to tracker
-            original_update = update_current_trace
             trace_updates = []
 
             def mock_update_trace(**kwargs):
@@ -355,7 +351,7 @@ class TestClassifierAgentTracing:
             # Need to patch is_langfuse_enabled to make update_current_trace actually run
             with patch("src.agents.classifier_agent.is_langfuse_enabled", return_value=True), \
                  patch("src.agents.classifier_agent.update_current_trace", side_effect=mock_update_trace):
-                result, metadata = await classify_case(
+                _result, _metadata = await classify_case(
                     case_description="Test case",
                     session_id="my-session-abc",
                     user_id="user-xyz-789",
@@ -492,7 +488,7 @@ class TestQAAgentTracing:
             # Patch is_langfuse_enabled to True so update_current_trace runs
             with patch("src.agents.qa_agent.is_langfuse_enabled", return_value=True), \
                  patch("src.agents.qa_agent.update_current_trace", side_effect=mock_update_trace):
-                result = await answer_question(
+                await answer_question(
                     question="Labor law question",
                     mode="LAWYER",
                     session_id="test-session",
@@ -538,7 +534,6 @@ class TestErrorTracking:
     @pytest.mark.asyncio
     async def test_qa_agent_timeout_error(self, reset_tracker):
         """Test that timeout errors are properly classified and tracked."""
-        from src.exceptions import LLMTimeoutError
 
         with patch("src.agents.qa_agent.get_query_analyzer_agent") as mock_analyzer_getter:
             mock_analyzer = AsyncMock()
@@ -599,7 +594,7 @@ class TestTokenUsageAndLatency:
             mock_agent.run = AsyncMock(return_value=mock_result)
             mock_agent_getter.return_value = mock_agent
 
-            result, metadata = await classify_case(
+            _result, metadata = await classify_case(
                 case_description="Test",
                 session_id="timing-test",
             )
@@ -623,7 +618,7 @@ class TestTokenUsageAndLatency:
             mock_agent.run = AsyncMock(return_value=mock_result)
             mock_agent_getter.return_value = mock_agent
 
-            result, metadata = await classify_case(
+            _result, metadata = await classify_case(
                 case_description="Test",
                 session_id="model-test",
             )
@@ -728,14 +723,14 @@ class TestMultiTurnConversationTracing:
             with patch("src.agents.qa_agent.is_langfuse_enabled", return_value=True), \
                  patch("src.agents.qa_agent.update_current_trace", side_effect=mock_update_trace):
                 # First turn
-                result1 = await answer_question(
+                await answer_question(
                     question="First question",
                     mode="SIMPLE",
                     session_id=session_id,
                 )
 
                 # Second turn
-                result2 = await answer_question(
+                await answer_question(
                     question="Follow-up question",
                     mode="SIMPLE",
                     session_id=session_id,
@@ -919,17 +914,16 @@ class TestIntegrationScenarios:
                             clarification_prompt="Need more details",
                         )
                     )
-                else:
-                    # Second call: no clarification needed
-                    return MagicMock(
-                        output=MagicMock(
-                            query_type="contract_dispute",
-                            key_terms=["breach", "damages", "timeline"],
-                            question_refined="Breach with timeline provided",
-                            needs_clarification=False,
-                            clarification_prompt=None,
-                        )
+                # Second call: no clarification needed
+                return MagicMock(
+                    output=MagicMock(
+                        query_type="contract_dispute",
+                        key_terms=["breach", "damages", "timeline"],
+                        question_refined="Breach with timeline provided",
+                        needs_clarification=False,
+                        clarification_prompt=None,
                     )
+                )
 
             mock_analyzer = AsyncMock()
             mock_analyzer.run = mock_analyzer_run

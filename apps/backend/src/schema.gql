@@ -2240,6 +2240,20 @@ input DeleteChatSessionInput {
   sessionId: ID!
 }
 
+type DeleteChatSessionResult {
+  """Deletion type (hard or soft)"""
+  deletionType: String!
+
+  """Number of messages deleted with this session"""
+  messageCount: Int!
+
+  """The ID of the deleted session"""
+  sessionId: ID!
+
+  """Whether the deletion was successful"""
+  success: Boolean!
+}
+
 input DeleteDocumentInputV2 {
   deletedBy: ID!
   documentId: ID!
@@ -4866,6 +4880,9 @@ type Mutation {
   generateDocument(input: GenerateDocumentInput!): LegalDocument!
   generateDocumentFromTemplate(input: GenerateFromTemplateInput!): LegalDocument!
 
+  """Permanently delete a chat session and all messages (cannot be undone)"""
+  hardDeleteChatSession(input: DeleteChatSessionInput!): DeleteChatSessionResult!
+
   """
   Authenticate user with username/email and password. Supports 2FA with twoFactorToken or backupCode.
   """
@@ -6050,6 +6067,9 @@ type Query {
 
   """List all Temporal schedules with pagination"""
   temporalSchedules(input: ScheduleListInput): ScheduleListResult!
+
+  """Get the current status of Temporal workers"""
+  temporalWorkerStatus: WorkerStatusResult!
   tokenUsageAnalytics(input: DashboardAnalyticsInput): TokenUsageAnalytics!
   tokenUsageByOperation(input: DashboardAnalyticsInput): [TokenUsageByOperation!]!
   tokenUsageExport(input: DashboardAnalyticsInput): TokenUsageExport!
@@ -8160,4 +8180,32 @@ enum WebhookStatus {
   ACTIVE
   DISABLED
   INACTIVE
+}
+
+type WorkerStatusEntry {
+  """Whether the worker is running"""
+  running: Boolean!
+
+  """Task queue this worker processes"""
+  taskQueue: String!
+
+  """Worker uptime in seconds"""
+  uptimeSeconds: Int
+
+  """Worker ID for tracking"""
+  workerId: String
+}
+
+type WorkerStatusResult {
+  """Number of workers currently running"""
+  runningWorkers: Int!
+
+  """Overall health status"""
+  status: String
+
+  """Total number of workers"""
+  totalWorkers: Int!
+
+  """List of worker status entries"""
+  workers: [WorkerStatusEntry!]!
 }

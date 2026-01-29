@@ -158,7 +158,7 @@ def generate_fallback_title(first_message: str) -> str:
     # Filter out short words and common filler words
     skip_words = {
         "i", "a", "w", "z", "na", "do", "o", "u", "za", "przez",
-        "the", "a", "an", "is", "are", "for", "to", "of", "in", "at",
+        "the", "an", "is", "are", "for", "to", "of", "in", "at",
     }
 
     meaningful_words = [w for w in words if len(w) > 2 and w.lower() not in skip_words]

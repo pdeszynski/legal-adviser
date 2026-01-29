@@ -93,7 +93,7 @@ async def parallel_classify_research_node(state: CaseAnalysisState) -> CaseAnaly
         state["metadata"]["current_step"] = "parallel_classify_research"
         state["next_step"] = "check_clarification"
 
-        duration_ms = (time.time() - start_time) * 1000
+        (time.time() - start_time) * 1000
 
         # Track costs
         track_llm_call(
@@ -359,13 +359,13 @@ class OptimizedCaseAnalysisWorkflow:
         Returns:
             Dictionary containing the workflow results
         """
-        start_time = time.time()
+        time.time()
 
         # Check cache first if enabled
         if use_cache:
             from ..services.cache_service import cached_call, generate_cache_key
 
-            cache_key = generate_cache_key(
+            generate_cache_key(
                 "optimized_case_analysis",
                 description=case_description,
                 responses=user_responses,
@@ -449,7 +449,7 @@ class OptimizedCaseAnalysisWorkflow:
 
             return output
 
-        except Exception as e:
+        except Exception:
             raise
 
 

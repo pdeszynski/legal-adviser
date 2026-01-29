@@ -69,7 +69,20 @@ fragment ClarificationSessionFragment on ClarificationSession {
 # Mutation: Submit answers to clarification questions
 mutation SubmitClarificationAnswers($input: SubmitClarificationAnswersInput!) {
   submitClarificationAnswers(input: $input) {
-    ...ClarificationSessionFragment
+    success
+    clarificationMessageId
+    validationErrors {
+      code
+      message
+      questionId
+    }
+    userMessage {
+      messageId
+      role
+      content
+      sequenceOrder
+      createdAt
+    }
   }
 }
 
@@ -81,7 +94,7 @@ mutation CancelClarificationSession($input: CancelClarificationSessionInput!) {
 }
 
 # Query: Get active clarification session for a query
-query GetClarificationSessionByQuery($queryId: ID!) {
+query GetClarificationSessionByQuery($queryId: String!) {
   clarificationSessionByQuery(queryId: $queryId) {
     ...ClarificationSessionFragment
   }

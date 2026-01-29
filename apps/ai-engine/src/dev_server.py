@@ -29,6 +29,7 @@ GRACEFUL_SHUTDOWN_TIMEOUT = 5
 
 from types import FrameType
 
+
 def handle_signal(signum: int, _frame: FrameType | None) -> None:
     """Handle shutdown signals from turbo."""
     logger.info("Received signal %s, shutting down...", signum)

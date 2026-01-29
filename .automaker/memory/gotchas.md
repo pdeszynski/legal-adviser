@@ -5,9 +5,9 @@ relevantTo: [error, bug, fix, issue, problem]
 importance: 0.9
 relatedFiles: []
 usageStats:
-  loaded: 1264
-  referenced: 471
-  successfulFeatures: 471
+  loaded: 1283
+  referenced: 482
+  successfulFeatures: 482
 ---
 # Gotchas
 
@@ -324,3 +324,25 @@ Mistakes and edge cases to avoid. These are lessons learned from past issues.
      ```
   3. **Check for deprecated imports:** When reviewing PRs or creating new resolvers, search for `ResolveProperty` to catch deprecated usage
 - **Related files:** `apps/backend/src/modules/documents/pdf-url.resolver.ts` - fixed to use `@ResolveField`
+
+#### [Gotcha] GraphQL schema changes require running codegen before frontend types match - build succeeds but runtime errors occur (2026-01-29)
+
+- **Situation:** After adding/modifying GraphQL queries, mutations, or types, frontend builds successfully but TypeScript types don't match runtime behavior, causing "field not found" or type mismatch errors at runtime
+- **Root cause:** GraphQL codegen generates TypeScript types from backend schema. When backend schema changes but codegen isn't run, frontend uses stale types. Build passes because TypeScript compiles against the (stale) generated types, but runtime breaks because actual GraphQL response differs
+- **How to avoid:**
+  1. **Always run codegen after GraphQL changes:**
+     ```bash
+     pnpm codegen    # Generate types from backend schema
+     pnpm build      # Verify frontend builds with new types
+     pnpm typecheck  # Verify no TypeScript errors
+     ```
+  2. **Generated files location:** `apps/web/src/generated/`
+     - `graphql.ts` - Full GraphQL types
+     - `introspection.json` - Schema introspection
+     - `persisted-queries/client.json` - Persisted queries
+  3. **Common issues after schema changes:**
+     - Field not found in generated types → Backend field added, codegen not run
+     - Type mismatch (e.g., string vs string | null) → Backend nullability changed, types stale
+     - Mutation missing → Resolver not exported or module not registered
+  4. **Add to post-feature checklist:** Run `pnpm codegen` as first step after any GraphQL schema modification
+- **Verification:** Check `apps/web/src/generated/graphql.ts` for new fields/types after schema changes

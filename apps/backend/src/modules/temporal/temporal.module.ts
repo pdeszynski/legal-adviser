@@ -17,6 +17,7 @@ import { TemporalWorkerService } from './temporal.worker';
 import { TemporalMetricsService } from './temporal-metrics.service';
 import { TemporalObservabilityService } from './temporal-observability.service';
 import { TemporalMetricsController } from './temporal-metrics.controller';
+import { TemporalWorkerStatusController } from './temporal-worker-status.controller';
 import { TemporalResolver } from './temporal.resolver';
 import { DocumentGenerationStarter } from './workflows/document/document-generation.starter';
 import { PdfExportStarter } from './workflows/document/pdf-export.starter';
@@ -136,7 +137,7 @@ export class TemporalModule {
     return {
       module: TemporalModule,
       imports: [ConfigModule, AuditLogModule],
-      controllers: [TemporalMetricsController],
+      controllers: [TemporalMetricsController, TemporalWorkerStatusController],
       providers: [
         optionsProvider,
         TemporalMetricsService,
@@ -188,7 +189,7 @@ export class TemporalModule {
     return {
       module: TemporalModule,
       imports: [ConfigModule, AuditLogModule, ...(options.imports || [])],
-      controllers: [TemporalMetricsController],
+      controllers: [TemporalMetricsController, TemporalWorkerStatusController],
       providers: [
         ...asyncProviders,
         TemporalMetricsService,
@@ -237,7 +238,7 @@ export class TemporalModule {
     return {
       module: TemporalModule,
       imports: [ConfigModule, AuditLogModule],
-      controllers: [TemporalMetricsController],
+      controllers: [TemporalMetricsController, TemporalWorkerStatusController],
       providers: [
         temporalOptionsProvider,
         TemporalMetricsService,

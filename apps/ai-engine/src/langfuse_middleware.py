@@ -8,7 +8,6 @@ Updated for Langfuse SDK 3.x which uses OpenTelemetry and @observe decorator.
 
 import time
 import uuid
-from collections.abc import Callable, Awaitable
 from typing import Any, ClassVar
 
 from fastapi import Request

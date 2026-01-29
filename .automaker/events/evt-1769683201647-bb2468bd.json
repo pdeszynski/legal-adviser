@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769683201647-bb2468bd",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-29T10:40:01.647Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "chat-history-actions-e2e-tests",
+  "featureName": "Create E2E Tests for Chat History Actions",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

@@ -4663,6 +4663,127 @@
       "dismissed": false,
       "featureId": "create-clarification-e2e-tests-with-type-discriminator",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "67ad17f9-4b96-4e25-b7ab-3e31bcbbb3e3",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"verify-temporal-worker-connection-and-logging\" has been verified and is complete.",
+      "createdAt": "2026-01-29T10:08:48.002Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "verify-temporal-worker-connection-and-logging",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "b03e8b6b-65a8-46ea-a729-42205fe932ae",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-history-actions-graphql-mutations\" has been verified and is complete.",
+      "createdAt": "2026-01-29T10:12:19.768Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-history-actions-graphql-mutations",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "fe797406-81c0-47f6-bfd4-cb1d024d30a4",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-temporal-worker-registration-in-dev\" has been verified and is complete.",
+      "createdAt": "2026-01-29T10:12:33.001Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-temporal-worker-registration-in-dev",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "8eade926-6697-4944-ac37-e48ab18245cb",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"verify-temporal-workflow-activity-registration\" has been verified and is complete.",
+      "createdAt": "2026-01-29T10:16:14.458Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "verify-temporal-workflow-activity-registration",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "e3c12244-7f74-4f09-828d-5368b270a5a2",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-history-delete-frontend\" has been verified and is complete.",
+      "createdAt": "2026-01-29T10:19:10.029Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-history-delete-frontend",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "6082a52a-9b8d-48c5-a409-bf31d09a973a",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-history-pin-frontend\" has been verified and is complete.",
+      "createdAt": "2026-01-29T10:25:17.443Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-history-pin-frontend",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "a97a8eab-d860-4add-98b6-effdc8d6335c",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-session-pin-backend-implementation\" has been verified and is complete.",
+      "createdAt": "2026-01-29T10:25:44.464Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-session-pin-backend-implementation",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "72946dd2-d746-42db-8070-03aac46437bb",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-session-delete-backend-implementation\" has been verified and is complete.",
+      "createdAt": "2026-01-29T10:28:19.979Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-session-delete-backend-implementation",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "2cc0215b-582b-411d-9b75-032232643d20",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-session-pinned-field\" has been verified and is complete.",
+      "createdAt": "2026-01-29T10:30:42.627Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-session-pinned-field",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "c4949be5-3248-4b9f-941d-2ffd9b0ffddd",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-history-list-sorting-by-pinned\" has been verified and is complete.",
+      "createdAt": "2026-01-29T10:31:09.374Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-history-list-sorting-by-pinned",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "f6241c76-30bf-4696-9c2c-77156be6b39a",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"chat-history-actions-e2e-tests\" has been verified and is complete.",
+      "createdAt": "2026-01-29T11:40:28.513Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "chat-history-actions-e2e-tests",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

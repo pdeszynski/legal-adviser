@@ -1555,6 +1555,72 @@
       "backToAbout": "Back to About"
     }
   },
+  "chat": {
+    "title": "Legal AI Assistant",
+    "clarificationMode": "Clarification Mode",
+    "reconnecting": "Reconnecting...",
+    "mode": {
+      "simple": "Simple",
+      "lawyer": "Pro"
+    },
+    "status": {
+      "waitingForAnswers": "Waiting for your answers",
+      "generatingResponse": "Generating response...",
+      "onlineAndReady": "Online & Ready",
+      "reconnecting": "Reconnecting... (Attempt {attempt}/3)"
+    },
+    "buttons": {
+      "newChat": "New Chat",
+      "history": "Chat History",
+      "stop": "Stop",
+      "send": "Send"
+    },
+    "placeholders": {
+      "simpleMode": "Ask for legal help...",
+      "lawyerMode": "Ask a complex legal question..."
+    },
+    "starterPrompts": {
+      "draftDemandLetter": {
+        "title": "Draft a Lawyer Demand Letter",
+        "prompt": "I need to draft a demand letter for unpaid services. Can you help me?"
+      },
+      "analyzeRentalContract": {
+        "title": "Analyze a Rental Contract",
+        "prompt": "What are the common pitfalls in a residential rental agreement in Poland?"
+      },
+      "askEmployeeRights": {
+        "title": "Ask about Employee Rights",
+        "prompt": "What are my rights if my employer terminates my contract without notice?"
+      }
+    },
+    "emptyState": {
+      "title": "How can I help you today?",
+      "subtitle": "I can help you draft documents, analyze contracts, or answer complex legal questions."
+    },
+    "loadingStates": {
+      "startingNewConversation": "Starting new conversation...",
+      "loadingConversation": "Loading conversation...",
+      "restoringChatSession": "Restoring your chat session",
+      "creatingNewSession": "Creating a new session",
+      "preparingConversation": "Preparing a new conversation"
+    },
+    "sessionError": {
+      "title": "Session Error",
+      "tryAgain": "Try Again"
+    },
+    "errors": {
+      "sessionNotFound": "Session not found. Please start a new chat session.",
+      "failedToCreateSession": "Failed to create chat session",
+      "couldNotStartSession": "Could not start a new chat session. Please try again."
+    },
+    "messages": {
+      "retrying": "Retrying..."
+    },
+    "warnings": {
+      "sessionTitleUpdateFailed": "Failed to update session title"
+    },
+    "skipClarification": "Please provide a general answer based on the information available."
+  },
   "interest": {
     "hero": {
       "badge": "Early Access Interest",

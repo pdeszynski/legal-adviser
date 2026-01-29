@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 # Lazy import to avoid mypy issues
 def _get_app() -> "FastAPI":  # type: ignore[no-any-return]
-    from main import app  # noqa: F401, type: ignore[import-not-found]
+    from main import app
     return app
 
 

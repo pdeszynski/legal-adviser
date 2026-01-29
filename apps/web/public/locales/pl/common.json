@@ -1715,5 +1715,71 @@
       "subtitle": "Dołącz do naszej społeczności wczesnych adopterów i uzyskaj ekskluzywny dostęp do narzędzi, które przekształcą praktykę prawniczą.",
       "button": "Poproś o wczesny dostęp teraz"
     }
+  },
+  "chat": {
+    "title": "Asystent Prawny AI",
+    "clarificationMode": "Tryb Uzupełniania",
+    "reconnecting": "Ponowne łączenie...",
+    "mode": {
+      "simple": "Prosty",
+      "lawyer": "Pro"
+    },
+    "status": {
+      "waitingForAnswers": "Oczekiwanie na odpowiedzi",
+      "generatingResponse": "Generowanie odpowiedzi...",
+      "onlineAndReady": "Online i Gotowy",
+      "reconnecting": "Ponowne łączenie... (Próba {attempt}/3)"
+    },
+    "buttons": {
+      "newChat": "Nowa rozmowa",
+      "history": "Historia czatów",
+      "stop": "Zatrzymaj",
+      "send": "Wyślij"
+    },
+    "placeholders": {
+      "simpleMode": "Zapytaj o pomoc prawną...",
+      "lawyerMode": "Zadaj złożone pytanie prawne..."
+    },
+    "starterPrompts": {
+      "draftDemandLetter": {
+        "title": "Napisz Wezwanie Przedsądowe",
+        "prompt": "Potrzebuję napisać wezwanie przedsądowe za nieopłacone usługi. Czy możesz mi pomóc?"
+      },
+      "analyzeRentalContract": {
+        "title": "Analizuj Umowę Najmu",
+        "prompt": "Jakie są typowe pułapki w polskiej umowie najmu mieszkania?"
+      },
+      "askEmployeeRights": {
+        "title": "Zapytaj o Prawa Pracownika",
+        "prompt": "Jakie są moje prawa, jeśli mój pracodawca rozwiąże umowę bez wypowiedzenia?"
+      }
+    },
+    "emptyState": {
+      "title": "Jak mogę Ci dziś pomóc?",
+      "subtitle": "Mogę pomóc Ci w sporządzaniu dokumentów, analizie umów lub odpowiedzi na złożone pytania prawne."
+    },
+    "loadingStates": {
+      "startingNewConversation": "Rozpoczynanie nowej rozmowy...",
+      "loadingConversation": "Ładowanie rozmowy...",
+      "restoringChatSession": "Przywracanie sesji czatu",
+      "creatingNewSession": "Tworzenie nowej sesji",
+      "preparingConversation": "Przygotowywanie nowej rozmowy"
+    },
+    "sessionError": {
+      "title": "Błąd Sesji",
+      "tryAgain": "Spróbuj ponownie"
+    },
+    "errors": {
+      "sessionNotFound": "Sesja nie została znaleziona. Rozpocznij nową sesję czatu.",
+      "failedToCreateSession": "Nie udało się utworzyć sesji czatu",
+      "couldNotStartSession": "Nie można rozpocząć nowej sesji czatu. Spróbuj ponownie."
+    },
+    "messages": {
+      "retrying": "Ponawianie..."
+    },
+    "warnings": {
+      "sessionTitleUpdateFailed": "Nie udało się zaktualizować tytułu sesji"
+    },
+    "skipClarification": "Proszę podać ogólną odpowiedź na podstawie dostępnych informacji."
   }
 }

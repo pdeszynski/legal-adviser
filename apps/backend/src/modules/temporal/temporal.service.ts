@@ -198,14 +198,26 @@ export class TemporalService {
       return this.client;
     }
 
+    const connectionStartTime = Date.now();
+
+    this.logger.log('=== Temporal Client Connection ===');
+    this.logger.log(`Connecting to Temporal cluster at: ${this.options.clusterUrl}`);
+    this.logger.log(`Namespace: ${this.options.namespace}`);
+    this.logger.log(`TLS Enabled: ${this.options.tlsEnabled}`);
+    this.logger.log(`Connection Timeout: ${this.options.clientTimeout}ms`);
+
     try {
       // Dynamic import to handle ESM-only temporalio package
+      this.logger.debug('Loading Temporal client SDK...');
       const clientModule = await import('@temporalio/client');
       const { Connection, Client } = clientModule;
 
       this.Connection = Connection;
       this.Client = Client;
 
+      this.logger.debug('Temporal client SDK loaded successfully');
+
+      this.logger.debug('Establishing connection to Temporal server...');
       const connection = await Connection.connect({
         address: this.options.clusterUrl,
         tls: this.options.tlsEnabled
@@ -223,18 +235,38 @@ export class TemporalService {
           : undefined,
       });
 
+      const connectionDuration = Date.now() - connectionStartTime;
+      this.logger.log(`✓ Connection established in ${connectionDuration}ms`);
+
+      this.logger.debug('Creating Temporal client...');
       this.client = new Client({
         connection,
         namespace: this.options.namespace,
       });
 
-      this.logger.log(
-        `Connected to Temporal at ${this.options.clusterUrl} (namespace: ${this.options.namespace})`,
-      );
+      const totalDuration = Date.now() - connectionStartTime;
+      this.logger.log(`✓ Temporal client initialized successfully`);
+      this.logger.log(`Connected to Temporal at ${this.options.clusterUrl} (namespace: ${this.options.namespace})`);
+      this.logger.log(`Total connection time: ${totalDuration}ms`);
+      this.logger.log('=== Temporal Client Connection Complete ===');
 
       return this.client;
     } catch (error) {
-      this.logger.error('Failed to connect to Temporal', error);
+      const failureDuration = Date.now() - connectionStartTime;
+      this.logger.error(`✗ Failed to connect to Temporal after ${failureDuration}ms`);
+      this.logger.error(`Connection Details:`);
+      this.logger.error(`  - Cluster URL: ${this.options.clusterUrl}`);
+      this.logger.error(`  - Namespace: ${this.options.namespace}`);
+      this.logger.error(`  - TLS: ${this.options.tlsEnabled}`);
+      this.logger.error(`This may indicate:`);
+      this.logger.error(`  - Temporal server is not running or unreachable`);
+      this.logger.error(`  - Incorrect cluster URL configuration`);
+      this.logger.error(`  - Network connectivity issues`);
+      this.logger.error(`  - TLS certificate mismatch (if TLS is enabled)`);
+      this.logger.error(`  - Firewall blocking the connection`);
+
+      this.logger.error('Connection error details:', error);
+
       throw new BadRequestException('Failed to connect to Temporal server');
     }
   }

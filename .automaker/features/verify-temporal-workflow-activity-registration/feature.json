@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Ensure all Temporal workflows and activities are correctly registered with the worker. Investigation tasks: 1) List all workflows that should be registered: DocumentGenerationWorkflow, EmailWorkflow, PdfExportWorkflow, RulingIndexingWorkflow, WebhookDeliveryWorkflow, ChatCleanupWorkflow, 2) Verify each workflow file exports the workflow function, 3) Check activities are defined and exported in each workflow, 4) Verify TemporalModule.register() calls include all workflows, 5) Check worker connection options match what Temporal server expects, 6) Verify workflow names and task queue names match between backend and Temporal UI, 7) Test with minimal worker: create a simple 'HelloWorld' workflow to verify basic registration works, 8) Check if there are circular dependencies preventing workflow imports, 9) Verify @Injectable() decorator is on workflow classes if using NestJS dependency injection, 10) Add unit test that verifies worker.options.workflows and worker.options.activities are non-empty. If workflows are not being registered, the worker will start but have nothing to execute.",
+  "id": "verify-temporal-workflow-activity-registration",
+  "title": "Verify Workflows and Activities Are Properly Registered",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Ensure all Temporal workflows and activities are correctly registered with the worker. Investigation tasks: 1) List all workflows that should be registered: DocumentGenerationWorkflow, EmailWorkflow, PdfExportWorkflow, RulingIndexingWorkflow, WebhookDeliveryWorkflow, ChatCleanupWorkflow, 2) Verify each workflow file exports the workflow function, 3) Check activities are defined and exported in each workflow, 4) Verify TemporalModule.register() calls include all workflows, 5) Check worker connection options match what Temporal server expects, 6) Verify workflow names and task queue names match between backend and Temporal UI, 7) Test with minimal worker: create a simple 'HelloWorld' workflow to verify basic registration works, 8) Check if there are circular dependencies preventing workflow imports, 9) Verify @Injectable() decorator is on workflow classes if using NestJS dependency injection, 10) Add unit test that verifies worker.options.workflows and worker.options.activities are non-empty. If workflows are not being registered, the worker will start but have nothing to execute.",
+      "timestamp": "2026-01-29T10:01:38.704Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T10:16:14.454Z"
+}

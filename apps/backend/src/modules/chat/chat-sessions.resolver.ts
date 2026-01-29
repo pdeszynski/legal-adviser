@@ -24,6 +24,7 @@ import {
   DeleteChatSessionInput,
   ChatSessionsArgs,
   ChatSessionDetailArgs,
+  DeleteChatSessionResult,
 } from './dto/chat-session.dto';
 import {
   ExportChatSessionInput,
@@ -87,6 +88,7 @@ interface ChatMessageAddedPayload {
  * - createChatSession(title, mode): Create new session
  * - updateChatSessionTitle(sessionId, title): Rename session
  * - deleteChatSession(sessionId): Soft delete session
+ * - hardDeleteChatSession(sessionId): Permanently delete session and all messages
  * - pinChatSession(sessionId, isPinned): Toggle pin status
  * - exportChatSession(sessionId, format): Export session to PDF/Markdown/JSON
  * - chatSessionUpdated: Subscription for real-time updates when messages are added
@@ -635,9 +637,14 @@ export class ChatSessionsResolver {
       throw new Error('User not authenticated');
     }
 
+    const ipAddress = this.extractIpAddress(
+      context as { req: { ip?: string; headers?: Record<string, unknown> } },
+    );
+
     const session = await this.chatSessionsService.softDelete(
       input.sessionId,
       userId,
+      ipAddress,
     );
 
     // Publish deletion event
@@ -647,6 +654,72 @@ export class ChatSessionsResolver {
     });
 
     return session;
+  }
+
+  /**
+   * Mutation: Permanently delete a chat session
+   *
+   * Permanently deletes a chat session and all associated messages.
+   * This action cannot be undone - all data will be removed from the database.
+   *
+   * The deletion is performed within a database transaction to ensure atomicity.
+   * All associated ChatMessage records are deleted along with the ChatSession.
+   *
+   * @param input - Delete input with sessionId
+   * @param context - GraphQL context with authenticated user
+   * @returns Deletion result with sessionId and message count
+   *
+   * @example
+   * ```graphql
+   * mutation {
+   *   hardDeleteChatSession(input: {
+   *     sessionId: "session-uuid"
+   *   }) {
+   *     sessionId
+   *     messageCount
+   *     deletionType
+   *     success
+   *   }
+   * }
+   * ```
+   */
+  @Mutation(() => DeleteChatSessionResult, {
+    name: 'hardDeleteChatSession',
+    description:
+      'Permanently delete a chat session and all messages (cannot be undone)',
+  })
+  @UseGuards(ChatSessionOwnershipGuard)
+  async hardDeleteChatSession(
+    @Args('input') input: DeleteChatSessionInput,
+    @Context() context: { req: { user?: { id?: string } } },
+  ): Promise<DeleteChatSessionResult> {
+    const userId = context.req?.user?.id;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+
+    const ipAddress = this.extractIpAddress(
+      context as { req: { ip?: string; headers?: Record<string, unknown> } },
+    );
+
+    const result = await this.chatSessionsService.hardDelete(
+      input.sessionId,
+      userId,
+      ipAddress,
+    );
+
+    // Publish deletion event
+    await pubSub.publish(ChatSessionEventType.SESSION_DELETED, {
+      sessionId: result.sessionId,
+      session: null, // Session no longer exists
+    });
+
+    return {
+      sessionId: result.sessionId,
+      messageCount: result.messageCount,
+      deletionType: 'hard',
+      success: true,
+    };
   }
 
   /**
@@ -691,6 +764,17 @@ export class ChatSessionsResolver {
       input.sessionId,
       userId,
       input.isPinned,
+    );
+
+    // Log pin/unpin action for audit
+    this.auditService.logSessionModification(
+      userId,
+      input.isPinned ? 'PIN' : 'UNPIN',
+      session.id,
+      this.extractIpAddress(
+        context as { req: { ip?: string; headers?: Record<string, unknown> } },
+      ),
+      { previousState: !input.isPinned, newState: input.isPinned },
     );
 
     // Publish update event

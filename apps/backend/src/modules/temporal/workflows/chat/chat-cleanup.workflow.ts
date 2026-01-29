@@ -267,6 +267,14 @@ export function generateWorkflowId(
 }
 
 /**
+ * Workflow export for Temporal registration
+ */
+export const workflowInfo = {
+  name: 'chatCleanup',
+  taskQueue: 'legal-ai-task-queue',
+} as const;
+
+/**
  * Chat Cleanup Workflow
  *
  * Main workflow for cleaning up old chat sessions.

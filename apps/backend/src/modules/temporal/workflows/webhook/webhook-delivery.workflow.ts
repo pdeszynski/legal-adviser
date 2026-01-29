@@ -142,6 +142,14 @@ export function generateWorkflowId(deliveryId: string): string {
 }
 
 /**
+ * Workflow export for Temporal registration
+ */
+export const workflowInfo = {
+  name: 'webhookDelivery',
+  taskQueue: 'webhook-workflows',
+} as const;
+
+/**
  * Calculate exponential backoff delay
  *
  * @param attemptNumber - Attempt number (1-indexed)

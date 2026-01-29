@@ -10,10 +10,8 @@ See CLAUDE.md "TypeScript Input/Output Type Declaration Order" section.
 
 import uuid
 from enum import Enum
-from typing import Annotated
 
 from pydantic import BaseModel, Field, field_validator
-
 
 # -----------------------------------------------------------------------------
 # Enums

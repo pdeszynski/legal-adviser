@@ -5,7 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource, QueryRunner } from 'typeorm';
 import { ChatSession } from '../entities/chat-session.entity';
 import { ChatMessage } from '../entities/chat-message.entity';
 import {
@@ -13,6 +13,7 @@ import {
   ChatSessionsArgs,
 } from '../dto/chat-session.dto';
 import { TitleGenerationService } from './title-generation.service';
+import { ChatAuditService } from './chat-audit.service';
 
 /**
  * Service for managing chat sessions
@@ -35,6 +36,8 @@ export class ChatSessionsService {
     @InjectRepository(ChatMessage)
     private readonly chatMessageRepository: Repository<ChatMessage>,
     private readonly titleGenerationService: TitleGenerationService,
+    private readonly dataSource: DataSource,
+    private readonly auditService: ChatAuditService,
   ) {}
 
   /**
@@ -99,10 +102,10 @@ export class ChatSessionsService {
       : 'lastMessageAt';
     const direction = sortOrder === 'ASC' ? 'ASC' : 'DESC';
 
-    // Apply sorting and pagination
+    // Apply sorting: pinned sessions first, then by the selected sort field
     queryBuilder
-      .orderBy(`session.${sortField}`, direction)
-      .addOrderBy('session.isPinned', 'DESC') // Pinned sessions first
+      .orderBy('session.isPinned', 'DESC') // Pinned sessions first
+      .addOrderBy(`session.${sortField}`, direction)
       .limit(limit)
       .offset(offset);
 
@@ -222,11 +225,42 @@ export class ChatSessionsService {
 
   /**
    * Soft delete a session
+   *
+   * Marks the session as deleted by setting the deletedAt timestamp.
+   * The session and its messages remain in the database but are filtered from default queries.
+   *
+   * @param sessionId - The session ID to soft delete
+   * @param userId - The user ID requesting the deletion (for ownership verification)
+   * @param ipAddress - Optional IP address for audit logging
+   * @returns The soft-deleted session with deletedAt timestamp set
+   * @throws NotFoundException if session not found
    */
-  async softDelete(sessionId: string, userId: string): Promise<ChatSession> {
+  async softDelete(
+    sessionId: string,
+    userId: string,
+    ipAddress?: string,
+  ): Promise<ChatSession> {
     const session = await this.findByIdAndUserId(sessionId, userId);
     session.softDelete();
-    return this.chatSessionRepository.save(session);
+    const savedSession = await this.chatSessionRepository.save(session);
+
+    // Log soft delete to audit logs
+    this.auditService.logSessionModification(
+      userId,
+      'SOFT_DELETE',
+      sessionId,
+      ipAddress,
+      {
+        messageCount: session.messageCount || 0,
+        deletionType: 'soft',
+      },
+    );
+
+    this.logger.log(
+      `Soft deleted chat session ${sessionId} for user ${userId}`,
+    );
+
+    return savedSession;
   }
 
   /**
@@ -240,11 +274,80 @@ export class ChatSessionsService {
 
   /**
    * Permanently delete a session (hard delete)
-   * Use with caution - this will cascade delete all messages
+   *
+   * Use with caution - this will permanently delete the session and all associated messages.
+   * This operation is wrapped in a database transaction to ensure atomic deletion.
+   *
+   * Cascade delete behavior:
+   * - TypeORM cascade will delete all ChatMessage records associated with this session
+   * - The deletion is performed within a transaction for data integrity
+   *
+   * @param sessionId - The session ID to delete
+   * @param userId - The user ID requesting the deletion (for ownership verification)
+   * @param ipAddress - Optional IP address for audit logging
+   * @returns The ID of the deleted session
+   * @throws NotFoundException if session not found
+   * @throws ForbiddenException if user doesn't own the session
    */
-  async hardDelete(sessionId: string, userId: string): Promise<void> {
-    const session = await this.findByIdAndUserId(sessionId, userId);
-    await this.chatSessionRepository.remove(session);
+  async hardDelete(
+    sessionId: string,
+    userId: string,
+    ipAddress?: string,
+  ): Promise<{ sessionId: string; messageCount: number }> {
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // Fetch the session within the transaction
+      const session = await queryRunner.manager.findOne(ChatSession, {
+        where: { id: sessionId, userId },
+      });
+
+      if (!session) {
+        throw new NotFoundException(
+          `Chat session ${sessionId} not found or access denied`,
+        );
+      }
+
+      // Get message count for audit logging before deletion
+      const messageCount = session.messageCount || 0;
+
+      // Delete all associated messages explicitly to ensure cascade works
+      // This is a safety measure even though TypeORM cascade should handle it
+      await queryRunner.manager.delete(ChatMessage, { sessionId });
+
+      // Delete the session
+      await queryRunner.manager.remove(session);
+
+      // Commit the transaction
+      await queryRunner.commitTransaction();
+
+      // Log deletion to audit logs (after successful commit)
+      this.auditService.logSessionModification(userId, 'DELETE', sessionId, ipAddress, {
+        messageCount,
+        deletionType: 'hard',
+      });
+
+      this.logger.log(
+        `Hard deleted chat session ${sessionId} for user ${userId} (${messageCount} messages)`,
+      );
+
+      return { sessionId, messageCount };
+    } catch (error) {
+      // Rollback on any error
+      await queryRunner.rollbackTransaction();
+
+      this.logger.error(
+        `Failed to hard delete chat session ${sessionId}: ${error.message}`,
+      );
+
+      // Re-throw the error to be handled by the caller
+      throw error;
+    } finally {
+      // Release the query runner
+      await queryRunner.release();
+    }
   }
 
   /**

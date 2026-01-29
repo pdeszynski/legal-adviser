@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "autoLoopWasRunning": false,
+  "maxConcurrency": 1,
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "branchName": null,
+  "runningFeatureIds": [
+    "add-dashboard-auth-requirement",
+    "feature-1769683062355-h0vn8gdjz",
+    "chat-history-actions-e2e-tests"
+  ],
+  "savedAt": "2026-01-29T11:01:08.953Z"
+}

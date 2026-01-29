@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769681328022-4a8abdf4",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T10:08:48.022Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "verify-temporal-worker-connection-and-logging",
+  "featureName": "Verify Temporal Worker Connection and Add Logging",
+  "error": "Feature completed in 380s - auto-verified",
+  "passes": true
+}

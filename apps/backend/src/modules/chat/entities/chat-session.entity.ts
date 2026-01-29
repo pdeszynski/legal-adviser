@@ -104,6 +104,7 @@ export class ChatCitationType {
 @Index(['lastMessageAt'])
 @Index(['mode'])
 @Index(['deletedAt'])
+@Index(['isPinned'])
 export class ChatSession {
   @PrimaryGeneratedColumn('uuid')
   @IDField(() => ID)

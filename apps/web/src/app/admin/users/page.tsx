@@ -4,6 +4,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { CrudFilter } from '@refinedev/core';
 import { Button, Input } from '@legal/ui';
 import {
   Search,
@@ -68,7 +69,7 @@ export default function AdminUsersPage() {
       const dp = dataProvider;
       if (!dp) return;
 
-      const filterList: Array<{ field: string; operator: string; value: string | boolean }> = [];
+      const filterList: CrudFilter[] = [];
 
       // Apply role filter
       if (filters.role && filters.role !== 'all') {
@@ -305,7 +306,7 @@ export default function AdminUsersPage() {
         config: {
           mutation: {
             operation: 'bulkActivateUsers',
-            fields: ['success', { failed: ['id', 'error'] }],
+            fields: ['success', 'failed { id error }'],
             variables: {
               input: { userIds },
             },

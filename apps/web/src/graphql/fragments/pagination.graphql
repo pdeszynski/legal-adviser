@@ -9,19 +9,8 @@ fragment PageInfoFragment on PageInfo {
   endCursor
 }
 
-# Page result wrapper - common structure for paginated queries
-# This is a type-level fragment for use with generic types
-fragment UserPageResultFragment on UserConnection {
-  totalCount
-  edges {
-    node {
-      ...UserFragment
-    }
-  }
-  pageInfo {
-    ...PageInfoFragment
-  }
-}
+# Note: User queries return a simple array, not a connection type
+# Use AdminUserMinimalFragment or UserDetailFragment directly
 
 fragment LegalDocumentPageResultFragment on LegalDocumentConnection {
   totalCount

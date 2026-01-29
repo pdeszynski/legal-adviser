@@ -17,6 +17,7 @@ Langfuse Integration:
 
 from functools import lru_cache
 
+from openai import AsyncOpenAI
 from pydantic_ai import Agent
 
 from ..auth import UserContext
@@ -24,7 +25,7 @@ from ..config import get_settings
 
 
 @lru_cache
-def get_openai_client() -> "AsyncOpenAI":  # type: ignore[name-defined]
+def get_openai_client() -> AsyncOpenAI:
     """Get or create the OpenAI client singleton.
 
     This client is used for embeddings generation only, as PydanticAI v1.31
@@ -36,8 +37,6 @@ def get_openai_client() -> "AsyncOpenAI":  # type: ignore[name-defined]
     Returns:
         AsyncOpenAI: Configured OpenAI client for embeddings
     """
-    from openai import AsyncOpenAI
-
     settings = get_settings()
     return AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 

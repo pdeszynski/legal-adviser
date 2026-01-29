@@ -157,12 +157,12 @@ export default function SystemHealthPage() {
     },
   });
 
-  const { data: healthData, isLoading } = result;
-  const { refetch } = query;
+  const { data: healthData } = result;
+  const { refetch, isLoading } = query;
 
   // Update last refresh time when data changes
   useEffect(() => {
-    if (healthData?.data) {
+    if (healthData) {
       setLastRefresh(new Date());
     }
   }, [healthData]);
@@ -180,7 +180,7 @@ export default function SystemHealthPage() {
     refetch();
   };
 
-  const data = healthData?.data;
+  const data = healthData;
 
   return (
     <div className="space-y-6">

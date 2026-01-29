@@ -138,6 +138,14 @@ export function generateBackfillWorkflowId(
 }
 
 /**
+ * Workflow export for Temporal registration
+ */
+export const workflowInfo = {
+  name: 'rulingBackfill',
+  taskQueue: 'billing-workflows',
+} as const;
+
+/**
  * Calculate date chunks for backfill
  *
  * @param dateFrom - Start date

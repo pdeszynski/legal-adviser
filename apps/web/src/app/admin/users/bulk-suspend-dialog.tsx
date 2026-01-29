@@ -10,9 +10,9 @@ import type { GraphQLMutationConfig } from '@providers/data-provider';
 interface User {
   id: string;
   email: string;
-  username?: string;
-  firstName?: string;
-  lastName?: string;
+  username?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   isActive: boolean;
 }
 
@@ -72,7 +72,7 @@ export function BulkSuspendDialog({ open, onClose, users, onUpdate }: BulkSuspen
         config: {
           mutation: {
             operation: 'bulkSuspendUsers',
-            fields: ['success', { failed: ['id', 'error'] }],
+            fields: ['success', 'failed { id error }'],
             variables: {
               input: { userIds, reason },
             },

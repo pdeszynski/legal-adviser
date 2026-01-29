@@ -110,14 +110,14 @@ query GetAdminSystemHealthMetrics($input: DashboardAnalyticsInput) {
   }
 }
 
-# Get users with filtering and pagination (nestjs-query auto-generated)
+# Get users with filtering and pagination
 query GetAdminUsers(
   $filter: UserFilter
   $sorting: [UserSort!]
-  $paging: CursorPaging
+  $paging: UserPaging
 ) {
   users(filter: $filter, sorting: $sorting, paging: $paging) {
-    ...UserPageResultFragment
+    ...AdminUserMinimalFragment
   }
 }
 
@@ -132,23 +132,23 @@ query GetAdminUser($id: ID!) {
 # ADMIN MUTATIONS
 # ============================================================
 
-# Create user using nestjs-query auto-generated mutation
-mutation AdminCreateUser($input: CreateOneUserInput!) {
+# Create user mutation
+mutation AdminCreateUser($input: CreateUserInput!) {
   createOneUser(input: $input) {
     ...AdminUserFragment
   }
 }
 
-# Update user using nestjs-query auto-generated mutation
-mutation AdminUpdateUser($input: UpdateOneUserInput!) {
-  updateOneUser(input: $input) {
+# Update user mutation
+mutation AdminUpdateUser($id: ID!, $input: UpdateUserInput!) {
+  updateOneUser(id: $id, input: $input) {
     ...AdminUserMinimalFragment
   }
 }
 
-# Delete user using nestjs-query auto-generated mutation
-mutation AdminDeleteUser($input: DeleteOneUserInput!) {
-  deleteOneUser(input: $input) {
+# Delete user mutation
+mutation AdminDeleteUser($id: ID!) {
+  deleteOneUser(id: $id) {
     id
     email
   }

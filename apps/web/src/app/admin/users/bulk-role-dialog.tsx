@@ -9,10 +9,10 @@ import type { GraphQLMutationConfig } from '@providers/data-provider';
 interface User {
   id: string;
   email: string;
-  username?: string;
-  firstName?: string;
-  lastName?: string;
-  role: 'user' | 'admin';
+  username?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  role: string;
 }
 
 interface BulkRoleDialogProps {
@@ -84,7 +84,7 @@ export function BulkRoleDialog({ open, onClose, users, onUpdate }: BulkRoleDialo
         config: {
           mutation: {
             operation: 'bulkChangeUserRoles',
-            fields: ['success', { failed: ['id', 'error'] }],
+            fields: ['success', 'failed { id error }'],
             variables: {
               input: { userIds, role },
             },

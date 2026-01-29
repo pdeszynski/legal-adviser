@@ -1,0 +1,20 @@
+{
+  "category": "refactor",
+  "description": "Update all project documentation to reflect the new single source of truth approach for user roles. Update: 1) CLAUDE.md RBAC section with correct entity structure (User.role vs UserRole), 2) RBAC architecture documentation showing the chosen approach, 3) Seed user documentation with admin@refine.dev as default admin, 4) GraphQL schema examples showing correct role fields, 5) Frontend role check examples (hasRole, hasRoleLevel, isAdmin), 6) Backend guard usage examples, 7) Migration guide if upgrading from old structure, 8) Troubleshooting section for common role-related issues. Remove all documentation references to the deprecated approach. Add warnings about not reverting to old pattern. Ensure code examples in docs match actual implementation.",
+  "id": "update-documentation-for-role-refactoring",
+  "title": "Update Documentation for Role Refactoring",
+  "dependencies": [
+    "update-backend-rbac-guards-for-consistency",
+    "update-frontend-role-checks-for-consistency"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update all project documentation to reflect the new single source of truth approach for user roles. Update: 1) CLAUDE.md RBAC section with correct entity structure (User.role vs UserRole), 2) RBAC architecture documentation showing the chosen approach, 3) Seed user documentation with admin@refine.dev as default admin, 4) GraphQL schema examples showing correct role fields, 5) Frontend role check examples (hasRole, hasRoleLevel, isAdmin), 6) Backend guard usage examples, 7) Migration guide if upgrading from old structure, 8) Troubleshooting section for common role-related issues. Remove all documentation references to the deprecated approach. Add warnings about not reverting to old pattern. Ensure code examples in docs match actual implementation.",
+      "timestamp": "2026-01-29T12:30:41.338Z",
+      "source": "initial"
+    }
+  ]
+}

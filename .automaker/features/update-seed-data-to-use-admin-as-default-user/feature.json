@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Update database seed files to ensure admin@refine.dev is created with ADMIN role and is the primary admin user. Implementation: 1) Update users.seed.ts to create admin@refine.dev first with password 'password' and ADMIN role, 2) Ensure admin@refine.dev has SUPER_ADMIN role if that tier exists, 3) Update Role seed to include ADMIN role definition, 4) Create UserRole relationship if using many-to-many approach, 5) Add comment documenting this is the default admin account, 6) Verify email is 'admin@refine.dev' (not admin@example.com or similar), 7) Ensure no duplicate admin users exist in seeds, 8) Update CLAUDE.md documentation with admin credentials. Run seeds and verify admin user can login and access admin routes. Update existing documentation references to admin@example.com if they exist.",
+  "id": "update-seed-data-to-use-admin-as-default-user",
+  "title": "Update Seed Data to Use admin@refine.dev as Default User",
+  "dependencies": [
+    "refactor-user-role-to-single-source-of-truth"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update database seed files to ensure admin@refine.dev is created with ADMIN role and is the primary admin user. Implementation: 1) Update users.seed.ts to create admin@refine.dev first with password 'password' and ADMIN role, 2) Ensure admin@refine.dev has SUPER_ADMIN role if that tier exists, 3) Update Role seed to include ADMIN role definition, 4) Create UserRole relationship if using many-to-many approach, 5) Add comment documenting this is the default admin account, 6) Verify email is 'admin@refine.dev' (not admin@example.com or similar), 7) Ensure no duplicate admin users exist in seeds, 8) Update CLAUDE.md documentation with admin credentials. Run seeds and verify admin user can login and access admin routes. Update existing documentation references to admin@example.com if they exist.",
+      "timestamp": "2026-01-29T12:30:41.336Z",
+      "source": "initial"
+    }
+  ]
+}

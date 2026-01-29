@@ -4,22 +4,14 @@
 #import "./fragments/user.graphql"
 #import "./fragments/pagination.graphql"
 
-# Query: Get paginated list of users
+# Query: Get list of users
 query GetUsers(
   $filter: UserFilter
-  $paging: CursorPaging
+  $paging: UserPaging
   $sorting: [UserSort!]
 ) {
   users(filter: $filter, paging: $paging, sorting: $sorting) {
-    totalCount
-    edges {
-      node {
-        ...UserDetailFragment
-      }
-    }
-    pageInfo {
-      ...PageInfoFragment
-    }
+    ...UserDetailFragment
   }
 }
 
@@ -31,22 +23,22 @@ query GetUser($id: ID!) {
 }
 
 # Mutation: Create a new user
-mutation CreateOneUser($input: CreateOneUserInput!) {
+mutation CreateOneUser($input: CreateUserInput!) {
   createOneUser(input: $input) {
     ...UserDetailFragment
   }
 }
 
 # Mutation: Update an existing user
-mutation UpdateOneUser($input: UpdateOneUserInput!) {
-  updateOneUser(input: $input) {
+mutation UpdateOneUser($id: ID!, $input: UpdateUserInput!) {
+  updateOneUser(id: $id, input: $input) {
     ...UserDetailFragment
   }
 }
 
 # Mutation: Delete a user
-mutation DeleteOneUser($input: DeleteOneUserInput!) {
-  deleteOneUser(input: $input) {
+mutation DeleteOneUser($id: ID!) {
+  deleteOneUser(id: $id) {
     id
     email
   }

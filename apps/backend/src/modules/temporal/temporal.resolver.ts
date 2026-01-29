@@ -22,7 +22,7 @@ import {
   ID,
   Int,
 } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, Optional } from '@nestjs/common';
 import {
   Field,
   ObjectType,
@@ -31,6 +31,7 @@ import {
 } from '@nestjs/graphql';
 import { GqlAuthGuard, AdminGuard } from '../auth/guards';
 import { TemporalService } from './temporal.service';
+import { TemporalWorkerService } from './temporal.worker';
 import { AuditLogService } from '../audit-log/audit-log.service';
 import {
   AuditActionType,
@@ -489,6 +490,59 @@ export class ScheduleDetailsGraphQL {
 }
 
 /**
+ * Worker Status Entry
+ *
+ * Represents the status of a single Temporal worker.
+ */
+@ObjectType('WorkerStatusEntry')
+export class WorkerStatusEntry {
+  @Field(() => String, { description: 'Task queue this worker processes' })
+  taskQueue: string;
+
+  @Field(() => Boolean, { description: 'Whether the worker is running' })
+  running: boolean;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Worker ID for tracking',
+  })
+  workerId?: string;
+
+  @Field(() => Int, {
+    nullable: true,
+    description: 'Worker uptime in seconds',
+  })
+  uptimeSeconds?: number;
+}
+
+/**
+ * Worker Status Result
+ *
+ * Response containing status of all Temporal workers.
+ */
+@ObjectType('WorkerStatusResult')
+export class WorkerStatusResult {
+  @Field(() => [WorkerStatusEntry], {
+    description: 'List of worker status entries',
+  })
+  workers: WorkerStatusEntry[];
+
+  @Field(() => Int, { description: 'Total number of workers' })
+  totalWorkers: number;
+
+  @Field(() => Int, {
+    description: 'Number of workers currently running',
+  })
+  runningWorkers: number;
+
+  @Field(() => String, {
+    nullable: true,
+    description: 'Overall health status',
+  })
+  status: string;
+}
+
+/**
  * Temporal Schedule Resolver
  *
  * Handles GraphQL mutations for managing Temporal schedules.
@@ -500,6 +554,8 @@ export class TemporalResolver {
   constructor(
     private readonly temporalService: TemporalService,
     private readonly auditLogService: AuditLogService,
+    @Optional()
+    private readonly workerService?: TemporalWorkerService,
   ) {}
 
   /**
@@ -1108,5 +1164,49 @@ export class TemporalResolver {
 
       throw error;
     }
+  }
+
+  /**
+   * Query: Get Temporal Worker Status
+   *
+   * Returns the current status of all Temporal workers.
+   * Useful for monitoring and debugging worker connectivity.
+   *
+   * @returns Worker status information
+   */
+  @Query(() => WorkerStatusResult, {
+    name: 'temporalWorkerStatus',
+    description: 'Get the current status of Temporal workers',
+  })
+  async temporalWorkerStatus(): Promise<WorkerStatusResult> {
+    if (!this.workerService) {
+      return {
+        workers: [],
+        totalWorkers: 0,
+        runningWorkers: 0,
+        status: 'Worker service not available',
+      };
+    }
+
+    const workers = this.workerService.getWorkerStatus();
+    const runningWorkers = workers.filter((w) => w.running).length;
+
+    let status: string;
+    if (workers.length === 0) {
+      status = 'No workers configured';
+    } else if (runningWorkers === 0) {
+      status = 'UNHEALTHY - No workers running';
+    } else if (runningWorkers < workers.length) {
+      status = 'DEGRADED - Some workers not running';
+    } else {
+      status = 'HEALTHY - All workers running';
+    }
+
+    return {
+      workers,
+      totalWorkers: workers.length,
+      runningWorkers,
+      status,
+    };
   }
 }

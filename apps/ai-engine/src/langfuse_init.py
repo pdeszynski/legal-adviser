@@ -293,7 +293,7 @@ def init_langfuse() -> None:
 
     # Check for required credentials
     if not settings.LANGFUSE_PUBLIC_KEY or not settings.LANGFUSE_SECRET_KEY:
-        print(f"LANGFUSE_PUBLIC_KEY or LANGFUSE_SECRET_KEY not configured - skipping Langfuse initialization")
+        print("LANGFUSE_PUBLIC_KEY or LANGFUSE_SECRET_KEY not configured - skipping Langfuse initialization")
         print(f"  LANGFUSE_PUBLIC_KEY: {'SET' if settings.LANGFUSE_PUBLIC_KEY else 'NOT SET'}")
         print(f"  LANGFUSE_SECRET_KEY: {'SET' if settings.LANGFUSE_SECRET_KEY else 'NOT SET'}")
         _langfuse_enabled = False

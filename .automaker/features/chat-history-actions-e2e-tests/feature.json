@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive Playwright E2E tests for the delete and pin/unpin functionality. Test scenarios: 1) Delete chat session - verify confirmation dialog appears, 2) Confirm deletion - verify session is removed from list, 3) Cancel deletion - verify session remains, 4) Pin chat session - verify pin icon changes to filled, 5) Unpin chat session - verify pin icon changes to outline, 6) Pinned session appears at top of list, 7) Unpinned session appears in chronological order, 8) User cannot delete another user's session (403 error), 9) Delete pin state persists across page refresh, 10) Error handling when deletion/pin fails (network error). Use Playwright to simulate full user flow. Add tests to apps/web/tests/chat-history-actions.spec.ts.",
+  "id": "chat-history-actions-e2e-tests",
+  "title": "Create E2E Tests for Chat History Actions",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive Playwright E2E tests for the delete and pin/unpin functionality. Test scenarios: 1) Delete chat session - verify confirmation dialog appears, 2) Confirm deletion - verify session is removed from list, 3) Cancel deletion - verify session remains, 4) Pin chat session - verify pin icon changes to filled, 5) Unpin chat session - verify pin icon changes to outline, 6) Pinned session appears at top of list, 7) Unpinned session appears in chronological order, 8) User cannot delete another user's session (403 error), 9) Delete pin state persists across page refresh, 10) Error handling when deletion/pin fails (network error). Use Playwright to simulate full user flow. Add tests to apps/web/tests/chat-history-actions.spec.ts.",
+      "timestamp": "2026-01-29T10:07:53.281Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T11:40:28.511Z"
+}

@@ -1,0 +1,20 @@
+{
+  "category": "feature",
+  "description": "Implement the delete button functionality in the chat history list view. The button should: 1) Call a GraphQL mutation to delete the chat session, 2) Show a confirmation dialog before deletion with message 'Are you sure you want to delete this chat? This action cannot be undone.', 3) Display loading state during deletion, 4) Remove the deleted session from the list optimistically or after server confirmation, 5) Handle deletion errors gracefully with user-friendly error message, 6) Use trash icon from lucide-react for visual clarity. Ensure the mutation requires proper authentication and session ownership validation.",
+  "id": "chat-history-delete-frontend",
+  "title": "Add Chat Session Delete Functionality to Frontend",
+  "dependencies": [
+    "chat-history-frontend-list-view",
+    "chat-session-ownership-authorization-guard"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Implement the delete button functionality in the chat history list view. The button should: 1) Call a GraphQL mutation to delete the chat session, 2) Show a confirmation dialog before deletion with message 'Are you sure you want to delete this chat? This action cannot be undone.', 3) Display loading state during deletion, 4) Remove the deleted session from the list optimistically or after server confirmation, 5) Handle deletion errors gracefully with user-friendly error message, 6) Use trash icon from lucide-react for visual clarity. Ensure the mutation requires proper authentication and session ownership validation.",
+      "timestamp": "2026-01-29T10:07:53.232Z",
+      "source": "initial"
+    }
+  ]
+}

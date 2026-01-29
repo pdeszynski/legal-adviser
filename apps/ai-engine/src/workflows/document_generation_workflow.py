@@ -128,7 +128,7 @@ async def review_node(state: DocumentGenerationState) -> DocumentGenerationState
     3. Proper formatting
     4. Placeholder completeness
     """
-    metadata = state.get("metadata", {})
+    state.get("metadata", {})
     draft = state.get("current_draft", "")
 
     try:
@@ -417,7 +417,7 @@ class DocumentGenerationWorkflow:
 
             return output
 
-        except Exception as e:
+        except Exception:
             raise
 
 

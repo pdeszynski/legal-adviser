@@ -243,7 +243,7 @@ class StreamingContext:
         """Exit streaming context and record metrics."""
         import time
 
-        elapsed = time.time() - self.start_time
+        time.time() - self.start_time
 
         # Record metrics
         from ..services.cost_monitoring import track_llm_call

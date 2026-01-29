@@ -11,7 +11,7 @@ for the debug status endpoint. It tracks:
 import logging
 import time
 from collections import deque
-from datetime import datetime, timedelta
+from datetime import datetime
 from threading import Lock
 from typing import Any
 

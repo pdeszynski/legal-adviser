@@ -60,3 +60,11 @@ export async function aiQueryProcessing(
     processedAt: new Date().toISOString(),
   };
 }
+
+/**
+ * Workflow export for Temporal registration
+ */
+export const workflowInfo = {
+  name: 'aiQueryProcessing',
+  taskQueue: 'ai-workflows',
+} as const;

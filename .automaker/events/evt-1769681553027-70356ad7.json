@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769681553027-70356ad7",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T10:12:33.027Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-temporal-worker-registration-in-dev",
+  "featureName": "Fix Temporal Worker Registration in Development Mode",
+  "error": "Feature completed in 609s - auto-verified",
+  "passes": true
+}

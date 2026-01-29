@@ -1,4 +1,4 @@
-import { InputType, Field, ID, Int, ArgsType } from '@nestjs/graphql';
+import { InputType, Field, ID, Int, ArgsType, ObjectType } from '@nestjs/graphql';
 import { ChatMode } from '../entities/chat-session.entity';
 import {
   IsOptional,
@@ -269,4 +269,32 @@ export class ChatSessionDetailResponse {
     description: 'Message IDs in order',
   })
   messageIds: string[];
+}
+
+/**
+ * Response type for hard delete operation
+ *
+ * Returns the ID of the deleted session and the number of messages that were deleted.
+ */
+@ObjectType('DeleteChatSessionResult')
+export class DeleteChatSessionResult {
+  @Field(() => ID, {
+    description: 'The ID of the deleted session',
+  })
+  sessionId: string;
+
+  @Field(() => Int, {
+    description: 'Number of messages deleted with this session',
+  })
+  messageCount: number;
+
+  @Field(() => String, {
+    description: 'Deletion type (hard or soft)',
+  })
+  deletionType: string;
+
+  @Field(() => Boolean, {
+    description: 'Whether the deletion was successful',
+  })
+  success: boolean;
 }

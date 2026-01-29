@@ -1,0 +1,20 @@
+{
+  "category": "feature",
+  "description": "Implement the pin/unpin toggle button functionality in the chat history list view. The button should: 1) Call a GraphQL mutation to toggle pinned state, 2) Optimistically update the UI to show pin state change immediately, 3) Revert optimistic update if mutation fails, 4) Display loading state during mutation, 5) Show pin icon (filled pin) for pinned chats and outline pin icon for unpinned chats from lucide-react, 6) Handle errors gracefully with user-friendly error message. Consider adding a visual indicator (badge or border) for pinned sessions. Ensure mutation requires authentication and session ownership validation.",
+  "id": "chat-history-pin-frontend",
+  "title": "Add Chat Session Pin/Unpin Functionality to Frontend",
+  "dependencies": [
+    "chat-history-frontend-list-view",
+    "chat-session-ownership-authorization-guard"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Implement the pin/unpin toggle button functionality in the chat history list view. The button should: 1) Call a GraphQL mutation to toggle pinned state, 2) Optimistically update the UI to show pin state change immediately, 3) Revert optimistic update if mutation fails, 4) Display loading state during mutation, 5) Show pin icon (filled pin) for pinned chats and outline pin icon for unpinned chats from lucide-react, 6) Handle errors gracefully with user-friendly error message. Consider adding a visual indicator (badge or border) for pinned sessions. Ensure mutation requires authentication and session ownership validation.",
+      "timestamp": "2026-01-29T10:07:53.251Z",
+      "source": "initial"
+    }
+  ]
+}

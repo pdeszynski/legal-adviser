@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769681774523-d72a2b8e",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T10:16:14.523Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "verify-temporal-workflow-activity-registration",
+  "featureName": "Verify Workflows and Activities Are Properly Registered",
+  "error": "Feature completed in 829s - auto-verified",
+  "passes": true
+}

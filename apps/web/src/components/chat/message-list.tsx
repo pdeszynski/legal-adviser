@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { StreamingViewer } from './StreamingViewer';
-import { ChatMessage } from './chat-interface';
+import { ChatMessage } from './types/chat.types';
 import { CitationRenderer } from './citation-renderer';
 import { MessageSkeleton } from './message-skeleton';
 import { ClarificationPrompt } from './clarification-prompt';

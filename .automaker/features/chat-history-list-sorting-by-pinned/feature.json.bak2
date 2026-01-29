@@ -1,0 +1,16 @@
+{
+  "category": "enhancement",
+  "description": "Update the chatSessions GraphQL query and frontend list to sort sessions with pinned sessions at the top. Backend changes: 1) Modify ChatSession query resolver to sort by pinned DESC (pinned first), then lastMessageAt DESC (most recent), 2) Ensure this is the default sort order for all chat history queries, 3) Add support for optional sort parameter if users want different sort orders later. Frontend changes: 1) Update chat history list to display pinned sessions at the top, 2) Add visual separator (subtle line or spacing) between pinned and unpinned sections, 3) Optionally add 'Pinned' section header if there are pinned sessions. This ensures important chats are always easily accessible.",
+  "id": "chat-history-list-sorting-by-pinned",
+  "title": "Update Chat History List Sorting for Pinned Sessions",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update the chatSessions GraphQL query and frontend list to sort sessions with pinned sessions at the top. Backend changes: 1) Modify ChatSession query resolver to sort by pinned DESC (pinned first), then lastMessageAt DESC (most recent), 2) Ensure this is the default sort order for all chat history queries, 3) Add support for optional sort parameter if users want different sort orders later. Frontend changes: 1) Update chat history list to display pinned sessions at the top, 2) Add visual separator (subtle line or spacing) between pinned and unpinned sections, 3) Optionally add 'Pinned' section header if there are pinned sessions. This ensures important chats are always easily accessible.",
+      "timestamp": "2026-01-29T10:07:53.268Z",
+      "source": "initial"
+    }
+  ]
+}

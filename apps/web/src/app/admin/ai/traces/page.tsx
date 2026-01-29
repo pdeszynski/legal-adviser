@@ -12,14 +12,14 @@ import {
   AlertCircle,
   CheckCircle,
   Clock,
-  Zap,
   Eye,
-  TrendingUp,
   Users,
+  Coins,
+  Activity,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@legal/ui';
 import { Button } from '@legal/ui';
-import { format as formatDateFormat, subDays, startOfDay } from 'date-fns';
+import { format as formatDateFormat, subDays } from 'date-fns';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 

@@ -1,0 +1,89 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [active]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - navigation [ref=e7]:
+            - button "previous" [disabled] [ref=e8]:
+              - img "previous" [ref=e9]
+            - generic [ref=e11]:
+              - generic [ref=e12]: 1/
+              - text: "1"
+            - button "next" [disabled] [ref=e13]:
+              - img "next" [ref=e14]
+          - img
+        - generic [ref=e16]:
+          - link "Next.js 15.5.9 (outdated) Webpack" [ref=e17] [cursor=pointer]:
+            - /url: https://nextjs.org/docs/messages/version-staleness
+            - img [ref=e18]
+            - generic "An outdated version detected (latest is 16.1.6), upgrade is highly recommended!" [ref=e20]: Next.js 15.5.9 (outdated)
+            - generic [ref=e21]: Webpack
+          - img
+      - dialog "Runtime Error" [ref=e23]:
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - generic [ref=e28]:
+              - generic [ref=e30]: Runtime Error
+              - generic [ref=e31]:
+                - button "Copy Error Info" [ref=e32] [cursor=pointer]:
+                  - img [ref=e33]
+                - button "No related documentation found" [disabled] [ref=e35]:
+                  - img [ref=e36]
+                - link "Learn more about enabling Node.js inspector for server code with Chrome DevTools" [ref=e38] [cursor=pointer]:
+                  - /url: https://nextjs.org/docs/app/building-your-application/configuring/debugging#server-side-code
+                  - img [ref=e39]
+            - paragraph [ref=e48]: Too many re-renders. React limits the number of renders to prevent an infinite loop.
+          - generic [ref=e49]:
+            - generic [ref=e50]:
+              - paragraph [ref=e52]:
+                - img [ref=e54]
+                - generic [ref=e57]: src/components/chat/chat-history-list.tsx (129:7) @ ChatHistoryList
+                - button "Open in editor" [ref=e58] [cursor=pointer]:
+                  - img [ref=e60]
+              - generic [ref=e63]:
+                - generic [ref=e64]: 127 | return (
+                - generic [ref=e65]: 128 | <>
+                - generic [ref=e66]: "> 129 | <ChatDeleteDialog"
+                - generic [ref=e67]: "| ^"
+                - generic [ref=e68]: "130 | open={deleteDialogOpen}"
+                - generic [ref=e69]: "131 | onClose={() => {"
+                - generic [ref=e70]: 132 | setDeleteDialogOpen(false);
+            - generic [ref=e71]:
+              - generic [ref=e72]:
+                - paragraph [ref=e73]:
+                  - text: Call Stack
+                  - generic [ref=e74]: "14"
+                - button "Show 12 ignore-listed frame(s)" [ref=e75] [cursor=pointer]:
+                  - text: Show 12 ignore-listed frame(s)
+                  - img [ref=e76]
+              - generic [ref=e78]:
+                - generic [ref=e79]:
+                  - text: ChatHistoryList
+                  - button "Open ChatHistoryList in editor" [ref=e80] [cursor=pointer]:
+                    - img [ref=e81]
+                - text: src/components/chat/chat-history-list.tsx (129:7)
+              - generic [ref=e83]:
+                - generic [ref=e84]:
+                  - text: ChatHistoryPage
+                  - button "Open ChatHistoryPage in editor" [ref=e85] [cursor=pointer]:
+                    - img [ref=e86]
+                - text: src/app/(authenticated)/chat/history/page.tsx (217:15)
+        - generic [ref=e88]:
+          - generic [ref=e89]: "1"
+          - generic [ref=e90]: "2"
+    - generic [ref=e95] [cursor=pointer]:
+      - button "Open Next.js Dev Tools" [ref=e96]:
+        - img [ref=e97]
+      - generic [ref=e100]:
+        - button "Open issues overlay" [ref=e101]:
+          - generic [ref=e102]:
+            - generic [ref=e103]: "0"
+            - generic [ref=e104]: "1"
+          - generic [ref=e105]: Issue
+        - button "Collapse issues badge" [ref=e106]:
+          - img [ref=e107]
+  - 'heading "Application error: a client-side exception has occurred while loading localhost (see the browser console for more information)." [level=2] [ref=e111]'
+```

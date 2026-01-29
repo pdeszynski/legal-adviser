@@ -164,7 +164,7 @@ export const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
                 'group-hover:scale-110 transition-transform duration-300',
               )}
             >
-              {React.isValidElement(Icon) ? Icon : <Icon className="h-6 w-6" strokeWidth={1.5} />}
+              {React.isValidElement(Icon) ? Icon : typeof Icon === 'function' ? <Icon className="h-6 w-6" strokeWidth={1.5} /> : null}
             </div>
           )}
 

@@ -132,7 +132,7 @@ async def clarify_node(state: CaseAnalysisState) -> CaseAnalysisState:
 
     The clarification agent has instrument=True for automatic Langfuse tracing.
     """
-    metadata = state.get("metadata", {})
+    state.get("metadata", {})
 
     try:
         agent = clarification_agent()

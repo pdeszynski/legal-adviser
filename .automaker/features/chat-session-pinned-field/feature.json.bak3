@@ -1,0 +1,19 @@
+{
+  "category": "feature",
+  "description": "Update the ChatSession entity to include a 'pinned' boolean field for tracking pinned state. Database changes: 1) Add 'pinned' column (boolean, default false) to chat_sessions table, 2) Create database migration script to add the column, 3) Update ChatSession entity definition with @FilterableField() decorated pinned property, 4) Update GraphQL schema to include pinned field in ChatSession type. Backend changes: 1) Update QueriesService to support filtering by pinned status, 2) Ensure chatSessions query sorts by pinned status first (pinned at top), then by lastMessageAt descending. Ensure backward compatibility with existing sessions (default to false).",
+  "id": "chat-session-pinned-field",
+  "title": "Add Pinned Field to ChatSession Entity",
+  "dependencies": [
+    "chat-session-entity"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update the ChatSession entity to include a 'pinned' boolean field for tracking pinned state. Database changes: 1) Add 'pinned' column (boolean, default false) to chat_sessions table, 2) Create database migration script to add the column, 3) Update ChatSession entity definition with @FilterableField() decorated pinned property, 4) Update GraphQL schema to include pinned field in ChatSession type. Backend changes: 1) Update QueriesService to support filtering by pinned status, 2) Ensure chatSessions query sorts by pinned status first (pinned at top), then by lastMessageAt descending. Ensure backward compatibility with existing sessions (default to false).",
+      "timestamp": "2026-01-29T10:07:53.260Z",
+      "source": "initial"
+    }
+  ]
+}

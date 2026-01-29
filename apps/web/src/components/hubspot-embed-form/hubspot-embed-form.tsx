@@ -169,10 +169,9 @@ export function HubSpotEmbedForm({ source = 'demo', className = '' }: HubSpotEmb
       script.src = 'https://js.hsforms.net/forms/v2.js';
       script.async = true;
       script.onload = () => {
-        if (typeof window !== 'undefined' && (window as unknown).hbspt) {
-          const hbspt = (
-            window as unknown as { hbspt: { forms: { create: (config: unknown) => void } } }
-          ).hbspt;
+        const win = window as typeof window & { hbspt?: { forms: { create: (config: unknown) => void } } };
+        if (typeof window !== 'undefined' && win.hbspt) {
+          const hbspt = win.hbspt;
           hbspt.forms.create({
             portalId: HUBSPOT_PORTAL_ID,
             formId: HUBSPOT_FORM_ID,

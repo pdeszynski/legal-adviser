@@ -5,7 +5,7 @@ It should be imported and called at application startup.
 """
 
 import os
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 try:
     import sentry_sdk

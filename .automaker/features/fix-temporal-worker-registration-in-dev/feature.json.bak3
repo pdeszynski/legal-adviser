@@ -1,0 +1,20 @@
+{
+  "category": "bug",
+  "description": "Investigate and fix why Temporal workers are not being registered when running 'pnpm dlx turbo dev'. The Temporal UI shows 'No Workers Running' for the legal-ai-task-queue. Implementation tasks: 1) Verify Temporal worker initialization code in backend is being executed during dev mode, 2) Check if TemporalModule is properly imported in app.module.ts, 3) Verify TEMPORAL_TASK_QUEUE environment variable is set to 'legal-ai-task-queue', 4) Check if worker connection to Temporal server is successful (logs should show 'Worker connected' or similar), 5) Ensure worker run loop is not being blocked or exiting early, 6) Verify workflow and activity registration happens before worker starts polling, 7) Check for any errors in backend logs during startup related to Temporal, 8) Ensure docker-compose services (Temporal server) are fully started before backend attempts worker connection, 9) Add startup logs showing registered workflows and activities, 10) Add health check endpoint GET /api/temporal/worker-status that returns worker polling status. Test by: starting services with docker compose, running pnpm dlx turbo dev, checking Temporal UI at http://localhost:8088, verifying workers appear in the Task Queues tab.",
+  "id": "fix-temporal-worker-registration-in-dev",
+  "title": "Fix Temporal Worker Registration in Development Mode",
+  "dependencies": [
+    "temporal-nestjs-integration",
+    "temporal-local-development-docker-compose"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Investigate and fix why Temporal workers are not being registered when running 'pnpm dlx turbo dev'. The Temporal UI shows 'No Workers Running' for the legal-ai-task-queue. Implementation tasks: 1) Verify Temporal worker initialization code in backend is being executed during dev mode, 2) Check if TemporalModule is properly imported in app.module.ts, 3) Verify TEMPORAL_TASK_QUEUE environment variable is set to 'legal-ai-task-queue', 4) Check if worker connection to Temporal server is successful (logs should show 'Worker connected' or similar), 5) Ensure worker run loop is not being blocked or exiting early, 6) Verify workflow and activity registration happens before worker starts polling, 7) Check for any errors in backend logs during startup related to Temporal, 8) Ensure docker-compose services (Temporal server) are fully started before backend attempts worker connection, 9) Add startup logs showing registered workflows and activities, 10) Add health check endpoint GET /api/temporal/worker-status that returns worker polling status. Test by: starting services with docker compose, running pnpm dlx turbo dev, checking Temporal UI at http://localhost:8088, verifying workers appear in the Task Queues tab.",
+      "timestamp": "2026-01-29T10:01:38.702Z",
+      "source": "initial"
+    }
+  ]
+}

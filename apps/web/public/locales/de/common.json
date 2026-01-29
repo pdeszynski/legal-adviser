@@ -1557,6 +1557,72 @@
     },
     "questions": "Fragen"
   },
+  "chat": {
+    "title": "Legal KI-Assistent",
+    "clarificationMode": "Klärungsmodus",
+    "reconnecting": "Neuverbinden...",
+    "mode": {
+      "simple": "Einfach",
+      "lawyer": "Profi"
+    },
+    "status": {
+      "waitingForAnswers": "Warten auf Ihre Antworten",
+      "generatingResponse": "Antwort wird generiert...",
+      "onlineAndReady": "Online & Bereit",
+      "reconnecting": "Neuverbinden... (Versuch {attempt}/3)"
+    },
+    "buttons": {
+      "newChat": "Neuer Chat",
+      "history": "Chat-Verlauf",
+      "stop": "Stoppen",
+      "send": "Senden"
+    },
+    "placeholders": {
+      "simpleMode": "Fragen Sie nach rechtlicher Hilfe...",
+      "lawyerMode": "Stellen Sie eine komplexe Rechtsfrage..."
+    },
+    "starterPrompts": {
+      "draftDemandLetter": {
+        "title": "Anwaltsschreiben Entwerfen",
+        "prompt": "Ich muss ein Mahnschreiben für unbezahlte Dienstleistungen verfassen. Können Sie mir helfen?"
+      },
+      "analyzeRentalContract": {
+        "title": "Mietvertrag Analysieren",
+        "prompt": "Was sind die häufigen Fallstricke in einem Wohnmietvertrag in Polen?"
+      },
+      "askEmployeeRights": {
+        "title": "Nach Arbeitnehmerrechten Fragen",
+        "prompt": "Was sind meine Rechte, wenn mein Arbeitgeber meinen Vertrag ohne Kündigung kündigt?"
+      }
+    },
+    "emptyState": {
+      "title": "Wie kann ich Ihnen heute helfen?",
+      "subtitle": "Ich kann Ihnen helfen, Dokumente zu erstellen, Verträge zu analysieren oder komplexe Rechtsfragen zu beantworten."
+    },
+    "loadingStates": {
+      "startingNewConversation": "Neue Unterhaltung wird gestartet...",
+      "loadingConversation": "Unterhaltung wird geladen...",
+      "restoringChatSession": "Ihre Chat-Sitzung wird wiederhergestellt",
+      "creatingNewSession": "Neue Sitzung wird erstellt",
+      "preparingConversation": "Neue Unterhaltung wird vorbereitet"
+    },
+    "sessionError": {
+      "title": "Sitzungsfehler",
+      "tryAgain": "Erneut versuchen"
+    },
+    "errors": {
+      "sessionNotFound": "Sitzung nicht gefunden. Bitte starten Sie eine neue Chat-Sitzung.",
+      "failedToCreateSession": "Chat-Sitzung konnte nicht erstellt werden",
+      "couldNotStartSession": "Es konnte keine neue Chat-Sitzung gestartet werden. Bitte versuchen Sie es erneut."
+    },
+    "messages": {
+      "retrying": "Wiederholung..."
+    },
+    "warnings": {
+      "sessionTitleUpdateFailed": "Sitzungstitel konnte nicht aktualisiert werden"
+    },
+    "skipClarification": "Bitte geben Sie eine allgemeine Antwort basierend auf den verfügbaren Informationen."
+  },
   "interest": {
     "hero": {
       "badge": "Frühzugang-Interesse",

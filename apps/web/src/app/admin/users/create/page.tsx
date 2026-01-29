@@ -20,6 +20,12 @@ interface CreateUserForm {
   isActive: boolean;
 }
 
+interface EmailCheckResult {
+  exists: boolean;
+  userId?: string;
+  username?: string;
+}
+
 // Use generated types from admin.graphql (Note: EmailCheckResult would need a generated query type)
 
 const defaultForm: CreateUserForm = {

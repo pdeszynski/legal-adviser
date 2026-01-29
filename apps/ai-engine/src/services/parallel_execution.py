@@ -167,7 +167,7 @@ def parallel_node_wrapper(
             return {
                 **state,
                 "error": str(e),
-                "parallel_errors": state.get("parallel_errors", []) + [f"{node_name}: {e}"],
+                "parallel_errors": [*state.get("parallel_errors", []), f"{node_name}: {e}"],
                 "parallel_timings": state.get("parallel_timings", {}),
             }
 
@@ -208,11 +208,10 @@ async def run_parallel_research(
     results = await asyncio.gather(*tasks)
 
     # Sort by index and extract results
-    sorted_results = [
+    return [
         result for _, result in sorted(results, key=lambda x: x[0])
     ]
 
-    return sorted_results
 
 
 class ParallelAgentRunner:

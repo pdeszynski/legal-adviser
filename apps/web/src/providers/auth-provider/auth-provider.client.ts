@@ -86,34 +86,40 @@ async function executeGraphQL<T>(
  */
 function storeAuthData(payload: LoginMutation['login'] | RegisterMutation['register']): void {
   // Store tokens separately for easier management
-  Cookies.set(ACCESS_TOKEN_COOKIE, payload.accessToken, {
-    expires: ACCESS_TOKEN_EXPIRY,
-    path: '/',
-    sameSite: 'lax',
-    secure: COOKIE_SECURE,
-  });
+  if (payload.accessToken) {
+    Cookies.set(ACCESS_TOKEN_COOKIE, payload.accessToken, {
+      expires: ACCESS_TOKEN_EXPIRY,
+      path: '/',
+      sameSite: 'lax',
+      secure: COOKIE_SECURE,
+    });
+  }
 
-  Cookies.set(REFRESH_TOKEN_COOKIE, payload.refreshToken, {
-    expires: REFRESH_TOKEN_EXPIRY,
-    path: '/',
-    sameSite: 'lax',
-    secure: COOKIE_SECURE,
-  });
-
-  // Store user data and metadata
-  Cookies.set(
-    AUTH_COOKIE,
-    JSON.stringify({
-      user: payload.user,
-      roles: [payload.user.role || 'user'], // Use role from backend
-    }),
-    {
+  if (payload.refreshToken) {
+    Cookies.set(REFRESH_TOKEN_COOKIE, payload.refreshToken, {
       expires: REFRESH_TOKEN_EXPIRY,
       path: '/',
       sameSite: 'lax',
       secure: COOKIE_SECURE,
-    },
-  );
+    });
+  }
+
+  // Store user data and metadata
+  if (payload.user) {
+    Cookies.set(
+      AUTH_COOKIE,
+      JSON.stringify({
+        user: payload.user,
+        roles: [payload.user.role || 'user'], // Use role from backend
+      }),
+      {
+        expires: REFRESH_TOKEN_EXPIRY,
+        path: '/',
+        sameSite: 'lax',
+        secure: COOKIE_SECURE,
+      },
+    );
+  }
 }
 
 /**

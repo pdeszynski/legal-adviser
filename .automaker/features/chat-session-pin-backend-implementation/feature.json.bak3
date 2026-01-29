@@ -1,0 +1,19 @@
+{
+  "category": "feature",
+  "description": "Implement the backend service logic for pinning and unpinning chat sessions. Implementation tasks: 1) Create updateChatSessionPin(sessionId: string, userId: string, pinned: boolean) method in service, 2) Verify session ownership before updating (throw ForbiddenException if not owner), 3) Update ChatSession.pinned field to the requested boolean value, 4) Return updated ChatSession with new pinned state, 5) Update ChatSession.updatedAt timestamp, 6) Log pin/unpin actions to audit logs with user ID and session ID. Ensure the update is atomic and handles concurrent updates correctly. Consider adding @Version field for optimistic locking if needed.",
+  "id": "chat-session-pin-backend-implementation",
+  "title": "Implement Backend Chat Session Pin/Unpin Logic",
+  "dependencies": [
+    "chat-session-entity"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Implement the backend service logic for pinning and unpinning chat sessions. Implementation tasks: 1) Create updateChatSessionPin(sessionId: string, userId: string, pinned: boolean) method in service, 2) Verify session ownership before updating (throw ForbiddenException if not owner), 3) Update ChatSession.pinned field to the requested boolean value, 4) Return updated ChatSession with new pinned state, 5) Update ChatSession.updatedAt timestamp, 6) Log pin/unpin actions to audit logs with user ID and session ID. Ensure the update is atomic and handles concurrent updates correctly. Consider adding @Version field for optimistic locking if needed.",
+      "timestamp": "2026-01-29T10:07:53.265Z",
+      "source": "initial"
+    }
+  ]
+}

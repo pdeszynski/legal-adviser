@@ -254,7 +254,7 @@ def with_retry(
 
                         if not is_retryable(e):
                             # Non-retryable error, raise immediately
-                            logger.error(
+                            logger.exception(
                                 "Non-retryable error in %s: %s",
                                 operation,
                                 e,
@@ -293,7 +293,7 @@ def with_retry(
 
                             await asyncio.sleep(delay)
                         else:
-                            logger.error(
+                            logger.exception(
                                 "Max retries exceeded for %s: %s",
                                 operation,
                                 e,
@@ -328,7 +328,7 @@ def with_retry(
                     last_error = e
 
                     if not is_retryable(e):
-                        logger.error(
+                        logger.exception(
                             "Non-retryable error in %s: %s",
                             operation,
                             e,
@@ -348,7 +348,7 @@ def with_retry(
                         )
                         time.sleep(delay)
                     else:
-                        logger.error(
+                        logger.exception(
                             "Max retries exceeded for %s: %s",
                             operation,
                             e,

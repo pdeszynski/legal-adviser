@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useCustom } from '@refinedev/core';
 import {
-  LineChart,
   Line,
   BarChart,
   Bar,
@@ -21,13 +20,9 @@ import {
 } from 'recharts';
 import {
   Coins,
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
   Download,
   Calendar,
-  Filter,
   Users,
   Activity,
   Zap,
@@ -35,7 +30,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@legal/ui';
 import { Button } from '@legal/ui';
-import { format as formatDateFormat, subDays, subMonths, startOfDay, startOfMonth } from 'date-fns';
+import { format as formatDateFormat, subDays, startOfDay, startOfMonth } from 'date-fns';
 
 // Types for the analytics data
 interface DashboardAnalyticsInput {
@@ -525,7 +520,7 @@ export default function TokenAnalyticsPage() {
                   <YAxis />
                   <Tooltip
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    formatter={(value: any, name: string) => {
+                    formatter={(value: any, name?: string) => {
                       if (name === 'cost') return formatCurrency(value ?? 0);
                       if (name === 'tokens' || name === 'requests') return formatNumber(value ?? 0);
                       return value ?? 0;
@@ -571,7 +566,8 @@ export default function TokenAnalyticsPage() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percentage }) => `${name}: ${percentage?.toFixed(0) || 0}%`}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    label={(props: any) => `${props.name}: ${props.percentage?.toFixed(0) || 0}%`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"

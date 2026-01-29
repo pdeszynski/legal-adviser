@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { useCustom } from '@refinedev/core';
 import {
   ArrowLeft,
@@ -14,15 +14,13 @@ import {
   ChevronRight,
   Copy,
   User,
-  Calendar,
   Cpu,
   Layers,
   FileText,
   DollarSign,
   ExternalLink,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@legal/ui';
-import { Button } from '@legal/ui';
+import { Card, CardContent, CardHeader, CardTitle, Button } from '@legal/ui';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -157,12 +155,12 @@ function copyToClipboard(text: string): void {
 }
 
 interface TraceDetailPageProps {
-  params: { traceId: string };
+  params: Promise<{ traceId: string }>;
 }
 
 export default function TraceDetailPage({ params }: TraceDetailPageProps) {
   const router = useRouter();
-  const { traceId } = params;
+  const { traceId } = use(params);
 
   const [expandedObservations, setExpandedObservations] = useState<Set<string>>(new Set());
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
@@ -175,9 +173,7 @@ export default function TraceDetailPage({ params }: TraceDetailPageProps) {
       query: {
         operation: 'langfuseDebugConfig',
         args: {},
-        fields: [
-          'langfuseDebugConfig { enabled hostUrl traceUrlTemplate dashboardUrl }',
-        ],
+        fields: ['langfuseDebugConfig { enabled hostUrl traceUrlTemplate dashboardUrl }'],
       },
     },
     queryOptions: {
@@ -211,9 +207,8 @@ export default function TraceDetailPage({ params }: TraceDetailPageProps) {
   const { refetch, isLoading } = query;
 
   // Generate Langfuse trace URL
-  const langfuseTraceUrl = langfuseConfig?.enabled && traceData
-    ? `${langfuseConfig.hostUrl}/trace/${traceData.id}`
-    : null;
+  const langfuseTraceUrl =
+    langfuseConfig?.enabled && traceData ? `${langfuseConfig.hostUrl}/trace/${traceData.id}` : null;
 
   useEffect(() => {
     if (traceData) {
@@ -278,7 +273,7 @@ export default function TraceDetailPage({ params }: TraceDetailPageProps) {
   const getChildren = (parentId: string) =>
     traceData.observations.filter((o) => o.parentObservationId === parentId);
 
-  const renderObservation = (obs: TraceObservation, depth: number = 0): JSX.Element => {
+  const renderObservation = (obs: TraceObservation, depth: number = 0): React.ReactNode => {
     const isExpanded = expandedObservations.has(obs.id);
     const children = getChildren(obs.id);
     const hasChildren = children.length > 0;
@@ -461,11 +456,7 @@ export default function TraceDetailPage({ params }: TraceDetailPageProps) {
             Copy ID
           </Button>
           {langfuseTraceUrl && (
-            <Button
-              variant="outline"
-              size="sm"
-              asChild
-            >
+            <Button variant="outline" size="sm" asChild>
               <a
                 href={langfuseTraceUrl}
                 target="_blank"

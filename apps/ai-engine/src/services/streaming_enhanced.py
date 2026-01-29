@@ -14,7 +14,6 @@ This module uses OpenAI's streaming API directly to deliver tokens in real-time
 as they are generated, rather than waiting for the complete response.
 """
 
-import asyncio
 import json
 import logging
 from collections.abc import AsyncGenerator
@@ -241,8 +240,8 @@ async def stream_qa_enhanced(
     """
     import time
 
+    from ..agents.dependencies import get_model_deps_with_user
     from ..agents.qa_agent import get_query_analyzer_agent
-    from ..agents.dependencies import ModelDeps, get_model_deps_with_user
     from ..langfuse_init import is_langfuse_enabled, update_current_trace
 
     start_time = time.time()
@@ -649,8 +648,11 @@ async def stream_clarification_answer(
     """
     import time
 
-    from ..agents.dependencies import get_model_deps_with_user
-    from ..agents.rag_tool import extract_citations_from_contexts, format_contexts_for_prompt, retrieve_context_tool
+    from ..agents.rag_tool import (
+        extract_citations_from_contexts,
+        format_contexts_for_prompt,
+        retrieve_context_tool,
+    )
     from ..langfuse_init import is_langfuse_enabled, update_current_trace
 
     start_time = time.time()

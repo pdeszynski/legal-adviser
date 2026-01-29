@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getAccessToken } from '@/providers/auth-provider/auth-provider.client';
 import { getCsrfHeaders } from '@/lib/csrf';
-import type { ChatMessage } from '@/components/chat/chat-interface';
+import type { ChatMessage } from '@/components/chat/types/chat.types';
 
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 

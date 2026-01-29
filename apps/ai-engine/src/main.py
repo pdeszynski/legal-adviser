@@ -13,9 +13,10 @@ import asyncio
 import logging
 import time
 import uuid
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any, AsyncGenerator
+from typing import Any
 
 import sentry_sdk
 from dotenv import load_dotenv
@@ -32,6 +33,7 @@ load_dotenv(dotenv_path=_env_path)
 # This ensures Agent.instrument_all() is called before any agents are created
 # Following the official integration pattern: https://langfuse.com/integrations/frameworks/pydantic-ai
 from .langfuse_init import init_langfuse
+
 init_langfuse()
 
 # JWT Authentication imports
@@ -46,7 +48,6 @@ from .langfuse_init import flush
 from .models.requests import (
     AskQuestionRequest,
     ClassifyCaseRequest,
-    ClarificationAnswerRequest,
     GenerateDocumentRequest,
     GenerateEmbeddingsRequest,
     GenerateTitleRequest,
@@ -86,12 +87,11 @@ init_sentry()
 
 # Import workflows AFTER Langfuse initialization
 # Workflows import agents at module level, so this must come after init_langfuse()
-from .workflows import get_orchestrator
-
 # Import agent modules AFTER Langfuse initialization
 # This is critical: Agent.instrument_all() must be called before agents are created
 from .agents.classifier_agent import classifier_agent as get_classifier_agent
 from .agents.qa_agent import answer_question
+from .workflows import get_orchestrator
 
 # Configure logging with DEBUG level for more verbose output
 logging.basicConfig(
@@ -170,7 +170,7 @@ async def lifespan(_app: FastAPI):
     try:
         # Use asyncio.wait_for to prevent hanging on Langfuse flush
         await asyncio.wait_for(asyncio.to_thread(flush), timeout=2.0)
-    except asyncio.TimeoutError:
+    except TimeoutError:
         logger.warning("Langfuse flush timed out after 2 seconds - continuing shutdown")
     except Exception as e:
         logger.warning("Langfuse flush failed: %s - continuing shutdown", e)
@@ -691,7 +691,7 @@ async def langfuse_health_check():
     determine if action is needed.
     """
     from .config import get_settings
-    from .langfuse_init import get_langfuse, is_langfuse_enabled
+    from .langfuse_init import get_langfuse
     from .validate_config import validate_langfuse_config
 
     settings = get_settings()
@@ -838,6 +838,7 @@ async def get_all_metrics():
         - uptime: Service uptime in seconds
     """
     import psutil
+
     from .services.metrics import get_conversation_history_metrics
 
     process = psutil.Process()
@@ -981,7 +982,6 @@ async def get_session_history_debug(
     - Use GraphQL query: { chatMessages(sessionId: "uuid") { role content sequenceOrder } }
     - Or use the backend's getConversationHistory service method
     """
-    import logging
     from .auth import is_valid_uuid_v4
 
     # Validate session ID format

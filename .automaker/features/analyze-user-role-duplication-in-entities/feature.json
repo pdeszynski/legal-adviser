@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Investigate the current dual implementation of user roles: 1) User entity has a 'role' column, 2) User-Role entity exists for many-to-many relationships. Audit all usages across the codebase to understand which approach is used where. Check: User entity definition, UserRole entity definition, GraphQL resolvers referencing roles, Frontend role checks (useUserRole hook), RBAC guards (RoleGuard, AdminGuard), Seed data creation, Migration files. Document which tables/columns are actively used vs deprecated. Identify any inconsistencies where code reads from User.role vs UserRole relationship. Create a matrix showing all role-related code paths and which data source they use. This analysis will determine whether to keep the many-to-many approach (User + UserRole + Role tables) or simplify to single role column on User table.",
+  "id": "analyze-user-role-duplication-in-entities",
+  "title": "Analyze User Role Duplication in Entities",
+  "dependencies": [],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Investigate the current dual implementation of user roles: 1) User entity has a 'role' column, 2) User-Role entity exists for many-to-many relationships. Audit all usages across the codebase to understand which approach is used where. Check: User entity definition, UserRole entity definition, GraphQL resolvers referencing roles, Frontend role checks (useUserRole hook), RBAC guards (RoleGuard, AdminGuard), Seed data creation, Migration files. Document which tables/columns are actively used vs deprecated. Identify any inconsistencies where code reads from User.role vs UserRole relationship. Create a matrix showing all role-related code paths and which data source they use. This analysis will determine whether to keep the many-to-many approach (User + UserRole + Role tables) or simplify to single role column on User table.",
+      "timestamp": "2026-01-29T12:30:41.328Z",
+      "source": "initial"
+    }
+  ]
+}

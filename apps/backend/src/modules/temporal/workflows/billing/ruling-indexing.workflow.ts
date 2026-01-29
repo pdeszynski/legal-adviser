@@ -157,6 +157,14 @@ export function workflowInfoGetter() {
 }
 
 /**
+ * Workflow export for Temporal registration
+ */
+export const definedWorkflowInfo = {
+  name: 'rulingIndexing',
+  taskQueue: 'billing-workflows',
+} as const;
+
+/**
  * Ruling Indexing Workflow
  *
  * Main workflow for indexing legal rulings from external sources.

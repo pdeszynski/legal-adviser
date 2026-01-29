@@ -188,7 +188,7 @@ async def generate_clarifications(
         for msg in conversation_history[-6:]:  # Limit to last 6 messages for context
             role_display = "User" if msg.get("role") == "user" else "Assistant"
             history_lines.append(f"{role_display}: {msg.get('content', '')}")
-        history_context = f"\n\nPrevious conversation:\n" + "\n".join(history_lines)
+        history_context = "\n\nPrevious conversation:\n" + "\n".join(history_lines)
 
     prompt = f"""Analyze this legal question and determine if clarification is needed:
 {history_context}

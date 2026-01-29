@@ -221,7 +221,7 @@ def validate_jwt_token(token: str, session_id: str | None = None) -> UserContext
         raise
     except ImportError as e:
         # PyJWT not installed - configuration error
-        logger.error("PyJWT not installed: %s", e)
+        logger.exception("PyJWT not installed: %s", e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={

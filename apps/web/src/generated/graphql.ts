@@ -28,8 +28,55 @@ export type Scalars = {
   Timestamp: { input: Date; output: Date };
 };
 
+export type AiEngineMessageFormat = {
+  __typename?: 'AIEngineMessageFormat';
+  /** Message content */
+  content: Scalars['String']['output'];
+  /** Message role (user or assistant) */
+  role: Scalars['String']['output'];
+};
+
 export type ActivateUserInput = {
   userId: Scalars['ID']['input'];
+};
+
+export type ActiveUsersCount = {
+  __typename?: 'ActiveUsersCount';
+  calculatedAt: Scalars['DateTime']['output'];
+  /** Users active in last 7 days */
+  last7Days: Scalars['Int']['output'];
+  /** Users active in last 24 hours */
+  last24Hours: Scalars['Int']['output'];
+  /** Users active in last 30 days */
+  last30Days: Scalars['Int']['output'];
+};
+
+export type AddPermissionInput = {
+  permission: Scalars['String']['input'];
+  roleId: Scalars['String']['input'];
+};
+
+export type AdminCreateUserInput = {
+  email: Scalars['String']['input'];
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  password: Scalars['String']['input'];
+  role?: InputMaybe<Scalars['String']['input']>;
+  username?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AdminForceDisableTwoFactorInput = {
+  /** The ID of the user to disable 2FA for */
+  userId: Scalars['String']['input'];
+};
+
+export type AdminForceDisableTwoFactorResponse = {
+  __typename?: 'AdminForceDisableTwoFactorResponse';
+  /** The user ID */
+  id: Scalars['String']['output'];
+  /** The updated 2FA status (should be false) */
+  twoFactorEnabled: Scalars['Boolean']['output'];
 };
 
 export type AdvancedLegalRulingSearchResponse = {
@@ -77,6 +124,57 @@ export type AdvancedSearchTermInput = {
   /** Search term text */
   term: Scalars['String']['input'];
 };
+
+export type AffectedUserInfo = {
+  __typename?: 'AffectedUserInfo';
+  /** Number of affected sessions */
+  affectedSessionCount: Scalars['Int']['output'];
+  /** User email (if available) */
+  email?: Maybe<Scalars['String']['output']>;
+  /** Number of empty messages for this user */
+  emptyMessageCount: Scalars['Int']['output'];
+  /** List of affected session IDs */
+  sessionIds: Array<Scalars['String']['output']>;
+  /** The user ID */
+  userId: Scalars['ID']['output'];
+};
+
+export type AffectedUsersReport = {
+  __typename?: 'AffectedUsersReport';
+  /** Total number of affected users */
+  totalAffectedUsers: Scalars['Int']['output'];
+  /** Total number of empty messages across all users */
+  totalEmptyMessages: Scalars['Int']['output'];
+  /** List of affected users with details */
+  users: Array<AffectedUserInfo>;
+};
+
+export type AgentLatencyMetrics = {
+  __typename?: 'AgentLatencyMetrics';
+  /** Agent type */
+  agentType: AgentType;
+  /** Average latency in milliseconds */
+  avgLatency: Scalars['Float']['output'];
+  /** Maximum latency in milliseconds */
+  maxLatency: Scalars['Float']['output'];
+  /** Median latency in milliseconds */
+  medianLatency: Scalars['Float']['output'];
+  /** Minimum latency in milliseconds */
+  minLatency: Scalars['Float']['output'];
+  /** P95 latency in milliseconds */
+  p95Latency: Scalars['Int']['output'];
+  /** Total request count */
+  requestCount: Scalars['Int']['output'];
+};
+
+/** Type of AI agent or workflow */
+export type AgentType =
+  | 'CLARIFICATION_AGENT'
+  | 'CLASSIFIER_AGENT'
+  | 'DRAFTING_AGENT'
+  | 'QA_AGENT'
+  | 'UNKNOWN'
+  | 'WORKFLOW';
 
 export type AggregatedLegalRulingSearchResponse = {
   __typename?: 'AggregatedLegalRulingSearchResponse';
@@ -240,6 +338,13 @@ export type AnalyticsDashboard = {
 /** Time period granularity for analytics data */
 export type AnalyticsPeriod = 'DAILY' | 'HOURLY' | 'MONTHLY' | 'WEEKLY' | 'YEARLY';
 
+export type AnalyticsTimeSeriesPoint = {
+  __typename?: 'AnalyticsTimeSeriesPoint';
+  count: Scalars['Int']['output'];
+  timestamp: Scalars['DateTime']['output'];
+  value?: Maybe<Scalars['Float']['output']>;
+};
+
 export type AnswerLegalQueryInput = {
   /** The AI-generated answer in Markdown format */
   answerMarkdown: Scalars['String']['input'];
@@ -299,6 +404,8 @@ export type AskLegalQuestionInput = {
   question: Scalars['String']['input'];
   /** Session ID for the user asking the question (optional - will be auto-created if not provided) */
   sessionId?: InputMaybe<Scalars['String']['input']>;
+  /** Message type: TEXT (default question), CLARIFICATION_ANSWER (answers to clarification questions) */
+  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Type of action performed */
@@ -308,7 +415,9 @@ export type AuditActionType =
   | 'EXPORT'
   | 'LOGIN'
   | 'LOGOUT'
+  | 'PAUSE'
   | 'READ'
+  | 'RESUME'
   | 'UPDATE';
 
 export type AuditActionTypeFilterComparison = {
@@ -470,7 +579,7 @@ export type AuditLogSortFields =
   | 'userId';
 
 /** Type of resource affected */
-export type AuditResourceType = 'DOCUMENT' | 'SESSION' | 'SYSTEM' | 'USER';
+export type AuditResourceType = 'DOCUMENT' | 'SCHEDULE' | 'SESSION' | 'SYSTEM' | 'USER' | 'WEBHOOK';
 
 export type AuditResourceTypeFilterComparison = {
   eq?: InputMaybe<AuditResourceType>;
@@ -491,12 +600,16 @@ export type AuditResourceTypeFilterComparison = {
 
 export type AuthPayload = {
   __typename?: 'AuthPayload';
-  /** JWT access token */
-  accessToken: Scalars['String']['output'];
-  /** JWT refresh token for obtaining new access tokens */
-  refreshToken: Scalars['String']['output'];
-  /** Authenticated user information */
-  user: AuthUser;
+  /** JWT access token (null if 2FA is required) */
+  accessToken?: Maybe<Scalars['String']['output']>;
+  /** JWT refresh token for obtaining new access tokens (null if 2FA is required) */
+  refreshToken?: Maybe<Scalars['String']['output']>;
+  /** True if user needs to provide 2FA token to complete login */
+  requiresTwoFactor: Scalars['Boolean']['output'];
+  /** Temporary token for completing 2FA (only present when 2FA is required) */
+  twoFactorTempToken?: Maybe<Scalars['String']['output']>;
+  /** Authenticated user information (null if 2FA is required) */
+  user?: Maybe<AuthUser>;
 };
 
 export type AuthUser = {
@@ -572,8 +685,48 @@ export type BooleanFieldComparison = {
   isNot?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type BooleanFilter = {
+  eq?: InputMaybe<Scalars['Boolean']['input']>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 /** Boolean operators for combining search terms */
 export type BooleanOperator = 'AND' | 'NOT' | 'OR';
+
+/** Budget ranges for implementation */
+export type BudgetRange =
+  | 'NOT_SPECIFIED'
+  | 'OVER_100K'
+  | 'RANGE_5K_10K'
+  | 'RANGE_10K_25K'
+  | 'RANGE_25K_50K'
+  | 'RANGE_50K_100K'
+  | 'UNDER_5K';
+
+export type BulkActivateUsersInput = {
+  userIds: Array<Scalars['ID']['input']>;
+};
+
+export type BulkChangeUserRolesInput = {
+  role: Scalars['String']['input'];
+  userIds: Array<Scalars['ID']['input']>;
+};
+
+export type BulkDeleteUsersInput = {
+  userIds: Array<Scalars['ID']['input']>;
+};
+
+export type BulkDeleteUsersResult = {
+  __typename?: 'BulkDeleteUsersResult';
+  failed: Array<BulkOperationError>;
+  success: Array<Scalars['ID']['output']>;
+};
+
+export type BulkOperationError = {
+  __typename?: 'BulkOperationError';
+  error: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+};
 
 export type BulkSendNotificationInput = {
   /** Channel to send notification through */
@@ -600,8 +753,24 @@ export type BulkSendNotificationResponse = {
   totalSent: Scalars['Int']['output'];
 };
 
+export type BulkSuspendUsersInput = {
+  reason: Scalars['String']['input'];
+  userIds: Array<Scalars['ID']['input']>;
+};
+
 export type BulkUpdateSettingsInput = {
   settings: Array<SystemSettingInput>;
+};
+
+export type BulkUsersResult = {
+  __typename?: 'BulkUsersResult';
+  failed: Array<BulkOperationError>;
+  success: Array<User>;
+};
+
+export type CancelClarificationSessionInput = {
+  /** ID of the clarification session to cancel */
+  sessionId: Scalars['String']['input'];
 };
 
 export type CancelSubscriptionInput = {
@@ -618,6 +787,398 @@ export type ChangePasswordInput = {
 export type ChangeUserRoleInput = {
   role: Scalars['String']['input'];
   userId: Scalars['ID']['input'];
+};
+
+export type ChatCitation = {
+  __typename?: 'ChatCitation';
+  article?: Maybe<Scalars['String']['output']>;
+  excerpt?: Maybe<Scalars['String']['output']>;
+  source: Scalars['String']['output'];
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+export type ChatCitationInput = {
+  article?: InputMaybe<Scalars['String']['input']>;
+  excerpt?: InputMaybe<Scalars['String']['input']>;
+  source: Scalars['String']['input'];
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ChatContentSearchResponse = {
+  __typename?: 'ChatContentSearchResponse';
+  /** Number of results returned */
+  count: Scalars['Int']['output'];
+  /** Whether there are more results */
+  hasMore: Scalars['Boolean']['output'];
+  /** Current offset */
+  offset: Scalars['Int']['output'];
+  /** List of search results */
+  results: Array<ChatContentSearchResult>;
+  /** Total count of matching messages */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type ChatContentSearchResult = {
+  __typename?: 'ChatContentSearchResult';
+  /** Original message content */
+  content: Scalars['String']['output'];
+  /** Context preview with highlighted match */
+  contextPreview?: Maybe<Scalars['String']['output']>;
+  /** Message creation timestamp */
+  createdAt: Scalars['DateTime']['output'];
+  /** Message content with highlighted matching text */
+  highlightedContent: Scalars['String']['output'];
+  /** List of matched terms */
+  matchedTerms: Array<Scalars['String']['output']>;
+  /** Message ID */
+  messageId: Scalars['ID']['output'];
+  /** Relevance ranking score (higher is more relevant) */
+  rank: Scalars['Float']['output'];
+  /** Role of the message sender */
+  role: MessageRole;
+  /** Sequence order in the session */
+  sequenceOrder: Scalars['Float']['output'];
+  /** Session ID */
+  sessionId: Scalars['ID']['output'];
+  /** Total number of messages in the session */
+  sessionMessageCount: Scalars['Int']['output'];
+  /** AI mode of the session */
+  sessionMode: ChatMode;
+  /** Session title */
+  sessionTitle?: Maybe<Scalars['String']['output']>;
+};
+
+/** Export format for chat sessions */
+export type ChatExportFormat = 'JSON' | 'MARKDOWN' | 'PDF';
+
+export type ChatExportResult = {
+  __typename?: 'ChatExportResult';
+  /** Base64-encoded content of the export */
+  contentBase64: Scalars['String']['output'];
+  /** Timestamp when the export was generated */
+  exportedAt: Scalars['DateTime']['output'];
+  /** Size of the export in bytes */
+  fileSizeBytes: Scalars['Float']['output'];
+  /** Filename for the export */
+  filename: Scalars['String']['output'];
+  /** Format of the export */
+  format: ChatExportFormat;
+  /** MIME type of the export */
+  mimeType: Scalars['String']['output'];
+  /** Session ID that was exported */
+  sessionId: Scalars['ID']['output'];
+};
+
+export type ChatMessage = {
+  __typename?: 'ChatMessage';
+  /** Legal citations/references in assistant responses */
+  citations?: Maybe<Array<ChatCitation>>;
+  /** Message content (markdown for assistant responses) */
+  content: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  messageId: Scalars['ID']['output'];
+  /** Additional message metadata */
+  metadata?: Maybe<ChatMessageMetadata>;
+  /** Original content before AI processing */
+  rawContent?: Maybe<Scalars['String']['output']>;
+  /** Role of the message sender */
+  role: MessageRole;
+  /** Sequence order of the message within the session */
+  sequenceOrder: Scalars['Float']['output'];
+  /** ID of the chat session this message belongs to */
+  sessionId: Scalars['ID']['output'];
+  /** Type of message content */
+  type?: Maybe<ChatMessageType>;
+};
+
+export type ChatMessageInterface = {
+  /** Message content */
+  content: Scalars['String']['output'];
+  /** Creation timestamp */
+  createdAt: Scalars['DateTime']['output'];
+  /** Unique message identifier */
+  messageId: Scalars['ID']['output'];
+  /** Role of the message sender */
+  role: MessageRole;
+  /** Sequence order in conversation */
+  sequenceOrder: Scalars['Float']['output'];
+  /** Session ID */
+  sessionId: Scalars['ID']['output'];
+  /** Message type discriminator for resolving concrete types */
+  type?: Maybe<ChatMessageType>;
+};
+
+export type ChatMessageMetadata = {
+  __typename?: 'ChatMessageMetadata';
+  clarification?: Maybe<ClarificationInfoType>;
+  confidence?: Maybe<Scalars['Float']['output']>;
+  keyTerms?: Maybe<Array<Scalars['String']['output']>>;
+  language?: Maybe<Scalars['String']['output']>;
+  model?: Maybe<Scalars['String']['output']>;
+  queryType?: Maybe<Scalars['String']['output']>;
+};
+
+export type ChatMessageMetadataInput = {
+  /** Clarification data for messages that need clarification */
+  clarification?: InputMaybe<ClarificationInfoInput>;
+  /** Confidence score of AI response (0-1) */
+  confidence?: InputMaybe<Scalars['Float']['input']>;
+  /** Key legal terms extracted */
+  keyTerms?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Language detected */
+  language?: InputMaybe<Scalars['String']['input']>;
+  /** Model used for generation (e.g., gpt-4o) */
+  model?: InputMaybe<Scalars['String']['input']>;
+  /** Query type classification */
+  queryType?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** The type of message content */
+export type ChatMessageType =
+  | 'CITATION'
+  | 'CLARIFICATION_ANSWER'
+  | 'CLARIFICATION_QUESTION'
+  | 'ERROR'
+  | 'TEXT';
+
+/** The AI response mode for chat messages */
+export type ChatMode = 'LAWYER' | 'SIMPLE';
+
+export type ChatModeFilterComparison = {
+  eq?: InputMaybe<ChatMode>;
+  gt?: InputMaybe<ChatMode>;
+  gte?: InputMaybe<ChatMode>;
+  iLike?: InputMaybe<ChatMode>;
+  in?: InputMaybe<Array<ChatMode>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<ChatMode>;
+  lt?: InputMaybe<ChatMode>;
+  lte?: InputMaybe<ChatMode>;
+  neq?: InputMaybe<ChatMode>;
+  notILike?: InputMaybe<ChatMode>;
+  notIn?: InputMaybe<Array<ChatMode>>;
+  notLike?: InputMaybe<ChatMode>;
+};
+
+export type ChatSession = {
+  __typename?: 'ChatSession';
+  createdAt: Scalars['DateTime']['output'];
+  /** Soft delete timestamp, null if not deleted */
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  /** Whether the session is pinned by the user */
+  isPinned: Scalars['Boolean']['output'];
+  /** Timestamp of the last message for sorting */
+  lastMessageAt?: Maybe<Scalars['DateTime']['output']>;
+  /** Number of messages in the session */
+  messageCount: Scalars['Float']['output'];
+  /** AI response mode for this session */
+  mode: ChatMode;
+  /** Session title, auto-generated from first message if not provided */
+  title?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  user: User;
+  userId: Scalars['ID']['output'];
+};
+
+export type ChatSessionAggregateFilter = {
+  and?: InputMaybe<Array<ChatSessionAggregateFilter>>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  deletedAt?: InputMaybe<DateFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  isPinned?: InputMaybe<BooleanFieldComparison>;
+  lastMessageAt?: InputMaybe<DateFieldComparison>;
+  messageCount?: InputMaybe<NumberFieldComparison>;
+  mode?: InputMaybe<ChatModeFilterComparison>;
+  or?: InputMaybe<Array<ChatSessionAggregateFilter>>;
+  title?: InputMaybe<StringFieldComparison>;
+  updatedAt?: InputMaybe<DateFieldComparison>;
+  userId?: InputMaybe<IdFilterComparison>;
+};
+
+export type ChatSessionAggregateGroupBy = {
+  __typename?: 'ChatSessionAggregateGroupBy';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  isPinned?: Maybe<Scalars['Boolean']['output']>;
+  lastMessageAt?: Maybe<Scalars['DateTime']['output']>;
+  messageCount?: Maybe<Scalars['Float']['output']>;
+  mode?: Maybe<ChatMode>;
+  title?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userId?: Maybe<Scalars['ID']['output']>;
+};
+
+export type ChatSessionAggregateGroupByCreatedAtArgs = {
+  by?: GroupBy;
+};
+
+export type ChatSessionAggregateGroupByUpdatedAtArgs = {
+  by?: GroupBy;
+};
+
+export type ChatSessionAggregateResponse = {
+  __typename?: 'ChatSessionAggregateResponse';
+  avg?: Maybe<ChatSessionAvgAggregate>;
+  count?: Maybe<ChatSessionCountAggregate>;
+  groupBy?: Maybe<ChatSessionAggregateGroupBy>;
+  max?: Maybe<ChatSessionMaxAggregate>;
+  min?: Maybe<ChatSessionMinAggregate>;
+  sum?: Maybe<ChatSessionSumAggregate>;
+};
+
+export type ChatSessionAvgAggregate = {
+  __typename?: 'ChatSessionAvgAggregate';
+  messageCount?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ChatSessionConnection = {
+  __typename?: 'ChatSessionConnection';
+  /** Array of edges. */
+  edges: Array<ChatSessionEdge>;
+  /** Paging information */
+  pageInfo: PageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type ChatSessionCountAggregate = {
+  __typename?: 'ChatSessionCountAggregate';
+  createdAt?: Maybe<Scalars['Int']['output']>;
+  deletedAt?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  isPinned?: Maybe<Scalars['Int']['output']>;
+  lastMessageAt?: Maybe<Scalars['Int']['output']>;
+  messageCount?: Maybe<Scalars['Int']['output']>;
+  mode?: Maybe<Scalars['Int']['output']>;
+  title?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['Int']['output']>;
+  userId?: Maybe<Scalars['Int']['output']>;
+};
+
+export type ChatSessionDebugInfo = {
+  __typename?: 'ChatSessionDebugInfo';
+  /** Messages in AI Engine format (what gets sent to AI) */
+  aiEngineFormat: Array<AiEngineMessageFormat>;
+  /** Total number of messages in history */
+  messageCount: Scalars['Float']['output'];
+  /** Message previews with full details */
+  messages: Array<ConversationMessagePreview>;
+  /** Role distribution in conversation */
+  roleDistribution: ConversationRoleDistribution;
+  /** Session ID */
+  sessionId: Scalars['String']['output'];
+  /** Total characters across all messages */
+  totalCharacters: Scalars['Float']['output'];
+  /** Verification information */
+  verification: ConversationHistoryVerification;
+};
+
+export type ChatSessionDeleteResponse = {
+  __typename?: 'ChatSessionDeleteResponse';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  /** Soft delete timestamp, null if not deleted */
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  /** Whether the session is pinned by the user */
+  isPinned?: Maybe<Scalars['Boolean']['output']>;
+  /** Timestamp of the last message for sorting */
+  lastMessageAt?: Maybe<Scalars['DateTime']['output']>;
+  /** Number of messages in the session */
+  messageCount?: Maybe<Scalars['Float']['output']>;
+  /** AI response mode for this session */
+  mode?: Maybe<ChatMode>;
+  /** Session title, auto-generated from first message if not provided */
+  title?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userId?: Maybe<Scalars['ID']['output']>;
+};
+
+export type ChatSessionEdge = {
+  __typename?: 'ChatSessionEdge';
+  /** Cursor for this node. */
+  cursor: Scalars['ConnectionCursor']['output'];
+  /** The node containing the ChatSession */
+  node: ChatSession;
+};
+
+export type ChatSessionFilter = {
+  and?: InputMaybe<Array<ChatSessionFilter>>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  deletedAt?: InputMaybe<DateFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  isPinned?: InputMaybe<BooleanFieldComparison>;
+  lastMessageAt?: InputMaybe<DateFieldComparison>;
+  messageCount?: InputMaybe<NumberFieldComparison>;
+  mode?: InputMaybe<ChatModeFilterComparison>;
+  or?: InputMaybe<Array<ChatSessionFilter>>;
+  title?: InputMaybe<StringFieldComparison>;
+  updatedAt?: InputMaybe<DateFieldComparison>;
+  userId?: InputMaybe<IdFilterComparison>;
+};
+
+export type ChatSessionMaxAggregate = {
+  __typename?: 'ChatSessionMaxAggregate';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  lastMessageAt?: Maybe<Scalars['DateTime']['output']>;
+  messageCount?: Maybe<Scalars['Float']['output']>;
+  mode?: Maybe<ChatMode>;
+  title?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userId?: Maybe<Scalars['ID']['output']>;
+};
+
+export type ChatSessionMinAggregate = {
+  __typename?: 'ChatSessionMinAggregate';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  lastMessageAt?: Maybe<Scalars['DateTime']['output']>;
+  messageCount?: Maybe<Scalars['Float']['output']>;
+  mode?: Maybe<ChatMode>;
+  title?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userId?: Maybe<Scalars['ID']['output']>;
+};
+
+export type ChatSessionSort = {
+  direction: SortDirection;
+  field: ChatSessionSortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export type ChatSessionSortFields =
+  | 'createdAt'
+  | 'deletedAt'
+  | 'id'
+  | 'isPinned'
+  | 'lastMessageAt'
+  | 'messageCount'
+  | 'mode'
+  | 'title'
+  | 'updatedAt'
+  | 'userId';
+
+export type ChatSessionSumAggregate = {
+  __typename?: 'ChatSessionSumAggregate';
+  messageCount?: Maybe<Scalars['Float']['output']>;
+};
+
+export type CheckEmailExistsResult = {
+  __typename?: 'CheckEmailExistsResult';
+  exists: Scalars['Boolean']['output'];
+  userId?: Maybe<Scalars['String']['output']>;
+  username?: Maybe<Scalars['String']['output']>;
+};
+
+export type CheckPermissionInput = {
+  permissionType: Scalars['String']['input'];
+  resourceType: Scalars['String']['input'];
+  roleNames: Array<Scalars['String']['input']>;
 };
 
 export type CheckQuotaInput = {
@@ -641,6 +1202,198 @@ export type Citation = {
   url?: Maybe<Scalars['String']['output']>;
 };
 
+/** Message focused on legal citations and references */
+export type CitationMessage = ChatMessageInterface & {
+  __typename?: 'CitationMessage';
+  citationCount: Scalars['Float']['output'];
+  citations: Array<ChatCitation>;
+  confidence?: Maybe<Scalars['Float']['output']>;
+  /** Message content */
+  content: Scalars['String']['output'];
+  /** Creation timestamp */
+  createdAt: Scalars['DateTime']['output'];
+  /** Unique message identifier */
+  messageId: Scalars['ID']['output'];
+  queryType?: Maybe<Scalars['String']['output']>;
+  /** Role of the message sender */
+  role: MessageRole;
+  /** Sequence order in conversation */
+  sequenceOrder: Scalars['Float']['output'];
+  /** Session ID */
+  sessionId: Scalars['ID']['output'];
+  /** Message type discriminator for resolving concrete types */
+  type?: Maybe<ChatMessageType>;
+};
+
+export type ClarificationAnswer = {
+  __typename?: 'ClarificationAnswer';
+  answer: Scalars['String']['output'];
+  answered_at?: Maybe<Scalars['DateTime']['output']>;
+  question: Scalars['String']['output'];
+  question_type: Scalars['String']['output'];
+};
+
+export type ClarificationAnswerInput = {
+  /** The user answer */
+  answer: Scalars['String']['input'];
+  /** Unique identifier of the question being answered */
+  questionId: Scalars['String']['input'];
+};
+
+export type ClarificationAnswerItemType = {
+  __typename?: 'ClarificationAnswerItemType';
+  answer: Scalars['String']['output'];
+  question: Scalars['String']['output'];
+  question_type?: Maybe<Scalars['String']['output']>;
+};
+
+/** User's answers to clarification questions */
+export type ClarificationAnswerMessage = ChatMessageInterface & {
+  __typename?: 'ClarificationAnswerMessage';
+  /** When the answers were submitted */
+  answeredAt?: Maybe<Scalars['DateTime']['output']>;
+  answers: Array<ClarificationAnswerItemType>;
+  clarificationMessageId?: Maybe<Scalars['ID']['output']>;
+  /** Message content */
+  content: Scalars['String']['output'];
+  /** Creation timestamp */
+  createdAt: Scalars['DateTime']['output'];
+  /** Unique message identifier */
+  messageId: Scalars['ID']['output'];
+  /** Role of the message sender */
+  role: MessageRole;
+  /** Sequence order in conversation */
+  sequenceOrder: Scalars['Float']['output'];
+  /** Session ID */
+  sessionId: Scalars['ID']['output'];
+  /** Message type discriminator for resolving concrete types */
+  type?: Maybe<ChatMessageType>;
+};
+
+export type ClarificationInfo = {
+  __typename?: 'ClarificationInfo';
+  context_summary: Scalars['String']['output'];
+  needs_clarification: Scalars['Boolean']['output'];
+  next_steps: Scalars['String']['output'];
+  questions: Array<ClarificationQuestion>;
+};
+
+export type ClarificationInfoInput = {
+  answered?: InputMaybe<Scalars['Boolean']['input']>;
+  context_summary: Scalars['String']['input'];
+  currentRound?: InputMaybe<Scalars['Float']['input']>;
+  needs_clarification: Scalars['Boolean']['input'];
+  next_steps: Scalars['String']['input'];
+  questions: Array<LegacyClarificationQuestionInput>;
+  totalRounds?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type ClarificationInfoType = {
+  __typename?: 'ClarificationInfoType';
+  answered?: Maybe<Scalars['Boolean']['output']>;
+  context_summary: Scalars['String']['output'];
+  currentRound?: Maybe<Scalars['Float']['output']>;
+  needs_clarification: Scalars['Boolean']['output'];
+  next_steps: Scalars['String']['output'];
+  questions: Array<ClarificationQuestionType>;
+  totalRounds?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ClarificationQuestion = {
+  __typename?: 'ClarificationQuestion';
+  hint?: Maybe<Scalars['String']['output']>;
+  options?: Maybe<Array<Scalars['String']['output']>>;
+  question: Scalars['String']['output'];
+  question_type: Scalars['String']['output'];
+};
+
+export type ClarificationQuestionItemType = {
+  __typename?: 'ClarificationQuestionItemType';
+  hint?: Maybe<Scalars['String']['output']>;
+  options?: Maybe<Array<Scalars['String']['output']>>;
+  question: Scalars['String']['output'];
+  question_type: Scalars['String']['output'];
+};
+
+/** Message from AI asking follow-up clarification questions to the user */
+export type ClarificationQuestionMessage = ChatMessageInterface & {
+  __typename?: 'ClarificationQuestionMessage';
+  /** Whether the clarification has been answered */
+  answered?: Maybe<Scalars['Boolean']['output']>;
+  /** Message content */
+  content: Scalars['String']['output'];
+  context_summary: Scalars['String']['output'];
+  /** Creation timestamp */
+  createdAt: Scalars['DateTime']['output'];
+  /** Current clarification round */
+  currentRound?: Maybe<Scalars['Float']['output']>;
+  /** Unique message identifier */
+  messageId: Scalars['ID']['output'];
+  next_steps: Scalars['String']['output'];
+  questions: Array<ClarificationQuestionItemType>;
+  /** Role of the message sender */
+  role: MessageRole;
+  /** Sequence order in conversation */
+  sequenceOrder: Scalars['Float']['output'];
+  /** Session ID */
+  sessionId: Scalars['ID']['output'];
+  /** Total clarification rounds */
+  totalRounds?: Maybe<Scalars['Float']['output']>;
+  /** Message type discriminator for resolving concrete types */
+  type?: Maybe<ChatMessageType>;
+};
+
+export type ClarificationQuestionType = {
+  __typename?: 'ClarificationQuestionType';
+  hint?: Maybe<Scalars['String']['output']>;
+  options?: Maybe<Array<Scalars['String']['output']>>;
+  question: Scalars['String']['output'];
+  questionId?: Maybe<Scalars['String']['output']>;
+  questionType?: Maybe<Scalars['String']['output']>;
+  question_type?: Maybe<Scalars['String']['output']>;
+  required?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type ClarificationSession = {
+  __typename?: 'ClarificationSession';
+  /** Accumulated context for AI processing */
+  accumulatedContext?: Maybe<Array<Scalars['String']['output']>>;
+  /** User answers to clarification questions */
+  answersReceived: Array<ClarificationAnswer>;
+  /** Session completion timestamp */
+  completedAt?: Maybe<Scalars['DateTime']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  /** Error message if session failed */
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  /** Session expiration timestamp */
+  expiresAt: Scalars['DateTime']['output'];
+  /** Final query ID with complete answer */
+  finalQueryId?: Maybe<Scalars['ID']['output']>;
+  id: Scalars['ID']['output'];
+  originalQuery: Scalars['String']['output'];
+  queryId: Scalars['ID']['output'];
+  /** Array of clarification question texts */
+  questionsAsked: Array<Scalars['String']['output']>;
+  /** Number of clarification rounds */
+  rounds: Scalars['Float']['output'];
+  sessionId?: Maybe<Scalars['ID']['output']>;
+  state: ClarificationState;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+/** The current state of a clarification session */
+export type ClarificationState = 'ANSWERED' | 'CANCELLED' | 'COMPLETE' | 'EXPIRED' | 'PENDING';
+
+export type ClarificationValidationError = {
+  __typename?: 'ClarificationValidationError';
+  /** Error code for programmatic handling */
+  code: Scalars['String']['output'];
+  /** Error message describing what went wrong */
+  message: Scalars['String']['output'];
+  /** The question ID that has validation errors */
+  questionId: Scalars['String']['output'];
+};
+
 export type ClassifyCaseInput = {
   /** Detailed description of the legal case to analyze */
   caseDescription: Scalars['String']['input'];
@@ -650,6 +1403,68 @@ export type ClassifyCaseInput = {
   sessionId: Scalars['String']['input'];
   /** Title or brief summary of the analysis */
   title: Scalars['String']['input'];
+};
+
+export type CleanupEmptyMessagesInput = {
+  /** Actually perform the cleanup (false = dry run) */
+  execute?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Mark truly empty messages for deletion */
+  markForDeletion?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Recover messages from clarification metadata */
+  recoverFromClarification?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Recover messages from rawContent if available */
+  recoverFromRawContent?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type CleanupEmptyMessagesResult = {
+  __typename?: 'CleanupEmptyMessagesResult';
+  /** Number of affected sessions */
+  affectedSessions: Scalars['Int']['output'];
+  /** Number of affected users */
+  affectedUsers: Scalars['Int']['output'];
+  /** Number of messages marked for deletion (truly empty) */
+  markedForDeletion: Scalars['Int']['output'];
+  /** Number of messages recovered from clarification metadata */
+  recoveredFromClarification: Scalars['Int']['output'];
+  /** Number of messages recovered from rawContent */
+  recoveredFromRawContent: Scalars['Int']['output'];
+  /** List of affected session IDs */
+  sessionIds: Array<Scalars['String']['output']>;
+  /** Number of messages that could not be recovered */
+  unrecoverable: Scalars['Int']['output'];
+  /** List of affected user IDs */
+  userIds: Array<Scalars['String']['output']>;
+};
+
+export type CleanupEmptySessionsInput = {
+  /** Actually perform the cleanup (false = dry run) */
+  execute?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type CleanupEmptySessionsResult = {
+  __typename?: 'CleanupEmptySessionsResult';
+  /** Number of affected users */
+  affectedUsers: Scalars['Int']['output'];
+  /** Number of sessions that were deleted */
+  deletedSessions: Scalars['Int']['output'];
+  /** List of errors that occurred during cleanup */
+  errors: Array<CleanupErrorDetail>;
+  /** List of deleted session IDs */
+  sessionIds: Array<Scalars['String']['output']>;
+  /** Number of sessions skipped (had messages or other issues) */
+  skippedSessions: Scalars['Int']['output'];
+  /** Total number of empty sessions found */
+  totalEmptySessions: Scalars['Int']['output'];
+  /** List of affected user IDs */
+  userIds: Array<Scalars['String']['output']>;
+};
+
+export type CleanupErrorDetail = {
+  __typename?: 'CleanupErrorDetail';
+  /** Error message */
+  error: Scalars['String']['output'];
+  /** The session ID that failed */
+  sessionId: Scalars['ID']['output'];
 };
 
 export type CommentPosition = {
@@ -680,10 +1495,69 @@ export type CommentResolutionStatusFilterComparison = {
   notLike?: InputMaybe<CommentResolutionStatus>;
 };
 
+/** Company size categories */
+export type CompanySize =
+  | 'ENTERPRISE_500_PLUS'
+  | 'LARGE_201_500'
+  | 'MEDIUM_51_200'
+  | 'SMALL_2_10'
+  | 'SMALL_11_50'
+  | 'SOLO';
+
+/** Company size categories for demo requests */
+export type CompanySizeEnum = 'ENTERPRISE' | 'LARGE' | 'MEDIUM' | 'SMALL' | 'SOLO';
+
+export type CompleteTwoFactorLoginInput = {
+  /** Backup code for account recovery (alternative to TOTP token) */
+  backupCode?: InputMaybe<Scalars['String']['input']>;
+  /** Temporary token received from login when 2FA is required */
+  twoFactorTempToken: Scalars['String']['input'];
+  /** The 6-digit TOTP token from authenticator app */
+  twoFactorToken?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type ConditionalSectionInput = {
   condition: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
+};
+
+export type ConversationHistoryVerification = {
+  __typename?: 'ConversationHistoryVerification';
+  /** First message role */
+  firstRole?: Maybe<Scalars['String']['output']>;
+  /** Whether any messages have empty content */
+  hasEmptyContent: Scalars['Boolean']['output'];
+  /** Last message role */
+  lastRole?: Maybe<Scalars['String']['output']>;
+  /** Whether message count matches between different queries */
+  messageCountMatches: Scalars['Boolean']['output'];
+  /** Whether message order is valid */
+  orderValid: Scalars['Boolean']['output'];
+};
+
+export type ConversationMessagePreview = {
+  __typename?: 'ConversationMessagePreview';
+  /** Full message content */
+  content: Scalars['String']['output'];
+  /** Content preview (first 100 chars) */
+  contentPreview: Scalars['String']['output'];
+  /** Creation timestamp */
+  createdAt: Scalars['String']['output'];
+  /** Message ID */
+  messageId: Scalars['String']['output'];
+  /** Message role (USER or ASSISTANT) */
+  role: Scalars['String']['output'];
+  /** Sequence order in conversation */
+  sequenceOrder: Scalars['Float']['output'];
+};
+
+export type ConversationRoleDistribution = {
+  __typename?: 'ConversationRoleDistribution';
+  /** Number of assistant messages */
+  assistant: Scalars['Float']['output'];
+  /** Number of user messages */
+  user: Scalars['Float']['output'];
 };
 
 /** Type/level of court that issued the ruling */
@@ -753,11 +1627,27 @@ export type CreateBackupInput = {
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+export type CreateChatSessionInput = {
+  /** AI response mode for the session (LAWYER or SIMPLE) */
+  mode: ChatMode;
+};
+
 export type CreateCitationInput = {
   article?: InputMaybe<Scalars['String']['input']>;
   excerpt?: InputMaybe<Scalars['String']['input']>;
   source: Scalars['String']['input'];
   url?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateClarificationSessionInput = {
+  /** Initial context for the clarification session */
+  initialContext?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** ID of the legal query that triggered clarification */
+  queryId: Scalars['String']['input'];
+  /** Clarification questions to ask the user */
+  questions: Array<Scalars['String']['input']>;
+  /** Session ID for the user (optional) */
+  sessionId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateCommentPositionInput = {
@@ -799,6 +1689,35 @@ export type CreateDocumentVersionInput = {
   contentSnapshot: Scalars['String']['input'];
   documentId: Scalars['ID']['input'];
   sessionId: Scalars['ID']['input'];
+};
+
+export type CreateHubSpotContactInput = {
+  /** Company name */
+  company?: InputMaybe<Scalars['String']['input']>;
+  /** Company size */
+  companySize?: InputMaybe<Scalars['String']['input']>;
+  /** Contact email address (required) */
+  email: Scalars['String']['input'];
+  /** First name */
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  /** GDPR consent for data processing */
+  gdprConsent?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Job title */
+  jobTitle?: InputMaybe<Scalars['String']['input']>;
+  /** Last name */
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  /** Additional message */
+  message?: InputMaybe<Scalars['String']['input']>;
+  /** Phone number */
+  phone?: InputMaybe<Scalars['String']['input']>;
+  /** Lead source */
+  source?: InputMaybe<Scalars['String']['input']>;
+  /** Implementation timeline */
+  timeline?: InputMaybe<LeadTimeline>;
+  /** Use case description */
+  useCase?: InputMaybe<Scalars['String']['input']>;
+  /** Company website */
+  website?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateInAppNotificationInput = {
@@ -883,6 +1802,11 @@ export type CreateNotificationInput = {
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreateOneChatSessionInput = {
+  /** The record to create */
+  chatSession: CreateChatSessionInput;
+};
+
 export type CreateOneDocumentCommentInput = {
   /** The record to create */
   documentComment: CreateDocumentCommentInput;
@@ -928,14 +1852,17 @@ export type CreateOneNotificationInput = {
   notification: CreateNotificationInput;
 };
 
-export type CreateOneUserInput = {
-  /** The record to create */
-  user: CreateUserInput;
-};
-
 export type CreateOneUserPreferencesInput = {
   /** The record to create */
   userPreferences: CreateUserPreferencesInput;
+};
+
+export type CreateRoleInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  inheritsFrom?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  permissions: Array<Scalars['String']['input']>;
+  type: Scalars['String']['input'];
 };
 
 export type CreateRulingMetadataInput = {
@@ -943,6 +1870,29 @@ export type CreateRulingMetadataInput = {
   legalArea?: InputMaybe<Scalars['String']['input']>;
   relatedCases?: InputMaybe<Array<Scalars['String']['input']>>;
   sourceReference?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateScheduleInput = {
+  /** Action the schedule performs */
+  action: ScheduleActionInput;
+  /** Initial paused state */
+  paused?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Schedule behavior policies */
+  policies?: InputMaybe<SchedulePoliciesInput>;
+  /** Unique identifier for the schedule */
+  scheduleId: Scalars['String']['input'];
+  /** Schedule specification (when it runs) */
+  spec: ScheduleSpecInput;
+};
+
+export type CreateScheduleResult = {
+  __typename?: 'CreateScheduleResult';
+  /** Message describing the creation result */
+  message?: Maybe<Scalars['String']['output']>;
+  /** The ID of the created schedule */
+  scheduleId: Scalars['ID']['output'];
+  /** Whether the creation was successful */
+  success: Scalars['Boolean']['output'];
 };
 
 export type CreateSubscriptionPlanInput = {
@@ -1093,10 +2043,32 @@ export type DateFieldComparisonBetween = {
   upper: Scalars['DateTime']['input'];
 };
 
+export type DeleteChatSessionInput = {
+  /** Session ID to delete (soft delete) */
+  sessionId: Scalars['ID']['input'];
+};
+
+export type DeleteChatSessionResult = {
+  __typename?: 'DeleteChatSessionResult';
+  /** Deletion type (hard or soft) */
+  deletionType: Scalars['String']['output'];
+  /** Number of messages deleted with this session */
+  messageCount: Scalars['Int']['output'];
+  /** The ID of the deleted session */
+  sessionId: Scalars['ID']['output'];
+  /** Whether the deletion was successful */
+  success: Scalars['Boolean']['output'];
+};
+
 export type DeleteDocumentInputV2 = {
   deletedBy: Scalars['ID']['input'];
   documentId: Scalars['ID']['input'];
   reason?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type DeleteOneChatSessionInput = {
+  /** The id of the record to delete. */
+  id: Scalars['ID']['input'];
 };
 
 export type DeleteOneDocumentCommentInput = {
@@ -1134,11 +2106,6 @@ export type DeleteOneLegalRulingInput = {
   id: Scalars['ID']['input'];
 };
 
-export type DeleteOneUserInput = {
-  /** The id of the record to delete. */
-  id: Scalars['ID']['input'];
-};
-
 export type DeleteOneUserPreferencesInput = {
   /** The id of the record to delete. */
   id: Scalars['ID']['input'];
@@ -1149,8 +2116,311 @@ export type DeleteOneUserSessionInput = {
   id: Scalars['ID']['input'];
 };
 
+export type DeleteScheduleInput = {
+  /** Confirmation that the user intends to delete the schedule */
+  confirm?: Scalars['Boolean']['input'];
+  /** Optional reason for deletion (logged to audit trail) */
+  reason?: InputMaybe<Scalars['String']['input']>;
+  /** The ID of the schedule to delete */
+  scheduleId: Scalars['String']['input'];
+};
+
 /** Webhook delivery status */
 export type DeliveryStatus = 'FAILED' | 'PENDING' | 'RETRYING' | 'SUCCESS';
+
+export type DemoRequest = {
+  __typename?: 'DemoRequest';
+  budget?: Maybe<Scalars['String']['output']>;
+  company?: Maybe<Scalars['String']['output']>;
+  companySize?: Maybe<CompanySizeEnum>;
+  contactedAt?: Maybe<Scalars['DateTime']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  email: Scalars['String']['output'];
+  fullName: Scalars['String']['output'];
+  hubspotContactId?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  industry?: Maybe<Scalars['String']['output']>;
+  metadata?: Maybe<Scalars['String']['output']>;
+  preferredDemoTime?: Maybe<Scalars['DateTime']['output']>;
+  status: DemoRequestStatus;
+  submittedAt: Scalars['DateTime']['output'];
+  timeline?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  useCase: Scalars['String']['output'];
+};
+
+export type DemoRequestAggregateFilter = {
+  and?: InputMaybe<Array<DemoRequestAggregateFilter>>;
+  email?: InputMaybe<StringFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  or?: InputMaybe<Array<DemoRequestAggregateFilter>>;
+  status?: InputMaybe<DemoRequestStatusFilterComparison>;
+};
+
+export type DemoRequestAggregateGroupBy = {
+  __typename?: 'DemoRequestAggregateGroupBy';
+  email?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  status?: Maybe<DemoRequestStatus>;
+};
+
+export type DemoRequestAggregateResponse = {
+  __typename?: 'DemoRequestAggregateResponse';
+  count?: Maybe<DemoRequestCountAggregate>;
+  groupBy?: Maybe<DemoRequestAggregateGroupBy>;
+  max?: Maybe<DemoRequestMaxAggregate>;
+  min?: Maybe<DemoRequestMinAggregate>;
+};
+
+export type DemoRequestAnalytics = {
+  __typename?: 'DemoRequestAnalytics';
+  /** Company size distribution */
+  companySizeDistribution: Array<DemoRequestCompanySizeDistribution>;
+  generatedAt: Scalars['DateTime']['output'];
+  /** Industry breakdown */
+  industryBreakdown: Array<DemoRequestIndustryBreakdown>;
+  /** Lead source distribution */
+  leadSources: Array<DemoRequestLeadSource>;
+  metrics: DemoRequestMetrics;
+  /** Requests over time (by day) */
+  requestsOverTime: Array<DemoRequestTimeSeriesPoint>;
+  /** Average response time metrics */
+  responseTimeMetrics: DemoRequestResponseTimeMetrics;
+  /** Status distribution for funnel visualization */
+  statusBreakdown: Array<DemoRequestStatusBreakdown>;
+  /** Top mentioned use cases */
+  topUseCases: Array<DemoRequestTopUseCase>;
+};
+
+export type DemoRequestCompanySizeDistribution = {
+  __typename?: 'DemoRequestCompanySizeDistribution';
+  companySize: Scalars['String']['output'];
+  count: Scalars['Int']['output'];
+  /** Percentage of total */
+  percentage: Scalars['Float']['output'];
+};
+
+export type DemoRequestConnection = {
+  __typename?: 'DemoRequestConnection';
+  /** Array of edges. */
+  edges: Array<DemoRequestEdge>;
+  /** Paging information */
+  pageInfo: PageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type DemoRequestCountAggregate = {
+  __typename?: 'DemoRequestCountAggregate';
+  email?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  status?: Maybe<Scalars['Int']['output']>;
+};
+
+export type DemoRequestEdge = {
+  __typename?: 'DemoRequestEdge';
+  /** Cursor for this node. */
+  cursor: Scalars['ConnectionCursor']['output'];
+  /** The node containing the DemoRequest */
+  node: DemoRequest;
+};
+
+export type DemoRequestFilter = {
+  and?: InputMaybe<Array<DemoRequestFilter>>;
+  email?: InputMaybe<StringFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  or?: InputMaybe<Array<DemoRequestFilter>>;
+  status?: InputMaybe<DemoRequestStatusFilterComparison>;
+};
+
+export type DemoRequestIndustryBreakdown = {
+  __typename?: 'DemoRequestIndustryBreakdown';
+  count: Scalars['Int']['output'];
+  industry: Scalars['String']['output'];
+  /** Percentage of total */
+  percentage: Scalars['Float']['output'];
+};
+
+export type DemoRequestInput = {
+  /** Budget range for implementation */
+  budget?: InputMaybe<BudgetRange>;
+  /** Company name */
+  company: Scalars['String']['input'];
+  /** Company size (number of employees) */
+  companySize: CompanySize;
+  /** Email address */
+  email: Scalars['String']['input'];
+  /** Full name of the requester */
+  fullName: Scalars['String']['input'];
+  /** Industry category */
+  industry: Industry;
+  /** Preferred time of day for demo */
+  preferredDemoTime?: InputMaybe<PreferredTimeSlot>;
+  /** Referrer URL for tracking */
+  referrer?: InputMaybe<Scalars['String']['input']>;
+  /** Timeline for implementation */
+  timeline: DemoTimeline;
+  /** Specific use case or requirements */
+  useCase: Scalars['String']['input'];
+  /** UTM campaign parameter for tracking */
+  utmCampaign?: InputMaybe<Scalars['String']['input']>;
+  /** UTM content parameter for tracking */
+  utmContent?: InputMaybe<Scalars['String']['input']>;
+  /** UTM medium parameter for tracking */
+  utmMedium?: InputMaybe<Scalars['String']['input']>;
+  /** UTM source parameter for tracking */
+  utmSource?: InputMaybe<Scalars['String']['input']>;
+  /** UTM term parameter for tracking */
+  utmTerm?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type DemoRequestLeadSource = {
+  __typename?: 'DemoRequestLeadSource';
+  /** Number of requests from this source */
+  count: Scalars['Int']['output'];
+  /** UTM medium */
+  medium?: Maybe<Scalars['String']['output']>;
+  /** Percentage of total */
+  percentage: Scalars['Float']['output'];
+  /** UTM source or "direct" */
+  source?: Maybe<Scalars['String']['output']>;
+};
+
+export type DemoRequestMaxAggregate = {
+  __typename?: 'DemoRequestMaxAggregate';
+  email?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  status?: Maybe<DemoRequestStatus>;
+};
+
+export type DemoRequestMetrics = {
+  __typename?: 'DemoRequestMetrics';
+  /** Requests closed (won or lost) */
+  closedRequests: Scalars['Int']['output'];
+  /** Requests that have been contacted */
+  contactedRequests: Scalars['Int']['output'];
+  /** Contacted to scheduled conversion rate % */
+  contactedToScheduledRate: Scalars['Float']['output'];
+  /** New requests (not yet contacted) */
+  newRequests: Scalars['Int']['output'];
+  /** New to contacted conversion rate % */
+  newToContactedRate: Scalars['Float']['output'];
+  /** Overall funnel conversion rate % */
+  overallConversionRate: Scalars['Float']['output'];
+  periodEnd: Scalars['DateTime']['output'];
+  periodStart: Scalars['DateTime']['output'];
+  /** Requests qualified as leads */
+  qualifiedRequests: Scalars['Int']['output'];
+  /** Requests with demos scheduled */
+  scheduledRequests: Scalars['Int']['output'];
+  /** Total demo requests in period */
+  totalRequests: Scalars['Int']['output'];
+};
+
+export type DemoRequestMinAggregate = {
+  __typename?: 'DemoRequestMinAggregate';
+  email?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  status?: Maybe<DemoRequestStatus>;
+};
+
+export type DemoRequestResponse = {
+  __typename?: 'DemoRequestResponse';
+  /** Confirmation message with next steps */
+  message: Scalars['String']['output'];
+  /** Whether the lead was qualified for immediate follow-up */
+  qualified?: Maybe<Scalars['Boolean']['output']>;
+  /** Unique reference ID for the request */
+  referenceId?: Maybe<Scalars['String']['output']>;
+  /** Whether the request was submitted successfully */
+  success: Scalars['Boolean']['output'];
+};
+
+export type DemoRequestResponseTimeMetrics = {
+  __typename?: 'DemoRequestResponseTimeMetrics';
+  /** Average hours from submission to first contact */
+  avgHoursToContact: Scalars['Float']['output'];
+  calculatedAt: Scalars['DateTime']['output'];
+  /** Median hours to contact */
+  medianHoursToContact: Scalars['Float']['output'];
+  /** Total contacted requests measured */
+  totalContacted: Scalars['Int']['output'];
+};
+
+export type DemoRequestSort = {
+  direction: SortDirection;
+  field: DemoRequestSortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export type DemoRequestSortFields = 'email' | 'id' | 'status';
+
+/** Demo request status in the sales pipeline */
+export type DemoRequestStatus = 'CLOSED' | 'CONTACTED' | 'NEW' | 'QUALIFIED' | 'SCHEDULED';
+
+export type DemoRequestStatusBreakdown = {
+  __typename?: 'DemoRequestStatusBreakdown';
+  count: Scalars['Int']['output'];
+  /** Percentage of total */
+  percentage: Scalars['Float']['output'];
+  status: Scalars['String']['output'];
+};
+
+export type DemoRequestStatusFilterComparison = {
+  eq?: InputMaybe<DemoRequestStatus>;
+  gt?: InputMaybe<DemoRequestStatus>;
+  gte?: InputMaybe<DemoRequestStatus>;
+  iLike?: InputMaybe<DemoRequestStatus>;
+  in?: InputMaybe<Array<DemoRequestStatus>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<DemoRequestStatus>;
+  lt?: InputMaybe<DemoRequestStatus>;
+  lte?: InputMaybe<DemoRequestStatus>;
+  neq?: InputMaybe<DemoRequestStatus>;
+  notILike?: InputMaybe<DemoRequestStatus>;
+  notIn?: InputMaybe<Array<DemoRequestStatus>>;
+  notLike?: InputMaybe<DemoRequestStatus>;
+};
+
+export type DemoRequestTimeSeriesPoint = {
+  __typename?: 'DemoRequestTimeSeriesPoint';
+  count: Scalars['Int']['output'];
+  timestamp: Scalars['DateTime']['output'];
+};
+
+export type DemoRequestTopUseCase = {
+  __typename?: 'DemoRequestTopUseCase';
+  /** Number of similar requests */
+  count: Scalars['Int']['output'];
+  /** Truncated use case text */
+  useCase: Scalars['String']['output'];
+};
+
+/** Timeline preferences for demo */
+export type DemoTimeline = 'ASAP' | 'EXPLORING' | 'WITHIN_MONTH' | 'WITHIN_QUARTER' | 'WITHIN_WEEK';
+
+export type DisableTwoFactorInput = {
+  /** User password for confirmation */
+  password: Scalars['String']['input'];
+};
+
+export type DocumentActivityEntry = {
+  __typename?: 'DocumentActivityEntry';
+  createdAt: Scalars['DateTime']['output'];
+  documentId: Scalars['ID']['output'];
+  /** Document type */
+  documentType?: Maybe<Scalars['String']['output']>;
+  /** Error message if failed */
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  /** The status of the document */
+  status: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  /** When the status last changed */
+  updatedAt: Scalars['DateTime']['output'];
+  /** User who owns the document */
+  userId?: Maybe<Scalars['ID']['output']>;
+};
 
 export type DocumentComment = {
   __typename?: 'DocumentComment';
@@ -1316,6 +2586,22 @@ export type DocumentEditEventPayload = {
   version: Scalars['Float']['output'];
 };
 
+export type DocumentGenerationMetrics = {
+  __typename?: 'DocumentGenerationMetrics';
+  /** Average generation time in seconds */
+  avgGenerationTime: Scalars['Int']['output'];
+  /** Failed document generations */
+  failedDocuments: Scalars['Int']['output'];
+  periodEnd: Scalars['DateTime']['output'];
+  periodStart: Scalars['DateTime']['output'];
+  /** Success rate as percentage */
+  successRate: Scalars['Float']['output'];
+  /** Successfully generated documents */
+  successfulDocuments: Scalars['Int']['output'];
+  /** Total documents generated */
+  totalDocuments: Scalars['Int']['output'];
+};
+
 export type DocumentMetadata = {
   __typename?: 'DocumentMetadata';
   claimAmount?: Maybe<Scalars['Float']['output']>;
@@ -1343,6 +2629,19 @@ export type DocumentMetrics = {
   /** Success rate as percentage */
   successRate: Scalars['Float']['output'];
   totalDocuments: Scalars['Int']['output'];
+};
+
+export type DocumentQueueMetrics = {
+  __typename?: 'DocumentQueueMetrics';
+  calculatedAt: Scalars['DateTime']['output'];
+  /** Documents in COMPLETED status (total) */
+  completedCount: Scalars['Int']['output'];
+  /** Documents currently in DRAFT status */
+  draftCount: Scalars['Int']['output'];
+  /** Documents in FAILED status (total) */
+  failedCount: Scalars['Int']['output'];
+  /** Documents currently in GENERATING status */
+  generatingCount: Scalars['Int']['output'];
 };
 
 export type DocumentShare = {
@@ -1724,8 +3023,10 @@ export type DocumentVersionSumAggregate = {
 
 /** Email template types available in the system */
 export type EmailTemplateType =
+  | 'DEMO_REQUEST_CONFIRMATION'
   | 'DOCUMENT_COMPLETED'
   | 'DOCUMENT_FAILED'
+  | 'INTEREST_CONFIRMATION'
   | 'SYSTEM_NOTIFICATION'
   | 'WELCOME';
 
@@ -1744,6 +3045,109 @@ export type EmailTemplateTypeFilterComparison = {
   notILike?: InputMaybe<EmailTemplateType>;
   notIn?: InputMaybe<Array<EmailTemplateType>>;
   notLike?: InputMaybe<EmailTemplateType>;
+};
+
+export type EmptyMessageAnalysis = {
+  __typename?: 'EmptyMessageAnalysis';
+  /** Content field value (should be empty) */
+  content?: Maybe<Scalars['String']['output']>;
+  /** Timestamp when the message was created */
+  createdAt: Scalars['String']['output'];
+  /** Whether metadata contains clarification data */
+  hasClarificationMetadata: Scalars['Boolean']['output'];
+  /** Whether rawContent has data that can be recovered */
+  hasRecoverableRawContent: Scalars['Boolean']['output'];
+  /** The message ID */
+  messageId: Scalars['ID']['output'];
+  /** Raw content field value (may have data) */
+  rawContent?: Maybe<Scalars['String']['output']>;
+  /** Message role */
+  role: MessageRole;
+  /** Sequence order in the conversation */
+  sequenceOrder: Scalars['Int']['output'];
+  /** The session ID */
+  sessionId: Scalars['ID']['output'];
+  /** The user ID */
+  userId: Scalars['ID']['output'];
+};
+
+export type EmptyMessagesSummary = {
+  __typename?: 'EmptyMessagesSummary';
+  /** Number of affected sessions */
+  affectedSessions: Scalars['Int']['output'];
+  /** Number of affected users */
+  affectedUsers: Scalars['Int']['output'];
+  /** List of empty messages found */
+  messages: Array<EmptyMessageAnalysis>;
+  /** Number of messages with recoverable rawContent */
+  recoverableFromRawContent: Scalars['Int']['output'];
+  /** Total number of empty assistant messages found */
+  totalEmptyMessages: Scalars['Int']['output'];
+  /** Number of messages that are truly empty (both content and rawContent) */
+  trulyEmpty: Scalars['Int']['output'];
+  /** Number of messages with clarification metadata */
+  withClarificationMetadata: Scalars['Int']['output'];
+};
+
+export type EmptySessionAnalysis = {
+  __typename?: 'EmptySessionAnalysis';
+  /** Timestamp when the session was created */
+  createdAt: Scalars['String']['output'];
+  /** Chat mode (LAWYER or SIMPLE) */
+  mode: Scalars['String']['output'];
+  /** The session ID */
+  sessionId: Scalars['ID']['output'];
+  /** Session title (should be null for empty sessions) */
+  title?: Maybe<Scalars['String']['output']>;
+  /** The user ID */
+  userId: Scalars['ID']['output'];
+};
+
+export type EmptySessionsMetrics = {
+  __typename?: 'EmptySessionsMetrics';
+  /** Threshold for alerting (null = no threshold set) */
+  alertThreshold?: Maybe<Scalars['Int']['output']>;
+  /** Current count of empty sessions in the database */
+  count: Scalars['Int']['output'];
+  /** Whether the count exceeds the alert threshold */
+  requiresAttention: Scalars['Boolean']['output'];
+  /** ISO timestamp of when this metric was collected */
+  timestamp: Scalars['String']['output'];
+};
+
+export type EnableTwoFactorResponse = {
+  __typename?: 'EnableTwoFactorResponse';
+  /** Backup codes for account recovery (show only once) */
+  backupCodes: Array<Scalars['String']['output']>;
+  /** QR code as base64 data URL for scanning */
+  qrCodeDataUrl: Scalars['String']['output'];
+  /** The TOTP secret key for storing in authenticator app */
+  secret: Scalars['String']['output'];
+};
+
+export type ErrorSummary = {
+  __typename?: 'ErrorSummary';
+  count: Scalars['Float']['output'];
+  message: Scalars['String']['output'];
+  timestamp: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
+export type ErrorTrackingStatus = {
+  __typename?: 'ErrorTrackingStatus';
+  criticalErrors: Scalars['Float']['output'];
+  lastError?: Maybe<ErrorSummary>;
+  recentErrors: Scalars['Float']['output'];
+  totalErrors: Scalars['Float']['output'];
+};
+
+export type ExportChatSessionInput = {
+  /** Optional custom filename (without extension) */
+  filename?: InputMaybe<Scalars['String']['input']>;
+  /** Export format (PDF, MARKDOWN, or JSON) */
+  format: ChatExportFormat;
+  /** ID of the chat session to export */
+  sessionId: Scalars['ID']['input'];
 };
 
 export type ExportDocumentToPdfInput = {
@@ -1793,6 +3197,16 @@ export type GenerateFromTemplateInput = {
 
 /** Group by */
 export type GroupBy = 'DAY' | 'MONTH' | 'WEEK' | 'YEAR';
+
+export type HubSpotContactResponse = {
+  __typename?: 'HubSpotContactResponse';
+  /** When the contact was created */
+  createdAt: Scalars['String']['output'];
+  /** Contact email */
+  email: Scalars['String']['output'];
+  /** HubSpot contact ID */
+  id: Scalars['String']['output'];
+};
 
 export type IdFilterComparison = {
   eq?: InputMaybe<Scalars['ID']['input']>;
@@ -1980,6 +3394,153 @@ export type InAppNotificationTypeFilterComparison = {
   notILike?: InputMaybe<InAppNotificationType>;
   notIn?: InputMaybe<Array<InAppNotificationType>>;
   notLike?: InputMaybe<InAppNotificationType>;
+};
+
+/** Industry categories */
+export type Industry =
+  | 'CONSULTING'
+  | 'FINANCE'
+  | 'GOVERNMENT'
+  | 'HEALTHCARE'
+  | 'LAW_FIRM'
+  | 'LEGAL_DEPARTMENT'
+  | 'OTHER'
+  | 'REAL_ESTATE'
+  | 'TECHNOLOGY';
+
+export type InterestRequestInput = {
+  /** Company name */
+  company?: InputMaybe<Scalars['String']['input']>;
+  /** GDPR consent checkbox */
+  consent: Scalars['Boolean']['input'];
+  /** Email address */
+  email: Scalars['String']['input'];
+  /** Full name of the requester */
+  fullName: Scalars['String']['input'];
+  /** How they heard about us (lead source) */
+  leadSource?: InputMaybe<Scalars['String']['input']>;
+  /** Job role or position */
+  role?: InputMaybe<Scalars['String']['input']>;
+  /** Specific use case or requirements */
+  useCase?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type InterestRequestResponse = {
+  __typename?: 'InterestRequestResponse';
+  /** Confirmation message with next steps */
+  message: Scalars['String']['output'];
+  /** Unique reference ID for the request */
+  referenceId?: Maybe<Scalars['String']['output']>;
+  /** Whether the request was submitted successfully */
+  success: Scalars['Boolean']['output'];
+};
+
+export type LangfuseDebugConfig = {
+  __typename?: 'LangfuseDebugConfig';
+  /** Base URL for Langfuse dashboard */
+  dashboardUrl?: Maybe<Scalars['String']['output']>;
+  /** Whether Langfuse integration is enabled */
+  enabled: Scalars['Boolean']['output'];
+  /** Langfuse host URL */
+  hostUrl?: Maybe<Scalars['String']['output']>;
+  /** Langfuse trace URL template (use {traceId} as placeholder) */
+  traceUrlTemplate?: Maybe<Scalars['String']['output']>;
+};
+
+export type LangfuseTrace = {
+  __typename?: 'LangfuseTrace';
+  /** Type of agent or workflow */
+  agentType: AgentType;
+  /** Duration in milliseconds */
+  duration?: Maybe<Scalars['Float']['output']>;
+  /** Timestamp when trace ended */
+  endTime?: Maybe<Scalars['Timestamp']['output']>;
+  /** Unique trace ID */
+  id: Scalars['ID']['output'];
+  /** Trace level */
+  level?: Maybe<TraceLevel>;
+  /** Metadata associated with the trace */
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  /** Model used for the trace */
+  model: Scalars['String']['output'];
+  /** Trace name (operation name) */
+  name: Scalars['String']['output'];
+  /** Number of observations (spans/generations) in the trace */
+  observationCount: Scalars['Int']['output'];
+  /** Session ID associated with the trace */
+  sessionId: Scalars['String']['output'];
+  /** Timestamp when trace started */
+  startTime?: Maybe<Scalars['Timestamp']['output']>;
+  /** Trace status */
+  status: TraceStatus;
+  /** Timestamp when trace was created */
+  timestamp: Scalars['Timestamp']['output'];
+  /** Token usage details */
+  usage?: Maybe<TokenUsage>;
+  /** User ID associated with the trace */
+  userId: Scalars['String']['output'];
+};
+
+export type LangfuseTraceDetail = {
+  __typename?: 'LangfuseTraceDetail';
+  /** Type of agent or workflow */
+  agentType: AgentType;
+  /** Duration in milliseconds */
+  duration?: Maybe<Scalars['Float']['output']>;
+  /** Timestamp when trace ended */
+  endTime?: Maybe<Scalars['Timestamp']['output']>;
+  /** Error message if trace failed */
+  errorMessage: Scalars['String']['output'];
+  /** When this data was fetched */
+  fetchedAt: Scalars['Timestamp']['output'];
+  /** Unique trace ID */
+  id: Scalars['ID']['output'];
+  /** Trace level */
+  level?: Maybe<TraceLevel>;
+  /** Metadata associated with the trace */
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  /** Model used for the trace */
+  model: Scalars['String']['output'];
+  /** Trace name (operation name) */
+  name: Scalars['String']['output'];
+  /** All observations within the trace */
+  observations: Array<TraceObservation>;
+  /** Session ID associated with the trace */
+  sessionId: Scalars['String']['output'];
+  /** Stack trace if trace failed */
+  stackTrace: Scalars['String']['output'];
+  /** Timestamp when trace started */
+  startTime?: Maybe<Scalars['Timestamp']['output']>;
+  /** Trace status */
+  status: TraceStatus;
+  /** Timestamp when trace was created */
+  timestamp: Scalars['Timestamp']['output'];
+  /** Aggregated token usage */
+  usage?: Maybe<TokenUsage>;
+  /** User email if available */
+  userEmail: Scalars['String']['output'];
+  /** User ID associated with the trace */
+  userId: Scalars['String']['output'];
+};
+
+export type LeadQualificationResponse = {
+  __typename?: 'LeadQualificationResponse';
+  /** Whether the lead is qualified */
+  qualified: Scalars['Boolean']['output'];
+  /** Reason for qualification status */
+  reason?: Maybe<Scalars['String']['output']>;
+  /** Lead qualification score */
+  score: Scalars['Float']['output'];
+};
+
+/** Timeline for lead implementation */
+export type LeadTimeline = 'EXPLORING' | 'IMMEDIATE' | 'WITHIN_MONTH' | 'WITHIN_QUARTER';
+
+export type LegacyClarificationQuestionInput = {
+  hint?: InputMaybe<Scalars['String']['input']>;
+  options?: InputMaybe<Array<Scalars['String']['input']>>;
+  question: Scalars['String']['input'];
+  question_type: Scalars['String']['input'];
 };
 
 export type LegalAnalysis = {
@@ -2365,8 +3926,12 @@ export type LegalQuery = {
   __typename?: 'LegalQuery';
   answerMarkdown?: Maybe<Scalars['String']['output']>;
   citations?: Maybe<Array<Citation>>;
+  clarificationInfo?: Maybe<ClarificationInfo>;
+  confidence?: Maybe<Scalars['Float']['output']>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  keyTerms?: Maybe<Array<Scalars['String']['output']>>;
+  queryType?: Maybe<Scalars['String']['output']>;
   question: Scalars['String']['output'];
   session: UserSession;
   sessionId?: Maybe<Scalars['ID']['output']>;
@@ -2431,8 +3996,12 @@ export type LegalQueryDeleteResponse = {
   __typename?: 'LegalQueryDeleteResponse';
   answerMarkdown?: Maybe<Scalars['String']['output']>;
   citations?: Maybe<Array<Citation>>;
+  clarificationInfo?: Maybe<ClarificationInfo>;
+  confidence?: Maybe<Scalars['Float']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
+  keyTerms?: Maybe<Array<Scalars['String']['output']>>;
+  queryType?: Maybe<Scalars['String']['output']>;
   question?: Maybe<Scalars['String']['output']>;
   sessionId?: Maybe<Scalars['ID']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2678,11 +4247,96 @@ export type LegalRulingSortFields =
   | 'signature'
   | 'updatedAt';
 
+export type LocalStorageMigrationStatus = {
+  __typename?: 'LocalStorageMigrationStatus';
+  /** Whether the user has completed migration */
+  hasMigrated: Scalars['Boolean']['output'];
+  /** Timestamp of last migration attempt */
+  lastMigrationAt?: Maybe<Scalars['String']['output']>;
+  /** Number of sessions migrated */
+  sessionsMigrated: Scalars['Int']['output'];
+};
+
 export type LoginInput = {
+  /** Backup code for account recovery (alternative to TOTP token) */
+  backupCode?: InputMaybe<Scalars['String']['input']>;
   /** User password */
   password: Scalars['String']['input'];
+  /** 6-digit TOTP token (if 2FA is enabled) */
+  twoFactorToken?: InputMaybe<Scalars['String']['input']>;
   /** Username or email address */
   username: Scalars['String']['input'];
+};
+
+/** The role of the message sender */
+export type MessageRole = 'ASSISTANT' | 'SYSTEM' | 'USER';
+
+export type MigrateChatBulkInput = {
+  /** Sessions to migrate */
+  sessions: Array<MigrateChatSessionInput>;
+  /** Skip sessions that already exist in the database */
+  skipDuplicates?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type MigrateChatBulkResult = {
+  __typename?: 'MigrateChatBulkResult';
+  /** Number of failed migrations */
+  failedCount: Scalars['Int']['output'];
+  /** Results for each session migration attempt */
+  results: Array<MigrateChatSessionResult>;
+  /** Number of successfully migrated sessions */
+  successfulCount: Scalars['Int']['output'];
+  /** Total number of messages migrated */
+  totalMessagesMigrated: Scalars['Int']['output'];
+  /** Total number of sessions processed */
+  totalProcessed: Scalars['Int']['output'];
+};
+
+export type MigrateChatCitationInput = {
+  /** Article or section reference */
+  article?: InputMaybe<Scalars['String']['input']>;
+  /** Brief excerpt or description */
+  excerpt?: InputMaybe<Scalars['String']['input']>;
+  /** Source of the citation */
+  source: Scalars['String']['input'];
+  /** URL to the source document */
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MigrateChatMessageWithCitationsInput = {
+  /** Citations for assistant messages */
+  citations?: InputMaybe<Array<MigrateChatCitationInput>>;
+  /** Message content */
+  content: Scalars['String']['input'];
+  /** Original content before AI processing */
+  rawContent?: InputMaybe<Scalars['String']['input']>;
+  /** Role of the message sender */
+  role: MessageRole;
+  /** ISO timestamp of when the message was created */
+  timestamp?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MigrateChatSessionInput = {
+  /** Messages to migrate */
+  messages: Array<MigrateChatMessageWithCitationsInput>;
+  /** AI mode used for this session */
+  mode?: ChatMode;
+  /** Session ID from localStorage (UUID v4) */
+  sessionId: Scalars['String']['input'];
+  /** Optional title for the session */
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MigrateChatSessionResult = {
+  __typename?: 'MigrateChatSessionResult';
+  /** Error message if migration failed */
+  error?: Maybe<Scalars['String']['output']>;
+  /** Number of messages migrated */
+  messageCount: Scalars['Int']['output'];
+  /** The session ID in the database */
+  sessionId: Scalars['ID']['output'];
+  /** Whether migration was successful */
+  success: Scalars['Boolean']['output'];
 };
 
 export type ModerationActionResult = {
@@ -2727,13 +4381,35 @@ export type Mutation = {
   activateWebhook: Webhook;
   /** Add a citation to an existing legal query */
   addCitationToQuery: LegalQuery;
+  /** Add a permission to a role */
+  addPermissionToRole: Role;
+  /** Create a backup (admin only) */
+  adminCreateBackup: Backup;
+  /** Create a new user with password and role (admin only) */
+  adminCreateUser: User;
+  /** Delete a backup (admin only) */
+  adminDeleteBackup: Scalars['Boolean']['output'];
+  /** Admin force-disable 2FA for a user (requires admin role) */
+  adminForceDisableTwoFactor: AdminForceDisableTwoFactorResponse;
+  /** Restore a backup (admin only) */
+  adminRestoreBackup: Scalars['Boolean']['output'];
   /** Add AI-generated answer to a legal query */
   answerLegalQuery: LegalQuery;
   /** Approve a document after moderation review */
   approveDocument: ModerationActionResult;
   /** Ask a legal question and get AI answer synchronously */
   askLegalQuestion: LegalQuery;
+  /** Activate multiple user accounts (admin only) */
+  bulkActivateUsers: BulkUsersResult;
+  /** Change roles for multiple users (admin only) */
+  bulkChangeUserRoles: BulkUsersResult;
+  /** Delete multiple user accounts (admin only) */
+  bulkDeleteUsers: BulkDeleteUsersResult;
+  /** Suspend multiple user accounts (admin only) */
+  bulkSuspendUsers: BulkUsersResult;
   bulkUpsertSystemSettings: Array<SystemSetting>;
+  /** Cancel an active clarification session */
+  cancelClarificationSession: ClarificationSession;
   /** Cancel the current user subscription */
   cancelMySubscription: UserSubscription;
   /** Change password for the current user */
@@ -2744,13 +4420,27 @@ export type Mutation = {
   changeUserRole: User;
   /** Analyze a case description using AI and identify applicable legal grounds */
   classifyCase: LegalAnalysis;
+  /** Cleanup empty assistant messages in the database */
+  cleanupEmptyMessages: CleanupEmptyMessagesResult;
+  /** Cleanup empty chat sessions (soft delete) */
+  cleanupEmptySessions: CleanupEmptySessionsResult;
+  /** Complete a clarification session with final answer reference */
+  completeClarificationSession: ClarificationSession;
+  /** Complete login with 2FA token or backup code after receiving requiresTwoFactor response */
+  completeTwoFactorLogin: AuthPayload;
   /** Create a new API key. The raw key is only shown once. */
   createApiKey: CreateApiKeyResponse;
-  createBackup: Backup;
+  /** Create a new chat session. Session ID is generated server-side. */
+  createChatSession: ChatSession;
+  /** Create a new clarification session for a query */
+  createClarificationSession: ClarificationSession;
   createDocumentTemplate: DocumentTemplate;
   createDocumentV2: LegalDocumentV2;
+  /** Create a contact in HubSpot from form submission */
+  createHubSpotContact?: Maybe<HubSpotContactResponse>;
   /** Create a new subscription for the current user */
   createMySubscription: UserSubscription;
+  createOneChatSession: ChatSession;
   createOneDocumentComment: DocumentComment;
   createOneDocumentTemplate: DocumentTemplate;
   createOneDocumentVersion: DocumentVersion;
@@ -2760,9 +4450,14 @@ export type Mutation = {
   createOneLegalQuery: LegalQuery;
   createOneLegalRuling: LegalRuling;
   createOneNotification: Notification;
+  /** Create a new user (admin only) */
   createOneUser: User;
   createOneUserPreference: UserPreferences;
-  /** Create a new subscription plan */
+  /** Create a new custom role */
+  createRole: Role;
+  /** Create a new Temporal schedule for recurring workflow execution */
+  createSchedule: CreateScheduleResult;
+  /** Create a new subscription plan (admin only) */
   createSubscriptionPlan: SubscriptionPlan;
   createUsageRecord: AiUsageRecord;
   /** Create a new webhook. The secret is only shown once. */
@@ -2771,7 +4466,8 @@ export type Mutation = {
   deactivateWebhook: Webhook;
   /** Delete an API key permanently. This action cannot be undone. */
   deleteApiKey: Scalars['Boolean']['output'];
-  deleteBackup: Scalars['Boolean']['output'];
+  /** Soft delete a chat session */
+  deleteChatSession: ChatSession;
   /** @deprecated Use deleteOneLegalDocument instead */
   deleteDocument: Scalars['Boolean']['output'];
   deleteDocumentTemplate: Scalars['Boolean']['output'];
@@ -2781,6 +4477,7 @@ export type Mutation = {
    * @deprecated Use deleteOneLegalQuery instead
    */
   deleteLegalQuery: Scalars['Boolean']['output'];
+  deleteOneChatSession: ChatSessionDeleteResponse;
   deleteOneDocumentComment: DocumentCommentDeleteResponse;
   deleteOneDocumentTemplate: DocumentTemplateDeleteResponse;
   deleteOneInAppNotification: InAppNotificationDeleteResponse;
@@ -2788,16 +4485,27 @@ export type Mutation = {
   deleteOneLegalDocument: LegalDocumentDeleteResponse;
   deleteOneLegalQuery: LegalQueryDeleteResponse;
   deleteOneLegalRuling: LegalRulingDeleteResponse;
-  deleteOneUser: UserDeleteResponse;
+  /** Delete a user (admin only) */
+  deleteOneUser: User;
   deleteOneUserPreference: UserPreferencesDeleteResponse;
   deleteOneUserSession: UserSessionDeleteResponse;
-  /** Delete a subscription plan */
+  /** Delete a custom role (system roles cannot be deleted) */
+  deleteRole: Scalars['Boolean']['output'];
+  /** Permanently delete a Temporal schedule (requires confirmation) */
+  deleteSchedule: ScheduleDeletionResult;
+  /** Delete a subscription plan (admin only) */
   deleteSubscriptionPlan: Scalars['Boolean']['output'];
   deleteSystemSetting: Scalars['Boolean']['output'];
   /** Delete a webhook permanently. This action cannot be undone. */
   deleteWebhook: Scalars['Boolean']['output'];
+  /** Disable 2FA with password confirmation */
+  disableTwoFactorAuth: Scalars['Boolean']['output'];
   /** Disable a webhook */
   disableWebhook: Webhook;
+  /** Generate TOTP secret and QR code for 2FA setup */
+  enableTwoFactorAuth: EnableTwoFactorResponse;
+  /** Export a chat session to PDF, Markdown, or JSON format */
+  exportChatSession: ChatExportResult;
   /** Queue a document for PDF export */
   exportDocumentToPdf: PdfExportJob;
   /** Export a document to PDF and wait for the result */
@@ -2806,29 +4514,50 @@ export type Mutation = {
   flagDocumentForModeration: ModerationActionResult;
   generateDocument: LegalDocument;
   generateDocumentFromTemplate: LegalDocument;
-  /** Authenticate user with username/email and password */
+  /** Permanently delete a chat session and all messages (cannot be undone) */
+  hardDeleteChatSession: DeleteChatSessionResult;
+  /** Authenticate user with username/email and password. Supports 2FA with twoFactorToken or backupCode. */
   login: AuthPayload;
   /** Mark all notifications as read for a user */
   markAllNotificationsAsRead: Scalars['Int']['output'];
+  /** Mark localStorage migration as complete for the current user */
+  markLocalStorageMigrated: LocalStorageMigrationStatus;
   /** Mark a notification as read */
   markNotificationAsRead: Scalars['String']['output'];
+  /** Migrate a single chat session from localStorage to the database */
+  migrateChatSession: MigrateChatSessionResult;
+  /** Migrate multiple chat sessions from localStorage to the database */
+  migrateChatSessionsBulk: MigrateChatBulkResult;
+  /** Pause a running Temporal schedule */
+  pauseSchedule: Scalars['Boolean']['output'];
+  /** Pin or unpin a chat session */
+  pinChatSession: ChatSession;
   publishDocumentV2: LegalDocumentV2;
+  /** Check if a lead qualifies for deal creation */
+  qualifyHubSpotLead: LeadQualificationResponse;
   /** Record usage for quota tracking */
   recordUsage: Scalars['Boolean']['output'];
   /** Refresh access token using a valid refresh token */
   refreshToken: RefreshTokenPayload;
+  /** Generate new backup codes (invalidates old ones) */
+  regenerateBackupCodes: RegenerateBackupCodesResponse;
   /** Register a new user account */
   register: AuthPayload;
   /** Reject a document after moderation review */
   rejectDocument: ModerationActionResult;
+  /** Remove a permission from a role */
+  removePermissionFromRole: Role;
   /** Render a template with variable substitution without creating a document */
   renderTemplate: Scalars['String']['output'];
+  /** Reset the localStorage migration flag to allow re-migration */
+  resetLocalStorageMigration: LocalStorageMigrationStatus;
   resetMyPreferences: UserPreferences;
   /** Reset a user password (admin only) */
   resetUserPassword: User;
-  restoreBackup: Scalars['Boolean']['output'];
   /** Resume a subscription that was scheduled for cancellation */
   resumeMySubscription: UserSubscription;
+  /** Resume a paused Temporal schedule */
+  resumeSchedule: Scalars['Boolean']['output'];
   /** Revoke an API key. This action cannot be undone. */
   revokeApiKey: ApiKey;
   /** Revoke a document share */
@@ -2837,21 +4566,41 @@ export type Mutation = {
   rollbackDocumentToVersion: LegalDocument;
   /** Rotate webhook secret. The old secret will no longer work. */
   rotateWebhookSecret: Scalars['String']['output'];
+  /** Save a chat message to the database (used for streaming responses) */
+  saveChatMessage: SendChatMessageResponse;
+  /** Schedule a demo time (admin only) */
+  scheduleDemo: DemoRequest;
   seedSystemSettings: Scalars['Boolean']['output'];
   /** Send bulk notifications to multiple users */
   sendBulkNotifications: BulkSendNotificationResponse;
+  /** Send a chat message and get AI response. Stores both messages in the database. */
+  sendChatMessageWithAI: SendChatMessageWithAiResponse;
   /** Send a notification to a user across specified channels */
   sendNotification: SendNotificationResponse;
   /** Share a document with a user */
   shareDocument: DocumentShare;
+  /** Submit answers to clarification questions. Validates answers and creates a user message. */
+  submitClarificationAnswers: SubmitClarificationAnswersResponse;
+  /** Submit a demo request. No authentication required. The request will be synced to HubSpot and the sales team will be notified via email. */
+  submitDemoRequest: DemoRequestResponse;
+  /** Submit an early access interest request. No authentication required. The request will be synced to HubSpot Early Access list. GDPR consent is required. */
+  submitInterestRequest: InterestRequestResponse;
   /** Submit a new legal query for AI processing */
   submitLegalQuery: LegalQuery;
   /** Suspend a user account (admin only) */
   suspendUser: User;
+  /** Sync a lead to HubSpot with automatic qualification */
+  syncHubSpotLead: LeadQualificationResponse;
   /** Test a webhook by sending a test event */
   testWebhook: TestWebhookResponse;
   /** Update an existing API key (name, scopes, rate limit, expiration) */
   updateApiKey: ApiKey;
+  /** Update the title of a chat session */
+  updateChatSessionTitle: ChatSession;
+  /** Update the answered status of a clarification message */
+  updateClarificationStatus: UpdateClarificationStatusResponse;
+  /** Update demo request status (admin only) */
+  updateDemoRequestStatus: DemoRequest;
   updateDocument: LegalDocument;
   /** Update the permission level of a document share */
   updateDocumentSharePermission: DocumentShare;
@@ -2860,6 +4609,7 @@ export type Mutation = {
   updateMyPreferences: UserPreferences;
   /** Update notification preferences for a user */
   updateNotificationPreferences: Scalars['String']['output'];
+  updateOneChatSession: ChatSession;
   updateOneDocumentComment: DocumentComment;
   updateOneDocumentTemplate: DocumentTemplate;
   updateOneDocumentVersion: DocumentVersion;
@@ -2869,15 +4619,20 @@ export type Mutation = {
   updateOneLegalQuery: LegalQuery;
   updateOneLegalRuling: LegalRuling;
   updateOneNotification: Notification;
+  /** Update a user (admin only) */
   updateOneUser: User;
   updateOneUserPreference: UserPreferences;
   /** Update profile information for the current user */
   updateProfile: AuthUser;
-  /** Update an existing subscription plan */
+  /** Update role name or description */
+  updateRole: Role;
+  /** Update an existing subscription plan (admin only) */
   updateSubscriptionPlan: SubscriptionPlan;
   /** Update an existing webhook (name, URL, events, headers, status) */
   updateWebhook: Webhook;
   upsertSystemSetting: SystemSetting;
+  /** Verify 2FA setup with first TOTP token to enable */
+  verifyTwoFactorSetup: VerifyTwoFactorSetupResponse;
 };
 
 export type MutationActivateUserArgs = {
@@ -2893,6 +4648,30 @@ export type MutationAddCitationToQueryArgs = {
   queryId: Scalars['ID']['input'];
 };
 
+export type MutationAddPermissionToRoleArgs = {
+  input: AddPermissionInput;
+};
+
+export type MutationAdminCreateBackupArgs = {
+  input?: InputMaybe<CreateBackupInput>;
+};
+
+export type MutationAdminCreateUserArgs = {
+  input: AdminCreateUserInput;
+};
+
+export type MutationAdminDeleteBackupArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type MutationAdminForceDisableTwoFactorArgs = {
+  input: AdminForceDisableTwoFactorInput;
+};
+
+export type MutationAdminRestoreBackupArgs = {
+  input: RestoreBackupInput;
+};
+
 export type MutationAnswerLegalQueryArgs = {
   id: Scalars['ID']['input'];
   input: AnswerLegalQueryInput;
@@ -2906,8 +4685,28 @@ export type MutationAskLegalQuestionArgs = {
   input: AskLegalQuestionInput;
 };
 
+export type MutationBulkActivateUsersArgs = {
+  input: BulkActivateUsersInput;
+};
+
+export type MutationBulkChangeUserRolesArgs = {
+  input: BulkChangeUserRolesInput;
+};
+
+export type MutationBulkDeleteUsersArgs = {
+  input: BulkDeleteUsersInput;
+};
+
+export type MutationBulkSuspendUsersArgs = {
+  input: BulkSuspendUsersInput;
+};
+
 export type MutationBulkUpsertSystemSettingsArgs = {
   input: BulkUpdateSettingsInput;
+};
+
+export type MutationCancelClarificationSessionArgs = {
+  input: CancelClarificationSessionInput;
 };
 
 export type MutationCancelMySubscriptionArgs = {
@@ -2930,12 +4729,33 @@ export type MutationClassifyCaseArgs = {
   input: ClassifyCaseInput;
 };
 
+export type MutationCleanupEmptyMessagesArgs = {
+  input: CleanupEmptyMessagesInput;
+};
+
+export type MutationCleanupEmptySessionsArgs = {
+  input: CleanupEmptySessionsInput;
+};
+
+export type MutationCompleteClarificationSessionArgs = {
+  finalQueryId: Scalars['String']['input'];
+  sessionId: Scalars['String']['input'];
+};
+
+export type MutationCompleteTwoFactorLoginArgs = {
+  input: CompleteTwoFactorLoginInput;
+};
+
 export type MutationCreateApiKeyArgs = {
   input: CreateApiKeyInput;
 };
 
-export type MutationCreateBackupArgs = {
-  input?: InputMaybe<CreateBackupInput>;
+export type MutationCreateChatSessionArgs = {
+  input: CreateChatSessionInput;
+};
+
+export type MutationCreateClarificationSessionArgs = {
+  input: CreateClarificationSessionInput;
 };
 
 export type MutationCreateDocumentTemplateArgs = {
@@ -2946,8 +4766,16 @@ export type MutationCreateDocumentV2Args = {
   input: CreateLegalDocumentInputV2;
 };
 
+export type MutationCreateHubSpotContactArgs = {
+  input: CreateHubSpotContactInput;
+};
+
 export type MutationCreateMySubscriptionArgs = {
   input: CreateUserSubscriptionInput;
+};
+
+export type MutationCreateOneChatSessionArgs = {
+  input: CreateOneChatSessionInput;
 };
 
 export type MutationCreateOneDocumentCommentArgs = {
@@ -2987,11 +4815,19 @@ export type MutationCreateOneNotificationArgs = {
 };
 
 export type MutationCreateOneUserArgs = {
-  input: CreateOneUserInput;
+  input: CreateUserInput;
 };
 
 export type MutationCreateOneUserPreferenceArgs = {
   input: CreateOneUserPreferencesInput;
+};
+
+export type MutationCreateRoleArgs = {
+  input: CreateRoleInput;
+};
+
+export type MutationCreateScheduleArgs = {
+  input: CreateScheduleInput;
 };
 
 export type MutationCreateSubscriptionPlanArgs = {
@@ -3014,8 +4850,8 @@ export type MutationDeleteApiKeyArgs = {
   id: Scalars['String']['input'];
 };
 
-export type MutationDeleteBackupArgs = {
-  id: Scalars['ID']['input'];
+export type MutationDeleteChatSessionArgs = {
+  input: DeleteChatSessionInput;
 };
 
 export type MutationDeleteDocumentArgs = {
@@ -3032,6 +4868,10 @@ export type MutationDeleteDocumentV2Args = {
 
 export type MutationDeleteLegalQueryArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type MutationDeleteOneChatSessionArgs = {
+  input: DeleteOneChatSessionInput;
 };
 
 export type MutationDeleteOneDocumentCommentArgs = {
@@ -3063,7 +4903,7 @@ export type MutationDeleteOneLegalRulingArgs = {
 };
 
 export type MutationDeleteOneUserArgs = {
-  input: DeleteOneUserInput;
+  id: Scalars['ID']['input'];
 };
 
 export type MutationDeleteOneUserPreferenceArgs = {
@@ -3072,6 +4912,14 @@ export type MutationDeleteOneUserPreferenceArgs = {
 
 export type MutationDeleteOneUserSessionArgs = {
   input: DeleteOneUserSessionInput;
+};
+
+export type MutationDeleteRoleArgs = {
+  id: Scalars['String']['input'];
+};
+
+export type MutationDeleteScheduleArgs = {
+  input: DeleteScheduleInput;
 };
 
 export type MutationDeleteSubscriptionPlanArgs = {
@@ -3086,8 +4934,16 @@ export type MutationDeleteWebhookArgs = {
   id: Scalars['String']['input'];
 };
 
+export type MutationDisableTwoFactorAuthArgs = {
+  input: DisableTwoFactorInput;
+};
+
 export type MutationDisableWebhookArgs = {
   id: Scalars['String']['input'];
+};
+
+export type MutationExportChatSessionArgs = {
+  input: ExportChatSessionInput;
 };
 
 export type MutationExportDocumentToPdfArgs = {
@@ -3110,6 +4966,10 @@ export type MutationGenerateDocumentFromTemplateArgs = {
   input: GenerateFromTemplateInput;
 };
 
+export type MutationHardDeleteChatSessionArgs = {
+  input: DeleteChatSessionInput;
+};
+
 export type MutationLoginArgs = {
   input: LoginInput;
 };
@@ -3123,8 +4983,28 @@ export type MutationMarkNotificationAsReadArgs = {
   userId: Scalars['String']['input'];
 };
 
+export type MutationMigrateChatSessionArgs = {
+  input: MigrateChatSessionInput;
+};
+
+export type MutationMigrateChatSessionsBulkArgs = {
+  input: MigrateChatBulkInput;
+};
+
+export type MutationPauseScheduleArgs = {
+  input: PauseScheduleInput;
+};
+
+export type MutationPinChatSessionArgs = {
+  input: PinChatSessionInput;
+};
+
 export type MutationPublishDocumentV2Args = {
   input: PublishDocumentInputV2;
+};
+
+export type MutationQualifyHubSpotLeadArgs = {
+  input: CreateHubSpotContactInput;
 };
 
 export type MutationRecordUsageArgs = {
@@ -3144,6 +5024,10 @@ export type MutationRejectDocumentArgs = {
   input: RejectDocumentInput;
 };
 
+export type MutationRemovePermissionFromRoleArgs = {
+  input: RemovePermissionInput;
+};
+
 export type MutationRenderTemplateArgs = {
   input: RenderTemplateInput;
 };
@@ -3152,8 +5036,8 @@ export type MutationResetUserPasswordArgs = {
   input: ResetUserPasswordInput;
 };
 
-export type MutationRestoreBackupArgs = {
-  input: RestoreBackupInput;
+export type MutationResumeScheduleArgs = {
+  input: ResumeScheduleInput;
 };
 
 export type MutationRevokeApiKeyArgs = {
@@ -3175,8 +5059,20 @@ export type MutationRotateWebhookSecretArgs = {
   id: Scalars['String']['input'];
 };
 
+export type MutationSaveChatMessageArgs = {
+  input: SaveChatMessageInput;
+};
+
+export type MutationScheduleDemoArgs = {
+  input: ScheduleDemoInput;
+};
+
 export type MutationSendBulkNotificationsArgs = {
   input: BulkSendNotificationInput;
+};
+
+export type MutationSendChatMessageWithAiArgs = {
+  input: SendChatMessageWithAiInput;
 };
 
 export type MutationSendNotificationArgs = {
@@ -3187,12 +5083,29 @@ export type MutationShareDocumentArgs = {
   input: ShareDocumentInput;
 };
 
+export type MutationSubmitClarificationAnswersArgs = {
+  input: SubmitClarificationAnswersInput;
+};
+
+export type MutationSubmitDemoRequestArgs = {
+  input: DemoRequestInput;
+};
+
+export type MutationSubmitInterestRequestArgs = {
+  input: InterestRequestInput;
+};
+
 export type MutationSubmitLegalQueryArgs = {
   input: SubmitLegalQueryInput;
 };
 
 export type MutationSuspendUserArgs = {
   input: SuspendUserInput;
+};
+
+export type MutationSyncHubSpotLeadArgs = {
+  input: CreateHubSpotContactInput;
+  listType?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MutationTestWebhookArgs = {
@@ -3202,6 +5115,18 @@ export type MutationTestWebhookArgs = {
 export type MutationUpdateApiKeyArgs = {
   id: Scalars['String']['input'];
   input: UpdateApiKeyInput;
+};
+
+export type MutationUpdateChatSessionTitleArgs = {
+  input: UpdateChatSessionTitleInput;
+};
+
+export type MutationUpdateClarificationStatusArgs = {
+  input: UpdateClarificationStatusInput;
+};
+
+export type MutationUpdateDemoRequestStatusArgs = {
+  input: UpdateDemoRequestStatusInput;
 };
 
 export type MutationUpdateDocumentArgs = {
@@ -3228,6 +5153,10 @@ export type MutationUpdateMyPreferencesArgs = {
 
 export type MutationUpdateNotificationPreferencesArgs = {
   input: NotificationDeliveryPreferencesInput;
+};
+
+export type MutationUpdateOneChatSessionArgs = {
+  input: UpdateOneChatSessionInput;
 };
 
 export type MutationUpdateOneDocumentCommentArgs = {
@@ -3267,7 +5196,8 @@ export type MutationUpdateOneNotificationArgs = {
 };
 
 export type MutationUpdateOneUserArgs = {
-  input: UpdateOneUserInput;
+  id: Scalars['ID']['input'];
+  input: UpdateUserInput;
 };
 
 export type MutationUpdateOneUserPreferenceArgs = {
@@ -3276,6 +5206,11 @@ export type MutationUpdateOneUserPreferenceArgs = {
 
 export type MutationUpdateProfileArgs = {
   input: UpdateProfileInput;
+};
+
+export type MutationUpdateRoleArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateRoleInput;
 };
 
 export type MutationUpdateSubscriptionPlanArgs = {
@@ -3290,6 +5225,10 @@ export type MutationUpdateWebhookArgs = {
 
 export type MutationUpsertSystemSettingArgs = {
   input: SystemSettingInput;
+};
+
+export type MutationVerifyTwoFactorSetupArgs = {
+  input: VerifyTwoFactorSetupInput;
 };
 
 export type Notification = {
@@ -3578,6 +5517,9 @@ export type NumberFieldComparisonBetween = {
   upper: Scalars['Float']['input'];
 };
 
+/** Type of observation within a trace */
+export type ObservationType = 'EVENT' | 'GENERATION' | 'SPAN';
+
 export type OperationBreakdown = {
   __typename?: 'OperationBreakdown';
   cost: Scalars['Float']['output'];
@@ -3596,6 +5538,13 @@ export type PageInfo = {
   hasPreviousPage?: Maybe<Scalars['Boolean']['output']>;
   /** The cursor of the first returned record. */
   startCursor?: Maybe<Scalars['ConnectionCursor']['output']>;
+};
+
+export type PauseScheduleInput = {
+  /** Optional reason for pausing (logged to audit trail) */
+  reason?: InputMaybe<Scalars['String']['input']>;
+  /** The ID of the schedule to pause */
+  scheduleId: Scalars['String']['input'];
 };
 
 export type PaymentHistoryItem = {
@@ -3688,6 +5637,26 @@ export type PdfExportStatus = {
 /** Page format for PDF export */
 export type PdfPageFormat = 'A4' | 'LEGAL' | 'LETTER';
 
+export type Permission = {
+  __typename?: 'Permission';
+  condition?: Maybe<Scalars['String']['output']>;
+  resource: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
+export type PermissionCheckResult = {
+  __typename?: 'PermissionCheckResult';
+  allowed: Scalars['Boolean']['output'];
+  permissions?: Maybe<Array<Scalars['String']['output']>>;
+};
+
+export type PinChatSessionInput = {
+  /** True to pin, false to unpin */
+  isPinned: Scalars['Boolean']['input'];
+  /** Session ID to pin/unpin */
+  sessionId: Scalars['ID']['input'];
+};
+
 /** Subscription plan tiers */
 export type PlanTier = 'BASIC' | 'ENTERPRISE' | 'FREE' | 'PROFESSIONAL';
 
@@ -3699,6 +5668,9 @@ export type PolishFormattingRulesInput = {
   numberFormat?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** Preferred time of day for demo */
+export type PreferredTimeSlot = 'AFTERNOON' | 'EVENING' | 'MORNING';
+
 export type PublishDocumentInputV2 = {
   documentId: Scalars['ID']['input'];
   publishedBy: Scalars['ID']['input'];
@@ -3706,30 +5678,69 @@ export type PublishDocumentInputV2 = {
 
 export type Query = {
   __typename?: 'Query';
+  /** Get a backup by ID (admin only) */
+  adminBackup?: Maybe<Backup>;
+  /** Get backup statistics (admin only) */
+  adminBackupStats: BackupStats;
+  /** Get all backups (admin only) */
+  adminBackups: Array<Backup>;
   /** Advanced search with boolean operators (AND, OR, NOT) and field-specific search */
   advancedSearchLegalRulings: AdvancedLegalRulingSearchResponse;
+  /** Generate a report of users affected by empty messages */
+  affectedUsersForEmptyMessages: AffectedUsersReport;
   /** Search legal rulings across multiple sources (LOCAL, SAOS, ISAP) with relevance ranking */
   aggregatedSearchLegalRulings: AggregatedLegalRulingSearchResponse;
   aiUsageMetrics: AiUsageMetrics;
   analyticsDashboard: AnalyticsDashboard;
+  /** Analyze all empty assistant messages in the database */
+  analyzeEmptyMessages: EmptyMessagesSummary;
+  /** Analyze all empty chat sessions (messageCount = 0) */
+  analyzeEmptySessions: Array<EmptySessionAnalysis>;
   auditLog: AuditLog;
   auditLogAggregate: Array<AuditLogAggregateResponse>;
   auditLogs: AuditLogConnection;
-  backup?: Maybe<Backup>;
-  backupStats: BackupStats;
-  backups: Array<Backup>;
   /** Check if the current user can access a specific feature */
   canAccessFeature: Scalars['Boolean']['output'];
+  /** Get a single chat message by ID with proper type resolution */
+  chatMessageById?: Maybe<ChatMessageInterface>;
+  /** Get all messages for a chat session in sequence order */
+  chatMessages: Array<ChatMessage>;
+  /** Get chat messages for a session with proper type resolution based on message type */
+  chatMessagesBySession: Array<ChatMessageInterface>;
+  chatSessionAggregate: Array<ChatSessionAggregateResponse>;
+  chatSessionById: ChatSession;
+  /** Get a chat session with all its messages */
+  chatSessionDetail?: Maybe<ChatSession>;
+  /** Get chat sessions for a user with filtering and sorting */
+  chatSessions: Array<ChatSession>;
+  chatSessionsList: ChatSessionConnection;
+  /** Check if email is already registered (admin only) */
+  checkEmailExists?: Maybe<CheckEmailExistsResult>;
   /** Check the current user quota for a specific resource */
   checkQuota: CheckQuotaResponse;
+  /** Get the active clarification session for a specific query */
+  clarificationSessionByQuery?: Maybe<ClarificationSession>;
+  /** Get all clarification sessions in a specific state */
+  clarificationSessionsByState: Array<ClarificationSession>;
+  /** Get all clarification sessions for a user session */
+  clarificationSessionsByUserSession: Array<ClarificationSession>;
   /** Count legal rulings matching filter criteria */
   countLegalRulings: Scalars['Int']['output'];
+  /** Debug endpoint to inspect conversation history for a session */
+  debugConversationHistory: ChatSessionDebugInfo;
+  demoRequest: DemoRequest;
+  demoRequestAggregate: Array<DemoRequestAggregateResponse>;
+  demoRequestAnalytics: DemoRequestAnalytics;
+  demoRequests: DemoRequestConnection;
+  /** Get detailed information about a Temporal schedule */
+  describeSchedule?: Maybe<ScheduleDetails>;
   documentComment: DocumentComment;
   documentCommentAggregate: Array<DocumentCommentAggregateResponse>;
   documentComments: DocumentCommentConnection;
   /** Get the latest version of a document */
   documentLatestVersion?: Maybe<DocumentVersion>;
   documentMetrics: DocumentMetrics;
+  documentQueueMetrics: DocumentQueueMetrics;
   /** Get all shares for a document */
   documentShares: Array<DocumentShare>;
   documentTemplate: DocumentTemplate;
@@ -3749,11 +5760,35 @@ export type Query = {
   documentsBySession: Array<LegalDocument>;
   /** Get all documents shared with the current user */
   documentsSharedWithMe: Array<DocumentShare>;
+  /** Get empty assistant messages for a specific session */
+  emptyMessagesForSession: Array<EmptyMessageAnalysis>;
+  /** Get empty assistant messages for a specific user */
+  emptyMessagesForUser: Array<EmptyMessageAnalysis>;
+  /** Get empty sessions count for monitoring (alert if threshold exceeded) */
+  emptySessionsMetrics: EmptySessionsMetrics;
   /** Filter legal rulings by multiple criteria */
   filterLegalRulings: Array<LegalRuling>;
+  getActiveUsersCount: ActiveUsersCount;
+  /** Get formatted context for AI processing from a clarification session */
+  getClarificationContext?: Maybe<Scalars['String']['output']>;
+  getDocumentGenerationMetrics: DocumentGenerationMetrics;
+  getQueryVolume: Array<AnalyticsTimeSeriesPoint>;
+  getTotalDocumentCount: DocumentMetrics;
+  getTotalTokenUsage: Array<TokenUsageBreakdown>;
+  getUserGrowthStats: UserGrowthStats;
+  /** Check if the given roles have a specific permission */
+  hasPermission: PermissionCheckResult;
   inAppNotification: InAppNotification;
   inAppNotificationAggregate: Array<InAppNotificationAggregateResponse>;
   inAppNotifications: InAppNotificationConnection;
+  langfuseDebugConfig?: Maybe<LangfuseDebugConfig>;
+  langfuseLatencyMetrics?: Maybe<Array<AgentLatencyMetrics>>;
+  langfuseTokenUsageByAgent?: Maybe<Array<TokenUsageByAgent>>;
+  langfuseTraceDetail?: Maybe<LangfuseTraceDetail>;
+  /** Get the URL to view a specific trace in Langfuse dashboard */
+  langfuseTraceUrl?: Maybe<Scalars['String']['output']>;
+  langfuseTraces?: Maybe<TracesListResponse>;
+  langfuseUserAttribution?: Maybe<Array<UserTraceAttribution>>;
   legalAnalyses: LegalAnalysisConnection;
   legalAnalysis: LegalAnalysis;
   legalAnalysisAggregate: Array<LegalAnalysisAggregateResponse>;
@@ -3772,6 +5807,8 @@ export type Query = {
   legalRulingsByCourtType: Array<LegalRuling>;
   /** Get legal rulings from higher courts (Supreme, Appellate, Constitutional) */
   legalRulingsFromHigherCourts: Array<LegalRuling>;
+  /** Check the status of localStorage migration for the current user */
+  localStorageMigrationStatus: LocalStorageMigrationStatus;
   /** Get current authenticated user information */
   me?: Maybe<AuthUser>;
   /** Get all API keys for the current user */
@@ -3805,8 +5842,17 @@ export type Query = {
   /** Get all legal queries for a specific session */
   queriesBySession: Array<LegalQuery>;
   queryMetrics: QueryMetrics;
+  recentDocumentActivity: RecentDocumentActivity;
   /** Get recent notifications for a user */
   recentNotifications: Array<InAppNotification>;
+  /** Get a role by ID */
+  role?: Maybe<Role>;
+  /** Get a role by name */
+  roleByName?: Maybe<Role>;
+  /** Get all roles in the system */
+  roles: Array<Role>;
+  /** Full-text search across chat messages with relevance ranking and highlighting */
+  searchChatContent: ChatContentSearchResponse;
   /** Full-text search across documents with relevance ranking */
   searchLegalDocuments: LegalDocumentSearchResponse;
   /** Full-text search across queries with relevance ranking */
@@ -3817,16 +5863,30 @@ export type Query = {
   subscriptionPlan?: Maybe<SubscriptionPlan>;
   /** Get all active subscription plans ordered by price */
   subscriptionPlans: Array<SubscriptionPlan>;
+  /** Get comprehensive system health status for admin dashboard */
+  systemHealth: SystemHealthResponse;
   systemHealthMetrics: SystemHealthMetrics;
   systemSetting?: Maybe<SystemSetting>;
   systemSettings: Array<SystemSetting>;
   systemSettingsByCategory: Array<SystemSetting>;
+  /** Get detailed information about a Temporal schedule by ID */
+  temporalSchedule?: Maybe<ScheduleDetails>;
+  /** List all Temporal schedules with pagination */
+  temporalSchedules: ScheduleListResult;
+  /** Get the current status of Temporal workers */
+  temporalWorkerStatus: WorkerStatusResult;
+  tokenUsageAnalytics: TokenUsageAnalytics;
+  tokenUsageByOperation: Array<TokenUsageByOperation>;
+  tokenUsageExport: TokenUsageExport;
+  tokenUsageTrend: Array<TokenUsageTrend>;
   topUsersByUsage: Scalars['String']['output'];
+  /** Get current 2FA settings and status */
+  twoFactorSettings?: Maybe<TwoFactorSettings>;
   /** Get count of unread notifications for a user */
   unreadNotificationCount: Scalars['Int']['output'];
   usageStats: UsageStatsResponse;
-  user: User;
-  userAggregate: Array<UserAggregateResponse>;
+  /** Get a user by ID (admin only) */
+  user?: Maybe<User>;
   userGrowthMetrics: UserGrowthMetrics;
   userPreference: UserPreferences;
   userPreferences: UserPreferencesConnection;
@@ -3834,8 +5894,10 @@ export type Query = {
   userSession: UserSession;
   userSessionAggregate: Array<UserSessionAggregateResponse>;
   userSessions: UserSessionConnection;
+  userTokenLeaderboard: Array<UserTokenUsage>;
   userUsageRecords: Array<AiUsageRecord>;
-  users: UserConnection;
+  /** Get all users with filtering, sorting, and paging (admin only) */
+  users: Array<User>;
   /** Validate an API key and check if it has the required scopes */
   validateApiKey: ValidateApiKeyResponse;
   /** Get a webhook by ID */
@@ -3844,6 +5906,15 @@ export type Query = {
   webhookDeliveries: Array<WebhookDelivery>;
   /** Get webhook statistics for the current user */
   webhookStats: WebhookStats;
+};
+
+export type QueryAdminBackupArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type QueryAdminBackupsArgs = {
+  limit?: InputMaybe<Scalars['Float']['input']>;
+  offset?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type QueryAdvancedSearchLegalRulingsArgs = {
@@ -3876,25 +5947,100 @@ export type QueryAuditLogsArgs = {
   sorting?: Array<AuditLogSort>;
 };
 
-export type QueryBackupArgs = {
+export type QueryCanAccessFeatureArgs = {
+  featureKey: Scalars['String']['input'];
+};
+
+export type QueryChatMessageByIdArgs = {
+  messageId: Scalars['ID']['input'];
+};
+
+export type QueryChatMessagesArgs = {
+  sessionId: Scalars['ID']['input'];
+};
+
+export type QueryChatMessagesBySessionArgs = {
+  sessionId: Scalars['ID']['input'];
+};
+
+export type QueryChatSessionAggregateArgs = {
+  filter?: InputMaybe<ChatSessionAggregateFilter>;
+};
+
+export type QueryChatSessionByIdArgs = {
   id: Scalars['ID']['input'];
 };
 
-export type QueryBackupsArgs = {
-  limit?: InputMaybe<Scalars['Float']['input']>;
-  offset?: InputMaybe<Scalars['Float']['input']>;
+export type QueryChatSessionDetailArgs = {
+  sessionId: Scalars['ID']['input'];
 };
 
-export type QueryCanAccessFeatureArgs = {
-  featureKey: Scalars['String']['input'];
+export type QueryChatSessionsArgs = {
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  isPinned?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  mode?: InputMaybe<ChatMode>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type QueryChatSessionsListArgs = {
+  filter?: ChatSessionFilter;
+  paging?: CursorPaging;
+  sorting?: Array<ChatSessionSort>;
+};
+
+export type QueryCheckEmailExistsArgs = {
+  email: Scalars['String']['input'];
 };
 
 export type QueryCheckQuotaArgs = {
   input: CheckQuotaInput;
 };
 
+export type QueryClarificationSessionByQueryArgs = {
+  queryId: Scalars['String']['input'];
+};
+
+export type QueryClarificationSessionsByStateArgs = {
+  state: ClarificationState;
+};
+
+export type QueryClarificationSessionsByUserSessionArgs = {
+  sessionId: Scalars['String']['input'];
+};
+
 export type QueryCountLegalRulingsArgs = {
   input?: InputMaybe<FilterLegalRulingsInput>;
+};
+
+export type QueryDebugConversationHistoryArgs = {
+  sessionId: Scalars['ID']['input'];
+};
+
+export type QueryDemoRequestArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type QueryDemoRequestAggregateArgs = {
+  filter?: InputMaybe<DemoRequestAggregateFilter>;
+};
+
+export type QueryDemoRequestAnalyticsArgs = {
+  input?: InputMaybe<DashboardAnalyticsInput>;
+};
+
+export type QueryDemoRequestsArgs = {
+  filter?: DemoRequestFilter;
+  paging?: CursorPaging;
+  sorting?: Array<DemoRequestSort>;
+};
+
+export type QueryDescribeScheduleArgs = {
+  scheduleId: Scalars['String']['input'];
 };
 
 export type QueryDocumentCommentArgs = {
@@ -3981,8 +6127,48 @@ export type QueryDocumentsSharedWithMeArgs = {
   permission?: InputMaybe<SharePermission>;
 };
 
+export type QueryEmptyMessagesForSessionArgs = {
+  sessionId: Scalars['ID']['input'];
+};
+
+export type QueryEmptyMessagesForUserArgs = {
+  userId: Scalars['ID']['input'];
+};
+
+export type QueryEmptySessionsMetricsArgs = {
+  alertThreshold?: InputMaybe<Scalars['Float']['input']>;
+};
+
 export type QueryFilterLegalRulingsArgs = {
   input: FilterLegalRulingsInput;
+};
+
+export type QueryGetClarificationContextArgs = {
+  sessionId: Scalars['String']['input'];
+};
+
+export type QueryGetDocumentGenerationMetricsArgs = {
+  input?: InputMaybe<DashboardAnalyticsInput>;
+};
+
+export type QueryGetQueryVolumeArgs = {
+  input?: InputMaybe<DashboardAnalyticsInput>;
+};
+
+export type QueryGetTotalDocumentCountArgs = {
+  input?: InputMaybe<DashboardAnalyticsInput>;
+};
+
+export type QueryGetTotalTokenUsageArgs = {
+  input?: InputMaybe<DashboardAnalyticsInput>;
+};
+
+export type QueryGetUserGrowthStatsArgs = {
+  input?: InputMaybe<DashboardAnalyticsInput>;
+};
+
+export type QueryHasPermissionArgs = {
+  input: CheckPermissionInput;
 };
 
 export type QueryInAppNotificationArgs = {
@@ -3997,6 +6183,34 @@ export type QueryInAppNotificationsArgs = {
   filter?: InAppNotificationFilter;
   paging?: CursorPaging;
   sorting?: Array<InAppNotificationSort>;
+};
+
+export type QueryLangfuseLatencyMetricsArgs = {
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type QueryLangfuseTokenUsageByAgentArgs = {
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type QueryLangfuseTraceDetailArgs = {
+  traceId: Scalars['String']['input'];
+};
+
+export type QueryLangfuseTraceUrlArgs = {
+  traceId: Scalars['String']['input'];
+};
+
+export type QueryLangfuseTracesArgs = {
+  input?: InputMaybe<TracesListInput>;
+};
+
+export type QueryLangfuseUserAttributionArgs = {
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Float']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type QueryLegalAnalysesArgs = {
@@ -4124,10 +6338,35 @@ export type QueryQueryMetricsArgs = {
   input?: InputMaybe<DashboardAnalyticsInput>;
 };
 
+export type QueryRecentDocumentActivityArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type QueryRecentNotificationsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   unreadOnly?: InputMaybe<Scalars['Boolean']['input']>;
   userId: Scalars['String']['input'];
+};
+
+export type QueryRoleArgs = {
+  id: Scalars['String']['input'];
+};
+
+export type QueryRoleByNameArgs = {
+  name: Scalars['String']['input'];
+};
+
+export type QuerySearchChatContentArgs = {
+  contextLength?: InputMaybe<Scalars['Int']['input']>;
+  dateFrom?: InputMaybe<Scalars['String']['input']>;
+  dateTo?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  mode?: InputMaybe<ChatMode>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  query: Scalars['String']['input'];
+  role?: InputMaybe<MessageRole>;
+  sessionTitle?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type QuerySearchLegalDocumentsArgs = {
@@ -4158,6 +6397,30 @@ export type QuerySystemSettingsByCategoryArgs = {
   category: SettingCategory;
 };
 
+export type QueryTemporalScheduleArgs = {
+  scheduleId: Scalars['String']['input'];
+};
+
+export type QueryTemporalSchedulesArgs = {
+  input?: InputMaybe<ScheduleListInput>;
+};
+
+export type QueryTokenUsageAnalyticsArgs = {
+  input?: InputMaybe<DashboardAnalyticsInput>;
+};
+
+export type QueryTokenUsageByOperationArgs = {
+  input?: InputMaybe<DashboardAnalyticsInput>;
+};
+
+export type QueryTokenUsageExportArgs = {
+  input?: InputMaybe<DashboardAnalyticsInput>;
+};
+
+export type QueryTokenUsageTrendArgs = {
+  input?: InputMaybe<DashboardAnalyticsInput>;
+};
+
 export type QueryTopUsersByUsageArgs = {
   by?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -4175,10 +6438,6 @@ export type QueryUsageStatsArgs = {
 
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
-};
-
-export type QueryUserAggregateArgs = {
-  filter?: InputMaybe<UserAggregateFilter>;
 };
 
 export type QueryUserGrowthMetricsArgs = {
@@ -4213,6 +6472,11 @@ export type QueryUserSessionsArgs = {
   sorting?: Array<UserSessionSort>;
 };
 
+export type QueryUserTokenLeaderboardArgs = {
+  input?: InputMaybe<DashboardAnalyticsInput>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type QueryUserUsageRecordsArgs = {
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   limit?: InputMaybe<Scalars['Float']['input']>;
@@ -4223,9 +6487,9 @@ export type QueryUserUsageRecordsArgs = {
 };
 
 export type QueryUsersArgs = {
-  filter?: UserFilter;
-  paging?: CursorPaging;
-  sorting?: Array<UserSort>;
+  filter?: InputMaybe<UserFilter>;
+  paging?: InputMaybe<UserPaging>;
+  sorting?: InputMaybe<Array<UserSort>>;
 };
 
 export type QueryValidateApiKeyArgs = {
@@ -4255,6 +6519,15 @@ export type QueryMetrics = {
   uniqueUsers: Scalars['Int']['output'];
 };
 
+export type RecentDocumentActivity = {
+  __typename?: 'RecentDocumentActivity';
+  /** Documents currently being generated */
+  currentlyGenerating: Array<DocumentActivityEntry>;
+  fetchedAt: Scalars['DateTime']['output'];
+  recentCompletions: Array<DocumentActivityEntry>;
+  recentFailures: Array<DocumentActivityEntry>;
+};
+
 export type RefreshTokenInput = {
   /** Refresh token */
   refreshToken: Scalars['String']['input'];
@@ -4266,6 +6539,12 @@ export type RefreshTokenPayload = {
   accessToken: Scalars['String']['output'];
   /** New JWT refresh token */
   refreshToken: Scalars['String']['output'];
+};
+
+export type RegenerateBackupCodesResponse = {
+  __typename?: 'RegenerateBackupCodesResponse';
+  /** New backup codes for account recovery (show only once) */
+  codes: Array<Scalars['String']['output']>;
 };
 
 export type RegisterInput = {
@@ -4303,6 +6582,11 @@ export type RelatedDocumentLinkInput = {
   relevanceScore?: InputMaybe<Scalars['Float']['input']>;
 };
 
+export type RemovePermissionInput = {
+  permission: Scalars['String']['input'];
+  roleId: Scalars['String']['input'];
+};
+
 export type RenderTemplateInput = {
   templateId: Scalars['String']['input'];
   variables: Scalars['JSON']['input'];
@@ -4323,12 +6607,185 @@ export type RestoreBackupInput = {
   targetDatabase?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type ResumeScheduleInput = {
+  /** Optional reason for resuming (logged to audit trail) */
+  reason?: InputMaybe<Scalars['String']['input']>;
+  /** The ID of the schedule to resume */
+  scheduleId: Scalars['String']['input'];
+};
+
+export type Role = {
+  __typename?: 'Role';
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  inheritsFrom?: Maybe<Scalars['String']['output']>;
+  isSystemRole: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  permissions: Array<Permission>;
+  type: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type RulingMetadata = {
   __typename?: 'RulingMetadata';
   keywords?: Maybe<Array<Scalars['String']['output']>>;
   legalArea?: Maybe<Scalars['String']['output']>;
   relatedCases?: Maybe<Array<Scalars['String']['output']>>;
   sourceReference?: Maybe<Scalars['String']['output']>;
+};
+
+export type SaveChatMessageInput = {
+  /** Citations (for assistant messages) */
+  citations?: InputMaybe<Array<ChatCitationInput>>;
+  /** Message content */
+  content: Scalars['String']['input'];
+  /** Additional metadata (for assistant messages) */
+  metadata?: InputMaybe<ChatMessageMetadataInput>;
+  /** Message role (USER or ASSISTANT) */
+  role: Scalars['String']['input'];
+  /** The session ID */
+  sessionId: Scalars['ID']['input'];
+  /** Type of message (text, clarification_question, clarification_answer, citation, error) */
+  type?: InputMaybe<ChatMessageType>;
+};
+
+export type ScheduleActionDetails = {
+  __typename?: 'ScheduleActionDetails';
+  /** JSON string of arguments passed to workflow */
+  args?: Maybe<Scalars['String']['output']>;
+  /** Task queue for executions */
+  taskQueue: Scalars['String']['output'];
+  /** Workflow ID template */
+  workflowId: Scalars['String']['output'];
+  /** Workflow type being executed */
+  workflowType: Scalars['String']['output'];
+};
+
+export type ScheduleActionInput = {
+  /** JSON string of arguments to pass to the workflow */
+  args?: InputMaybe<Scalars['String']['input']>;
+  /** Task queue to dispatch workflows to */
+  taskQueue: Scalars['String']['input'];
+  /** Type of action (currently only startWorkflow is supported) */
+  type: Scalars['String']['input'];
+  /** Workflow ID template for each execution */
+  workflowId: Scalars['String']['input'];
+  /** Workflow type to execute */
+  workflowType: Scalars['String']['input'];
+};
+
+export type ScheduleDeletionResult = {
+  __typename?: 'ScheduleDeletionResult';
+  /** Message describing the deletion result */
+  message?: Maybe<Scalars['String']['output']>;
+  /** The ID of the deleted schedule */
+  scheduleId: Scalars['ID']['output'];
+  /** Whether the deletion was successful */
+  success: Scalars['Boolean']['output'];
+};
+
+export type ScheduleDemoInput = {
+  demoRequestId: Scalars['ID']['input'];
+  scheduledTime: Scalars['DateTime']['input'];
+};
+
+export type ScheduleDetails = {
+  __typename?: 'ScheduleDetails';
+  /** Action the schedule performs */
+  action?: Maybe<ScheduleActionDetails>;
+  /** Whether the schedule exists */
+  exists: Scalars['Boolean']['output'];
+  /** Number of failed actions */
+  failedActions?: Maybe<Scalars['String']['output']>;
+  /** ISO datetime of last run */
+  lastRunAt?: Maybe<Scalars['String']['output']>;
+  /** Number of missed actions */
+  missedActions?: Maybe<Scalars['String']['output']>;
+  /** ISO datetime of next run */
+  nextRunAt?: Maybe<Scalars['String']['output']>;
+  /** Overlap policy */
+  overlap?: Maybe<ScheduleOverlapPolicy>;
+  /** Whether the schedule is currently paused */
+  paused?: Maybe<Scalars['Boolean']['output']>;
+  /** Schedule ID */
+  scheduleId: Scalars['ID']['output'];
+  /** Schedule specification */
+  spec?: Maybe<ScheduleSpecDetails>;
+  /** Schedule state information */
+  state?: Maybe<ScheduleStateInfo>;
+  /** Number of successful actions */
+  successfulActions?: Maybe<Scalars['String']['output']>;
+  /** Total number of actions taken */
+  totalActions?: Maybe<Scalars['String']['output']>;
+};
+
+export type ScheduleListInput = {
+  /** Maximum number of results to return */
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+  /** Continuation token from previous page */
+  pageToken?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ScheduleListResult = {
+  __typename?: 'ScheduleListResult';
+  /** Continuation token for pagination */
+  nextPageToken?: Maybe<Scalars['String']['output']>;
+  /** List of schedule IDs */
+  scheduleIds: Array<Scalars['String']['output']>;
+  /** Total number of schedules */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** How to handle overlapping schedule executions */
+export type ScheduleOverlapPolicy = 'ALLOW_ALL' | 'BUFFER_ONE' | 'SKIP';
+
+export type SchedulePoliciesInput = {
+  /** Catchup window for missed runs (duration string, e.g., "1 day") */
+  catchupWindow?: InputMaybe<Scalars['String']['input']>;
+  /** How to handle overlapping executions */
+  overlap?: InputMaybe<ScheduleOverlapPolicy>;
+  /** Whether to pause on failure */
+  pauseOnFailure?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type ScheduleSpecDetails = {
+  __typename?: 'ScheduleSpecDetails';
+  /** Cron expression (if calendar-based) */
+  cronExpression?: Maybe<Scalars['String']['output']>;
+  /** End time */
+  endTime?: Maybe<Scalars['String']['output']>;
+  /** Interval in seconds (if interval-based) */
+  intervalSeconds?: Maybe<Scalars['Float']['output']>;
+  /** Start time */
+  startTime?: Maybe<Scalars['String']['output']>;
+  /** Timezone */
+  timezone?: Maybe<Scalars['String']['output']>;
+};
+
+export type ScheduleSpecInput = {
+  /** Cron expression for execution schedule (e.g., "0 2 * * *" for daily at 2 AM) */
+  cronExpression?: InputMaybe<Scalars['String']['input']>;
+  /** End time (ISO 8601 string) */
+  endTime?: InputMaybe<Scalars['String']['input']>;
+  /** Start time (ISO 8601 string) */
+  startTime?: InputMaybe<Scalars['String']['input']>;
+  /** Timezone identifier (IANA tz database) */
+  timezone?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ScheduleStateInfo = {
+  __typename?: 'ScheduleStateInfo';
+  /** Number of failed actions */
+  failedActions?: Maybe<Scalars['Float']['output']>;
+  /** Number of missed actions */
+  missedActions?: Maybe<Scalars['Float']['output']>;
+  /** Number of currently running actions */
+  runningActions?: Maybe<Scalars['Float']['output']>;
+  /** Number of successful actions */
+  successfulActions?: Maybe<Scalars['Float']['output']>;
+  /** Total number of actions */
+  totalActions?: Maybe<Scalars['Float']['output']>;
 };
 
 /** Specific fields to search in */
@@ -4393,6 +6850,53 @@ export type SearchLegalRulingsInput = {
 /** Source of the search result (LOCAL, SAOS, or ISAP) */
 export type SearchSource = 'ISAP' | 'LOCAL' | 'SAOS';
 
+export type SendChatMessageResponse = {
+  __typename?: 'SendChatMessageResponse';
+  /** Message content */
+  content: Scalars['String']['output'];
+  /** Timestamp when the message was created */
+  createdAt: Scalars['String']['output'];
+  /** The created message ID */
+  messageId: Scalars['ID']['output'];
+  /** Message role (USER or ASSISTANT) */
+  role: Scalars['String']['output'];
+  /** Sequence order in the conversation */
+  sequenceOrder: Scalars['Float']['output'];
+  /** The session ID */
+  sessionId: Scalars['ID']['output'];
+  /** Type of message (text, clarification_question, clarification_answer, citation, error) */
+  type?: Maybe<ChatMessageType>;
+};
+
+export type SendChatMessageWithAiInput = {
+  /** AI response mode (LAWYER or SIMPLE) */
+  mode: Scalars['String']['input'];
+  /** The user question/message */
+  question: Scalars['String']['input'];
+  /** Session ID (creates new session if not provided) */
+  sessionId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type SendChatMessageWithAiResponse = {
+  __typename?: 'SendChatMessageWithAIResponse';
+  /** AI response content (for streaming compatibility) */
+  answerMarkdown?: Maybe<Scalars['String']['output']>;
+  /** The AI assistant response */
+  assistantMessage?: Maybe<SendChatMessageResponse>;
+  /** Citations from the AI response */
+  citations?: Maybe<Array<ChatCitation>>;
+  /** Confidence score of the AI response */
+  confidence?: Maybe<Scalars['Float']['output']>;
+  /** Key legal terms extracted */
+  keyTerms?: Maybe<Array<Scalars['String']['output']>>;
+  /** Query type classification */
+  queryType?: Maybe<Scalars['String']['output']>;
+  /** The session ID */
+  sessionId: Scalars['ID']['output'];
+  /** The user message that was sent */
+  userMessage: SendChatMessageResponse;
+};
+
 export type SendNotificationInput = {
   /** Optional action label for the action link button */
   actionLabel?: InputMaybe<Scalars['String']['input']>;
@@ -4427,6 +6931,17 @@ export type SendNotificationResponse = {
   /** ID of the created in-app notification */
   notificationId?: Maybe<Scalars['String']['output']>;
 };
+
+export type ServiceHealth = {
+  __typename?: 'ServiceHealth';
+  error?: Maybe<Scalars['String']['output']>;
+  lastCheck?: Maybe<Scalars['String']['output']>;
+  latency?: Maybe<Scalars['Float']['output']>;
+  status: ServiceStatus;
+};
+
+/** Health status of a service or system component */
+export type ServiceStatus = 'DEGRADED' | 'HEALTHY' | 'UNHEALTHY';
 
 /** Mode of operation for a user session */
 export type SessionMode = 'LAWYER' | 'SIMPLE';
@@ -4491,6 +7006,33 @@ export type StringFieldComparison = {
   notLike?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type StringFilter = {
+  eq?: InputMaybe<Scalars['String']['input']>;
+  iLike?: InputMaybe<Scalars['String']['input']>;
+  in?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type SubmitClarificationAnswersInput = {
+  /** Array of question-answer pairs */
+  answers: Array<ClarificationAnswerInput>;
+  /** The message ID containing the clarification questions */
+  clarificationMessageId: Scalars['ID']['input'];
+  /** The session ID */
+  sessionId: Scalars['ID']['input'];
+};
+
+export type SubmitClarificationAnswersResponse = {
+  __typename?: 'SubmitClarificationAnswersResponse';
+  /** The clarification message ID that was updated */
+  clarificationMessageId: Scalars['ID']['output'];
+  /** Whether the submission was successful */
+  success: Scalars['Boolean']['output'];
+  /** The created user message containing the answers */
+  userMessage?: Maybe<SendChatMessageResponse>;
+  /** Validation errors if submission failed */
+  validationErrors?: Maybe<Array<ClarificationValidationError>>;
+};
+
 export type SubmitLegalQueryInput = {
   /** The legal question to be answered by the AI */
   question: Scalars['String']['input'];
@@ -4500,6 +7042,10 @@ export type SubmitLegalQueryInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  /** Real-time notifications when a new message is added */
+  chatMessageAdded: ChatMessage;
+  /** Real-time updates when a chat session is modified */
+  chatSessionUpdated: ChatSession;
   /** Subscribe to cursor position updates for a document */
   cursorUpdated: CursorEventPayload;
   /** Subscribe to document edits for real-time collaboration */
@@ -4512,6 +7058,14 @@ export type Subscription = {
   userJoinedDocument: UserJoinedEventPayload;
   /** Subscribe to user left events for a document */
   userLeftDocument: UserLeftEventPayload;
+};
+
+export type SubscriptionChatMessageAddedArgs = {
+  sessionId: Scalars['ID']['input'];
+};
+
+export type SubscriptionChatSessionUpdatedArgs = {
+  sessionId: Scalars['ID']['input'];
 };
 
 export type SubscriptionCursorUpdatedArgs = {
@@ -4588,6 +7142,15 @@ export type SystemHealthMetrics = {
   timestamp: Scalars['DateTime']['output'];
 };
 
+export type SystemHealthResponse = {
+  __typename?: 'SystemHealthResponse';
+  errors: ErrorTrackingStatus;
+  services?: Maybe<Array<ServiceHealth>>;
+  status: ServiceStatus;
+  timestamp: Scalars['String']['output'];
+  uptime: Scalars['Float']['output'];
+};
+
 export type SystemSetting = {
   __typename?: 'SystemSetting';
   category: SettingCategory;
@@ -4655,6 +7218,26 @@ export type TestWebhookResponse = {
   success: Scalars['Boolean']['output'];
 };
 
+/** Standard text message from user or assistant */
+export type TextChatMessage = ChatMessageInterface & {
+  __typename?: 'TextChatMessage';
+  citations?: Maybe<Array<ChatCitation>>;
+  /** Message content */
+  content: Scalars['String']['output'];
+  /** Creation timestamp */
+  createdAt: Scalars['DateTime']['output'];
+  /** Unique message identifier */
+  messageId: Scalars['ID']['output'];
+  /** Role of the message sender */
+  role: MessageRole;
+  /** Sequence order in conversation */
+  sequenceOrder: Scalars['Float']['output'];
+  /** Session ID */
+  sessionId: Scalars['ID']['output'];
+  /** Message type discriminator for resolving concrete types */
+  type?: Maybe<ChatMessageType>;
+};
+
 /** Available theme options for the UI */
 export type ThemePreference = 'DARK' | 'LIGHT' | 'SYSTEM';
 
@@ -4675,12 +7258,253 @@ export type ThemePreferenceFilterComparison = {
   notLike?: InputMaybe<ThemePreference>;
 };
 
+export type TokenUsage = {
+  __typename?: 'TokenUsage';
+  /** Completion tokens used */
+  completionTokens: Scalars['Int']['output'];
+  /** Prompt tokens used */
+  promptTokens: Scalars['Int']['output'];
+  /** Estimated cost in USD */
+  totalCost: Scalars['Float']['output'];
+  /** Total tokens used */
+  totalTokens: Scalars['Int']['output'];
+};
+
+export type TokenUsageAnalytics = {
+  __typename?: 'TokenUsageAnalytics';
+  /** All-time total cost */
+  allTimeCost: Scalars['Float']['output'];
+  /** All-time total tokens */
+  allTimeTokens: Scalars['Int']['output'];
+  /** Detected usage anomalies */
+  anomalies: Array<UsageAnomaly>;
+  /** Average tokens per query */
+  avgTokensPerQuery: Scalars['Int']['output'];
+  /** Breakdown by operation type */
+  byOperation: Array<TokenUsageByOperation>;
+  generatedAt: Scalars['DateTime']['output'];
+  periodEnd: Scalars['DateTime']['output'];
+  periodStart: Scalars['DateTime']['output'];
+  /** Cost this month */
+  thisMonthCost: Scalars['Float']['output'];
+  /** Tokens this month */
+  thisMonthTokens: Scalars['Int']['output'];
+  /** Cost today */
+  todayCost: Scalars['Float']['output'];
+  /** Tokens today */
+  todayTokens: Scalars['Int']['output'];
+  /** Token usage over time */
+  trend: Array<TokenUsageTrend>;
+  /** Per-user usage leaderboard */
+  userLeaderboard: Array<UserTokenUsage>;
+};
+
+export type TokenUsageBreakdown = {
+  __typename?: 'TokenUsageBreakdown';
+  periodEnd: Scalars['DateTime']['output'];
+  periodStart: Scalars['DateTime']['output'];
+  /** Total cost in USD */
+  totalCost: Scalars['Float']['output'];
+  /** Total requests */
+  totalRequests: Scalars['Int']['output'];
+  /** Total tokens used */
+  totalTokens: Scalars['Int']['output'];
+};
+
+export type TokenUsageByAgent = {
+  __typename?: 'TokenUsageByAgent';
+  /** Agent type */
+  agentType: AgentType;
+  /** Average tokens per request */
+  avgTokensPerRequest: Scalars['Int']['output'];
+  /** Total request count */
+  requestCount: Scalars['Int']['output'];
+  /** Percentage of total tokens */
+  tokenPercentage: Scalars['Float']['output'];
+  /** Total cost in USD */
+  totalCost: Scalars['Float']['output'];
+  /** Total tokens used */
+  totalTokens: Scalars['Int']['output'];
+};
+
+export type TokenUsageByOperation = {
+  __typename?: 'TokenUsageByOperation';
+  /** Average tokens per request */
+  avgTokensPerRequest: Scalars['Int']['output'];
+  /** Percentage of total cost */
+  costPercentage: Scalars['Float']['output'];
+  operationType: AiOperationType;
+  requestCount: Scalars['Int']['output'];
+  /** Percentage of total tokens */
+  tokenPercentage: Scalars['Float']['output'];
+  totalCost: Scalars['Float']['output'];
+  totalTokens: Scalars['Int']['output'];
+};
+
+export type TokenUsageExport = {
+  __typename?: 'TokenUsageExport';
+  exportedAt: Scalars['DateTime']['output'];
+  operationBreakdown: Array<TokenUsageByOperation>;
+  periodEnd: Scalars['DateTime']['output'];
+  periodStart: Scalars['DateTime']['output'];
+  trendData: Array<TokenUsageTrend>;
+  userUsageData: Array<UserTokenUsage>;
+};
+
+export type TokenUsageTrend = {
+  __typename?: 'TokenUsageTrend';
+  /** Percentage change from previous period */
+  changePercentage?: Maybe<Scalars['Float']['output']>;
+  cost: Scalars['Float']['output'];
+  requests: Scalars['Int']['output'];
+  timestamp: Scalars['DateTime']['output'];
+  tokens: Scalars['Int']['output'];
+};
+
+/** Level of a Langfuse trace */
+export type TraceLevel = 'DEBUG' | 'DEFAULT' | 'ERROR' | 'INFO' | 'WARNING';
+
+export type TraceObservation = {
+  __typename?: 'TraceObservation';
+  /** Duration in milliseconds */
+  duration?: Maybe<Scalars['Float']['output']>;
+  /** Timestamp when observation ended */
+  endTime?: Maybe<Scalars['Timestamp']['output']>;
+  /** Error message if failed */
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  /** Unique observation ID */
+  id: Scalars['ID']['output'];
+  /** Input prompt(s) */
+  input?: Maybe<Array<Scalars['String']['output']>>;
+  /** Observation level */
+  level?: Maybe<TraceLevel>;
+  /** Metadata associated with the observation */
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  /** Model used (for generations) */
+  model?: Maybe<Scalars['String']['output']>;
+  /** Observation name */
+  name: Scalars['String']['output'];
+  /** Output completion(s) */
+  output?: Maybe<Array<Scalars['String']['output']>>;
+  /** Parent observation ID if nested */
+  parentObservationId?: Maybe<Scalars['String']['output']>;
+  /** Stack trace if failed */
+  stackTrace?: Maybe<Scalars['String']['output']>;
+  /** Timestamp when observation started */
+  startTime: Scalars['Timestamp']['output'];
+  /** Observation status */
+  status?: Maybe<TraceStatus>;
+  /** Type of observation */
+  type: ObservationType;
+  /** Token usage (for generations) */
+  usage?: Maybe<TokenUsage>;
+};
+
+/** Status of a Langfuse trace */
+export type TraceStatus = 'ERROR' | 'SUCCESS' | 'UNKNOWN';
+
+export type TracesListInput = {
+  /** Filter by agent type */
+  agentType?: InputMaybe<AgentType>;
+  /** End date for filtering (ISO 8601) */
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  /** Number of items per page */
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  /** Page number (1-indexed) */
+  page?: InputMaybe<Scalars['Int']['input']>;
+  /** Search term for filtering */
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  /** Filter by session ID */
+  sessionId?: InputMaybe<Scalars['String']['input']>;
+  /** Sort field */
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  /** Sort order (ASC or DESC) */
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+  /** Start date for filtering (ISO 8601) */
+  startDate?: InputMaybe<Scalars['String']['input']>;
+  /** Filter by trace status */
+  status?: InputMaybe<TraceStatus>;
+  /** Filter by user ID */
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TracesListResponse = {
+  __typename?: 'TracesListResponse';
+  /** When this data was fetched */
+  fetchedAt: Scalars['Timestamp']['output'];
+  /** Number of items per page */
+  limit: Scalars['Int']['output'];
+  /** Current page number (1-indexed) */
+  page: Scalars['Int']['output'];
+  /** Total number of traces matching the filter */
+  totalCount: Scalars['Int']['output'];
+  /** Total number of pages */
+  totalPages: Scalars['Int']['output'];
+  /** List of traces */
+  traces: Array<LangfuseTrace>;
+};
+
+export type TwoFactorSettings = {
+  __typename?: 'TwoFactorSettings';
+  /** True if 2FA is fully enabled */
+  enabled: Scalars['Boolean']['output'];
+  /** Timestamp when 2FA was last verified/enabled */
+  lastVerifiedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** Number of remaining backup codes */
+  remainingBackupCodes?: Maybe<Scalars['Int']['output']>;
+  /** Current 2FA status */
+  status: TwoFactorStatus;
+};
+
+/** Status of two-factor authentication */
+export type TwoFactorStatus = 'DISABLED' | 'ENABLED' | 'PENDING';
+
 export type UpdateApiKeyInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   expiresAt?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   rateLimitPerMinute?: InputMaybe<Scalars['Int']['input']>;
   scopes?: InputMaybe<Array<ApiKeyScope>>;
+};
+
+export type UpdateChatSessionInput = {
+  /** Update pinned status */
+  isPinned?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Update AI response mode */
+  mode?: InputMaybe<ChatMode>;
+  /** Update session title */
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateChatSessionTitleInput = {
+  /** Session ID to update */
+  sessionId: Scalars['ID']['input'];
+  /** New title for the session */
+  title: Scalars['String']['input'];
+};
+
+export type UpdateClarificationStatusInput = {
+  /** Whether the clarification has been answered */
+  answered: Scalars['Boolean']['input'];
+  /** JSON string of question-answer pairs */
+  answers?: InputMaybe<Scalars['String']['input']>;
+  /** The message ID containing the clarification */
+  messageId: Scalars['ID']['input'];
+};
+
+export type UpdateClarificationStatusResponse = {
+  __typename?: 'UpdateClarificationStatusResponse';
+  /** The message ID that was updated */
+  messageId: Scalars['ID']['output'];
+  /** The updated clarification status */
+  status?: Maybe<Scalars['String']['output']>;
+  /** Whether the update was successful */
+  success: Scalars['Boolean']['output'];
+};
+
+export type UpdateDemoRequestStatusInput = {
+  demoRequestId: Scalars['ID']['input'];
+  status: Scalars['String']['input'];
 };
 
 export type UpdateDocumentCommentInput = {
@@ -4791,6 +7615,13 @@ export type UpdateNotificationInput = {
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateOneChatSessionInput = {
+  /** The id of the record to update */
+  id: Scalars['ID']['input'];
+  /** The update to apply. */
+  update: UpdateChatSessionInput;
+};
+
 export type UpdateOneDocumentCommentInput = {
   /** The id of the record to update */
   id: Scalars['ID']['input'];
@@ -4854,13 +7685,6 @@ export type UpdateOneNotificationInput = {
   update: UpdateNotificationInput;
 };
 
-export type UpdateOneUserInput = {
-  /** The id of the record to update */
-  id: Scalars['ID']['input'];
-  /** The update to apply. */
-  update: UpdateUserInput;
-};
-
 export type UpdateOneUserPreferencesInput = {
   /** The id of the record to update */
   id: Scalars['ID']['input'];
@@ -4877,6 +7701,11 @@ export type UpdateProfileInput = {
   lastName?: InputMaybe<Scalars['String']['input']>;
   /** Username */
   username?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateRoleInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateSharePermissionInput = {
@@ -4943,6 +7772,23 @@ export type UpdateWebhookInput = {
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UsageAnomaly = {
+  __typename?: 'UsageAnomaly';
+  /** Type of anomaly detected */
+  anomalyType: Scalars['String']['output'];
+  /** Description of the anomaly */
+  description: Scalars['String']['output'];
+  detectedAt: Scalars['DateTime']['output'];
+  /** Deviation from expected (percentage) */
+  deviationPercentage: Scalars['Float']['output'];
+  /** Expected/normal token count */
+  expectedValue: Scalars['Float']['output'];
+  /** Token count that triggered the anomaly */
+  tokenCount: Scalars['Int']['output'];
+  userEmail?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['ID']['output']>;
+};
+
 export type UsageStatsQueryInput = {
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   operationType?: InputMaybe<AiOperationType>;
@@ -4972,102 +7818,18 @@ export type User = {
   isActive: Scalars['Boolean']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
   role: Scalars['String']['output'];
-  sessions?: Maybe<UserSession>;
   stripeCustomerId?: Maybe<Scalars['String']['output']>;
+  twoFactorEnabled: Scalars['Boolean']['output'];
+  twoFactorVerifiedAt?: Maybe<Scalars['DateTime']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   username?: Maybe<Scalars['String']['output']>;
 };
 
-export type UserAggregateFilter = {
-  and?: InputMaybe<Array<UserAggregateFilter>>;
-  createdAt?: InputMaybe<DateFieldComparison>;
-  email?: InputMaybe<StringFieldComparison>;
-  id?: InputMaybe<IdFilterComparison>;
-  isActive?: InputMaybe<BooleanFieldComparison>;
-  or?: InputMaybe<Array<UserAggregateFilter>>;
-  role?: InputMaybe<StringFieldComparison>;
-  updatedAt?: InputMaybe<DateFieldComparison>;
-};
-
-export type UserAggregateGroupBy = {
-  __typename?: 'UserAggregateGroupBy';
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  email?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-  isActive?: Maybe<Scalars['Boolean']['output']>;
-  role?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-};
-
-export type UserAggregateGroupByCreatedAtArgs = {
-  by?: GroupBy;
-};
-
-export type UserAggregateGroupByUpdatedAtArgs = {
-  by?: GroupBy;
-};
-
-export type UserAggregateResponse = {
-  __typename?: 'UserAggregateResponse';
-  count?: Maybe<UserCountAggregate>;
-  groupBy?: Maybe<UserAggregateGroupBy>;
-  max?: Maybe<UserMaxAggregate>;
-  min?: Maybe<UserMinAggregate>;
-};
-
-export type UserConnection = {
-  __typename?: 'UserConnection';
-  /** Array of edges. */
-  edges: Array<UserEdge>;
-  /** Paging information */
-  pageInfo: PageInfo;
-  /** Fetch total count of records */
-  totalCount: Scalars['Int']['output'];
-};
-
-export type UserCountAggregate = {
-  __typename?: 'UserCountAggregate';
-  createdAt?: Maybe<Scalars['Int']['output']>;
-  email?: Maybe<Scalars['Int']['output']>;
-  id?: Maybe<Scalars['Int']['output']>;
-  isActive?: Maybe<Scalars['Int']['output']>;
-  role?: Maybe<Scalars['Int']['output']>;
-  updatedAt?: Maybe<Scalars['Int']['output']>;
-};
-
-export type UserDeleteResponse = {
-  __typename?: 'UserDeleteResponse';
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  disclaimerAccepted?: Maybe<Scalars['Boolean']['output']>;
-  disclaimerAcceptedAt?: Maybe<Scalars['DateTime']['output']>;
-  email?: Maybe<Scalars['String']['output']>;
-  firstName?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-  isActive?: Maybe<Scalars['Boolean']['output']>;
-  lastName?: Maybe<Scalars['String']['output']>;
-  role?: Maybe<Scalars['String']['output']>;
-  stripeCustomerId?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  username?: Maybe<Scalars['String']['output']>;
-};
-
-export type UserEdge = {
-  __typename?: 'UserEdge';
-  /** Cursor for this node. */
-  cursor: Scalars['ConnectionCursor']['output'];
-  /** The node containing the User */
-  node: User;
-};
-
 export type UserFilter = {
-  and?: InputMaybe<Array<UserFilter>>;
-  createdAt?: InputMaybe<DateFieldComparison>;
-  email?: InputMaybe<StringFieldComparison>;
-  id?: InputMaybe<IdFilterComparison>;
-  isActive?: InputMaybe<BooleanFieldComparison>;
-  or?: InputMaybe<Array<UserFilter>>;
-  role?: InputMaybe<StringFieldComparison>;
-  updatedAt?: InputMaybe<DateFieldComparison>;
+  email?: InputMaybe<StringFilter>;
+  isActive?: InputMaybe<BooleanFilter>;
+  role?: InputMaybe<StringFilter>;
+  username?: InputMaybe<StringFilter>;
 };
 
 export type UserGrowthMetrics = {
@@ -5080,6 +7842,17 @@ export type UserGrowthMetrics = {
   periodEnd: Scalars['DateTime']['output'];
   periodStart: Scalars['DateTime']['output'];
   totalUsers: Scalars['Int']['output'];
+};
+
+export type UserGrowthStats = {
+  __typename?: 'UserGrowthStats';
+  /** Average growth rate */
+  avgGrowthRate: Scalars['Float']['output'];
+  newUsersPerPeriod: Array<AnalyticsTimeSeriesPoint>;
+  periodEnd: Scalars['DateTime']['output'];
+  periodStart: Scalars['DateTime']['output'];
+  /** Total new users in range */
+  totalNewUsers: Scalars['Int']['output'];
 };
 
 export type UserJoinedEventPayload = {
@@ -5099,22 +7872,9 @@ export type UserLeftEventPayload = {
   userName: Scalars['String']['output'];
 };
 
-export type UserMaxAggregate = {
-  __typename?: 'UserMaxAggregate';
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  email?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-  role?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-};
-
-export type UserMinAggregate = {
-  __typename?: 'UserMinAggregate';
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  email?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-  role?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+export type UserPaging = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type UserPreferences = {
@@ -5206,7 +7966,6 @@ export type UserPreferencesDeleteResponse = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   dateFormat?: Maybe<Scalars['String']['output']>;
   emailNotifications?: Maybe<Scalars['Boolean']['output']>;
-  getNotificationPreferences?: Maybe<NotificationPreferences>;
   id?: Maybe<Scalars['ID']['output']>;
   inAppNotifications?: Maybe<Scalars['Boolean']['output']>;
   locale?: Maybe<Scalars['String']['output']>;
@@ -5399,12 +8158,9 @@ export type UserSessionSort = {
 export type UserSessionSortFields = 'createdAt' | 'id' | 'mode' | 'updatedAt' | 'userId';
 
 export type UserSort = {
-  direction: SortDirection;
-  field: UserSortFields;
-  nulls?: InputMaybe<SortNulls>;
+  direction: Scalars['String']['input'];
+  field: Scalars['String']['input'];
 };
-
-export type UserSortFields = 'createdAt' | 'email' | 'id' | 'isActive' | 'role' | 'updatedAt';
 
 export type UserSubscription = {
   __typename?: 'UserSubscription';
@@ -5427,6 +8183,41 @@ export type UserSubscription = {
   userId: Scalars['String']['output'];
 };
 
+export type UserTokenUsage = {
+  __typename?: 'UserTokenUsage';
+  /** Average tokens per request */
+  avgTokensPerRequest: Scalars['Float']['output'];
+  periodEnd: Scalars['DateTime']['output'];
+  periodStart: Scalars['DateTime']['output'];
+  /** Number of requests */
+  requestCount: Scalars['Int']['output'];
+  /** Total cost in USD */
+  totalCost: Scalars['Float']['output'];
+  /** Total tokens used by this user */
+  totalTokens: Scalars['Int']['output'];
+  userEmail?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['ID']['output'];
+  userName?: Maybe<Scalars['String']['output']>;
+};
+
+export type UserTraceAttribution = {
+  __typename?: 'UserTraceAttribution';
+  /** First trace timestamp */
+  firstTraceAt: Scalars['Timestamp']['output'];
+  /** Last trace timestamp */
+  lastTraceAt: Scalars['Timestamp']['output'];
+  /** Total cost in USD */
+  totalCost: Scalars['Float']['output'];
+  /** Total tokens used */
+  totalTokens: Scalars['Int']['output'];
+  /** Total trace count */
+  traceCount: Scalars['Int']['output'];
+  /** User email */
+  userEmail?: Maybe<Scalars['String']['output']>;
+  /** User ID */
+  userId: Scalars['String']['output'];
+};
+
 export type ValidateApiKeyInput = {
   rawKey: Scalars['String']['input'];
   requiredScopes?: InputMaybe<Array<ApiKeyScope>>;
@@ -5440,6 +8231,19 @@ export type ValidateApiKeyResponse = {
   scopes?: Maybe<Array<ApiKeyScope>>;
   status?: Maybe<ApiKeyStatus>;
   userId?: Maybe<Scalars['ID']['output']>;
+};
+
+export type VerifyTwoFactorSetupInput = {
+  /** The 6-digit TOTP token from authenticator app */
+  token: Scalars['String']['input'];
+};
+
+export type VerifyTwoFactorSetupResponse = {
+  __typename?: 'VerifyTwoFactorSetupResponse';
+  /** Backup codes for account recovery */
+  backupCodes?: Maybe<Array<Scalars['String']['output']>>;
+  /** True if verification was successful */
+  success: Scalars['Boolean']['output'];
 };
 
 export type Webhook = {
@@ -5507,6 +8311,30 @@ export type WebhookStats = {
 /** Webhook status */
 export type WebhookStatus = 'ACTIVE' | 'DISABLED' | 'INACTIVE';
 
+export type WorkerStatusEntry = {
+  __typename?: 'WorkerStatusEntry';
+  /** Whether the worker is running */
+  running: Scalars['Boolean']['output'];
+  /** Task queue this worker processes */
+  taskQueue: Scalars['String']['output'];
+  /** Worker uptime in seconds */
+  uptimeSeconds?: Maybe<Scalars['Int']['output']>;
+  /** Worker ID for tracking */
+  workerId?: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkerStatusResult = {
+  __typename?: 'WorkerStatusResult';
+  /** Number of workers currently running */
+  runningWorkers: Scalars['Int']['output'];
+  /** Overall health status */
+  status?: Maybe<Scalars['String']['output']>;
+  /** Total number of workers */
+  totalWorkers: Scalars['Int']['output'];
+  /** List of worker status entries */
+  workers: Array<WorkerStatusEntry>;
+};
+
 export type AdminUserFragmentFragment = {
   __typename?: 'User';
   id: string;
@@ -5519,6 +8347,7 @@ export type AdminUserFragmentFragment = {
   disclaimerAccepted: boolean;
   disclaimerAcceptedAt?: Date | null | undefined;
   stripeCustomerId?: string | null | undefined;
+  twoFactorEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -5532,6 +8361,7 @@ export type AdminUserMinimalFragmentFragment = {
   lastName?: string | null | undefined;
   isActive: boolean;
   role: string;
+  twoFactorEnabled: boolean;
   createdAt: Date;
 };
 
@@ -5700,44 +8530,12 @@ export type GetAdminSystemHealthMetricsQuery = {
 export type GetAdminUsersQueryVariables = Exact<{
   filter?: InputMaybe<UserFilter>;
   sorting?: InputMaybe<Array<UserSort> | UserSort>;
-  paging?: InputMaybe<CursorPaging>;
+  paging?: InputMaybe<UserPaging>;
 }>;
 
 export type GetAdminUsersQuery = {
   __typename?: 'Query';
-  users: {
-    __typename?: 'UserConnection';
-    totalCount: number;
-    edges: Array<{
-      __typename?: 'UserEdge';
-      node: {
-        __typename?: 'User';
-        id: string;
-        email: string;
-        username?: string | null | undefined;
-        firstName?: string | null | undefined;
-        lastName?: string | null | undefined;
-        isActive: boolean;
-        role: string;
-      };
-    }>;
-    pageInfo: {
-      __typename?: 'PageInfo';
-      hasNextPage?: boolean | null | undefined;
-      hasPreviousPage?: boolean | null | undefined;
-      startCursor?: string | null | undefined;
-      endCursor?: string | null | undefined;
-    };
-  };
-};
-
-export type GetAdminUserQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-export type GetAdminUserQuery = {
-  __typename?: 'Query';
-  user: {
+  users: Array<{
     __typename?: 'User';
     id: string;
     email: string;
@@ -5746,16 +8544,40 @@ export type GetAdminUserQuery = {
     lastName?: string | null | undefined;
     isActive: boolean;
     role: string;
-    disclaimerAccepted: boolean;
-    disclaimerAcceptedAt?: Date | null | undefined;
-    stripeCustomerId?: string | null | undefined;
+    twoFactorEnabled: boolean;
     createdAt: Date;
-    updatedAt: Date;
-  };
+  }>;
+};
+
+export type GetAdminUserQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type GetAdminUserQuery = {
+  __typename?: 'Query';
+  user?:
+    | {
+        __typename?: 'User';
+        id: string;
+        email: string;
+        username?: string | null | undefined;
+        firstName?: string | null | undefined;
+        lastName?: string | null | undefined;
+        isActive: boolean;
+        role: string;
+        disclaimerAccepted: boolean;
+        disclaimerAcceptedAt?: Date | null | undefined;
+        stripeCustomerId?: string | null | undefined;
+        twoFactorEnabled: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+      }
+    | null
+    | undefined;
 };
 
 export type AdminCreateUserMutationVariables = Exact<{
-  input: CreateOneUserInput;
+  input: CreateUserInput;
 }>;
 
 export type AdminCreateUserMutation = {
@@ -5772,13 +8594,15 @@ export type AdminCreateUserMutation = {
     disclaimerAccepted: boolean;
     disclaimerAcceptedAt?: Date | null | undefined;
     stripeCustomerId?: string | null | undefined;
+    twoFactorEnabled: boolean;
     createdAt: Date;
     updatedAt: Date;
   };
 };
 
 export type AdminUpdateUserMutationVariables = Exact<{
-  input: UpdateOneUserInput;
+  id: Scalars['ID']['input'];
+  input: UpdateUserInput;
 }>;
 
 export type AdminUpdateUserMutation = {
@@ -5792,21 +8616,18 @@ export type AdminUpdateUserMutation = {
     lastName?: string | null | undefined;
     isActive: boolean;
     role: string;
+    twoFactorEnabled: boolean;
     createdAt: Date;
   };
 };
 
 export type AdminDeleteUserMutationVariables = Exact<{
-  input: DeleteOneUserInput;
+  id: Scalars['ID']['input'];
 }>;
 
 export type AdminDeleteUserMutation = {
   __typename?: 'Mutation';
-  deleteOneUser: {
-    __typename?: 'UserDeleteResponse';
-    id?: string | null | undefined;
-    email?: string | null | undefined;
-  };
+  deleteOneUser: { __typename?: 'User'; id: string; email: string };
 };
 
 export type AdminSuspendUserMutationVariables = Exact<{
@@ -5824,6 +8645,7 @@ export type AdminSuspendUserMutation = {
     lastName?: string | null | undefined;
     isActive: boolean;
     role: string;
+    twoFactorEnabled: boolean;
     createdAt: Date;
   };
 };
@@ -5843,6 +8665,7 @@ export type AdminActivateUserMutation = {
     lastName?: string | null | undefined;
     isActive: boolean;
     role: string;
+    twoFactorEnabled: boolean;
     createdAt: Date;
   };
 };
@@ -5862,6 +8685,7 @@ export type AdminChangeUserRoleMutation = {
     lastName?: string | null | undefined;
     isActive: boolean;
     role: string;
+    twoFactorEnabled: boolean;
     createdAt: Date;
   };
 };
@@ -5881,7 +8705,21 @@ export type AdminResetUserPasswordMutation = {
     lastName?: string | null | undefined;
     isActive: boolean;
     role: string;
+    twoFactorEnabled: boolean;
     createdAt: Date;
+  };
+};
+
+export type AdminForceDisableTwoFactorMutationVariables = Exact<{
+  input: AdminForceDisableTwoFactorInput;
+}>;
+
+export type AdminForceDisableTwoFactorMutation = {
+  __typename?: 'Mutation';
+  adminForceDisableTwoFactor: {
+    __typename?: 'AdminForceDisableTwoFactorResponse';
+    id: string;
+    twoFactorEnabled: boolean;
   };
 };
 
@@ -6352,6 +9190,253 @@ export type GetPendingQueriesQuery = {
         }>
       | null
       | undefined;
+  }>;
+};
+
+export type ClarificationSessionFragmentFragment = {
+  __typename?: 'ClarificationSession';
+  id: string;
+  state: ClarificationState;
+  originalQuery: string;
+  questionsAsked: Array<string>;
+  rounds: number;
+  accumulatedContext?: Array<string> | null | undefined;
+  finalQueryId?: string | null | undefined;
+  completedAt?: Date | null | undefined;
+  expiresAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  answersReceived: Array<{
+    __typename?: 'ClarificationAnswer';
+    question: string;
+    answer: string;
+    question_type: string;
+  }>;
+};
+
+export type SubmitClarificationAnswersMutationVariables = Exact<{
+  input: SubmitClarificationAnswersInput;
+}>;
+
+export type SubmitClarificationAnswersMutation = {
+  __typename?: 'Mutation';
+  submitClarificationAnswers: {
+    __typename?: 'SubmitClarificationAnswersResponse';
+    success: boolean;
+    clarificationMessageId: string;
+    validationErrors?:
+      | Array<{
+          __typename?: 'ClarificationValidationError';
+          code: string;
+          message: string;
+          questionId: string;
+        }>
+      | null
+      | undefined;
+    userMessage?:
+      | {
+          __typename?: 'SendChatMessageResponse';
+          messageId: string;
+          role: string;
+          content: string;
+          sequenceOrder: number;
+          createdAt: string;
+        }
+      | null
+      | undefined;
+  };
+};
+
+export type CancelClarificationSessionMutationVariables = Exact<{
+  input: CancelClarificationSessionInput;
+}>;
+
+export type CancelClarificationSessionMutation = {
+  __typename?: 'Mutation';
+  cancelClarificationSession: {
+    __typename?: 'ClarificationSession';
+    id: string;
+    state: ClarificationState;
+    originalQuery: string;
+    questionsAsked: Array<string>;
+    rounds: number;
+    accumulatedContext?: Array<string> | null | undefined;
+    finalQueryId?: string | null | undefined;
+    completedAt?: Date | null | undefined;
+    expiresAt: Date;
+    createdAt: Date;
+    updatedAt: Date;
+    answersReceived: Array<{
+      __typename?: 'ClarificationAnswer';
+      question: string;
+      answer: string;
+      question_type: string;
+    }>;
+  };
+};
+
+export type GetClarificationSessionByQueryQueryVariables = Exact<{
+  queryId: Scalars['String']['input'];
+}>;
+
+export type GetClarificationSessionByQueryQuery = {
+  __typename?: 'Query';
+  clarificationSessionByQuery?:
+    | {
+        __typename?: 'ClarificationSession';
+        id: string;
+        state: ClarificationState;
+        originalQuery: string;
+        questionsAsked: Array<string>;
+        rounds: number;
+        accumulatedContext?: Array<string> | null | undefined;
+        finalQueryId?: string | null | undefined;
+        completedAt?: Date | null | undefined;
+        expiresAt: Date;
+        createdAt: Date;
+        updatedAt: Date;
+        answersReceived: Array<{
+          __typename?: 'ClarificationAnswer';
+          question: string;
+          answer: string;
+          question_type: string;
+        }>;
+      }
+    | null
+    | undefined;
+};
+
+export type ChatMessageFragmentFragment = {
+  __typename?: 'ChatMessage';
+  messageId: string;
+  sessionId: string;
+  role: MessageRole;
+  content: string;
+  rawContent?: string | null | undefined;
+  sequenceOrder: number;
+  createdAt: Date;
+  citations?:
+    | Array<{
+        __typename?: 'ChatCitation';
+        source: string;
+        url?: string | null | undefined;
+        article?: string | null | undefined;
+        excerpt?: string | null | undefined;
+      }>
+    | null
+    | undefined;
+  metadata?:
+    | {
+        __typename?: 'ChatMessageMetadata';
+        confidence?: number | null | undefined;
+        model?: string | null | undefined;
+        queryType?: string | null | undefined;
+        keyTerms?: Array<string> | null | undefined;
+        language?: string | null | undefined;
+      }
+    | null
+    | undefined;
+};
+
+export type ChatSessionFragmentFragment = {
+  __typename?: 'ChatSession';
+  id: string;
+  title?: string | null | undefined;
+  mode: ChatMode;
+  messageCount: number;
+  lastMessageAt?: Date | null | undefined;
+  createdAt: Date;
+  updatedAt: Date;
+  isPinned: boolean;
+  deletedAt?: Date | null | undefined;
+};
+
+export type GetChatMessagesQueryVariables = Exact<{
+  sessionId: Scalars['ID']['input'];
+}>;
+
+export type GetChatMessagesQuery = {
+  __typename?: 'Query';
+  chatMessages: Array<{
+    __typename?: 'ChatMessage';
+    messageId: string;
+    sessionId: string;
+    role: MessageRole;
+    content: string;
+    rawContent?: string | null | undefined;
+    sequenceOrder: number;
+    createdAt: Date;
+    citations?:
+      | Array<{
+          __typename?: 'ChatCitation';
+          source: string;
+          url?: string | null | undefined;
+          article?: string | null | undefined;
+          excerpt?: string | null | undefined;
+        }>
+      | null
+      | undefined;
+    metadata?:
+      | {
+          __typename?: 'ChatMessageMetadata';
+          confidence?: number | null | undefined;
+          model?: string | null | undefined;
+          queryType?: string | null | undefined;
+          keyTerms?: Array<string> | null | undefined;
+          language?: string | null | undefined;
+        }
+      | null
+      | undefined;
+  }>;
+};
+
+export type GetChatSessionQueryVariables = Exact<{
+  sessionId: Scalars['ID']['input'];
+}>;
+
+export type GetChatSessionQuery = {
+  __typename?: 'Query';
+  chatSessionDetail?:
+    | {
+        __typename?: 'ChatSession';
+        id: string;
+        title?: string | null | undefined;
+        mode: ChatMode;
+        messageCount: number;
+        lastMessageAt?: Date | null | undefined;
+        createdAt: Date;
+        updatedAt: Date;
+        isPinned: boolean;
+        deletedAt?: Date | null | undefined;
+      }
+    | null
+    | undefined;
+};
+
+export type GetChatSessionsQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+  mode?: InputMaybe<ChatMode>;
+  isPinned?: InputMaybe<Scalars['Boolean']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+export type GetChatSessionsQuery = {
+  __typename?: 'Query';
+  chatSessions: Array<{
+    __typename?: 'ChatSession';
+    id: string;
+    title?: string | null | undefined;
+    mode: ChatMode;
+    messageCount: number;
+    lastMessageAt?: Date | null | undefined;
+    createdAt: Date;
+    updatedAt: Date;
+    isPinned: boolean;
+    deletedAt?: Date | null | undefined;
   }>;
 };
 
@@ -6899,31 +9984,6 @@ export type PageInfoFragmentFragment = {
   endCursor?: string | null | undefined;
 };
 
-export type UserPageResultFragmentFragment = {
-  __typename?: 'UserConnection';
-  totalCount: number;
-  edges: Array<{
-    __typename?: 'UserEdge';
-    node: {
-      __typename?: 'User';
-      id: string;
-      email: string;
-      username?: string | null | undefined;
-      firstName?: string | null | undefined;
-      lastName?: string | null | undefined;
-      isActive: boolean;
-      role: string;
-    };
-  }>;
-  pageInfo: {
-    __typename?: 'PageInfo';
-    hasNextPage?: boolean | null | undefined;
-    hasPreviousPage?: boolean | null | undefined;
-    startCursor?: string | null | undefined;
-    endCursor?: string | null | undefined;
-  };
-};
-
 export type LegalDocumentPageResultFragmentFragment = {
   __typename?: 'LegalDocumentConnection';
   totalCount: number;
@@ -7116,7 +10176,6 @@ export type UserPreferencesFragmentFragment = {
   userId: string;
   locale: string;
   theme: ThemePreference;
-  aiModel: AiModelType;
   emailNotifications: boolean;
   inAppNotifications: boolean;
   timezone?: string | null | undefined;
@@ -7154,6 +10213,7 @@ export type UserDetailFragmentFragment = {
   disclaimerAccepted: boolean;
   disclaimerAcceptedAt?: Date | null | undefined;
   stripeCustomerId?: string | null | undefined;
+  twoFactorEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
   id: string;
@@ -7188,20 +10248,25 @@ export type UserMinimalFragmentFragment = {
 
 export type AuthPayloadFragmentFragment = {
   __typename?: 'AuthPayload';
-  accessToken: string;
-  refreshToken: string;
-  user: {
-    __typename?: 'AuthUser';
-    id: string;
-    email: string;
-    username?: string | null | undefined;
-    firstName?: string | null | undefined;
-    lastName?: string | null | undefined;
-    isActive: boolean;
-    disclaimerAccepted: boolean;
-    disclaimerAcceptedAt?: Date | null | undefined;
-    role: string;
-  };
+  accessToken?: string | null | undefined;
+  refreshToken?: string | null | undefined;
+  requiresTwoFactor: boolean;
+  twoFactorTempToken?: string | null | undefined;
+  user?:
+    | {
+        __typename?: 'AuthUser';
+        id: string;
+        email: string;
+        username?: string | null | undefined;
+        firstName?: string | null | undefined;
+        lastName?: string | null | undefined;
+        isActive: boolean;
+        disclaimerAccepted: boolean;
+        disclaimerAcceptedAt?: Date | null | undefined;
+        role: string;
+      }
+    | null
+    | undefined;
 };
 
 export type RefreshTokenPayloadFragmentFragment = {
@@ -7302,20 +10367,25 @@ export type LoginMutation = {
   __typename?: 'Mutation';
   login: {
     __typename?: 'AuthPayload';
-    accessToken: string;
-    refreshToken: string;
-    user: {
-      __typename?: 'AuthUser';
-      id: string;
-      email: string;
-      username?: string | null | undefined;
-      firstName?: string | null | undefined;
-      lastName?: string | null | undefined;
-      isActive: boolean;
-      disclaimerAccepted: boolean;
-      disclaimerAcceptedAt?: Date | null | undefined;
-      role: string;
-    };
+    accessToken?: string | null | undefined;
+    refreshToken?: string | null | undefined;
+    requiresTwoFactor: boolean;
+    twoFactorTempToken?: string | null | undefined;
+    user?:
+      | {
+          __typename?: 'AuthUser';
+          id: string;
+          email: string;
+          username?: string | null | undefined;
+          firstName?: string | null | undefined;
+          lastName?: string | null | undefined;
+          isActive: boolean;
+          disclaimerAccepted: boolean;
+          disclaimerAcceptedAt?: Date | null | undefined;
+          role: string;
+        }
+      | null
+      | undefined;
   };
 };
 
@@ -7327,20 +10397,25 @@ export type RegisterMutation = {
   __typename?: 'Mutation';
   register: {
     __typename?: 'AuthPayload';
-    accessToken: string;
-    refreshToken: string;
-    user: {
-      __typename?: 'AuthUser';
-      id: string;
-      email: string;
-      username?: string | null | undefined;
-      firstName?: string | null | undefined;
-      lastName?: string | null | undefined;
-      isActive: boolean;
-      disclaimerAccepted: boolean;
-      disclaimerAcceptedAt?: Date | null | undefined;
-      role: string;
-    };
+    accessToken?: string | null | undefined;
+    refreshToken?: string | null | undefined;
+    requiresTwoFactor: boolean;
+    twoFactorTempToken?: string | null | undefined;
+    user?:
+      | {
+          __typename?: 'AuthUser';
+          id: string;
+          email: string;
+          username?: string | null | undefined;
+          firstName?: string | null | undefined;
+          lastName?: string | null | undefined;
+          isActive: boolean;
+          disclaimerAccepted: boolean;
+          disclaimerAcceptedAt?: Date | null | undefined;
+          role: string;
+        }
+      | null
+      | undefined;
   };
 };
 
@@ -7368,6 +10443,92 @@ export type AcceptDisclaimerMutation = {
     disclaimerAccepted: boolean;
     disclaimerAcceptedAt?: Date | null | undefined;
     role: string;
+  };
+};
+
+export type CompleteTwoFactorLoginMutationVariables = Exact<{
+  input: CompleteTwoFactorLoginInput;
+}>;
+
+export type CompleteTwoFactorLoginMutation = {
+  __typename?: 'Mutation';
+  completeTwoFactorLogin: {
+    __typename?: 'AuthPayload';
+    accessToken?: string | null | undefined;
+    refreshToken?: string | null | undefined;
+    requiresTwoFactor: boolean;
+    twoFactorTempToken?: string | null | undefined;
+    user?:
+      | {
+          __typename?: 'AuthUser';
+          id: string;
+          email: string;
+          username?: string | null | undefined;
+          firstName?: string | null | undefined;
+          lastName?: string | null | undefined;
+          isActive: boolean;
+          disclaimerAccepted: boolean;
+          disclaimerAcceptedAt?: Date | null | undefined;
+          role: string;
+        }
+      | null
+      | undefined;
+  };
+};
+
+export type EnableTwoFactorAuthMutationVariables = Exact<{ [key: string]: never }>;
+
+export type EnableTwoFactorAuthMutation = {
+  __typename?: 'Mutation';
+  enableTwoFactorAuth: {
+    __typename?: 'EnableTwoFactorResponse';
+    secret: string;
+    qrCodeDataUrl: string;
+    backupCodes: Array<string>;
+  };
+};
+
+export type VerifyTwoFactorSetupMutationVariables = Exact<{
+  input: VerifyTwoFactorSetupInput;
+}>;
+
+export type VerifyTwoFactorSetupMutation = {
+  __typename?: 'Mutation';
+  verifyTwoFactorSetup: {
+    __typename?: 'VerifyTwoFactorSetupResponse';
+    success: boolean;
+    backupCodes?: Array<string> | null | undefined;
+  };
+};
+
+export type DisableTwoFactorAuthMutationVariables = Exact<{
+  input: DisableTwoFactorInput;
+}>;
+
+export type DisableTwoFactorAuthMutation = {
+  __typename?: 'Mutation';
+  disableTwoFactorAuth: boolean;
+};
+
+export type RegenerateBackupCodesMutationVariables = Exact<{ [key: string]: never }>;
+
+export type RegenerateBackupCodesMutation = {
+  __typename?: 'Mutation';
+  regenerateBackupCodes: { __typename?: 'RegenerateBackupCodesResponse'; codes: Array<string> };
+};
+
+export type SubmitDemoRequestMutationVariables = Exact<{
+  input: DemoRequestInput;
+}>;
+
+export type SubmitDemoRequestMutation = {
+  __typename?: 'Mutation';
+  submitDemoRequest: {
+    __typename?: 'DemoRequestResponse';
+    success: boolean;
+    message: string;
+    referenceId?: string | null | undefined;
+    qualified?: boolean | null | undefined;
   };
 };
 
@@ -7442,7 +10603,6 @@ export type UpdateMyPreferencesMutation = {
     userId: string;
     locale: string;
     theme: ThemePreference;
-    aiModel: AiModelType;
     emailNotifications: boolean;
     inAppNotifications: boolean;
     timezone?: string | null | undefined;
@@ -7475,7 +10635,6 @@ export type ResetMyPreferencesMutation = {
     userId: string;
     locale: string;
     theme: ThemePreference;
-    aiModel: AiModelType;
     emailNotifications: boolean;
     inAppNotifications: boolean;
     timezone?: string | null | undefined;
@@ -7510,7 +10669,6 @@ export type UpdateOneUserPreferenceMutation = {
     userId: string;
     locale: string;
     theme: ThemePreference;
-    aiModel: AiModelType;
     emailNotifications: boolean;
     inAppNotifications: boolean;
     timezone?: string | null | undefined;
@@ -7545,7 +10703,6 @@ export type CreateOneUserPreferenceMutation = {
     userId: string;
     locale: string;
     theme: ThemePreference;
-    aiModel: AiModelType;
     emailNotifications: boolean;
     inAppNotifications: boolean;
     timezone?: string | null | undefined;
@@ -7833,6 +10990,21 @@ export type MeQuery = {
     | undefined;
 };
 
+export type TwoFactorSettingsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type TwoFactorSettingsQuery = {
+  __typename?: 'Query';
+  twoFactorSettings?:
+    | {
+        __typename?: 'TwoFactorSettings';
+        status: TwoFactorStatus;
+        enabled: boolean;
+        remainingBackupCodes?: number | null | undefined;
+      }
+    | null
+    | undefined;
+};
+
 export type GetSystemSettingsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetSystemSettingsQuery = {
@@ -7904,7 +11076,6 @@ export type GetMyPreferencesQuery = {
     userId: string;
     locale: string;
     theme: ThemePreference;
-    aiModel: AiModelType;
     emailNotifications: boolean;
     inAppNotifications: boolean;
     timezone?: string | null | undefined;
@@ -8047,54 +11218,18 @@ export type SearchDocumentsQuery = {
 
 export type GetUsersQueryVariables = Exact<{
   filter?: InputMaybe<UserFilter>;
-  paging?: InputMaybe<CursorPaging>;
+  paging?: InputMaybe<UserPaging>;
   sorting?: InputMaybe<Array<UserSort> | UserSort>;
 }>;
 
 export type GetUsersQuery = {
   __typename?: 'Query';
-  users: {
-    __typename?: 'UserConnection';
-    totalCount: number;
-    edges: Array<{
-      __typename?: 'UserEdge';
-      node: {
-        __typename?: 'User';
-        disclaimerAccepted: boolean;
-        disclaimerAcceptedAt?: Date | null | undefined;
-        stripeCustomerId?: string | null | undefined;
-        createdAt: Date;
-        updatedAt: Date;
-        id: string;
-        email: string;
-        username?: string | null | undefined;
-        firstName?: string | null | undefined;
-        lastName?: string | null | undefined;
-        isActive: boolean;
-        role: string;
-      };
-    }>;
-    pageInfo: {
-      __typename?: 'PageInfo';
-      hasNextPage?: boolean | null | undefined;
-      hasPreviousPage?: boolean | null | undefined;
-      startCursor?: string | null | undefined;
-      endCursor?: string | null | undefined;
-    };
-  };
-};
-
-export type GetUserQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-export type GetUserQuery = {
-  __typename?: 'Query';
-  user: {
+  users: Array<{
     __typename?: 'User';
     disclaimerAccepted: boolean;
     disclaimerAcceptedAt?: Date | null | undefined;
     stripeCustomerId?: string | null | undefined;
+    twoFactorEnabled: boolean;
     createdAt: Date;
     updatedAt: Date;
     id: string;
@@ -8104,11 +11239,38 @@ export type GetUserQuery = {
     lastName?: string | null | undefined;
     isActive: boolean;
     role: string;
-  };
+  }>;
+};
+
+export type GetUserQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type GetUserQuery = {
+  __typename?: 'Query';
+  user?:
+    | {
+        __typename?: 'User';
+        disclaimerAccepted: boolean;
+        disclaimerAcceptedAt?: Date | null | undefined;
+        stripeCustomerId?: string | null | undefined;
+        twoFactorEnabled: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        id: string;
+        email: string;
+        username?: string | null | undefined;
+        firstName?: string | null | undefined;
+        lastName?: string | null | undefined;
+        isActive: boolean;
+        role: string;
+      }
+    | null
+    | undefined;
 };
 
 export type CreateOneUserMutationVariables = Exact<{
-  input: CreateOneUserInput;
+  input: CreateUserInput;
 }>;
 
 export type CreateOneUserMutation = {
@@ -8118,6 +11280,7 @@ export type CreateOneUserMutation = {
     disclaimerAccepted: boolean;
     disclaimerAcceptedAt?: Date | null | undefined;
     stripeCustomerId?: string | null | undefined;
+    twoFactorEnabled: boolean;
     createdAt: Date;
     updatedAt: Date;
     id: string;
@@ -8131,7 +11294,8 @@ export type CreateOneUserMutation = {
 };
 
 export type UpdateOneUserMutationVariables = Exact<{
-  input: UpdateOneUserInput;
+  id: Scalars['ID']['input'];
+  input: UpdateUserInput;
 }>;
 
 export type UpdateOneUserMutation = {
@@ -8141,6 +11305,7 @@ export type UpdateOneUserMutation = {
     disclaimerAccepted: boolean;
     disclaimerAcceptedAt?: Date | null | undefined;
     stripeCustomerId?: string | null | undefined;
+    twoFactorEnabled: boolean;
     createdAt: Date;
     updatedAt: Date;
     id: string;
@@ -8154,16 +11319,12 @@ export type UpdateOneUserMutation = {
 };
 
 export type DeleteOneUserMutationVariables = Exact<{
-  input: DeleteOneUserInput;
+  id: Scalars['ID']['input'];
 }>;
 
 export type DeleteOneUserMutation = {
   __typename?: 'Mutation';
-  deleteOneUser: {
-    __typename?: 'UserDeleteResponse';
-    id?: string | null | undefined;
-    email?: string | null | undefined;
-  };
+  deleteOneUser: { __typename?: 'User'; id: string; email: string };
 };
 
 export const AdminUserFragmentFragmentDoc = `
@@ -8178,6 +11339,7 @@ export const AdminUserFragmentFragmentDoc = `
   disclaimerAccepted
   disclaimerAcceptedAt
   stripeCustomerId
+  twoFactorEnabled
   createdAt
   updatedAt
 }
@@ -8191,6 +11353,7 @@ export const AdminUserMinimalFragmentFragmentDoc = `
   lastName
   isActive
   role
+  twoFactorEnabled
   createdAt
 }
     `;
@@ -8240,6 +11403,63 @@ export const LegalQueryFragmentFragmentDoc = `
   sessionId
   createdAt
   updatedAt
+}
+    `;
+export const ClarificationSessionFragmentFragmentDoc = `
+    fragment ClarificationSessionFragment on ClarificationSession {
+  id
+  state
+  originalQuery
+  questionsAsked
+  answersReceived {
+    question
+    answer
+    question_type
+  }
+  rounds
+  accumulatedContext
+  finalQueryId
+  completedAt
+  expiresAt
+  createdAt
+  updatedAt
+}
+    `;
+export const ChatMessageFragmentFragmentDoc = `
+    fragment ChatMessageFragment on ChatMessage {
+  messageId
+  sessionId
+  role
+  content
+  rawContent
+  citations {
+    source
+    url
+    article
+    excerpt
+  }
+  metadata {
+    confidence
+    model
+    queryType
+    keyTerms
+    language
+  }
+  sequenceOrder
+  createdAt
+}
+    `;
+export const ChatSessionFragmentFragmentDoc = `
+    fragment ChatSessionFragment on ChatSession {
+  id
+  title
+  mode
+  messageCount
+  lastMessageAt
+  createdAt
+  updatedAt
+  isPinned
+  deletedAt
 }
     `;
 export const UserGrowthMetricsFragmentFragmentDoc = `
@@ -8472,17 +11692,6 @@ export const NotificationFragmentFragmentDoc = `
   createdAt
 }
     `;
-export const UserFragmentFragmentDoc = `
-    fragment UserFragment on User {
-  id
-  email
-  username
-  firstName
-  lastName
-  isActive
-  role
-}
-    `;
 export const PageInfoFragmentFragmentDoc = `
     fragment PageInfoFragment on PageInfo {
   hasNextPage
@@ -8491,20 +11700,6 @@ export const PageInfoFragmentFragmentDoc = `
   endCursor
 }
     `;
-export const UserPageResultFragmentFragmentDoc = `
-    fragment UserPageResultFragment on UserConnection {
-  totalCount
-  edges {
-    node {
-      ...UserFragment
-    }
-  }
-  pageInfo {
-    ...PageInfoFragment
-  }
-}
-    ${UserFragmentFragmentDoc}
-${PageInfoFragmentFragmentDoc}`;
 export const LegalDocumentPageResultFragmentFragmentDoc = `
     fragment LegalDocumentPageResultFragment on LegalDocumentConnection {
   totalCount
@@ -8632,7 +11827,6 @@ export const UserPreferencesFragmentFragmentDoc = `
   userId
   locale
   theme
-  aiModel
   getNotificationPreferences {
     documentUpdates
     queryResponses
@@ -8652,12 +11846,24 @@ export const UserPreferencesFragmentFragmentDoc = `
   updatedAt
 }
     `;
+export const UserFragmentFragmentDoc = `
+    fragment UserFragment on User {
+  id
+  email
+  username
+  firstName
+  lastName
+  isActive
+  role
+}
+    `;
 export const UserDetailFragmentFragmentDoc = `
     fragment UserDetailFragment on User {
   ...UserFragment
   disclaimerAccepted
   disclaimerAcceptedAt
   stripeCustomerId
+  twoFactorEnabled
   createdAt
   updatedAt
 }
@@ -8679,6 +11885,8 @@ export const AuthPayloadFragmentFragmentDoc = `
     fragment AuthPayloadFragment on AuthPayload {
   accessToken
   refreshToken
+  requiresTwoFactor
+  twoFactorTempToken
   user {
     ...AuthUserFragment
   }
@@ -8951,12 +12159,12 @@ useGetAdminSystemHealthMetricsQuery.fetcher = (
   );
 
 export const GetAdminUsersDocument = `
-    query GetAdminUsers($filter: UserFilter, $sorting: [UserSort!], $paging: CursorPaging) {
+    query GetAdminUsers($filter: UserFilter, $sorting: [UserSort!], $paging: UserPaging) {
   users(filter: $filter, sorting: $sorting, paging: $paging) {
-    ...UserPageResultFragment
+    ...AdminUserMinimalFragment
   }
 }
-    ${UserPageResultFragmentFragmentDoc}`;
+    ${AdminUserMinimalFragmentFragmentDoc}`;
 
 export const useGetAdminUsersQuery = <TData = GetAdminUsersQuery, TError = unknown>(
   variables?: GetAdminUsersQueryVariables,
@@ -9015,7 +12223,7 @@ useGetAdminUserQuery.fetcher = (
   fetcher<GetAdminUserQuery, GetAdminUserQueryVariables>(GetAdminUserDocument, variables, options);
 
 export const AdminCreateUserDocument = `
-    mutation AdminCreateUser($input: CreateOneUserInput!) {
+    mutation AdminCreateUser($input: CreateUserInput!) {
   createOneUser(input: $input) {
     ...AdminUserFragment
   }
@@ -9052,8 +12260,8 @@ useAdminCreateUserMutation.fetcher = (
   );
 
 export const AdminUpdateUserDocument = `
-    mutation AdminUpdateUser($input: UpdateOneUserInput!) {
-  updateOneUser(input: $input) {
+    mutation AdminUpdateUser($id: ID!, $input: UpdateUserInput!) {
+  updateOneUser(id: $id, input: $input) {
     ...AdminUserMinimalFragment
   }
 }
@@ -9089,8 +12297,8 @@ useAdminUpdateUserMutation.fetcher = (
   );
 
 export const AdminDeleteUserDocument = `
-    mutation AdminDeleteUser($input: DeleteOneUserInput!) {
-  deleteOneUser(input: $input) {
+    mutation AdminDeleteUser($id: ID!) {
+  deleteOneUser(id: $id) {
     id
     email
   }
@@ -9287,6 +12495,49 @@ useAdminResetUserPasswordMutation.fetcher = (
 ) =>
   fetcher<AdminResetUserPasswordMutation, AdminResetUserPasswordMutationVariables>(
     AdminResetUserPasswordDocument,
+    variables,
+    options,
+  );
+
+export const AdminForceDisableTwoFactorDocument = `
+    mutation AdminForceDisableTwoFactor($input: AdminForceDisableTwoFactorInput!) {
+  adminForceDisableTwoFactor(input: $input) {
+    id
+    twoFactorEnabled
+  }
+}
+    `;
+
+export const useAdminForceDisableTwoFactorMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    AdminForceDisableTwoFactorMutation,
+    TError,
+    AdminForceDisableTwoFactorMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    AdminForceDisableTwoFactorMutation,
+    TError,
+    AdminForceDisableTwoFactorMutationVariables,
+    TContext
+  >({
+    mutationKey: ['AdminForceDisableTwoFactor'],
+    mutationFn: (variables?: AdminForceDisableTwoFactorMutationVariables) =>
+      fetcher<AdminForceDisableTwoFactorMutation, AdminForceDisableTwoFactorMutationVariables>(
+        AdminForceDisableTwoFactorDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useAdminForceDisableTwoFactorMutation.fetcher = (
+  variables: AdminForceDisableTwoFactorMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<AdminForceDisableTwoFactorMutation, AdminForceDisableTwoFactorMutationVariables>(
+    AdminForceDisableTwoFactorDocument,
     variables,
     options,
   );
@@ -9793,6 +13044,254 @@ useGetPendingQueriesQuery.fetcher = (
 ) =>
   fetcher<GetPendingQueriesQuery, GetPendingQueriesQueryVariables>(
     GetPendingQueriesDocument,
+    variables,
+    options,
+  );
+
+export const SubmitClarificationAnswersDocument = `
+    mutation SubmitClarificationAnswers($input: SubmitClarificationAnswersInput!) {
+  submitClarificationAnswers(input: $input) {
+    success
+    clarificationMessageId
+    validationErrors {
+      code
+      message
+      questionId
+    }
+    userMessage {
+      messageId
+      role
+      content
+      sequenceOrder
+      createdAt
+    }
+  }
+}
+    `;
+
+export const useSubmitClarificationAnswersMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    SubmitClarificationAnswersMutation,
+    TError,
+    SubmitClarificationAnswersMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    SubmitClarificationAnswersMutation,
+    TError,
+    SubmitClarificationAnswersMutationVariables,
+    TContext
+  >({
+    mutationKey: ['SubmitClarificationAnswers'],
+    mutationFn: (variables?: SubmitClarificationAnswersMutationVariables) =>
+      fetcher<SubmitClarificationAnswersMutation, SubmitClarificationAnswersMutationVariables>(
+        SubmitClarificationAnswersDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useSubmitClarificationAnswersMutation.fetcher = (
+  variables: SubmitClarificationAnswersMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<SubmitClarificationAnswersMutation, SubmitClarificationAnswersMutationVariables>(
+    SubmitClarificationAnswersDocument,
+    variables,
+    options,
+  );
+
+export const CancelClarificationSessionDocument = `
+    mutation CancelClarificationSession($input: CancelClarificationSessionInput!) {
+  cancelClarificationSession(input: $input) {
+    ...ClarificationSessionFragment
+  }
+}
+    ${ClarificationSessionFragmentFragmentDoc}`;
+
+export const useCancelClarificationSessionMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    CancelClarificationSessionMutation,
+    TError,
+    CancelClarificationSessionMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    CancelClarificationSessionMutation,
+    TError,
+    CancelClarificationSessionMutationVariables,
+    TContext
+  >({
+    mutationKey: ['CancelClarificationSession'],
+    mutationFn: (variables?: CancelClarificationSessionMutationVariables) =>
+      fetcher<CancelClarificationSessionMutation, CancelClarificationSessionMutationVariables>(
+        CancelClarificationSessionDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useCancelClarificationSessionMutation.fetcher = (
+  variables: CancelClarificationSessionMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<CancelClarificationSessionMutation, CancelClarificationSessionMutationVariables>(
+    CancelClarificationSessionDocument,
+    variables,
+    options,
+  );
+
+export const GetClarificationSessionByQueryDocument = `
+    query GetClarificationSessionByQuery($queryId: String!) {
+  clarificationSessionByQuery(queryId: $queryId) {
+    ...ClarificationSessionFragment
+  }
+}
+    ${ClarificationSessionFragmentFragmentDoc}`;
+
+export const useGetClarificationSessionByQueryQuery = <
+  TData = GetClarificationSessionByQueryQuery,
+  TError = unknown,
+>(
+  variables: GetClarificationSessionByQueryQueryVariables,
+  options?: Omit<
+    UseQueryOptions<GetClarificationSessionByQueryQuery, TError, TData>,
+    'queryKey'
+  > & {
+    queryKey?: UseQueryOptions<GetClarificationSessionByQueryQuery, TError, TData>['queryKey'];
+  },
+) => {
+  return useQuery<GetClarificationSessionByQueryQuery, TError, TData>({
+    queryKey: ['GetClarificationSessionByQuery', variables],
+    queryFn: fetcher<
+      GetClarificationSessionByQueryQuery,
+      GetClarificationSessionByQueryQueryVariables
+    >(GetClarificationSessionByQueryDocument, variables),
+    ...options,
+  });
+};
+
+useGetClarificationSessionByQueryQuery.fetcher = (
+  variables: GetClarificationSessionByQueryQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<GetClarificationSessionByQueryQuery, GetClarificationSessionByQueryQueryVariables>(
+    GetClarificationSessionByQueryDocument,
+    variables,
+    options,
+  );
+
+export const GetChatMessagesDocument = `
+    query GetChatMessages($sessionId: ID!) {
+  chatMessages(sessionId: $sessionId) {
+    ...ChatMessageFragment
+  }
+}
+    ${ChatMessageFragmentFragmentDoc}`;
+
+export const useGetChatMessagesQuery = <TData = GetChatMessagesQuery, TError = unknown>(
+  variables: GetChatMessagesQueryVariables,
+  options?: Omit<UseQueryOptions<GetChatMessagesQuery, TError, TData>, 'queryKey'> & {
+    queryKey?: UseQueryOptions<GetChatMessagesQuery, TError, TData>['queryKey'];
+  },
+) => {
+  return useQuery<GetChatMessagesQuery, TError, TData>({
+    queryKey: ['GetChatMessages', variables],
+    queryFn: fetcher<GetChatMessagesQuery, GetChatMessagesQueryVariables>(
+      GetChatMessagesDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useGetChatMessagesQuery.fetcher = (
+  variables: GetChatMessagesQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<GetChatMessagesQuery, GetChatMessagesQueryVariables>(
+    GetChatMessagesDocument,
+    variables,
+    options,
+  );
+
+export const GetChatSessionDocument = `
+    query GetChatSession($sessionId: ID!) {
+  chatSessionDetail(sessionId: $sessionId) {
+    ...ChatSessionFragment
+  }
+}
+    ${ChatSessionFragmentFragmentDoc}`;
+
+export const useGetChatSessionQuery = <TData = GetChatSessionQuery, TError = unknown>(
+  variables: GetChatSessionQueryVariables,
+  options?: Omit<UseQueryOptions<GetChatSessionQuery, TError, TData>, 'queryKey'> & {
+    queryKey?: UseQueryOptions<GetChatSessionQuery, TError, TData>['queryKey'];
+  },
+) => {
+  return useQuery<GetChatSessionQuery, TError, TData>({
+    queryKey: ['GetChatSession', variables],
+    queryFn: fetcher<GetChatSessionQuery, GetChatSessionQueryVariables>(
+      GetChatSessionDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useGetChatSessionQuery.fetcher = (
+  variables: GetChatSessionQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<GetChatSessionQuery, GetChatSessionQueryVariables>(
+    GetChatSessionDocument,
+    variables,
+    options,
+  );
+
+export const GetChatSessionsDocument = `
+    query GetChatSessions($limit: Int = 20, $offset: Int = 0, $sortBy: String = "lastMessageAt", $sortOrder: String = "DESC", $mode: ChatMode, $isPinned: Boolean, $search: String, $includeDeleted: Boolean = false) {
+  chatSessions(
+    limit: $limit
+    offset: $offset
+    sortBy: $sortBy
+    sortOrder: $sortOrder
+    mode: $mode
+    isPinned: $isPinned
+    search: $search
+    includeDeleted: $includeDeleted
+  ) {
+    ...ChatSessionFragment
+  }
+}
+    ${ChatSessionFragmentFragmentDoc}`;
+
+export const useGetChatSessionsQuery = <TData = GetChatSessionsQuery, TError = unknown>(
+  variables?: GetChatSessionsQueryVariables,
+  options?: Omit<UseQueryOptions<GetChatSessionsQuery, TError, TData>, 'queryKey'> & {
+    queryKey?: UseQueryOptions<GetChatSessionsQuery, TError, TData>['queryKey'];
+  },
+) => {
+  return useQuery<GetChatSessionsQuery, TError, TData>({
+    queryKey: variables === undefined ? ['GetChatSessions'] : ['GetChatSessions', variables],
+    queryFn: fetcher<GetChatSessionsQuery, GetChatSessionsQueryVariables>(
+      GetChatSessionsDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useGetChatSessionsQuery.fetcher = (
+  variables?: GetChatSessionsQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<GetChatSessionsQuery, GetChatSessionsQueryVariables>(
+    GetChatSessionsDocument,
     variables,
     options,
   );
@@ -10416,6 +13915,262 @@ useAcceptDisclaimerMutation.fetcher = (
 ) =>
   fetcher<AcceptDisclaimerMutation, AcceptDisclaimerMutationVariables>(
     AcceptDisclaimerDocument,
+    variables,
+    options,
+  );
+
+export const CompleteTwoFactorLoginDocument = `
+    mutation CompleteTwoFactorLogin($input: CompleteTwoFactorLoginInput!) {
+  completeTwoFactorLogin(input: $input) {
+    ...AuthPayloadFragment
+  }
+}
+    ${AuthPayloadFragmentFragmentDoc}`;
+
+export const useCompleteTwoFactorLoginMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    CompleteTwoFactorLoginMutation,
+    TError,
+    CompleteTwoFactorLoginMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    CompleteTwoFactorLoginMutation,
+    TError,
+    CompleteTwoFactorLoginMutationVariables,
+    TContext
+  >({
+    mutationKey: ['CompleteTwoFactorLogin'],
+    mutationFn: (variables?: CompleteTwoFactorLoginMutationVariables) =>
+      fetcher<CompleteTwoFactorLoginMutation, CompleteTwoFactorLoginMutationVariables>(
+        CompleteTwoFactorLoginDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useCompleteTwoFactorLoginMutation.fetcher = (
+  variables: CompleteTwoFactorLoginMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<CompleteTwoFactorLoginMutation, CompleteTwoFactorLoginMutationVariables>(
+    CompleteTwoFactorLoginDocument,
+    variables,
+    options,
+  );
+
+export const EnableTwoFactorAuthDocument = `
+    mutation EnableTwoFactorAuth {
+  enableTwoFactorAuth {
+    secret
+    qrCodeDataUrl
+    backupCodes
+  }
+}
+    `;
+
+export const useEnableTwoFactorAuthMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    EnableTwoFactorAuthMutation,
+    TError,
+    EnableTwoFactorAuthMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    EnableTwoFactorAuthMutation,
+    TError,
+    EnableTwoFactorAuthMutationVariables,
+    TContext
+  >({
+    mutationKey: ['EnableTwoFactorAuth'],
+    mutationFn: (variables?: EnableTwoFactorAuthMutationVariables) =>
+      fetcher<EnableTwoFactorAuthMutation, EnableTwoFactorAuthMutationVariables>(
+        EnableTwoFactorAuthDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useEnableTwoFactorAuthMutation.fetcher = (
+  variables?: EnableTwoFactorAuthMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<EnableTwoFactorAuthMutation, EnableTwoFactorAuthMutationVariables>(
+    EnableTwoFactorAuthDocument,
+    variables,
+    options,
+  );
+
+export const VerifyTwoFactorSetupDocument = `
+    mutation VerifyTwoFactorSetup($input: VerifyTwoFactorSetupInput!) {
+  verifyTwoFactorSetup(input: $input) {
+    success
+    backupCodes
+  }
+}
+    `;
+
+export const useVerifyTwoFactorSetupMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    VerifyTwoFactorSetupMutation,
+    TError,
+    VerifyTwoFactorSetupMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    VerifyTwoFactorSetupMutation,
+    TError,
+    VerifyTwoFactorSetupMutationVariables,
+    TContext
+  >({
+    mutationKey: ['VerifyTwoFactorSetup'],
+    mutationFn: (variables?: VerifyTwoFactorSetupMutationVariables) =>
+      fetcher<VerifyTwoFactorSetupMutation, VerifyTwoFactorSetupMutationVariables>(
+        VerifyTwoFactorSetupDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useVerifyTwoFactorSetupMutation.fetcher = (
+  variables: VerifyTwoFactorSetupMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<VerifyTwoFactorSetupMutation, VerifyTwoFactorSetupMutationVariables>(
+    VerifyTwoFactorSetupDocument,
+    variables,
+    options,
+  );
+
+export const DisableTwoFactorAuthDocument = `
+    mutation DisableTwoFactorAuth($input: DisableTwoFactorInput!) {
+  disableTwoFactorAuth(input: $input)
+}
+    `;
+
+export const useDisableTwoFactorAuthMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    DisableTwoFactorAuthMutation,
+    TError,
+    DisableTwoFactorAuthMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    DisableTwoFactorAuthMutation,
+    TError,
+    DisableTwoFactorAuthMutationVariables,
+    TContext
+  >({
+    mutationKey: ['DisableTwoFactorAuth'],
+    mutationFn: (variables?: DisableTwoFactorAuthMutationVariables) =>
+      fetcher<DisableTwoFactorAuthMutation, DisableTwoFactorAuthMutationVariables>(
+        DisableTwoFactorAuthDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useDisableTwoFactorAuthMutation.fetcher = (
+  variables: DisableTwoFactorAuthMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<DisableTwoFactorAuthMutation, DisableTwoFactorAuthMutationVariables>(
+    DisableTwoFactorAuthDocument,
+    variables,
+    options,
+  );
+
+export const RegenerateBackupCodesDocument = `
+    mutation RegenerateBackupCodes {
+  regenerateBackupCodes {
+    codes
+  }
+}
+    `;
+
+export const useRegenerateBackupCodesMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    RegenerateBackupCodesMutation,
+    TError,
+    RegenerateBackupCodesMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    RegenerateBackupCodesMutation,
+    TError,
+    RegenerateBackupCodesMutationVariables,
+    TContext
+  >({
+    mutationKey: ['RegenerateBackupCodes'],
+    mutationFn: (variables?: RegenerateBackupCodesMutationVariables) =>
+      fetcher<RegenerateBackupCodesMutation, RegenerateBackupCodesMutationVariables>(
+        RegenerateBackupCodesDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useRegenerateBackupCodesMutation.fetcher = (
+  variables?: RegenerateBackupCodesMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<RegenerateBackupCodesMutation, RegenerateBackupCodesMutationVariables>(
+    RegenerateBackupCodesDocument,
+    variables,
+    options,
+  );
+
+export const SubmitDemoRequestDocument = `
+    mutation SubmitDemoRequest($input: DemoRequestInput!) {
+  submitDemoRequest(input: $input) {
+    success
+    message
+    referenceId
+    qualified
+  }
+}
+    `;
+
+export const useSubmitDemoRequestMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    SubmitDemoRequestMutation,
+    TError,
+    SubmitDemoRequestMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    SubmitDemoRequestMutation,
+    TError,
+    SubmitDemoRequestMutationVariables,
+    TContext
+  >({
+    mutationKey: ['SubmitDemoRequest'],
+    mutationFn: (variables?: SubmitDemoRequestMutationVariables) =>
+      fetcher<SubmitDemoRequestMutation, SubmitDemoRequestMutationVariables>(
+        SubmitDemoRequestDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useSubmitDemoRequestMutation.fetcher = (
+  variables: SubmitDemoRequestMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<SubmitDemoRequestMutation, SubmitDemoRequestMutationVariables>(
+    SubmitDemoRequestDocument,
     variables,
     options,
   );
@@ -11183,6 +14938,42 @@ export const useMeQuery = <TData = MeQuery, TError = unknown>(
 useMeQuery.fetcher = (variables?: MeQueryVariables, options?: RequestInit['headers']) =>
   fetcher<MeQuery, MeQueryVariables>(MeDocument, variables, options);
 
+export const TwoFactorSettingsDocument = `
+    query TwoFactorSettings {
+  twoFactorSettings {
+    status
+    enabled
+    remainingBackupCodes
+  }
+}
+    `;
+
+export const useTwoFactorSettingsQuery = <TData = TwoFactorSettingsQuery, TError = unknown>(
+  variables?: TwoFactorSettingsQueryVariables,
+  options?: Omit<UseQueryOptions<TwoFactorSettingsQuery, TError, TData>, 'queryKey'> & {
+    queryKey?: UseQueryOptions<TwoFactorSettingsQuery, TError, TData>['queryKey'];
+  },
+) => {
+  return useQuery<TwoFactorSettingsQuery, TError, TData>({
+    queryKey: variables === undefined ? ['TwoFactorSettings'] : ['TwoFactorSettings', variables],
+    queryFn: fetcher<TwoFactorSettingsQuery, TwoFactorSettingsQueryVariables>(
+      TwoFactorSettingsDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useTwoFactorSettingsQuery.fetcher = (
+  variables?: TwoFactorSettingsQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<TwoFactorSettingsQuery, TwoFactorSettingsQueryVariables>(
+    TwoFactorSettingsDocument,
+    variables,
+    options,
+  );
+
 export const GetSystemSettingsDocument = `
     query GetSystemSettings {
   systemSettings {
@@ -11486,21 +15277,12 @@ useSearchDocumentsQuery.fetcher = (
   );
 
 export const GetUsersDocument = `
-    query GetUsers($filter: UserFilter, $paging: CursorPaging, $sorting: [UserSort!]) {
+    query GetUsers($filter: UserFilter, $paging: UserPaging, $sorting: [UserSort!]) {
   users(filter: $filter, paging: $paging, sorting: $sorting) {
-    totalCount
-    edges {
-      node {
-        ...UserDetailFragment
-      }
-    }
-    pageInfo {
-      ...PageInfoFragment
-    }
+    ...UserDetailFragment
   }
 }
-    ${UserDetailFragmentFragmentDoc}
-${PageInfoFragmentFragmentDoc}`;
+    ${UserDetailFragmentFragmentDoc}`;
 
 export const useGetUsersQuery = <TData = GetUsersQuery, TError = unknown>(
   variables?: GetUsersQueryVariables,
@@ -11543,7 +15325,7 @@ useGetUserQuery.fetcher = (variables: GetUserQueryVariables, options?: RequestIn
   fetcher<GetUserQuery, GetUserQueryVariables>(GetUserDocument, variables, options);
 
 export const CreateOneUserDocument = `
-    mutation CreateOneUser($input: CreateOneUserInput!) {
+    mutation CreateOneUser($input: CreateUserInput!) {
   createOneUser(input: $input) {
     ...UserDetailFragment
   }
@@ -11580,8 +15362,8 @@ useCreateOneUserMutation.fetcher = (
   );
 
 export const UpdateOneUserDocument = `
-    mutation UpdateOneUser($input: UpdateOneUserInput!) {
-  updateOneUser(input: $input) {
+    mutation UpdateOneUser($id: ID!, $input: UpdateUserInput!) {
+  updateOneUser(id: $id, input: $input) {
     ...UserDetailFragment
   }
 }
@@ -11617,8 +15399,8 @@ useUpdateOneUserMutation.fetcher = (
   );
 
 export const DeleteOneUserDocument = `
-    mutation DeleteOneUser($input: DeleteOneUserInput!) {
-  deleteOneUser(input: $input) {
+    mutation DeleteOneUser($id: ID!) {
+  deleteOneUser(id: $id) {
     id
     email
   }

@@ -36,6 +36,14 @@ interface WorkerEntry {
   taskQueue: string;
   /** Whether the worker is running */
   running: boolean;
+  /** Worker ID for tracking */
+  workerId: string;
+  /** When the worker was started */
+  startedAt: Date;
+  /** Workflows path */
+  workflowsPath: string;
+  /** Activities path */
+  activitiesPath?: string;
 }
 
 /**
@@ -51,10 +59,9 @@ interface WorkerEntry {
 export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(TemporalWorkerService.name);
   private readonly workers: Map<string, WorkerEntry> = new Map();
-  private Worker: new (...args: unknown[]) => unknown = null as unknown as new (
-    ...args: unknown[]
-  ) => unknown;
   private stuckActivityCheckInterval?: NodeJS.Timeout;
+  private heartbeatInterval?: NodeJS.Timeout;
+  private workerInitialized = false;
 
   constructor(
     @Inject(TEMPORAL_MODULE_OPTIONS)
@@ -68,49 +75,348 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
   /**
    * Start workers on module initialization
    *
-   * By default, workers are not auto-started.
-   * Workers should be explicitly started when needed.
+   * Logs comprehensive connection and configuration information.
+   * Starts periodic heartbeat logging to verify worker health.
+   * In development mode, automatically starts workers for convenience.
    */
   async onModuleInit(): Promise<void> {
-    this.logger.log('Temporal Worker Service initialized');
+    this.logger.log('=== Temporal Worker Service Initialization ===');
+    this.logger.log(`Temporal Cluster URL: ${this.options.clusterUrl}`);
+    this.logger.log(`Temporal Namespace: ${this.options.namespace}`);
+    this.logger.log(`Default Task Queue: ${this.options.taskQueue}`);
+    this.logger.log(`TLS Enabled: ${this.options.tlsEnabled}`);
+    this.logger.log(`Client Timeout: ${this.options.clientTimeout}ms`);
 
     // Start stuck activity detection check (every 5 minutes)
     this.startStuckActivityDetection();
+
+    // Start heartbeat logging (every 60 seconds)
+    this.startHeartbeat();
+
+    // Attempt to initialize Worker SDK to verify it's available
+    try {
+      await this.initializeWorkerModule();
+      this.workerInitialized = true;
+      this.logger.log('✓ Temporal Worker SDK loaded successfully');
+    } catch (error) {
+      this.logger.error('✗ Failed to load Temporal Worker SDK', error);
+      this.logger.error(
+        'This will prevent workers from starting. Check @temporalio/worker is installed.',
+      );
+      throw error;
+    }
+
+    // Auto-start workers in development mode
+    const isDevelopment =
+      process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
+    const autoStartWorkers =
+      process.env.TEMPORAL_AUTO_START_WORKERS !== 'false';
+
+    if (isDevelopment && autoStartWorkers) {
+      this.logger.log(
+        'Development mode detected: Auto-starting Temporal workers...',
+      );
+      await this.autoStartDevWorkers();
+    } else {
+      this.logger.log('Worker is ready. Call startWorker() to begin polling.');
+    }
+
+    this.logger.log('=== Temporal Worker Service Initialization Complete ===');
+  }
+
+  /**
+   * Auto-start workers in development mode
+   *
+   * Automatically starts workers for all configured task queues in development.
+   * Uses compiled JavaScript paths for workflows and activities.
+   */
+  private async autoStartDevWorkers(): Promise<void> {
+    const path = await import('node:path');
+
+    // Determine the base path for compiled workflows/activities
+    // NestJS builds to dist/src/, not dist/ directly
+    const basePath = path.join(process.cwd(), 'dist/src/modules/temporal');
+
+    const workflowsPath = path.join(basePath, 'workflows');
+    const activitiesPath = path.join(basePath, 'activities');
+
+    this.logger.log(`Auto-start configuration:`);
+    this.logger.log(`  Workflows path: ${workflowsPath}`);
+    this.logger.log(`  Activities path: ${activitiesPath}`);
+    this.logger.log(`  Task queue: ${this.options.taskQueue}`);
+
+    // Check if compiled files exist
+    const fs = await import('node:fs/promises');
+    try {
+      await fs.access(workflowsPath);
+    } catch {
+      this.logger.warn(`Workflows directory not found at ${workflowsPath}`);
+      this.logger.warn(
+        `Workers will not auto-start. Please run: npm run build`,
+      );
+      this.logger.warn(`Or run the standalone worker: npm run temporal:worker`);
+      return;
+    }
+
+    // Start the worker with a small delay to ensure Temporal server is ready
+    // In dev mode with docker compose, there might be a race condition
+    const waitForServer = process.env.TEMPORAL_WAIT_FOR_SERVER !== 'false';
+    if (waitForServer) {
+      const maxRetries = 10;
+      const retryDelay = 2000; // 2 seconds
+
+      for (let i = 0; i < maxRetries; i++) {
+        try {
+          this.logger.log(
+            `Checking Temporal server connection (attempt ${i + 1}/${maxRetries})...`,
+          );
+          // Try to create a test connection
+          await this.createTestConnection();
+          this.logger.log('✓ Temporal server is reachable');
+          break;
+        } catch {
+          if (i < maxRetries - 1) {
+            this.logger.log(
+              `Temporal server not ready, retrying in ${retryDelay}ms...`,
+            );
+            await new Promise((resolve) => setTimeout(resolve, retryDelay));
+          } else {
+            this.logger.warn(
+              'Could not connect to Temporal server. Workers will start anyway and will retry connection.',
+            );
+          }
+        }
+      }
+    }
+
+    try {
+      await this.startWorker(
+        this.options.taskQueue,
+        workflowsPath,
+        activitiesPath,
+      );
+      this.logger.log('✓ Development worker started successfully');
+    } catch (error) {
+      this.logger.error(
+        'Failed to auto-start worker in development mode',
+        error,
+      );
+      this.logger.error(
+        'You can start workers manually with: npm run temporal:worker',
+      );
+    }
+  }
+
+  /**
+   * Create a test connection to verify Temporal server is reachable
+   */
+  private async createTestConnection(): Promise<void> {
+    const clientModule = await import('@temporalio/client');
+    const { Connection } = clientModule;
+
+    const connection = await Connection.connect({
+      address: this.options.clusterUrl,
+    });
+
+    // Close the connection immediately after testing
+    await connection.close();
   }
 
   /**
    * Stop all workers on module destruction
    */
   async onModuleDestroy(): Promise<void> {
+    this.logger.log('=== Temporal Worker Service Shutdown ===');
+
+    // Stop heartbeat
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.logger.debug('Stopped heartbeat logging');
+    }
+
     // Stop stuck activity detection
     if (this.stuckActivityCheckInterval) {
       clearInterval(this.stuckActivityCheckInterval);
+      this.logger.debug('Stopped stuck activity detection');
     }
 
     await this.stopAllWorkers();
+
+    this.logger.log('=== Temporal Worker Service Shutdown Complete ===');
   }
 
   /**
-   * Initialize Worker class (lazy loading)
+   * Start heartbeat logging
+   *
+   * Logs periodic status updates to verify workers are still polling.
    */
-  private async initializeWorker(): Promise<
-    new (...args: unknown[]) => unknown
-  > {
-    if (this.Worker) {
-      return this.Worker;
-    }
+  private startHeartbeat(): void {
+    const heartbeatIntervalMs = parseInt(
+      process.env.TEMPORAL_HEARTBEAT_INTERVAL || '60000',
+      10,
+    ); // Default 60 seconds
 
+    this.heartbeatInterval = setInterval(() => {
+      const activeWorkers = Array.from(this.workers.values()).filter(
+        (w) => w.running,
+      );
+
+      if (activeWorkers.length === 0) {
+        this.logger.warn(
+          'Heartbeat: No active workers running. Workflows may not be processed.',
+        );
+      } else {
+        const workerInfo = activeWorkers.map((w) => ({
+          workerId: w.workerId,
+          taskQueue: w.taskQueue,
+          uptime: `${Math.floor((Date.now() - w.startedAt.getTime()) / 1000)}s`,
+        }));
+
+        this.logger.log(
+          `Heartbeat: ${activeWorkers.length} worker(s) polling | ${JSON.stringify(
+            workerInfo,
+          )}`,
+        );
+      }
+    }, heartbeatIntervalMs);
+
+    this.logger.log(
+      `Started heartbeat logging (interval: ${heartbeatIntervalMs}ms)`,
+    );
+  }
+
+  /**
+   * Initialize Worker module (lazy loading)
+   */
+  private async initializeWorkerModule(): Promise<typeof import('@temporalio/worker')> {
     try {
       // Dynamic import to handle ESM-only temporalio package
       const workerModule = await import('@temporalio/worker');
-      this.Worker = workerModule.Worker as unknown as new (
-        ...args: unknown[]
-      ) => unknown;
-      return this.Worker;
+      return workerModule;
     } catch (error) {
       this.logger.error('Failed to load Temporal Worker SDK', error);
       throw error;
     }
+  }
+
+  /**
+   * Log discovered workflows and activities from file paths
+   *
+   * Scans the provided directories for workflow and activity files
+   * and logs their names for registration verification.
+   *
+   * @param workflowsPath - Path to workflows directory
+   * @param activitiesPath - Path to activities directory
+   */
+  private async logDiscoveredWorkflowsAndActivities(
+    workflowsPath: string,
+    activitiesPath?: string,
+  ): Promise<void> {
+    try {
+      // Import fs promises
+      const path = await import('node:path');
+
+      // Log discovered workflows
+      this.logger.log(`Discovered Workflows (from: ${workflowsPath}):`);
+      try {
+        const workflowFiles = await this.recursiveFindFiles(workflowsPath, [
+          '.workflow.ts',
+          '.workflow.js',
+        ]);
+        if (workflowFiles.length === 0) {
+          this.logger.warn('  No workflow files found');
+        } else {
+          for (const file of workflowFiles) {
+            // Extract workflow name from file path
+            const relativePath = path.relative(workflowsPath, file);
+            const workflowName = path
+              .basename(file, path.extname(file))
+              .replace(/\.workflow$/, '');
+            this.logger.log(`  - ${workflowName} (${relativePath})`);
+          }
+        }
+      } catch (err) {
+        this.logger.warn(
+          `  Could not scan workflows directory: ${(err as Error).message}`,
+        );
+      }
+
+      // Log discovered activities
+      if (activitiesPath) {
+        this.logger.log(`Discovered Activities (from: ${activitiesPath}):`);
+        try {
+          const activityFiles = await this.recursiveFindFiles(activitiesPath, [
+            '.activities.ts',
+            '.activities.js',
+          ]);
+          if (activityFiles.length === 0) {
+            this.logger.warn('  No activity files found');
+          } else {
+            for (const file of activityFiles) {
+              const relativePath = path.relative(activitiesPath, file);
+              const activityName = path
+                .basename(file, path.extname(file))
+                .replace(/\.activities$/, '');
+              this.logger.log(`  - ${activityName} (${relativePath})`);
+            }
+          }
+        } catch (err) {
+          this.logger.warn(
+            `  Could not scan activities directory: ${(err as Error).message}`,
+          );
+        }
+      } else {
+        this.logger.log(
+          'Activities: Embedded in workflows (no separate activities path)',
+        );
+      }
+    } catch (error) {
+      this.logger.warn('Could not scan for workflows/activities', error);
+    }
+  }
+
+  /**
+   * Recursively find files matching extensions in a directory
+   *
+   * @param dir - Directory to search
+   * @param extensions - File extensions to match
+   * @returns Array of absolute file paths
+   */
+  private async recursiveFindFiles(
+    dir: string,
+    extensions: string[],
+  ): Promise<string[]> {
+    const fs = await import('node:fs/promises');
+    const path = await import('node:path');
+
+    const results: string[] = [];
+
+    async function scan(currentDir: string): Promise<void> {
+      try {
+        const entries = await fs.readdir(currentDir, { withFileTypes: true });
+
+        for (const entry of entries) {
+          const fullPath = path.join(currentDir, entry.name);
+
+          if (entry.isDirectory()) {
+            // Skip node_modules and hidden directories
+            if (entry.name !== 'node_modules' && !entry.name.startsWith('.')) {
+              await scan(fullPath);
+            }
+          } else if (entry.isFile()) {
+            const ext = path.extname(entry.name);
+            if (extensions.includes(ext)) {
+              results.push(fullPath);
+            }
+          }
+        }
+      } catch {
+        // Directory may not exist or be readable
+      }
+    }
+
+    await scan(dir);
+    return results;
   }
 
   /**
@@ -133,38 +439,90 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
     }
 
     const startTime = Date.now();
+    const workerId = `worker-${taskQueue}-${Date.now()}`;
+
+    this.logger.log(`=== Starting Temporal Worker ===`);
+    this.logger.log(`Worker ID: ${workerId}`);
+    this.logger.log(`Task Queue: ${taskQueue}`);
+    this.logger.log(`Workflows Path: ${workflowsPath}`);
+    this.logger.log(
+      `Activities Path: ${activitiesPath || 'none (embedded in workflows)'}`,
+    );
+    this.logger.log(`Target Cluster: ${this.options.clusterUrl}`);
+    this.logger.log(`Namespace: ${this.options.namespace}`);
+
+    // Log discovered workflows and activities
+    await this.logDiscoveredWorkflowsAndActivities(
+      workflowsPath,
+      activitiesPath,
+    );
 
     try {
-      const Worker = await this.initializeWorker();
+      const workerModule = await this.initializeWorkerModule();
+      const { Worker, NativeConnection } = workerModule;
+
+      // Create connection to Temporal server
+      this.logger.log(`Connecting to Temporal server at ${this.options.clusterUrl}...`);
+      const connection = await NativeConnection.connect({
+        address: this.options.clusterUrl,
+      });
+      this.logger.log('✓ Connected to Temporal server');
+
+      const maxConcurrentWorkflowTaskExecutions =
+        (workerOptions?.maxConcurrentWorkflowTasks as number) ||
+        TEMPORAL_WORKER_DEFAULTS.MAX_CONCURRENT_WORKFLOW_TASKS;
+      const maxConcurrentActivityTaskExecutions =
+        (workerOptions?.maxConcurrentActivities as number) ||
+        TEMPORAL_WORKER_DEFAULTS.MAX_CONCURRENT_ACTIVITIES;
+      const maxConcurrentLocalActivityExecutions =
+        (workerOptions?.maxConcurrentLocalActivities as number) ||
+        TEMPORAL_WORKER_DEFAULTS.MAX_CONCURRENT_LOCAL_ACTIVITIES;
 
       const workerOptionsFull = {
+        connection,
+        namespace: this.options.namespace,
         taskQueue,
         workflowsPath,
-        activitiesPath,
-        maxConcurrentWorkflowTasks:
-          workerOptions?.maxConcurrentWorkflowTasks ||
-          TEMPORAL_WORKER_DEFAULTS.MAX_CONCURRENT_WORKFLOW_TASKS,
-        maxConcurrentActivities:
-          workerOptions?.maxConcurrentActivities ||
-          TEMPORAL_WORKER_DEFAULTS.MAX_CONCURRENT_ACTIVITIES,
-        maxConcurrentLocalActivities:
-          workerOptions?.maxConcurrentLocalActivities ||
-          TEMPORAL_WORKER_DEFAULTS.MAX_CONCURRENT_LOCAL_ACTIVITIES,
-        ...workerOptions,
+        maxConcurrentWorkflowTaskExecutions,
+        maxConcurrentActivityTaskExecutions,
+        maxConcurrentLocalActivityExecutions,
       };
 
-      const worker = new Worker(workerOptionsFull);
+      this.logger.debug(
+        `Worker Options: ${JSON.stringify({
+          maxConcurrentWorkflowTaskExecutions:
+            workerOptionsFull.maxConcurrentWorkflowTaskExecutions,
+          maxConcurrentActivityTaskExecutions: workerOptionsFull.maxConcurrentActivityTaskExecutions,
+          maxConcurrentLocalActivityExecutions:
+            workerOptionsFull.maxConcurrentLocalActivityExecutions,
+        })}`,
+      );
+
+      const worker = await Worker.create(workerOptionsFull);
+
+      this.logger.log(
+        `✓ Worker instance created, connecting to Temporal server...`,
+      );
 
       // Start the worker in the background
       // Note: worker.run() is blocking, so in production you'd want to handle this differently
       void (async () => {
         try {
+          this.logger.log(
+            `[${workerId}] Starting to poll task queue '${taskQueue}'...`,
+          );
           await (worker as { run: () => Promise<void> }).run();
         } catch (error) {
           this.logger.error(
-            `Worker for task queue '${taskQueue}' failed`,
+            `[${workerId}] Worker for task queue '${taskQueue}' failed`,
             error,
           );
+
+          // Update worker entry to reflect failure
+          const entry = this.workers.get(taskQueue);
+          if (entry) {
+            entry.running = false;
+          }
 
           // Record worker failure in metrics
           this.metricsService?.recordWorkflowFailed({
@@ -176,16 +534,23 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
         }
       })();
 
+      const startedAt = new Date();
       this.workers.set(taskQueue, {
         worker,
         taskQueue,
         running: true,
+        workerId,
+        startedAt,
+        workflowsPath,
+        activitiesPath,
       });
 
       const startupDuration = Date.now() - startTime;
+      this.logger.log(`✓ Worker started successfully in ${startupDuration}ms`);
       this.logger.log(
-        `Started worker for task queue '${taskQueue}' (workflows: ${workflowsPath}) in ${startupDuration}ms`,
+        `[${workerId}] Now polling task queue '${taskQueue}' for workflows`,
       );
+      this.logger.log(`=== Temporal Worker Start Complete ===`);
 
       // Initialize metrics for this worker
       this.metricsService?.updateActiveWorkflows(taskQueue, 0);
@@ -195,9 +560,18 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
     } catch (error) {
       const startupDuration = Date.now() - startTime;
       this.logger.error(
-        `Failed to start worker for task queue '${taskQueue}' after ${startupDuration}ms`,
+        `✗ Failed to start worker for task queue '${taskQueue}' after ${startupDuration}ms`,
         error,
       );
+      this.logger.error(`This may indicate:`);
+      this.logger.error(
+        `  - Temporal server is not running at ${this.options.clusterUrl}`,
+      );
+      this.logger.error(
+        `  - Network connectivity issues to the Temporal cluster`,
+      );
+      this.logger.error(`  - Incorrect cluster URL or namespace configuration`);
+      this.logger.error(`  - TLS configuration mismatch`);
       throw error;
     }
   }
@@ -251,11 +625,15 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
     }
 
     try {
+      const uptime = Date.now() - entry.startedAt.getTime();
+
       // Mark as not running
       entry.running = false;
       this.workers.delete(taskQueue);
 
-      this.logger.log(`Stopped worker for task queue '${taskQueue}'`);
+      this.logger.log(
+        `Stopped worker [${entry.workerId}] for task queue '${taskQueue}' (uptime: ${Math.floor(uptime / 1000)}s)`,
+      );
     } catch (error) {
       this.logger.error(
         `Failed to stop worker for task queue '${taskQueue}'`,
@@ -268,13 +646,22 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
    * Stop all workers
    */
   async stopAllWorkers(): Promise<void> {
+    const workerCount = this.workers.size;
+
+    if (workerCount === 0) {
+      this.logger.log('No workers to stop');
+      return;
+    }
+
+    this.logger.log(`Stopping ${workerCount} worker(s)...`);
+
     const stopPromises = Array.from(this.workers.keys()).map((taskQueue) =>
       this.stopWorker(taskQueue),
     );
 
     await Promise.allSettled(stopPromises);
 
-    this.logger.log(`Stopped all workers`);
+    this.logger.log(`Stopped all ${workerCount} worker(s)`);
   }
 
   /**
@@ -285,10 +672,16 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
   getWorkerStatus(): Array<{
     taskQueue: string;
     running: boolean;
+    workerId: string;
+    uptimeSeconds: number;
   }> {
     return Array.from(this.workers.values()).map((entry) => ({
       taskQueue: entry.taskQueue,
       running: entry.running,
+      workerId: entry.workerId,
+      uptimeSeconds: Math.floor(
+        (Date.now() - entry.startedAt.getTime()) / 1000,
+      ),
     }));
   }
 

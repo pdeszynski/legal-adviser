@@ -1,0 +1,16 @@
+{
+  "category": "feature",
+  "description": "Implement the backend service logic for deleting chat sessions in QueriesService or ChatSessionsService. Implementation tasks: 1) Create deleteChatSession(sessionId: string, userId: string) method that verifies session ownership, 2) Delete all associated ChatMessage records for the session (cascade delete or explicit delete), 3) Delete the ChatSession record itself, 4) Use database transaction to ensure atomic deletion, 5) Return success response with deleted session ID, 6) Throw ForbiddenException if user doesn't own the session, 7) Log deletion to audit logs with user ID and session ID. Ensure cascading deletes don't leave orphaned messages in the database.",
+  "id": "chat-session-delete-backend-implementation",
+  "title": "Implement Backend Chat Session Deletion Logic",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Implement the backend service logic for deleting chat sessions in QueriesService or ChatSessionsService. Implementation tasks: 1) Create deleteChatSession(sessionId: string, userId: string) method that verifies session ownership, 2) Delete all associated ChatMessage records for the session (cascade delete or explicit delete), 3) Delete the ChatSession record itself, 4) Use database transaction to ensure atomic deletion, 5) Return success response with deleted session ID, 6) Throw ForbiddenException if user doesn't own the session, 7) Log deletion to audit logs with user ID and session ID. Ensure cascading deletes don't leave orphaned messages in the database.",
+      "timestamp": "2026-01-29T10:07:53.263Z",
+      "source": "initial"
+    }
+  ]
+}

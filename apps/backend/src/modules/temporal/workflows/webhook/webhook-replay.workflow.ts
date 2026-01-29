@@ -120,6 +120,14 @@ export function generateReplayWorkflowId(webhookId?: string): string {
 }
 
 /**
+ * Workflow export for Temporal registration
+ */
+export const workflowInfo = {
+  name: 'webhookReplay',
+  taskQueue: 'webhook-workflows',
+} as const;
+
+/**
  * Webhook Replay Workflow
  *
  * Main workflow for replaying failed webhook deliveries.

@@ -5,22 +5,9 @@ import { X, Mail, Shield, Calendar, Check, UserX, Edit2, Save, XCircle } from 'l
 import { Button, Input } from '@legal/ui';
 import { Label } from '@legal/ui';
 import { dataProvider } from '@providers/data-provider';
-import type { GraphQLMutationConfig } from '@providers/data-provider';
 
-interface User {
-  id: string;
-  email: string;
-  username?: string;
-  firstName?: string;
-  lastName?: string;
-  isActive: boolean;
-  role: 'user' | 'admin';
-  disclaimerAccepted: boolean;
-  disclaimerAcceptedAt?: string;
-  stripeCustomerId?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// Use the generated User type from GraphQL
+import type { User } from '@/generated/graphql';
 
 interface UserDetailDialogProps {
   open: boolean;
@@ -87,54 +74,29 @@ export function UserDetailDialog({ open, onClose, user, onUpdate }: UserDetailDi
       const dp = dataProvider;
       if (!dp) throw new Error('Data provider not available');
 
-      const mutationConfig: GraphQLMutationConfig<{
-        email?: string;
-        username?: string;
-        firstName?: string;
-        lastName?: string;
-        role?: 'user' | 'admin';
-        isActive?: boolean;
-      }> = {
-        url: '',
-        method: 'post',
-        config: {
-          mutation: {
-            operation: 'updateOneUser',
-            fields: [
-              'id',
-              'email',
-              'username',
-              'firstName',
-              'lastName',
-              'role',
-              'isActive',
-              'updatedAt',
-            ],
-            variables: {
-              input: {
-                ...(editForm.email !== user.email && { email: editForm.email }),
-                ...(editForm.username !== user.username && {
-                  username: editForm.username || undefined,
-                }),
-                ...(editForm.firstName !== user.firstName && {
-                  firstName: editForm.firstName || undefined,
-                }),
-                ...(editForm.lastName !== user.lastName && {
-                  lastName: editForm.lastName || undefined,
-                }),
-                ...(editForm.role !== user.role && { role: editForm.role }),
-                ...(editForm.isActive !== user.isActive && { isActive: editForm.isActive }),
-              },
-            },
-          },
-        },
-      };
+      // Build the input object with only changed fields
+      const inputUpdate: Record<string, unknown> = {};
+      if (editForm.email !== user.email) inputUpdate.email = editForm.email;
+      if (editForm.username !== (user.username ?? '')) inputUpdate.username = editForm.username || undefined;
+      if (editForm.firstName !== (user.firstName ?? '')) inputUpdate.firstName = editForm.firstName || undefined;
+      if (editForm.lastName !== (user.lastName ?? '')) inputUpdate.lastName = editForm.lastName || undefined;
+      if (editForm.role !== user.role) inputUpdate.role = editForm.role;
+      if (editForm.isActive !== user.isActive) inputUpdate.isActive = editForm.isActive;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (dp as any).custom({
         url: '',
         method: 'post',
-        config: mutationConfig.config,
+        config: {
+          mutation: {
+            operation: 'updateOneUser',
+            fields: ['id', 'email', 'username', 'firstName', 'lastName', 'role', 'isActive', 'updatedAt'],
+            variables: {
+              id: user.id,
+              input: inputUpdate,
+            },
+          },
+        },
       });
       setIsEditing(false);
       onUpdate();
@@ -158,7 +120,8 @@ export function UserDetailDialog({ open, onClose, user, onUpdate }: UserDetailDi
       const dp = dataProvider;
       if (!dp) throw new Error('Data provider not available');
 
-      const mutationConfig: GraphQLMutationConfig<{ userId: string; reason?: string }> = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (dp as any).custom({
         url: '',
         method: 'post',
         config: {
@@ -172,13 +135,6 @@ export function UserDetailDialog({ open, onClose, user, onUpdate }: UserDetailDi
             },
           },
         },
-      };
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (dp as any).custom({
-        url: '',
-        method: 'post',
-        config: mutationConfig.config,
       });
       onUpdate();
     } catch (error) {

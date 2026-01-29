@@ -59,3 +59,6 @@ export type {
   RecentDocumentActivity,
   UseDocumentMonitoringReturn,
 } from './use-document-monitoring';
+
+export { useDeleteChatSession } from './use-delete-chat-session';
+export type { DeleteChatSessionOptions } from './use-delete-chat-session';
