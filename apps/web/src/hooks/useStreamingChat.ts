@@ -1225,6 +1225,10 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
    *
    * This function sends the user's answers to clarification questions
    * and streams the AI's response in real-time.
+   *
+   * IMPORTANT: This function does NOT save a user message to the backend.
+   * The caller is responsible for calling submitClarificationAnswers mutation
+   * to persist the user's answers before calling this function.
    */
   const sendClarificationAnswers = useCallback(
     async (
@@ -1301,13 +1305,9 @@ export function useStreamingChat(options: UseStreamingChatOptions = {}): UseStre
         conversationMetadata: requestBody.conversation_metadata,
       });
 
-      // Save user's clarification answers to backend before streaming
-      const answerText = answers.map((a) => `${a.question}: ${a.answer}`).join('\n');
-      const userMessageResult = await saveUserMessageToBackend(sessionId, answerText);
-      if (!userMessageResult.success) {
-        console.warn('Failed to save clarification answers to backend:', userMessageResult.error);
-        // Continue anyway - don't block the user experience
-      }
+      // NOTE: User message is saved by submitClarificationAnswers mutation
+      // which should be called BEFORE this function.
+      // This function only handles streaming the AI response.
 
       // Create abort controller for this request
       abortControllerRef.current = new AbortController();

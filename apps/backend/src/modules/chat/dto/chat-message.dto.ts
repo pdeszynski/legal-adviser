@@ -140,6 +140,14 @@ export class CreateChatMessageInput {
   @IsString()
   @IsNotEmpty()
   content: string;
+
+  @Field(() => ChatMessageMetadataInput, {
+    nullable: true,
+    description: 'Optional metadata for the message',
+  })
+  @IsOptional()
+  @ValidateNested()
+  metadata?: ChatMessageMetadataInput;
 }
 
 /**
@@ -497,11 +505,13 @@ export class SubmitClarificationAnswersInput {
   @Field(() => ID, {
     description: 'The session ID',
   })
+  @IsString()
   sessionId: string;
 
   @Field(() => ID, {
     description: 'The message ID containing the clarification questions',
   })
+  @IsString()
   clarificationMessageId: string;
 
   @Field(() => [ClarificationAnswerInput], {

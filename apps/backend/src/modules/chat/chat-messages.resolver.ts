@@ -524,23 +524,26 @@ export class ChatMessagesResolver {
         })),
       });
 
-      // Store original questions in metadata for reference
-      const answerMetadata = {
-        custom: {
-          clarification_answers: {
-            original_questions: clarificationInfo.questions,
-            answered_at: new Date().toISOString(),
-            clarification_message_id: input.clarificationMessageId,
-          },
-        },
-      };
-
       // Create a user message with the answers
       const userMessage = await this.chatMessagesService.createUserMessage(
         input.sessionId,
         safeUserId,
         {
           content: answerContent,
+        },
+      );
+
+      // Update the message's metadata to include the clarification message ID
+      // This allows the frontend to link the answers to the correct clarification message
+      await this.chatMessagesService.updateMessageMetadata(
+        userMessage.messageId,
+        {
+          custom: {
+            clarification_answers: {
+              clarification_message_id: input.clarificationMessageId,
+              answered_at: new Date().toISOString(),
+            },
+          },
         },
       );
 
@@ -556,10 +559,6 @@ export class ChatMessagesResolver {
           ),
         ),
       );
-
-      // Update the user message's metadata to include the original questions
-      userMessage.metadata = answerMetadata;
-      await this.chatMessagesService['chatMessageRepository'].save(userMessage);
 
       console.log(
         `[submitClarificationAnswers] Created answer message | sessionId=${input.sessionId} | messageId=${userMessage.messageId} | answersCount=${input.answers.length}`,

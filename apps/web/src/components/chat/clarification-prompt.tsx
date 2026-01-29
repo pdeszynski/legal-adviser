@@ -32,12 +32,20 @@ const CLARIFICATION_ANSWERS_KEY = 'clarification_form_answers';
 function getStorageKey(clarification: ClarificationInfo): string {
   // Create a unique key based on the questions asked
   // Sort questions to ensure consistent key regardless of order
+  // Use a simple hash instead of btoa to avoid issues with non-Latin1 characters
   const questionsHash = clarification.questions
     .map((q) => q.question)
     .sort()
     .join('|')
     .slice(0, 50); // Limit length for key
-  return `${CLARIFICATION_ANSWERS_KEY}_${btoa(questionsHash)}`;
+  // Simple hash function that works with unicode
+  let hash = 0;
+  for (let i = 0; i < questionsHash.length; i++) {
+    const char = questionsHash.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return `${CLARIFICATION_ANSWERS_KEY}_${Math.abs(hash).toString(36)}`;
 }
 
 /**
@@ -110,6 +118,10 @@ interface ClarificationPromptProps {
   onSubmit: (answers: Record<string, string>) => Promise<void>;
   onCancel?: () => void;
   isSubmitting?: boolean;
+  /** If true, show the form in readonly mode with pre-filled answers (greenish style) */
+  readonly?: boolean;
+  /** Pre-filled answers to display when in readonly mode */
+  prefillAnswers?: Record<string, string>;
 }
 
 /**
@@ -124,11 +136,19 @@ export function ClarificationPrompt({
   onSubmit,
   onCancel,
   isSubmitting = false,
+  readonly = false,
+  prefillAnswers,
 }: ClarificationPromptProps) {
-  // Initialize state from sessionStorage on mount, with empty default
-  const [answers, setAnswers] = useState<Record<string, string>>(() =>
-    loadSavedAnswers(clarification),
-  );
+  // Initialize state from prefillAnswers (readonly mode) or sessionStorage (interactive mode)
+  // Start empty and let useEffect populate to avoid issues with empty prefillAnswers object
+  const [answers, setAnswers] = useState<Record<string, string>>(() => {
+    // If in readonly mode and have prefill answers, use those
+    if (readonly && prefillAnswers && Object.keys(prefillAnswers).length > 0) {
+      return { ...prefillAnswers };
+    }
+    // Otherwise try to load from sessionStorage for interactive mode
+    return loadSavedAnswers(clarification);
+  });
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   // Track the last clarification signature to detect when clarification content changes
@@ -149,6 +169,24 @@ export function ClarificationPrompt({
       lastClarificationSignatureRef.current = currentSignature;
     }
   }, [clarification]);
+
+  // When prefillAnswers changes (in readonly mode after loading from backend),
+  // update the answers state to reflect the loaded answers
+  // This handles the case where prefillAnswers is initially empty and then gets populated
+  useEffect(() => {
+    if (readonly && prefillAnswers) {
+      const hasAnswers = Object.keys(prefillAnswers).length > 0;
+      if (hasAnswers) {
+        console.log(
+          '[ClarificationPrompt] Populating answers from prefillAnswers:',
+          prefillAnswers,
+        );
+        setAnswers(prefillAnswers);
+      } else {
+        console.log('[ClarificationPrompt] prefillAnswers is empty, keeping current answers');
+      }
+    }
+  }, [readonly, prefillAnswers]);
 
   // Save answers to sessionStorage whenever they change
   useEffect(() => {
@@ -241,13 +279,32 @@ export function ClarificationPrompt({
 
   return (
     <Card
-      className="border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/20 shadow-sm"
+      className={cn(
+        'shadow-sm',
+        readonly
+          ? 'border-green-200 bg-green-50/50 dark:border-green-900 dark:bg-green-950/20'
+          : 'border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/20',
+      )}
       data-testid="clarification-prompt"
     >
       <CardHeader className="pb-4">
         <div className="flex items-start gap-3">
-          <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center shrink-0">
-            {isMultiRound ? (
+          <div
+            className={cn(
+              'h-10 w-10 rounded-full flex items-center justify-center shrink-0',
+              readonly ? 'bg-green-100 dark:bg-green-900' : 'bg-amber-100 dark:bg-amber-900',
+            )}
+          >
+            {readonly ? (
+              <Check
+                className={cn(
+                  'h-5 w-5',
+                  readonly
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-amber-600 dark:text-amber-400',
+                )}
+              />
+            ) : isMultiRound ? (
               <div className="text-amber-600 dark:text-amber-400 font-semibold text-sm">
                 {currentRound}/{totalRounds}
               </div>
@@ -257,20 +314,40 @@ export function ClarificationPrompt({
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <CardTitle className="text-lg text-amber-900 dark:text-amber-100">
-                {isMultiRound
-                  ? `Clarification (Round ${currentRound}/${totalRounds})`
-                  : 'I need some more information'}
+              <CardTitle
+                className={cn(
+                  'text-lg',
+                  readonly
+                    ? 'text-green-900 dark:text-green-100'
+                    : 'text-amber-900 dark:text-amber-100',
+                )}
+              >
+                {readonly
+                  ? 'Answered'
+                  : isMultiRound
+                    ? `Clarification (Round ${currentRound}/${totalRounds})`
+                    : 'I need some more information'}
               </CardTitle>
               <Badge
                 variant="outline"
-                className="border-amber-300 text-amber-700 dark:border-amber-700 dark:text-amber-300"
+                className={cn(
+                  readonly
+                    ? 'border-green-300 text-green-700 dark:border-green-700 dark:text-green-300'
+                    : 'border-amber-300 text-amber-700 dark:border-amber-700 dark:text-amber-300',
+                )}
               >
-                <HelpCircle className="h-3 w-3 mr-1" />
+                <Check className="h-3 w-3 mr-1" />
                 {answeredCount}/{clarification.questions.length} answered
               </Badge>
             </div>
-            <CardDescription className="text-amber-700 dark:text-amber-300 mt-1">
+            <CardDescription
+              className={cn(
+                'mt-1',
+                readonly
+                  ? 'text-green-700 dark:text-green-300'
+                  : 'text-amber-700 dark:text-amber-300',
+              )}
+            >
               {clarification.context_summary}
             </CardDescription>
           </div>
@@ -279,8 +356,23 @@ export function ClarificationPrompt({
         {/* Progress bar */}
         {clarification.questions.length > 1 && (
           <div className="mt-4">
-            <Progress value={progressPercentage} className="h-2 bg-amber-200 dark:bg-amber-900" />
-            <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+            <Progress
+              value={progressPercentage}
+              className={cn(
+                'h-2',
+                readonly
+                  ? 'bg-green-200 dark:bg-green-900 [&_[role=progressbar]]:bg-green-500'
+                  : 'bg-amber-200 dark:bg-amber-900 [&_[role=progressbar]]:bg-amber-500',
+              )}
+            />
+            <p
+              className={cn(
+                'text-xs mt-1',
+                readonly
+                  ? 'text-green-600 dark:text-green-400'
+                  : 'text-amber-600 dark:text-amber-400',
+              )}
+            >
               {answeredCount === clarification.questions.length
                 ? 'All questions answered!'
                 : `${clarification.questions.length - answeredCount} more question${clarification.questions.length - answeredCount > 1 ? 's' : ''} to go`}
@@ -299,28 +391,34 @@ export function ClarificationPrompt({
               key={idx}
               className={cn(
                 'space-y-3 p-3 rounded-lg transition-all',
-                isAnswered && 'bg-amber-100/50 dark:bg-amber-900/30 opacity-70',
-                isCurrent && 'ring-2 ring-amber-400 dark:ring-amber-600',
-                !isAnswered && !isCurrent && 'bg-white/50 dark:bg-gray-800/50',
+                readonly && isAnswered && 'bg-green-100/50 dark:bg-green-900/30',
+                !readonly && isAnswered && 'bg-amber-100/50 dark:bg-amber-900/30 opacity-70',
+                !readonly && isCurrent && 'ring-2 ring-amber-400 dark:ring-amber-600',
+                !isAnswered && !isCurrent && !readonly && 'bg-white/50 dark:bg-gray-800/50',
               )}
             >
               <div className="flex items-start gap-2">
                 <div
                   className={cn(
                     'h-6 w-6 rounded-full flex items-center justify-center text-xs font-medium shrink-0 mt-0.5',
-                    isAnswered
+                    readonly
                       ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
-                      : 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300',
+                      : isAnswered
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                        : 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300',
                   )}
                 >
-                  {isAnswered ? '✓' : idx + 1}
+                  {isAnswered || readonly ? '✓' : idx + 1}
                 </div>
                 <div className="flex-1 space-y-2">
                   <Label
                     htmlFor={`q-${idx}`}
                     className={cn(
-                      'text-amber-900 dark:text-amber-100 font-medium',
-                      isAnswered && 'line-through text-amber-700 dark:text-amber-400',
+                      'font-medium',
+                      readonly
+                        ? 'text-green-900 dark:text-green-100'
+                        : 'text-amber-900 dark:text-amber-100',
+                      isAnswered && !readonly && 'line-through text-amber-700 dark:text-amber-400',
                     )}
                   >
                     {q.question}
@@ -341,19 +439,26 @@ export function ClarificationPrompt({
                           type="button"
                           variant={answers[q.question] === option ? 'default' : 'outline'}
                           size="sm"
-                          onClick={() => handleOptionSelect(q.question, option)}
-                          disabled={isSubmitting}
+                          onClick={() => !readonly && handleOptionSelect(q.question, option)}
+                          disabled={isSubmitting || readonly}
                           className={cn(
                             'transition-all',
-                            answers[q.question] === option
-                              ? 'bg-amber-600 hover:bg-amber-700 text-white border-amber-600'
-                              : 'border-amber-300 hover:border-amber-400 hover:bg-amber-100 dark:border-amber-700 dark:hover:bg-amber-900',
-                            !isAnswered && !isCurrent && 'opacity-60',
+                            readonly
+                              ? answers[q.question] === option
+                                ? 'bg-green-600 text-white border-green-600'
+                                : 'border-green-300 text-green-700 dark:border-green-700 dark:text-green-300'
+                              : answers[q.question] === option
+                                ? 'bg-amber-600 hover:bg-amber-700 text-white border-amber-600'
+                                : 'border-amber-300 hover:border-amber-400 hover:bg-amber-100 dark:border-amber-700 dark:hover:bg-amber-900',
+                            !isAnswered && !isCurrent && !readonly && 'opacity-60',
                           )}
                         >
                           {option}
-                          {answers[q.question] === option && (
+                          {answers[q.question] === option && !readonly && (
                             <ChevronRight className="ml-1 h-3 w-3" />
+                          )}
+                          {answers[q.question] === option && readonly && (
+                            <Check className="ml-1 h-3 w-3" />
                           )}
                         </Button>
                       ))}
@@ -365,53 +470,72 @@ export function ClarificationPrompt({
                           id={`q-${idx}`}
                           type="text"
                           value={answers[q.question] || ''}
-                          onChange={(e) => handleInputChange(q.question, e.target.value)}
-                          onKeyDown={(e) => handleInputKeyDown(e, q.question)}
-                          placeholder="Type your answer here..."
-                          className="bg-white dark:bg-gray-800 border-amber-300 dark:border-amber-700 focus-visible:ring-amber-500 flex-1"
-                          disabled={isSubmitting}
-                          onFocus={() => setCurrentQuestionIndex(idx)}
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleConfirmAnswer(q.question)}
-                          disabled={
-                            !answers[q.question] ||
-                            answers[q.question].trim().length === 0 ||
-                            isSubmitting
+                          onChange={(e) =>
+                            !readonly && handleInputChange(q.question, e.target.value)
                           }
-                          className="shrink-0 border-amber-300 hover:border-amber-400 hover:bg-amber-100 dark:border-amber-700 dark:hover:bg-amber-900"
-                          title="Confirm answer and move to next question"
-                        >
-                          <Check className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      {/* Character counter with visual feedback and Enter hint */}
-                      <div className="flex items-center justify-between text-xs">
-                        <span
+                          onKeyDown={(e) => !readonly && handleInputKeyDown(e, q.question)}
+                          placeholder={readonly ? '' : 'Type your answer here...'}
                           className={cn(
-                            answers[q.question]?.trim().length > 0
-                              ? 'text-green-600 dark:text-green-400'
-                              : 'text-amber-600 dark:text-amber-400',
+                            'flex-1',
+                            readonly
+                              ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700 text-green-900 dark:text-green-100'
+                              : 'bg-white dark:bg-gray-800 border-amber-300 dark:border-amber-700 focus-visible:ring-amber-500',
                           )}
-                        >
-                          {answers[q.question]?.trim().length > 0 ? (
-                            <>Answer ready • Press Enter or click ✓ to confirm</>
-                          ) : (
-                            <>Type your answer above</>
-                          )}
-                        </span>
-                        <span className="text-muted-foreground">
-                          {answers[q.question]?.length || 0} chars
-                        </span>
+                          disabled={isSubmitting || readonly}
+                          onFocus={() => !readonly && setCurrentQuestionIndex(idx)}
+                          readOnly={readonly}
+                        />
+                        {!readonly && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleConfirmAnswer(q.question)}
+                            disabled={
+                              !answers[q.question] ||
+                              answers[q.question].trim().length === 0 ||
+                              isSubmitting
+                            }
+                            className="shrink-0 border-amber-300 hover:border-amber-400 hover:bg-amber-100 dark:border-amber-700 dark:hover:bg-amber-900"
+                            title="Confirm answer and move to next question"
+                          >
+                            <Check className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
+                      {/* Character counter with visual feedback and Enter hint - only show when not readonly */}
+                      {!readonly && (
+                        <div className="flex items-center justify-between text-xs">
+                          <span
+                            className={cn(
+                              answers[q.question]?.trim().length > 0
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-amber-600 dark:text-amber-400',
+                            )}
+                          >
+                            {answers[q.question]?.trim().length > 0 ? (
+                              <>Answer ready • Press Enter or click ✓ to confirm</>
+                            ) : (
+                              <>Type your answer above</>
+                            )}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {answers[q.question]?.length || 0} chars
+                          </span>
+                        </div>
+                      )}
                     </div>
                   )}
 
-                  {isAnswered && (
-                    <p className="text-xs text-amber-700 dark:text-amber-400 italic">
+                  {(isAnswered || readonly) && (
+                    <p
+                      className={cn(
+                        'text-xs italic',
+                        readonly
+                          ? 'text-green-700 dark:text-green-400'
+                          : 'text-amber-700 dark:text-amber-400',
+                      )}
+                    >
                       Your answer: {answers[q.question]}
                     </p>
                   )}
@@ -422,41 +546,55 @@ export function ClarificationPrompt({
         })}
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-3 pt-4 border-t border-amber-200 dark:border-amber-800">
-        <p className="text-xs text-amber-600 dark:text-amber-400 w-full">
+      <CardFooter
+        className={cn(
+          'flex flex-col gap-3 pt-4 border-t',
+          readonly
+            ? 'border-green-200 dark:border-green-800'
+            : 'border-amber-200 dark:border-amber-800',
+        )}
+      >
+        <p
+          className={cn(
+            'text-xs w-full',
+            readonly ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400',
+          )}
+        >
           {clarification.next_steps}
         </p>
-        <div className="flex gap-2 w-full">
-          <Button
-            type="button"
-            onClick={handleSubmit}
-            disabled={!allQuestionsAnswered || isSubmitting}
-            className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                {isMultiRound ? `Submit Answers for Round ${currentRound}` : 'Submit Answers'}
-                <ChevronRight className="ml-1 h-4 w-4" />
-              </>
-            )}
-          </Button>
-          {onCancel && (
+        {!readonly && (
+          <div className="flex gap-2 w-full">
             <Button
               type="button"
-              variant="ghost"
-              onClick={onCancel}
-              disabled={isSubmitting}
-              className="text-amber-700 hover:text-amber-900 hover:bg-amber-100 dark:text-amber-300 dark:hover:bg-amber-900"
+              onClick={handleSubmit}
+              disabled={!allQuestionsAnswered || isSubmitting}
+              className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
             >
-              Skip
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  {isMultiRound ? `Submit Answers for Round ${currentRound}` : 'Submit Answers'}
+                  <ChevronRight className="ml-1 h-4 w-4" />
+                </>
+              )}
             </Button>
-          )}
-        </div>
+            {onCancel && (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={onCancel}
+                disabled={isSubmitting}
+                className="text-amber-700 hover:text-amber-900 hover:bg-amber-100 dark:text-amber-300 dark:hover:bg-amber-900"
+              >
+                Skip
+              </Button>
+            )}
+          </div>
+        )}
       </CardFooter>
     </Card>
   );

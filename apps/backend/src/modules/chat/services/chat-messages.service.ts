@@ -12,6 +12,7 @@ import {
   ChatMessage,
   MessageRole,
   ClarificationInfo,
+  ChatMessageMetadata,
 } from '../entities/chat-message.entity';
 import { ChatSessionsService } from './chat-sessions.service';
 import {
@@ -130,7 +131,7 @@ export class ChatMessagesService {
       rawContent: input.content, // User messages store raw content as-is
       sequenceOrder: nextOrder,
       citations: null,
-      metadata: null,
+      metadata: null, // User messages don't have metadata by default
     });
 
     const savedMessage = await this.chatMessageRepository.save(message);
@@ -213,7 +214,9 @@ export class ChatMessagesService {
     );
 
     // Merge clarification from content with provided metadata
-    const metadata = input.metadata ?? {};
+    const metadata: ChatMessageMetadata = input.metadata
+      ? { ...input.metadata }
+      : {};
     if (clarificationFromContent) {
       metadata.clarification = clarificationFromContent;
       this.logger.log(
@@ -607,6 +610,33 @@ export class ChatMessagesService {
     );
 
     return savedMessage;
+  }
+
+  /**
+   * Update message metadata
+   *
+   * @param messageId - The message ID
+   * @param metadata - The metadata to merge with existing metadata
+   * @returns The updated message
+   */
+  async updateMessageMetadata(
+    messageId: string,
+    metadata: Partial<ChatMessageMetadata>,
+  ): Promise<ChatMessage> {
+    const message = await this.chatMessageRepository.findOne({
+      where: { messageId },
+    });
+    if (!message) {
+      throw new NotFoundException(`Message with ID ${messageId} not found`);
+    }
+
+    // Merge metadata
+    message.metadata = {
+      ...message.metadata,
+      ...metadata,
+    };
+
+    return await this.chatMessageRepository.save(message);
   }
 
   /**

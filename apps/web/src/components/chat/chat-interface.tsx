@@ -46,6 +46,8 @@ export interface ChatMessage {
   clarificationAnswered?: boolean;
   /** For user messages containing clarification answers */
   isClarificationAnswer?: boolean;
+  /** Stores the answers submitted for a clarification (for readonly display) */
+  clarificationAnswers?: Record<string, string>;
 }
 
 const STARTER_PROMPTS = [
@@ -97,6 +99,14 @@ export function ChatInterface() {
   const [pendingClarificationMessageId, setPendingClarificationMessageId] = useState<string | null>(
     null,
   );
+  // Store pending clarification submission data to submit after streaming completes
+  const pendingClarificationSubmissionRef = useRef<{
+    clarificationMessageId: string;
+    answers: Record<string, string>;
+    clarificationQuestions: Array<{ question: string; question_type?: string }>;
+  } | null>(null);
+  // Map temporary message IDs to database IDs for clarification messages
+  const clarificationIdMapRef = useRef<Map<string, string>>(new Map());
 
   // Keep non-streaming chat for clarification responses - declared early for use in session restoration
   const {
@@ -134,36 +144,59 @@ export function ChatInterface() {
 
       // Load messages from session data with full support for citations and clarification
       if (sessionData.messages && sessionData.messages.length > 0) {
-        const loadedMessages: ChatMessage[] = sessionData.messages
+        // First pass: collect all clarification answers and their target message IDs
+        const clarificationAnswersMap = new Map<string, Record<string, string>>();
+        const nonAnswerMessages = sessionData.messages.filter((msg: any) => {
+          if (msg.content && typeof msg.content === 'string' && msg.role === 'USER') {
+            const trimmed = msg.content.trim();
+            if (
+              trimmed.startsWith('{"type":"clarification_answer"') ||
+              trimmed.startsWith('{"type": "clarification_answer"')
+            ) {
+              try {
+                const parsed = JSON.parse(trimmed);
+                if (parsed.type === 'clarification_answer' && Array.isArray(parsed.answers)) {
+                  // Get the clarification message ID from metadata (backend stores it in custom.clarification_answers)
+                  const clarificationMessageId =
+                    msg.metadata?.custom?.clarification_answers?.clarification_message_id;
+                  if (clarificationMessageId) {
+                    // Convert answers array to a record
+                    const answersRecord = parsed.answers.reduce(
+                      (acc: Record<string, string>, a: any) => {
+                        acc[a.question] = a.answer;
+                        return acc;
+                      },
+                      {},
+                    );
+                    clarificationAnswersMap.set(clarificationMessageId, answersRecord);
+                  }
+                  // Filter out this message - don't display it
+                  return false;
+                }
+              } catch (e) {
+                console.warn('[Message Loading] Failed to parse clarification_answer JSON:', e);
+              }
+            }
+          }
+          return true;
+        });
+
+        // Second pass: load remaining messages and attach clarification answers
+        const loadedMessages: ChatMessage[] = nonAnswerMessages
           .sort((a: any, b: any) => a.sequenceOrder - b.sequenceOrder)
           .map((msg: any) => {
+            const msgId = msg.messageId;
+            const answersForThis = clarificationAnswersMap.get(msgId);
+            if (answersForThis) {
+              console.log('[Message Loading] Attaching answers to message:', {
+                msgId,
+                answersCount: Object.keys(answersForThis).length,
+                answers: answersForThis,
+              });
+            }
             // Default display content
             let displayContent = msg.content;
             let parsedClarificationFromContent: ClarificationInfo | null = null;
-            let isClarificationAnswer = false;
-
-            // Parse user messages for clarification_answer type
-            if (msg.content && typeof msg.content === 'string' && msg.role === 'USER') {
-              const trimmed = msg.content.trim();
-              // Check if content contains clarification_answer JSON
-              if (
-                trimmed.startsWith('{"type":"clarification_answer"') ||
-                trimmed.startsWith('{"type": "clarification_answer"')
-              ) {
-                try {
-                  const parsed = JSON.parse(trimmed);
-                  if (parsed.type === 'clarification_answer' && Array.isArray(parsed.answers)) {
-                    isClarificationAnswer = true;
-                    // Format the answers for display
-                    displayContent = parsed.answers
-                      .map((a: any) => `${a.question}: ${a.answer}`)
-                      .join('\n');
-                  }
-                } catch (e) {
-                  console.warn('Failed to parse clarification_answer JSON from content:', e);
-                }
-              }
-            }
 
             // Parse assistant messages for clarification JSON
             if (msg.content && typeof msg.content === 'string' && msg.role === 'ASSISTANT') {
@@ -219,11 +252,6 @@ export function ChatInterface() {
               isStreaming: false,
             };
 
-            // Mark clarification answer messages with a flag for special rendering
-            if (isClarificationAnswer) {
-              message.isClarificationAnswer = true;
-            }
-
             // Attach clarification data from either metadata or parsed content
             if (clarification) {
               message.clarification = {
@@ -237,6 +265,23 @@ export function ChatInterface() {
               // Store whether this clarification was already answered
               message.clarificationAnswered =
                 clarification.answered || msg.metadata?.clarification?.answered || false;
+
+              // Check if we have answers for this clarification message from the map
+              const answersForThis = clarificationAnswersMap.get(msg.messageId);
+              if (answersForThis) {
+                console.log('[Message Loading] Setting clarificationAnswers on message:', {
+                  msgId: msg.messageId,
+                  answersCount: Object.keys(answersForThis).length,
+                  answers: answersForThis,
+                });
+                message.clarificationAnswers = answersForThis;
+                message.clarificationAnswered = true;
+              } else {
+                console.log('[Message Loading] No answers found for clarification message:', {
+                  msgId: msg.messageId,
+                  mapKeys: Array.from(clarificationAnswersMap.keys()),
+                });
+              }
             }
 
             return message;
@@ -305,12 +350,21 @@ export function ChatInterface() {
         );
       }
     },
-    onStreamEnd: (response) => {
+    onStreamEnd: async (response) => {
       // Finalize the streaming message
       if (streamingMessageIdRef.current) {
+        const tempId = streamingMessageIdRef.current;
+        const dbId = response.dbMessageId;
+
+        // Store the mapping from temporary ID to database ID for clarification messages
+        if (dbId && response.clarification?.needs_clarification) {
+          clarificationIdMapRef.current.set(tempId, dbId);
+          console.log('[onStreamEnd] Stored clarification ID mapping:', { tempId, dbId });
+        }
+
         setMessages((prev) =>
           prev.map((msg) =>
-            msg.id === streamingMessageIdRef.current
+            msg.id === tempId
               ? {
                   ...msg,
                   content: response.content,
@@ -321,7 +375,7 @@ export function ChatInterface() {
                   errorResponse: response.errorResponse,
                   partial: response.partial,
                   // Update the message ID to the database ID if available
-                  ...(response.dbMessageId && { id: response.dbMessageId }),
+                  ...(dbId && { id: dbId }),
                 }
               : msg,
           ),
@@ -330,7 +384,7 @@ export function ChatInterface() {
         // Track the message ID if it contains a pending clarification
         // Use the database ID if available, otherwise use the temporary ID
         if (response.clarification?.needs_clarification) {
-          const messageIdToTrack = response.dbMessageId || streamingMessageIdRef.current;
+          const messageIdToTrack = dbId || tempId;
           setPendingClarificationMessageId(messageIdToTrack);
         } else {
           setPendingClarificationMessageId(null);
@@ -342,12 +396,43 @@ export function ChatInterface() {
         updateSessionTitle(response.suggestedTitle);
       }
 
+      // Handle pending clarification submission after streaming completes
+      // We need to use the database ID for the clarification message
+      if (pendingClarificationSubmissionRef.current) {
+        const submission = pendingClarificationSubmissionRef.current;
+
+        // Check if the clarification message has been mapped to a database ID
+        const clarifDbId =
+          clarificationIdMapRef.current.get(submission.clarificationMessageId) ||
+          submission.clarificationMessageId;
+
+        console.log('[onStreamEnd] Submitting clarification answers to backend with:', {
+          originalTempId: submission.clarificationMessageId,
+          clarifDbId,
+        });
+
+        await submitClarificationAnswersToBackend(
+          clarifDbId, // Use the database ID if available, otherwise the original ID
+          submission.answers,
+          submission.clarificationQuestions,
+        );
+
+        // Clear the pending submission
+        pendingClarificationSubmissionRef.current = null;
+      }
+
       streamingMessageIdRef.current = null;
     },
     onStreamError: (error, response) => {
       // Handle stream errors - show error banner
       setCurrentError(response);
       setShowErrorBanner(true);
+
+      // Clear the pending clarification submission on error
+      if (pendingClarificationSubmissionRef.current) {
+        console.warn('[onStreamError] Clearing pending clarification submission due to error');
+        pendingClarificationSubmissionRef.current = null;
+      }
 
       if (streamingMessageIdRef.current) {
         setMessages((prev) =>
@@ -554,6 +639,11 @@ export function ChatInterface() {
     }
     streamingMessageIdRef.current = null;
     setShowErrorBanner(false);
+    // Clear the pending clarification submission on abort
+    if (pendingClarificationSubmissionRef.current) {
+      console.warn('[handleAbortStream] Clearing pending clarification submission due to abort');
+      pendingClarificationSubmissionRef.current = null;
+    }
   }, [abortStream]);
 
   // Handle retry from error banner
@@ -717,7 +807,9 @@ export function ChatInterface() {
     ): Promise<boolean> => {
       const accessToken = getAccessToken();
       if (!accessToken || !sessionId) {
-        console.warn('No access token or session ID available to submit clarification answers');
+        console.warn(
+          '[submitClarificationAnswersToBackend] No access token or session ID available',
+        );
         return false;
       }
 
@@ -730,6 +822,12 @@ export function ChatInterface() {
             answer,
             question_type: questionObj?.question_type || 'text',
           };
+        });
+
+        console.log('[submitClarificationAnswersToBackend] Calling mutation with:', {
+          sessionId,
+          clarificationMessageId,
+          answersArray,
         });
 
         const response = await fetch(GRAPHQL_URL, {
@@ -773,41 +871,26 @@ export function ChatInterface() {
 
         const result = await response.json();
         if (result.errors?.length > 0) {
-          console.warn('GraphQL errors submitting clarification answers:', result.errors);
+          console.warn('[submitClarificationAnswersToBackend] GraphQL errors:', result.errors);
           return false;
         }
 
         const success = result.data?.submitClarificationAnswers?.success || false;
 
-        // If successful, add the persisted user message to local state
-        if (success && result.data?.submitClarificationAnswers?.userMessage) {
-          const userMessage = result.data.submitClarificationAnswers.userMessage;
-          // Parse the content to check if it's a clarification_answer type
-          let parsedContent: any = null;
-          try {
-            parsedContent = JSON.parse(userMessage.content);
-          } catch {
-            // Not JSON, use as-is
-          }
-
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: userMessage.messageId,
-              role: 'user',
-              content:
-                parsedContent?.type === 'clarification_answer'
-                  ? answersArray.map((a) => `${a.question}: ${a.answer}`).join('\n')
-                  : userMessage.content,
-              timestamp: new Date(userMessage.createdAt),
-            },
-          ]);
-
-          // Update the clarification message's answered status in local state
+        // If successful, update the clarification message's answered status and store answers
+        if (success) {
+          // Update the clarification message's answered status and store answers for readonly display
           setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === clarificationMessageId ? { ...msg, clarificationAnswered: true } : msg,
-            ),
+            prev.map((msg) => {
+              if (msg.id === clarificationMessageId && msg.clarification) {
+                return {
+                  ...msg,
+                  clarificationAnswered: true,
+                  clarificationAnswers: answers, // Store answers for readonly display
+                };
+              }
+              return msg;
+            }),
           );
         }
 
@@ -821,15 +904,6 @@ export function ChatInterface() {
   );
 
   const handleClarificationSubmit = async (answers: Record<string, string>) => {
-    // Convert answers to the format expected by the streaming endpoint
-    const answersArray = Object.entries(answers)
-      .filter(([, value]) => value.trim())
-      .map(([question, answer]) => ({
-        question,
-        answer,
-        question_type: 'text', // Default question type
-      }));
-
     // Ensure we have a session ID
     if (!sessionId) {
       const errorMessage: ChatMessage = {
@@ -844,22 +918,37 @@ export function ChatInterface() {
       return;
     }
 
-    // Submit the answers to the backend to persist them
-    if (pendingClarificationMessageId) {
-      // Find the clarification message from the messages array
-      const clarificationMessage = messages.find((m) => m.id === pendingClarificationMessageId);
-      if (clarificationMessage) {
-        const clarificationQuestions = clarificationMessage.clarification?.questions || [];
+    // Find the clarification message to get its questions for the backend submission
+    const clarificationMessage = messages.find(
+      (m) => m.id === pendingClarificationMessageId && m.clarification?.needs_clarification,
+    );
 
-        await submitClarificationAnswersToBackend(
-          pendingClarificationMessageId,
-          answers,
-          clarificationQuestions,
-        );
-      }
-      // Clear the pending clarification message ID
-      setPendingClarificationMessageId(null);
+    if (!clarificationMessage || !clarificationMessage.clarification) {
+      console.warn('[handleClarificationSubmit] Clarification message not found');
+      return;
     }
+
+    // Store the submission data in a ref so we can submit after streaming completes
+    // We need the database ID (which we'll get after streaming) for the backend mutation
+    pendingClarificationSubmissionRef.current = {
+      clarificationMessageId: pendingClarificationMessageId!,
+      answers,
+      clarificationQuestions: clarificationMessage.clarification.questions,
+    };
+
+    // Convert answers to the format expected by the streaming endpoint
+    const answersArray = Object.entries(answers)
+      .filter(([, value]) => value.trim())
+      .map(([question, answer]) => {
+        const questionObj = clarificationMessage.clarification!.questions.find(
+          (q) => q.question === question,
+        );
+        return {
+          question,
+          answer,
+          question_type: questionObj?.question_type || 'text',
+        };
+      });
 
     // Use the original question that led to clarification
     const originalQuestion = lastUserQuestion || 'Previous question';
@@ -902,6 +991,12 @@ export function ChatInterface() {
         setMessages((prev) => prev.map((m) => (m.id === assistantId ? finalAssistantMessage : m)));
       }
     } catch (err) {
+      // Clear the pending submission on error
+      if (pendingClarificationSubmissionRef.current) {
+        console.warn('[handleClarificationSubmit] Clearing pending submission due to error:', err);
+        pendingClarificationSubmissionRef.current = null;
+      }
+
       // Handle error
       const errorMessage: ChatMessage = {
         id: assistantId,

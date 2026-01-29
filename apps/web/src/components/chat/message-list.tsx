@@ -102,13 +102,22 @@ export function MessageList({
               </>
             ) : message.clarification?.needs_clarification ? (
               <>
-                {/* For historical clarification messages that haven't been answered, show interactive ClarificationPrompt */}
+                {/* For historical clarification messages, show interactive or readonly ClarificationPrompt */}
                 {/* Skip rendering for the last message if skipLastClarification is true (prevents duplicate rendering) */}
-                {/* Completely hide already answered clarifications - form stays hidden after page refresh */}
                 {skipLastClarification &&
                 idx === lastIndex ? /* Skip rendering - ChatInterface will handle this */
-                null : message.clarificationAnswered ? /* Hide answered clarifications completely - form stays hidden after refresh */
-                null : (
+                null : message.clarificationAnswered || message.clarificationAnswers ? (
+                  /* Show readonly ClarificationPrompt for answered clarifications */
+                  <ClarificationPrompt
+                    clarification={message.clarification}
+                    onSubmit={async () => {
+                      // No-op - readonly mode
+                    }}
+                    isSubmitting={false}
+                    readonly={true}
+                    prefillAnswers={message.clarificationAnswers}
+                  />
+                ) : (
                   /* Show interactive ClarificationPrompt for pending historical clarifications */
                   <ClarificationPrompt
                     clarification={message.clarification}
