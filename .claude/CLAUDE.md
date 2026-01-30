@@ -34,6 +34,7 @@ cd apps/web && npm test | playwright test
 ## Testing
 
 **Locations:**
+
 - Backend Unit: `apps/backend/src/modules/**/*.spec.ts`
 - Backend E2E: `apps/backend/tests/e2e/*.e2e-spec.ts`
 - Frontend Unit: `apps/web/src/**/*.spec.tsx` or `src/**/__tests__/**/*.spec.tsx`
@@ -41,6 +42,7 @@ cd apps/web && npm test | playwright test
 - AI Engine: `apps/ai-engine/tests/unit/*.py`
 
 **Post-Feature Checklist:**
+
 1. Codegen: `pnpm codegen` (after any GraphQL schema changes)
 2. Lint: `eslint .`
 3. Type check: `tsc --noEmit` / `cd apps/ai-engine && uv run mypy src/`
@@ -98,6 +100,7 @@ export class UserInput {
 **Rule:** After ANY GraphQL schema changes (queries, mutations, types), run codegen and verify frontend types match backend.
 
 **Commands:**
+
 ```bash
 pnpm codegen           # Generate types from backend schema
 pnpm build             # Verify frontend builds with new types
@@ -105,6 +108,7 @@ pnpm typecheck         # Verify no TypeScript errors
 ```
 
 **What Gets Generated:**
+
 - `apps/web/src/generated/graphql.ts` - Full GraphQL types
 - `apps/web/src/generated/introspection.json` - Schema introspection
 - `apps/web/src/generated/persisted-queries/client.json` - Persisted queries
@@ -152,27 +156,143 @@ async getPdfUrl(@Parent() document: LegalDocument): Promise<string | null> {
 
 **Generate TOTP:** `cd apps/backend && npm run test:totp <secret>`
 
-## RBAC
+## RBAC (Role-Based Access Control)
+
+### Role Hierarchy
 
 **Hierarchy:** `SUPER_ADMIN(5) > ADMIN(4) > LAWYER(3) > PARALEGAL(2) > CLIENT(1) > GUEST(0)`
 
-**Backend Guards:**
+Higher roles automatically inherit permissions from lower roles. For example, an ADMIN can access any route that requires CLIENT, PARALEGAL, or LAWYER permissions.
+
+### Single Source of Truth
+
+**User Entity** (`apps/backend/src/modules/users/entities/user.entity.ts`):
+
+- Single `role` field (enum: `guest | client | paralegal | lawyer | admin | super_admin`)
+- Default role: `CLIENT` for regular users
+- This is the authoritative source for a user's role
+
+**JWT Token Format**:
+
+- `roles` array: Always contains one role from the User entity
+- Example: `{ "sub": "uuid", "email": "...", "roles": ["admin"] }`
+
+**Legacy Mapping** (for backwards compatibility):
+
+- `user` → `CLIENT`
+- `admin` → `ADMIN`
+
+### Backend Guards
+
+**Location:** `apps/backend/src/modules/auth/guards/`
+
+**RoleGuard** - Role-based access with hierarchy:
+
 ```typescript
+import { UseGuards } from '@nestjs/common';
+import { UserRole, RoleMatchMode } from '../enums/user-role.enum';
+import { GqlAuthGuard } from '../guards/gql-auth.guard';
+import { RoleGuard, RequireRole } from '../guards/role.guard';
+
+// Single required role (ADMIN or higher)
 @UseGuards(GqlAuthGuard, RoleGuard)
 @RequireRole(UserRole.ADMIN)
 async adminQuery() { ... }
+
+// Multiple roles - user needs at least one (OR logic)
+@UseGuards(GqlAuthGuard, RoleGuard)
+@RequireRole(UserRole.ADMIN, UserRole.LAWYER)
+async flexibleQuery() { ... }
+
+// Multiple roles - user needs all (AND logic)
+@UseGuards(GqlAuthGuard, RoleGuard)
+@RequireRole(UserRole.ADMIN, UserRole.LAWYER, { mode: RoleMatchMode.ALL })
+async requiresAllRoles() { ... }
+```
+
+**AdminGuard** - Admin-only access (ADMIN or SUPER_ADMIN):
+
+```typescript
+import { AdminGuard } from '../guards/admin.guard';
 
 @UseGuards(GqlAuthGuard, AdminGuard)
 async adminOnly() { ... }
 ```
 
-**Frontend:** `const { hasRole, hasRoleLevel, isAdmin } = useUserRole();`
+**Role Access Pattern** (how guards read roles):
+
+```typescript
+// Guards handle both formats automatically:
+// 1. user.roles (string[] from JWT) - checked first
+// 2. user.role (string from User entity) - fallback
+
+// The normalizeRole() function handles legacy mapping:
+// - 'user' → UserRole.CLIENT
+// - 'admin' → UserRole.ADMIN
+```
+
+### Frontend Role Checking
+
+**Location:** `apps/web/src/hooks/use-user-role.tsx`
+
+```typescript
+import { useUserRole } from '@/hooks/use-user-role';
+
+const {
+  role, // Single role ( UserRole | null)
+  roles, // Array for backwards compatibility (UserRole[])
+  hasRole, // (role: UserRole | UserRole[]) => boolean
+  hasRoleLevel, // (minRole: UserRole) => boolean
+  isAdmin, // boolean (admin or super_admin)
+  isSuperAdmin, // boolean
+  isLegalProfessional, // boolean (paralegal, lawyer, admin, super_admin)
+  isClient, // boolean (client or guest)
+} = useUserRole();
+
+// Examples:
+if (isAdmin) {
+  // Show admin content
+}
+
+if (hasRole('lawyer')) {
+  // Show lawyer-specific content
+}
+
+if (hasRoleLevel('lawyer')) {
+  // Show content for lawyer level and above (lawyer, admin, super_admin)
+}
+
+if (hasRole(['lawyer', 'admin'])) {
+  // User has at least one of these roles
+}
+```
+
+### Protected Routes
+
+**Admin Layout:** `apps/web/src/app/admin/layout.tsx`
+**Menu Filtering:** `apps/web/src/config/menu.config.tsx`
+
+### Do NOT Revert to Old Pattern
+
+**WARNING:** Never use the old multi-role pattern where users had multiple roles in the entity. The current implementation has:
+
+- Single `role` field on User entity (enum)
+- `roles` array only in JWT for token format compatibility
+- Guards that handle both formats seamlessly
+
+Reverting to the old pattern (multiple roles per user in entity) will break:
+
+1. Role hierarchy logic
+2. AdminGuard functionality
+3. Frontend `useUserRole` hook
+4. All existing role checks
 
 ## GraphQL Authorization
 
 **Guard Order:** `GqlAuthGuard` → `RoleGuard` → `DocumentPermissionGuard`
 
 **Patterns:**
+
 ```typescript
 // Authenticated only
 @UseGuards(GqlAuthGuard)
@@ -200,6 +320,7 @@ async login() { ... }
 **Token:** Bearer in Authorization header
 
 **Context Access:**
+
 ```typescript
 @Context() context: { req: { user: { id: string; username: string; email: string; roles: string[] } } }
 const userId = context.req.user?.id;
@@ -207,6 +328,7 @@ if (!userId) throw new UnauthorizedException('User not authenticated');
 ```
 
 **Pitfalls:**
+
 1. Missing `GqlAuthGuard` before `RoleGuard`
 2. Wrong context type: use `{ req: { user } }` not `{ user }`
 3. Forgetting null check: `context.req.user?.id`
@@ -218,6 +340,7 @@ if (!userId) throw new UnauthorizedException('User not authenticated');
 **Pattern:** Double-submit cookie. Frontend gets token from `GET /api/csrf-token`, includes in `X-CSRF-Token` header for mutations.
 
 **Frontend:** `apps/web/src/lib/csrf.ts`
+
 - `getCsrfToken()` - Get token from cookie/cache
 - `fetchCsrfToken()` - Fetch new token
 - `ensureCsrfToken()` - Ensure token exists
@@ -225,6 +348,7 @@ if (!userId) throw new UnauthorizedException('User not authenticated');
 - `clearCsrfToken()` - Clear on logout
 
 **Usage:**
+
 ```tsx
 const response = await fetch(GRAPHQL_URL, {
   headers: { Authorization: `Bearer ${token}`, ...getCsrfHeaders() },
@@ -233,6 +357,7 @@ const response = await fetch(GRAPHQL_URL, {
 ```
 
 **Backend:**
+
 ```typescript
 // Most mutations require CSRF by default
 @Mutation(() => MyResponse)
@@ -251,13 +376,41 @@ async login() { ... }
 **Features:** TOTP (RFC 6238), QR codes, 10 backup codes, admin override
 
 **GraphQL API:**
+
 ```graphql
-mutation EnableTwoFactorAuth { enableTwoFactorAuth { secret, qrCodeDataUrl, backupCodes } }
-mutation VerifyTwoFactorSetup($input: VerifyTwoFactorSetupInput!) { verifyTwoFactorSetup(input: $input) { success } }
-mutation DisableTwoFactorAuth($input: DisableTwoFactorInput!) { disableTwoFactorAuth(input: { password: "..." }) }
-mutation RegenerateBackupCodes { regenerateBackupCodes { codes } }
-mutation AdminForceDisableTwoFactor($input: AdminForceDisableTwoFactorInput!) { adminForceDisableTwoFactor(input: { userId: "..." }) { id twoFactorEnabled } }
-query TwoFactorSettings { twoFactorSettings { status enabled remainingBackupCodes } }
+mutation EnableTwoFactorAuth {
+  enableTwoFactorAuth {
+    secret
+    qrCodeDataUrl
+    backupCodes
+  }
+}
+mutation VerifyTwoFactorSetup($input: VerifyTwoFactorSetupInput!) {
+  verifyTwoFactorSetup(input: $input) {
+    success
+  }
+}
+mutation DisableTwoFactorAuth($input: DisableTwoFactorInput!) {
+  disableTwoFactorAuth(input: { password: "..." })
+}
+mutation RegenerateBackupCodes {
+  regenerateBackupCodes {
+    codes
+  }
+}
+mutation AdminForceDisableTwoFactor($input: AdminForceDisableTwoFactorInput!) {
+  adminForceDisableTwoFactor(input: { userId: "..." }) {
+    id
+    twoFactorEnabled
+  }
+}
+query TwoFactorSettings {
+  twoFactorSettings {
+    status
+    enabled
+    remainingBackupCodes
+  }
+}
 ```
 
 **Rate Limit:** 5/minute, 10 failures = 30 min lockout
@@ -298,6 +451,7 @@ query TwoFactorSettings { twoFactorSettings { status enabled remainingBackupCode
 **Tech:** FastAPI, PydanticAI, LangGraph, Langfuse, Python 3.11+, uv
 
 **Commands:**
+
 ```bash
 cd apps/ai-engine && uv run dev      # Hot reload
 cd apps/ai-engine && uv run pytest    # Tests
@@ -305,6 +459,7 @@ cd apps/ai-engine && uv run mypy src/ # Type check
 ```
 
 **Env Vars:**
+
 ```bash
 # OpenAI (Required)
 OPENAI_API_KEY=sk-...
@@ -342,6 +497,7 @@ LANGFUSE_SESSION_ID_HEADER=x-session-id
 **Validation:** HS256, `JWT_SECRET` shared with backend, requires `sub` + `email`, rejects refresh tokens
 
 **Session ID Pattern:**
+
 - Session IDs track conversations, stored in request body (not JWT)
 - Validated as UUID v4 in AI Engine
 - Frontend generates with `crypto.randomUUID()`, stores in localStorage
@@ -350,9 +506,14 @@ LANGFUSE_SESSION_ID_HEADER=x-session-id
 **UUID v4 Format:** `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx` (e.g., `550e8400-e29b-41d4-a716-446655440000`)
 
 **Frontend Hook:** `apps/web/src/hooks/useStreamingChat.ts`
+
 ```tsx
 const { sendMessage, abortStream, isStreaming, currentContent } = useStreamingChat({
-  onToken, onCitation, onStreamEnd, onStreamError, fallbackToGraphQL: true
+  onToken,
+  onCitation,
+  onStreamEnd,
+  onStreamError,
+  fallbackToGraphQL: true,
 });
 ```
 
@@ -361,6 +522,7 @@ const { sendMessage, abortStream, isStreaming, currentContent } = useStreamingCh
 **Unified endpoint** for questions and clarification answers
 
 **Request:**
+
 ```json
 {
   "question": "What are my rights?",
@@ -389,6 +551,7 @@ const { sendMessage, abortStream, isStreaming, currentContent } = useStreamingCh
 ### PydanticAI Agent Patterns
 
 **Lazy Loading Pattern:**
+
 ```python
 _my_agent: Agent[MyResult, ModelDeps] | None = None
 
@@ -403,6 +566,7 @@ def get_my_agent() -> Agent[MyResult, ModelDeps]:
 **ModelDeps:** All agents use `ModelDeps` for consistent access to settings and OpenAI client
 
 **Agents:**
+
 - `legal-query-analyzer` - Query analysis and routing (`src/agents/qa_agent.py`)
 - `legal-qa-lawyer` - Professional legal Q&A (`src/agents/qa_agent.py`)
 - `legal-qa-simple` - Simplified Q&A (`src/agents/qa_agent.py`)
@@ -414,6 +578,7 @@ def get_my_agent() -> Agent[MyResult, ModelDeps]:
 **Purpose:** Orchestration between PydanticAI agents (not for direct LLM calls)
 
 **Structure:**
+
 ```python
 class MyWorkflowState(TypedDict, total=False):
     input: Required[str]
@@ -432,6 +597,7 @@ def create_workflow() -> StateGraph:
 **Best Practices:** `TypedDict` with `total=False`, wrap nodes in try-catch, cache compiled workflows with `@lru_cache`, provide `create_*_state()` factory functions
 
 **Workflows:**
+
 - Case Analysis (`src/workflows/case_analysis_workflow.py`)
 - Document Generation (`src/workflows/document_generation_workflow.py`)
 - Complex Q&A (`src/workflows/complex_qa_workflow.py`)
@@ -441,6 +607,7 @@ def create_workflow() -> StateGraph:
 **Decision Logic:** Confidence < 0.6 → clarify, no grounds → clarify, pre-filled responses → skip
 
 **Question Structure:**
+
 ```python
 class ClarificationQuestion(BaseModel):
     question: str
@@ -458,12 +625,14 @@ class ClarificationQuestion(BaseModel):
 **Env Vars:** `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_HOST` (default: https://cloud.langfuse.com), `LANGFUSE_ENABLED`, `LANGFUSE_SAMPLING_RATE`
 
 **Trace Metadata:**
+
 - **Input:** question, question_length, mode, query_type, document_type, language, model
 - **Output:** answer_length, confidence, citations_count, grounds_count, processing_time_ms, time_to_first_token_ms, suggested_title
 - **User/Session:** user_id (JWT sub), session_id (UUID v4), user_roles, user_role_level
 - **Conversation:** message_count, conversation_history_length, is_first_message, query_category, locale
 
 **Add Metadata:**
+
 ```python
 from ..langfuse_init import is_langfuse_enabled, update_current_trace
 
@@ -472,6 +641,7 @@ if is_langfuse_enabled():
 ```
 
 **Filtering in Langfuse UI:**
+
 - User: `user_id = "<uuid>"`
 - Session: `session_id = "<uuid>"`
 - Agent: `agent_name = "legal-qa-lawyer"`
@@ -483,12 +653,14 @@ if is_langfuse_enabled():
 **Data Retention:** Production: 90 days, Dev: 30 days, Errors: 180 days
 
 **Debugging User Issues:**
+
 1. Get `userId` and `sessionId` from frontend
 2. Filter traces in Langfuse by `user_id`
 3. Check trace status, input/output, latency breakdown, error messages
 4. Verify metadata populated correctly
 
 **Common Issues:**
+
 - Empty response → Check `latency_ms` > 30000
 - Wrong language → Check `language` metadata
 - No citations → Look for `search` span errors
@@ -496,6 +668,7 @@ if is_langfuse_enabled():
 - Clarification loop → Check `confidence < 0.6`
 
 **Troubleshooting:**
+
 - No traces: Verify env vars, `LANGFUSE_ENABLED=true`, check logs for "PydanticAI instrumentation enabled"
 - Missing agents: Ensure `instrument=True`, `Agent.instrument_all()` called after `init_langfuse()`, use lazy loading
 - Missing metadata: Check `update_current_trace()` called, keys are strings, values JSON-serializable
@@ -524,6 +697,7 @@ if is_langfuse_enabled():
 **Test Locations:** Unit: `apps/ai-engine/tests/unit/*.py`, Integration: `apps/ai-engine/tests/integration/*.py`
 
 **Test Patterns:**
+
 ```python
 # Model validation
 def test_create_legal_ground():
@@ -561,10 +735,10 @@ export class AiClientService {
 
 ### Migration from LangChain
 
-| LangChain | PydanticAI |
-|-----------|------------|
-| `@chain` decorator | `Agent` class with `output_type` |
-| `RunnableSequence` | LangGraph `StateGraph` |
-| `BasePromptTemplate` | System prompt string |
-| `StructuredOutput` | `output_type=BaseModel` |
-| `bind_tools()` | Tool registration on Agent |
+| LangChain            | PydanticAI                       |
+| -------------------- | -------------------------------- |
+| `@chain` decorator   | `Agent` class with `output_type` |
+| `RunnableSequence`   | LangGraph `StateGraph`           |
+| `BasePromptTemplate` | System prompt string             |
+| `StructuredOutput`   | `output_type=BaseModel`          |
+| `bind_tools()`       | Tool registration on Agent       |

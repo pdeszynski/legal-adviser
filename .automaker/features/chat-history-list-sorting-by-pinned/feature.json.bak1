@@ -4,7 +4,7 @@
   "id": "chat-history-list-sorting-by-pinned",
   "title": "Update Chat History List Sorting for Pinned Sessions",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-29T10:28:24.687Z"
+  "updatedAt": "2026-01-29T10:31:09.372Z"
 }

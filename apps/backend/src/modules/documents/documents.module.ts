@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { NestjsQueryGraphQLModule } from '@ptc-org/nestjs-query-graphql';
 import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -107,7 +107,7 @@ import { DocumentGenerationStarter } from '../temporal/workflows/document/docume
     // AI client for communication with AI engine
     AiClientModule,
     // Temporal for workflow orchestration
-    TemporalModule,
+    forwardRef(() => TemporalModule),
     // Anti-corruption layer for external integrations
     SaosModule,
     IsapModule,

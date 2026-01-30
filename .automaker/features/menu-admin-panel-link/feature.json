@@ -13,5 +13,9 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-25T02:07:21.066Z"
+  "updatedAt": "2026-01-25T02:07:21.066Z",
+  "dependencies": [
+    "update-frontend-role-checks-to-use-user-roles-array",
+    "verify-admin-role-enables-admin-links-in-menu"
+  ]
 }

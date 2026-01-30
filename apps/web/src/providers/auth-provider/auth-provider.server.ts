@@ -82,6 +82,7 @@ export const authProviderServer: Pick<AuthProvider, 'check' | 'getIdentity' | 'g
             : user.username || user.email,
         email: user.email,
         ...user,
+        role: user.user_roles?.[0], // Add role field for compatibility with useUserRole hook
       };
     } catch {
       return null;
@@ -89,9 +90,8 @@ export const authProviderServer: Pick<AuthProvider, 'check' | 'getIdentity' | 'g
   },
 
   /**
-   * Get user permissions (roles) from server-side cookies
-   *
-   * Returns the user's roles from the auth cookie.
+   * Get user permissions (returns roles as array)
+   * The backend returns user_roles as an array
    */
   getPermissions: async () => {
     const cookieStore = await cookies();
@@ -103,7 +103,14 @@ export const authProviderServer: Pick<AuthProvider, 'check' | 'getIdentity' | 'g
 
     try {
       const parsedAuth = JSON.parse(auth.value);
-      return parsedAuth.roles || [];
+      // Read from user_roles array in the user object
+      const userRoles = parsedAuth.user?.user_roles;
+      if (userRoles && Array.isArray(userRoles) && userRoles.length > 0) {
+        return userRoles;
+      }
+      // Fallback to cached role for backwards compatibility
+      const role = parsedAuth.role;
+      return role ? [role] : [];
     } catch {
       return null;
     }

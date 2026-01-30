@@ -187,6 +187,21 @@ export async function rulingIndexing(
     userId,
   } = input;
 
+  // Log: Workflow started
+  // eslint-disable-next-line no-console
+  console.log(
+    `[DEBUG] rulingIndexing workflow started: ${JSON.stringify({
+      jobId,
+      source,
+      dateFrom: dateFrom?.toISOString?.() ?? dateFrom,
+      dateTo: dateTo?.toISOString?.() ?? dateTo,
+      courtType,
+      batchSize,
+      updateExisting,
+      userId,
+    })}`,
+  );
+
   // Create activity proxies with retry policy
   const activities = proxyActivities<RulingIndexingActivities>({
     startToCloseTimeout: '4h', // Long-running workflow for large batches
@@ -219,9 +234,20 @@ export async function rulingIndexing(
 
     const { totalAvailable } = initResult;
 
+    // Log: Initialization complete
+    // eslint-disable-next-line no-console
+    console.log(
+      `[DEBUG] rulingIndexing initialization complete: totalAvailable=${totalAvailable}, estimatedBatches=${initResult.estimatedBatches}`,
+    );
+
     // Step 2: Process batches
     let batchNumber = 1;
     let offset = 0;
+
+    // eslint-disable-next-line no-console
+    console.log(
+      `[DEBUG] rulingIndexing starting batch loop: will loop while offset < totalAvailable`,
+    );
 
     while (offset < totalAvailable) {
       const currentBatchSize = Math.min(batchSize, totalAvailable - offset);
@@ -250,7 +276,19 @@ export async function rulingIndexing(
 
       offset += currentBatchSize;
       batchNumber++;
+
+      // Log: Batch loop iteration
+      // eslint-disable-next-line no-console
+      console.log(
+        `[DEBUG] rulingIndexing batch ${batchNumber - 1} complete: indexed=${batchResult.indexed}, skipped=${batchResult.skipped}, failed=${batchResult.failed}, new offset=${offset}, totalAvailable=${totalAvailable}`,
+      );
     }
+
+    // Log: Batch loop complete
+    // eslint-disable-next-line no-console
+    console.log(
+      `[DEBUG] rulingIndexing batch loop complete: offset=${offset}, totalAvailable=${totalAvailable}`,
+    );
 
     // Step 3: Complete the indexing job
     await activities.completeIndexing({

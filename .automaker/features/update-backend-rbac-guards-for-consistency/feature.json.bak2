@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Refactor all backend authorization guards to use the new single source of truth role format. Update: 1) RoleGuard to check roles in new format (array vs single string), 2) AdminGuard to work with new role structure, 3) DocumentPermissionGuard if it references user roles, 4) @RequireRole decorator implementation, 5) PermissionGuard if it depends on role data, 6) Custom authorization logic in resolvers that checks roles. Ensure all guards access user roles through the same mechanism (e.g., context.req.user.roles or context.req.user.role). Add unit tests for each guard verifying they correctly allow/deny access based on the new role format. Update CLAUDE.md documentation with the correct role access patterns.",
+  "id": "update-backend-rbac-guards-for-consistency",
+  "title": "Update Backend RBAC Guards for Consistency",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Refactor all backend authorization guards to use the new single source of truth role format. Update: 1) RoleGuard to check roles in new format (array vs single string), 2) AdminGuard to work with new role structure, 3) DocumentPermissionGuard if it references user roles, 4) @RequireRole decorator implementation, 5) PermissionGuard if it depends on role data, 6) Custom authorization logic in resolvers that checks roles. Ensure all guards access user roles through the same mechanism (e.g., context.req.user.roles or context.req.user.role). Add unit tests for each guard verifying they correctly allow/deny access based on the new role format. Update CLAUDE.md documentation with the correct role access patterns.",
+      "timestamp": "2026-01-29T12:30:41.336Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T12:32:13.318Z"
+}

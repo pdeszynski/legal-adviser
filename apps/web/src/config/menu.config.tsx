@@ -232,17 +232,21 @@ export const getMenuIcon = (iconKey?: string): MenuItemIcon | undefined => {
 };
 
 /**
- * Get menu items filtered by user role
- * @param userRoles - The user's roles
+ * Get menu items filtered by user roles
+ * @param userRoles - The user's roles array from the backend (typically contains one role)
  * @returns Filtered menu items ordered by MENU_ORDER
  */
-export const getMenuItemsForRoles = (userRoles: UserRole[]): MenuItem[] => {
-  if (userRoles.length === 0) {
+export const getMenuItemsForRoles = (userRoles: UserRole[] | null): MenuItem[] => {
+  if (!userRoles || userRoles.length === 0) {
     // Unauthenticated users see minimal menu
     return [];
   }
 
-  // Get the highest role for comparison
+  // Get the primary role (first in array) for level-based comparisons
+  // The backend typically returns a single role in the array
+  const primaryRole = userRoles[0];
+
+  // Get the role level for comparison
   const getRoleLevel = (role: UserRole): number => {
     const levels: Record<UserRole, number> = {
       guest: 0,
@@ -251,26 +255,22 @@ export const getMenuItemsForRoles = (userRoles: UserRole[]): MenuItem[] => {
       lawyer: 3,
       admin: 4,
       super_admin: 5,
-      user: 1,
     };
     return levels[role] ?? 0;
   };
-
-  const highestRole = userRoles.reduce((highest, current) =>
-    getRoleLevel(current) > getRoleLevel(highest) ? current : highest,
-  );
 
   return MENU_ORDER.filter((menuKey) => {
     const item = MENU_CONFIG[menuKey];
 
     // Check if item has specific allowed roles
+    // User needs at least one of the allowed roles
     if (item.allowedRoles) {
-      return item.allowedRoles.some((allowed) => userRoles.includes(allowed));
+      return item.allowedRoles.some((allowedRole) => userRoles.includes(allowedRole));
     }
 
-    // Check if user meets minimum role requirement
+    // Check if user meets minimum role requirement (using primary role)
     if (item.minRole) {
-      return getRoleLevel(highestRole) >= getRoleLevel(item.minRole);
+      return getRoleLevel(primaryRole) >= getRoleLevel(item.minRole);
     }
 
     return true;

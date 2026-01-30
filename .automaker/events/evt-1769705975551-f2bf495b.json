@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769705975551-f2bf495b",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T16:59:35.551Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "regenerate-graphql-hooks-after-role-schema-changes",
+  "featureName": "Regenerate GraphQL Hooks and Types After Role Schema Changes",
+  "error": "Feature completed in 348s - auto-verified",
+  "passes": true
+}

@@ -37,8 +37,8 @@ test.describe('Template Data Provider Meta Operation', () => {
           query: loginMutation,
           variables: {
             input: {
-              email: 'admin@example.com',
-              password: 'admin123',
+              email: 'admin@refine.dev',
+              password: 'password',
             },
           },
         },

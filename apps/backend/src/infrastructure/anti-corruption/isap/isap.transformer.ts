@@ -46,10 +46,19 @@ export class IsapTransformer {
    * Transform domain search query to ISAP search request
    */
   toExternal(domain: SearchRulingsQuery): IsapSearchRequest {
+    // Helper to safely convert Date or string to year number
+    const toYear = (date: Date | string | undefined): number | undefined => {
+      if (!date) return undefined;
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      // Check if date is valid
+      if (isNaN(dateObj.getTime())) return undefined;
+      return dateObj.getFullYear();
+    };
+
     return {
       q: domain.query,
-      year_from: domain.dateFrom?.getFullYear(),
-      year_to: domain.dateTo?.getFullYear(),
+      year_from: toYear(domain.dateFrom),
+      year_to: toYear(domain.dateTo),
       court_type: this.courtTypeToIsapType(domain.courtType),
       limit: domain.limit,
       offset: domain.offset,

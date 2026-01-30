@@ -4,7 +4,7 @@
   "id": "chat-session-pinned-field",
   "title": "Add Pinned Field to ChatSession Entity",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

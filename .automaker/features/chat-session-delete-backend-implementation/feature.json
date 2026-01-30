@@ -4,7 +4,7 @@
   "id": "chat-session-delete-backend-implementation",
   "title": "Implement Backend Chat Session Deletion Logic",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

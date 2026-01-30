@@ -5,9 +5,9 @@ relevantTo: [architecture]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 74
-  referenced: 8
-  successfulFeatures: 8
+  loaded: 75
+  referenced: 9
+  successfulFeatures: 9
 ---
 # architecture
 
@@ -117,6 +117,7 @@ usageStats:
 ### [Principle] Role-Based Access Control (RBAC) with Hierarchical Roles (2026-01-24)
 - **Context:** Legal AI platform requires different access levels for various user types (super admins, platform admins, lawyers, paralegals, clients, guests)
 - **Why:** Hierarchical RBAC provides flexible permission management with role inheritance, reducing permission matrix complexity. Higher roles automatically inherit lower role permissions
+- **Single Source of Truth:** The User entity's `role` field (enum) is the authoritative source. JWT tokens contain a `roles` array with the single role for format compatibility.
 - **Role Hierarchy (Highest to Lowest):**
   - `SUPER_ADMIN` (5): Platform owner, full system access including user management and billing
   - `ADMIN` (4): Platform administrator, user management, content moderation, analytics
@@ -127,10 +128,15 @@ usageStats:
 - **Implementation:**
   - **Backend:** RoleGuard and AdminGuard in `apps/backend/src/modules/auth/guards/` protect GraphQL resolvers
   - **Frontend:** Admin layout protection at `apps/web/src/app/admin/layout.tsx`, role-based menu filtering in `apps/web/src/config/menu.config.tsx`
-  - **Hook:** `useUserRole` in `apps/web/src/hooks/use-user-role.tsx` provides role checking utilities
+  - **Hook:** `useUserRole` in `apps/web/src/hooks/use-user-role.tsx` provides role checking utilities (`hasRole`, `hasRoleLevel`, `isAdmin`, etc.)
+  - **Role Enum:** `UserRole` in `apps/backend/src/modules/auth/enums/user-role.enum.ts`
+- **Guard Behavior:** Both RoleGuard and AdminGuard handle two formats:
+  1. `user.roles` (string[] from JWT) - checked first
+  2. `user.role` (string from User entity) - fallback
+  - Legacy role names are mapped: `user` → CLIENT, `admin` → ADMIN
 - **Seed Users:** `admin@refine.dev` (SUPER_ADMIN), `lawyer@example.com` (LAWYER), `user@example.com` (CLIENT)
 - **Trade-offs:** Hierarchical roles simplify permission checks but reduce fine-grained control; additional roles require level assignment
-- **Breaking if changed:** Removing role hierarchy breaks all `hasRoleLevel()` checks; changing role levels requires database migration of existing user roles
+- **Breaking if changed:** Removing role hierarchy breaks all `hasRoleLevel()` checks; changing role levels requires database migration of existing user roles; reverting to multi-role entity pattern breaks all guards
 
 #### [Pattern] Maintain translation key parity across all locales by using a validation gate that enforces identical key structures before code can proceed (2026-01-12)
 - **Problem solved:** Multi-locale system where partial translations are deployed, causing runtime failures when UI components reference non-existent keys in some locales

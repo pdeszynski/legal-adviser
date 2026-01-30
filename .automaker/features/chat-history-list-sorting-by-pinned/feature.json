@@ -4,7 +4,7 @@
   "id": "chat-history-list-sorting-by-pinned",
   "title": "Update Chat History List Sorting for Pinned Sessions",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

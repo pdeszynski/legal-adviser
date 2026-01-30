@@ -4180,6 +4180,118 @@ command finished with error: command (/Users/piteer/workspace/radca-prawny/legal
       <name>Create E2E Tests for Chat History Actions</name>
       <description>Create comprehensive Playwright E2E tests for the delete and pin/unpin functionality. Test scenarios: 1) Delete chat session - verify confirmation dialog appears, 2) Confirm deletion - verify session is removed from list, 3) Cancel deletion - verify session remains, 4) Pin chat session - verify pin icon changes to filled, 5) Unpin chat session - verify pin icon changes to outline, 6) Pinned session appears at top of list, 7) Unpinned session appears in chronological order, 8) User cannot delete another user&apos;s session (403 error), 9) Delete pin state persists across page refresh, 10) Error handling when deletion/pin fails (network error). Use Playwright to simulate full user flow. Add tests to apps/web/tests/chat-history-actions.spec.ts.</description>
     </feature>
+    <feature>
+      <name>Analyze User Role Duplication in Entities</name>
+      <description>Investigate the current dual implementation of user roles: 1) User entity has a &apos;role&apos; column, 2) User-Role entity exists for many-to-many relationships. Audit all usages across the codebase to understand which approach is used where. Check: User entity definition, UserRole entity definition, GraphQL resolvers referencing roles, Frontend role checks (useUserRole hook), RBAC guards (RoleGuard, AdminGuard), Seed data creation, Migration files. Document which tables/columns are actively used vs deprecated. Identify any inconsistencies where code reads from User.role vs UserRole relationship. Create a matrix showing all role-related code paths and which data source they use. This analysis will determine whether to keep the many-to-many approach (User + UserRole + Role tables) or simplify to single role column on User table.</description>
+    </feature>
+    <feature>
+      <name>Update GraphQL Schema for Consistent Role Access</name>
+      <description>After refactoring role storage to single source of truth, update GraphQL schema to reflect the change. If using many-to-many: 1) Update User type to have roles: [Role!]! field instead of role: Role, 2) Update all queries and mutations to handle roles array, 3) Update input types for user creation/updates to accept role IDs array. If using single role: 1) Ensure User type has role: Role! field (not array), 2) Update mutations to accept single role parameter, 3) Remove deprecated role-related fields from schema. Run pnpm codegen to regenerate TypeScript types. Verify all GraphQL operations return role data in the correct format. Test queries: user, users, me, and mutations: updateUser, userCreate, userUpdate.</description>
+    </feature>
+    <feature>
+      <name>Update Backend RBAC Guards for Consistency</name>
+      <description>Refactor all backend authorization guards to use the new single source of truth role format. Update: 1) RoleGuard to check roles in new format (array vs single string), 2) AdminGuard to work with new role structure, 3) DocumentPermissionGuard if it references user roles, 4) @RequireRole decorator implementation, 5) PermissionGuard if it depends on role data, 6) Custom authorization logic in resolvers that checks roles. Ensure all guards access user roles through the same mechanism (e.g., context.req.user.roles or context.req.user.role). Add unit tests for each guard verifying they correctly allow/deny access based on the new role format. Update CLAUDE.md documentation with the correct role access patterns.</description>
+    </feature>
+    <feature>
+      <name>Refactor User Role to Single Source of Truth</name>
+      <description>Based on analysis from analyze-user-role-duplication-in-entities, choose ONE approach and implement it consistently. Option A (Many-to-Many): Keep UserRole entity, remove role column from User table, ensure all code uses user.roles array. Option B (Single Role): Keep role column on User table, drop UserRole entity, ensure all code uses user.role string. Implementation tasks: 1) Create database migration to move data from deprecated approach to chosen approach, 2) Update User entity definition to remove deprecated field or relationship, 3) Delete UserRole entity if choosing single-role approach, 4) Update all GraphQL resolvers to use consistent role access pattern, 5) Update RBAC guards (RoleGuard, AdminGuard) to check roles consistently, 6) Update frontend useUserRole hook to return consistent format, 7) Update seed data to use only the chosen approach, 8) Add database constraint to prevent reverting to old pattern. This ensures single source of truth for role data.</description>
+    </feature>
+    <feature>
+      <name>Update Seed Data to Use admin@refine.dev as Default User</name>
+      <description>Update database seed files to ensure admin@refine.dev is created with ADMIN role and is the primary admin user. Implementation: 1) Update users.seed.ts to create admin@refine.dev first with password &apos;password&apos; and ADMIN role, 2) Ensure admin@refine.dev has SUPER_ADMIN role if that tier exists, 3) Update Role seed to include ADMIN role definition, 4) Create UserRole relationship if using many-to-many approach, 5) Add comment documenting this is the default admin account, 6) Verify email is &apos;admin@refine.dev&apos; (not admin@example.com or similar), 7) Ensure no duplicate admin users exist in seeds, 8) Update CLAUDE.md documentation with admin credentials. Run seeds and verify admin user can login and access admin routes. Update existing documentation references to admin@example.com if they exist.</description>
+    </feature>
+    <feature>
+      <name>Update Documentation for Role Refactoring</name>
+      <description>Update all project documentation to reflect the new single source of truth approach for user roles. Update: 1) CLAUDE.md RBAC section with correct entity structure (User.role vs UserRole), 2) RBAC architecture documentation showing the chosen approach, 3) Seed user documentation with admin@refine.dev as default admin, 4) GraphQL schema examples showing correct role fields, 5) Frontend role check examples (hasRole, hasRoleLevel, isAdmin), 6) Backend guard usage examples, 7) Migration guide if upgrading from old structure, 8) Troubleshooting section for common role-related issues. Remove all documentation references to the deprecated approach. Add warnings about not reverting to old pattern. Ensure code examples in docs match actual implementation.</description>
+    </feature>
+    <feature>
+      <name>Update Frontend Role Checks for Consistency</name>
+      <description>Update all frontend role-based access control to use the new single source of truth format. Tasks: 1) Update useUserRole hook to return role data in new format (array or single string), 2) Update hasRole() helper function to check roles correctly, 3) Update hasRoleLevel() function if using hierarchical roles, 4) Update isAdmin() check to work with new format, 5) Update ProtectedRoute component to validate roles consistently, 6) Update menu display logic (menu-admin-panel-link, menu-grouping-lawyer-features) to use new role format, 7) Update role-based conditional rendering throughout the app, 8) Add TypeScript types for the new role format to prevent type errors. Test with different user roles (admin, lawyer, user) to ensure permissions work correctly. Add E2E tests for role-based UI elements.</description>
+    </feature>
+    <feature>
+      <name>Update E2E Tests to Use Consistent Role Format</name>
+      <description>Update all E2E tests that verify role-based functionality to use the new single source of truth format. Update tests in: rbac-e2e-tests, e2e-tests-authorization-mutations, e2e-test-two-factor-settings-enable-flow, admin-user-management tests. Ensure: 1) Login steps use admin@refine.dev credentials, 2) Role checks verify correct format (array or string), 3) Admin access tests validate ADMIN role correctly, 4) User role tests validate non-admin roles, 5) Tests verify role-based UI elements appear/disappear correctly. Update test fixtures and mock data to match new role format. Add new test cases verifying the refactored role implementation works end-to-end. Ensure tests catch any regressions where old role format is accidentally used.</description>
+    </feature>
+    <feature>
+      <name>Update seeds to create roles and assign super admin</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Analyze User Role Duplication in Entities
+
+**Description:** Investigate the current dual implementation of user roles: 1) User entity has a &apos;role&apos; column, 2) User-Role entity exists for many-to-many relationships. Audit all usages across the codebase to understand which approach is used where. Check: User entity definition, UserRole entity definition, GraphQL resolvers referencing roles, Frontend role checks (useUserRole hook), RBAC guards (RoleGuard, AdminGuard), Seed data creation, Migration files. Document which tables/columns are actively used vs deprecated. Identify any inconsistencies where code reads from User.role vs UserRole relationship. Create a matrix showing all role-related code paths and which data source they use. This analysis will determine whether to keep the many-to-many approach (User + UserRole + Role tables) or simplify to single role column on User table.
+
+---
+
+## Task Description
+
+Update seeds to make sure the roels are created, add role to admin@refine.dev as a super admin.</description>
+    </feature>
+    <feature>
+      <name>Update GraphQL me Query to Return user_roles Array Instead of Single role</name>
+      <description>Fix the me GraphQL query to return user_roles as an array of Role objects instead of a single role field. Implementation: 1) Update User GraphQL type to expose user_roles field as [Role!]! instead of role: Role, 2) Update me query resolver to return user with user_roles populated, 3) Remove role field from User GraphQL type definition, 4) Update GraphQL fragments that reference user.role to use user.user_roles, 5) Run pnpm codegen to regenerate TypeScript types, 6) Verify frontend can access array of roles via me query. This aligns with the decision to use only user_roles relationship.</description>
+    </feature>
+    <feature>
+      <name>Update Backend Role Guards to Check user_roles Array</name>
+      <description>Update all backend authorization guards to check roles in the user_roles array instead of the deprecated role column. Implementation: 1) Update RoleGuard to read roles from context.user.user_roles array, 2) Update AdminGuard to check if any role in user.user_roles matches ADMIN or SUPER_ADMIN, 3) Update @RequireRole decorator logic to work with array of roles, 4) Update DocumentPermissionGuard if it references user roles, 5) Update any custom authorization logic in resolvers, 6) Ensure guards handle both old format (for migration) and new format, 7) Add unit tests for each guard verifying correct role checking, 8) Update CLAUDE.md documentation with correct role access patterns. This ensures backend consistently uses user_roles array.</description>
+    </feature>
+    <feature>
+      <name>Consolidate User Role to Use Only user_roles Relationship</name>
+      <description>Remove the deprecated role column from User entity and update all code to use only the user_roles many-to-many relationship. This ensures a single source of truth for user roles. Implementation: 1) Create database migration to remove role column from users table, 2) Update User entity to remove @FilterableField(&apos;role&apos;) property, 3) Keep only user_roles relationship with UserRole entity, 4) Update all GraphQL resolvers to access roles via user.user_roles, 5) Update all backend services to use user_roles array, 6) Ensure seed data creates roles through UserRole relationships, 7) Add database constraint to prevent adding role column back, 8) Update documentation to reflect only user_roles exists.</description>
+    </feature>
+    <feature>
+      <name>Regenerate GraphQL Hooks and Types After Role Schema Changes</name>
+      <description>After updating the User GraphQL type to use user_roles array instead of role field, regenerate all GraphQL codegen artifacts. Implementation: 1) Run pnpm codegen to regenerate TypeScript types from updated GraphQL schema, 2) Verify apps/web/src/generated/graphql.ts includes updated User type with user_roles field, 3) Check that generated hooks use correct types (user_roles: Role[]), 4) Update any components or hooks that reference the old user.role field to use user.user_roles, 5) Fix TypeScript errors from changed types, 6) Run pnpm typecheck to verify no type errors remain, 7) Run pnpm build to ensure frontend compiles successfully. This ensures all frontend code uses the correct role structure.</description>
+    </feature>
+    <feature>
+      <name>Update Frontend Role Checks to Use user_roles Array</name>
+      <description>Update all frontend role-based access control to use the user_roles array from GraphQL responses. Implementation: 1) Update useUserRole hook to return roles as array from user.user_roles, 2) Update hasRole() helper to check if any role in array matches, 3) Update hasRoleLevel() to work with array of roles, 4) Update isAdmin() to check for ADMIN/SUPER_ADMIN in array, 5) Update ProtectedRoute component role validation, 6) Update menu display logic (menu-admin-panel-link, etc.), 7) Update all role-based conditional rendering, 8) Add TypeScript types for user_roles array, 9) Test with different user roles to ensure correct behavior. This ensures frontend consistently uses user_roles array.</description>
+    </feature>
+    <feature>
+      <name>Audit and Fix All Role References to Use user_roles Array</name>
+      <description>Perform comprehensive audit of all code references to user roles and fix any remaining uses of deprecated role column. Implementation: 1) Search codebase for &apos;user.role&apos; references (should be &apos;user.user_roles&apos;), 2) Search for direct role access patterns, 3) Update GraphQL queries to select user_roles instead of role, 4) Update mutations that create/update users to use user_roles input, 5) Update seed data to create UserRole relationships, 6) Update E2E tests to use new role structure, 7) Update documentation and comments, 8) Add code comment warning against using role column, 9) Run all tests to verify no regressions, 10) Create pre-commit hook to prevent role column usage. This ensures complete consistency across entire codebase.</description>
+    </feature>
+    <feature>
+      <name>Verify Admin Users Can Access Admin Management Links</name>
+      <description>Ensure that when a user with ADMIN or SUPER_ADMIN role logs in, they can see and access admin management links in the navigation menu. Implementation: 1) Check menu-admin-panel-link feature implementation, 2) Verify useUserRole hook correctly identifies admin users from user_roles array, 3) Ensure menu configuration checks for admin role presence: user.user_roles.some(r =&gt; r.name === &apos;ADMIN&apos; || r.name === &apos;SUPER_ADMIN&apos;), 4) Test login with admin@refine.dev seed user (should have ADMIN role), 5) Verify Admin Panel link appears in navigation menu, 6) Verify /admin route is accessible, 7) Add E2E test verifying admin user sees admin links, 8) Test with non-admin user to ensure links are hidden. Fix any issues with role detection logic.</description>
+    </feature>
+    <feature>
+      <name>Create E2E Tests Verifying Role Consistency After Consolidation</name>
+      <description>Create comprehensive Playwright E2E tests to verify that role consolidation works correctly across all layers. Test scenarios: 1) Admin user logs in and sees admin links (menu-admin-panel-link), 2) Admin user can access /admin routes, 3) Non-admin user cannot access admin routes (403), 4) GraphQL me query returns user_roles array with correct roles, 5) Frontend useUserRole hook returns correct roles array, 6) Backend guards correctly authorize based on user_roles, 7) User with multiple roles has all permissions, 8) Seed users (admin@refine.dev, user@example.com) have correct roles, 9) Role checks in components work correctly, 10) Menu items show/hide based on roles. These tests ensure the single user_roles mechanism works end-to-end.</description>
+    </feature>
+    <feature>
+      <name>Remove Deprecated Role Column from User Entity and Database</name>
+      <description>Remove the deprecated role column from the User entity and database schema to enforce single source of truth. Implementation: 1) Create database migration to: a) Drop column &apos;role&apos; from users table, b) Add CHECK constraint to prevent adding it back, 2) Update User entity (TypeScript/ORM) to remove @FilterableField(&apos;role&apos;) and any role property, 3) Remove all references to user.role in backend services and resolvers, 4) Ensure all code uses user.user_roles array instead, 5) Update seed data to remove role column references, 6) Add database constraint comment warning against re-adding role column, 7) Run migration in development and verify no regressions, 8) Update CLAUDE.md to document role column removal and confirm UserRole relationship is the only valid source. This completes the migration to many-to-many roles.</description>
+    </feature>
+    <feature>
+      <name>Update GraphQL Auth Guards and Context to Use UserRole Relationship</name>
+      <description>Ensure all GraphQL authentication and authorization logic uses the UserRole relationship instead of the deprecated role column. Implementation: 1) Update GqlAuthGuard to populate user context with user_roles array from UserRole relationship, 2) Update RoleGuard to check roles in user.user_roles (array of UserRole with nested Role), 3) Update AdminGuard to verify ADMIN/SUPER_ADMIN in user.user_roles, 4) Update @RequireRole decorator to work with UserRole array format, 5) Update JWT context creation to include roles from UserRole relationship, 6) Verify all mutations/queries with role restrictions use the correct data source, 7) Add unit tests for guards verifying they check UserRole relationship, 8) Update DocumentPermissionGuard if it references user roles, 9) Ensure consistent role checking format across all guards: user.user_roles.some(ur =&gt; ur.role.name === &apos;ADMIN&apos;). Test with admin@refine.dev to verify auth still works.</description>
+    </feature>
+    <feature>
+      <name>Fix GraphQL User Roles to Return UserRole Entities</name>
+      <description>Fix the GraphQL User type to return roles from the UserRole entity relationship instead of the deprecated role column. Implementation: 1) Update User GraphQL type to resolve the roles field from the user_roles relationship (many-to-many with UserRole), 2) Remove or deprecate the role field from User GraphQL type, 3) Update the User entity resolver to fetch UserRole entities through the relationship, 4) Ensure UserRole entity includes the related Role entity data (role name, description), 5) Update GraphQL query resolvers to populate user_roles correctly, 6) Run pnpm codegen to regenerate TypeScript types with correct role structure, 7) Verify that GraphQL queries (me, user, users) return roles as UserRole objects with nested Role data. This ensures the API returns the correct many-to-many relationship data, not the deprecated single column.</description>
+    </feature>
+    <feature>
+      <name>Create E2E Tests Verifying UserRole Entities in GraphQL Responses</name>
+      <description>Create comprehensive E2E tests to verify GraphQL returns UserRole entities correctly for all role-based operations. Test scenarios: 1) Query me() - verify user_roles array is returned with UserRole objects, 2) Query user(id) - verify user_roles includes UserRole with nested Role data, 3) Query users list - verify each user has user_roles array, 4) Verify UserRole objects include: id, userId, roleId, role { id, name, description }, createdAt, 5) Verify deprecated role field is NOT present in response, 6) Test with admin@refine.dev - verify ADMIN role appears in user_roles, 7) Test with user@example.com - verify USER role in user_roles, 8) Test mutations (userCreate, userUpdate) create UserRole relationships, 9) Verify frontend useUserRole hook receives correct array format, 10) Add network request interception in tests to inspect actual GraphQL response structure. Use Playwright to test authenticated GraphQL queries.</description>
+    </feature>
+    <feature>
+      <name>Fix returned value from graphql </name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Consolidate User Role to Use Only user_roles Relationship
+
+**Description:** Remove the deprecated role column from User entity and update all code to use only the user_roles many-to-many relationship. This ensures a single source of truth for user roles. Implementation: 1) Create database migration to remove role column from users table, 2) Update User entity to remove @FilterableField(&apos;role&apos;) property, 3) Keep only user_roles relationship with UserRole entity, 4) Update all GraphQL resolvers to access roles via user.user_roles, 5) Update all backend services to use user_roles array, 6) Ensure seed data creates roles through UserRole relationships, 7) Add database constraint to prevent adding role column back, 8) Update documentation to reflect only user_roles exists.
+
+---
+
+## Task Description
+
+It&apos;s still not working, for user admin@refine.dev instead of super admin i&apos;m getting a role = client, this is returned from graphql</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

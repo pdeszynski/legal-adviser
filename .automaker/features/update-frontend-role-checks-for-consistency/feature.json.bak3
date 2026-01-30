@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Update all frontend role-based access control to use the new single source of truth format. Tasks: 1) Update useUserRole hook to return role data in new format (array or single string), 2) Update hasRole() helper function to check roles correctly, 3) Update hasRoleLevel() function if using hierarchical roles, 4) Update isAdmin() check to work with new format, 5) Update ProtectedRoute component to validate roles consistently, 6) Update menu display logic (menu-admin-panel-link, menu-grouping-lawyer-features) to use new role format, 7) Update role-based conditional rendering throughout the app, 8) Add TypeScript types for the new role format to prevent type errors. Test with different user roles (admin, lawyer, user) to ensure permissions work correctly. Add E2E tests for role-based UI elements.",
+  "id": "update-frontend-role-checks-for-consistency",
+  "title": "Update Frontend Role Checks for Consistency",
+  "dependencies": [
+    "update-graphql-schema-for-consistent-role-access"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update all frontend role-based access control to use the new single source of truth format. Tasks: 1) Update useUserRole hook to return role data in new format (array or single string), 2) Update hasRole() helper function to check roles correctly, 3) Update hasRoleLevel() function if using hierarchical roles, 4) Update isAdmin() check to work with new format, 5) Update ProtectedRoute component to validate roles consistently, 6) Update menu display logic (menu-admin-panel-link, menu-grouping-lawyer-features) to use new role format, 7) Update role-based conditional rendering throughout the app, 8) Add TypeScript types for the new role format to prevent type errors. Test with different user roles (admin, lawyer, user) to ensure permissions work correctly. Add E2E tests for role-based UI elements.",
+      "timestamp": "2026-01-29T12:30:41.334Z",
+      "source": "initial"
+    }
+  ]
+}

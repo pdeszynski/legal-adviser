@@ -23,7 +23,7 @@ export const Menu = () => {
   const pathname = usePathname();
   const { roles, isAdmin, isLegalProfessional } = useUserRole();
 
-  // Get menu items filtered by user role
+  // Get menu items filtered by user roles
   const roleBasedMenuItems = getMenuItemsForRoles(roles);
 
   // Separate admin, legal, regular, and account items for sectioning

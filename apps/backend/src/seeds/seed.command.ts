@@ -12,7 +12,6 @@ import { LegalAnalysis } from '../modules/documents/entities/legal-analysis.enti
 import { LegalRuling } from '../modules/documents/entities/legal-ruling.entity';
 import { LegalQuery } from '../modules/queries/entities/legal-query.entity';
 import { AuditLog } from '../modules/audit-log/entities/audit-log.entity';
-import { RoleEntity, UserRoleEntity } from '../modules/authorization/entities';
 import { UserPreferences } from '../modules/user-preferences/entities/user-preferences.entity';
 
 // Modules
@@ -47,8 +46,6 @@ import { SeedService } from './seed.service';
           LegalRuling,
           LegalQuery,
           AuditLog,
-          RoleEntity,
-          UserRoleEntity,
           UserPreferences,
         ],
         synchronize: true, // Enable for dev seeding
@@ -112,9 +109,8 @@ Examples:
 
       logger.log('=== Database Status ===');
       logger.log(`Seeded: ${isSeeded ? 'Yes' : 'No'}`);
-      logger.log(`Roles: ${stats.roles}`);
       logger.log(`Users: ${stats.users}`);
-      logger.log(`User Roles: ${stats.userRoles}`);
+      logger.log(`User Preferences: ${stats.userPreferences}`);
       logger.log(`Sessions: ${stats.sessions}`);
       logger.log(`Documents: ${stats.documents}`);
       logger.log(`Analyses: ${stats.analyses}`);

@@ -4784,6 +4784,248 @@
       "dismissed": false,
       "featureId": "chat-history-actions-e2e-tests",
       "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "c915fb16-05f0-4e15-801a-39401228a9a4",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"analyze-user-role-duplication-in-entities\" has been verified and is complete.",
+      "createdAt": "2026-01-29T12:35:15.937Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "analyze-user-role-duplication-in-entities",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "5ef5b551-e9bc-433d-b017-4acef472cf2a",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-graphql-schema-for-consistent-role-access\" has been verified and is complete.",
+      "createdAt": "2026-01-29T12:41:22.396Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-graphql-schema-for-consistent-role-access",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "b70f6e8b-068d-4aa3-95d2-9191bfb304c4",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-backend-rbac-guards-for-consistency\" has been verified and is complete.",
+      "createdAt": "2026-01-29T12:46:06.759Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-backend-rbac-guards-for-consistency",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "76cb5c32-5c15-4088-8dff-fd8ad5080392",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"refactor-user-role-to-single-source-of-truth\" has been verified and is complete.",
+      "createdAt": "2026-01-29T12:47:05.872Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "refactor-user-role-to-single-source-of-truth",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "a87c8964-35b3-4220-8f31-d68895000e2f",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-seed-data-to-use-admin-as-default-user\" has been verified and is complete.",
+      "createdAt": "2026-01-29T12:51:41.085Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-seed-data-to-use-admin-as-default-user",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "1688e37f-4ec3-4c9b-b4c6-fc9ee4f67ebd",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-documentation-for-role-refactoring\" has been verified and is complete.",
+      "createdAt": "2026-01-29T12:51:47.255Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-documentation-for-role-refactoring",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "f46a89e5-3aee-4780-b67c-9abcf0c0e097",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-frontend-role-checks-for-consistency\" has been verified and is complete.",
+      "createdAt": "2026-01-29T12:52:00.760Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-frontend-role-checks-for-consistency",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "16525d48-2506-4feb-a07f-b12e1ab058fb",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-e2e-tests-to-use-consistent-role-format\" has been verified and is complete.",
+      "createdAt": "2026-01-29T14:37:20.525Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-e2e-tests-to-use-consistent-role-format",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "f4558c98-b8d4-405e-be88-7c7812bf1345",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769703633928-ufe54fysw\" has been verified and is complete.",
+      "createdAt": "2026-01-29T16:25:30.078Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769703633928-ufe54fysw",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "362174ba-a4ed-4ee9-bf6e-50e38d15e7d9",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-graphql-me-query-to-return-user-roles-array\" has been verified and is complete.",
+      "createdAt": "2026-01-29T16:53:43.187Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-graphql-me-query-to-return-user-roles-array",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "aaa4ad9d-c831-4ba2-8306-b3219ab59d3b",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-backend-role-guards-to-use-user-roles-array\" has been verified and is complete.",
+      "createdAt": "2026-01-29T16:54:10.633Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-backend-role-guards-to-use-user-roles-array",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "cb072224-b7cb-41f2-bb68-37b91f476091",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"consolidate-user-role-to-single-source\" has been verified and is complete.",
+      "createdAt": "2026-01-29T16:55:04.001Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "consolidate-user-role-to-single-source",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "a25da82c-02d5-44e7-8b28-08006b269e84",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"regenerate-graphql-hooks-after-role-schema-changes\" has been verified and is complete.",
+      "createdAt": "2026-01-29T16:59:35.507Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "regenerate-graphql-hooks-after-role-schema-changes",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "ac3e1457-acbe-4733-8921-4485fd070443",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-frontend-role-checks-to-use-user-roles-array\" has been verified and is complete.",
+      "createdAt": "2026-01-29T17:03:13.002Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-frontend-role-checks-to-use-user-roles-array",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "73d38113-50f0-430b-8614-777f101bfd70",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"audit-and-fix-all-role-references-in-codebase\" has been verified and is complete.",
+      "createdAt": "2026-01-29T17:08:09.811Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "audit-and-fix-all-role-references-in-codebase",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "e0296779-0e8e-4f0c-a092-c7c87a17b4cc",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"verify-admin-role-enables-admin-links-in-menu\" has been verified and is complete.",
+      "createdAt": "2026-01-29T17:23:09.138Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "verify-admin-role-enables-admin-links-in-menu",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "72e3ccb7-14be-4a93-9ffd-dbca712ff194",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"create-e2e-tests-for-role-consistency-after-consolidation\" has been verified and is complete.",
+      "createdAt": "2026-01-29T17:26:19.467Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "create-e2e-tests-for-role-consistency-after-consolidation",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "e100428d-c228-4459-ae91-86109519d111",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"remove-role-column-from-user-entity-and-database\" has been verified and is complete.",
+      "createdAt": "2026-01-29T17:32:13.514Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "remove-role-column-from-user-entity-and-database",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "bc94b4be-f1ed-48af-9bdc-9510d4327613",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"update-graphql-auth-to-use-userrole-relationship\" has been verified and is complete.",
+      "createdAt": "2026-01-29T17:33:19.919Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "update-graphql-auth-to-use-userrole-relationship",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "c7f99828-7347-4305-9aae-e8d2fd59d0d1",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"fix-graphql-user-roles-to-return-userrole-entities\" has been verified and is complete.",
+      "createdAt": "2026-01-29T17:34:32.747Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "fix-graphql-user-roles-to-return-userrole-entities",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "3cc6dad0-d13b-4926-90f7-a9f7f5a0bce1",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"create-verification-tests-for-userrole-graphql-responses\" has been verified and is complete.",
+      "createdAt": "2026-01-29T17:57:21.163Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "create-verification-tests-for-userrole-graphql-responses",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
+    },
+    {
+      "id": "c7ab2a3c-2894-497a-8db1-c95f07c81af3",
+      "type": "feature_verified",
+      "title": "Feature Verified",
+      "message": "\"feature-1769709035122-bcpkw5ltx\" has been verified and is complete.",
+      "createdAt": "2026-01-29T18:01:39.677Z",
+      "read": false,
+      "dismissed": false,
+      "featureId": "feature-1769709035122-bcpkw5ltx",
+      "projectPath": "/Users/piteer/workspace/radca-prawny/legal"
     }
   ]
 }

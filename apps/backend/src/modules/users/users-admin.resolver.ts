@@ -8,13 +8,22 @@ import {
   ObjectType,
   Field,
   ID,
+  registerEnumType,
 } from '@nestjs/graphql';
 import { UseGuards, ConflictException } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { RoleGuard, RequireAdmin } from '../auth/guards/role.guard';
+import { UserRole } from '../auth/enums/user-role.enum';
 import { AdminCreateUserInput } from './dto';
+
+// Register UserRole enum for GraphQL usage
+registerEnumType(UserRole, {
+  name: 'UserRole',
+  description:
+    'User role with hierarchy: SUPER_ADMIN(5) > ADMIN(4) > LAWYER(3) > PARALEGAL(2) > CLIENT(1) > GUEST(0)',
+});
 
 /**
  * Input for suspending a user account
@@ -45,8 +54,8 @@ class ChangeUserRoleInput {
   @Field(() => ID)
   userId: string;
 
-  @Field()
-  role: 'user' | 'admin';
+  @Field(() => UserRole)
+  role: UserRole;
 }
 
 /**
@@ -117,8 +126,8 @@ class BulkChangeUserRolesInput {
   @Field(() => [ID])
   userIds: string[];
 
-  @Field()
-  role: 'user' | 'admin';
+  @Field(() => UserRole)
+  role: UserRole;
 }
 
 /**
@@ -257,8 +266,8 @@ export class UsersAdminResolver {
       password: input.password,
     });
 
-    // Set role if different from default
-    if (input.role && input.role !== 'user') {
+    // Set role if different from default (CLIENT)
+    if (input.role && input.role !== UserRole.CLIENT) {
       await this.usersService.changeUserRole(
         user.id,
         input.role,

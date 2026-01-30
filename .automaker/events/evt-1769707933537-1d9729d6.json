@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769707933537-1d9729d6",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T17:32:13.537Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "remove-role-column-from-user-entity-and-database",
+  "featureName": "Remove Deprecated Role Column from User Entity and Database",
+  "error": "Feature completed in 542s - auto-verified",
+  "passes": true
+}

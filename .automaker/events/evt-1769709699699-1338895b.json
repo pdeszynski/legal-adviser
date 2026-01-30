@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769709699699-1338895b",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T18:01:39.699Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "feature-1769709035122-bcpkw5ltx",
+  "featureName": "I need to understand this issue better. Let me ask a clarifying question:\n\n**What exactly is not working?** \n\nIs the problem that:\n1. The user admin@refine.dev should have a \"super admin\" role but is getting \"client\" instead?\n2. The role is being read incorrectly from the user_roles relationship?\n3. The role assignment/seed data is incorrect?\n4. Something else in the role resolution logic?\n\nAlso, can you provide:\n- Where/how you're checking the role (GraphQL query, API endpoint, code location)?\n- What the expected behavior should be?\n- Any error messages or logs?\n\nThis will help me generate an accurate title for the actual problem we need to solve.",
+  "error": "Feature completed in 578s - auto-verified",
+  "passes": true
+}

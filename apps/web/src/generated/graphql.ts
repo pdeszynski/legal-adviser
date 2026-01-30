@@ -51,11 +51,6 @@ export type ActiveUsersCount = {
   last30Days: Scalars['Int']['output'];
 };
 
-export type AddPermissionInput = {
-  permission: Scalars['String']['input'];
-  roleId: Scalars['String']['input'];
-};
-
 export type AdminCreateUserInput = {
   email: Scalars['String']['input'];
   firstName?: InputMaybe<Scalars['String']['input']>;
@@ -621,7 +616,8 @@ export type AuthUser = {
   id: Scalars['ID']['output'];
   isActive: Scalars['Boolean']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
-  role: Scalars['String']['output'];
+  /** Array of user roles (single role wrapped as array for consistency with JWT format) */
+  user_roles: Array<Scalars['String']['output']>;
   username?: Maybe<Scalars['String']['output']>;
 };
 
@@ -708,7 +704,7 @@ export type BulkActivateUsersInput = {
 };
 
 export type BulkChangeUserRolesInput = {
-  role: Scalars['String']['input'];
+  role: UserRole;
   userIds: Array<Scalars['ID']['input']>;
 };
 
@@ -785,7 +781,7 @@ export type ChangePasswordInput = {
 };
 
 export type ChangeUserRoleInput = {
-  role: Scalars['String']['input'];
+  role: UserRole;
   userId: Scalars['ID']['input'];
 };
 
@@ -1173,12 +1169,6 @@ export type CheckEmailExistsResult = {
   exists: Scalars['Boolean']['output'];
   userId?: Maybe<Scalars['String']['output']>;
   username?: Maybe<Scalars['String']['output']>;
-};
-
-export type CheckPermissionInput = {
-  permissionType: Scalars['String']['input'];
-  resourceType: Scalars['String']['input'];
-  roleNames: Array<Scalars['String']['input']>;
 };
 
 export type CheckQuotaInput = {
@@ -1855,14 +1845,6 @@ export type CreateOneNotificationInput = {
 export type CreateOneUserPreferencesInput = {
   /** The record to create */
   userPreferences: CreateUserPreferencesInput;
-};
-
-export type CreateRoleInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  inheritsFrom?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  permissions: Array<Scalars['String']['input']>;
-  type: Scalars['String']['input'];
 };
 
 export type CreateRulingMetadataInput = {
@@ -4381,8 +4363,6 @@ export type Mutation = {
   activateWebhook: Webhook;
   /** Add a citation to an existing legal query */
   addCitationToQuery: LegalQuery;
-  /** Add a permission to a role */
-  addPermissionToRole: Role;
   /** Create a backup (admin only) */
   adminCreateBackup: Backup;
   /** Create a new user with password and role (admin only) */
@@ -4453,8 +4433,6 @@ export type Mutation = {
   /** Create a new user (admin only) */
   createOneUser: User;
   createOneUserPreference: UserPreferences;
-  /** Create a new custom role */
-  createRole: Role;
   /** Create a new Temporal schedule for recurring workflow execution */
   createSchedule: CreateScheduleResult;
   /** Create a new subscription plan (admin only) */
@@ -4489,8 +4467,6 @@ export type Mutation = {
   deleteOneUser: User;
   deleteOneUserPreference: UserPreferencesDeleteResponse;
   deleteOneUserSession: UserSessionDeleteResponse;
-  /** Delete a custom role (system roles cannot be deleted) */
-  deleteRole: Scalars['Boolean']['output'];
   /** Permanently delete a Temporal schedule (requires confirmation) */
   deleteSchedule: ScheduleDeletionResult;
   /** Delete a subscription plan (admin only) */
@@ -4545,8 +4521,6 @@ export type Mutation = {
   register: AuthPayload;
   /** Reject a document after moderation review */
   rejectDocument: ModerationActionResult;
-  /** Remove a permission from a role */
-  removePermissionFromRole: Role;
   /** Render a template with variable substitution without creating a document */
   renderTemplate: Scalars['String']['output'];
   /** Reset the localStorage migration flag to allow re-migration */
@@ -4624,8 +4598,6 @@ export type Mutation = {
   updateOneUserPreference: UserPreferences;
   /** Update profile information for the current user */
   updateProfile: AuthUser;
-  /** Update role name or description */
-  updateRole: Role;
   /** Update an existing subscription plan (admin only) */
   updateSubscriptionPlan: SubscriptionPlan;
   /** Update an existing webhook (name, URL, events, headers, status) */
@@ -4646,10 +4618,6 @@ export type MutationActivateWebhookArgs = {
 export type MutationAddCitationToQueryArgs = {
   citation: CreateCitationInput;
   queryId: Scalars['ID']['input'];
-};
-
-export type MutationAddPermissionToRoleArgs = {
-  input: AddPermissionInput;
 };
 
 export type MutationAdminCreateBackupArgs = {
@@ -4822,10 +4790,6 @@ export type MutationCreateOneUserPreferenceArgs = {
   input: CreateOneUserPreferencesInput;
 };
 
-export type MutationCreateRoleArgs = {
-  input: CreateRoleInput;
-};
-
 export type MutationCreateScheduleArgs = {
   input: CreateScheduleInput;
 };
@@ -4912,10 +4876,6 @@ export type MutationDeleteOneUserPreferenceArgs = {
 
 export type MutationDeleteOneUserSessionArgs = {
   input: DeleteOneUserSessionInput;
-};
-
-export type MutationDeleteRoleArgs = {
-  id: Scalars['String']['input'];
 };
 
 export type MutationDeleteScheduleArgs = {
@@ -5022,10 +4982,6 @@ export type MutationRegisterArgs = {
 
 export type MutationRejectDocumentArgs = {
   input: RejectDocumentInput;
-};
-
-export type MutationRemovePermissionFromRoleArgs = {
-  input: RemovePermissionInput;
 };
 
 export type MutationRenderTemplateArgs = {
@@ -5206,11 +5162,6 @@ export type MutationUpdateOneUserPreferenceArgs = {
 
 export type MutationUpdateProfileArgs = {
   input: UpdateProfileInput;
-};
-
-export type MutationUpdateRoleArgs = {
-  id: Scalars['String']['input'];
-  input: UpdateRoleInput;
 };
 
 export type MutationUpdateSubscriptionPlanArgs = {
@@ -5637,19 +5588,6 @@ export type PdfExportStatus = {
 /** Page format for PDF export */
 export type PdfPageFormat = 'A4' | 'LEGAL' | 'LETTER';
 
-export type Permission = {
-  __typename?: 'Permission';
-  condition?: Maybe<Scalars['String']['output']>;
-  resource: Scalars['String']['output'];
-  type: Scalars['String']['output'];
-};
-
-export type PermissionCheckResult = {
-  __typename?: 'PermissionCheckResult';
-  allowed: Scalars['Boolean']['output'];
-  permissions?: Maybe<Array<Scalars['String']['output']>>;
-};
-
 export type PinChatSessionInput = {
   /** True to pin, false to unpin */
   isPinned: Scalars['Boolean']['input'];
@@ -5776,8 +5714,6 @@ export type Query = {
   getTotalDocumentCount: DocumentMetrics;
   getTotalTokenUsage: Array<TokenUsageBreakdown>;
   getUserGrowthStats: UserGrowthStats;
-  /** Check if the given roles have a specific permission */
-  hasPermission: PermissionCheckResult;
   inAppNotification: InAppNotification;
   inAppNotificationAggregate: Array<InAppNotificationAggregateResponse>;
   inAppNotifications: InAppNotificationConnection;
@@ -5845,12 +5781,6 @@ export type Query = {
   recentDocumentActivity: RecentDocumentActivity;
   /** Get recent notifications for a user */
   recentNotifications: Array<InAppNotification>;
-  /** Get a role by ID */
-  role?: Maybe<Role>;
-  /** Get a role by name */
-  roleByName?: Maybe<Role>;
-  /** Get all roles in the system */
-  roles: Array<Role>;
   /** Full-text search across chat messages with relevance ranking and highlighting */
   searchChatContent: ChatContentSearchResponse;
   /** Full-text search across documents with relevance ranking */
@@ -6167,10 +6097,6 @@ export type QueryGetUserGrowthStatsArgs = {
   input?: InputMaybe<DashboardAnalyticsInput>;
 };
 
-export type QueryHasPermissionArgs = {
-  input: CheckPermissionInput;
-};
-
 export type QueryInAppNotificationArgs = {
   id: Scalars['ID']['input'];
 };
@@ -6346,14 +6272,6 @@ export type QueryRecentNotificationsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   unreadOnly?: InputMaybe<Scalars['Boolean']['input']>;
   userId: Scalars['String']['input'];
-};
-
-export type QueryRoleArgs = {
-  id: Scalars['String']['input'];
-};
-
-export type QueryRoleByNameArgs = {
-  name: Scalars['String']['input'];
 };
 
 export type QuerySearchChatContentArgs = {
@@ -6582,11 +6500,6 @@ export type RelatedDocumentLinkInput = {
   relevanceScore?: InputMaybe<Scalars['Float']['input']>;
 };
 
-export type RemovePermissionInput = {
-  permission: Scalars['String']['input'];
-  roleId: Scalars['String']['input'];
-};
-
 export type RenderTemplateInput = {
   templateId: Scalars['String']['input'];
   variables: Scalars['JSON']['input'];
@@ -6612,19 +6525,6 @@ export type ResumeScheduleInput = {
   reason?: InputMaybe<Scalars['String']['input']>;
   /** The ID of the schedule to resume */
   scheduleId: Scalars['String']['input'];
-};
-
-export type Role = {
-  __typename?: 'Role';
-  createdAt: Scalars['DateTime']['output'];
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  inheritsFrom?: Maybe<Scalars['String']['output']>;
-  isSystemRole: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  permissions: Array<Permission>;
-  type: Scalars['String']['output'];
-  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type RulingMetadata = {
@@ -7703,11 +7603,6 @@ export type UpdateProfileInput = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type UpdateRoleInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type UpdateSharePermissionInput = {
   /** New permission level */
   permission: SharePermission;
@@ -7818,6 +7713,8 @@ export type User = {
   isActive: Scalars['Boolean']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
   role: Scalars['String']['output'];
+  /** Array of user roles (single role wrapped as array for consistency with JWT format) */
+  roles: Array<Scalars['String']['output']>;
   stripeCustomerId?: Maybe<Scalars['String']['output']>;
   twoFactorEnabled: Scalars['Boolean']['output'];
   twoFactorVerifiedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -8035,6 +7932,9 @@ export type UserPreferencesSortFields =
   | 'theme'
   | 'updatedAt'
   | 'userId';
+
+/** User role with hierarchy: SUPER_ADMIN(5) > ADMIN(4) > LAWYER(3) > PARALEGAL(2) > CLIENT(1) > GUEST(0) */
+export type UserRole = 'ADMIN' | 'CLIENT' | 'GUEST' | 'LAWYER' | 'PARALEGAL' | 'SUPER_ADMIN';
 
 export type UserSession = {
   __typename?: 'UserSession';
@@ -8743,6 +8643,7 @@ export type AuditLogFragmentFragment = {
         email: string;
         firstName?: string | null | undefined;
         lastName?: string | null | undefined;
+        roles: Array<string>;
       }
     | null
     | undefined;
@@ -8769,6 +8670,7 @@ export type AuditLogDetailFragmentFragment = {
         email: string;
         firstName?: string | null | undefined;
         lastName?: string | null | undefined;
+        roles: Array<string>;
       }
     | null
     | undefined;
@@ -8807,6 +8709,7 @@ export type AuditLogsQuery = {
               email: string;
               firstName?: string | null | undefined;
               lastName?: string | null | undefined;
+              roles: Array<string>;
             }
           | null
           | undefined;
@@ -8848,6 +8751,7 @@ export type AuditLogQuery = {
           email: string;
           firstName?: string | null | undefined;
           lastName?: string | null | undefined;
+          roles: Array<string>;
         }
       | null
       | undefined;
@@ -10045,6 +9949,7 @@ export type AuditLogPageResultFragmentFragment = {
             email: string;
             firstName?: string | null | undefined;
             lastName?: string | null | undefined;
+            roles: Array<string>;
           }
         | null
         | undefined;
@@ -10206,6 +10111,7 @@ export type UserFragmentFragment = {
   lastName?: string | null | undefined;
   isActive: boolean;
   role: string;
+  roles: Array<string>;
 };
 
 export type UserDetailFragmentFragment = {
@@ -10223,6 +10129,7 @@ export type UserDetailFragmentFragment = {
   lastName?: string | null | undefined;
   isActive: boolean;
   role: string;
+  roles: Array<string>;
 };
 
 export type AuthUserFragmentFragment = {
@@ -10235,7 +10142,7 @@ export type AuthUserFragmentFragment = {
   isActive: boolean;
   disclaimerAccepted: boolean;
   disclaimerAcceptedAt?: Date | null | undefined;
-  role: string;
+  user_roles: Array<string>;
 };
 
 export type UserMinimalFragmentFragment = {
@@ -10244,6 +10151,7 @@ export type UserMinimalFragmentFragment = {
   email: string;
   firstName?: string | null | undefined;
   lastName?: string | null | undefined;
+  roles: Array<string>;
 };
 
 export type AuthPayloadFragmentFragment = {
@@ -10263,7 +10171,7 @@ export type AuthPayloadFragmentFragment = {
         isActive: boolean;
         disclaimerAccepted: boolean;
         disclaimerAcceptedAt?: Date | null | undefined;
-        role: string;
+        user_roles: Array<string>;
       }
     | null
     | undefined;
@@ -10382,7 +10290,7 @@ export type LoginMutation = {
           isActive: boolean;
           disclaimerAccepted: boolean;
           disclaimerAcceptedAt?: Date | null | undefined;
-          role: string;
+          user_roles: Array<string>;
         }
       | null
       | undefined;
@@ -10412,7 +10320,7 @@ export type RegisterMutation = {
           isActive: boolean;
           disclaimerAccepted: boolean;
           disclaimerAcceptedAt?: Date | null | undefined;
-          role: string;
+          user_roles: Array<string>;
         }
       | null
       | undefined;
@@ -10442,7 +10350,7 @@ export type AcceptDisclaimerMutation = {
     isActive: boolean;
     disclaimerAccepted: boolean;
     disclaimerAcceptedAt?: Date | null | undefined;
-    role: string;
+    user_roles: Array<string>;
   };
 };
 
@@ -10469,7 +10377,7 @@ export type CompleteTwoFactorLoginMutation = {
           isActive: boolean;
           disclaimerAccepted: boolean;
           disclaimerAcceptedAt?: Date | null | undefined;
-          role: string;
+          user_roles: Array<string>;
         }
       | null
       | undefined;
@@ -10801,7 +10709,7 @@ export type GetCurrentUserQuery = {
         isActive: boolean;
         disclaimerAccepted: boolean;
         disclaimerAcceptedAt?: Date | null | undefined;
-        role: string;
+        user_roles: Array<string>;
       }
     | null
     | undefined;
@@ -10984,7 +10892,7 @@ export type MeQuery = {
         isActive: boolean;
         disclaimerAccepted: boolean;
         disclaimerAcceptedAt?: Date | null | undefined;
-        role: string;
+        user_roles: Array<string>;
       }
     | null
     | undefined;
@@ -11239,6 +11147,7 @@ export type GetUsersQuery = {
     lastName?: string | null | undefined;
     isActive: boolean;
     role: string;
+    roles: Array<string>;
   }>;
 };
 
@@ -11264,6 +11173,7 @@ export type GetUserQuery = {
         lastName?: string | null | undefined;
         isActive: boolean;
         role: string;
+        roles: Array<string>;
       }
     | null
     | undefined;
@@ -11290,6 +11200,7 @@ export type CreateOneUserMutation = {
     lastName?: string | null | undefined;
     isActive: boolean;
     role: string;
+    roles: Array<string>;
   };
 };
 
@@ -11315,6 +11226,7 @@ export type UpdateOneUserMutation = {
     lastName?: string | null | undefined;
     isActive: boolean;
     role: string;
+    roles: Array<string>;
   };
 };
 
@@ -11363,6 +11275,7 @@ export const UserMinimalFragmentFragmentDoc = `
   email
   firstName
   lastName
+  roles
 }
     `;
 export const AuditLogFragmentFragmentDoc = `
@@ -11855,6 +11768,7 @@ export const UserFragmentFragmentDoc = `
   lastName
   isActive
   role
+  roles
 }
     `;
 export const UserDetailFragmentFragmentDoc = `
@@ -11878,7 +11792,7 @@ export const AuthUserFragmentFragmentDoc = `
   isActive
   disclaimerAccepted
   disclaimerAcceptedAt
-  role
+  user_roles
 }
     `;
 export const AuthPayloadFragmentFragmentDoc = `
@@ -14646,7 +14560,7 @@ export const GetCurrentUserDocument = `
     isActive
     disclaimerAccepted
     disclaimerAcceptedAt
-    role
+    user_roles
   }
 }
     `;

@@ -13,5 +13,8 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-24T09:11:52.861Z"
+  "updatedAt": "2026-01-24T09:11:52.861Z",
+  "dependencies": [
+    "update-backend-role-guards-to-use-user-roles-array"
+  ]
 }

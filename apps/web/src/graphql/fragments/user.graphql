@@ -8,6 +8,7 @@ fragment UserFragment on User {
   lastName
   isActive
   role
+  roles
 }
 
 # Extended User Fragment with all fields used in data provider
@@ -33,7 +34,7 @@ fragment AuthUserFragment on AuthUser {
   isActive
   disclaimerAccepted
   disclaimerAcceptedAt
-  role
+  user_roles
 }
 
 # Minimal User Fragment for audit logs and references
@@ -43,6 +44,7 @@ fragment UserMinimalFragment on User {
   email
   firstName
   lastName
+  roles
 }
 
 # AuthPayload Fragment for login/register responses

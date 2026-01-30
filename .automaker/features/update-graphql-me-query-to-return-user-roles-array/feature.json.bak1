@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Fix the me GraphQL query to return user_roles as an array of Role objects instead of a single role field. Implementation: 1) Update User GraphQL type to expose user_roles field as [Role!]! instead of role: Role, 2) Update me query resolver to return user with user_roles populated, 3) Remove role field from User GraphQL type definition, 4) Update GraphQL fragments that reference user.role to use user.user_roles, 5) Run pnpm codegen to regenerate TypeScript types, 6) Verify frontend can access array of roles via me query. This aligns with the decision to use only user_roles relationship.",
+  "id": "update-graphql-me-query-to-return-user-roles-array",
+  "title": "Update GraphQL me Query to Return user_roles Array Instead of Single role",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Fix the me GraphQL query to return user_roles as an array of Role objects instead of a single role field. Implementation: 1) Update User GraphQL type to expose user_roles field as [Role!]! instead of role: Role, 2) Update me query resolver to return user with user_roles populated, 3) Remove role field from User GraphQL type definition, 4) Update GraphQL fragments that reference user.role to use user.user_roles, 5) Run pnpm codegen to regenerate TypeScript types, 6) Verify frontend can access array of roles via me query. This aligns with the decision to use only user_roles relationship.",
+      "timestamp": "2026-01-29T16:43:07.595Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T16:43:12.517Z"
+}

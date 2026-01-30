@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769691120771-1dae66de",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T12:52:00.771Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "update-frontend-role-checks-for-consistency",
+  "featureName": "Update Frontend Role Checks for Consistency",
+  "error": "Feature completed in 635s - auto-verified",
+  "passes": true
+}

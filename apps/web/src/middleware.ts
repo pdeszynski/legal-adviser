@@ -31,8 +31,25 @@ function hasAdminRole(request: NextRequest): boolean {
 
   try {
     const parsedAuth = JSON.parse(auth.value);
-    const roles = parsedAuth.roles || [];
-    return Array.isArray(roles) && roles.includes('admin');
+    // Check user_roles array from the backend
+    const userRoles = parsedAuth.user?.user_roles;
+    if (userRoles && Array.isArray(userRoles) && userRoles.length > 0) {
+      return userRoles.includes('admin') || userRoles.includes('super_admin');
+    }
+
+    // Fallback to cached role for backwards compatibility
+    const role = parsedAuth.role || parsedAuth.user?.role;
+    if (role) {
+      return role === 'admin' || role === 'super_admin';
+    }
+
+    // Old format: roles array check (for backwards compatibility during transition)
+    const roles = parsedAuth.roles;
+    if (Array.isArray(roles)) {
+      return roles.includes('admin') || roles.includes('super_admin');
+    }
+
+    return false;
   } catch {
     return false;
   }

@@ -243,7 +243,7 @@ export class RulingSearchAggregatorService {
 
       return {
         source: 'SAOS',
-        results: domainResults.map((r: RulingSearchResult) =>
+        results: domainResults.results.map((r: RulingSearchResult) =>
           this.domainToExternal(r.ruling),
         ),
       };
@@ -287,7 +287,7 @@ export class RulingSearchAggregatorService {
 
       return {
         source: 'ISAP',
-        results: domainResults.map((r: RulingSearchResult) =>
+        results: domainResults.results.map((r: RulingSearchResult) =>
           this.domainToExternal(r.ruling),
         ),
       };

@@ -5,6 +5,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { UserSession, SessionMode } from './entities/user-session.entity';
+import { UserRole, LEGACY_ROLE_MAP } from '../auth/enums/user-role.enum';
 import {
   UserCreatedEvent,
   UserUpdatedEvent,
@@ -387,11 +388,12 @@ export class UsersService {
 
   /**
    * Change user role (admin only)
-   * Updates user role to 'user' or 'admin'
+   * Updates user role to any valid UserRole
+   * Supports legacy role names ('user', 'admin') for backwards compatibility
    */
   async changeUserRole(
     userId: string,
-    newRole: 'user' | 'admin',
+    newRole: UserRole | string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     changedBy: string,
   ): Promise<User> {
@@ -400,7 +402,17 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
-    user.role = newRole;
+    // Map legacy role names to UserRole enum values
+    let normalizedRole: UserRole;
+    if (typeof newRole === 'string' && newRole in LEGACY_ROLE_MAP) {
+      normalizedRole = LEGACY_ROLE_MAP[newRole];
+    } else if (Object.values(UserRole).includes(newRole as UserRole)) {
+      normalizedRole = newRole as UserRole;
+    } else {
+      throw new NotFoundException(`Invalid role: ${newRole}`);
+    }
+
+    user.role = normalizedRole;
     const savedUser = await this.userRepository.save(user);
 
     // Emit domain event for role change
@@ -510,7 +522,7 @@ export class UsersService {
    */
   async bulkChangeUserRoles(
     userIds: string[],
-    newRole: 'user' | 'admin',
+    newRole: UserRole | string,
     changedBy: string,
   ): Promise<{
     success: User[];

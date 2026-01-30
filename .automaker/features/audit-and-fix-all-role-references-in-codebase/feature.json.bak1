@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Perform comprehensive audit of all code references to user roles and fix any remaining uses of deprecated role column. Implementation: 1) Search codebase for 'user.role' references (should be 'user.user_roles'), 2) Search for direct role access patterns, 3) Update GraphQL queries to select user_roles instead of role, 4) Update mutations that create/update users to use user_roles input, 5) Update seed data to create UserRole relationships, 6) Update E2E tests to use new role structure, 7) Update documentation and comments, 8) Add code comment warning against using role column, 9) Run all tests to verify no regressions, 10) Create pre-commit hook to prevent role column usage. This ensures complete consistency across entire codebase.",
+  "id": "audit-and-fix-all-role-references-in-codebase",
+  "title": "Audit and Fix All Role References to Use user_roles Array",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Perform comprehensive audit of all code references to user roles and fix any remaining uses of deprecated role column. Implementation: 1) Search codebase for 'user.role' references (should be 'user.user_roles'), 2) Search for direct role access patterns, 3) Update GraphQL queries to select user_roles instead of role, 4) Update mutations that create/update users to use user_roles input, 5) Update seed data to create UserRole relationships, 6) Update E2E tests to use new role structure, 7) Update documentation and comments, 8) Add code comment warning against using role column, 9) Run all tests to verify no regressions, 10) Create pre-commit hook to prevent role column usage. This ensures complete consistency across entire codebase.",
+      "timestamp": "2026-01-29T16:43:07.597Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T16:59:36.117Z"
+}

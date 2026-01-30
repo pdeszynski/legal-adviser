@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "After refactoring role storage to single source of truth, update GraphQL schema to reflect the change. If using many-to-many: 1) Update User type to have roles: [Role!]! field instead of role: Role, 2) Update all queries and mutations to handle roles array, 3) Update input types for user creation/updates to accept role IDs array. If using single role: 1) Ensure User type has role: Role! field (not array), 2) Update mutations to accept single role parameter, 3) Remove deprecated role-related fields from schema. Run pnpm codegen to regenerate TypeScript types. Verify all GraphQL operations return role data in the correct format. Test queries: user, users, me, and mutations: updateUser, userCreate, userUpdate.",
+  "id": "update-graphql-schema-for-consistent-role-access",
+  "title": "Update GraphQL Schema for Consistent Role Access",
+  "dependencies": [
+    "refactor-user-role-to-single-source-of-truth"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "After refactoring role storage to single source of truth, update GraphQL schema to reflect the change. If using many-to-many: 1) Update User type to have roles: [Role!]! field instead of role: Role, 2) Update all queries and mutations to handle roles array, 3) Update input types for user creation/updates to accept role IDs array. If using single role: 1) Ensure User type has role: Role! field (not array), 2) Update mutations to accept single role parameter, 3) Remove deprecated role-related fields from schema. Run pnpm codegen to regenerate TypeScript types. Verify all GraphQL operations return role data in the correct format. Test queries: user, users, me, and mutations: updateUser, userCreate, userUpdate.",
+      "timestamp": "2026-01-29T12:30:41.334Z",
+      "source": "initial"
+    }
+  ]
+}

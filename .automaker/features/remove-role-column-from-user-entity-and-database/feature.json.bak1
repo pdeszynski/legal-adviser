@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Remove the deprecated role column from the User entity and database schema to enforce single source of truth. Implementation: 1) Create database migration to: a) Drop column 'role' from users table, b) Add CHECK constraint to prevent adding it back, 2) Update User entity (TypeScript/ORM) to remove @FilterableField('role') and any role property, 3) Remove all references to user.role in backend services and resolvers, 4) Ensure all code uses user.user_roles array instead, 5) Update seed data to remove role column references, 6) Add database constraint comment warning against re-adding role column, 7) Run migration in development and verify no regressions, 8) Update CLAUDE.md to document role column removal and confirm UserRole relationship is the only valid source. This completes the migration to many-to-many roles.",
+  "id": "remove-role-column-from-user-entity-and-database",
+  "title": "Remove Deprecated Role Column from User Entity and Database",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Remove the deprecated role column from the User entity and database schema to enforce single source of truth. Implementation: 1) Create database migration to: a) Drop column 'role' from users table, b) Add CHECK constraint to prevent adding it back, 2) Update User entity (TypeScript/ORM) to remove @FilterableField('role') and any role property, 3) Remove all references to user.role in backend services and resolvers, 4) Ensure all code uses user.user_roles array instead, 5) Update seed data to remove role column references, 6) Add database constraint comment warning against re-adding role column, 7) Run migration in development and verify no regressions, 8) Update CLAUDE.md to document role column removal and confirm UserRole relationship is the only valid source. This completes the migration to many-to-many roles.",
+      "timestamp": "2026-01-29T17:21:59.098Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T17:23:11.928Z"
+}

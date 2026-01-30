@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Fix the GraphQL User type to return roles from the UserRole entity relationship instead of the deprecated role column. Implementation: 1) Update User GraphQL type to resolve the roles field from the user_roles relationship (many-to-many with UserRole), 2) Remove or deprecate the role field from User GraphQL type, 3) Update the User entity resolver to fetch UserRole entities through the relationship, 4) Ensure UserRole entity includes the related Role entity data (role name, description), 5) Update GraphQL query resolvers to populate user_roles correctly, 6) Run pnpm codegen to regenerate TypeScript types with correct role structure, 7) Verify that GraphQL queries (me, user, users) return roles as UserRole objects with nested Role data. This ensures the API returns the correct many-to-many relationship data, not the deprecated single column.",
+  "id": "fix-graphql-user-roles-to-return-userrole-entities",
+  "title": "Fix GraphQL User Roles to Return UserRole Entities",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Fix the GraphQL User type to return roles from the UserRole entity relationship instead of the deprecated role column. Implementation: 1) Update User GraphQL type to resolve the roles field from the user_roles relationship (many-to-many with UserRole), 2) Remove or deprecate the role field from User GraphQL type, 3) Update the User entity resolver to fetch UserRole entities through the relationship, 4) Ensure UserRole entity includes the related Role entity data (role name, description), 5) Update GraphQL query resolvers to populate user_roles correctly, 6) Run pnpm codegen to regenerate TypeScript types with correct role structure, 7) Verify that GraphQL queries (me, user, users) return roles as UserRole objects with nested Role data. This ensures the API returns the correct many-to-many relationship data, not the deprecated single column.",
+      "timestamp": "2026-01-29T17:21:59.097Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T17:34:32.745Z"
+}

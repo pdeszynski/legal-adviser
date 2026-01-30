@@ -50,7 +50,7 @@ export class TwoFactorResolver {
     description: 'Generate TOTP secret and QR code for 2FA setup',
   })
   @UseGuards(GqlAuthGuard, RoleGuard, GqlThrottlerGuard)
-  @RequireRole(UserRole.USER)
+  @RequireRole(UserRole.CLIENT)
   async enableTwoFactorAuth(
     @Context()
     context: {
@@ -94,7 +94,7 @@ export class TwoFactorResolver {
     description: 'Verify 2FA setup with first TOTP token to enable',
   })
   @UseGuards(GqlAuthGuard, RoleGuard, GqlThrottlerGuard)
-  @RequireRole(UserRole.USER)
+  @RequireRole(UserRole.CLIENT)
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   async verifyTwoFactorSetup(
     @Context()
@@ -138,7 +138,7 @@ export class TwoFactorResolver {
     description: 'Disable 2FA with password confirmation',
   })
   @UseGuards(GqlAuthGuard, RoleGuard, GqlThrottlerGuard)
-  @RequireRole(UserRole.USER)
+  @RequireRole(UserRole.CLIENT)
   async disableTwoFactorAuth(
     @Context()
     context: {
@@ -177,7 +177,7 @@ export class TwoFactorResolver {
     description: 'Generate new backup codes (invalidates old ones)',
   })
   @UseGuards(GqlAuthGuard, RoleGuard, GqlThrottlerGuard)
-  @RequireRole(UserRole.USER)
+  @RequireRole(UserRole.CLIENT)
   async regenerateBackupCodes(
     @Context()
     context: {
@@ -215,7 +215,7 @@ export class TwoFactorResolver {
     nullable: true,
   })
   @UseGuards(GqlAuthGuard, RoleGuard)
-  @RequireRole(UserRole.USER)
+  @RequireRole(UserRole.CLIENT)
   async twoFactorSettings(
     @Context() context: { req: { user: { id: string } } },
   ): Promise<TwoFactorSettings | null> {

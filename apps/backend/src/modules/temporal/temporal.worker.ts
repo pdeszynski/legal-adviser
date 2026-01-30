@@ -13,6 +13,7 @@ import {
   Inject,
   Optional,
 } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import {
   TEMPORAL_MODULE_OPTIONS,
   TEMPORAL_WORKER_DEFAULTS,
@@ -23,6 +24,11 @@ import type {
 } from './temporal.interfaces';
 import { TemporalMetricsService } from './temporal-metrics.service';
 import { TemporalObservabilityService } from './temporal-observability.service';
+import { createRulingIndexingActivities } from './activities/billing/ruling-indexing.activities';
+import { SaosAdapter } from '../../infrastructure/anti-corruption/saos/saos.adapter';
+import { IsapAdapter } from '../../infrastructure/anti-corruption/isap/isap.adapter';
+import { LegalRulingService } from '../documents/services/legal-ruling.service';
+import { VectorStoreService } from '../documents/services/vector-store.service';
 
 /**
  * Worker Pool Entry
@@ -64,6 +70,7 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
   private workerInitialized = false;
 
   constructor(
+    private readonly moduleRef: ModuleRef,
     @Inject(TEMPORAL_MODULE_OPTIONS)
     private readonly options: TemporalModuleOptions,
     @Optional()
@@ -288,7 +295,9 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
   /**
    * Initialize Worker module (lazy loading)
    */
-  private async initializeWorkerModule(): Promise<typeof import('@temporalio/worker')> {
+  private async initializeWorkerModule(): Promise<
+    typeof import('@temporalio/worker')
+  > {
     try {
       // Dynamic import to handle ESM-only temporalio package
       const workerModule = await import('@temporalio/worker');
@@ -462,7 +471,9 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
       const { Worker, NativeConnection } = workerModule;
 
       // Create connection to Temporal server
-      this.logger.log(`Connecting to Temporal server at ${this.options.clusterUrl}...`);
+      this.logger.log(
+        `Connecting to Temporal server at ${this.options.clusterUrl}...`,
+      );
       const connection = await NativeConnection.connect({
         address: this.options.clusterUrl,
       });
@@ -478,11 +489,15 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
         (workerOptions?.maxConcurrentLocalActivities as number) ||
         TEMPORAL_WORKER_DEFAULTS.MAX_CONCURRENT_LOCAL_ACTIVITIES;
 
+      // Create activities for the worker
+      const activities = this.createActivitiesForTaskQueue(taskQueue);
+
       const workerOptionsFull = {
         connection,
         namespace: this.options.namespace,
         taskQueue,
         workflowsPath,
+        activities,
         maxConcurrentWorkflowTaskExecutions,
         maxConcurrentActivityTaskExecutions,
         maxConcurrentLocalActivityExecutions,
@@ -492,11 +507,18 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
         `Worker Options: ${JSON.stringify({
           maxConcurrentWorkflowTaskExecutions:
             workerOptionsFull.maxConcurrentWorkflowTaskExecutions,
-          maxConcurrentActivityTaskExecutions: workerOptionsFull.maxConcurrentActivityTaskExecutions,
+          maxConcurrentActivityTaskExecutions:
+            workerOptionsFull.maxConcurrentActivityTaskExecutions,
           maxConcurrentLocalActivityExecutions:
             workerOptionsFull.maxConcurrentLocalActivityExecutions,
         })}`,
       );
+
+      if (activities && Object.keys(activities).length > 0) {
+        this.logger.log(
+          `Registering ${Object.keys(activities).length} activities for task queue '${taskQueue}'`,
+        );
+      }
 
       const worker = await Worker.create(workerOptionsFull);
 
@@ -694,6 +716,100 @@ export class TemporalWorkerService implements OnModuleInit, OnModuleDestroy {
   isWorkerRunning(taskQueue: string): boolean {
     const entry = this.workers.get(taskQueue);
     return entry?.running ?? false;
+  }
+
+  /**
+   * Create activities for a given task queue
+   *
+   * Returns an object with activity functions bound to their implementations.
+   * Different task queues may require different activities.
+   *
+   * @param taskQueue - Task queue name
+   * @returns Activities object for the worker
+   */
+  private createActivitiesForTaskQueue(
+    taskQueue: string,
+  ): Record<string, unknown> {
+    // Billing workflows and legal-ai-task-queue both require ruling indexing activities
+    // (The scheduler triggers workflows on legal-ai-task-queue)
+    if (
+      taskQueue === 'billing-workflows' ||
+      taskQueue === 'legal-ai-task-queue'
+    ) {
+      try {
+        // Get required services using ModuleRef with actual class tokens
+        // Note: VectorStoreService is REQUEST-scoped (depends on AiClientService)
+        // so we can't resolve it in the worker context. It's optional for activities.
+        const saosAdapter = this.moduleRef.get(SaosAdapter, { strict: false });
+        const isapAdapter = this.moduleRef.get(IsapAdapter, { strict: false });
+        const legalRulingService = this.moduleRef.get(LegalRulingService, {
+          strict: false,
+        });
+
+        this.logger.log(
+          `[DEBUG] createActivitiesForTaskQueue: saosAdapter=${!!saosAdapter}, isapAdapter=${!!isapAdapter}, ` +
+            `legalRulingService=${!!legalRulingService}`,
+        );
+
+        if (!saosAdapter || !isapAdapter || !legalRulingService) {
+          this.logger.warn(
+            'Missing required dependencies for ruling indexing activities. ' +
+              'Activities will not be registered. This may cause workflows to fail.',
+          );
+          this.logger.warn(
+            `[DEBUG] Dependencies status: saosAdapter=${!!saosAdapter}, isapAdapter=${!!isapAdapter}, ` +
+              `legalRulingService=${!!legalRulingService}`,
+          );
+          return {};
+        }
+
+        // Create activities - VectorStoreService is optional (used for vector search)
+        const rulingIndexingActivities = createRulingIndexingActivities({
+          saosAdapter,
+          isapAdapter,
+          legalRulingService,
+          vectorStoreService: undefined, // REQUEST-scoped, not available in worker context
+        });
+
+        this.logger.log(
+          `Created ruling indexing activities for task queue '${taskQueue}' (vector store disabled)`,
+        );
+
+        return {
+          // Ruling Indexing activities
+          initializeIndexing: rulingIndexingActivities.initializeIndexing.bind(
+            rulingIndexingActivities,
+          ),
+          processIndexingBatch:
+            rulingIndexingActivities.processIndexingBatch.bind(
+              rulingIndexingActivities,
+            ),
+          completeIndexing: rulingIndexingActivities.completeIndexing.bind(
+            rulingIndexingActivities,
+          ),
+          failIndexing: rulingIndexingActivities.failIndexing.bind(
+            rulingIndexingActivities,
+          ),
+          checkRateLimit: rulingIndexingActivities.checkRateLimit.bind(
+            rulingIndexingActivities,
+          ),
+          indexInVectorStore: rulingIndexingActivities.indexInVectorStore.bind(
+            rulingIndexingActivities,
+          ),
+        };
+      } catch (error) {
+        this.logger.error(
+          `Failed to create activities for task queue '${taskQueue}'`,
+          error,
+        );
+        return {};
+      }
+    }
+
+    // Other task queues can be added here as needed
+    // For now, return empty activities for other queues
+    // (workflows in those queues should work without activities)
+    return {};
   }
 
   /**

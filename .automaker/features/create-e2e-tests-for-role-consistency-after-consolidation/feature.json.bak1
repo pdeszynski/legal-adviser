@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive Playwright E2E tests to verify that role consolidation works correctly across all layers. Test scenarios: 1) Admin user logs in and sees admin links (menu-admin-panel-link), 2) Admin user can access /admin routes, 3) Non-admin user cannot access admin routes (403), 4) GraphQL me query returns user_roles array with correct roles, 5) Frontend useUserRole hook returns correct roles array, 6) Backend guards correctly authorize based on user_roles, 7) User with multiple roles has all permissions, 8) Seed users (admin@refine.dev, user@example.com) have correct roles, 9) Role checks in components work correctly, 10) Menu items show/hide based on roles. These tests ensure the single user_roles mechanism works end-to-end.",
+  "id": "create-e2e-tests-for-role-consistency-after-consolidation",
+  "title": "Create E2E Tests Verifying Role Consistency After Consolidation",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive Playwright E2E tests to verify that role consolidation works correctly across all layers. Test scenarios: 1) Admin user logs in and sees admin links (menu-admin-panel-link), 2) Admin user can access /admin routes, 3) Non-admin user cannot access admin routes (403), 4) GraphQL me query returns user_roles array with correct roles, 5) Frontend useUserRole hook returns correct roles array, 6) Backend guards correctly authorize based on user_roles, 7) User with multiple roles has all permissions, 8) Seed users (admin@refine.dev, user@example.com) have correct roles, 9) Role checks in components work correctly, 10) Menu items show/hide based on roles. These tests ensure the single user_roles mechanism works end-to-end.",
+      "timestamp": "2026-01-29T16:43:07.598Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T17:03:14.029Z"
+}

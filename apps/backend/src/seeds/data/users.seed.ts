@@ -1,7 +1,16 @@
 /**
  * User seed data for development and testing
- * Includes admin user and sample users
+ *
+ * DEFAULT ADMIN ACCOUNT:
+ * - Email: admin@refine.dev
+ * - Password: password
+ * - Role: SUPER_ADMIN
+ *
+ * This is the primary admin user for the application. Use these credentials
+ * to access admin routes and perform administrative tasks.
  */
+import { UserRole } from '../../modules/auth/enums/user-role.enum';
+
 export interface UserSeedData {
   email: string;
   username: string | null;
@@ -10,6 +19,7 @@ export interface UserSeedData {
   password: string;
   isActive: boolean;
   disclaimerAccepted: boolean;
+  role: UserRole;
   twoFactorEnabled?: boolean;
   twoFactorSecret?: string | null;
   twoFactorBackupCodes?: string | null;
@@ -60,7 +70,16 @@ export const TEST_BACKUP_CODES = [
 ];
 
 export const usersSeedData: UserSeedData[] = [
-  // Admin user - required by specification
+  // ============================================================================
+  // DEFAULT ADMIN USER - PRIMARY ACCOUNT FOR DEVELOPMENT AND TESTING
+  // ============================================================================
+  // Email: admin@refine.dev
+  // Password: password
+  // Role: SUPER_ADMIN (full access to all features including admin dashboard)
+  //
+  // This user is created first and should be the only admin user in seed data.
+  // Use this account to test admin functionality and access protected routes.
+  // ============================================================================
   {
     email: 'admin@refine.dev',
     username: 'admin',
@@ -69,6 +88,7 @@ export const usersSeedData: UserSeedData[] = [
     password: 'password',
     isActive: true,
     disclaimerAccepted: true,
+    role: UserRole.SUPER_ADMIN,
   },
   // Sample lawyer user
   {
@@ -79,8 +99,9 @@ export const usersSeedData: UserSeedData[] = [
     password: 'password123',
     isActive: true,
     disclaimerAccepted: true,
+    role: UserRole.LAWYER,
   },
-  // Sample regular user
+  // Sample regular user (client)
   {
     email: 'user@example.com',
     username: 'user1',
@@ -89,6 +110,7 @@ export const usersSeedData: UserSeedData[] = [
     password: 'password123',
     isActive: true,
     disclaimerAccepted: false,
+    role: UserRole.CLIENT,
   },
   // Inactive user for testing
   {
@@ -99,6 +121,7 @@ export const usersSeedData: UserSeedData[] = [
     password: 'password123',
     isActive: false,
     disclaimerAccepted: false,
+    role: UserRole.GUEST,
   },
   // User without username
   {
@@ -109,6 +132,7 @@ export const usersSeedData: UserSeedData[] = [
     password: 'password123',
     isActive: true,
     disclaimerAccepted: true,
+    role: UserRole.CLIENT,
   },
   // User with 2FA enabled - for testing 2FA login flow
   // TOTP secret: JBSWY3DPEHPK3PXP
@@ -121,6 +145,7 @@ export const usersSeedData: UserSeedData[] = [
     password: 'password123',
     isActive: true,
     disclaimerAccepted: true,
+    role: UserRole.CLIENT,
     twoFactorEnabled: true,
     twoFactorSecret: TEST_TOTP_SECRETS.USER_2FA,
     twoFactorBackupCodes: JSON.stringify(
@@ -141,6 +166,7 @@ export const usersSeedData: UserSeedData[] = [
     password: 'password123',
     isActive: true,
     disclaimerAccepted: true,
+    role: UserRole.ADMIN,
     twoFactorEnabled: true,
     twoFactorSecret: TEST_TOTP_SECRETS.ADMIN_2FA,
     twoFactorBackupCodes: JSON.stringify(
@@ -160,8 +186,20 @@ export const usersSeedData: UserSeedData[] = [
     password: 'password123',
     isActive: true,
     disclaimerAccepted: true,
+    role: UserRole.CLIENT,
     twoFactorEnabled: false, // Not yet verified
     twoFactorSecret: TEST_TOTP_SECRETS.USER_2FA,
     twoFactorBackupCodes: null, // Codes not issued yet
+  },
+  // Paralegal user for testing role hierarchy
+  {
+    email: 'paralegal@example.com',
+    username: 'paralegal1',
+    firstName: 'Maria',
+    lastName: 'Wojcik',
+    password: 'password123',
+    isActive: true,
+    disclaimerAccepted: true,
+    role: UserRole.PARALEGAL,
   },
 ];

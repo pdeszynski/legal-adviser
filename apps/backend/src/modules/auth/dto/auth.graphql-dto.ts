@@ -154,8 +154,11 @@ export class AuthUserPayload {
   @Field(() => GraphQLISODateTime, { nullable: true })
   disclaimerAcceptedAt?: Date;
 
-  @Field(() => String)
-  role!: string;
+  @Field(() => [String], {
+    description:
+      'Array of user roles (single role wrapped as array for consistency with JWT format)',
+  })
+  user_roles!: string[];
 }
 
 /**

@@ -36,8 +36,8 @@ test.describe('Document Template Mutations', () => {
           query: loginMutation,
           variables: {
             input: {
-              email: 'admin@example.com',
-              password: 'admin123',
+              email: 'admin@refine.dev',
+              password: 'password',
             },
           },
         },

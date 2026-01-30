@@ -82,15 +82,15 @@
       "name": "AdminForceDisableTwoFactor",
       "body": "mutation AdminForceDisableTwoFactor($input: AdminForceDisableTwoFactorInput!) {\n  adminForceDisableTwoFactor(input: $input) {\n    id\n    twoFactorEnabled\n    __typename\n  }\n}"
     },
-    "sha256:db1fd0c05b94aac93140315ff65712f6a78931e964646538c310875cbfd46a3a": {
+    "sha256:61446b8ce30fa0cde2acdf7f2fd0acd2e68ea8946f21e7e43d70d7c557ead115": {
       "type": "query",
       "name": "AuditLogs",
-      "body": "query AuditLogs($filter: AuditLogFilter, $paging: CursorPaging, $sorting: [AuditLogSort!]) {\n  auditLogs(filter: $filter, paging: $paging, sorting: $sorting) {\n    edges {\n      node {\n        ...AuditLogFragment\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n      __typename\n    }\n    totalCount\n    __typename\n  }\n}\n\nfragment AuditLogFragment on AuditLog {\n  id\n  action\n  resourceType\n  resourceId\n  userId\n  ipAddress\n  statusCode\n  errorMessage\n  userAgent\n  createdAt\n  updatedAt\n  user {\n    ...UserMinimalFragment\n    __typename\n  }\n  __typename\n}\n\nfragment UserMinimalFragment on User {\n  id\n  email\n  firstName\n  lastName\n  __typename\n}"
+      "body": "query AuditLogs($filter: AuditLogFilter, $paging: CursorPaging, $sorting: [AuditLogSort!]) {\n  auditLogs(filter: $filter, paging: $paging, sorting: $sorting) {\n    edges {\n      node {\n        ...AuditLogFragment\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n      __typename\n    }\n    totalCount\n    __typename\n  }\n}\n\nfragment AuditLogFragment on AuditLog {\n  id\n  action\n  resourceType\n  resourceId\n  userId\n  ipAddress\n  statusCode\n  errorMessage\n  userAgent\n  createdAt\n  updatedAt\n  user {\n    ...UserMinimalFragment\n    __typename\n  }\n  __typename\n}\n\nfragment UserMinimalFragment on User {\n  id\n  email\n  firstName\n  lastName\n  roles\n  __typename\n}"
     },
-    "sha256:627a37ce6164e91724a7d4cee0b712fafe052e8c6701cbe49ff1d2ca5d49d4ee": {
+    "sha256:0de483a2e5232edc0f01308a7faf36140db2679c8f15c1df2959aeddd5efb025": {
       "type": "query",
       "name": "AuditLog",
-      "body": "query AuditLog($id: ID!) {\n  auditLog(id: $id) {\n    ...AuditLogFragment\n    __typename\n  }\n}\n\nfragment AuditLogFragment on AuditLog {\n  id\n  action\n  resourceType\n  resourceId\n  userId\n  ipAddress\n  statusCode\n  errorMessage\n  userAgent\n  createdAt\n  updatedAt\n  user {\n    ...UserMinimalFragment\n    __typename\n  }\n  __typename\n}\n\nfragment UserMinimalFragment on User {\n  id\n  email\n  firstName\n  lastName\n  __typename\n}"
+      "body": "query AuditLog($id: ID!) {\n  auditLog(id: $id) {\n    ...AuditLogFragment\n    __typename\n  }\n}\n\nfragment AuditLogFragment on AuditLog {\n  id\n  action\n  resourceType\n  resourceId\n  userId\n  ipAddress\n  statusCode\n  errorMessage\n  userAgent\n  createdAt\n  updatedAt\n  user {\n    ...UserMinimalFragment\n    __typename\n  }\n  __typename\n}\n\nfragment UserMinimalFragment on User {\n  id\n  email\n  firstName\n  lastName\n  roles\n  __typename\n}"
     },
     "sha256:55d6167f0424fb0bd9f9fc72519d9ec803c1673c6ac8679d4615548692c0d8bc": {
       "type": "query",
@@ -247,30 +247,30 @@
       "name": "GetLegalRulingDetail",
       "body": "query GetLegalRulingDetail($id: ID!) {\n  legalRuling(id: $id) {\n    ...LegalRulingDetailFragment\n    __typename\n  }\n}\n\nfragment LegalRulingDetailFragment on LegalRuling {\n  ...LegalRulingFragment\n  fullText\n  metadata {\n    legalArea\n    keywords\n    relatedCases\n    sourceReference\n    __typename\n  }\n  __typename\n}\n\nfragment LegalRulingFragment on LegalRuling {\n  id\n  signature\n  courtName\n  courtType\n  rulingDate\n  summary\n  createdAt\n  updatedAt\n  __typename\n}"
     },
-    "sha256:721a5f9aa863f2188a36e37d07befd7d1277a2f8ea858e5f004b0117ee46168d": {
+    "sha256:f69d56ad55240e2ad737b31ece0c9ee09efcdc6a38b4ee02f0f7fe7571a15948": {
       "type": "mutation",
       "name": "Login",
-      "body": "mutation Login($input: LoginInput!) {\n  login(input: $input) {\n    ...AuthPayloadFragment\n    __typename\n  }\n}\n\nfragment AuthPayloadFragment on AuthPayload {\n  accessToken\n  refreshToken\n  requiresTwoFactor\n  twoFactorTempToken\n  user {\n    ...AuthUserFragment\n    __typename\n  }\n  __typename\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  role\n  __typename\n}"
+      "body": "mutation Login($input: LoginInput!) {\n  login(input: $input) {\n    ...AuthPayloadFragment\n    __typename\n  }\n}\n\nfragment AuthPayloadFragment on AuthPayload {\n  accessToken\n  refreshToken\n  requiresTwoFactor\n  twoFactorTempToken\n  user {\n    ...AuthUserFragment\n    __typename\n  }\n  __typename\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  user_roles\n  __typename\n}"
     },
-    "sha256:420ceb792087c452cf62d2aa273d7345266745c893447cc7b18776213055eb95": {
+    "sha256:4dee4d98829a4978df003d3d1f957d8ba7ae2cfbace7449c39de08cc302eb573": {
       "type": "mutation",
       "name": "Register",
-      "body": "mutation Register($input: RegisterInput!) {\n  register(input: $input) {\n    ...AuthPayloadFragment\n    __typename\n  }\n}\n\nfragment AuthPayloadFragment on AuthPayload {\n  accessToken\n  refreshToken\n  requiresTwoFactor\n  twoFactorTempToken\n  user {\n    ...AuthUserFragment\n    __typename\n  }\n  __typename\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  role\n  __typename\n}"
+      "body": "mutation Register($input: RegisterInput!) {\n  register(input: $input) {\n    ...AuthPayloadFragment\n    __typename\n  }\n}\n\nfragment AuthPayloadFragment on AuthPayload {\n  accessToken\n  refreshToken\n  requiresTwoFactor\n  twoFactorTempToken\n  user {\n    ...AuthUserFragment\n    __typename\n  }\n  __typename\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  user_roles\n  __typename\n}"
     },
     "sha256:f5b59dcaa9d1e27431d45c8baa918f66af9a94a5345d6a598e311da107ab377a": {
       "type": "mutation",
       "name": "RefreshToken",
       "body": "mutation RefreshToken($input: RefreshTokenInput!) {\n  refreshToken(input: $input) {\n    ...RefreshTokenPayloadFragment\n    __typename\n  }\n}\n\nfragment RefreshTokenPayloadFragment on RefreshTokenPayload {\n  accessToken\n  refreshToken\n  __typename\n}"
     },
-    "sha256:5bb0e9130867e46ee534a757d96d319b0cb6931f68f0ebe19c0c21faa92230c9": {
+    "sha256:246b21077216ed0f000a23c4c6de59574979e72f1759cb0c529598f93a72cddd": {
       "type": "mutation",
       "name": "AcceptDisclaimer",
-      "body": "mutation AcceptDisclaimer {\n  acceptDisclaimer {\n    ...AuthUserFragment\n    __typename\n  }\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  role\n  __typename\n}"
+      "body": "mutation AcceptDisclaimer {\n  acceptDisclaimer {\n    ...AuthUserFragment\n    __typename\n  }\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  user_roles\n  __typename\n}"
     },
-    "sha256:b44bcbcb8fc5587c615a36c9d4499a61cbd5eeabb555aa58f5ebee584c774276": {
+    "sha256:f9dab2fe7ba1075e1a7067c359019dbe6f72f1db16be16622dc0696b29fc6d14": {
       "type": "mutation",
       "name": "CompleteTwoFactorLogin",
-      "body": "mutation CompleteTwoFactorLogin($input: CompleteTwoFactorLoginInput!) {\n  completeTwoFactorLogin(input: $input) {\n    ...AuthPayloadFragment\n    __typename\n  }\n}\n\nfragment AuthPayloadFragment on AuthPayload {\n  accessToken\n  refreshToken\n  requiresTwoFactor\n  twoFactorTempToken\n  user {\n    ...AuthUserFragment\n    __typename\n  }\n  __typename\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  role\n  __typename\n}"
+      "body": "mutation CompleteTwoFactorLogin($input: CompleteTwoFactorLoginInput!) {\n  completeTwoFactorLogin(input: $input) {\n    ...AuthPayloadFragment\n    __typename\n  }\n}\n\nfragment AuthPayloadFragment on AuthPayload {\n  accessToken\n  refreshToken\n  requiresTwoFactor\n  twoFactorTempToken\n  user {\n    ...AuthUserFragment\n    __typename\n  }\n  __typename\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  user_roles\n  __typename\n}"
     },
     "sha256:da6ea91d7b3b7dee939a91e8c136551a850d1477c69bcf706fea6869dfc8746e": {
       "type": "mutation",
@@ -357,10 +357,10 @@
       "name": "InAppNotificationCreated",
       "body": "subscription InAppNotificationCreated($userId: String) {\n  inAppNotificationCreated(userId: $userId) {\n    notificationId\n    userId\n    type\n    message\n    actionLink\n    actionLabel\n    metadata\n    createdAt\n    __typename\n  }\n}"
     },
-    "sha256:b687da4227656259cae738340a5f29159161455b8bd16b589f73ca64813ac7ba": {
+    "sha256:a13691b8ec019facc5a1bada1e09ae0847726a52cb50773619763e87c8f1b9ed": {
       "type": "query",
       "name": "GetCurrentUser",
-      "body": "query GetCurrentUser {\n  me {\n    id\n    email\n    username\n    firstName\n    lastName\n    isActive\n    disclaimerAccepted\n    disclaimerAcceptedAt\n    role\n    __typename\n  }\n}"
+      "body": "query GetCurrentUser {\n  me {\n    id\n    email\n    username\n    firstName\n    lastName\n    isActive\n    disclaimerAccepted\n    disclaimerAcceptedAt\n    user_roles\n    __typename\n  }\n}"
     },
     "sha256:ebd2b4896454b06702db95560b2822063b77280594b39fedd7741c632207c1cb": {
       "type": "query",
@@ -392,10 +392,10 @@
       "name": "GetSystemHealthMetrics",
       "body": "query GetSystemHealthMetrics($input: DashboardAnalyticsInput) {\n  systemHealthMetrics(input: $input) {\n    ...SystemHealthMetricsFragment\n    __typename\n  }\n}\n\nfragment SystemHealthMetricsFragment on SystemHealthMetrics {\n  documentSuccessRate\n  avgResponseTime\n  activeSessions\n  timestamp\n  __typename\n}"
     },
-    "sha256:c3774b140405205d9538d122a0c7126b93eb80fd8ad1c746075ee086148b9630": {
+    "sha256:bf4c74574179b22f6bd87cbe0db74dd12e9da264b1c7d5e85d31982cb4608ddd": {
       "type": "query",
       "name": "Me",
-      "body": "query Me {\n  me {\n    ...AuthUserFragment\n    __typename\n  }\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  role\n  __typename\n}"
+      "body": "query Me {\n  me {\n    ...AuthUserFragment\n    __typename\n  }\n}\n\nfragment AuthUserFragment on AuthUser {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  user_roles\n  __typename\n}"
     },
     "sha256:a647f90aa0d868b9bd55fdfcaa2b1a6074b6f8621d1fc0d3e7493bb06e792785": {
       "type": "query",
@@ -442,25 +442,25 @@
       "name": "SearchDocuments",
       "body": "query SearchDocuments($filter: LegalDocumentFilter!) {\n  legalDocuments(filter: $filter, paging: {first: 3}) {\n    edges {\n      node {\n        id\n        title\n        type\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}"
     },
-    "sha256:71066459c5a85ea715de7b7b0e9b250c4f32bfe1ce41df85b8df83a55e522b3f": {
+    "sha256:7f718fe07199f6a0b33c8f926198e7a2a3c654f54fa6a827f57b5743290d66af": {
       "type": "query",
       "name": "GetUsers",
-      "body": "query GetUsers($filter: UserFilter, $paging: UserPaging, $sorting: [UserSort!]) {\n  users(filter: $filter, paging: $paging, sorting: $sorting) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  __typename\n}"
+      "body": "query GetUsers($filter: UserFilter, $paging: UserPaging, $sorting: [UserSort!]) {\n  users(filter: $filter, paging: $paging, sorting: $sorting) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  roles\n  __typename\n}"
     },
-    "sha256:00fc9fc448fcb9d3963567a8fadd319ef461c83e98aaf7e6c3aebe6330656ff4": {
+    "sha256:7c2943e1eeca432fa82f8397dc5598b32157cf63ca5e7ae17d17bef83c2a7b1a": {
       "type": "query",
       "name": "GetUser",
-      "body": "query GetUser($id: ID!) {\n  user(id: $id) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  __typename\n}"
+      "body": "query GetUser($id: ID!) {\n  user(id: $id) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  roles\n  __typename\n}"
     },
-    "sha256:8efd0705dc9036a1eb8749c7c7d8d6ebc356f2d1fcac1d22952671bd77fa6580": {
+    "sha256:03642c7382d39c4a91a698ba988c247c047e0bc7e07cba047fe9d187996b51a0": {
       "type": "mutation",
       "name": "CreateOneUser",
-      "body": "mutation CreateOneUser($input: CreateUserInput!) {\n  createOneUser(input: $input) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  __typename\n}"
+      "body": "mutation CreateOneUser($input: CreateUserInput!) {\n  createOneUser(input: $input) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  roles\n  __typename\n}"
     },
-    "sha256:d55be3aa1bf9bd809ace02ddb7babbbd9ef974417fc099b0143126eb00ca9020": {
+    "sha256:a3769670bd314daae812c539685fe7789948afd77e2c570203568361cae3c0fd": {
       "type": "mutation",
       "name": "UpdateOneUser",
-      "body": "mutation UpdateOneUser($id: ID!, $input: UpdateUserInput!) {\n  updateOneUser(id: $id, input: $input) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  __typename\n}"
+      "body": "mutation UpdateOneUser($id: ID!, $input: UpdateUserInput!) {\n  updateOneUser(id: $id, input: $input) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  roles\n  __typename\n}"
     },
     "sha256:b5605e7572f0db071faf0c38f7058e97eaa5f26f7965b83b34f6a8dcd766b839": {
       "type": "mutation",

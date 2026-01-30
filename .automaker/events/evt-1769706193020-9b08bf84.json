@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769706193020-9b08bf84",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T17:03:13.020Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "update-frontend-role-checks-to-use-user-roles-array",
+  "featureName": "Update Frontend Role Checks to Use user_roles Array",
+  "error": "Feature completed in 538s - auto-verified",
+  "passes": true
+}

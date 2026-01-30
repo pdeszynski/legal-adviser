@@ -242,7 +242,7 @@ export class RulingIndexingActivities {
     private readonly saosAdapter: SaosAdapter,
     private readonly isapAdapter: IsapAdapter,
     private readonly legalRulingService: LegalRulingService,
-    private readonly vectorStoreService: VectorStoreService,
+    private readonly vectorStoreService?: VectorStoreService,
   ) {}
 
   /**
@@ -273,6 +273,11 @@ export class RulingIndexingActivities {
       const adapter = source === 'SAOS' ? this.saosAdapter : this.isapAdapter;
       const result = await adapter.search(searchQuery);
 
+      // Adapter returns RulingSearchResponse with results and totalCount
+      const responseData = result.data;
+      const items = responseData?.results || [];
+      const totalCount = responseData?.totalCount || 0;
+
       if (!result.success || !result.data) {
         this.logger.warn(
           `Failed to query ${source} during initialization: ${result.error?.message}`,
@@ -284,23 +289,24 @@ export class RulingIndexingActivities {
         };
       }
 
-      // For estimation, we'll use a reasonable batch size
-      // In a real implementation, the API might return total count
-      const estimatedCount = result.data.length > 0 ? 1000 : 0; // Default estimate
+      // Use the actual total count from the API response
       const batchSize = 100;
-      const estimatedBatches = Math.ceil(estimatedCount / batchSize);
+      const estimatedBatches = Math.ceil(totalCount / batchSize);
 
       this.logger.log(
-        `Initialized indexing job ${jobId}: ~${estimatedCount} rulings, ${estimatedBatches} batches`,
+        `Initialized indexing job ${jobId}: ~${totalCount} rulings, ${estimatedBatches} batches`,
       );
 
       return {
-        totalAvailable: estimatedCount,
+        totalAvailable: totalCount,
         estimatedBatches,
         initializedAt: new Date().toISOString(),
       };
     } catch (error) {
       this.logger.error(`Failed to initialize indexing job ${jobId}`, error);
+      this.logger.debug(
+        `[DEBUG] initializeIndexing error details: ${error instanceof Error ? error.stack : String(error)}`,
+      );
       throw error;
     }
   }
@@ -378,8 +384,8 @@ export class RulingIndexingActivities {
         courtType,
       });
 
-      this.logger.debug(
-        `Fetched ${externalRulings.length} rulings from ${source} for batch ${batchNumber}`,
+      this.logger.log(
+        `Batch ${batchNumber} (job ${jobId}): Fetched ${externalRulings.length} rulings from ${source}, processing...`,
       );
 
       // Process each ruling
@@ -549,8 +555,14 @@ export class RulingIndexingActivities {
   ): Promise<IndexInVectorStoreOutput> {
     const { rulingId, fullText, metadata } = input;
 
+    if (!this.vectorStoreService) {
+      return {
+        chunkCount: 0,
+        indexedAt: new Date().toISOString(),
+      };
+    }
+
     if (!fullText || fullText.trim().length === 0) {
-      this.logger.debug(`No full text to index for ruling ${rulingId}`);
       return {
         chunkCount: 0,
         indexedAt: new Date().toISOString(),
@@ -566,10 +578,6 @@ export class RulingIndexingActivities {
           chunkOverlap: 50,
           metadata,
         },
-      );
-
-      this.logger.debug(
-        `Indexed ${embeddings.length} chunks for ruling ${rulingId}`,
       );
 
       return {
@@ -603,6 +611,17 @@ export class RulingIndexingActivities {
   }): Promise<Array<{ ruling: any; sourceReference?: string }>> {
     const { source, limit, offset, dateFrom, dateTo, courtType } = input;
 
+    this.logger.debug(
+      `[DEBUG] fetchFromExternalSource called with: ${JSON.stringify({
+        source,
+        limit,
+        offset,
+        dateFrom: dateFrom?.toISOString?.() ?? dateFrom,
+        dateTo: dateTo?.toISOString?.() ?? dateTo,
+        courtType,
+      })}`,
+    );
+
     const adapter = source === 'SAOS' ? this.saosAdapter : this.isapAdapter;
 
     const searchQuery: SearchRulingsQuery = {
@@ -616,6 +635,11 @@ export class RulingIndexingActivities {
 
     const result = await adapter.search(searchQuery);
 
+    // Adapter returns RulingSearchResponse with results and totalCount
+    const responseData = result.data;
+    const items = responseData?.results || [];
+    const totalCount = responseData?.totalCount || 0;
+
     if (!result.success || !result.data) {
       this.logger.warn(
         `Failed to fetch from ${source}: ${result.error?.message ?? 'Unknown error'}`,
@@ -623,9 +647,21 @@ export class RulingIndexingActivities {
       return [];
     }
 
-    return result.data.map((item) => ({
-      ruling: item.ruling,
-      sourceReference: item.ruling.metadata?.sourceReference,
+    if (items.length === 0) {
+      this.logger.warn(
+        `${source}: No more items to fetch for offset=${offset}, limit=${limit} (total available: ${totalCount})`,
+      );
+      return [];
+    }
+
+    this.logger.log(
+      `${source}: Fetched ${items.length} rulings (total available: ${totalCount})`,
+    );
+
+    // Map RulingSearchResult to the expected format (extract the ruling property)
+    return items.map((item: any) => ({
+      ruling: item.ruling, // Extract LegalRulingDto from RulingSearchResult
+      sourceReference: `${source}:${item.ruling.externalId}`,
     }));
   }
 
@@ -752,7 +788,7 @@ export const createRulingIndexingActivities = (dependencies: {
   saosAdapter: SaosAdapter;
   isapAdapter: IsapAdapter;
   legalRulingService: LegalRulingService;
-  vectorStoreService: VectorStoreService;
+  vectorStoreService?: VectorStoreService;
 }): RulingIndexingActivities => {
   const { saosAdapter, isapAdapter, legalRulingService, vectorStoreService } =
     dependencies;

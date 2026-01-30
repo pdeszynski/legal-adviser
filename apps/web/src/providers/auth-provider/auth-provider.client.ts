@@ -105,12 +105,13 @@ function storeAuthData(payload: LoginMutation['login'] | RegisterMutation['regis
   }
 
   // Store user data and metadata
+  // Backend returns user_roles as an array (single role wrapped for JWT consistency)
   if (payload.user) {
     Cookies.set(
       AUTH_COOKIE,
       JSON.stringify({
         user: payload.user,
-        roles: [payload.user.role || 'user'], // Use role from backend
+        role: payload.user.user_roles?.[0] || 'client', // First role from array for compatibility
       }),
       {
         expires: REFRESH_TOKEN_EXPIRY,
@@ -385,14 +386,22 @@ export const authProviderClient: AuthProvider = {
   },
 
   /**
-   * Get user permissions/roles
+   * Get user permissions (returns roles as array)
+   * The backend returns user_roles as an array
    */
   getPermissions: async () => {
     const auth = Cookies.get(AUTH_COOKIE);
     if (auth) {
       try {
         const parsedAuth = JSON.parse(auth);
-        return parsedAuth.roles || null;
+        // Read from user_roles array in the user object
+        const userRoles = parsedAuth.user?.user_roles;
+        if (userRoles && Array.isArray(userRoles) && userRoles.length > 0) {
+          return userRoles;
+        }
+        // Fallback to cached role for backwards compatibility
+        const role = parsedAuth.role;
+        return role ? [role] : null;
       } catch {
         return null;
       }
@@ -436,6 +445,7 @@ export const authProviderClient: AuthProvider = {
             const userData = result.data.me;
             return {
               ...userData,
+              role: userData.user_roles?.[0], // Add role field for compatibility with useUserRole hook
               name:
                 userData.firstName && userData.lastName
                   ? `${userData.firstName} ${userData.lastName}`
@@ -451,6 +461,7 @@ export const authProviderClient: AuthProvider = {
       if (!cachedUser) return null;
       return {
         ...cachedUser,
+        role: cachedUser.user_roles?.[0], // Add role field for compatibility with useUserRole hook
         name:
           cachedUser.firstName && cachedUser.lastName
             ? `${cachedUser.firstName} ${cachedUser.lastName}`

@@ -5,9 +5,8 @@
   "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
   "branchName": null,
   "runningFeatureIds": [
-    "add-dashboard-auth-requirement",
-    "feature-1769683062355-h0vn8gdjz",
-    "chat-history-actions-e2e-tests"
+    "create-verification-tests-for-userrole-graphql-responses",
+    "feature-1769709035122-bcpkw5ltx"
   ],
-  "savedAt": "2026-01-29T11:01:08.953Z"
+  "savedAt": "2026-01-29T17:52:01.391Z"
 }

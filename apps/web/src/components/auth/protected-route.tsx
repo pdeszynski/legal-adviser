@@ -10,10 +10,8 @@ import { useUserRole, type UserRole } from '@/hooks/use-user-role';
 export interface ProtectedRouteProps {
   /** Child components to render if authorized */
   children: ReactNode;
-  /** Required role(s) to access the route */
+  /** Required role(s) to access the route (any match) */
   requiredRole?: UserRole | UserRole[];
-  /** If true, user must have ALL specified roles (default: false = any role) */
-  requireAll?: boolean;
   /** Minimum role level required (uses role hierarchy) */
   minRoleLevel?: UserRole;
   /** Where to redirect if unauthorized (default: '/403') */
@@ -53,7 +51,6 @@ export interface ProtectedRouteProps {
 export const ProtectedRoute = ({
   children,
   requiredRole,
-  requireAll = false,
   minRoleLevel,
   redirectTo = '/403',
   loginRedirectTo = '/login',
@@ -73,7 +70,7 @@ export const ProtectedRoute = ({
 
     // Check specific role requirements
     if (requiredRole) {
-      authorized = hasRole(requiredRole, requireAll);
+      authorized = hasRole(requiredRole);
     }
 
     // Check minimum role level
@@ -89,7 +86,6 @@ export const ProtectedRoute = ({
     isAuthenticated,
     role,
     requiredRole,
-    requireAll,
     minRoleLevel,
     hasRole,
     hasRoleLevel,
@@ -107,7 +103,7 @@ export const ProtectedRoute = ({
   let authorized = true;
 
   if (requiredRole) {
-    authorized = hasRole(requiredRole, requireAll);
+    authorized = hasRole(requiredRole);
   }
 
   if (authorized && minRoleLevel) {

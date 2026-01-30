@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769705704023-b3dfdbec",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T16:55:04.023Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "consolidate-user-role-to-single-source",
+  "featureName": "Consolidate User Role to Use Only user_roles Relationship",
+  "error": "Feature completed in 716s - auto-verified",
+  "passes": true
+}

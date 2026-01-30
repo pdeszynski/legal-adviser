@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { TwoFactorService } from './two-factor.service';
+import { UserRole } from './enums/user-role.enum';
 import {
   AuthPayload,
   RefreshTokenPayload,
@@ -85,7 +86,7 @@ export class AuthService {
       userId: user.id,
       username: user.username || user.email,
       email: user.email,
-      roles: [user.role || 'user'], // Use role from database
+      roles: [user.role], // Use role from database (now UserRole enum)
     };
   }
 
@@ -139,7 +140,7 @@ export class AuthService {
       sub: user.id,
       username: user.username || user.email,
       email: user.email,
-      roles: [user.role || 'user'], // Use role from database
+      roles: [user.role], // Use role from database (now UserRole enum)
     };
 
     // Use type assertion to work around JwtService generic type issues
@@ -169,7 +170,7 @@ export class AuthService {
       isActive: user.isActive,
       disclaimerAccepted: user.disclaimerAccepted,
       disclaimerAcceptedAt: user.disclaimerAcceptedAt || undefined,
-      role: user.role || 'user',
+      user_roles: [user.role], // Single role wrapped as array for consistency with JWT format
     };
   }
 

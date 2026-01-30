@@ -174,7 +174,7 @@ export class AuthResolver {
       isActive: user.isActive,
       disclaimerAccepted: user.disclaimerAccepted,
       disclaimerAcceptedAt: user.disclaimerAcceptedAt || undefined,
-      role: 'USER', // Default role
+      user_roles: [user.role],
     };
   }
 
@@ -206,7 +206,7 @@ export class AuthResolver {
       isActive: user.isActive,
       disclaimerAccepted: user.disclaimerAccepted,
       disclaimerAcceptedAt: user.disclaimerAcceptedAt || undefined,
-      role: 'USER', // Default role
+      user_roles: [user.role],
     };
   }
 
@@ -239,7 +239,7 @@ export class AuthResolver {
       isActive: user.isActive,
       disclaimerAccepted: user.disclaimerAccepted,
       disclaimerAcceptedAt: user.disclaimerAcceptedAt || undefined,
-      role: 'USER', // Default role
+      user_roles: [user.role],
     };
   }
 

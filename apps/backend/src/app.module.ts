@@ -38,8 +38,6 @@ import { TemporalModule } from './modules/temporal/temporal.module';
 import { HubSpotModule } from './modules/integrations/hubspot/hubspot.module';
 import { DemoRequestModule } from './modules/demo-request/demo-request.module';
 import { InterestRequestModule } from './modules/interest-request/interest-request.module';
-// Authorization - Role-Based Access Control following DDD
-import { AuthorizationModule } from './modules/authorization/authorization.module';
 // Langfuse - AI trace visualization
 import { LangfuseModule } from './modules/langfuse/langfuse.module';
 // Persisted Queries - Automatic Persisted Queries (APQ) support
@@ -173,8 +171,6 @@ import { PersistedQueriesService } from './modules/persisted-queries';
     DemoRequestModule,
     // Interest Request Module - Public early access interest submissions
     InterestRequestModule,
-    // Authorization - Role-Based Access Control
-    AuthorizationModule,
     // Langfuse - AI trace visualization
     LangfuseModule,
     // Domain Event System - Event dispatcher for reliable event delivery

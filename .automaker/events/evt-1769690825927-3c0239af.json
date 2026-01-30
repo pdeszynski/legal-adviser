@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769690825927-3c0239af",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T12:47:05.927Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "refactor-user-role-to-single-source-of-truth",
+  "featureName": "Refactor User Role to Single Source of Truth",
+  "error": "Feature completed in 895s - auto-verified",
+  "passes": true
+}

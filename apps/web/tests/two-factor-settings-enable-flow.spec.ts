@@ -13,8 +13,13 @@ import { test, expect } from '@playwright/test';
  * 7) Verify backup codes are shown
  * 8) Confirm 2FA is enabled in settings
  *
- * Uses admin@refine.dev credentials for testing.
+ * Uses admin@refine.dev credentials (role: admin) for testing.
  * Verifies GraphQL mutations are called via network trace.
+ *
+ * Role Format Note:
+ * - The admin user has role: 'admin' in the User entity
+ * - JWT tokens contain { roles: ['admin'] } array format
+ * - Tests verify 2FA works correctly with the new role format
  */
 
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';

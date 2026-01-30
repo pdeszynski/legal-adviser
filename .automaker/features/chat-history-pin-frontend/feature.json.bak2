@@ -4,7 +4,7 @@
   "id": "chat-history-pin-frontend",
   "title": "Add Chat Session Pin/Unpin Functionality to Frontend",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-29T10:07:53.251Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-29T10:12:37.431Z"
 }

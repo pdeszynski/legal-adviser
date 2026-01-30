@@ -18,7 +18,7 @@ import { cn } from '@legal/ui';
 import { ChevronRight, ShieldAlert } from 'lucide-react';
 import type { SupportedLocale } from '@i18n/config';
 import { ADMIN_MENU_ITEMS } from '@config/menu.config';
-import { useUserRole } from '@hooks/use-user-role';
+import { useUserRole, type UserRole } from '@hooks/use-user-role';
 
 interface UserIdentity {
   id: string;
@@ -26,7 +26,10 @@ interface UserIdentity {
   name?: string;
   firstName?: string;
   lastName?: string;
+  /** Compatibility field added by auth provider (first element of user_roles) */
   role?: string;
+  /** Primary source of roles from backend GraphQL API (AuthUser.user_roles) */
+  user_roles?: string[];
   [key: string]: unknown;
 }
 
@@ -85,7 +88,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <div className="h-6 w-px bg-border" />
               {displayName && (
                 <span className="text-sm text-muted-foreground">
-                  {displayName} ({identity?.role || 'user'})
+                  {displayName} ({identity?.role || identity?.user_roles?.[0] || 'user'})
                 </span>
               )}
             </div>
@@ -111,7 +114,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               {ADMIN_MENU_ITEMS.filter((item) => {
                 // Filter menu items based on user's roles
                 if (item.allowedRoles) {
-                  return item.allowedRoles.some((allowed) => roles.includes(allowed));
+                  return (
+                    roles.length > 0 &&
+                    item.allowedRoles.some((allowedRole) => roles.includes(allowedRole))
+                  );
                 }
                 return true;
               }).map((item) => {

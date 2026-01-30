@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769691101106-2df2e22c",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T12:51:41.106Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "update-seed-data-to-use-admin-as-default-user",
+  "featureName": "Update Seed Data to Use admin@refine.dev as Default User",
+  "error": "Feature completed in 274s - auto-verified",
+  "passes": true
+}

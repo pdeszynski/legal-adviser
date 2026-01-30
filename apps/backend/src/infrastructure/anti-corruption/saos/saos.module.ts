@@ -9,7 +9,12 @@ import { SaosAdapter } from './saos.adapter';
  * Provides the SAOS integration with proper isolation and transformation.
  */
 @Module({
-  imports: [HttpModule],
+  imports: [
+    HttpModule.register({
+      timeout: 30000,
+      maxRedirects: 5,
+    }),
+  ],
   providers: [SaosTransformer, SaosAdapter],
   exports: [SaosTransformer, SaosAdapter],
 })

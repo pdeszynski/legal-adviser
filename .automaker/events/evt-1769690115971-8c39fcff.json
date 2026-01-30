@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769690115971-8c39fcff",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T12:35:15.971Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "analyze-user-role-duplication-in-entities",
+  "featureName": "Analyze User Role Duplication in Entities",
+  "error": "Feature completed in 187s - auto-verified",
+  "passes": true
+}

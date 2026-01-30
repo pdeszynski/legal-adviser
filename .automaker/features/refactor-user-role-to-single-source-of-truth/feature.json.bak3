@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Based on analysis from analyze-user-role-duplication-in-entities, choose ONE approach and implement it consistently. Option A (Many-to-Many): Keep UserRole entity, remove role column from User table, ensure all code uses user.roles array. Option B (Single Role): Keep role column on User table, drop UserRole entity, ensure all code uses user.role string. Implementation tasks: 1) Create database migration to move data from deprecated approach to chosen approach, 2) Update User entity definition to remove deprecated field or relationship, 3) Delete UserRole entity if choosing single-role approach, 4) Update all GraphQL resolvers to use consistent role access pattern, 5) Update RBAC guards (RoleGuard, AdminGuard) to check roles consistently, 6) Update frontend useUserRole hook to return consistent format, 7) Update seed data to use only the chosen approach, 8) Add database constraint to prevent reverting to old pattern. This ensures single source of truth for role data.",
+  "id": "refactor-user-role-to-single-source-of-truth",
+  "title": "Refactor User Role to Single Source of Truth",
+  "dependencies": [
+    "analyze-user-role-duplication-in-entities"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Based on analysis from analyze-user-role-duplication-in-entities, choose ONE approach and implement it consistently. Option A (Many-to-Many): Keep UserRole entity, remove role column from User table, ensure all code uses user.roles array. Option B (Single Role): Keep role column on User table, drop UserRole entity, ensure all code uses user.role string. Implementation tasks: 1) Create database migration to move data from deprecated approach to chosen approach, 2) Update User entity definition to remove deprecated field or relationship, 3) Delete UserRole entity if choosing single-role approach, 4) Update all GraphQL resolvers to use consistent role access pattern, 5) Update RBAC guards (RoleGuard, AdminGuard) to check roles consistently, 6) Update frontend useUserRole hook to return consistent format, 7) Update seed data to use only the chosen approach, 8) Add database constraint to prevent reverting to old pattern. This ensures single source of truth for role data.",
+      "timestamp": "2026-01-29T12:30:41.332Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -27,18 +27,13 @@ type ActiveUsersCount {
   last30Days: Int!
 }
 
-input AddPermissionInput {
-  permission: String!
-  roleId: String!
-}
-
 input AdminCreateUserInput {
   email: String!
   firstName: String
   isActive: Boolean = true
   lastName: String
   password: String!
-  role: String = "user"
+  role: String = "client"
   username: String
 }
 
@@ -656,7 +651,11 @@ type AuthUser {
   id: ID!
   isActive: Boolean!
   lastName: String
-  role: String!
+
+  """
+  Array of user roles (single role wrapped as array for consistency with JWT format)
+  """
+  user_roles: [String!]!
   username: String
 }
 
@@ -748,7 +747,7 @@ input BulkActivateUsersInput {
 }
 
 input BulkChangeUserRolesInput {
-  role: String!
+  role: UserRole!
   userIds: [ID!]!
 }
 
@@ -829,7 +828,7 @@ input ChangePasswordInput {
 }
 
 input ChangeUserRoleInput {
-  role: String!
+  role: UserRole!
   userId: ID!
 }
 
@@ -1260,12 +1259,6 @@ type CheckEmailExistsResult {
   exists: Boolean!
   userId: String
   username: String
-}
-
-input CheckPermissionInput {
-  permissionType: String!
-  resourceType: String!
-  roleNames: [String!]!
 }
 
 input CheckQuotaInput {
@@ -2038,14 +2031,6 @@ input CreateOneNotificationInput {
 input CreateOneUserPreferencesInput {
   """The record to create"""
   userPreferences: CreateUserPreferencesInput!
-}
-
-input CreateRoleInput {
-  description: String
-  inheritsFrom: String
-  name: String!
-  permissions: [String!]!
-  type: String!
 }
 
 input CreateRulingMetadataInput {
@@ -4698,9 +4683,6 @@ type Mutation {
   """Add a citation to an existing legal query"""
   addCitationToQuery(citation: CreateCitationInput!, queryId: ID!): LegalQuery!
 
-  """Add a permission to a role"""
-  addPermissionToRole(input: AddPermissionInput!): Role!
-
   """Create a backup (admin only)"""
   adminCreateBackup(input: CreateBackupInput): Backup!
 
@@ -4803,9 +4785,6 @@ type Mutation {
   createOneUser(input: CreateUserInput!): User!
   createOneUserPreference(input: CreateOneUserPreferencesInput!): UserPreferences!
 
-  """Create a new custom role"""
-  createRole(input: CreateRoleInput!): Role!
-
   """Create a new Temporal schedule for recurring workflow execution"""
   createSchedule(input: CreateScheduleInput!): CreateScheduleResult!
 
@@ -4843,9 +4822,6 @@ type Mutation {
   deleteOneUser(id: ID!): User!
   deleteOneUserPreference(input: DeleteOneUserPreferencesInput!): UserPreferencesDeleteResponse!
   deleteOneUserSession(input: DeleteOneUserSessionInput!): UserSessionDeleteResponse!
-
-  """Delete a custom role (system roles cannot be deleted)"""
-  deleteRole(id: String!): Boolean!
 
   """Permanently delete a Temporal schedule (requires confirmation)"""
   deleteSchedule(input: DeleteScheduleInput!): ScheduleDeletionResult!
@@ -4927,9 +4903,6 @@ type Mutation {
 
   """Reject a document after moderation review"""
   rejectDocument(input: RejectDocumentInput!): ModerationActionResult!
-
-  """Remove a permission from a role"""
-  removePermissionFromRole(input: RemovePermissionInput!): Role!
 
   """
   Render a template with variable substitution without creating a document
@@ -5049,9 +5022,6 @@ type Mutation {
 
   """Update profile information for the current user"""
   updateProfile(input: UpdateProfileInput!): AuthUser!
-
-  """Update role name or description"""
-  updateRole(id: String!, input: UpdateRoleInput!): Role!
 
   """Update an existing subscription plan (admin only)"""
   updateSubscriptionPlan(id: String!, input: UpdateSubscriptionPlanInput!): SubscriptionPlan!
@@ -5509,17 +5479,6 @@ enum PdfPageFormat {
   LETTER
 }
 
-type Permission {
-  condition: String
-  resource: String!
-  type: String!
-}
-
-type PermissionCheckResult {
-  allowed: Boolean!
-  permissions: [String!]
-}
-
 input PinChatSessionInput {
   """True to pin, false to unpin"""
   isPinned: Boolean!
@@ -5813,9 +5772,6 @@ type Query {
   getTotalDocumentCount(input: DashboardAnalyticsInput): DocumentMetrics!
   getTotalTokenUsage(input: DashboardAnalyticsInput): [TokenUsageBreakdown!]!
   getUserGrowthStats(input: DashboardAnalyticsInput): UserGrowthStats!
-
-  """Check if the given roles have a specific permission"""
-  hasPermission(input: CheckPermissionInput!): PermissionCheckResult!
   inAppNotification(
     """The id of the record to find."""
     id: ID!
@@ -5995,15 +5951,6 @@ type Query {
 
   """Get recent notifications for a user"""
   recentNotifications(limit: Int, unreadOnly: Boolean, userId: String!): [InAppNotification!]!
-
-  """Get a role by ID"""
-  role(id: String!): Role
-
-  """Get a role by name"""
-  roleByName(name: String!): Role
-
-  """Get all roles in the system"""
-  roles: [Role!]!
 
   """
   Full-text search across chat messages with relevance ranking and highlighting
@@ -6221,11 +6168,6 @@ input RelatedDocumentLinkInput {
   relevanceScore: Float
 }
 
-input RemovePermissionInput {
-  permission: String!
-  roleId: String!
-}
-
 input RenderTemplateInput {
   templateId: String!
   variables: JSON!
@@ -6254,18 +6196,6 @@ input ResumeScheduleInput {
 
   """The ID of the schedule to resume"""
   scheduleId: String!
-}
-
-type Role {
-  createdAt: DateTime!
-  description: String
-  id: ID!
-  inheritsFrom: String
-  isSystemRole: Boolean!
-  name: String!
-  permissions: [Permission!]!
-  type: String!
-  updatedAt: DateTime!
 }
 
 type RulingMetadata {
@@ -7588,11 +7518,6 @@ input UpdateProfileInput {
   username: String
 }
 
-input UpdateRoleInput {
-  description: String
-  name: String
-}
-
 input UpdateSharePermissionInput {
   """New permission level"""
   permission: SharePermission!
@@ -7705,6 +7630,11 @@ type User {
   isActive: Boolean!
   lastName: String
   role: String!
+
+  """
+  Array of user roles (single role wrapped as array for consistency with JWT format)
+  """
+  roles: [String!]!
   stripeCustomerId: String
   twoFactorEnabled: Boolean!
   twoFactorVerifiedAt: DateTime
@@ -7906,6 +7836,18 @@ enum UserPreferencesSortFields {
   theme
   updatedAt
   userId
+}
+
+"""
+User role with hierarchy: SUPER_ADMIN(5) > ADMIN(4) > LAWYER(3) > PARALEGAL(2) > CLIENT(1) > GUEST(0)
+"""
+enum UserRole {
+  ADMIN
+  CLIENT
+  GUEST
+  LAWYER
+  PARALEGAL
+  SUPER_ADMIN
 }
 
 type UserSession {

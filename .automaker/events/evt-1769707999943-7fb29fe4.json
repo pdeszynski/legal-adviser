@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769707999943-7fb29fe4",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T17:33:19.943Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "update-graphql-auth-to-use-userrole-relationship",
+  "featureName": "Update GraphQL Auth Guards and Context to Use UserRole Relationship",
+  "error": "Feature completed in 420s - auto-verified",
+  "passes": true
+}

@@ -81,3 +81,13 @@ export interface RulingSearchResult {
   headline?: string;
   relevanceScore: number;
 }
+
+/**
+ * Domain Model: RulingSearchResponse
+ *
+ * Search results with total count for pagination.
+ */
+export interface RulingSearchResponse {
+  results: RulingSearchResult[];
+  totalCount: number;
+}

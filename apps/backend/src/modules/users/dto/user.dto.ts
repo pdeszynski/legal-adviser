@@ -8,8 +8,10 @@ import {
   MinLength,
   MaxLength,
   Matches,
+  IsEnum,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { UserRole } from '../../auth/enums/user-role.enum';
 
 /**
  * Sanitize string input by trimming whitespace and removing potentially dangerous characters
@@ -201,13 +203,12 @@ export class AdminCreateUserInput {
   @MaxLength(100, { message: 'Password must be at most 100 characters long' })
   password: string;
 
-  @Field(() => String, { nullable: true, defaultValue: 'user' })
+  @Field(() => String, { nullable: true, defaultValue: UserRole.CLIENT })
   @IsOptional()
-  @IsString()
-  @Matches(/^(user|admin)$/, {
-    message: 'Role must be either "user" or "admin"',
+  @IsEnum(UserRole, {
+    message: `Role must be one of: ${Object.values(UserRole).join(', ')}`,
   })
-  role?: 'user' | 'admin';
+  role?: UserRole;
 
   @Field(() => Boolean, { nullable: true, defaultValue: true })
   @IsOptional()

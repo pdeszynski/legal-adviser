@@ -15,9 +15,15 @@ import { test, expect } from '@playwright/test';
  * 7) Admin user can perform admin mutations
  *
  * Test Users:
- * - admin@refine.dev / password (SUPER_ADMIN)
- * - user@example.com / password123 (CLIENT)
- * - lawyer@example.com / password123 (LAWYER)
+ * - admin@refine.dev / password (role: SUPER_ADMIN)
+ * - user@example.com / password123 (role: CLIENT)
+ * - lawyer@example.com / password123 (role: LAWYER)
+ *
+ * Role Format (Single Source of Truth):
+ * - JWT tokens contain: { roles: ['admin'] } array format (single element)
+ * - User entity has: { role: 'admin' } single string field
+ * - Guards handle both formats automatically via LEGACY_ROLE_MAP
+ * - Legacy 'user' role maps to CLIENT, 'admin' maps to ADMIN
  */
 
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
@@ -70,7 +76,7 @@ async function graphql(
   variables?: Record<string, unknown>,
   headers?: Record<string, string>,
 ) {
-  const csrfToken = await getCsrfToken(request);
+  const csrfToken = await getCsrfToken();
 
   const response = await request.post(GRAPHQL_URL, {
     headers: {

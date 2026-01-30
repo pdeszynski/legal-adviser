@@ -1,19 +1,22 @@
 {
   "category": "refactor",
-  "description": "Refactor all backend authorization guards to use the new single source of truth role format. Update: 1) RoleGuard to check roles in new format (array vs single string), 2) AdminGuard to work with new role structure, 3) DocumentPermissionGuard if it references user roles, 4) @RequireRole decorator implementation, 5) PermissionGuard if it depends on role data, 6) Custom authorization logic in resolvers that checks roles. Ensure all guards access user roles through the same mechanism (e.g., context.req.user.roles or context.req.user.role). Add unit tests for each guard verifying they correctly allow/deny access based on the new role format. Update CLAUDE.md documentation with the correct role access patterns.",
+  "description": "Update all backend authorization guards to explicitly use the UserRole entity relationship. Implementation: 1) Update RoleGuard to read roles from user.user_users array (many-to-many), 2) Update AdminGuard to check user.user_roles for ADMIN/SUPER_ADMIN, 3) Update @RequireRole decorator to work with UserRole array, 4) Ensure JWT context includes user_roles populated from UserRole table, 5) Add unit tests verifying guards check UserRole not deprecated role column, 6) Update DocumentPermissionGuard to use UserRole, 7) Add logging to show which data source guards are reading, 8) Verify with multiple test users (admin, lawyer, client).",
   "id": "update-backend-rbac-guards-for-consistency",
-  "title": "Update Backend RBAC Guards for Consistency",
-  "dependencies": [
-    "refactor-user-role-to-single-source-of-truth"
-  ],
+  "title": "Update Backend RBAC Guards to Use UserRole Relationship",
   "priority": 1,
-  "status": "backlog",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
       "description": "Refactor all backend authorization guards to use the new single source of truth role format. Update: 1) RoleGuard to check roles in new format (array vs single string), 2) AdminGuard to work with new role structure, 3) DocumentPermissionGuard if it references user roles, 4) @RequireRole decorator implementation, 5) PermissionGuard if it depends on role data, 6) Custom authorization logic in resolvers that checks roles. Ensure all guards access user roles through the same mechanism (e.g., context.req.user.roles or context.req.user.role). Add unit tests for each guard verifying they correctly allow/deny access based on the new role format. Update CLAUDE.md documentation with the correct role access patterns.",
       "timestamp": "2026-01-29T12:30:41.336Z",
       "source": "initial"
+    },
+    {
+      "description": "Update all backend authorization guards to explicitly use the UserRole entity relationship. Implementation: 1) Update RoleGuard to read roles from user.user_users array (many-to-many), 2) Update AdminGuard to check user.user_roles for ADMIN/SUPER_ADMIN, 3) Update @RequireRole decorator to work with UserRole array, 4) Ensure JWT context includes user_roles populated from UserRole table, 5) Add unit tests verifying guards check UserRole not deprecated role column, 6) Update DocumentPermissionGuard to use UserRole, 7) Add logging to show which data source guards are reading, 8) Verify with multiple test users (admin, lawyer, client).",
+      "timestamp": "2026-01-29T17:21:59.100Z",
+      "source": "edit"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-29T12:46:06.754Z"
 }

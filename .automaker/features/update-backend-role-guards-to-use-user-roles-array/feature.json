@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Update all backend authorization guards to check roles in the user_roles array instead of the deprecated role column. Implementation: 1) Update RoleGuard to read roles from context.user.user_roles array, 2) Update AdminGuard to check if any role in user.user_roles matches ADMIN or SUPER_ADMIN, 3) Update @RequireRole decorator logic to work with array of roles, 4) Update DocumentPermissionGuard if it references user roles, 5) Update any custom authorization logic in resolvers, 6) Ensure guards handle both old format (for migration) and new format, 7) Add unit tests for each guard verifying correct role checking, 8) Update CLAUDE.md documentation with correct role access patterns. This ensures backend consistently uses user_roles array.",
+  "id": "update-backend-role-guards-to-use-user-roles-array",
+  "title": "Update Backend Role Guards to Check user_roles Array",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update all backend authorization guards to check roles in the user_roles array instead of the deprecated role column. Implementation: 1) Update RoleGuard to read roles from context.user.user_roles array, 2) Update AdminGuard to check if any role in user.user_roles matches ADMIN or SUPER_ADMIN, 3) Update @RequireRole decorator logic to work with array of roles, 4) Update DocumentPermissionGuard if it references user roles, 5) Update any custom authorization logic in resolvers, 6) Ensure guards handle both old format (for migration) and new format, 7) Add unit tests for each guard verifying correct role checking, 8) Update CLAUDE.md documentation with correct role access patterns. This ensures backend consistently uses user_roles array.",
+      "timestamp": "2026-01-29T16:43:07.596Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T16:54:10.631Z"
+}

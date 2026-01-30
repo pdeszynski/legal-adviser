@@ -8,6 +8,7 @@ import {
   SearchRulingsQuery,
   LegalRulingDto,
   RulingSearchResult,
+  RulingSearchResponse,
 } from '../../../domain/legal-rulings/value-objects/ruling-source.vo';
 import {
   IsapRuling,
@@ -47,7 +48,7 @@ export class IsapAdapter {
    */
   async search(
     query: SearchRulingsQuery,
-  ): Promise<IntegrationResult<RulingSearchResult[]>> {
+  ): Promise<IntegrationResult<RulingSearchResponse>> {
     try {
       const isapRequest = this.transformer.toExternal(query);
 
@@ -107,7 +108,10 @@ export class IsapAdapter {
 
       return {
         success: true,
-        data: results,
+        data: {
+          results,
+          totalCount: isapResponse.total || results.length,
+        },
       };
     } catch (error) {
       this.logger.error('Failed to search ISAP', error);
@@ -192,7 +196,7 @@ export class IsapAdapter {
    */
   async execute(
     request: SearchRulingsQuery,
-  ): Promise<IntegrationResult<RulingSearchResult[]>> {
+  ): Promise<IntegrationResult<RulingSearchResponse>> {
     return this.search(request);
   }
 

@@ -1,0 +1,128 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+    - generic [ref=e2]:
+        - banner [ref=e3]:
+            - generic [ref=e4]:
+                - link "Legal AI" [ref=e5] [cursor=pointer]:
+                    - /url: /
+                - navigation [ref=e6]:
+                    - link "Features" [ref=e7] [cursor=pointer]:
+                        - /url: /features
+                    - link "Pricing" [ref=e8] [cursor=pointer]:
+                        - /url: /about/pricing
+                    - link "About" [ref=e9] [cursor=pointer]:
+                        - /url: /about
+                    - link "Get Early Access New" [ref=e10] [cursor=pointer]:
+                        - /url: /early-access
+                        - text: Get Early Access
+                        - generic [ref=e11]: New
+                - generic [ref=e12]:
+                    - button "🇬🇧 English" [ref=e14] [cursor=pointer]:
+                        - img [ref=e15]
+                        - generic [ref=e18]: 🇬🇧 English
+                    - link "Get Early Access" [ref=e19] [cursor=pointer]:
+                        - /url: /early-access
+                        - button "Get Early Access" [ref=e20]:
+                            - text: Get Early Access
+                            - img [ref=e21]
+                    - link "Sign In" [ref=e24] [cursor=pointer]:
+                        - /url: /login
+        - main [ref=e25]:
+            - generic [ref=e28]:
+                - generic [ref=e29]:
+                    - img [ref=e31]
+                    - generic [ref=e35]:
+                        - heading "Welcome Back" [level=3] [ref=e36]
+                        - paragraph [ref=e37]: Sign in to your legal workspace
+                - generic [ref=e38]:
+                    - generic [ref=e39]:
+                        - generic [ref=e40]:
+                            - text: Email
+                            - textbox "Email" [ref=e41]:
+                                - /placeholder: name@example.com
+                        - generic [ref=e42]:
+                            - generic [ref=e43]:
+                                - generic [ref=e44]: Password
+                                - generic [ref=e45] [cursor=pointer]: Forgot password?
+                            - textbox "Password" [ref=e46]:
+                                - /placeholder: Enter your password
+                    - generic [ref=e47]:
+                        - button "Sign In" [ref=e48] [cursor=pointer]
+                        - generic [ref=e49]: Don't have an account? Request access
+        - contentinfo [ref=e50]:
+            - generic [ref=e51]:
+                - generic [ref=e52]:
+                    - generic [ref=e53]:
+                        - heading "Legal AI" [level=4] [ref=e54]
+                        - paragraph [ref=e55]: Empowering legal professionals with next-generation AI tools. Secure, accurate, and efficient.
+                    - generic [ref=e56]:
+                        - heading "Product" [level=4] [ref=e57]
+                        - list [ref=e58]:
+                            - listitem [ref=e59]:
+                                - link "Features" [ref=e60] [cursor=pointer]:
+                                    - /url: /features
+                            - listitem [ref=e61]:
+                                - link "Pricing" [ref=e62] [cursor=pointer]:
+                                    - /url: /about/pricing
+                            - listitem [ref=e63]:
+                                - link "Get Early Access" [ref=e64] [cursor=pointer]:
+                                    - /url: /early-access
+                            - listitem [ref=e65]:
+                                - link "Security" [ref=e66] [cursor=pointer]:
+                                    - /url: '#'
+                    - generic [ref=e67]:
+                        - heading "Company" [level=4] [ref=e68]
+                        - list [ref=e69]:
+                            - listitem [ref=e70]:
+                                - link "About Us" [ref=e71] [cursor=pointer]:
+                                    - /url: /about
+                            - listitem [ref=e72]:
+                                - link "Careers" [ref=e73] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e74]:
+                                - link "Contact" [ref=e75] [cursor=pointer]:
+                                    - /url: '#'
+                    - generic [ref=e76]:
+                        - heading "Legal" [level=4] [ref=e77]
+                        - list [ref=e78]:
+                            - listitem [ref=e79]:
+                                - link "Privacy Policy" [ref=e80] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e81]:
+                                - link "Terms of Service" [ref=e82] [cursor=pointer]:
+                                    - /url: '#'
+                            - listitem [ref=e83]:
+                                - link "Cookie Policy" [ref=e84] [cursor=pointer]:
+                                    - /url: '#'
+                - generic [ref=e85]:
+                    - paragraph [ref=e86]: © 2026 Legal AI. All rights reserved.
+                    - generic [ref=e87]:
+                        - link "Twitter" [ref=e88] [cursor=pointer]:
+                            - /url: '#'
+                        - link "LinkedIn" [ref=e89] [cursor=pointer]:
+                            - /url: '#'
+                        - link "GitHub" [ref=e90] [cursor=pointer]:
+                            - /url: '#'
+    - generic [ref=e91]:
+        - button [ref=e92] [cursor=pointer]:
+            - img [ref=e93]
+            - button "Element Selector" [ref=e101]:
+                - img
+        - generic:
+            - iframe
+            - generic:
+                - img
+            - generic:
+                - img
+            - generic:
+                - img
+            - generic:
+                - img
+    - region "Notifications (F8)":
+        - list
+    - button "Open Next.js Dev Tools" [ref=e107] [cursor=pointer]:
+        - img [ref=e108]
+    - alert [ref=e111]
+```

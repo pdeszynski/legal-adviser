@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769708072769-ee49e0b3",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T17:34:32.769Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-graphql-user-roles-to-return-userrole-entities",
+  "featureName": "Fix GraphQL User Roles to Return UserRole Entities",
+  "error": "Feature completed in 753s - auto-verified",
+  "passes": true
+}

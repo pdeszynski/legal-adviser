@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769706375666-deaf84f6",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-29T17:06:15.666Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "verify-admin-role-enables-admin-links-in-menu",
+  "featureName": "Verify Admin Users Can Access Admin Management Links",
+  "error": "Claude Code process exited with code 1",
+  "errorType": "execution"
+}

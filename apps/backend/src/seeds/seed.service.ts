@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { randomUUID } from 'crypto';
 
 // Entities
 import { User } from '../modules/users/entities/user.entity';
@@ -12,8 +11,6 @@ import { LegalAnalysis } from '../modules/documents/entities/legal-analysis.enti
 import { LegalRuling } from '../modules/documents/entities/legal-ruling.entity';
 import { LegalQuery } from '../modules/queries/entities/legal-query.entity';
 import { AuditLog } from '../modules/audit-log/entities/audit-log.entity';
-import { RoleEntity } from '../modules/authorization/entities/role.entity';
-import { UserRoleEntity } from '../modules/authorization/entities';
 import { UserPreferences } from '../modules/user-preferences/entities/user-preferences.entity';
 
 // Services
@@ -28,8 +25,6 @@ import {
   rulingsSeedData,
   queriesSeedData,
   auditLogsSeedData,
-  rolesSeedData,
-  userRolesSeedData,
 } from './data';
 
 const BCRYPT_SALT_ROUNDS = 10;
@@ -39,6 +34,9 @@ const BCRYPT_SALT_ROUNDS = 10;
  *
  * Handles database seeding with fixture data for development and testing.
  * Supports both fresh seeding and re-seeding (clearing existing data first).
+ *
+ * Role System: Uses single `role` field on User entity as the single source of truth.
+ * The legacy many-to-many role tables (roles, user_roles) have been removed.
  */
 @Injectable()
 export class SeedService {
@@ -47,7 +45,6 @@ export class SeedService {
   // Store created entities for reference during seeding
   private userMap: Map<string, User> = new Map();
   private sessionList: UserSession[] = [];
-  private roleMap: Map<string, RoleEntity> = new Map();
 
   constructor(
     private readonly dataSource: DataSource,
@@ -65,10 +62,6 @@ export class SeedService {
     private readonly queryRepository: Repository<LegalQuery>,
     @InjectRepository(AuditLog)
     private readonly auditLogRepository: Repository<AuditLog>,
-    @InjectRepository(RoleEntity)
-    private readonly roleRepository: Repository<RoleEntity>,
-    @InjectRepository(UserRoleEntity)
-    private readonly userRoleRepository: Repository<UserRoleEntity>,
     @InjectRepository(UserPreferences)
     private readonly userPreferencesRepository: Repository<UserPreferences>,
     private readonly encryptionService: EncryptionService,
@@ -83,22 +76,20 @@ export class SeedService {
 
     if (clean) {
       await this.cleanDatabase();
-    }
-
-    // Check if data already exists
-    const existingUsers = await this.userRepository.count();
-    if (existingUsers > 0 && !clean) {
-      this.logger.warn(
-        'Database already contains data. Use --clean flag to reset. Skipping seeding.',
-      );
-      return;
+    } else {
+      // Check if data already exists
+      const existingUsers = await this.userRepository.count();
+      if (existingUsers > 0) {
+        this.logger.warn(
+          'Database already contains data. Use --clean flag to reset. Skipping seeding.',
+        );
+        return;
+      }
     }
 
     try {
       // Seed in order of dependencies
-      await this.seedRoles();
-      await this.seedUsers();
-      await this.seedUserRoles();
+      await this.seedUsers(clean);
       await this.seedUserPreferences();
       await this.seedSessions();
       await this.seedDocuments();
@@ -137,8 +128,25 @@ export class SeedService {
       await queryRunner.query('DELETE FROM legal_documents');
       await queryRunner.query('DELETE FROM user_sessions');
       await queryRunner.query('DELETE FROM user_preferences');
-      await queryRunner.query('DELETE FROM user_roles');
-      await queryRunner.query('DELETE FROM roles');
+
+      // Delete from legacy user_roles table if it exists
+      try {
+        await queryRunner.query('DELETE FROM user_roles');
+      } catch (err) {
+        // Table may not exist, continue
+        this.logger.debug(
+          'user_roles table does not exist or is already empty',
+        );
+      }
+
+      // Delete from legacy roles table if it exists
+      try {
+        await queryRunner.query('DELETE FROM roles');
+      } catch (err) {
+        // Table may not exist, continue
+        this.logger.debug('roles table does not exist or is already empty');
+      }
+
       await queryRunner.query('DELETE FROM users');
 
       this.logger.log('Database cleaned successfully');
@@ -149,50 +157,16 @@ export class SeedService {
     // Clear local maps
     this.userMap.clear();
     this.sessionList = [];
-    this.roleMap.clear();
-  }
-
-  /**
-   * Seed roles
-   * Must be seeded before users so user-role relationships can be established
-   */
-  private async seedRoles(): Promise<void> {
-    this.logger.log('Seeding roles...');
-
-    for (const roleData of rolesSeedData) {
-      // Check if role already exists by ID or name (name has unique constraint)
-      const existingRole = await this.roleRepository.findOne({
-        where: [{ id: roleData.id }, { name: roleData.name }],
-      });
-
-      if (existingRole) {
-        this.logger.debug(`Role ${roleData.name} already exists, skipping`);
-        this.roleMap.set(roleData.type, existingRole);
-        continue;
-      }
-
-      const role = this.roleRepository.create({
-        id: roleData.id,
-        name: roleData.name,
-        description: roleData.description,
-        type: roleData.type,
-        permissions: roleData.permissions,
-        inheritsFrom: roleData.inheritsFrom,
-        isSystemRole: roleData.isSystemRole,
-      });
-
-      const savedRole = await this.roleRepository.save(role);
-      this.roleMap.set(roleData.type, savedRole);
-      this.logger.debug(`Created role: ${roleData.name}`);
-    }
-
-    this.logger.log(`Seeded ${this.roleMap.size} roles`);
   }
 
   /**
    * Seed users
+   * Now uses role property directly from seed data
+   *
+   * In clean mode, always creates fresh users. In normal mode,
+   * updates existing users' roles if they differ from seed data.
    */
-  private async seedUsers(): Promise<void> {
+  private async seedUsers(clean: boolean = false): Promise<void> {
     this.logger.log('Seeding users...');
 
     for (const userData of usersSeedData) {
@@ -202,9 +176,27 @@ export class SeedService {
       });
 
       if (existingUser) {
-        this.logger.debug(`User ${userData.email} already exists, skipping`);
-        this.userMap.set(userData.email, existingUser);
-        continue;
+        // In clean mode, this shouldn't happen, but handle it gracefully
+        if (clean) {
+          this.logger.warn(
+            `User ${userData.email} still exists after clean, deleting...`,
+          );
+          await this.userRepository.remove(existingUser);
+        } else {
+          // Update role if it differs from seed data (important for role corrections)
+          if (existingUser.role !== userData.role) {
+            this.logger.log(
+              `Updating role for ${userData.email}: ${existingUser.role} -> ${userData.role}`,
+            );
+            existingUser.role = userData.role;
+            const updatedUser = await this.userRepository.save(existingUser);
+            this.userMap.set(userData.email, updatedUser);
+            continue;
+          }
+          this.logger.debug(`User ${userData.email} already exists, skipping`);
+          this.userMap.set(userData.email, existingUser);
+          continue;
+        }
       }
 
       const passwordHash = await bcrypt.hash(
@@ -250,6 +242,7 @@ export class SeedService {
         passwordHash,
         isActive: userData.isActive,
         disclaimerAccepted: userData.disclaimerAccepted,
+        role: userData.role, // Use role from seed data
         twoFactorEnabled: userData.twoFactorEnabled ?? false,
         twoFactorSecret: encryptedSecret,
         twoFactorBackupCodes: hashedBackupCodes,
@@ -258,69 +251,11 @@ export class SeedService {
       const savedUser = await this.userRepository.save(user);
       this.userMap.set(userData.email, savedUser);
       this.logger.debug(
-        `Created user: ${userData.email}${userData.twoFactorEnabled ? ' (with 2FA)' : ''}`,
+        `Created user: ${userData.email} (${userData.role})${userData.twoFactorEnabled ? ' (with 2FA)' : ''}`,
       );
     }
 
     this.logger.log(`Seeded ${this.userMap.size} users`);
-  }
-
-  /**
-   * Seed user-role relationships
-   * Must be seeded after both users and roles
-   */
-  private async seedUserRoles(): Promise<void> {
-    this.logger.log('Seeding user roles...');
-
-    let count = 0;
-    for (const userRoleData of userRolesSeedData) {
-      const user = this.userMap.get(userRoleData.userEmail);
-      const role = this.roleMap.get(userRoleData.roleType);
-
-      if (!user) {
-        this.logger.warn(
-          `User ${userRoleData.userEmail} not found for role assignment, skipping`,
-        );
-        continue;
-      }
-
-      if (!role) {
-        this.logger.warn(
-          `Role ${userRoleData.roleType} not found for user ${userRoleData.userEmail}, skipping`,
-        );
-        continue;
-      }
-
-      // Check if user-role already exists
-      const existingUserRole = await this.userRoleRepository.findOne({
-        where: { userId: user.id, roleId: role.id },
-      });
-
-      if (existingUserRole) {
-        this.logger.debug(
-          `User-role for ${userRoleData.userEmail} with role ${userRoleData.roleType} already exists, skipping`,
-        );
-        continue;
-      }
-
-      const userRole = this.userRoleRepository.create({
-        id: randomUUID(),
-        userId: user.id,
-        roleId: role.id,
-        priority: userRoleData.priority ?? 100,
-        notes: userRoleData.notes,
-        expiresAt: userRoleData.expiresAt,
-        isActive: true,
-      });
-
-      await this.userRoleRepository.save(userRole);
-      count++;
-      this.logger.debug(
-        `Assigned role ${userRoleData.roleType} to user ${userRoleData.userEmail}`,
-      );
-    }
-
-    this.logger.log(`Seeded ${count} user-role assignments`);
   }
 
   /**
@@ -563,9 +498,7 @@ export class SeedService {
    */
   private printSummary(): void {
     this.logger.log('=== Seeding Summary ===');
-    this.logger.log(`Roles: ${this.roleMap.size}`);
     this.logger.log(`Users: ${this.userMap.size}`);
-    this.logger.log(`User Roles: ${userRolesSeedData.length}`);
     this.logger.log(`User Preferences: ${this.userMap.size}`);
     this.logger.log(`Sessions: ${this.sessionList.length}`);
     this.logger.log(`Documents: ${documentsSeedData.length}`);
@@ -576,18 +509,21 @@ export class SeedService {
     this.logger.log('=======================');
     this.logger.log('');
     this.logger.log('Default credentials:');
-    this.logger.log('  Admin (super_admin):');
+    this.logger.log('  Super Admin:');
     this.logger.log('    Email: admin@refine.dev');
     this.logger.log('    Password: password');
     this.logger.log('  Lawyer:');
     this.logger.log('    Email: lawyer@example.com');
     this.logger.log('    Password: password123');
-    this.logger.log('  User (client):');
+    this.logger.log('  Paralegal:');
+    this.logger.log('    Email: paralegal@example.com');
+    this.logger.log('    Password: password123');
+    this.logger.log('  Client:');
     this.logger.log('    Email: user@example.com');
     this.logger.log('    Password: password123');
     this.logger.log('');
     this.logger.log('Two-Factor Authentication (2FA) test users:');
-    this.logger.log('  User with 2FA enabled:');
+    this.logger.log('  Client with 2FA enabled:');
     this.logger.log('    Email: user2fa@example.com');
     this.logger.log('    Password: password123');
     this.logger.log('    TOTP Secret: JBSWY3DPEHPK3PXP');
@@ -621,9 +557,7 @@ export class SeedService {
    * Get seeding statistics
    */
   async getStats(): Promise<{
-    roles: number;
     users: number;
-    userRoles: number;
     userPreferences: number;
     sessions: number;
     documents: number;
@@ -633,9 +567,7 @@ export class SeedService {
     auditLogs: number;
   }> {
     const [
-      roles,
       users,
-      userRoles,
       userPreferences,
       sessions,
       documents,
@@ -644,9 +576,7 @@ export class SeedService {
       queries,
       auditLogs,
     ] = await Promise.all([
-      this.roleRepository.count(),
       this.userRepository.count(),
-      this.userRoleRepository.count(),
       this.userPreferencesRepository.count(),
       this.sessionRepository.count(),
       this.documentRepository.count(),
@@ -657,9 +587,7 @@ export class SeedService {
     ]);
 
     return {
-      roles,
       users,
-      userRoles,
       userPreferences,
       sessions,
       documents,

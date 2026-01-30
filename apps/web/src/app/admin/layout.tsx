@@ -21,7 +21,11 @@ async function getData() {
   const { authenticated, redirectTo } = await authProviderServer.check();
   const permissions = await authProviderServer.getPermissions?.();
 
-  const isAdmin = Array.isArray(permissions) && permissions.includes('admin');
+  // Check if user has admin role (admin or super_admin)
+  // permissions is an array with a single role from the backend
+  const isAdmin =
+    Array.isArray(permissions) &&
+    (permissions.includes('admin') || permissions.includes('super_admin'));
 
   return {
     authenticated,

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769697440544-93e64f7d",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T14:37:20.544Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "update-e2e-tests-to-use-consistent-role-format",
+  "featureName": "Update E2E Tests to Use Consistent Role Format",
+  "error": "Feature completed in 6335s - auto-verified",
+  "passes": true
+}

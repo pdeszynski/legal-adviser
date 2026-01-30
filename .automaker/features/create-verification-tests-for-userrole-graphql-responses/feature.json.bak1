@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive E2E tests to verify GraphQL returns UserRole entities correctly for all role-based operations. Test scenarios: 1) Query me() - verify user_roles array is returned with UserRole objects, 2) Query user(id) - verify user_roles includes UserRole with nested Role data, 3) Query users list - verify each user has user_roles array, 4) Verify UserRole objects include: id, userId, roleId, role { id, name, description }, createdAt, 5) Verify deprecated role field is NOT present in response, 6) Test with admin@refine.dev - verify ADMIN role appears in user_roles, 7) Test with user@example.com - verify USER role in user_roles, 8) Test mutations (userCreate, userUpdate) create UserRole relationships, 9) Verify frontend useUserRole hook receives correct array format, 10) Add network request interception in tests to inspect actual GraphQL response structure. Use Playwright to test authenticated GraphQL queries.",
+  "id": "create-verification-tests-for-userrole-graphql-responses",
+  "title": "Create E2E Tests Verifying UserRole Entities in GraphQL Responses",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive E2E tests to verify GraphQL returns UserRole entities correctly for all role-based operations. Test scenarios: 1) Query me() - verify user_roles array is returned with UserRole objects, 2) Query user(id) - verify user_roles includes UserRole with nested Role data, 3) Query users list - verify each user has user_roles array, 4) Verify UserRole objects include: id, userId, roleId, role { id, name, description }, createdAt, 5) Verify deprecated role field is NOT present in response, 6) Test with admin@refine.dev - verify ADMIN role appears in user_roles, 7) Test with user@example.com - verify USER role in user_roles, 8) Test mutations (userCreate, userUpdate) create UserRole relationships, 9) Verify frontend useUserRole hook receives correct array format, 10) Add network request interception in tests to inspect actual GraphQL response structure. Use Playwright to test authenticated GraphQL queries.",
+      "timestamp": "2026-01-29T17:21:59.099Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T17:32:17.216Z"
+}

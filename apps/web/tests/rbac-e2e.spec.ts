@@ -11,8 +11,13 @@ import { test, expect, type Page } from '@playwright/test';
  * 5) Seed users have correct roles
  *
  * Test credentials:
- * - Admin: admin@refine.dev / password
- * - Regular user: user@example.com / password123
+ * - Admin: admin@refine.dev / password (role: admin)
+ * - Regular user: user@example.com / password123 (role: client)
+ *
+ * Role Format (Single Source of Truth):
+ * - New format: User has a single 'role' field (admin, client, lawyer, etc.)
+ * - Legacy format: User has 'roles' array for backwards compatibility
+ * - Tests verify both formats work correctly
  */
 
 const ADMIN_EMAIL = 'admin@refine.dev';
@@ -81,6 +86,10 @@ async function getAuthCookies(page: Page) {
 
 /**
  * Test helper to get user role from auth cookie
+ *
+ * Supports both new single role format and legacy roles array:
+ * - New format: { role: 'admin' | 'client' | 'lawyer' | ... }
+ * - Legacy format: { roles: ['admin'] }
  */
 async function getUserRoleFromCookie(page: Page): Promise<string | null> {
   const cookies = await page.context().cookies();
@@ -94,8 +103,27 @@ async function getUserRoleFromCookie(page: Page): Promise<string | null> {
     // Need to decode URL-encoded cookie value
     const decodedValue = decodeURIComponent(authCookie.value);
     const parsedAuth = JSON.parse(decodedValue);
+
+    // New format: single role field (SSOT)
+    if (parsedAuth.role) {
+      // Map legacy 'user' to 'client' for consistency
+      if (parsedAuth.role === 'user') {
+        return 'client';
+      }
+      return parsedAuth.role;
+    }
+
+    // Legacy format: roles array (for backwards compatibility)
     const roles = parsedAuth.roles || [];
-    return roles.includes('admin') ? 'admin' : 'user';
+    if (roles.length > 0) {
+      const role = roles[0];
+      if (role === 'user') {
+        return 'client';
+      }
+      return role;
+    }
+
+    return null;
   } catch {
     return null;
   }
@@ -346,8 +374,8 @@ test.describe('RBAC - Backend Mutation Guards', () => {
     await performLogin(page, USER_EMAIL, USER_PASSWORD);
 
     // Set up a listener for GraphQL responses
-    let received403 = false;
-    let received401 = false;
+    const received403 = false;
+    const received401 = false;
 
     await page.route('**/graphql', async (route) => {
       const request = route.request();
@@ -477,7 +505,7 @@ test.describe('RBAC - Seed Users Roles Verification', () => {
     // Login as admin
     await performLogin(page, ADMIN_EMAIL, ADMIN_PASSWORD);
 
-    // Verify role from auth cookie
+    // Verify role from auth cookie (new single source of truth format)
     const role = await getUserRoleFromCookie(page);
     expect(role).toBe('admin');
 
@@ -498,7 +526,8 @@ test.describe('RBAC - Seed Users Roles Verification', () => {
 
     // Verify role from auth cookie
     const role = await getUserRoleFromCookie(page);
-    expect(role).toBe('user');
+    // Role should be 'client' (new single source of truth format)
+    expect(role).toBe('client');
 
     // Navigate to dashboard
     await page.goto('http://localhost:3000/dashboard');

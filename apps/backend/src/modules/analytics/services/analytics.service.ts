@@ -9,6 +9,7 @@ import {
 import { LegalQuery } from '../../queries/entities/legal-query.entity';
 import { AiUsageRecord } from '../../usage-tracking/entities/ai-usage-record.entity';
 import { DemoRequestOrmEntity } from '../../../infrastructure/persistence/entities/demo-request.orm-entity';
+import { UserRole } from '../../auth/enums/user-role.enum';
 import {
   AnalyticsDashboard,
   UserGrowthMetrics,
@@ -187,7 +188,7 @@ export class AnalyticsService {
       this.userRepository.count({
         where: { createdAt: Between(startDate, endDate) },
       }),
-      this.userRepository.count({ where: { role: 'admin' as const } }),
+      this.userRepository.count({ where: { role: UserRole.ADMIN } }),
     ]);
 
     // Calculate previous period for growth rate

@@ -1,0 +1,19 @@
+{
+  "category": "bug",
+  "description": "Update all frontend role-based access control to use the user_roles array from GraphQL responses. Implementation: 1) Update useUserRole hook to return roles as array from user.user_roles, 2) Update hasRole() helper to check if any role in array matches, 3) Update hasRoleLevel() to work with array of roles, 4) Update isAdmin() to check for ADMIN/SUPER_ADMIN in array, 5) Update ProtectedRoute component role validation, 6) Update menu display logic (menu-admin-panel-link, etc.), 7) Update all role-based conditional rendering, 8) Add TypeScript types for user_roles array, 9) Test with different user roles to ensure correct behavior. This ensures frontend consistently uses user_roles array.",
+  "id": "update-frontend-role-checks-to-use-user-roles-array",
+  "title": "Update Frontend Role Checks to Use user_roles Array",
+  "dependencies": [
+    "regenerate-graphql-hooks-after-role-schema-changes"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update all frontend role-based access control to use the user_roles array from GraphQL responses. Implementation: 1) Update useUserRole hook to return roles as array from user.user_roles, 2) Update hasRole() helper to check if any role in array matches, 3) Update hasRoleLevel() to work with array of roles, 4) Update isAdmin() to check for ADMIN/SUPER_ADMIN in array, 5) Update ProtectedRoute component role validation, 6) Update menu display logic (menu-admin-panel-link, etc.), 7) Update all role-based conditional rendering, 8) Add TypeScript types for user_roles array, 9) Test with different user roles to ensure correct behavior. This ensures frontend consistently uses user_roles array.",
+      "timestamp": "2026-01-29T16:43:07.597Z",
+      "source": "initial"
+    }
+  ]
+}

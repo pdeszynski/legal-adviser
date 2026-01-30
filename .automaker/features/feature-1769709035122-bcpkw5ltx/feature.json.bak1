@@ -1,0 +1,37 @@
+{
+  "category": "Uncategorized",
+  "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Consolidate User Role to Use Only user_roles Relationship\n\n**Description:** Remove the deprecated role column from User entity and update all code to use only the user_roles many-to-many relationship. This ensures a single source of truth for user roles. Implementation: 1) Create database migration to remove role column from users table, 2) Update User entity to remove @FilterableField('role') property, 3) Keep only user_roles relationship with UserRole entity, 4) Update all GraphQL resolvers to access roles via user.user_roles, 5) Update all backend services to use user_roles array, 6) Ensure seed data creates roles through UserRole relationships, 7) Add database constraint to prevent adding role column back, 8) Update documentation to reflect only user_roles exists.\n\n---\n\n## Task Description\n\nIt's still not working, for user admin@refine.dev instead of super admin i'm getting a role = client, this is returned from graphql",
+  "title": "Fix returned value from graphql ",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "master",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "workMode": "custom",
+  "titleGenerating": false,
+  "status": "in_progress",
+  "id": "feature-1769709035122-bcpkw5ltx",
+  "descriptionHistory": [
+    {
+      "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Consolidate User Role to Use Only user_roles Relationship\n\n**Description:** Remove the deprecated role column from User entity and update all code to use only the user_roles many-to-many relationship. This ensures a single source of truth for user roles. Implementation: 1) Create database migration to remove role column from users table, 2) Update User entity to remove @FilterableField('role') property, 3) Keep only user_roles relationship with UserRole entity, 4) Update all GraphQL resolvers to access roles via user.user_roles, 5) Update all backend services to use user_roles array, 6) Ensure seed data creates roles through UserRole relationships, 7) Add database constraint to prevent adding role column back, 8) Update documentation to reflect only user_roles exists.\n\n---\n\n## Task Description\n\nIt's still not working, for user admin@refine.dev instead of super admin i'm getting a role = client",
+      "timestamp": "2026-01-29T17:50:35.390Z",
+      "source": "initial"
+    },
+    {
+      "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Consolidate User Role to Use Only user_roles Relationship\n\n**Description:** Remove the deprecated role column from User entity and update all code to use only the user_roles many-to-many relationship. This ensures a single source of truth for user roles. Implementation: 1) Create database migration to remove role column from users table, 2) Update User entity to remove @FilterableField('role') property, 3) Keep only user_roles relationship with UserRole entity, 4) Update all GraphQL resolvers to access roles via user.user_roles, 5) Update all backend services to use user_roles array, 6) Ensure seed data creates roles through UserRole relationships, 7) Add database constraint to prevent adding role column back, 8) Update documentation to reflect only user_roles exists.\n\n---\n\n## Task Description\n\nIt's still not working, for user admin@refine.dev instead of super admin i'm getting a role = client, this is returned from graphql",
+      "timestamp": "2026-01-29T17:51:31.899Z",
+      "source": "edit"
+    }
+  ],
+  "startedAt": "2026-01-29T17:50:35.482Z",
+  "updatedAt": "2026-01-29T17:52:01.432Z",
+  "dependencies": [
+    "consolidate-user-role-to-single-source"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Ensure all GraphQL authentication and authorization logic uses the UserRole relationship instead of the deprecated role column. Implementation: 1) Update GqlAuthGuard to populate user context with user_roles array from UserRole relationship, 2) Update RoleGuard to check roles in user.user_roles (array of UserRole with nested Role), 3) Update AdminGuard to verify ADMIN/SUPER_ADMIN in user.user_roles, 4) Update @RequireRole decorator to work with UserRole array format, 5) Update JWT context creation to include roles from UserRole relationship, 6) Verify all mutations/queries with role restrictions use the correct data source, 7) Add unit tests for guards verifying they check UserRole relationship, 8) Update DocumentPermissionGuard if it references user roles, 9) Ensure consistent role checking format across all guards: user.user_roles.some(ur => ur.role.name === 'ADMIN'). Test with admin@refine.dev to verify auth still works.",
+  "id": "update-graphql-auth-to-use-userrole-relationship",
+  "title": "Update GraphQL Auth Guards and Context to Use UserRole Relationship",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Ensure all GraphQL authentication and authorization logic uses the UserRole relationship instead of the deprecated role column. Implementation: 1) Update GqlAuthGuard to populate user context with user_roles array from UserRole relationship, 2) Update RoleGuard to check roles in user.user_roles (array of UserRole with nested Role), 3) Update AdminGuard to verify ADMIN/SUPER_ADMIN in user.user_roles, 4) Update @RequireRole decorator to work with UserRole array format, 5) Update JWT context creation to include roles from UserRole relationship, 6) Verify all mutations/queries with role restrictions use the correct data source, 7) Add unit tests for guards verifying they check UserRole relationship, 8) Update DocumentPermissionGuard if it references user roles, 9) Ensure consistent role checking format across all guards: user.user_roles.some(ur => ur.role.name === 'ADMIN'). Test with admin@refine.dev to verify auth still works.",
+      "timestamp": "2026-01-29T17:21:59.099Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T17:26:20.043Z"
+}

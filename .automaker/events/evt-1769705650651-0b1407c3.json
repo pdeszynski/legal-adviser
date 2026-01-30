@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769705650651-0b1407c3",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-29T16:54:10.651Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "update-backend-role-guards-to-use-user-roles-array",
+  "featureName": "Update Backend Role Guards to Check user_roles Array",
+  "error": "Feature completed in 660s - auto-verified",
+  "passes": true
+}

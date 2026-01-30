@@ -6,7 +6,11 @@ import {
 } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Reflector } from '@nestjs/core';
-import { UserRole } from '../enums/user-role.enum';
+import {
+  UserRole,
+  ROLE_LEVELS,
+  LEGACY_ROLE_MAP,
+} from '../enums/user-role.enum';
 import { MissingTokenException, ForbiddenAccessException } from '../exceptions';
 import { PUBLIC_KEY } from '../decorators/public.decorator';
 
@@ -34,15 +38,6 @@ export enum RoleMatchMode {
  * Metadata key for storing role match mode
  */
 export const ROLE_MATCH_MODE_KEY = 'roleMatchMode';
-
-/**
- * Role hierarchy configuration
- * Higher index roles can access lower index routes
- */
-const ROLE_HIERARCHY: readonly UserRole[] = [
-  UserRole.USER,
-  UserRole.ADMIN,
-] as const;
 
 /**
  * User object from request
@@ -165,21 +160,39 @@ export class RoleGuard implements CanActivate {
 
   /**
    * Get user roles from request user object
+   * Handles legacy role names via LEGACY_ROLE_MAP
    */
   private getUserRoles(user: RequestUser): UserRole[] {
     // From JWT (roles array)
     if (user.roles && Array.isArray(user.roles) && user.roles.length > 0) {
-      return user.roles.filter((r): r is UserRole =>
-        Object.values(UserRole).includes(r as UserRole),
-      );
+      return user.roles
+        .map((r) => this.normalizeRole(r))
+        .filter((r): r is UserRole => r !== null);
     }
 
     // From User entity (single role string)
-    if (user.role && Object.values(UserRole).includes(user.role as UserRole)) {
-      return [user.role as UserRole];
+    if (user.role) {
+      const normalized = this.normalizeRole(user.role);
+      if (normalized) return [normalized];
     }
 
     return [];
+  }
+
+  /**
+   * Normalize role string to UserRole enum
+   * Handles legacy role names via LEGACY_ROLE_MAP
+   */
+  private normalizeRole(role: string): UserRole | null {
+    // Direct match
+    if (Object.values(UserRole).includes(role as UserRole)) {
+      return role as UserRole;
+    }
+    // Legacy role mapping
+    if (role in LEGACY_ROLE_MAP) {
+      return LEGACY_ROLE_MAP[role];
+    }
+    return null;
   }
 
   /**
@@ -242,11 +255,13 @@ export class RoleGuard implements CanActivate {
 
   /**
    * Check if userRole has the required role or higher in hierarchy
-   * ADMIN can access USER routes, but USER cannot access ADMIN routes
+   * Uses ROLE_LEVELS from user-role.enum for consistent hierarchy checking
+   *
+   * Hierarchy: SUPER_ADMIN(5) > ADMIN(4) > LAWYER(3) > PARALEGAL(2) > CLIENT(1) > GUEST(0)
    */
   private hasRoleOrHigher(userRole: UserRole, requiredRole: UserRole): boolean {
-    const userLevel = ROLE_HIERARCHY.indexOf(userRole);
-    const requiredLevel = ROLE_HIERARCHY.indexOf(requiredRole);
+    const userLevel = ROLE_LEVELS[userRole];
+    const requiredLevel = ROLE_LEVELS[requiredRole];
 
     // User has access if their role is at the same level or higher
     return userLevel >= requiredLevel;

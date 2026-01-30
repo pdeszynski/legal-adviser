@@ -107,7 +107,7 @@ export const LoginContent = () => {
               firstName
               lastName
               isActive
-              role
+              user_roles
             }
           }
         }
@@ -168,7 +168,7 @@ export const LoginContent = () => {
             'auth',
             JSON.stringify({
               user: loginData.user,
-              roles: [loginData.user.role || 'user'],
+              role: loginData.user.user_roles?.[0] || 'client', // First role from array for compatibility
             }),
             {
               expires: 7,

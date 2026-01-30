@@ -8,6 +8,7 @@ import {
   SearchRulingsQuery,
   LegalRulingDto,
   RulingSearchResult,
+  RulingSearchResponse,
 } from '../../../domain/legal-rulings/value-objects/ruling-source.vo';
 import {
   SaosJudgment,
@@ -37,7 +38,7 @@ export class SaosAdapter {
   ) {
     this.saosApiUrl =
       this.configService.get<string>('SAOS_API_URL') ||
-      'https://api.saos.org.pl/api';
+      'https://www.saos.org.pl/api';
     this.saosApiKey = this.configService.get<string>('SAOS_API_KEY');
     this.logger.log(`SAOS Adapter initialized with URL: ${this.saosApiUrl}`);
   }
@@ -47,7 +48,7 @@ export class SaosAdapter {
    */
   async search(
     query: SearchRulingsQuery,
-  ): Promise<IntegrationResult<RulingSearchResult[]>> {
+  ): Promise<IntegrationResult<RulingSearchResponse>> {
     try {
       const saosRequest = this.transformer.toExternal(query);
 
@@ -55,18 +56,35 @@ export class SaosAdapter {
         async () => {
           const headers: Record<string, string> = {
             'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'User-Agent': 'Legal-AI-Platform/1.0',
           };
 
           if (this.saosApiKey) {
             headers['Authorization'] = `Bearer ${this.saosApiKey}`;
           }
 
+          // Build query parameters for GET request
+          // Using correct SAOS API parameter names
+          const params = new URLSearchParams();
+          if (saosRequest.query) params.append('q', saosRequest.query);
+          if (saosRequest.judgmentDateFrom)
+            params.append('judgmentDateFrom', saosRequest.judgmentDateFrom);
+          if (saosRequest.judgmentDateTo)
+            params.append('judgmentDateTo', saosRequest.judgmentDateTo);
+          if (saosRequest.courtType)
+            params.append('courtType', saosRequest.courtType);
+          if (saosRequest.pageSize)
+            params.append('pageSize', saosRequest.pageSize.toString());
+          if (saosRequest.pageNumber !== undefined)
+            params.append('pageNumber', saosRequest.pageNumber.toString());
+
+          const url = `${this.saosApiUrl}/search/judgments?${params.toString()}`;
+
           const result = await firstValueFrom(
-            this.httpService.post<SaosSearchResponse | SaosErrorResponse>(
-              `${this.saosApiUrl}/judgments/search`,
-              saosRequest,
-              { headers },
-            ),
+            this.httpService.get<SaosSearchResponse | SaosErrorResponse>(url, {
+              headers,
+            }),
           );
 
           // Check for error response
@@ -80,7 +98,8 @@ export class SaosAdapter {
       );
 
       // Transform SAOS judgments to domain models
-      const results: RulingSearchResult[] = saosResponse.results
+      const itemCount = saosResponse.items?.length || 0;
+      const results: RulingSearchResult[] = (saosResponse.items || [])
         .filter((judgment) => this.transformer.validateExternal(judgment))
         .map((judgment) => {
           const ruling = this.transformer.toDomain(judgment);
@@ -102,9 +121,18 @@ export class SaosAdapter {
         })
         .sort((a, b) => b.relevanceScore - a.relevanceScore);
 
+      if (itemCount > 0) {
+        this.logger.log(
+          `SAOS: Transformed ${results.length}/${itemCount} items`,
+        );
+      }
+
       return {
         success: true,
-        data: results,
+        data: {
+          results,
+          totalCount: saosResponse.info?.totalResults || results.length,
+        },
       };
     } catch (error) {
       this.logger.error('Failed to search SAOS', error);
@@ -124,6 +152,8 @@ export class SaosAdapter {
         async () => {
           const headers: Record<string, string> = {
             'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'User-Agent': 'Legal-AI-Platform/1.0',
           };
 
           if (this.saosApiKey) {
@@ -191,7 +221,7 @@ export class SaosAdapter {
    */
   async execute(
     request: SearchRulingsQuery,
-  ): Promise<IntegrationResult<RulingSearchResult[]>> {
+  ): Promise<IntegrationResult<RulingSearchResponse>> {
     return this.search(request);
   }
 

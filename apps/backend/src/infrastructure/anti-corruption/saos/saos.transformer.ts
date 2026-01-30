@@ -22,23 +22,48 @@ export class SaosTransformer {
    * Transform SAOS judgment to domain ruling
    */
   toDomain(external: SaosJudgment): LegalRulingDto {
+    // Convert numeric id to string (SAOS API returns id as number)
+    const idStr = String(external.id);
+
     const metadata: LegalRulingMetadata = {
       legalArea: external.metadata?.legalArea as string | undefined,
       keywords: external.keywords,
       relatedCases: external.references,
-      sourceReference: `SAOS:${external.id}`,
+      sourceReference: `SAOS:${idStr}`,
     };
 
+    // Handle both old and new SAOS API response structures
+    const signature =
+      external.signature ||
+      (external.courtCases && external.courtCases[0]?.caseNumber) ||
+      `SAOS-${idStr}`;
+
+    const judgmentDateValue = external.judgmentDate || external.judgment_date;
+    const rulingDate = judgmentDateValue
+      ? new Date(judgmentDateValue)
+      : new Date();
+
+    const courtName =
+      external.court?.name || external.court_name || 'Unknown Court';
+
+    const courtCode =
+      external.division?.code ||
+      external.court_code ||
+      external.courtType ||
+      'COMMON';
+
+    const fullText = external.textContent || external.text_content || null;
+
     return {
-      signature: external.signature,
-      rulingDate: new Date(external.judgment_date),
-      courtName: external.court_name,
-      courtType: this.mapCourtType(external.court_code),
+      signature,
+      rulingDate,
+      courtName,
+      courtType: this.mapCourtType(courtCode),
       summary: external.summary ?? null,
-      fullText: external.text_content ?? null,
+      fullText,
       metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
       source: RulingSource.SAOS,
-      externalId: external.id,
+      externalId: idStr,
     };
   }
 
@@ -46,18 +71,34 @@ export class SaosTransformer {
    * Transform domain search query to SAOS search request
    */
   toExternal(domain: SearchRulingsQuery): SaosSearchRequest {
+    // Helper to safely convert Date or string to ISO date string (YYYY-MM-DD)
+    const toIsoDateString = (
+      date: Date | string | undefined,
+    ): string | undefined => {
+      if (!date) return undefined;
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      // Check if date is valid
+      if (isNaN(dateObj.getTime())) return undefined;
+      return dateObj.toISOString().split('T')[0];
+    };
+
+    // Calculate pageNumber from offset (offset is 0-based, pageNumber is 0-based)
+    // Assuming pageSize defaults to 10 if not specified
+    const pageSize = domain.limit || 10;
+    const pageNumber = domain.offset ? Math.floor(domain.offset / pageSize) : 0;
+
     return {
-      query: domain.query,
-      date_from: domain.dateFrom?.toISOString().split('T')[0],
-      date_to: domain.dateTo?.toISOString().split('T')[0],
-      court_code: this.courtTypeToSaosCode(domain.courtType),
-      limit: domain.limit,
-      offset: domain.offset,
+      judgmentDateFrom: toIsoDateString(domain.dateFrom),
+      judgmentDateTo: toIsoDateString(domain.dateTo),
+      courtType: domain.courtType,
+      pageNumber,
+      pageSize,
     };
   }
 
   /**
    * Validate SAOS judgment structure
+   * Supports both new (camelCase) and old (snake_case) field names
    */
   validateExternal(external: unknown): external is SaosJudgment {
     if (!external || typeof external !== 'object') {
@@ -66,13 +107,31 @@ export class SaosTransformer {
 
     const judgment = external as Partial<SaosJudgment>;
 
-    return (
-      typeof judgment.id === 'string' &&
-      typeof judgment.signature === 'string' &&
-      typeof judgment.judgment_date === 'string' &&
-      typeof judgment.court_name === 'string' &&
-      typeof judgment.court_code === 'string'
-    );
+    // Check required id field (SAOS returns id as number, not string)
+    if (typeof judgment.id !== 'string' && typeof judgment.id !== 'number') {
+      return false;
+    }
+
+    // Check judgmentDate (new) or judgment_date (old)
+    const hasJudgmentDate =
+      typeof judgment.judgmentDate === 'string' ||
+      typeof judgment.judgment_date === 'string';
+    if (!hasJudgmentDate) {
+      return false;
+    }
+
+    // Check court code (can be division.code, court.code, court_code, or courtType)
+    const hasCourtCode =
+      typeof judgment.division?.code === 'string' ||
+      typeof judgment.court?.code === 'string' ||
+      typeof judgment.court_code === 'string' ||
+      typeof judgment.courtType === 'string';
+    if (!hasCourtCode) {
+      return false;
+    }
+
+    // Optional: signature is not required (can be generated)
+    return true;
   }
 
   /**
@@ -139,13 +198,17 @@ export class SaosTransformer {
     let score = 0;
 
     // Check signature match
-    if (judgment.signature.toLowerCase().includes(query.toLowerCase())) {
+    if (
+      judgment.signature &&
+      judgment.signature.toLowerCase().includes(query.toLowerCase())
+    ) {
       score += 1.0;
     }
 
     // Check court name match
+    const courtName = judgment.court?.name || judgment.court_name;
     for (const term of queryTerms) {
-      if (judgment.court_name.toLowerCase().includes(term)) {
+      if (courtName && courtName.toLowerCase().includes(term)) {
         score += 0.3;
       }
     }
@@ -159,9 +222,10 @@ export class SaosTransformer {
       score += (matchCount / queryTerms.length) * 0.7;
     }
 
-    // Check full text match
-    if (judgment.text_content) {
-      const textLower = judgment.text_content.toLowerCase();
+    // Check full text match (handle both textContent and text_content)
+    const fullText = judgment.textContent || judgment.text_content;
+    if (fullText) {
+      const textLower = fullText.toLowerCase();
       const matchCount = queryTerms.filter((term) =>
         textLower.includes(term),
       ).length;

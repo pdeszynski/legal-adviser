@@ -14,7 +14,7 @@ import {
   Relation,
 } from '@ptc-org/nestjs-query-graphql';
 import { UserSession } from './user-session.entity';
-import { UserRoleEntity } from '../../authorization/entities/user-role.entity';
+import { UserRole } from '../../auth/enums/user-role.enum';
 
 /**
  * User Entity
@@ -23,6 +23,9 @@ import { UserRoleEntity } from '../../authorization/entities/user-role.entity';
  * Referenced by UUID in other modules.
  *
  * Uses nestjs-query decorators for GraphQL type generation.
+ *
+ * Role Hierarchy (higher index = more permissions):
+ * SUPER_ADMIN(5) > ADMIN(4) > LAWYER(3) > PARALEGAL(2) > CLIENT(1) > GUEST(0)
  */
 @Entity('users')
 @ObjectType('User')
@@ -62,12 +65,21 @@ export class User {
   disclaimerAcceptedAt: Date | null;
 
   /**
-   * User role for access control
-   * Roles: 'user' | 'admin'
+   * User role for access control (single source of truth)
+   *
+   * Role hierarchy (higher index = more permissions):
+   * SUPER_ADMIN(5) > ADMIN(4) > LAWYER(3) > PARALEGAL(2) > CLIENT(1) > GUEST(0)
+   *
+   * Default role is CLIENT for regular users.
+   * Legacy 'user' value is mapped to CLIENT for backwards compatibility.
    */
-  @Column({ type: 'enum', enum: ['user', 'admin'], default: 'user' })
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.CLIENT,
+  })
   @FilterableField(() => String)
-  role: 'user' | 'admin';
+  role: UserRole;
 
   /**
    * Two-Factor Authentication enabled flag
@@ -149,14 +161,20 @@ export class User {
     return this.username || this.email;
   }
 
+  /**
+   * Computed roles array property for consistency with JWT and AuthUser type
+   * Returns the single role wrapped in an array
+   */
+  @Field(() => [String], {
+    description:
+      'Array of user roles (single role wrapped as array for consistency with JWT format)',
+  })
+  get roles(): string[] {
+    return [this.role];
+  }
+
   @OneToMany(() => UserSession, (session) => session.user, { cascade: true })
   sessions: UserSession[];
-
-  /**
-   * User role assignments from the authorization module
-   */
-  @OneToMany(() => UserRoleEntity, (roleAssignment) => roleAssignment.user)
-  roleAssignments: UserRoleEntity[];
 
   @CreateDateColumn({ type: 'timestamp' })
   @FilterableField(() => GraphQLISODateTime)

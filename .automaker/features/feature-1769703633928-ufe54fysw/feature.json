@@ -1,0 +1,32 @@
+{
+  "category": "Uncategorized",
+  "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Analyze User Role Duplication in Entities\n\n**Description:** Investigate the current dual implementation of user roles: 1) User entity has a 'role' column, 2) User-Role entity exists for many-to-many relationships. Audit all usages across the codebase to understand which approach is used where. Check: User entity definition, UserRole entity definition, GraphQL resolvers referencing roles, Frontend role checks (useUserRole hook), RBAC guards (RoleGuard, AdminGuard), Seed data creation, Migration files. Document which tables/columns are actively used vs deprecated. Identify any inconsistencies where code reads from User.role vs UserRole relationship. Create a matrix showing all role-related code paths and which data source they use. This analysis will determine whether to keep the many-to-many approach (User + UserRole + Role tables) or simplify to single role column on User table.\n\n---\n\n## Task Description\n\nUpdate seeds to make sure the roels are created, add role to admin@refine.dev as a super admin. ",
+  "title": "Update seeds to create roles and assign super admin",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "master",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [
+    "analyze-user-role-duplication-in-entities"
+  ],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769703633928-ufe54fysw",
+  "descriptionHistory": [
+    {
+      "description": "## Parent Task Context (Already Completed)\n\n> **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.\n\n### Analyze User Role Duplication in Entities\n\n**Description:** Investigate the current dual implementation of user roles: 1) User entity has a 'role' column, 2) User-Role entity exists for many-to-many relationships. Audit all usages across the codebase to understand which approach is used where. Check: User entity definition, UserRole entity definition, GraphQL resolvers referencing roles, Frontend role checks (useUserRole hook), RBAC guards (RoleGuard, AdminGuard), Seed data creation, Migration files. Document which tables/columns are actively used vs deprecated. Identify any inconsistencies where code reads from User.role vs UserRole relationship. Create a matrix showing all role-related code paths and which data source they use. This analysis will determine whether to keep the many-to-many approach (User + UserRole + Role tables) or simplify to single role column on User table.\n\n---\n\n## Task Description\n\nUpdate seeds to make sure the roels are created, add role to admin@refine.dev as a super admin. ",
+      "timestamp": "2026-01-29T16:20:34.052Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-29T16:20:34.110Z",
+  "updatedAt": "2026-01-29T16:25:30.061Z"
+}

@@ -4,7 +4,7 @@
   "id": "chat-session-pin-backend-implementation",
   "title": "Implement Backend Chat Session Pin/Unpin Logic",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "After updating the User GraphQL type to use user_roles array instead of role field, regenerate all GraphQL codegen artifacts. Implementation: 1) Run pnpm codegen to regenerate TypeScript types from updated GraphQL schema, 2) Verify apps/web/src/generated/graphql.ts includes updated User type with user_roles field, 3) Check that generated hooks use correct types (user_roles: Role[]), 4) Update any components or hooks that reference the old user.role field to use user.user_roles, 5) Fix TypeScript errors from changed types, 6) Run pnpm typecheck to verify no type errors remain, 7) Run pnpm build to ensure frontend compiles successfully. This ensures all frontend code uses the correct role structure.",
+  "id": "regenerate-graphql-hooks-after-role-schema-changes",
+  "title": "Regenerate GraphQL Hooks and Types After Role Schema Changes",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "After updating the User GraphQL type to use user_roles array instead of role field, regenerate all GraphQL codegen artifacts. Implementation: 1) Run pnpm codegen to regenerate TypeScript types from updated GraphQL schema, 2) Verify apps/web/src/generated/graphql.ts includes updated User type with user_roles field, 3) Check that generated hooks use correct types (user_roles: Role[]), 4) Update any components or hooks that reference the old user.role field to use user.user_roles, 5) Fix TypeScript errors from changed types, 6) Run pnpm typecheck to verify no type errors remain, 7) Run pnpm build to ensure frontend compiles successfully. This ensures all frontend code uses the correct role structure.",
+      "timestamp": "2026-01-29T16:43:07.596Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-29T16:59:35.503Z"
+}

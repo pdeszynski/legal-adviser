@@ -9,7 +9,12 @@ import { IsapAdapter } from './isap.adapter';
  * Provides the ISAP integration with proper isolation and transformation.
  */
 @Module({
-  imports: [HttpModule],
+  imports: [
+    HttpModule.register({
+      timeout: 30000,
+      maxRedirects: 5,
+    }),
+  ],
   providers: [IsapTransformer, IsapAdapter],
   exports: [IsapTransformer, IsapAdapter],
 })

@@ -5,7 +5,7 @@
  * Configures Temporal client connection and provides workflow execution services.
  */
 
-import { DynamicModule, Module, Provider } from '@nestjs/common';
+import { DynamicModule, Module, Provider, forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
   TEMPORAL_MODULE_OPTIONS,
@@ -19,6 +19,9 @@ import { TemporalObservabilityService } from './temporal-observability.service';
 import { TemporalMetricsController } from './temporal-metrics.controller';
 import { TemporalWorkerStatusController } from './temporal-worker-status.controller';
 import { TemporalResolver } from './temporal.resolver';
+import { SaosModule } from '../../infrastructure/anti-corruption/saos/saos.module';
+import { IsapModule } from '../../infrastructure/anti-corruption/isap/isap.module';
+import { DocumentsModule } from '../documents/documents.module';
 import { DocumentGenerationStarter } from './workflows/document/document-generation.starter';
 import { PdfExportStarter } from './workflows/document/pdf-export.starter';
 import { EmailSendingStarter } from './workflows/notification/email-sending.starter';
@@ -136,7 +139,13 @@ export class TemporalModule {
 
     return {
       module: TemporalModule,
-      imports: [ConfigModule, AuditLogModule],
+      imports: [
+        ConfigModule,
+        AuditLogModule,
+        SaosModule,
+        IsapModule,
+        forwardRef(() => DocumentsModule),
+      ],
       controllers: [TemporalMetricsController, TemporalWorkerStatusController],
       providers: [
         optionsProvider,
@@ -188,7 +197,13 @@ export class TemporalModule {
 
     return {
       module: TemporalModule,
-      imports: [ConfigModule, AuditLogModule, ...(options.imports || [])],
+      imports: [
+        ConfigModule,
+        AuditLogModule,
+        SaosModule,
+        IsapModule,
+        ...(options.imports || []),
+      ],
       controllers: [TemporalMetricsController, TemporalWorkerStatusController],
       providers: [
         ...asyncProviders,
@@ -237,7 +252,13 @@ export class TemporalModule {
   static forRootWithDefaults(): DynamicModule {
     return {
       module: TemporalModule,
-      imports: [ConfigModule, AuditLogModule],
+      imports: [
+        ConfigModule,
+        AuditLogModule,
+        SaosModule,
+        IsapModule,
+        forwardRef(() => DocumentsModule),
+      ],
       controllers: [TemporalMetricsController, TemporalWorkerStatusController],
       providers: [
         temporalOptionsProvider,
