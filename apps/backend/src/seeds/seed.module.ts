@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 // Entities
 import { User } from '../modules/users/entities/user.entity';
 import { UserSession } from '../modules/users/entities/user-session.entity';
+import { RoleEntity, UserRoleEntity } from '../modules/authorization/entities';
 import { LegalDocument } from '../modules/documents/entities/legal-document.entity';
 import { LegalAnalysis } from '../modules/documents/entities/legal-analysis.entity';
 import { LegalRuling } from '../modules/documents/entities/legal-ruling.entity';
@@ -25,6 +26,8 @@ import { SeedService } from './seed.service';
     TypeOrmModule.forFeature([
       User,
       UserSession,
+      RoleEntity,
+      UserRoleEntity,
       LegalDocument,
       LegalAnalysis,
       LegalRuling,

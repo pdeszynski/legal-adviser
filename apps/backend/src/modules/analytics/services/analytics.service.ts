@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between, LessThanOrEqual } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { UserRoleEntity } from '../../authorization/entities';
 import {
   LegalDocument,
   DocumentStatus,
@@ -77,6 +78,8 @@ export class AnalyticsService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserRoleEntity)
+    private readonly userRoleRepository: Repository<UserRoleEntity>,
     @InjectRepository(LegalDocument)
     private readonly documentRepository: Repository<LegalDocument>,
     @InjectRepository(LegalQuery)
@@ -180,7 +183,7 @@ export class AnalyticsService {
     startDate: Date,
     endDate: Date,
   ): Promise<UserGrowthMetrics> {
-    const [totalUsers, activeUsers, newUsers, adminUsers] = await Promise.all([
+    const [totalUsers, activeUsers, newUsers] = await Promise.all([
       this.userRepository.count({
         where: { createdAt: LessThanOrEqual(endDate) },
       }),
@@ -188,8 +191,19 @@ export class AnalyticsService {
       this.userRepository.count({
         where: { createdAt: Between(startDate, endDate) },
       }),
-      this.userRepository.count({ where: { role: UserRole.ADMIN } }),
     ]);
+
+    // Count admin users from UserRoleEntity table
+    // Get all user role IDs for admin roles, then count distinct users
+    const adminRoleIds = await this.userRoleRepository
+      .createQueryBuilder('ur')
+      .select('ur.userId')
+      .innerJoin('ur.role', 'r')
+      .where('r.type = :type', { type: 'admin' })
+      .andWhere('ur.isActive = :isActive', { isActive: true })
+      .getRawMany();
+    const adminUserIds = [...new Set(adminRoleIds.map((ur) => ur.userId))];
+    const adminUsers = adminUserIds.length;
 
     // Calculate previous period for growth rate
     const daysInPeriod = Math.ceil(

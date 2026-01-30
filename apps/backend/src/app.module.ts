@@ -15,6 +15,7 @@ import { CsrfModule } from './shared/csrf';
 import { EncryptionModule } from './shared/encryption/encryption.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { AuthorizationModule } from './modules/authorization/authorization.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { QueriesModule } from './modules/queries/queries.module';
@@ -147,6 +148,7 @@ import { PersistedQueriesService } from './modules/persisted-queries';
     CsrfModule,
     UsersModule,
     AuthModule,
+    AuthorizationModule,
     BillingModule,
     DocumentsModule,
     AuditLogModule,

@@ -7,6 +7,7 @@ import { Module } from '@nestjs/common';
 // Entities
 import { User } from '../modules/users/entities/user.entity';
 import { UserSession } from '../modules/users/entities/user-session.entity';
+import { RoleEntity, UserRoleEntity } from '../modules/authorization/entities';
 import { LegalDocument } from '../modules/documents/entities/legal-document.entity';
 import { LegalAnalysis } from '../modules/documents/entities/legal-analysis.entity';
 import { LegalRuling } from '../modules/documents/entities/legal-ruling.entity';
@@ -41,6 +42,8 @@ import { SeedService } from './seed.service';
         entities: [
           User,
           UserSession,
+          RoleEntity,
+          UserRoleEntity,
           LegalDocument,
           LegalAnalysis,
           LegalRuling,

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { AuthResolver } from './auth.resolver';
@@ -16,9 +17,11 @@ import { GqlAuthGuard } from './guards/gql-auth.guard';
 import { GqlHybridAuthGuard } from './guards/gql-hybrid-auth.guard';
 import { RoleGuard } from './guards/role.guard';
 import { TotpService } from '../../shared/totp/totp.service';
+import { UserRoleEntity } from '../authorization/entities';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([UserRoleEntity]),
     PassportModule,
     ConfigModule,
     UsersModule,

@@ -17,6 +17,9 @@ import {
   ChangePasswordInput,
 } from './dto/auth.graphql-dto';
 import { AppLogger } from '../../shared/logger';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserRoleEntity } from '../authorization/entities';
 
 export interface UserPayload {
   userId: string;
@@ -59,8 +62,24 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
     private twoFactorService: TwoFactorService,
+    @InjectRepository(UserRoleEntity)
+    private readonly userRoleRepository: Repository<UserRoleEntity>,
   ) {
     this.logger.setContext('AuthService');
+  }
+
+  /**
+   * Load user roles from UserRoleEntity table
+   * Returns array of role type strings (e.g., ['admin', 'lawyer'])
+   */
+  private async getUserRoles(userId: string): Promise<string[]> {
+    const userRoles = await this.userRoleRepository.find({
+      where: { userId, isActive: true },
+      relations: ['role'],
+      order: { priority: 'ASC' },
+    });
+
+    return userRoles.map((ur) => ur.role?.type || 'client').filter(Boolean);
   }
 
   /**
@@ -81,12 +100,15 @@ export class AuthService {
       return null;
     }
 
+    // Load user roles from UserRoleEntity table
+    const roles = await this.getUserRoles(user.id);
+
     // Map User entity to UserPayload
     return {
       userId: user.id,
       username: user.username || user.email,
       email: user.email,
-      roles: [user.role], // Use role from database (now UserRole enum)
+      roles: roles.length > 0 ? roles : ['client'], // Default to client if no roles
     };
   }
 
@@ -132,15 +154,18 @@ export class AuthService {
   /**
    * Generate access and refresh tokens for a user
    */
-  private generateTokenPair(user: User): {
+  private async generateTokenPair(user: User): Promise<{
     accessToken: string;
     refreshToken: string;
-  } {
+  }> {
+    // Load user roles from UserRoleEntity table
+    const roles = await this.getUserRoles(user.id);
+
     const basePayload = {
       sub: user.id,
       username: user.username || user.email,
       email: user.email,
-      roles: [user.role], // Use role from database (now UserRole enum)
+      roles: roles.length > 0 ? roles : ['client'], // Default to client if no roles
     };
 
     // Use type assertion to work around JwtService generic type issues
@@ -159,8 +184,12 @@ export class AuthService {
 
   /**
    * Map User entity to AuthUserPayload
+   * Public method so it can be used by resolvers
    */
-  private mapUserToAuthPayload(user: User): AuthUserPayload {
+  async mapUserToAuthPayload(user: User): Promise<AuthUserPayload> {
+    // Load user roles from UserRoleEntity table
+    const roles = await this.getUserRoles(user.id);
+
     return {
       id: user.id,
       email: user.email,
@@ -170,7 +199,7 @@ export class AuthService {
       isActive: user.isActive,
       disclaimerAccepted: user.disclaimerAccepted,
       disclaimerAcceptedAt: user.disclaimerAcceptedAt || undefined,
-      user_roles: [user.role], // Single role wrapped as array for consistency with JWT format
+      user_roles: roles.length > 0 ? roles : ['client'], // Default to client if no roles
     };
   }
 
@@ -231,12 +260,12 @@ export class AuthService {
       }
     }
 
-    const tokens = this.generateTokenPair(user);
+    const tokens = await this.generateTokenPair(user);
 
     return {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
-      user: this.mapUserToAuthPayload(user),
+      user: await this.mapUserToAuthPayload(user),
       requiresTwoFactor: false,
     };
   }
@@ -325,12 +354,12 @@ export class AuthService {
       }
     }
 
-    const tokens = this.generateTokenPair(user);
+    const tokens = await this.generateTokenPair(user);
 
     return {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
-      user: this.mapUserToAuthPayload(user),
+      user: await this.mapUserToAuthPayload(user),
       requiresTwoFactor: false,
     };
   }
@@ -371,12 +400,12 @@ export class AuthService {
       password: data.password,
     });
 
-    const tokens = this.generateTokenPair(user);
+    const tokens = await this.generateTokenPair(user);
 
     return {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
-      user: this.mapUserToAuthPayload(user),
+      user: await this.mapUserToAuthPayload(user),
       requiresTwoFactor: false,
     };
   }
@@ -401,7 +430,7 @@ export class AuthService {
     }
 
     // Generate new token pair
-    const tokens = this.generateTokenPair(user);
+    const tokens = await this.generateTokenPair(user);
 
     return {
       accessToken: tokens.accessToken,

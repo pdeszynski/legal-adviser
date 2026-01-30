@@ -165,17 +165,7 @@ export class AuthResolver {
       return null;
     }
 
-    return {
-      id: user.id,
-      email: user.email,
-      username: user.username || undefined,
-      firstName: user.firstName || undefined,
-      lastName: user.lastName || undefined,
-      isActive: user.isActive,
-      disclaimerAccepted: user.disclaimerAccepted,
-      disclaimerAcceptedAt: user.disclaimerAcceptedAt || undefined,
-      user_roles: [user.role],
-    };
+    return await this.authService.mapUserToAuthPayload(user);
   }
 
   /**
@@ -196,18 +186,7 @@ export class AuthResolver {
     }
 
     const user = await this.authService.acceptDisclaimer(userId);
-
-    return {
-      id: user.id,
-      email: user.email,
-      username: user.username || undefined,
-      firstName: user.firstName || undefined,
-      lastName: user.lastName || undefined,
-      isActive: user.isActive,
-      disclaimerAccepted: user.disclaimerAccepted,
-      disclaimerAcceptedAt: user.disclaimerAcceptedAt || undefined,
-      user_roles: [user.role],
-    };
+    return await this.authService.mapUserToAuthPayload(user);
   }
 
   /**
@@ -229,18 +208,7 @@ export class AuthResolver {
     }
 
     const user = await this.authService.updateProfile(userId, input);
-
-    return {
-      id: user.id,
-      email: user.email,
-      username: user.username || undefined,
-      firstName: user.firstName || undefined,
-      lastName: user.lastName || undefined,
-      isActive: user.isActive,
-      disclaimerAccepted: user.disclaimerAccepted,
-      disclaimerAcceptedAt: user.disclaimerAcceptedAt || undefined,
-      user_roles: [user.role],
-    };
+    return await this.authService.mapUserToAuthPayload(user);
   }
 
   /**

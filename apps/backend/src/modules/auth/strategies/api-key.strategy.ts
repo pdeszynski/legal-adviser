@@ -1,7 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-http-bearer';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { ApiKeysService } from '../../api-keys/services/api-keys.service';
+import { UserRoleEntity } from '../../authorization/entities';
 
 /**
  * Validated user from API key authentication
@@ -30,7 +33,11 @@ export interface ValidatedApiKeyUser {
  */
 @Injectable()
 export class ApiKeyStrategy extends PassportStrategy(Strategy, 'api-key') {
-  constructor(private readonly apiKeysService: ApiKeysService) {
+  constructor(
+    private readonly apiKeysService: ApiKeysService,
+    @InjectRepository(UserRoleEntity)
+    private readonly userRoleRepository: Repository<UserRoleEntity>,
+  ) {
     super({
       // Custom token extraction to support both headers
       passReqToCallback: true,
@@ -76,12 +83,22 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, 'api-key') {
     const ipAddress = req.ip || req.connection?.remoteAddress || 'unknown';
     await this.apiKeysService.recordUsage(keyEntity.id, ipAddress);
 
+    // Load user roles from UserRoleEntity table
+    const userRoles = await this.userRoleRepository.find({
+      where: { userId: user.id, isActive: true },
+      relations: ['role'],
+      order: { priority: 'ASC' },
+    });
+    const roles = userRoles
+      .map((ur) => ur.role?.type || 'client')
+      .filter(Boolean);
+
     // Return user data with API key metadata
     return {
       userId: user.id,
       username: user.username || user.email,
       email: user.email,
-      roles: [user.role || 'user'],
+      roles: roles.length > 0 ? roles : ['client'],
       apiKeyId: keyEntity.id,
       authMethod: 'api-key',
     };

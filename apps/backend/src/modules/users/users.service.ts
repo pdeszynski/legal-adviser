@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -388,8 +392,9 @@ export class UsersService {
 
   /**
    * Change user role (admin only)
-   * Updates user role to any valid UserRole
-   * Supports legacy role names ('user', 'admin') for backwards compatibility
+   * NOTE: Roles are now managed via the authorization module
+   * This method is kept for backwards compatibility but delegates to the authorization service
+   * @deprecated Use AuthorizationService methods instead
    */
   async changeUserRole(
     userId: string,
@@ -397,31 +402,9 @@ export class UsersService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     changedBy: string,
   ): Promise<User> {
-    const user = await this.findById(userId);
-    if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
-    }
-
-    // Map legacy role names to UserRole enum values
-    let normalizedRole: UserRole;
-    if (typeof newRole === 'string' && newRole in LEGACY_ROLE_MAP) {
-      normalizedRole = LEGACY_ROLE_MAP[newRole];
-    } else if (Object.values(UserRole).includes(newRole as UserRole)) {
-      normalizedRole = newRole as UserRole;
-    } else {
-      throw new NotFoundException(`Invalid role: ${newRole}`);
-    }
-
-    user.role = normalizedRole;
-    const savedUser = await this.userRepository.save(user);
-
-    // Emit domain event for role change
-    this.eventEmitter.emit(
-      EVENT_PATTERNS.USER.UPDATED,
-      new UserUpdatedEvent(userId, ['role']),
+    throw new BadRequestException(
+      'Role management has moved to the authorization module. Use the authorization GraphQL API to manage user roles.',
     );
-
-    return savedUser;
   }
 
   /**

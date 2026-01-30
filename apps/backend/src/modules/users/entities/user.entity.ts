@@ -13,8 +13,8 @@ import {
   QueryOptions,
   Relation,
 } from '@ptc-org/nestjs-query-graphql';
+import type { UserRoleEntity } from '../../authorization/entities/user-role.entity';
 import { UserSession } from './user-session.entity';
-import { UserRole } from '../../auth/enums/user-role.enum';
 
 /**
  * User Entity
@@ -63,23 +63,6 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   @Field(() => GraphQLISODateTime, { nullable: true })
   disclaimerAcceptedAt: Date | null;
-
-  /**
-   * User role for access control (single source of truth)
-   *
-   * Role hierarchy (higher index = more permissions):
-   * SUPER_ADMIN(5) > ADMIN(4) > LAWYER(3) > PARALEGAL(2) > CLIENT(1) > GUEST(0)
-   *
-   * Default role is CLIENT for regular users.
-   * Legacy 'user' value is mapped to CLIENT for backwards compatibility.
-   */
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.CLIENT,
-  })
-  @FilterableField(() => String)
-  role: UserRole;
 
   /**
    * Two-Factor Authentication enabled flag
@@ -159,18 +142,6 @@ export class User {
       return `${this.firstName} ${this.lastName}`;
     }
     return this.username || this.email;
-  }
-
-  /**
-   * Computed roles array property for consistency with JWT and AuthUser type
-   * Returns the single role wrapped in an array
-   */
-  @Field(() => [String], {
-    description:
-      'Array of user roles (single role wrapped as array for consistency with JWT format)',
-  })
-  get roles(): string[] {
-    return [this.role];
   }
 
   @OneToMany(() => UserSession, (session) => session.user, { cascade: true })

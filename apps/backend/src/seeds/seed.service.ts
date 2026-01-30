@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 // Entities
 import { User } from '../modules/users/entities/user.entity';
 import { UserSession } from '../modules/users/entities/user-session.entity';
+import { RoleEntity, UserRoleEntity } from '../modules/authorization/entities';
 import { LegalDocument } from '../modules/documents/entities/legal-document.entity';
 import { LegalAnalysis } from '../modules/documents/entities/legal-analysis.entity';
 import { LegalRuling } from '../modules/documents/entities/legal-ruling.entity';
@@ -35,8 +36,8 @@ const BCRYPT_SALT_ROUNDS = 10;
  * Handles database seeding with fixture data for development and testing.
  * Supports both fresh seeding and re-seeding (clearing existing data first).
  *
- * Role System: Uses single `role` field on User entity as the single source of truth.
- * The legacy many-to-many role tables (roles, user_roles) have been removed.
+ * Role System: Uses UserRoles/Roles entities from authorization module.
+ * System roles are automatically initialized by AuthorizationModule.onModuleInit().
  */
 @Injectable()
 export class SeedService {
@@ -44,6 +45,7 @@ export class SeedService {
 
   // Store created entities for reference during seeding
   private userMap: Map<string, User> = new Map();
+  private roleMap: Map<string, RoleEntity> = new Map();
   private sessionList: UserSession[] = [];
 
   constructor(
@@ -52,6 +54,10 @@ export class SeedService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserSession)
     private readonly sessionRepository: Repository<UserSession>,
+    @InjectRepository(RoleEntity)
+    private readonly roleRepository: Repository<RoleEntity>,
+    @InjectRepository(UserRoleEntity)
+    private readonly userRoleRepository: Repository<UserRoleEntity>,
     @InjectRepository(LegalDocument)
     private readonly documentRepository: Repository<LegalDocument>,
     @InjectRepository(LegalAnalysis)
@@ -89,7 +95,9 @@ export class SeedService {
 
     try {
       // Seed in order of dependencies
+      await this.seedRoles();
       await this.seedUsers(clean);
+      await this.seedUserRoles();
       await this.seedUserPreferences();
       await this.seedSessions();
       await this.seedDocuments();
@@ -128,25 +136,8 @@ export class SeedService {
       await queryRunner.query('DELETE FROM legal_documents');
       await queryRunner.query('DELETE FROM user_sessions');
       await queryRunner.query('DELETE FROM user_preferences');
-
-      // Delete from legacy user_roles table if it exists
-      try {
-        await queryRunner.query('DELETE FROM user_roles');
-      } catch (err) {
-        // Table may not exist, continue
-        this.logger.debug(
-          'user_roles table does not exist or is already empty',
-        );
-      }
-
-      // Delete from legacy roles table if it exists
-      try {
-        await queryRunner.query('DELETE FROM roles');
-      } catch (err) {
-        // Table may not exist, continue
-        this.logger.debug('roles table does not exist or is already empty');
-      }
-
+      await queryRunner.query('DELETE FROM user_roles');
+      await queryRunner.query('DELETE FROM roles');
       await queryRunner.query('DELETE FROM users');
 
       this.logger.log('Database cleaned successfully');
@@ -156,15 +147,13 @@ export class SeedService {
 
     // Clear local maps
     this.userMap.clear();
+    this.roleMap.clear();
     this.sessionList = [];
   }
 
   /**
    * Seed users
-   * Now uses role property directly from seed data
-   *
-   * In clean mode, always creates fresh users. In normal mode,
-   * updates existing users' roles if they differ from seed data.
+   * Roles are assigned separately via seedUserRoles method
    */
   private async seedUsers(clean: boolean = false): Promise<void> {
     this.logger.log('Seeding users...');
@@ -183,16 +172,6 @@ export class SeedService {
           );
           await this.userRepository.remove(existingUser);
         } else {
-          // Update role if it differs from seed data (important for role corrections)
-          if (existingUser.role !== userData.role) {
-            this.logger.log(
-              `Updating role for ${userData.email}: ${existingUser.role} -> ${userData.role}`,
-            );
-            existingUser.role = userData.role;
-            const updatedUser = await this.userRepository.save(existingUser);
-            this.userMap.set(userData.email, updatedUser);
-            continue;
-          }
           this.logger.debug(`User ${userData.email} already exists, skipping`);
           this.userMap.set(userData.email, existingUser);
           continue;
@@ -242,7 +221,6 @@ export class SeedService {
         passwordHash,
         isActive: userData.isActive,
         disclaimerAccepted: userData.disclaimerAccepted,
-        role: userData.role, // Use role from seed data
         twoFactorEnabled: userData.twoFactorEnabled ?? false,
         twoFactorSecret: encryptedSecret,
         twoFactorBackupCodes: hashedBackupCodes,
@@ -251,11 +229,129 @@ export class SeedService {
       const savedUser = await this.userRepository.save(user);
       this.userMap.set(userData.email, savedUser);
       this.logger.debug(
-        `Created user: ${userData.email} (${userData.role})${userData.twoFactorEnabled ? ' (with 2FA)' : ''}`,
+        `Created user: ${userData.email}${userData.twoFactorEnabled ? ' (with 2FA)' : ''}`,
       );
     }
 
     this.logger.log(`Seeded ${this.userMap.size} users`);
+  }
+
+  /**
+   * Seed system roles
+   * These are the base roles used by the authorization system
+   */
+  private async seedRoles(): Promise<void> {
+    this.logger.log('Seeding roles...');
+
+    // Check if roles already exist
+    const existingRoles = await this.roleRepository.find();
+    if (existingRoles.length > 0) {
+      this.logger.debug('Roles already exist, skipping');
+      for (const role of existingRoles) {
+        this.roleMap.set(role.name, role);
+      }
+      return;
+    }
+
+    const roleTypes = [
+      'super_admin',
+      'admin',
+      'lawyer',
+      'paralegal',
+      'client',
+      'guest',
+    ] as const;
+
+    const roleNames: Record<(typeof roleTypes)[number], string> = {
+      super_admin: 'Super Administrator',
+      admin: 'Administrator',
+      lawyer: 'Lawyer',
+      paralegal: 'Paralegal',
+      client: 'Client',
+      guest: 'Guest',
+    };
+
+    for (const type of roleTypes) {
+      const role = this.roleRepository.create({
+        id: crypto.randomUUID(),
+        name: roleNames[type],
+        type,
+        permissions: [],
+        isSystemRole: true,
+      });
+      const savedRole = await this.roleRepository.save(role);
+      this.roleMap.set(savedRole.name, savedRole);
+      this.logger.debug(`Created role: ${savedRole.name} (${type})`);
+    }
+
+    this.logger.log(`Seeded ${this.roleMap.size} roles`);
+  }
+
+  /**
+   * Seed user role assignments
+   * Assigns roles to users based on the seed data
+   */
+  private async seedUserRoles(): Promise<void> {
+    this.logger.log('Seeding user roles...');
+
+    let count = 0;
+    for (const userData of usersSeedData) {
+      const user = this.userMap.get(userData.email);
+      if (!user) {
+        this.logger.warn(
+          `User ${userData.email} not found for role assignment`,
+        );
+        continue;
+      }
+
+      // Get role by type
+      const roleType = userData.role.toLowerCase().replace('-', '_') as
+        | 'super_admin'
+        | 'admin'
+        | 'lawyer'
+        | 'paralegal'
+        | 'client'
+        | 'guest';
+      const role = Array.from(this.roleMap.values()).find(
+        (r) => r.type === roleType,
+      );
+
+      if (!role) {
+        this.logger.warn(
+          `Role ${roleType} not found for user ${userData.email}`,
+        );
+        continue;
+      }
+
+      // Check if user role assignment already exists
+      const existingAssignment = await this.userRoleRepository.findOne({
+        where: { userId: user.id, roleId: role.id },
+      });
+
+      if (existingAssignment) {
+        this.logger.debug(
+          `User role assignment already exists for ${userData.email}, skipping`,
+        );
+        continue;
+      }
+
+      // Create user role assignment
+      const userRole = this.userRoleRepository.create({
+        id: crypto.randomUUID(),
+        userId: user.id,
+        roleId: role.id,
+        priority: 100,
+        notes: null,
+        isActive: true,
+        expiresAt: null,
+      });
+
+      await this.userRoleRepository.save(userRole);
+      count++;
+      this.logger.debug(`Assigned role ${role.name} to user ${userData.email}`);
+    }
+
+    this.logger.log(`Seeded ${count} user role assignments`);
   }
 
   /**
@@ -498,6 +594,7 @@ export class SeedService {
    */
   private printSummary(): void {
     this.logger.log('=== Seeding Summary ===');
+    this.logger.log(`Roles: ${this.roleMap.size}`);
     this.logger.log(`Users: ${this.userMap.size}`);
     this.logger.log(`User Preferences: ${this.userMap.size}`);
     this.logger.log(`Sessions: ${this.sessionList.length}`);
