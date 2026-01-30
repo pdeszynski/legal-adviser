@@ -66,7 +66,8 @@ class SeedAppModule {}
  *
  * Usage:
  *   npx ts-node src/seeds/seed.command.ts           # Seed if database is empty
- *   npx ts-node src/seeds/seed.command.ts --clean   # Clear and re-seed
+ *   npx ts-node src/seeds/seed.command.ts --clean   # Clear and re-seed (preserves external data)
+ *   npx ts-node src/seeds/seed.command.ts --clean-all # Clear and re-seed including external data
  *   npx ts-node src/seeds/seed.command.ts --status  # Check seeding status
  */
 async function bootstrap() {
@@ -74,6 +75,7 @@ async function bootstrap() {
   const args = process.argv.slice(2);
 
   const shouldClean = args.includes('--clean') || args.includes('-c');
+  const shouldCleanAll = args.includes('--clean-all');
   const showStatus = args.includes('--status') || args.includes('-s');
   const showHelp = args.includes('--help') || args.includes('-h');
 
@@ -85,14 +87,20 @@ Usage:
   npx ts-node src/seeds/seed.command.ts [options]
 
 Options:
-  --clean, -c     Clear existing data before seeding
-  --status, -s    Show current database seeding status
-  --help, -h      Show this help message
+  --clean, -c       Clear existing data before seeding (preserves external data tables)
+  --clean-all       Clear ALL data including external data tables (rulings, embeddings)
+  --status, -s      Show current database seeding status
+  --help, -h        Show this help message
+
+External Data Tables (preserved with --clean, deleted with --clean-all):
+  - legal_rulings     (populated from SAOS/ISAP APIs)
+  - document_embeddings (populated by vector store indexing)
 
 Examples:
-  npx ts-node src/seeds/seed.command.ts           # Seed if database is empty
-  npx ts-node src/seeds/seed.command.ts --clean   # Clear and re-seed
-  npx ts-node src/seeds/seed.command.ts --status  # Check seeding status
+  npx ts-node src/seeds/seed.command.ts              # Seed if database is empty
+  npx ts-node src/seeds/seed.command.ts --clean       # Clear and re-seed (preserves external data)
+  npx ts-node src/seeds/seed.command.ts --clean-all   # Clear and re-seed (includes external data)
+  npx ts-node src/seeds/seed.command.ts --status      # Check seeding status
     `);
     process.exit(0);
   }
@@ -122,7 +130,7 @@ Examples:
       logger.log(`Audit Logs: ${stats.auditLogs}`);
       logger.log('=======================');
     } else {
-      await seedService.seed(shouldClean);
+      await seedService.seed(shouldClean, shouldCleanAll);
     }
 
     logger.log('Seed command completed successfully');

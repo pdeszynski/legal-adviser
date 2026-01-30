@@ -75,13 +75,14 @@ export class SeedService {
 
   /**
    * Run the complete seeding process
-   * @param clean - If true, clear existing data before seeding
+   * @param clean - If true, clear existing data before seeding (preserves external data tables)
+   * @param cleanAll - If true, clear ALL data including external data tables (rulings, embeddings)
    */
-  async seed(clean: boolean = false): Promise<void> {
+  async seed(clean: boolean = false, cleanAll: boolean = false): Promise<void> {
     this.logger.log('Starting database seeding...');
 
-    if (clean) {
-      await this.cleanDatabase();
+    if (clean || cleanAll) {
+      await this.cleanDatabase(cleanAll);
     } else {
       // Check if data already exists
       const existingUsers = await this.userRepository.count();
@@ -115,10 +116,21 @@ export class SeedService {
   }
 
   /**
+   * Tables that contain external data and should NOT be deleted during normal cleaning
+   * These tables are populated by external sources (SAOS/ISAP APIs, vector indexing, etc.)
+   * Use --clean-all flag to force delete all data including these tables
+   */
+  private static readonly EXTERNAL_DATA_TABLES = [
+    'legal_rulings', // Populated from SAOS/ISAP external APIs
+    'document_embeddings', // Populated by vector store indexing
+  ] as const;
+
+  /**
    * Clean all seeded data from the database
    * Uses raw queries to bypass foreign key constraints
+   * @param cleanAll - If true, also delete external data tables (rulings, embeddings)
    */
-  async cleanDatabase(): Promise<void> {
+  async cleanDatabase(cleanAll: boolean = false): Promise<void> {
     this.logger.log('Cleaning database...');
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -131,7 +143,22 @@ export class SeedService {
       // Delete in reverse order of dependencies
       await queryRunner.query('DELETE FROM audit_logs');
       await queryRunner.query('DELETE FROM legal_queries');
-      await queryRunner.query('DELETE FROM legal_rulings');
+
+      // Only delete external data tables if --clean-all flag is set
+      if (cleanAll) {
+        this.logger.warn(
+          'Deleting external data tables (rulings, embeddings)...',
+        );
+        await queryRunner.query('DELETE FROM document_embeddings');
+        await queryRunner.query('DELETE FROM legal_rulings');
+      } else {
+        this.logger.log(
+          'Preserving external data tables: ' +
+            SeedService.EXTERNAL_DATA_TABLES.join(', ') +
+            '. Use --clean-all to delete them.',
+        );
+      }
+
       await queryRunner.query('DELETE FROM legal_analyses');
       await queryRunner.query('DELETE FROM legal_documents');
       await queryRunner.query('DELETE FROM user_sessions');
