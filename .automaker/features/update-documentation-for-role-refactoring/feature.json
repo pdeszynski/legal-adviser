@@ -4,7 +4,7 @@
   "id": "update-documentation-for-role-refactoring",
   "title": "Update Documentation for Role Refactoring",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

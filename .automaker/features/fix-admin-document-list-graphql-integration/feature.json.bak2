@@ -4,7 +4,7 @@
   "id": "fix-admin-document-list-graphql-integration",
   "title": "Fix Admin Document List GraphQL Integration",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-30T12:47:56.580Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-30T13:13:27.586Z"
 }

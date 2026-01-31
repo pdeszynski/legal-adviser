@@ -4,7 +4,7 @@
   "id": "update-backend-chat-mutation-to-support-type-discriminator",
   "title": "Update Backend Chat Mutations to Support Message Type Discriminator",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "refactor-chat-messaging",
   "descriptionHistory": [
     {

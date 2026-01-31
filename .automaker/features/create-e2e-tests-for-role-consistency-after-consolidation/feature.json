@@ -4,7 +4,7 @@
   "id": "create-e2e-tests-for-role-consistency-after-consolidation",
   "title": "Create E2E Tests Verifying Role Consistency After Consolidation",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

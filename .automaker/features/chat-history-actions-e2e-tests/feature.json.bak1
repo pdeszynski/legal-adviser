@@ -4,7 +4,7 @@
   "id": "chat-history-actions-e2e-tests",
   "title": "Create E2E Tests for Chat History Actions",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-29T11:35:58.492Z"
+  "updatedAt": "2026-01-29T11:40:28.511Z"
 }

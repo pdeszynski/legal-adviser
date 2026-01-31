@@ -4,7 +4,7 @@
   "id": "verify-admin-role-enables-admin-links-in-menu",
   "title": "Verify Admin Users Can Access Admin Management Links",
   "priority": 1,
-  "status": "pending",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,7 +13,7 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-29T17:06:16.823Z",
+  "updatedAt": "2026-01-29T17:23:09.135Z",
   "dependencies": [
     "fix-graphql-user-roles-to-return-userrole-entities",
     "remove-role-column-from-user-entity-and-database",

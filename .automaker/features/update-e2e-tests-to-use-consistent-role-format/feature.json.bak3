@@ -3,9 +3,6 @@
   "description": "Update all E2E tests that verify role-based functionality to use the new single source of truth format. Update tests in: rbac-e2e-tests, e2e-tests-authorization-mutations, e2e-test-two-factor-settings-enable-flow, admin-user-management tests. Ensure: 1) Login steps use admin@refine.dev credentials, 2) Role checks verify correct format (array or string), 3) Admin access tests validate ADMIN role correctly, 4) User role tests validate non-admin roles, 5) Tests verify role-based UI elements appear/disappear correctly. Update test fixtures and mock data to match new role format. Add new test cases verifying the refactored role implementation works end-to-end. Ensure tests catch any regressions where old role format is accidentally used.",
   "id": "update-e2e-tests-to-use-consistent-role-format",
   "title": "Update E2E Tests to Use Consistent Role Format",
-  "dependencies": [
-    "update-seed-data-to-use-admin-as-default-user"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "master",

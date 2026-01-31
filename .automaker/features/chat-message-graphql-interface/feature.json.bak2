@@ -4,7 +4,7 @@
   "id": "chat-message-graphql-interface",
   "title": "Create GraphQL Interface for Chat Messages",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "refactor-chat-messaging",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-29T07:24:16.612Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-29T07:24:25.978Z"
 }

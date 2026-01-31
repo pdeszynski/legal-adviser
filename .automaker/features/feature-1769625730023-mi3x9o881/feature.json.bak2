@@ -1,7 +1,7 @@
 {
   "category": "Uncategorized",
   "description": "Clarification form is working invalid:\n1. It does not wait for giving answer in free text forms, first keypress marks as answered and does not allow writing answer\n2. After refreshing page, form is again empty, instead simple string message is shown - form should be filled instead, persisted as form, not as a separate message.",
-  "title": "",
+  "title": "Fix clarification form text input and persistence",
   "images": [],
   "imagePaths": [],
   "textFilePaths": [],
@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "dependencies": [],
   "workMode": "current",
-  "titleGenerating": "Clarification form is working invalid:\n1. It does not wait for giving answer in free text forms, first keypress marks as answered and does not allow writing answer\n2. After refreshing page, form is again empty, instead simple string message is shown - form should be filled instead, persisted as form, not as a separate message.",
+  "titleGenerating": false,
   "status": "in_progress",
   "id": "feature-1769625730023-mi3x9o881",
   "descriptionHistory": [

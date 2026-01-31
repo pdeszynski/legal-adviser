@@ -4,7 +4,7 @@
   "id": "update-e2e-tests-to-use-consistent-role-format",
   "title": "Update E2E Tests to Use Consistent Role Format",
   "priority": 1,
-  "status": "backlog",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-29T12:30:41.337Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-29T13:10:00.000Z"
 }

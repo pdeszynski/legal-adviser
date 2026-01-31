@@ -4440,6 +4440,26 @@ path
       <name>Add E2E Tests for Admin Filtering Functionality</name>
       <description>Create comprehensive Playwright E2E tests for admin page filtering to ensure filters work correctly after fixes. Test scenarios: 1) Users page: filter by role (admin, lawyer, client), filter by isActive (true/false), verify filtered results match, 2) Audit logs: filter by action type, filter by date range, verify correct filters sent in GraphQL request, 3) Documents: filter by status (DRAFT, COMPLETED), filter by type, verify results, 4) API keys: filter by status, verify filtering, 5) Test combined filters (role + isActive), 6) Verify filter state persists across pagination, 7) Verify &apos;Clear filters&apos; button resets all filters, 8) Inspect network requests to verify filter format matches nestjs-query expectations, 9) Test that no client-side filtering occurs (all filtering happens on backend), 10) Verify no GraphQL errors in console. Use Playwright&apos;s request interception to capture GraphQL queries and verify filter variables. Add tests to apps/web/tests/admin-filters.spec.ts.</description>
     </feature>
+    <feature>
+      <name>Fix returned value from graphql</name>
+      <description>## Parent Task Context (Already Completed)
+
+&gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
+
+### Consolidate User Role to Use Only user_roles Relationship
+
+**Description:** Remove the deprecated role column from User entity and update all code to use only the user_roles many-to-many relationship. This ensures a single source of truth for user roles. Implementation: 1) Create database migration to remove role column from users table, 2) Update User entity to remove @FilterableField(&apos;role&apos;) property, 3) Keep only user_roles relationship with UserRole entity, 4) Update all GraphQL resolvers to access roles via user.user_roles, 5) Update all backend services to use user_roles array, 6) Ensure seed data creates roles through UserRole relationships, 7) Add database constraint to prevent adding role column back, 8) Update documentation to reflect only user_roles exists.
+
+---
+
+## Task Description
+
+It&apos;s still not working, for user admin@refine.dev instead of super admin i&apos;m getting a role = client, this is returned from graphql</description>
+    </feature>
+    <feature>
+      <name>Update Backend RBAC Guards to Use UserRole Relationship</name>
+      <description>Update all backend authorization guards to explicitly use the UserRole entity relationship. Implementation: 1) Update RoleGuard to read roles from user.user_users array (many-to-many), 2) Update AdminGuard to check user.user_roles for ADMIN/SUPER_ADMIN, 3) Update @RequireRole decorator to work with UserRole array, 4) Ensure JWT context includes user_roles populated from UserRole table, 5) Add unit tests verifying guards check UserRole not deprecated role column, 6) Update DocumentPermissionGuard to use UserRole, 7) Add logging to show which data source guards are reading, 8) Verify with multiple test users (admin, lawyer, client).</description>
+    </feature>
   </implemented_features>
 
   <additional_requirements>

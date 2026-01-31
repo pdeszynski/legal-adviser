@@ -4,7 +4,7 @@
   "id": "consolidate-user-role-to-single-source",
   "title": "Consolidate User Role to Use Only user_roles Relationship",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

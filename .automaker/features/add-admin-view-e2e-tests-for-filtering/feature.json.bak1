@@ -4,7 +4,7 @@
   "id": "add-admin-view-e2e-tests-for-filtering",
   "title": "Add E2E Tests for Admin View Filtering",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-30T15:55:36.873Z"
+  "updatedAt": "2026-01-30T16:33:57.155Z"
 }

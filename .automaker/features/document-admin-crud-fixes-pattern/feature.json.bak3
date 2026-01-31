@@ -3,9 +3,6 @@
   "description": "Update CLAUDE.md and admin development documentation with the correct pattern for integrating Refine with nestjs-query auto-generated resolvers. Include: 1) Entity decorator setup (@ObjectType, @FilterableField, @Relation), 2) QueryService registration in modules, 3) Refine data provider configuration showing correct request/response formats, 4) Example from working users list page, 5) Connection-based pagination handling (edges.node), 6) JSON field handling patterns (like auditLogs.changeDetails), 7) Common pitfalls and how to avoid them, 8) Links to reference examples (nestjs-query docs, Refine nestjs-query example). This documentation will prevent future admin pages from having the same integration issues.",
   "id": "document-admin-crud-fixes-pattern",
   "title": "Document Admin CRUD Integration Pattern for Future Development",
-  "dependencies": [
-    "verify-all-admin-resources-in-data-provider"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "master",

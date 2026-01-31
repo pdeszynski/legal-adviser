@@ -4,7 +4,7 @@
   "id": "admin-refine-routing-configuration",
   "title": "Configure Refine Routing for Admin Resources",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-30T10:22:50.578Z"
+  "updatedAt": "2026-01-30T10:40:12.113Z"
 }

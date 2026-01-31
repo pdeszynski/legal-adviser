@@ -4,7 +4,7 @@
   "id": "refactor-admin-views-to-use-table",
   "title": "Refactor Admin Views to Use useTable Hook",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-30T15:41:58.172Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-30T15:42:07.558Z"
 }

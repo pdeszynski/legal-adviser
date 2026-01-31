@@ -4,7 +4,7 @@
   "id": "fix-admin-user-list-graphql-integration",
   "title": "Fix Admin User List GraphQL Integration with nestjs-query",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

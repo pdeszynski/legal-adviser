@@ -4,7 +4,7 @@
   "id": "verify-all-admin-resources-in-data-provider",
   "title": "Verify All Admin Resources Are Configured in Refine Data Provider",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-30T13:20:39.867Z"
+  "updatedAt": "2026-01-30T13:38:32.142Z"
 }

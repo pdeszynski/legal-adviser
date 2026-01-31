@@ -4,7 +4,7 @@
   "id": "update-frontend-role-checks-to-use-user-roles-array",
   "title": "Update Frontend Role Checks to Use user_roles Array",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-29T16:54:14.941Z"
+  "updatedAt": "2026-01-29T17:03:13.000Z"
 }

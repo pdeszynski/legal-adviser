@@ -4,7 +4,7 @@
   "id": "update-clarification-form-to-send-json-with-type",
   "title": "Update Clarification Form to Stringify Answers and Set Type",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "refactor-chat-messaging",
   "descriptionHistory": [
     {

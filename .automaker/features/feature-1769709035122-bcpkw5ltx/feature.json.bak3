@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "workMode": "custom",
   "titleGenerating": false,
-  "status": "backlog",
+  "status": "in_progress",
   "id": "feature-1769709035122-bcpkw5ltx",
   "descriptionHistory": [
     {
@@ -30,5 +30,5 @@
     }
   ],
   "startedAt": "2026-01-29T17:50:35.482Z",
-  "updatedAt": "2026-01-29T17:51:57.043Z"
+  "updatedAt": "2026-01-29T17:52:01.432Z"
 }

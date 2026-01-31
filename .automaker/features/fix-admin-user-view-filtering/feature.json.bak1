@@ -4,7 +4,7 @@
   "id": "fix-admin-user-view-filtering",
   "title": "Fix Admin User View Filtering",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-30T15:42:09.642Z"
+  "updatedAt": "2026-01-30T15:55:58.465Z"
 }

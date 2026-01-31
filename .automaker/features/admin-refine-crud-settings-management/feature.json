@@ -4,7 +4,7 @@
   "id": "admin-refine-crud-settings-management",
   "title": "Refactor Admin System Settings to Use Refine Form Hooks",
   "priority": 3,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

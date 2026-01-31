@@ -4,7 +4,7 @@
   "id": "update-frontend-role-checks-for-consistency",
   "title": "Update Frontend Role Checks for Consistency",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

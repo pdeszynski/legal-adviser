@@ -4,7 +4,7 @@
   "id": "fix-temporal-worker-registration-in-dev",
   "title": "Fix Temporal Worker Registration in Development Mode",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-29T10:02:23.806Z"
+  "updatedAt": "2026-01-29T10:12:32.999Z"
 }

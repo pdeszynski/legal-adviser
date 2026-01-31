@@ -4,7 +4,7 @@
   "id": "admin-refine-migration-documentation",
   "title": "Document Refine.dev CRUD Patterns for Admin Development",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-30T10:19:36.069Z"
+  "updatedAt": "2026-01-30T10:24:30.137Z"
 }

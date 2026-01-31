@@ -4,7 +4,7 @@
   "id": "fix-admin-audit-logs-graphql-integration",
   "title": "Fix Admin Audit Logs GraphQL Integration",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-30T12:47:56.579Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-30T12:51:53.783Z"
 }

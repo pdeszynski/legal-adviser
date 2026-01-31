@@ -4,7 +4,7 @@
   "id": "admin-refine-crud-api-keys",
   "title": "Refactor Admin API Key Management to Use Standard Refine CRUD",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-30T09:00:38.697Z"
+  "updatedAt": "2026-01-30T09:14:27.276Z"
 }

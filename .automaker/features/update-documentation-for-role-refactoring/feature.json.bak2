@@ -4,7 +4,7 @@
   "id": "update-documentation-for-role-refactoring",
   "title": "Update Documentation for Role Refactoring",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-29T12:30:41.338Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-29T12:46:09.076Z"
 }

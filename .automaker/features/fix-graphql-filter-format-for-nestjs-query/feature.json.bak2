@@ -5,7 +5,7 @@
   "title": "Fix GraphQL Filter Format to Match nestjs-query Schema",
   "dependencies": [],
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,6 @@
       "timestamp": "2026-01-31T13:10:48.228Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-31T13:10:52.220Z"
 }

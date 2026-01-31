@@ -4,7 +4,7 @@
   "id": "remove-role-column-from-user-entity-and-database",
   "title": "Remove Deprecated Role Column from User Entity and Database",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-29T17:23:11.928Z"
+  "updatedAt": "2026-01-29T17:32:13.513Z"
 }

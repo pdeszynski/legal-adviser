@@ -4,7 +4,7 @@
   "id": "remove-client-side-filtering-from-admin-pages",
   "title": "Remove Client-Side Filtering from Admin Pages",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

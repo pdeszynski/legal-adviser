@@ -3,10 +3,6 @@
   "description": "Create GraphQL mutations for chat session management actions: 1) deleteChatSession(sessionId: ID!) mutation that permanently deletes a chat session and all its messages, 2) pinChatSession(sessionId: ID!) mutation that sets pinned=true on a ChatSession, 3) unpinChatSession(sessionId: ID!) mutation that sets pinned=false, or combine pin/unpin into toggleChatSessionPin(sessionId: ID!) mutation. Both mutations should: return DeleteChatSessionResponse or UpdateChatSessionResponse with success status and the updated/deleted session, require authentication via @UseGuards(GqlAuthGuard), validate session ownership using ChatSessionOwnershipGuard, apply to sessions owned by the authenticated user only. Add to existing queries.resolver or create dedicated chat-sessions.resolver.",
   "id": "chat-history-actions-graphql-mutations",
   "title": "Create GraphQL Mutations for Chat Session Actions",
-  "dependencies": [
-    "chat-session-ownership-authorization-guard",
-    "chat-session-entity"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "master",

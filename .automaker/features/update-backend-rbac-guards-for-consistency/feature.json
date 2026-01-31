@@ -4,7 +4,7 @@
   "id": "update-backend-rbac-guards-for-consistency",
   "title": "Update Backend RBAC Guards to Use UserRole Relationship",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

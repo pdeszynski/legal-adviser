@@ -5,7 +5,7 @@
   "title": "Analyze Admin Panel GraphQL Request Errors",
   "dependencies": [],
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

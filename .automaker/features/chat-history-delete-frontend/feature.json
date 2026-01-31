@@ -4,7 +4,7 @@
   "id": "chat-history-delete-frontend",
   "title": "Add Chat Session Delete Functionality to Frontend",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

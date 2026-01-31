@@ -13,5 +13,10 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-29T17:06:16.823Z"
+  "updatedAt": "2026-01-29T17:06:16.823Z",
+  "dependencies": [
+    "fix-graphql-user-roles-to-return-userrole-entities",
+    "remove-role-column-from-user-entity-and-database",
+    "update-graphql-auth-to-use-userrole-relationship"
+  ]
 }

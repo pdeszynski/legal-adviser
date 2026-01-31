@@ -4,7 +4,7 @@
   "id": "chat-message-type-discriminator",
   "title": "Add Message Type Discriminator to ChatMessage Entity",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "refactor-chat-messaging",
   "descriptionHistory": [
     {

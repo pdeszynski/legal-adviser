@@ -4,7 +4,7 @@
   "id": "admin-refine-resource-provider-configuration",
   "title": "Configure Refine Data Provider Resources for Admin Entities",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

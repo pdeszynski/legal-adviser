@@ -4,7 +4,7 @@
   "id": "fix-clarification-open-question-single-keypress-submission",
   "title": "Fix Clarification Open Questions Submitting on Single Keypress",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-28T17:16:30.282Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-28T17:16:31.161Z"
 }

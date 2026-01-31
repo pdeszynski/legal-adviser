@@ -4,7 +4,7 @@
   "id": "fix-admin-user-list-graphql-integration",
   "title": "Fix Admin User List GraphQL Integration with nestjs-query",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-30T12:47:56.577Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-30T12:48:02.666Z"
 }

@@ -4,7 +4,7 @@
   "id": "update-graphql-auth-to-use-userrole-relationship",
   "title": "Update GraphQL Auth Guards and Context to Use UserRole Relationship",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

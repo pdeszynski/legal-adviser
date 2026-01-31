@@ -4,7 +4,7 @@
   "id": "admin-refine-crud-audit-logs",
   "title": "Refactor Admin Audit Logs to Use Standard Refine Table Hook",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

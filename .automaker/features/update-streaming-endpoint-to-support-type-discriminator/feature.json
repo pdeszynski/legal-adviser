@@ -4,7 +4,7 @@
   "id": "update-streaming-endpoint-to-support-type-discriminator",
   "title": "Update /ask-stream Endpoint to Handle Message Type Discriminator",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "refactor-chat-messaging",
   "descriptionHistory": [
     {

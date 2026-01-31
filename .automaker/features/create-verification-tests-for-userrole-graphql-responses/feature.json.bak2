@@ -4,7 +4,7 @@
   "id": "create-verification-tests-for-userrole-graphql-responses",
   "title": "Create E2E Tests Verifying UserRole Entities in GraphQL Responses",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-29T17:21:59.099Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-29T17:32:17.216Z"
 }

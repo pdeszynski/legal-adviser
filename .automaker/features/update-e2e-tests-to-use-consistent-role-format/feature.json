@@ -4,7 +4,7 @@
   "id": "update-e2e-tests-to-use-consistent-role-format",
   "title": "Update E2E Tests to Use Consistent Role Format",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

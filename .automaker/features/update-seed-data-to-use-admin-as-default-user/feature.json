@@ -4,7 +4,7 @@
   "id": "update-seed-data-to-use-admin-as-default-user",
   "title": "Update Seed Data to Use admin@refine.dev as Default User",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

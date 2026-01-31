@@ -4,7 +4,7 @@
   "id": "document-nestjs-query-filter-fixes",
   "title": "Fix Document List Filters with nestjs-query",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

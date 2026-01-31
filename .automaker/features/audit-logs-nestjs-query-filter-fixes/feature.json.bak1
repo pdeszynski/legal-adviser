@@ -4,7 +4,7 @@
   "id": "audit-logs-nestjs-query-filter-fixes",
   "title": "Fix Audit Logs Filters with nestjs-query",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-31T13:10:54.316Z"
+  "updatedAt": "2026-01-31T13:22:57.439Z"
 }

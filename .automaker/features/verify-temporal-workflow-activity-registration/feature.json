@@ -4,7 +4,7 @@
   "id": "verify-temporal-workflow-activity-registration",
   "title": "Verify Workflows and Activities Are Properly Registered",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

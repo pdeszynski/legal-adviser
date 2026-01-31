@@ -4,7 +4,7 @@
   "id": "fix-graphql-user-roles-to-return-userrole-entities",
   "title": "Fix GraphQL User Roles to Return UserRole Entities",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-29T17:21:59.488Z"
+  "updatedAt": "2026-01-29T17:34:32.745Z"
 }

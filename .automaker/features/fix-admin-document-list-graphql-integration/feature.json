@@ -4,7 +4,7 @@
   "id": "fix-admin-document-list-graphql-integration",
   "title": "Fix Admin Document List GraphQL Integration",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

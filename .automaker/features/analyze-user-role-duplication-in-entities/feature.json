@@ -5,7 +5,7 @@
   "title": "Analyze User Role Duplication in Entities",
   "dependencies": [],
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

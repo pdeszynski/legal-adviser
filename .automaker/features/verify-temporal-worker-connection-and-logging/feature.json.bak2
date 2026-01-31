@@ -4,7 +4,7 @@
   "id": "verify-temporal-worker-connection-and-logging",
   "title": "Verify Temporal Worker Connection and Add Logging",
   "priority": 2,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-29T10:01:38.703Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-29T10:02:28.008Z"
 }

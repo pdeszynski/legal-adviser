@@ -4,7 +4,7 @@
   "id": "fix-admin-user-crud-operations",
   "title": "Fix Admin User CRUD Operations (Create, Update, Delete)",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-30T12:48:04.749Z"
+  "updatedAt": "2026-01-30T13:13:24.351Z"
 }

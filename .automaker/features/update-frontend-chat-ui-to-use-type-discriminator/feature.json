@@ -4,7 +4,7 @@
   "id": "update-frontend-chat-ui-to-use-type-discriminator",
   "title": "Update Frontend Chat UI to Use Message Type Discriminator",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "refactor-chat-messaging",
   "descriptionHistory": [
     {

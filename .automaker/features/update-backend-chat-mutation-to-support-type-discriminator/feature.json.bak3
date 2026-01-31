@@ -3,9 +3,6 @@
   "description": "Update GraphQL mutations and resolvers to handle the message type field. Implementation: 1) Update SubmitQueryDto to include type field (default: TEXT), 2) Update QueriesService.askQuestion() to accept and validate the type parameter, 3) When saving ChatMessage, set the type field based on the request, 4) For clarification answers (type=CLARIFICATION_ANSWER), parse the JSON content and pass to AI Engine, 5) Update askLegalQuestion GraphQL mutation to accept optional type parameter, 6) Ensure ChatMessage entity has type field with proper database constraint (enum or check), 7) Add migration to add type column to chat_messages table with default 'TEXT'.",
   "id": "update-backend-chat-mutation-to-support-type-discriminator",
   "title": "Update Backend Chat Mutations to Support Message Type Discriminator",
-  "dependencies": [
-    "chat-message-type-discriminator-for-clarification"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "refactor-chat-messaging",

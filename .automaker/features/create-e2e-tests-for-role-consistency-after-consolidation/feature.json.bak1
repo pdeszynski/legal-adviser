@@ -4,7 +4,7 @@
   "id": "create-e2e-tests-for-role-consistency-after-consolidation",
   "title": "Create E2E Tests Verifying Role Consistency After Consolidation",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-29T17:03:14.029Z"
+  "updatedAt": "2026-01-29T17:26:19.464Z"
 }

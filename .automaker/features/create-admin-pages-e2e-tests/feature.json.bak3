@@ -3,9 +3,6 @@
   "description": "Create comprehensive Playwright E2E tests to verify all admin pages work correctly after GraphQL integration fixes. Test scenarios: 1) Admin login and navigation to /admin, 2) Users list loads and displays data, 3) User filtering and pagination work, 4) Create new user (if applicable), 5) Edit user role, 6) Delete user (with confirmation), 7) Audit logs load with filters working, 8) Document list loads and displays, 9) Pagination and filtering work on all pages, 10) Verify no 'invalid request' errors appear. Use admin@refine.dev credentials for testing. Ensure tests catch regressions where GraphQL requests fail.",
   "id": "create-admin-pages-e2e-tests",
   "title": "Create E2E Tests for Admin Pages After Fixes",
-  "dependencies": [
-    "fix-admin-document-list-graphql-integration"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "master",

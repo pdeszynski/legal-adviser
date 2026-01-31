@@ -4,7 +4,7 @@
   "id": "update-buildgraphqlfilter-for-field-type-mapping",
   "title": "Update buildGraphQLFilter to Map Field Types Correctly",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-31T13:23:02.198Z"
+  "updatedAt": "2026-01-31T13:36:25.282Z"
 }

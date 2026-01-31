@@ -4,7 +4,7 @@
   "id": "update-graphql-schema-for-consistent-role-access",
   "title": "Update GraphQL Schema for Consistent Role Access",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

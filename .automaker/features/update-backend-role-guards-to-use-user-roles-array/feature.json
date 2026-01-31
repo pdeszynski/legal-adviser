@@ -4,7 +4,7 @@
   "id": "update-backend-role-guards-to-use-user-roles-array",
   "title": "Update Backend Role Guards to Check user_roles Array",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

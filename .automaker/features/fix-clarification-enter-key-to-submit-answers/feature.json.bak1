@@ -4,7 +4,7 @@
   "id": "fix-clarification-enter-key-to-submit-answers",
   "title": "Make Enter Key Submit Clarification Answers (Single-Line Inputs)",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "store-chat",
   "descriptionHistory": [
     {
@@ -18,7 +18,7 @@
       "source": "edit"
     }
   ],
-  "updatedAt": "2026-01-28T18:31:29.525Z",
+  "updatedAt": "2026-01-28T18:35:30.686Z",
   "skipTests": false,
   "model": "claude-opus",
   "thinkingLevel": "none",

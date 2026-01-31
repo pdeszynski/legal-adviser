@@ -3,9 +3,6 @@
   "description": "Create Pydantic models for clarification requests: ClarificationQuestion (questionId, questionText, questionType, hint, options), ClarificationRequest (contextSummary, questions [ClarificationQuestion], nextSteps). Update AI Engine endpoints to accept/send these structured objects instead of raw JSON strings. Add validation using Pydantic validators.",
   "id": "ai-engine-clarification-request-dto",
   "title": "Create Strongly-Typed Clarification Request DTO in AI Engine",
-  "dependencies": [
-    "ai-engine-pydanticai-migration"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "refactor-chat-messaging",

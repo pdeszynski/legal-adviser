@@ -4,7 +4,7 @@
   "id": "regenerate-graphql-hooks-after-role-schema-changes",
   "title": "Regenerate GraphQL Hooks and Types After Role Schema Changes",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-29T16:43:07.596Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-29T16:53:47.722Z"
 }

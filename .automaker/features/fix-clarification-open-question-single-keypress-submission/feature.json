@@ -4,7 +4,7 @@
   "id": "fix-clarification-open-question-single-keypress-submission",
   "title": "Fix Clarification Open Questions Submitting on Single Keypress",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "store-chat",
   "descriptionHistory": [
     {

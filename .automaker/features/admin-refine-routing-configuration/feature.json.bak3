@@ -3,9 +3,6 @@
   "description": "Update routing configuration in Refine provider to properly handle admin resource routes. Configure routes for: /admin/users (user resource), /admin/audit-logs (auditLog resource), /admin/documents (document resource for admin), /admin/api-keys (apiKey resource), /admin/settings (systemSettings resource). Use Refine's resource-based routing instead of manual route configuration. Enable nested routes for detail views (e.g., /admin/users/:id). Ensure navigation menu uses resource-based routes. This standardizes routing across admin section.",
   "id": "admin-refine-routing-configuration",
   "title": "Configure Refine Routing for Admin Resources",
-  "dependencies": [
-    "admin-refine-resource-provider-configuration"
-  ],
   "priority": 2,
   "status": "backlog",
   "branchName": "master",

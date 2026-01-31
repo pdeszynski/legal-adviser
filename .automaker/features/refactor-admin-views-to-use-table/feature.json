@@ -4,7 +4,7 @@
   "id": "refactor-admin-views-to-use-table",
   "title": "Refactor Admin Views to Use useTable Hook",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

@@ -4,7 +4,7 @@
   "id": "chat-message-type-discriminator-for-clarification",
   "title": "Add Message Type Discriminator for Clarification Flow",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "refactor-chat-messaging",
   "descriptionHistory": [
     {

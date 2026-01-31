@@ -4,7 +4,7 @@
   "id": "fix-admin-audit-logs-graphql-integration",
   "title": "Fix Admin Audit Logs GraphQL Integration",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

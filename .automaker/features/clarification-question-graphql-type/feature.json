@@ -4,7 +4,7 @@
   "id": "clarification-question-graphql-type",
   "title": "Create GraphQL Type for Clarification Questions",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "refactor-chat-messaging",
   "descriptionHistory": [
     {

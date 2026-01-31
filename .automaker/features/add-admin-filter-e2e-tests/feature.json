@@ -4,7 +4,7 @@
   "id": "add-admin-filter-e2e-tests",
   "title": "Add E2E Tests for Admin Filtering Functionality",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

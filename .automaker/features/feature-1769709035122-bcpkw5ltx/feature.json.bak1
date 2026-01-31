@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "workMode": "custom",
   "titleGenerating": false,
-  "status": "in_progress",
+  "status": "verified",
   "id": "feature-1769709035122-bcpkw5ltx",
   "descriptionHistory": [
     {
@@ -30,7 +30,7 @@
     }
   ],
   "startedAt": "2026-01-29T17:50:35.482Z",
-  "updatedAt": "2026-01-29T17:52:01.432Z",
+  "updatedAt": "2026-01-29T18:01:39.674Z",
   "dependencies": [
     "consolidate-user-role-to-single-source"
   ]

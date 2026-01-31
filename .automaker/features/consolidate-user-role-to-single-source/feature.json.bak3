@@ -3,9 +3,6 @@
   "description": "Remove the deprecated role column from User entity and update all code to use only the user_roles many-to-many relationship. This ensures a single source of truth for user roles. Implementation: 1) Create database migration to remove role column from users table, 2) Update User entity to remove @FilterableField('role') property, 3) Keep only user_roles relationship with UserRole entity, 4) Update all GraphQL resolvers to access roles via user.user_roles, 5) Update all backend services to use user_roles array, 6) Ensure seed data creates roles through UserRole relationships, 7) Add database constraint to prevent adding role column back, 8) Update documentation to reflect only user_roles exists.",
   "id": "consolidate-user-role-to-single-source",
   "title": "Consolidate User Role to Use Only user_roles Relationship",
-  "dependencies": [
-    "analyze-user-role-duplication-in-entities"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "master",

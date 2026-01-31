@@ -4,7 +4,7 @@
   "id": "fix-admin-user-crud-operations",
   "title": "Fix Admin User CRUD Operations (Create, Update, Delete)",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

@@ -3,9 +3,6 @@
   "description": "Add a `type` field to the ChatMessage entity to distinguish between different message types (TEXT, CLARIFICATION_QUESTION, CLARIFICATION_ANSWER, CITATION, ERROR). This eliminates the need for frontend JSON parsing and defensive programming. The type field will be an enum stored in the database and exposed via GraphQL.",
   "id": "chat-message-type-discriminator",
   "title": "Add Message Type Discriminator to ChatMessage Entity",
-  "dependencies": [
-    "chat-message-entity"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "refactor-chat-messaging",

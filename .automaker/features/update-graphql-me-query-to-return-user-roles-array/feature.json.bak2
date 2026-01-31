@@ -4,7 +4,7 @@
   "id": "update-graphql-me-query-to-return-user-roles-array",
   "title": "Update GraphQL me Query to Return user_roles Array Instead of Single role",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-29T16:43:07.595Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-29T16:43:12.517Z"
 }

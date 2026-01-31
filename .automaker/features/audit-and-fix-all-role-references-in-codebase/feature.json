@@ -4,7 +4,7 @@
   "id": "audit-and-fix-all-role-references-in-codebase",
   "title": "Audit and Fix All Role References to Use user_roles Array",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

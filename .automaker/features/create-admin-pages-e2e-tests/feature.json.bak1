@@ -4,7 +4,7 @@
   "id": "create-admin-pages-e2e-tests",
   "title": "Create E2E Tests for Admin Pages After Fixes",
   "priority": 1,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-30T13:13:30.127Z"
+  "updatedAt": "2026-01-30T13:37:49.642Z"
 }

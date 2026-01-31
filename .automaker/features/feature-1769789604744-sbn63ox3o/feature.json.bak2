@@ -1,7 +1,7 @@
 {
   "category": "Uncategorized",
   "description": "{,…}\ndata\n: \nnull\nerrors\n: \n[{message: \"Field paging.first max allowed value is `50`.\", locations: [{line: 3, column: 11}],…}]\n0\n: \n{message: \"Field paging.first max allowed value is `50`.\", locations: [{line: 3, column: 11}],…}\nextensions\n: \n{code: \"BAD_REQUEST\", httpStatus: 400,…}\nlocations\n: \n[{line: 3, column: 11}]\nmessage\n: \n\"Field paging.first max allowed value is `50`.\"\npath\n: \n[\"users\"]\n0\n: \n\"users\"",
-  "title": "",
+  "title": "Fix pagination limit validation error",
   "images": [],
   "imagePaths": [],
   "textFilePaths": [],
@@ -15,7 +15,7 @@
   "requirePlanApproval": false,
   "dependencies": [],
   "workMode": "current",
-  "titleGenerating": "{,…}\ndata\n: \nnull\nerrors\n: \n[{message: \"Field paging.first max allowed value is `50`.\", locations: [{line: 3, column: 11}],…}]\n0\n: \n{message: \"Field paging.first max allowed value is `50`.\", locations: [{line: 3, column: 11}],…}\nextensions\n: \n{code: \"BAD_REQUEST\", httpStatus: 400,…}\nlocations\n: \n[{line: 3, column: 11}]\nmessage\n: \n\"Field paging.first max allowed value is `50`.\"\npath\n: \n[\"users\"]\n0\n: \n\"users\"",
+  "titleGenerating": false,
   "status": "in_progress",
   "id": "feature-1769789604744-sbn63ox3o",
   "descriptionHistory": [

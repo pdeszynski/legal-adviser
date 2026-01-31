@@ -4,7 +4,7 @@
   "id": "update-graphql-schema-for-consistent-role-access",
   "title": "Update GraphQL Schema for Consistent Role Access",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-29T12:30:41.334Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-29T12:35:17.049Z"
 }

@@ -4,7 +4,7 @@
   "id": "verify-temporal-worker-connection-and-logging",
   "title": "Verify Temporal Worker Connection and Add Logging",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

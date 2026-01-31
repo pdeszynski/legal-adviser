@@ -4,7 +4,7 @@
   "id": "refactor-user-role-to-single-source-of-truth",
   "title": "Refactor User Role to Single Source of Truth",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

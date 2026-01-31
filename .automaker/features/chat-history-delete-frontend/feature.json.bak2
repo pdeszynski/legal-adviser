@@ -4,7 +4,7 @@
   "id": "chat-history-delete-frontend",
   "title": "Add Chat Session Delete Functionality to Frontend",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-29T10:07:53.232Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-29T10:12:20.202Z"
 }

@@ -4,7 +4,7 @@
   "id": "create-clarification-e2e-tests-with-type-discriminator",
   "title": "Create E2E Tests for Clarification Flow with Type Discriminator",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "refactor-chat-messaging",
   "descriptionHistory": [
     {

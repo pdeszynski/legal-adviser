@@ -3,9 +3,6 @@
   "description": "Create submitClarificationAnswers mutation accepting: sessionId (UUID), answers ([ClarificationAnswerInput]) where ClarificationAnswerInput contains questionId (string) and answer (string). Backend validates: 1) All required questions answered, 2) Answer format matches question type, 3) Session exists and user owns it. Returns SubmitClarificationAnswersResponse with success status and any validation errors.",
   "id": "clarification-answer-graphql-mutation",
   "title": "Create Dedicated Clarification Answer GraphQL Mutation",
-  "dependencies": [
-    "clarification-question-graphql-type"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "refactor-chat-messaging",

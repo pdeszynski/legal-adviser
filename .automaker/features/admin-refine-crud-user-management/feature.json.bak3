@@ -3,9 +3,6 @@
   "description": "Refactor admin user management page at /admin/users to use Refine.dev's standard CRUD patterns with nestjs-query auto-generated resolvers. Replace custom mutations and data provider calls with standard Refine hooks: useTable for listing, useShow for detail view, useEdit for editing, useCreate for user creation. Use @refinedev/nestjs-query's auto-generated CRUD operations from User entity. Configure resource in data provider following https://refine.dev/core/docs/data/data-provider/#usage-1. Example: https://github.com/refinedev/refine/blob/main/examples/data-provider-nestjs-query/src/pages/posts/list.tsx. This simplifies the admin code by leveraging nestjs-query's auto-generated resolvers for CRUD operations. User management is a pure CRUD admin task that fits this pattern perfectly - no complex domain logic, just standard user data operations.",
   "id": "admin-refine-crud-user-management",
   "title": "Refactor Admin User Management to Use Standard Refine CRUD",
-  "dependencies": [
-    "user-entity-nestjs-query"
-  ],
   "priority": 1,
   "status": "backlog",
   "branchName": "master",

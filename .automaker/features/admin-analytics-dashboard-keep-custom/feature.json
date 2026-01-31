@@ -5,7 +5,7 @@
   "title": "Keep Custom Implementation for Analytics Dashboard",
   "dependencies": [],
   "priority": 3,
-  "status": "verified",
+  "status": "completed",
   "branchName": "master",
   "descriptionHistory": [
     {

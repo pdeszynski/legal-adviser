@@ -4,7 +4,7 @@
   "id": "admin-refine-e2e-tests-after-refactor",
   "title": "Update E2E Tests for Refactored Admin Pages",
   "priority": 2,
-  "status": "in_progress",
+  "status": "verified",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -13,5 +13,5 @@
       "source": "initial"
     }
   ],
-  "updatedAt": "2026-01-30T10:19:33.989Z"
+  "updatedAt": "2026-01-30T10:58:56.472Z"
 }

@@ -4,7 +4,7 @@
   "id": "refactor-admin-views-data-provider-integration",
   "title": "Integrate Admin Views with Refine Data Provider",
   "priority": 1,
-  "status": "backlog",
+  "status": "in_progress",
   "branchName": "master",
   "descriptionHistory": [
     {
@@ -12,5 +12,6 @@
       "timestamp": "2026-01-30T15:41:58.174Z",
       "source": "initial"
     }
-  ]
+  ],
+  "updatedAt": "2026-01-30T15:42:05.476Z"
 }
