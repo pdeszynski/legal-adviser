@@ -13,8 +13,97 @@ concurrency:
 env:
   NODE_VERSION: '20'
   PNPM_VERSION: '9.15.0'
+  PYTHON_VERSION: '3.13'
+  UV_VERSION: '0.9.28'
 
 jobs:
+  # UV verification job - verifies UV is working correctly before other jobs
+  verify-uv:
+    name: Verify UV Installation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-path: 'apps/ai-engine/uv.lock'
+
+      - name: Debug - Display environment info
+        run: |
+          echo "=== Python Version ==="
+          python --version
+          echo "Python path: $(which python)"
+          echo ""
+          echo "=== UV Version ==="
+          uv --version
+          echo "UV path: $(which uv)"
+          echo ""
+          echo "=== PATH ==="
+          echo "$PATH"
+          echo ""
+          echo "=== Working Directory ==="
+          pwd
+
+      - name: Verify UV cache directory
+        run: |
+          echo "=== UV Cache Info ==="
+          uv cache dir
+          uv cache prune --ci
+          echo "UV cache verified successfully"
+
+      - name: Verify UV can sync dependencies
+        working-directory: apps/ai-engine
+        run: |
+          echo "=== Syncing UV Dependencies ==="
+          uv sync --frozen
+          echo "Dependencies synced successfully"
+
+      - name: Verify UV scripts - Import Check (ruff check --select I)
+        working-directory: apps/ai-engine
+        run: |
+          echo "=== Running: uv run ruff check --select I . ==="
+          uv run ruff check --select I .
+          echo "Import check passed successfully"
+
+      - name: Verify UV scripts - Linting (ruff check)
+        working-directory: apps/ai-engine
+        run: |
+          echo "=== Running: uv run ruff check . ==="
+          uv run ruff check .
+          echo "Linting passed successfully"
+
+      - name: Verify UV scripts - Tests (pytest)
+        working-directory: apps/ai-engine
+        run: |
+          echo "=== Running: uv run pytest ==="
+          uv run pytest --version
+          uv run pytest tests/ -v --tb=short
+          echo "Tests passed successfully"
+
+      - name: UV verification summary
+        if: success()
+        run: |
+          echo "=== UV Verification Summary ==="
+          echo "✓ UV installation verified"
+          echo "✓ Python ${{ env.PYTHON_VERSION }} verified"
+          echo "✓ UV cache verified"
+          echo "✓ uv sync verified"
+          echo "✓ uv run ruff check --select I verified"
+          echo "✓ uv run ruff check verified"
+          echo "✓ uv run pytest verified"
+          echo ""
+          echo "All UV-based scripts are working correctly in CI environment!"
+
   # Type generation job - generates GraphQL types before other checks
   codegen:
     name: Generate GraphQL Types
@@ -68,11 +157,11 @@ jobs:
             apps/web/src/generated/introspection.json
           retention-days: 1
 
-  # Linting job - runs after codegen
+  # Linting job - runs after codegen and verify-uv
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    needs: codegen
+    needs: [codegen, verify-uv]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -87,6 +176,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-path: 'apps/ai-engine/uv.lock'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -100,11 +202,11 @@ jobs:
       - name: Run lint
         run: pnpm lint
 
-  # Type checking job - runs after codegen
+  # Type checking job - runs after codegen and verify-uv
   typecheck:
     name: Type Check
     runs-on: ubuntu-latest
-    needs: codegen
+    needs: [codegen, verify-uv]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -119,6 +221,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-path: 'apps/ai-engine/uv.lock'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -171,11 +286,11 @@ jobs:
           path: apps/web/.next
           retention-days: 1
 
-  # Unit tests job
+  # Unit tests job - runs after codegen and verify-uv
   test:
     name: Unit Tests
     runs-on: ubuntu-latest
-    needs: codegen
+    needs: [codegen, verify-uv]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -191,6 +306,19 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-path: 'apps/ai-engine/uv.lock'
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -203,11 +331,11 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-  # E2E tests job
+  # E2E tests job - runs after build and verify-uv
   test-e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, verify-uv]
     services:
       postgres:
         image: postgres:16-alpine
@@ -245,6 +373,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-path: 'apps/ai-engine/uv.lock'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
