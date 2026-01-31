@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Fix the admin document list page to work with nestjs-query auto-generated resolvers. Implementation: 1) Verify LegalDocument entity has proper nestjs-query decorators and QueryService, 2) Update Refine data provider legalDocuments resource to use nestjs-query format, 3) Ensure filtering works (status, type, createdAt, etc.), 4) Fix pagination to use cursor-based paging, 5) Fix sorting configuration, 6) Test document list loads correctly, 7) Verify filtering and pagination work. This is straightforward CRUD following the same pattern as users list.",
+  "id": "fix-admin-document-list-graphql-integration",
+  "title": "Fix Admin Document List GraphQL Integration",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Fix the admin document list page to work with nestjs-query auto-generated resolvers. Implementation: 1) Verify LegalDocument entity has proper nestjs-query decorators and QueryService, 2) Update Refine data provider legalDocuments resource to use nestjs-query format, 3) Ensure filtering works (status, type, createdAt, etc.), 4) Fix pagination to use cursor-based paging, 5) Fix sorting configuration, 6) Test document list loads correctly, 7) Verify filtering and pagination work. This is straightforward CRUD following the same pattern as users list.",
+      "timestamp": "2026-01-30T12:47:56.580Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-30T13:13:27.586Z"
+}

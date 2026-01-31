@@ -4,7 +4,7 @@
   "id": "admin-user-management-crud-page",
   "title": "Admin User Management CRUD Page",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

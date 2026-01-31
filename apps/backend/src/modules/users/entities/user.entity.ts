@@ -69,7 +69,7 @@ export class User {
    * True when user has completed 2FA setup
    */
   @Column({ type: 'boolean', default: false })
-  @Field(() => Boolean, { defaultValue: false })
+  @FilterableField()
   twoFactorEnabled: boolean;
 
   /**

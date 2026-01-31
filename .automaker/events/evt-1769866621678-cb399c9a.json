@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769866621678-cb399c9a",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-31T13:37:01.678Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-graphql-filter-format-for-nestjs-query",
+  "featureName": "Fix GraphQL Filter Format to Match nestjs-query Schema",
+  "error": "Feature completed in 1569s - auto-verified",
+  "passes": true
+}

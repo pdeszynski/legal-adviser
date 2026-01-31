@@ -5,9 +5,9 @@ relevantTo: [performance]
 importance: 0.7
 relatedFiles: []
 usageStats:
-  loaded: 84
-  referenced: 19
-  successfulFeatures: 19
+  loaded: 85
+  referenced: 20
+  successfulFeatures: 20
 ---
 # performance
 

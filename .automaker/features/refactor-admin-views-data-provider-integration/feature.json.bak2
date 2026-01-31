@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Update the Refine data provider to properly support all admin resources with nestjs-query format. Implementation: 1) Add/update getList methods for: users, auditLogs, legalDocuments, apiKeys, notifications, 2) Ensure each resource uses proper nestjs-query connection format (edges.node structure), 3) Implement buildGraphQLFilter to convert Refine filters to nestjs-query format ({ field: { eq: value } }), 4) Implement buildGraphQLSorting to convert Refine sorters to nestjs-query format, 5) Implement cursor-based pagination with cursorCache for sequential page navigation, 6) Handle JSON fields properly (auditLogs.changeDetails should be scalar, not sub-selected), 7) Add error handling and proper TypeScript types. This ensures all admin views can use standard Refine hooks.",
+  "id": "refactor-admin-views-data-provider-integration",
+  "title": "Integrate Admin Views with Refine Data Provider",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update the Refine data provider to properly support all admin resources with nestjs-query format. Implementation: 1) Add/update getList methods for: users, auditLogs, legalDocuments, apiKeys, notifications, 2) Ensure each resource uses proper nestjs-query connection format (edges.node structure), 3) Implement buildGraphQLFilter to convert Refine filters to nestjs-query format ({ field: { eq: value } }), 4) Implement buildGraphQLSorting to convert Refine sorters to nestjs-query format, 5) Implement cursor-based pagination with cursorCache for sequential page navigation, 6) Handle JSON fields properly (auditLogs.changeDetails should be scalar, not sub-selected), 7) Add error handling and proper TypeScript types. This ensures all admin views can use standard Refine hooks.",
+      "timestamp": "2026-01-30T15:41:58.174Z",
+      "source": "initial"
+    }
+  ]
+}

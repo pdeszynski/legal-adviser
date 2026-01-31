@@ -20,6 +20,8 @@ import {
   Clock,
   Network,
   Zap,
+  Key,
+  Layers,
 } from 'lucide-react';
 
 /**
@@ -67,6 +69,8 @@ const MENU_ICONS: Record<string, MenuItemIcon> = {
   admin_panel: <ShieldAlert className="h-4 w-4" />,
   admin_dashboard: <LayoutDashboard className="h-4 w-4" />,
   admin_users: <UserCog className="h-4 w-4" />,
+  admin_api_keys: <Key className="h-4 w-4" />,
+  admin_documents: <FileText className="h-4 w-4" />,
   admin_templates: <FileStack className="h-4 w-4" />,
   admin_moderation: <ShieldAlert className="h-4 w-4" />,
   admin_audit_logs: <History className="h-4 w-4" />,
@@ -76,6 +80,7 @@ const MENU_ICONS: Record<string, MenuItemIcon> = {
   admin_demo_requests: <Phone className="h-4 w-4" />,
   admin_schedules: <Clock className="h-4 w-4" />,
   admin_ai_traces: <Network className="h-4 w-4" />,
+  admin_document_queue: <Layers className="h-4 w-4" />,
   case_analysis: <Gavel className="h-4 w-4" />,
   case_law_search: <Scale className="h-4 w-4" />,
   advanced_search: <Search className="h-4 w-4" />,
@@ -303,6 +308,13 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     allowedRoles: ['admin', 'super_admin'],
   },
   {
+    key: 'admin_documents',
+    label: 'Documents',
+    route: '/admin/documents',
+    icon: MENU_ICONS.admin_documents,
+    allowedRoles: ['admin', 'super_admin'],
+  },
+  {
     key: 'admin_templates',
     label: 'Templates',
     route: '/admin/templates',
@@ -321,6 +333,13 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     label: 'Audit Logs',
     route: '/admin/audit-logs',
     icon: MENU_ICONS.admin_audit_logs,
+    allowedRoles: ['admin', 'super_admin'],
+  },
+  {
+    key: 'admin_api_keys',
+    label: 'API Keys',
+    route: '/admin/api-keys',
+    icon: MENU_ICONS.admin_api_keys,
     allowedRoles: ['admin', 'super_admin'],
   },
   {
@@ -363,6 +382,13 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     label: 'AI Traces',
     route: '/admin/ai/traces',
     icon: MENU_ICONS.admin_ai_traces,
+    allowedRoles: ['admin', 'super_admin'],
+  },
+  {
+    key: 'admin_document_queue',
+    label: 'Document Queue',
+    route: '/admin/document-queue',
+    icon: MENU_ICONS.admin_document_queue,
     allowedRoles: ['admin', 'super_admin'],
   },
 ];

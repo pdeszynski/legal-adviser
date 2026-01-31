@@ -1,0 +1,18 @@
+{
+  "category": "bug",
+  "description": "Fix GraphQL filter variable format to match nestjs-query's expected input types. Current issue: Frontend is sending filters in wrong format causing 'Field \"eq\" is not defined by type \"BooleanFieldComparison\"' errors. The issue is that different field types use different comparison operators in nestjs-query. Implementation: 1) For Boolean fields: use 'is' instead of 'eq' ({ isActive: { is: true } }), 2) For String fields: use 'eq', 'contains', 'startsWith', 'endsWith' ({ email: { eq: 'test@example.com' } }), 3) For Number fields: use 'eq', 'gt', 'gte', 'lt', 'lte' ({ age: { gte: 18 } }), 4) For Date fields: use 'eq', 'gt', 'gte', 'lt', 'lte' ({ createdAt: { gte: '2024-01-01' } }), 5) Update buildGraphQLFilter function in data provider to map Refine filter operators to correct nestjs-query format, 6) Map Refine's 'eq' operator differently based on field type (boolean→'is', string→'eq'), 7) Add unit tests for filter builder function. Test with various filter types: boolean isActive, string email, date createdAt, enum role. Verify no more 'Field not defined' errors in GraphQL responses.",
+  "id": "fix-graphql-filter-format-for-nestjs-query",
+  "title": "Fix GraphQL Filter Format to Match nestjs-query Schema",
+  "dependencies": [],
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Fix GraphQL filter variable format to match nestjs-query's expected input types. Current issue: Frontend is sending filters in wrong format causing 'Field \"eq\" is not defined by type \"BooleanFieldComparison\"' errors. The issue is that different field types use different comparison operators in nestjs-query. Implementation: 1) For Boolean fields: use 'is' instead of 'eq' ({ isActive: { is: true } }), 2) For String fields: use 'eq', 'contains', 'startsWith', 'endsWith' ({ email: { eq: 'test@example.com' } }), 3) For Number fields: use 'eq', 'gt', 'gte', 'lt', 'lte' ({ age: { gte: 18 } }), 4) For Date fields: use 'eq', 'gt', 'gte', 'lt', 'lte' ({ createdAt: { gte: '2024-01-01' } }), 5) Update buildGraphQLFilter function in data provider to map Refine filter operators to correct nestjs-query format, 6) Map Refine's 'eq' operator differently based on field type (boolean→'is', string→'eq'), 7) Add unit tests for filter builder function. Test with various filter types: boolean isActive, string email, date createdAt, enum role. Verify no more 'Field not defined' errors in GraphQL responses.",
+      "timestamp": "2026-01-31T13:10:48.228Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T13:37:01.660Z"
+}

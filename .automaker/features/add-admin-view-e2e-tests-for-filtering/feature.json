@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive Playwright E2E tests for filtering functionality across all admin views. Test scenarios: 1) User list - filter by role (admin, lawyer, client), filter by status (active/inactive), filter by email (contains), filter by date range, 2) Audit logs - filter by action type, filter by date range, filter by user, 3) Documents - filter by status, filter by type, filter by date, 4) API keys - filter by status, filter by user, 5) Verify filters work together (combined filtering), 6) Verify filter state persists across pagination, 7) Verify clear filters button resets all filters, 8) Verify filters show correct results count. Use Playwright to interact with filter controls and verify results.",
+  "id": "add-admin-view-e2e-tests-for-filtering",
+  "title": "Add E2E Tests for Admin View Filtering",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive Playwright E2E tests for filtering functionality across all admin views. Test scenarios: 1) User list - filter by role (admin, lawyer, client), filter by status (active/inactive), filter by email (contains), filter by date range, 2) Audit logs - filter by action type, filter by date range, filter by user, 3) Documents - filter by status, filter by type, filter by date, 4) API keys - filter by status, filter by user, 5) Verify filters work together (combined filtering), 6) Verify filter state persists across pagination, 7) Verify clear filters button resets all filters, 8) Verify filters show correct results count. Use Playwright to interact with filter controls and verify results.",
+      "timestamp": "2026-01-30T15:41:58.177Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-30T16:33:57.155Z"
+}

@@ -51,6 +51,36 @@ export type ActiveUsersCount = {
   last30Days: Scalars['Int']['output'];
 };
 
+export type AddPermissionInput = {
+  permission: Scalars['String']['input'];
+  roleId: Scalars['String']['input'];
+};
+
+export type AdminCreateApiKeyInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  expiresAt?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  rateLimitPerMinute?: InputMaybe<Scalars['Int']['input']>;
+  scopes: Array<ApiKeyScope>;
+  userId: Scalars['ID']['input'];
+};
+
+export type AdminCreateApiKeyResponse = {
+  __typename?: 'AdminCreateApiKeyResponse';
+  createdAt: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  expiresAt?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  keyPrefix: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  rateLimitPerMinute: Scalars['Int']['output'];
+  rawKey: Scalars['String']['output'];
+  scopes: Array<ApiKeyScope>;
+  status: ApiKeyStatus;
+  updatedAt: Scalars['String']['output'];
+  userId: Scalars['ID']['output'];
+};
+
 export type AdminCreateUserInput = {
   email: Scalars['String']['input'];
   firstName?: InputMaybe<Scalars['String']['input']>;
@@ -72,6 +102,11 @@ export type AdminForceDisableTwoFactorResponse = {
   id: Scalars['String']['output'];
   /** The updated 2FA status (should be false) */
   twoFactorEnabled: Scalars['Boolean']['output'];
+};
+
+export type AdminRevokeApiKeyInput = {
+  id: Scalars['ID']['input'];
+  reason?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AdvancedLegalRulingSearchResponse = {
@@ -362,7 +397,175 @@ export type ApiKey = {
   status: ApiKeyStatus;
   updatedAt: Scalars['DateTime']['output'];
   usageCount: Scalars['Float']['output'];
+  user: User;
   userId: Scalars['String']['output'];
+};
+
+export type ApiKeyAggregateFilter = {
+  and?: InputMaybe<Array<ApiKeyAggregateFilter>>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  expiresAt?: InputMaybe<DateFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  keyPrefix?: InputMaybe<StringFieldComparison>;
+  name?: InputMaybe<StringFieldComparison>;
+  or?: InputMaybe<Array<ApiKeyAggregateFilter>>;
+  rateLimitPerMinute?: InputMaybe<IntFieldComparison>;
+  scopes?: InputMaybe<ApiKeyScopeFilterComparison>;
+  status?: InputMaybe<ApiKeyStatusFilterComparison>;
+  updatedAt?: InputMaybe<DateFieldComparison>;
+  usageCount?: InputMaybe<NumberFieldComparison>;
+  userId?: InputMaybe<StringFieldComparison>;
+};
+
+export type ApiKeyAggregateGroupBy = {
+  __typename?: 'ApiKeyAggregateGroupBy';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  expiresAt?: Maybe<Scalars['DateTime']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  keyPrefix?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  rateLimitPerMinute?: Maybe<Scalars['Int']['output']>;
+  scopes?: Maybe<Array<ApiKeyScope>>;
+  status?: Maybe<ApiKeyStatus>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  usageCount?: Maybe<Scalars['Float']['output']>;
+  userId?: Maybe<Scalars['String']['output']>;
+};
+
+export type ApiKeyAggregateGroupByCreatedAtArgs = {
+  by?: GroupBy;
+};
+
+export type ApiKeyAggregateGroupByUpdatedAtArgs = {
+  by?: GroupBy;
+};
+
+export type ApiKeyAggregateResponse = {
+  __typename?: 'ApiKeyAggregateResponse';
+  avg?: Maybe<ApiKeyAvgAggregate>;
+  count?: Maybe<ApiKeyCountAggregate>;
+  groupBy?: Maybe<ApiKeyAggregateGroupBy>;
+  max?: Maybe<ApiKeyMaxAggregate>;
+  min?: Maybe<ApiKeyMinAggregate>;
+  sum?: Maybe<ApiKeySumAggregate>;
+};
+
+export type ApiKeyAvgAggregate = {
+  __typename?: 'ApiKeyAvgAggregate';
+  usageCount?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ApiKeyConnection = {
+  __typename?: 'ApiKeyConnection';
+  /** Array of edges. */
+  edges: Array<ApiKeyEdge>;
+  /** Paging information */
+  pageInfo: PageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type ApiKeyCountAggregate = {
+  __typename?: 'ApiKeyCountAggregate';
+  createdAt?: Maybe<Scalars['Int']['output']>;
+  expiresAt?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  keyPrefix?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['Int']['output']>;
+  rateLimitPerMinute?: Maybe<Scalars['Int']['output']>;
+  scopes?: Maybe<Scalars['Int']['output']>;
+  status?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['Int']['output']>;
+  usageCount?: Maybe<Scalars['Int']['output']>;
+  userId?: Maybe<Scalars['Int']['output']>;
+};
+
+export type ApiKeyDeleteFilter = {
+  and?: InputMaybe<Array<ApiKeyDeleteFilter>>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  expiresAt?: InputMaybe<DateFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  keyPrefix?: InputMaybe<StringFieldComparison>;
+  name?: InputMaybe<StringFieldComparison>;
+  or?: InputMaybe<Array<ApiKeyDeleteFilter>>;
+  rateLimitPerMinute?: InputMaybe<IntFieldComparison>;
+  scopes?: InputMaybe<ApiKeyScopeFilterComparison>;
+  status?: InputMaybe<ApiKeyStatusFilterComparison>;
+  updatedAt?: InputMaybe<DateFieldComparison>;
+  usageCount?: InputMaybe<NumberFieldComparison>;
+  userId?: InputMaybe<StringFieldComparison>;
+};
+
+export type ApiKeyDeleteResponse = {
+  __typename?: 'ApiKeyDeleteResponse';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  expiresAt?: Maybe<Scalars['DateTime']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  keyPrefix?: Maybe<Scalars['String']['output']>;
+  lastUsedAt?: Maybe<Scalars['DateTime']['output']>;
+  lastUsedIp?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  rateLimitPerMinute?: Maybe<Scalars['Int']['output']>;
+  scopes?: Maybe<Array<ApiKeyScope>>;
+  status?: Maybe<ApiKeyStatus>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  usageCount?: Maybe<Scalars['Float']['output']>;
+  userId?: Maybe<Scalars['String']['output']>;
+};
+
+export type ApiKeyEdge = {
+  __typename?: 'ApiKeyEdge';
+  /** Cursor for this node. */
+  cursor: Scalars['ConnectionCursor']['output'];
+  /** The node containing the ApiKey */
+  node: ApiKey;
+};
+
+export type ApiKeyFilter = {
+  and?: InputMaybe<Array<ApiKeyFilter>>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  expiresAt?: InputMaybe<DateFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  keyPrefix?: InputMaybe<StringFieldComparison>;
+  name?: InputMaybe<StringFieldComparison>;
+  or?: InputMaybe<Array<ApiKeyFilter>>;
+  rateLimitPerMinute?: InputMaybe<IntFieldComparison>;
+  scopes?: InputMaybe<ApiKeyScopeFilterComparison>;
+  status?: InputMaybe<ApiKeyStatusFilterComparison>;
+  updatedAt?: InputMaybe<DateFieldComparison>;
+  usageCount?: InputMaybe<NumberFieldComparison>;
+  userId?: InputMaybe<StringFieldComparison>;
+};
+
+export type ApiKeyMaxAggregate = {
+  __typename?: 'ApiKeyMaxAggregate';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  expiresAt?: Maybe<Scalars['DateTime']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  keyPrefix?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  rateLimitPerMinute?: Maybe<Scalars['Int']['output']>;
+  scopes?: Maybe<Array<ApiKeyScope>>;
+  status?: Maybe<ApiKeyStatus>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  usageCount?: Maybe<Scalars['Float']['output']>;
+  userId?: Maybe<Scalars['String']['output']>;
+};
+
+export type ApiKeyMinAggregate = {
+  __typename?: 'ApiKeyMinAggregate';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  expiresAt?: Maybe<Scalars['DateTime']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  keyPrefix?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  rateLimitPerMinute?: Maybe<Scalars['Int']['output']>;
+  scopes?: Maybe<Array<ApiKeyScope>>;
+  status?: Maybe<ApiKeyStatus>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  usageCount?: Maybe<Scalars['Float']['output']>;
+  userId?: Maybe<Scalars['String']['output']>;
 };
 
 /** API key scopes/permissions */
@@ -382,8 +585,82 @@ export type ApiKeyScope =
   | 'TEMPLATES_READ'
   | 'TEMPLATES_WRITE';
 
+export type ApiKeyScopeFilterComparison = {
+  eq?: InputMaybe<Array<ApiKeyScope>>;
+  gt?: InputMaybe<Array<ApiKeyScope>>;
+  gte?: InputMaybe<Array<ApiKeyScope>>;
+  iLike?: InputMaybe<Array<ApiKeyScope>>;
+  in?: InputMaybe<Array<Array<ApiKeyScope>>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<Array<ApiKeyScope>>;
+  lt?: InputMaybe<Array<ApiKeyScope>>;
+  lte?: InputMaybe<Array<ApiKeyScope>>;
+  neq?: InputMaybe<Array<ApiKeyScope>>;
+  notILike?: InputMaybe<Array<ApiKeyScope>>;
+  notIn?: InputMaybe<Array<Array<ApiKeyScope>>>;
+  notLike?: InputMaybe<Array<ApiKeyScope>>;
+};
+
+export type ApiKeySort = {
+  direction: SortDirection;
+  field: ApiKeySortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export type ApiKeySortFields =
+  | 'createdAt'
+  | 'expiresAt'
+  | 'id'
+  | 'keyPrefix'
+  | 'name'
+  | 'rateLimitPerMinute'
+  | 'scopes'
+  | 'status'
+  | 'updatedAt'
+  | 'usageCount'
+  | 'userId';
+
 /** API key status */
 export type ApiKeyStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED';
+
+export type ApiKeyStatusFilterComparison = {
+  eq?: InputMaybe<ApiKeyStatus>;
+  gt?: InputMaybe<ApiKeyStatus>;
+  gte?: InputMaybe<ApiKeyStatus>;
+  iLike?: InputMaybe<ApiKeyStatus>;
+  in?: InputMaybe<Array<ApiKeyStatus>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<ApiKeyStatus>;
+  lt?: InputMaybe<ApiKeyStatus>;
+  lte?: InputMaybe<ApiKeyStatus>;
+  neq?: InputMaybe<ApiKeyStatus>;
+  notILike?: InputMaybe<ApiKeyStatus>;
+  notIn?: InputMaybe<Array<ApiKeyStatus>>;
+  notLike?: InputMaybe<ApiKeyStatus>;
+};
+
+export type ApiKeySumAggregate = {
+  __typename?: 'ApiKeySumAggregate';
+  usageCount?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ApiKeyUpdateFilter = {
+  and?: InputMaybe<Array<ApiKeyUpdateFilter>>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  expiresAt?: InputMaybe<DateFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  keyPrefix?: InputMaybe<StringFieldComparison>;
+  name?: InputMaybe<StringFieldComparison>;
+  or?: InputMaybe<Array<ApiKeyUpdateFilter>>;
+  rateLimitPerMinute?: InputMaybe<IntFieldComparison>;
+  scopes?: InputMaybe<ApiKeyScopeFilterComparison>;
+  status?: InputMaybe<ApiKeyStatusFilterComparison>;
+  updatedAt?: InputMaybe<DateFieldComparison>;
+  usageCount?: InputMaybe<NumberFieldComparison>;
+  userId?: InputMaybe<StringFieldComparison>;
+};
 
 export type ApproveDocumentInput = {
   /** Document ID to approve */
@@ -676,14 +953,26 @@ export type BillingInfo = {
 /** Billing interval options */
 export type BillingInterval = 'MONTHLY' | 'YEARLY';
 
+export type BillingIntervalFilterComparison = {
+  eq?: InputMaybe<BillingInterval>;
+  gt?: InputMaybe<BillingInterval>;
+  gte?: InputMaybe<BillingInterval>;
+  iLike?: InputMaybe<BillingInterval>;
+  in?: InputMaybe<Array<BillingInterval>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<BillingInterval>;
+  lt?: InputMaybe<BillingInterval>;
+  lte?: InputMaybe<BillingInterval>;
+  neq?: InputMaybe<BillingInterval>;
+  notILike?: InputMaybe<BillingInterval>;
+  notIn?: InputMaybe<Array<BillingInterval>>;
+  notLike?: InputMaybe<BillingInterval>;
+};
+
 export type BooleanFieldComparison = {
   is?: InputMaybe<Scalars['Boolean']['input']>;
   isNot?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type BooleanFilter = {
-  eq?: InputMaybe<Scalars['Boolean']['input']>;
-  is?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** Boolean operators for combining search terms */
@@ -722,6 +1011,13 @@ export type BulkOperationError = {
   __typename?: 'BulkOperationError';
   error: Scalars['String']['output'];
   id: Scalars['String']['output'];
+};
+
+export type BulkRevokeApiKeysResponse = {
+  __typename?: 'BulkRevokeApiKeysResponse';
+  errors?: Maybe<Array<Scalars['String']['output']>>;
+  failed: Scalars['Int']['output'];
+  success: Scalars['Int']['output'];
 };
 
 export type BulkSendNotificationInput = {
@@ -767,6 +1063,23 @@ export type BulkUsersResult = {
 export type CancelClarificationSessionInput = {
   /** ID of the clarification session to cancel */
   sessionId: Scalars['String']['input'];
+};
+
+export type CancelDocumentGenerationInput = {
+  /** Document ID to cancel */
+  documentId: Scalars['ID']['input'];
+  /** Optional reason for cancellation (logged to audit trail) */
+  reason?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CancelDocumentGenerationResult = {
+  __typename?: 'CancelDocumentGenerationResult';
+  /** Document ID */
+  documentId: Scalars['ID']['output'];
+  /** Message describing the cancellation result */
+  message?: Maybe<Scalars['String']['output']>;
+  /** Whether the cancellation was successful */
+  success: Scalars['Boolean']['output'];
 };
 
 export type CancelSubscriptionInput = {
@@ -1169,6 +1482,12 @@ export type CheckEmailExistsResult = {
   exists: Scalars['Boolean']['output'];
   userId?: Maybe<Scalars['String']['output']>;
   username?: Maybe<Scalars['String']['output']>;
+};
+
+export type CheckPermissionInput = {
+  permissionType: Scalars['String']['input'];
+  resourceType: Scalars['String']['input'];
+  roleNames: Array<Scalars['String']['input']>;
 };
 
 export type CheckQuotaInput = {
@@ -1585,6 +1904,23 @@ export type CreateAiUsageRecordInput = {
   tokensUsed: Scalars['Int']['input'];
 };
 
+export type CreateApiKey = {
+  createdAt: Scalars['DateTime']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  expiresAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id: Scalars['ID']['input'];
+  keyPrefix: Scalars['String']['input'];
+  lastUsedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  lastUsedIp?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  rateLimitPerMinute?: InputMaybe<Scalars['Int']['input']>;
+  scopes: Array<ApiKeyScope>;
+  status: ApiKeyStatus;
+  updatedAt: Scalars['DateTime']['input'];
+  usageCount: Scalars['Float']['input'];
+  userId: Scalars['String']['input'];
+};
+
 export type CreateApiKeyInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   expiresAt?: InputMaybe<Scalars['String']['input']>;
@@ -1769,6 +2105,16 @@ export type CreateLegalRulingInput = {
   summary?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreateManyApiKeysInput = {
+  /** Array of records to create */
+  apiKeys: Array<CreateApiKey>;
+};
+
+export type CreateManySubscriptionPlansInput = {
+  /** Array of records to create */
+  subscriptionPlans: Array<CreateSubscriptionPlan>;
+};
+
 export type CreateNotificationInput = {
   /** Error message if sending failed */
   errorMessage?: InputMaybe<Scalars['String']['input']>;
@@ -1790,6 +2136,11 @@ export type CreateNotificationInput = {
   templateData?: InputMaybe<Scalars['String']['input']>;
   /** User ID (if notification is for a registered user) */
   userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateOneApiKeyInput = {
+  /** The record to create */
+  apiKey: CreateApiKey;
 };
 
 export type CreateOneChatSessionInput = {
@@ -1842,9 +2193,27 @@ export type CreateOneNotificationInput = {
   notification: CreateNotificationInput;
 };
 
+export type CreateOneSubscriptionPlanInput = {
+  /** The record to create */
+  subscriptionPlan: CreateSubscriptionPlan;
+};
+
+export type CreateOneUserInput = {
+  /** The record to create */
+  user: CreateUserInput;
+};
+
 export type CreateOneUserPreferencesInput = {
   /** The record to create */
   userPreferences: CreateUserPreferencesInput;
+};
+
+export type CreateRoleInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  inheritsFrom?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  permissions: Array<Scalars['String']['input']>;
+  type: Scalars['String']['input'];
 };
 
 export type CreateRulingMetadataInput = {
@@ -1875,6 +2244,25 @@ export type CreateScheduleResult = {
   scheduleId: Scalars['ID']['output'];
   /** Whether the creation was successful */
   success: Scalars['Boolean']['output'];
+};
+
+export type CreateSubscriptionPlan = {
+  billingInterval: BillingInterval;
+  createdAt: Scalars['DateTime']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayOrder: Scalars['Float']['input'];
+  features: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
+  isActive: Scalars['Boolean']['input'];
+  maxUsers?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+  price: Scalars['Float']['input'];
+  stripePriceId?: InputMaybe<Scalars['String']['input']>;
+  stripeYearlyPriceId?: InputMaybe<Scalars['String']['input']>;
+  tier: PlanTier;
+  trialDays: Scalars['Float']['input'];
+  updatedAt: Scalars['DateTime']['input'];
+  yearlyDiscount: Scalars['Float']['input'];
 };
 
 export type CreateSubscriptionPlanInput = {
@@ -2048,6 +2436,27 @@ export type DeleteDocumentInputV2 = {
   reason?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type DeleteManyApiKeysInput = {
+  /** Filter to find records to delete */
+  filter: ApiKeyDeleteFilter;
+};
+
+export type DeleteManyResponse = {
+  __typename?: 'DeleteManyResponse';
+  /** The number of records deleted. */
+  deletedCount: Scalars['Int']['output'];
+};
+
+export type DeleteManySubscriptionPlansInput = {
+  /** Filter to find records to delete */
+  filter: SubscriptionPlanDeleteFilter;
+};
+
+export type DeleteOneApiKeyInput = {
+  /** The id of the record to delete. */
+  id: Scalars['ID']['input'];
+};
+
 export type DeleteOneChatSessionInput = {
   /** The id of the record to delete. */
   id: Scalars['ID']['input'];
@@ -2084,6 +2493,16 @@ export type DeleteOneLegalQueryInput = {
 };
 
 export type DeleteOneLegalRulingInput = {
+  /** The id of the record to delete. */
+  id: Scalars['ID']['input'];
+};
+
+export type DeleteOneSubscriptionPlanInput = {
+  /** The id of the record to delete. */
+  id: Scalars['ID']['input'];
+};
+
+export type DeleteOneUserInput = {
   /** The id of the record to delete. */
   id: Scalars['ID']['input'];
 };
@@ -2613,6 +3032,61 @@ export type DocumentMetrics = {
   totalDocuments: Scalars['Int']['output'];
 };
 
+export type DocumentQueueEntry = {
+  __typename?: 'DocumentQueueEntry';
+  /** ISO timestamp of creation */
+  createdAt: Scalars['String']['output'];
+  /** Document ID */
+  documentId: Scalars['ID']['output'];
+  /** Document status from database */
+  documentStatus?: Maybe<Scalars['String']['output']>;
+  /** Document type */
+  documentType: Scalars['String']['output'];
+  /** Error message if generation failed */
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  /** Generation time in milliseconds */
+  generationTimeMs?: Maybe<Scalars['Int']['output']>;
+  /** Document title */
+  title: Scalars['String']['output'];
+  /** ISO timestamp of last update */
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  /** User email who owns the document */
+  userEmail?: Maybe<Scalars['String']['output']>;
+  /** User ID who owns the document */
+  userId?: Maybe<Scalars['String']['output']>;
+  /** Current workflow status */
+  workflowStatus: DocumentWorkflowStatus;
+};
+
+export type DocumentQueueListInput = {
+  /** Filter by document type */
+  documentType?: InputMaybe<Scalars['String']['input']>;
+  /** Maximum number of results to return */
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  /** Number of results to skip */
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  /** Filter by workflow status */
+  status?: InputMaybe<DocumentWorkflowStatus>;
+  /** Filter by user ID */
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type DocumentQueueListResult = {
+  __typename?: 'DocumentQueueListResult';
+  /** Number of completed workflows */
+  completedCount: Scalars['Int']['output'];
+  /** List of documents in the queue */
+  entries: Array<DocumentQueueEntry>;
+  /** Number of failed workflows */
+  failedCount: Scalars['Int']['output'];
+  /** Number of entries per status */
+  pendingCount: Scalars['Int']['output'];
+  /** Number of running workflows */
+  runningCount: Scalars['Int']['output'];
+  /** Total number of entries */
+  totalCount: Scalars['Int']['output'];
+};
+
 export type DocumentQueueMetrics = {
   __typename?: 'DocumentQueueMetrics';
   calculatedAt: Scalars['DateTime']['output'];
@@ -3003,6 +3477,31 @@ export type DocumentVersionSumAggregate = {
   versionNumber?: Maybe<Scalars['Float']['output']>;
 };
 
+/** Status of a document generation workflow */
+export type DocumentWorkflowStatus =
+  | 'CANCELLED'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'NOT_FOUND'
+  | 'PENDING'
+  | 'RUNNING';
+
+export type DocumentWorkflowStatusResult = {
+  __typename?: 'DocumentWorkflowStatusResult';
+  /** Document ID */
+  documentId: Scalars['ID']['output'];
+  /** Error message if workflow failed */
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  /** Whether the workflow is currently running */
+  isRunning: Scalars['Boolean']['output'];
+  /** ISO timestamp of last update */
+  lastUpdated?: Maybe<Scalars['String']['output']>;
+  /** Current workflow status */
+  status: DocumentWorkflowStatus;
+  /** Workflow ID (derived from document ID) */
+  workflowId?: Maybe<Scalars['String']['output']>;
+};
+
 /** Email template types available in the system */
 export type EmailTemplateType =
   | 'DEMO_REQUEST_CONFIRMATION'
@@ -3389,6 +3888,26 @@ export type Industry =
   | 'OTHER'
   | 'REAL_ESTATE'
   | 'TECHNOLOGY';
+
+export type IntFieldComparison = {
+  between?: InputMaybe<IntFieldComparisonBetween>;
+  eq?: InputMaybe<Scalars['Int']['input']>;
+  gt?: InputMaybe<Scalars['Int']['input']>;
+  gte?: InputMaybe<Scalars['Int']['input']>;
+  in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  lt?: InputMaybe<Scalars['Int']['input']>;
+  lte?: InputMaybe<Scalars['Int']['input']>;
+  neq?: InputMaybe<Scalars['Int']['input']>;
+  notBetween?: InputMaybe<IntFieldComparisonBetween>;
+  notIn?: InputMaybe<Array<Scalars['Int']['input']>>;
+};
+
+export type IntFieldComparisonBetween = {
+  lower: Scalars['Int']['input'];
+  upper: Scalars['Int']['input'];
+};
 
 export type InterestRequestInput = {
   /** Company name */
@@ -4363,6 +4882,12 @@ export type Mutation = {
   activateWebhook: Webhook;
   /** Add a citation to an existing legal query */
   addCitationToQuery: LegalQuery;
+  /** Add a permission to a role */
+  addPermissionToRole: Role;
+  /** Revoke multiple API keys at once. (admin only) */
+  adminBulkRevokeApiKeys: BulkRevokeApiKeysResponse;
+  /** Create a new API key for any user. The raw key is only shown once. (admin only) */
+  adminCreateApiKey: AdminCreateApiKeyResponse;
   /** Create a backup (admin only) */
   adminCreateBackup: Backup;
   /** Create a new user with password and role (admin only) */
@@ -4373,6 +4898,8 @@ export type Mutation = {
   adminForceDisableTwoFactor: AdminForceDisableTwoFactorResponse;
   /** Restore a backup (admin only) */
   adminRestoreBackup: Scalars['Boolean']['output'];
+  /** Revoke any API key. This action cannot be undone. (admin only) */
+  adminRevokeApiKey: ApiKey;
   /** Add AI-generated answer to a legal query */
   answerLegalQuery: LegalQuery;
   /** Approve a document after moderation review */
@@ -4390,6 +4917,8 @@ export type Mutation = {
   bulkUpsertSystemSettings: Array<SystemSetting>;
   /** Cancel an active clarification session */
   cancelClarificationSession: ClarificationSession;
+  /** Cancel a running document generation workflow */
+  cancelDocumentGeneration: CancelDocumentGenerationResult;
   /** Cancel the current user subscription */
   cancelMySubscription: UserSubscription;
   /** Change password for the current user */
@@ -4418,8 +4947,11 @@ export type Mutation = {
   createDocumentV2: LegalDocumentV2;
   /** Create a contact in HubSpot from form submission */
   createHubSpotContact?: Maybe<HubSpotContactResponse>;
+  createManyApiKeys: Array<ApiKey>;
+  createManySubscriptionPlans: Array<SubscriptionPlan>;
   /** Create a new subscription for the current user */
   createMySubscription: UserSubscription;
+  createOneApiKey: ApiKey;
   createOneChatSession: ChatSession;
   createOneDocumentComment: DocumentComment;
   createOneDocumentTemplate: DocumentTemplate;
@@ -4430,9 +4962,11 @@ export type Mutation = {
   createOneLegalQuery: LegalQuery;
   createOneLegalRuling: LegalRuling;
   createOneNotification: Notification;
-  /** Create a new user (admin only) */
+  createOneSubscriptionPlan: SubscriptionPlan;
   createOneUser: User;
   createOneUserPreference: UserPreferences;
+  /** Create a new custom role */
+  createRole: Role;
   /** Create a new Temporal schedule for recurring workflow execution */
   createSchedule: CreateScheduleResult;
   /** Create a new subscription plan (admin only) */
@@ -4455,6 +4989,9 @@ export type Mutation = {
    * @deprecated Use deleteOneLegalQuery instead
    */
   deleteLegalQuery: Scalars['Boolean']['output'];
+  deleteManyApiKeys: DeleteManyResponse;
+  deleteManySubscriptionPlans: DeleteManyResponse;
+  deleteOneApiKey: ApiKeyDeleteResponse;
   deleteOneChatSession: ChatSessionDeleteResponse;
   deleteOneDocumentComment: DocumentCommentDeleteResponse;
   deleteOneDocumentTemplate: DocumentTemplateDeleteResponse;
@@ -4463,10 +5000,12 @@ export type Mutation = {
   deleteOneLegalDocument: LegalDocumentDeleteResponse;
   deleteOneLegalQuery: LegalQueryDeleteResponse;
   deleteOneLegalRuling: LegalRulingDeleteResponse;
-  /** Delete a user (admin only) */
-  deleteOneUser: User;
+  deleteOneSubscriptionPlan: SubscriptionPlanDeleteResponse;
+  deleteOneUser: UserDeleteResponse;
   deleteOneUserPreference: UserPreferencesDeleteResponse;
   deleteOneUserSession: UserSessionDeleteResponse;
+  /** Delete a custom role (system roles cannot be deleted) */
+  deleteRole: Scalars['Boolean']['output'];
   /** Permanently delete a Temporal schedule (requires confirmation) */
   deleteSchedule: ScheduleDeletionResult;
   /** Delete a subscription plan (admin only) */
@@ -4521,6 +5060,8 @@ export type Mutation = {
   register: AuthPayload;
   /** Reject a document after moderation review */
   rejectDocument: ModerationActionResult;
+  /** Remove a permission from a role */
+  removePermissionFromRole: Role;
   /** Render a template with variable substitution without creating a document */
   renderTemplate: Scalars['String']['output'];
   /** Reset the localStorage migration flag to allow re-migration */
@@ -4532,6 +5073,8 @@ export type Mutation = {
   resumeMySubscription: UserSubscription;
   /** Resume a paused Temporal schedule */
   resumeSchedule: Scalars['Boolean']['output'];
+  /** Retry a failed document generation workflow */
+  retryDocumentGeneration: RetryDocumentGenerationResult;
   /** Revoke an API key. This action cannot be undone. */
   revokeApiKey: ApiKey;
   /** Revoke a document share */
@@ -4580,9 +5123,12 @@ export type Mutation = {
   updateDocumentSharePermission: DocumentShare;
   updateDocumentTemplate: DocumentTemplate;
   updateDocumentTitleV2: LegalDocumentV2;
+  updateManyApiKeys: UpdateManyResponse;
+  updateManySubscriptionPlans: UpdateManyResponse;
   updateMyPreferences: UserPreferences;
   /** Update notification preferences for a user */
   updateNotificationPreferences: Scalars['String']['output'];
+  updateOneApiKey: ApiKey;
   updateOneChatSession: ChatSession;
   updateOneDocumentComment: DocumentComment;
   updateOneDocumentTemplate: DocumentTemplate;
@@ -4593,11 +5139,13 @@ export type Mutation = {
   updateOneLegalQuery: LegalQuery;
   updateOneLegalRuling: LegalRuling;
   updateOneNotification: Notification;
-  /** Update a user (admin only) */
+  updateOneSubscriptionPlan: SubscriptionPlan;
   updateOneUser: User;
   updateOneUserPreference: UserPreferences;
   /** Update profile information for the current user */
   updateProfile: AuthUser;
+  /** Update role name or description */
+  updateRole: Role;
   /** Update an existing subscription plan (admin only) */
   updateSubscriptionPlan: SubscriptionPlan;
   /** Update an existing webhook (name, URL, events, headers, status) */
@@ -4620,6 +5168,18 @@ export type MutationAddCitationToQueryArgs = {
   queryId: Scalars['ID']['input'];
 };
 
+export type MutationAddPermissionToRoleArgs = {
+  input: AddPermissionInput;
+};
+
+export type MutationAdminBulkRevokeApiKeysArgs = {
+  ids: Array<Scalars['ID']['input']>;
+};
+
+export type MutationAdminCreateApiKeyArgs = {
+  input: AdminCreateApiKeyInput;
+};
+
 export type MutationAdminCreateBackupArgs = {
   input?: InputMaybe<CreateBackupInput>;
 };
@@ -4638,6 +5198,10 @@ export type MutationAdminForceDisableTwoFactorArgs = {
 
 export type MutationAdminRestoreBackupArgs = {
   input: RestoreBackupInput;
+};
+
+export type MutationAdminRevokeApiKeyArgs = {
+  input: AdminRevokeApiKeyInput;
 };
 
 export type MutationAnswerLegalQueryArgs = {
@@ -4675,6 +5239,10 @@ export type MutationBulkUpsertSystemSettingsArgs = {
 
 export type MutationCancelClarificationSessionArgs = {
   input: CancelClarificationSessionInput;
+};
+
+export type MutationCancelDocumentGenerationArgs = {
+  input: CancelDocumentGenerationInput;
 };
 
 export type MutationCancelMySubscriptionArgs = {
@@ -4738,8 +5306,20 @@ export type MutationCreateHubSpotContactArgs = {
   input: CreateHubSpotContactInput;
 };
 
+export type MutationCreateManyApiKeysArgs = {
+  input: CreateManyApiKeysInput;
+};
+
+export type MutationCreateManySubscriptionPlansArgs = {
+  input: CreateManySubscriptionPlansInput;
+};
+
 export type MutationCreateMySubscriptionArgs = {
   input: CreateUserSubscriptionInput;
+};
+
+export type MutationCreateOneApiKeyArgs = {
+  input: CreateOneApiKeyInput;
 };
 
 export type MutationCreateOneChatSessionArgs = {
@@ -4782,12 +5362,20 @@ export type MutationCreateOneNotificationArgs = {
   input: CreateOneNotificationInput;
 };
 
+export type MutationCreateOneSubscriptionPlanArgs = {
+  input: CreateOneSubscriptionPlanInput;
+};
+
 export type MutationCreateOneUserArgs = {
-  input: CreateUserInput;
+  input: CreateOneUserInput;
 };
 
 export type MutationCreateOneUserPreferenceArgs = {
   input: CreateOneUserPreferencesInput;
+};
+
+export type MutationCreateRoleArgs = {
+  input: CreateRoleInput;
 };
 
 export type MutationCreateScheduleArgs = {
@@ -4834,6 +5422,18 @@ export type MutationDeleteLegalQueryArgs = {
   id: Scalars['ID']['input'];
 };
 
+export type MutationDeleteManyApiKeysArgs = {
+  input: DeleteManyApiKeysInput;
+};
+
+export type MutationDeleteManySubscriptionPlansArgs = {
+  input: DeleteManySubscriptionPlansInput;
+};
+
+export type MutationDeleteOneApiKeyArgs = {
+  input: DeleteOneApiKeyInput;
+};
+
 export type MutationDeleteOneChatSessionArgs = {
   input: DeleteOneChatSessionInput;
 };
@@ -4866,8 +5466,12 @@ export type MutationDeleteOneLegalRulingArgs = {
   input: DeleteOneLegalRulingInput;
 };
 
+export type MutationDeleteOneSubscriptionPlanArgs = {
+  input: DeleteOneSubscriptionPlanInput;
+};
+
 export type MutationDeleteOneUserArgs = {
-  id: Scalars['ID']['input'];
+  input: DeleteOneUserInput;
 };
 
 export type MutationDeleteOneUserPreferenceArgs = {
@@ -4876,6 +5480,10 @@ export type MutationDeleteOneUserPreferenceArgs = {
 
 export type MutationDeleteOneUserSessionArgs = {
   input: DeleteOneUserSessionInput;
+};
+
+export type MutationDeleteRoleArgs = {
+  id: Scalars['String']['input'];
 };
 
 export type MutationDeleteScheduleArgs = {
@@ -4984,6 +5592,10 @@ export type MutationRejectDocumentArgs = {
   input: RejectDocumentInput;
 };
 
+export type MutationRemovePermissionFromRoleArgs = {
+  input: RemovePermissionInput;
+};
+
 export type MutationRenderTemplateArgs = {
   input: RenderTemplateInput;
 };
@@ -4994,6 +5606,10 @@ export type MutationResetUserPasswordArgs = {
 
 export type MutationResumeScheduleArgs = {
   input: ResumeScheduleInput;
+};
+
+export type MutationRetryDocumentGenerationArgs = {
+  input: RetryDocumentGenerationInput;
 };
 
 export type MutationRevokeApiKeyArgs = {
@@ -5103,12 +5719,24 @@ export type MutationUpdateDocumentTitleV2Args = {
   input: UpdateDocumentTitleInputV2;
 };
 
+export type MutationUpdateManyApiKeysArgs = {
+  input: UpdateManyApiKeysInput;
+};
+
+export type MutationUpdateManySubscriptionPlansArgs = {
+  input: UpdateManySubscriptionPlansInput;
+};
+
 export type MutationUpdateMyPreferencesArgs = {
   input: UpdateUserPreferencesInput;
 };
 
 export type MutationUpdateNotificationPreferencesArgs = {
   input: NotificationDeliveryPreferencesInput;
+};
+
+export type MutationUpdateOneApiKeyArgs = {
+  input: UpdateOneApiKeyInput;
 };
 
 export type MutationUpdateOneChatSessionArgs = {
@@ -5151,9 +5779,12 @@ export type MutationUpdateOneNotificationArgs = {
   input: UpdateOneNotificationInput;
 };
 
+export type MutationUpdateOneSubscriptionPlanArgs = {
+  input: UpdateOneSubscriptionPlanInput;
+};
+
 export type MutationUpdateOneUserArgs = {
-  id: Scalars['ID']['input'];
-  input: UpdateUserInput;
+  input: UpdateOneUserInput;
 };
 
 export type MutationUpdateOneUserPreferenceArgs = {
@@ -5162,6 +5793,11 @@ export type MutationUpdateOneUserPreferenceArgs = {
 
 export type MutationUpdateProfileArgs = {
   input: UpdateProfileInput;
+};
+
+export type MutationUpdateRoleArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateRoleInput;
 };
 
 export type MutationUpdateSubscriptionPlanArgs = {
@@ -5588,6 +6224,19 @@ export type PdfExportStatus = {
 /** Page format for PDF export */
 export type PdfPageFormat = 'A4' | 'LEGAL' | 'LETTER';
 
+export type Permission = {
+  __typename?: 'Permission';
+  condition?: Maybe<Scalars['String']['output']>;
+  resource: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
+export type PermissionCheckResult = {
+  __typename?: 'PermissionCheckResult';
+  allowed: Scalars['Boolean']['output'];
+  permissions?: Maybe<Array<Scalars['String']['output']>>;
+};
+
 export type PinChatSessionInput = {
   /** True to pin, false to unpin */
   isPinned: Scalars['Boolean']['input'];
@@ -5597,6 +6246,23 @@ export type PinChatSessionInput = {
 
 /** Subscription plan tiers */
 export type PlanTier = 'BASIC' | 'ENTERPRISE' | 'FREE' | 'PROFESSIONAL';
+
+export type PlanTierFilterComparison = {
+  eq?: InputMaybe<PlanTier>;
+  gt?: InputMaybe<PlanTier>;
+  gte?: InputMaybe<PlanTier>;
+  iLike?: InputMaybe<PlanTier>;
+  in?: InputMaybe<Array<PlanTier>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<PlanTier>;
+  lt?: InputMaybe<PlanTier>;
+  lte?: InputMaybe<PlanTier>;
+  neq?: InputMaybe<PlanTier>;
+  notILike?: InputMaybe<PlanTier>;
+  notIn?: InputMaybe<Array<PlanTier>>;
+  notLike?: InputMaybe<PlanTier>;
+};
 
 export type PolishFormattingRulesInput = {
   addressFormat?: InputMaybe<Scalars['String']['input']>;
@@ -5634,6 +6300,11 @@ export type Query = {
   analyzeEmptyMessages: EmptyMessagesSummary;
   /** Analyze all empty chat sessions (messageCount = 0) */
   analyzeEmptySessions: Array<EmptySessionAnalysis>;
+  apiKey: ApiKey;
+  apiKeyAggregate: Array<ApiKeyAggregateResponse>;
+  apiKeys: ApiKeyConnection;
+  /** Get all API keys for a specific user (admin only) */
+  apiKeysByUser: Array<ApiKey>;
   auditLog: AuditLog;
   auditLogAggregate: Array<AuditLogAggregateResponse>;
   auditLogs: AuditLogConnection;
@@ -5675,6 +6346,8 @@ export type Query = {
   documentComment: DocumentComment;
   documentCommentAggregate: Array<DocumentCommentAggregateResponse>;
   documentComments: DocumentCommentConnection;
+  /** List documents in the generation queue */
+  documentGenerationQueueList: DocumentQueueListResult;
   /** Get the latest version of a document */
   documentLatestVersion?: Maybe<DocumentVersion>;
   documentMetrics: DocumentMetrics;
@@ -5710,10 +6383,14 @@ export type Query = {
   /** Get formatted context for AI processing from a clarification session */
   getClarificationContext?: Maybe<Scalars['String']['output']>;
   getDocumentGenerationMetrics: DocumentGenerationMetrics;
+  /** Get the status of a document generation workflow */
+  getDocumentWorkflowStatus: DocumentWorkflowStatusResult;
   getQueryVolume: Array<AnalyticsTimeSeriesPoint>;
   getTotalDocumentCount: DocumentMetrics;
   getTotalTokenUsage: Array<TokenUsageBreakdown>;
   getUserGrowthStats: UserGrowthStats;
+  /** Check if the given roles have a specific permission */
+  hasPermission: PermissionCheckResult;
   inAppNotification: InAppNotification;
   inAppNotificationAggregate: Array<InAppNotificationAggregateResponse>;
   inAppNotifications: InAppNotificationConnection;
@@ -5781,6 +6458,12 @@ export type Query = {
   recentDocumentActivity: RecentDocumentActivity;
   /** Get recent notifications for a user */
   recentNotifications: Array<InAppNotification>;
+  /** Get a role by ID */
+  role?: Maybe<Role>;
+  /** Get a role by name */
+  roleByName?: Maybe<Role>;
+  /** Get all roles in the system */
+  roles: Array<Role>;
   /** Full-text search across chat messages with relevance ranking and highlighting */
   searchChatContent: ChatContentSearchResponse;
   /** Full-text search across documents with relevance ranking */
@@ -5789,10 +6472,9 @@ export type Query = {
   searchLegalQueries: LegalQuerySearchResponse;
   /** Full-text search for legal rulings with relevance ranking */
   searchLegalRulings: LegalRulingSearchResponse;
-  /** Get a subscription plan by ID */
-  subscriptionPlan?: Maybe<SubscriptionPlan>;
-  /** Get all active subscription plans ordered by price */
-  subscriptionPlans: Array<SubscriptionPlan>;
+  subscriptionPlan: SubscriptionPlan;
+  subscriptionPlanAggregate: Array<SubscriptionPlanAggregateResponse>;
+  subscriptionPlans: SubscriptionPlanConnection;
   /** Get comprehensive system health status for admin dashboard */
   systemHealth: SystemHealthResponse;
   systemHealthMetrics: SystemHealthMetrics;
@@ -5815,8 +6497,8 @@ export type Query = {
   /** Get count of unread notifications for a user */
   unreadNotificationCount: Scalars['Int']['output'];
   usageStats: UsageStatsResponse;
-  /** Get a user by ID (admin only) */
-  user?: Maybe<User>;
+  user: User;
+  userAggregate: Array<UserAggregateResponse>;
   userGrowthMetrics: UserGrowthMetrics;
   userPreference: UserPreferences;
   userPreferences: UserPreferencesConnection;
@@ -5826,8 +6508,7 @@ export type Query = {
   userSessions: UserSessionConnection;
   userTokenLeaderboard: Array<UserTokenUsage>;
   userUsageRecords: Array<AiUsageRecord>;
-  /** Get all users with filtering, sorting, and paging (admin only) */
-  users: Array<User>;
+  users: UserConnection;
   /** Validate an API key and check if it has the required scopes */
   validateApiKey: ValidateApiKeyResponse;
   /** Get a webhook by ID */
@@ -5861,6 +6542,24 @@ export type QueryAiUsageMetricsArgs = {
 
 export type QueryAnalyticsDashboardArgs = {
   input?: InputMaybe<DashboardAnalyticsInput>;
+};
+
+export type QueryApiKeyArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type QueryApiKeyAggregateArgs = {
+  filter?: InputMaybe<ApiKeyAggregateFilter>;
+};
+
+export type QueryApiKeysArgs = {
+  filter?: ApiKeyFilter;
+  paging?: CursorPaging;
+  sorting?: Array<ApiKeySort>;
+};
+
+export type QueryApiKeysByUserArgs = {
+  userId: Scalars['ID']['input'];
 };
 
 export type QueryAuditLogArgs = {
@@ -5987,6 +6686,10 @@ export type QueryDocumentCommentsArgs = {
   sorting?: Array<DocumentCommentSort>;
 };
 
+export type QueryDocumentGenerationQueueListArgs = {
+  input?: InputMaybe<DocumentQueueListInput>;
+};
+
 export type QueryDocumentLatestVersionArgs = {
   documentId: Scalars['ID']['input'];
 };
@@ -6081,6 +6784,10 @@ export type QueryGetDocumentGenerationMetricsArgs = {
   input?: InputMaybe<DashboardAnalyticsInput>;
 };
 
+export type QueryGetDocumentWorkflowStatusArgs = {
+  documentId: Scalars['String']['input'];
+};
+
 export type QueryGetQueryVolumeArgs = {
   input?: InputMaybe<DashboardAnalyticsInput>;
 };
@@ -6095,6 +6802,10 @@ export type QueryGetTotalTokenUsageArgs = {
 
 export type QueryGetUserGrowthStatsArgs = {
   input?: InputMaybe<DashboardAnalyticsInput>;
+};
+
+export type QueryHasPermissionArgs = {
+  input: CheckPermissionInput;
 };
 
 export type QueryInAppNotificationArgs = {
@@ -6274,6 +6985,14 @@ export type QueryRecentNotificationsArgs = {
   userId: Scalars['String']['input'];
 };
 
+export type QueryRoleArgs = {
+  id: Scalars['String']['input'];
+};
+
+export type QueryRoleByNameArgs = {
+  name: Scalars['String']['input'];
+};
+
 export type QuerySearchChatContentArgs = {
   contextLength?: InputMaybe<Scalars['Int']['input']>;
   dateFrom?: InputMaybe<Scalars['String']['input']>;
@@ -6300,7 +7019,17 @@ export type QuerySearchLegalRulingsArgs = {
 };
 
 export type QuerySubscriptionPlanArgs = {
-  id: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
+};
+
+export type QuerySubscriptionPlanAggregateArgs = {
+  filter?: InputMaybe<SubscriptionPlanAggregateFilter>;
+};
+
+export type QuerySubscriptionPlansArgs = {
+  filter?: SubscriptionPlanFilter;
+  paging?: CursorPaging;
+  sorting?: Array<SubscriptionPlanSort>;
 };
 
 export type QuerySystemHealthMetricsArgs = {
@@ -6358,6 +7087,10 @@ export type QueryUserArgs = {
   id: Scalars['ID']['input'];
 };
 
+export type QueryUserAggregateArgs = {
+  filter?: InputMaybe<UserAggregateFilter>;
+};
+
 export type QueryUserGrowthMetricsArgs = {
   input?: InputMaybe<DashboardAnalyticsInput>;
 };
@@ -6405,9 +7138,9 @@ export type QueryUserUsageRecordsArgs = {
 };
 
 export type QueryUsersArgs = {
-  filter?: InputMaybe<UserFilter>;
-  paging?: InputMaybe<UserPaging>;
-  sorting?: InputMaybe<Array<UserSort>>;
+  filter?: UserFilter;
+  paging?: CursorPaging;
+  sorting?: Array<UserSort>;
 };
 
 export type QueryValidateApiKeyArgs = {
@@ -6500,6 +7233,11 @@ export type RelatedDocumentLinkInput = {
   relevanceScore?: InputMaybe<Scalars['Float']['input']>;
 };
 
+export type RemovePermissionInput = {
+  permission: Scalars['String']['input'];
+  roleId: Scalars['String']['input'];
+};
+
 export type RenderTemplateInput = {
   templateId: Scalars['String']['input'];
   variables: Scalars['JSON']['input'];
@@ -6525,6 +7263,38 @@ export type ResumeScheduleInput = {
   reason?: InputMaybe<Scalars['String']['input']>;
   /** The ID of the schedule to resume */
   scheduleId: Scalars['String']['input'];
+};
+
+export type RetryDocumentGenerationInput = {
+  /** Document ID to retry */
+  documentId: Scalars['ID']['input'];
+  /** Optional reason for retry (logged to audit trail) */
+  reason?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type RetryDocumentGenerationResult = {
+  __typename?: 'RetryDocumentGenerationResult';
+  /** Document ID */
+  documentId: Scalars['ID']['output'];
+  /** Message describing the retry result */
+  message?: Maybe<Scalars['String']['output']>;
+  /** Whether the retry was initiated */
+  success: Scalars['Boolean']['output'];
+  /** New workflow ID for the retry attempt */
+  workflowId?: Maybe<Scalars['String']['output']>;
+};
+
+export type Role = {
+  __typename?: 'Role';
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  inheritsFrom?: Maybe<Scalars['String']['output']>;
+  isSystemRole: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  permissions: Array<Permission>;
+  type: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type RulingMetadata = {
@@ -6906,12 +7676,6 @@ export type StringFieldComparison = {
   notLike?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type StringFilter = {
-  eq?: InputMaybe<Scalars['String']['input']>;
-  iLike?: InputMaybe<Scalars['String']['input']>;
-  in?: InputMaybe<Array<Scalars['String']['input']>>;
-};
-
 export type SubmitClarificationAnswersInput = {
   /** Array of question-answer pairs */
   answers: Array<ClarificationAnswerInput>;
@@ -7011,6 +7775,228 @@ export type SubscriptionPlan = {
   trialDays: Scalars['Float']['output'];
   updatedAt: Scalars['DateTime']['output'];
   yearlyDiscount: Scalars['Float']['output'];
+};
+
+export type SubscriptionPlanAggregateFilter = {
+  and?: InputMaybe<Array<SubscriptionPlanAggregateFilter>>;
+  billingInterval?: InputMaybe<BillingIntervalFilterComparison>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  displayOrder?: InputMaybe<NumberFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  isActive?: InputMaybe<BooleanFieldComparison>;
+  maxUsers?: InputMaybe<IntFieldComparison>;
+  name?: InputMaybe<StringFieldComparison>;
+  or?: InputMaybe<Array<SubscriptionPlanAggregateFilter>>;
+  price?: InputMaybe<NumberFieldComparison>;
+  tier?: InputMaybe<PlanTierFilterComparison>;
+  trialDays?: InputMaybe<NumberFieldComparison>;
+  updatedAt?: InputMaybe<DateFieldComparison>;
+  yearlyDiscount?: InputMaybe<NumberFieldComparison>;
+};
+
+export type SubscriptionPlanAggregateGroupBy = {
+  __typename?: 'SubscriptionPlanAggregateGroupBy';
+  billingInterval?: Maybe<BillingInterval>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  displayOrder?: Maybe<Scalars['Float']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  maxUsers?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  price?: Maybe<Scalars['Float']['output']>;
+  tier?: Maybe<PlanTier>;
+  trialDays?: Maybe<Scalars['Float']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  yearlyDiscount?: Maybe<Scalars['Float']['output']>;
+};
+
+export type SubscriptionPlanAggregateGroupByCreatedAtArgs = {
+  by?: GroupBy;
+};
+
+export type SubscriptionPlanAggregateGroupByUpdatedAtArgs = {
+  by?: GroupBy;
+};
+
+export type SubscriptionPlanAggregateResponse = {
+  __typename?: 'SubscriptionPlanAggregateResponse';
+  avg?: Maybe<SubscriptionPlanAvgAggregate>;
+  count?: Maybe<SubscriptionPlanCountAggregate>;
+  groupBy?: Maybe<SubscriptionPlanAggregateGroupBy>;
+  max?: Maybe<SubscriptionPlanMaxAggregate>;
+  min?: Maybe<SubscriptionPlanMinAggregate>;
+  sum?: Maybe<SubscriptionPlanSumAggregate>;
+};
+
+export type SubscriptionPlanAvgAggregate = {
+  __typename?: 'SubscriptionPlanAvgAggregate';
+  displayOrder?: Maybe<Scalars['Float']['output']>;
+  price?: Maybe<Scalars['Float']['output']>;
+  trialDays?: Maybe<Scalars['Float']['output']>;
+  yearlyDiscount?: Maybe<Scalars['Float']['output']>;
+};
+
+export type SubscriptionPlanConnection = {
+  __typename?: 'SubscriptionPlanConnection';
+  /** Array of edges. */
+  edges: Array<SubscriptionPlanEdge>;
+  /** Paging information */
+  pageInfo: PageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type SubscriptionPlanCountAggregate = {
+  __typename?: 'SubscriptionPlanCountAggregate';
+  billingInterval?: Maybe<Scalars['Int']['output']>;
+  createdAt?: Maybe<Scalars['Int']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  isActive?: Maybe<Scalars['Int']['output']>;
+  maxUsers?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['Int']['output']>;
+  price?: Maybe<Scalars['Int']['output']>;
+  tier?: Maybe<Scalars['Int']['output']>;
+  trialDays?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['Int']['output']>;
+  yearlyDiscount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type SubscriptionPlanDeleteFilter = {
+  and?: InputMaybe<Array<SubscriptionPlanDeleteFilter>>;
+  billingInterval?: InputMaybe<BillingIntervalFilterComparison>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  displayOrder?: InputMaybe<NumberFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  isActive?: InputMaybe<BooleanFieldComparison>;
+  maxUsers?: InputMaybe<IntFieldComparison>;
+  name?: InputMaybe<StringFieldComparison>;
+  or?: InputMaybe<Array<SubscriptionPlanDeleteFilter>>;
+  price?: InputMaybe<NumberFieldComparison>;
+  tier?: InputMaybe<PlanTierFilterComparison>;
+  trialDays?: InputMaybe<NumberFieldComparison>;
+  updatedAt?: InputMaybe<DateFieldComparison>;
+  yearlyDiscount?: InputMaybe<NumberFieldComparison>;
+};
+
+export type SubscriptionPlanDeleteResponse = {
+  __typename?: 'SubscriptionPlanDeleteResponse';
+  billingInterval?: Maybe<BillingInterval>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Float']['output']>;
+  features?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  maxUsers?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  price?: Maybe<Scalars['Float']['output']>;
+  stripePriceId?: Maybe<Scalars['String']['output']>;
+  stripeYearlyPriceId?: Maybe<Scalars['String']['output']>;
+  tier?: Maybe<PlanTier>;
+  trialDays?: Maybe<Scalars['Float']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  yearlyDiscount?: Maybe<Scalars['Float']['output']>;
+};
+
+export type SubscriptionPlanEdge = {
+  __typename?: 'SubscriptionPlanEdge';
+  /** Cursor for this node. */
+  cursor: Scalars['ConnectionCursor']['output'];
+  /** The node containing the SubscriptionPlan */
+  node: SubscriptionPlan;
+};
+
+export type SubscriptionPlanFilter = {
+  and?: InputMaybe<Array<SubscriptionPlanFilter>>;
+  billingInterval?: InputMaybe<BillingIntervalFilterComparison>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  displayOrder?: InputMaybe<NumberFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  isActive?: InputMaybe<BooleanFieldComparison>;
+  maxUsers?: InputMaybe<IntFieldComparison>;
+  name?: InputMaybe<StringFieldComparison>;
+  or?: InputMaybe<Array<SubscriptionPlanFilter>>;
+  price?: InputMaybe<NumberFieldComparison>;
+  tier?: InputMaybe<PlanTierFilterComparison>;
+  trialDays?: InputMaybe<NumberFieldComparison>;
+  updatedAt?: InputMaybe<DateFieldComparison>;
+  yearlyDiscount?: InputMaybe<NumberFieldComparison>;
+};
+
+export type SubscriptionPlanMaxAggregate = {
+  __typename?: 'SubscriptionPlanMaxAggregate';
+  billingInterval?: Maybe<BillingInterval>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  displayOrder?: Maybe<Scalars['Float']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  maxUsers?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  price?: Maybe<Scalars['Float']['output']>;
+  tier?: Maybe<PlanTier>;
+  trialDays?: Maybe<Scalars['Float']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  yearlyDiscount?: Maybe<Scalars['Float']['output']>;
+};
+
+export type SubscriptionPlanMinAggregate = {
+  __typename?: 'SubscriptionPlanMinAggregate';
+  billingInterval?: Maybe<BillingInterval>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  displayOrder?: Maybe<Scalars['Float']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  maxUsers?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  price?: Maybe<Scalars['Float']['output']>;
+  tier?: Maybe<PlanTier>;
+  trialDays?: Maybe<Scalars['Float']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  yearlyDiscount?: Maybe<Scalars['Float']['output']>;
+};
+
+export type SubscriptionPlanSort = {
+  direction: SortDirection;
+  field: SubscriptionPlanSortFields;
+  nulls?: InputMaybe<SortNulls>;
+};
+
+export type SubscriptionPlanSortFields =
+  | 'billingInterval'
+  | 'createdAt'
+  | 'displayOrder'
+  | 'id'
+  | 'isActive'
+  | 'maxUsers'
+  | 'name'
+  | 'price'
+  | 'tier'
+  | 'trialDays'
+  | 'updatedAt'
+  | 'yearlyDiscount';
+
+export type SubscriptionPlanSumAggregate = {
+  __typename?: 'SubscriptionPlanSumAggregate';
+  displayOrder?: Maybe<Scalars['Float']['output']>;
+  price?: Maybe<Scalars['Float']['output']>;
+  trialDays?: Maybe<Scalars['Float']['output']>;
+  yearlyDiscount?: Maybe<Scalars['Float']['output']>;
+};
+
+export type SubscriptionPlanUpdateFilter = {
+  and?: InputMaybe<Array<SubscriptionPlanUpdateFilter>>;
+  billingInterval?: InputMaybe<BillingIntervalFilterComparison>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  displayOrder?: InputMaybe<NumberFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  isActive?: InputMaybe<BooleanFieldComparison>;
+  maxUsers?: InputMaybe<IntFieldComparison>;
+  name?: InputMaybe<StringFieldComparison>;
+  or?: InputMaybe<Array<SubscriptionPlanUpdateFilter>>;
+  price?: InputMaybe<NumberFieldComparison>;
+  tier?: InputMaybe<PlanTierFilterComparison>;
+  trialDays?: InputMaybe<NumberFieldComparison>;
+  updatedAt?: InputMaybe<DateFieldComparison>;
+  yearlyDiscount?: InputMaybe<NumberFieldComparison>;
 };
 
 /** Subscription status */
@@ -7359,6 +8345,23 @@ export type TwoFactorSettings = {
 /** Status of two-factor authentication */
 export type TwoFactorStatus = 'DISABLED' | 'ENABLED' | 'PENDING';
 
+export type UpdateApiKey = {
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  expiresAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  keyPrefix?: InputMaybe<Scalars['String']['input']>;
+  lastUsedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  lastUsedIp?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  rateLimitPerMinute?: InputMaybe<Scalars['Int']['input']>;
+  scopes?: InputMaybe<Array<ApiKeyScope>>;
+  status?: InputMaybe<ApiKeyStatus>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  usageCount?: InputMaybe<Scalars['Float']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateApiKeyInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   expiresAt?: InputMaybe<Scalars['String']['input']>;
@@ -7492,6 +8495,26 @@ export type UpdateLegalRulingInput = {
   summary?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateManyApiKeysInput = {
+  /** Filter used to find fields to update */
+  filter: ApiKeyUpdateFilter;
+  /** The update to apply to all records found using the filter */
+  update: UpdateApiKey;
+};
+
+export type UpdateManyResponse = {
+  __typename?: 'UpdateManyResponse';
+  /** The number of records updated. */
+  updatedCount: Scalars['Int']['output'];
+};
+
+export type UpdateManySubscriptionPlansInput = {
+  /** Filter used to find fields to update */
+  filter: SubscriptionPlanUpdateFilter;
+  /** The update to apply to all records found using the filter */
+  update: UpdateSubscriptionPlan;
+};
+
 export type UpdateNotificationInput = {
   /** Error message if sending failed */
   errorMessage?: InputMaybe<Scalars['String']['input']>;
@@ -7513,6 +8536,13 @@ export type UpdateNotificationInput = {
   templateData?: InputMaybe<Scalars['String']['input']>;
   /** User ID */
   userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateOneApiKeyInput = {
+  /** The id of the record to update */
+  id: Scalars['ID']['input'];
+  /** The update to apply. */
+  update: UpdateApiKey;
 };
 
 export type UpdateOneChatSessionInput = {
@@ -7585,6 +8615,20 @@ export type UpdateOneNotificationInput = {
   update: UpdateNotificationInput;
 };
 
+export type UpdateOneSubscriptionPlanInput = {
+  /** The id of the record to update */
+  id: Scalars['ID']['input'];
+  /** The update to apply. */
+  update: UpdateSubscriptionPlan;
+};
+
+export type UpdateOneUserInput = {
+  /** The id of the record to update */
+  id: Scalars['ID']['input'];
+  /** The update to apply. */
+  update: UpdateUserInput;
+};
+
 export type UpdateOneUserPreferencesInput = {
   /** The id of the record to update */
   id: Scalars['ID']['input'];
@@ -7603,11 +8647,35 @@ export type UpdateProfileInput = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateRoleInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateSharePermissionInput = {
   /** New permission level */
   permission: SharePermission;
   /** ID of the share to update */
   shareId: Scalars['ID']['input'];
+};
+
+export type UpdateSubscriptionPlan = {
+  billingInterval?: InputMaybe<BillingInterval>;
+  createdAt?: InputMaybe<Scalars['DateTime']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayOrder?: InputMaybe<Scalars['Float']['input']>;
+  features?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  maxUsers?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  price?: InputMaybe<Scalars['Float']['input']>;
+  stripePriceId?: InputMaybe<Scalars['String']['input']>;
+  stripeYearlyPriceId?: InputMaybe<Scalars['String']['input']>;
+  tier?: InputMaybe<PlanTier>;
+  trialDays?: InputMaybe<Scalars['Float']['input']>;
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  yearlyDiscount?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type UpdateSubscriptionPlanInput = {
@@ -7712,9 +8780,9 @@ export type User = {
   id: Scalars['ID']['output'];
   isActive: Scalars['Boolean']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
-  role: Scalars['String']['output'];
-  /** Array of user roles (single role wrapped as array for consistency with JWT format) */
-  roles: Array<Scalars['String']['output']>;
+  role?: Maybe<Scalars['String']['output']>;
+  roles?: Maybe<Array<Scalars['String']['output']>>;
+  sessions?: Maybe<UserSession>;
   stripeCustomerId?: Maybe<Scalars['String']['output']>;
   twoFactorEnabled: Scalars['Boolean']['output'];
   twoFactorVerifiedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -7722,11 +8790,97 @@ export type User = {
   username?: Maybe<Scalars['String']['output']>;
 };
 
+export type UserAggregateFilter = {
+  and?: InputMaybe<Array<UserAggregateFilter>>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  email?: InputMaybe<StringFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  isActive?: InputMaybe<BooleanFieldComparison>;
+  or?: InputMaybe<Array<UserAggregateFilter>>;
+  twoFactorEnabled?: InputMaybe<BooleanFieldComparison>;
+  updatedAt?: InputMaybe<DateFieldComparison>;
+};
+
+export type UserAggregateGroupBy = {
+  __typename?: 'UserAggregateGroupBy';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  twoFactorEnabled?: Maybe<Scalars['Boolean']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type UserAggregateGroupByCreatedAtArgs = {
+  by?: GroupBy;
+};
+
+export type UserAggregateGroupByUpdatedAtArgs = {
+  by?: GroupBy;
+};
+
+export type UserAggregateResponse = {
+  __typename?: 'UserAggregateResponse';
+  count?: Maybe<UserCountAggregate>;
+  groupBy?: Maybe<UserAggregateGroupBy>;
+  max?: Maybe<UserMaxAggregate>;
+  min?: Maybe<UserMinAggregate>;
+};
+
+export type UserConnection = {
+  __typename?: 'UserConnection';
+  /** Array of edges. */
+  edges: Array<UserEdge>;
+  /** Paging information */
+  pageInfo: PageInfo;
+  /** Fetch total count of records */
+  totalCount: Scalars['Int']['output'];
+};
+
+export type UserCountAggregate = {
+  __typename?: 'UserCountAggregate';
+  createdAt?: Maybe<Scalars['Int']['output']>;
+  email?: Maybe<Scalars['Int']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  isActive?: Maybe<Scalars['Int']['output']>;
+  twoFactorEnabled?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['Int']['output']>;
+};
+
+export type UserDeleteResponse = {
+  __typename?: 'UserDeleteResponse';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  disclaimerAccepted?: Maybe<Scalars['Boolean']['output']>;
+  disclaimerAcceptedAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  firstName?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  lastName?: Maybe<Scalars['String']['output']>;
+  stripeCustomerId?: Maybe<Scalars['String']['output']>;
+  twoFactorEnabled?: Maybe<Scalars['Boolean']['output']>;
+  twoFactorVerifiedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  username?: Maybe<Scalars['String']['output']>;
+};
+
+export type UserEdge = {
+  __typename?: 'UserEdge';
+  /** Cursor for this node. */
+  cursor: Scalars['ConnectionCursor']['output'];
+  /** The node containing the User */
+  node: User;
+};
+
 export type UserFilter = {
-  email?: InputMaybe<StringFilter>;
-  isActive?: InputMaybe<BooleanFilter>;
-  role?: InputMaybe<StringFilter>;
-  username?: InputMaybe<StringFilter>;
+  and?: InputMaybe<Array<UserFilter>>;
+  createdAt?: InputMaybe<DateFieldComparison>;
+  email?: InputMaybe<StringFieldComparison>;
+  id?: InputMaybe<IdFilterComparison>;
+  isActive?: InputMaybe<BooleanFieldComparison>;
+  or?: InputMaybe<Array<UserFilter>>;
+  twoFactorEnabled?: InputMaybe<BooleanFieldComparison>;
+  updatedAt?: InputMaybe<DateFieldComparison>;
 };
 
 export type UserGrowthMetrics = {
@@ -7769,9 +8923,20 @@ export type UserLeftEventPayload = {
   userName: Scalars['String']['output'];
 };
 
-export type UserPaging = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
+export type UserMaxAggregate = {
+  __typename?: 'UserMaxAggregate';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type UserMinAggregate = {
+  __typename?: 'UserMinAggregate';
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type UserPreferences = {
@@ -8058,9 +9223,18 @@ export type UserSessionSort = {
 export type UserSessionSortFields = 'createdAt' | 'id' | 'mode' | 'updatedAt' | 'userId';
 
 export type UserSort = {
-  direction: Scalars['String']['input'];
-  field: Scalars['String']['input'];
+  direction: SortDirection;
+  field: UserSortFields;
+  nulls?: InputMaybe<SortNulls>;
 };
+
+export type UserSortFields =
+  | 'createdAt'
+  | 'email'
+  | 'id'
+  | 'isActive'
+  | 'twoFactorEnabled'
+  | 'updatedAt';
 
 export type UserSubscription = {
   __typename?: 'UserSubscription';
@@ -8243,7 +9417,7 @@ export type AdminUserFragmentFragment = {
   firstName?: string | null | undefined;
   lastName?: string | null | undefined;
   isActive: boolean;
-  role: string;
+  role?: string | null | undefined;
   disclaimerAccepted: boolean;
   disclaimerAcceptedAt?: Date | null | undefined;
   stripeCustomerId?: string | null | undefined;
@@ -8260,7 +9434,7 @@ export type AdminUserMinimalFragmentFragment = {
   firstName?: string | null | undefined;
   lastName?: string | null | undefined;
   isActive: boolean;
-  role: string;
+  role?: string | null | undefined;
   twoFactorEnabled: boolean;
   createdAt: Date;
 };
@@ -8430,23 +9604,37 @@ export type GetAdminSystemHealthMetricsQuery = {
 export type GetAdminUsersQueryVariables = Exact<{
   filter?: InputMaybe<UserFilter>;
   sorting?: InputMaybe<Array<UserSort> | UserSort>;
-  paging?: InputMaybe<UserPaging>;
+  paging?: InputMaybe<CursorPaging>;
 }>;
 
 export type GetAdminUsersQuery = {
   __typename?: 'Query';
-  users: Array<{
-    __typename?: 'User';
-    id: string;
-    email: string;
-    username?: string | null | undefined;
-    firstName?: string | null | undefined;
-    lastName?: string | null | undefined;
-    isActive: boolean;
-    role: string;
-    twoFactorEnabled: boolean;
-    createdAt: Date;
-  }>;
+  users: {
+    __typename?: 'UserConnection';
+    totalCount: number;
+    edges: Array<{
+      __typename?: 'UserEdge';
+      node: {
+        __typename?: 'User';
+        id: string;
+        email: string;
+        username?: string | null | undefined;
+        firstName?: string | null | undefined;
+        lastName?: string | null | undefined;
+        isActive: boolean;
+        role?: string | null | undefined;
+        twoFactorEnabled: boolean;
+        createdAt: Date;
+      };
+    }>;
+    pageInfo: {
+      __typename?: 'PageInfo';
+      hasNextPage?: boolean | null | undefined;
+      hasPreviousPage?: boolean | null | undefined;
+      startCursor?: string | null | undefined;
+      endCursor?: string | null | undefined;
+    };
+  };
 };
 
 export type GetAdminUserQueryVariables = Exact<{
@@ -8455,29 +9643,26 @@ export type GetAdminUserQueryVariables = Exact<{
 
 export type GetAdminUserQuery = {
   __typename?: 'Query';
-  user?:
-    | {
-        __typename?: 'User';
-        id: string;
-        email: string;
-        username?: string | null | undefined;
-        firstName?: string | null | undefined;
-        lastName?: string | null | undefined;
-        isActive: boolean;
-        role: string;
-        disclaimerAccepted: boolean;
-        disclaimerAcceptedAt?: Date | null | undefined;
-        stripeCustomerId?: string | null | undefined;
-        twoFactorEnabled: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-      }
-    | null
-    | undefined;
+  user: {
+    __typename?: 'User';
+    id: string;
+    email: string;
+    username?: string | null | undefined;
+    firstName?: string | null | undefined;
+    lastName?: string | null | undefined;
+    isActive: boolean;
+    role?: string | null | undefined;
+    disclaimerAccepted: boolean;
+    disclaimerAcceptedAt?: Date | null | undefined;
+    stripeCustomerId?: string | null | undefined;
+    twoFactorEnabled: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  };
 };
 
 export type AdminCreateUserMutationVariables = Exact<{
-  input: CreateUserInput;
+  input: CreateOneUserInput;
 }>;
 
 export type AdminCreateUserMutation = {
@@ -8490,7 +9675,7 @@ export type AdminCreateUserMutation = {
     firstName?: string | null | undefined;
     lastName?: string | null | undefined;
     isActive: boolean;
-    role: string;
+    role?: string | null | undefined;
     disclaimerAccepted: boolean;
     disclaimerAcceptedAt?: Date | null | undefined;
     stripeCustomerId?: string | null | undefined;
@@ -8501,8 +9686,7 @@ export type AdminCreateUserMutation = {
 };
 
 export type AdminUpdateUserMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
-  input: UpdateUserInput;
+  input: UpdateOneUserInput;
 }>;
 
 export type AdminUpdateUserMutation = {
@@ -8515,19 +9699,23 @@ export type AdminUpdateUserMutation = {
     firstName?: string | null | undefined;
     lastName?: string | null | undefined;
     isActive: boolean;
-    role: string;
+    role?: string | null | undefined;
     twoFactorEnabled: boolean;
     createdAt: Date;
   };
 };
 
 export type AdminDeleteUserMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
+  input: DeleteOneUserInput;
 }>;
 
 export type AdminDeleteUserMutation = {
   __typename?: 'Mutation';
-  deleteOneUser: { __typename?: 'User'; id: string; email: string };
+  deleteOneUser: {
+    __typename?: 'UserDeleteResponse';
+    id?: string | null | undefined;
+    email?: string | null | undefined;
+  };
 };
 
 export type AdminSuspendUserMutationVariables = Exact<{
@@ -8544,7 +9732,7 @@ export type AdminSuspendUserMutation = {
     firstName?: string | null | undefined;
     lastName?: string | null | undefined;
     isActive: boolean;
-    role: string;
+    role?: string | null | undefined;
     twoFactorEnabled: boolean;
     createdAt: Date;
   };
@@ -8564,7 +9752,7 @@ export type AdminActivateUserMutation = {
     firstName?: string | null | undefined;
     lastName?: string | null | undefined;
     isActive: boolean;
-    role: string;
+    role?: string | null | undefined;
     twoFactorEnabled: boolean;
     createdAt: Date;
   };
@@ -8584,7 +9772,7 @@ export type AdminChangeUserRoleMutation = {
     firstName?: string | null | undefined;
     lastName?: string | null | undefined;
     isActive: boolean;
-    role: string;
+    role?: string | null | undefined;
     twoFactorEnabled: boolean;
     createdAt: Date;
   };
@@ -8604,7 +9792,7 @@ export type AdminResetUserPasswordMutation = {
     firstName?: string | null | undefined;
     lastName?: string | null | undefined;
     isActive: boolean;
-    role: string;
+    role?: string | null | undefined;
     twoFactorEnabled: boolean;
     createdAt: Date;
   };
@@ -8643,7 +9831,7 @@ export type AuditLogFragmentFragment = {
         email: string;
         firstName?: string | null | undefined;
         lastName?: string | null | undefined;
-        roles: Array<string>;
+        roles?: Array<string> | null | undefined;
       }
     | null
     | undefined;
@@ -8670,7 +9858,7 @@ export type AuditLogDetailFragmentFragment = {
         email: string;
         firstName?: string | null | undefined;
         lastName?: string | null | undefined;
-        roles: Array<string>;
+        roles?: Array<string> | null | undefined;
       }
     | null
     | undefined;
@@ -8709,7 +9897,7 @@ export type AuditLogsQuery = {
               email: string;
               firstName?: string | null | undefined;
               lastName?: string | null | undefined;
-              roles: Array<string>;
+              roles?: Array<string> | null | undefined;
             }
           | null
           | undefined;
@@ -8751,7 +9939,7 @@ export type AuditLogQuery = {
           email: string;
           firstName?: string | null | undefined;
           lastName?: string | null | undefined;
-          roles: Array<string>;
+          roles?: Array<string> | null | undefined;
         }
       | null
       | undefined;
@@ -8828,30 +10016,12 @@ export type SubscriptionPlansQueryVariables = Exact<{ [key: string]: never }>;
 
 export type SubscriptionPlansQuery = {
   __typename?: 'Query';
-  subscriptionPlans: Array<{
-    __typename?: 'SubscriptionPlan';
-    id: string;
-    name: string;
-    description?: string | null | undefined;
-    price: number;
-    billingInterval: BillingInterval;
-    features: string;
-    tier: PlanTier;
-    isActive: boolean;
-    displayOrder: number;
-    maxUsers?: number | null | undefined;
-    createdAt: Date;
-  }>;
-};
-
-export type SubscriptionPlanQueryVariables = Exact<{
-  id: Scalars['String']['input'];
-}>;
-
-export type SubscriptionPlanQuery = {
-  __typename?: 'Query';
-  subscriptionPlan?:
-    | {
+  subscriptionPlans: {
+    __typename?: 'SubscriptionPlanConnection';
+    totalCount: number;
+    edges: Array<{
+      __typename?: 'SubscriptionPlanEdge';
+      node: {
         __typename?: 'SubscriptionPlan';
         id: string;
         name: string;
@@ -8864,9 +10034,31 @@ export type SubscriptionPlanQuery = {
         displayOrder: number;
         maxUsers?: number | null | undefined;
         createdAt: Date;
-      }
-    | null
-    | undefined;
+      };
+    }>;
+  };
+};
+
+export type SubscriptionPlanQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type SubscriptionPlanQuery = {
+  __typename?: 'Query';
+  subscriptionPlan: {
+    __typename?: 'SubscriptionPlan';
+    id: string;
+    name: string;
+    description?: string | null | undefined;
+    price: number;
+    billingInterval: BillingInterval;
+    features: string;
+    tier: PlanTier;
+    isActive: boolean;
+    displayOrder: number;
+    maxUsers?: number | null | undefined;
+    createdAt: Date;
+  };
 };
 
 export type CancelMySubscriptionMutationVariables = Exact<{
@@ -9949,7 +11141,7 @@ export type AuditLogPageResultFragmentFragment = {
             email: string;
             firstName?: string | null | undefined;
             lastName?: string | null | undefined;
-            roles: Array<string>;
+            roles?: Array<string> | null | undefined;
           }
         | null
         | undefined;
@@ -10110,8 +11302,8 @@ export type UserFragmentFragment = {
   firstName?: string | null | undefined;
   lastName?: string | null | undefined;
   isActive: boolean;
-  role: string;
-  roles: Array<string>;
+  role?: string | null | undefined;
+  roles?: Array<string> | null | undefined;
 };
 
 export type UserDetailFragmentFragment = {
@@ -10128,8 +11320,8 @@ export type UserDetailFragmentFragment = {
   firstName?: string | null | undefined;
   lastName?: string | null | undefined;
   isActive: boolean;
-  role: string;
-  roles: Array<string>;
+  role?: string | null | undefined;
+  roles?: Array<string> | null | undefined;
 };
 
 export type AuthUserFragmentFragment = {
@@ -10151,7 +11343,7 @@ export type UserMinimalFragmentFragment = {
   email: string;
   firstName?: string | null | undefined;
   lastName?: string | null | undefined;
-  roles: Array<string>;
+  roles?: Array<string> | null | undefined;
 };
 
 export type AuthPayloadFragmentFragment = {
@@ -11126,39 +12318,18 @@ export type SearchDocumentsQuery = {
 
 export type GetUsersQueryVariables = Exact<{
   filter?: InputMaybe<UserFilter>;
-  paging?: InputMaybe<UserPaging>;
+  paging?: InputMaybe<CursorPaging>;
   sorting?: InputMaybe<Array<UserSort> | UserSort>;
 }>;
 
 export type GetUsersQuery = {
   __typename?: 'Query';
-  users: Array<{
-    __typename?: 'User';
-    disclaimerAccepted: boolean;
-    disclaimerAcceptedAt?: Date | null | undefined;
-    stripeCustomerId?: string | null | undefined;
-    twoFactorEnabled: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    id: string;
-    email: string;
-    username?: string | null | undefined;
-    firstName?: string | null | undefined;
-    lastName?: string | null | undefined;
-    isActive: boolean;
-    role: string;
-    roles: Array<string>;
-  }>;
-};
-
-export type GetUserQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-export type GetUserQuery = {
-  __typename?: 'Query';
-  user?:
-    | {
+  users: {
+    __typename?: 'UserConnection';
+    totalCount: number;
+    edges: Array<{
+      __typename?: 'UserEdge';
+      node: {
         __typename?: 'User';
         disclaimerAccepted: boolean;
         disclaimerAcceptedAt?: Date | null | undefined;
@@ -11172,15 +12343,47 @@ export type GetUserQuery = {
         firstName?: string | null | undefined;
         lastName?: string | null | undefined;
         isActive: boolean;
-        role: string;
-        roles: Array<string>;
-      }
-    | null
-    | undefined;
+        role?: string | null | undefined;
+        roles?: Array<string> | null | undefined;
+      };
+    }>;
+    pageInfo: {
+      __typename?: 'PageInfo';
+      hasNextPage?: boolean | null | undefined;
+      hasPreviousPage?: boolean | null | undefined;
+      startCursor?: string | null | undefined;
+      endCursor?: string | null | undefined;
+    };
+  };
+};
+
+export type GetUserQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+export type GetUserQuery = {
+  __typename?: 'Query';
+  user: {
+    __typename?: 'User';
+    disclaimerAccepted: boolean;
+    disclaimerAcceptedAt?: Date | null | undefined;
+    stripeCustomerId?: string | null | undefined;
+    twoFactorEnabled: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    id: string;
+    email: string;
+    username?: string | null | undefined;
+    firstName?: string | null | undefined;
+    lastName?: string | null | undefined;
+    isActive: boolean;
+    role?: string | null | undefined;
+    roles?: Array<string> | null | undefined;
+  };
 };
 
 export type CreateOneUserMutationVariables = Exact<{
-  input: CreateUserInput;
+  input: CreateOneUserInput;
 }>;
 
 export type CreateOneUserMutation = {
@@ -11199,14 +12402,13 @@ export type CreateOneUserMutation = {
     firstName?: string | null | undefined;
     lastName?: string | null | undefined;
     isActive: boolean;
-    role: string;
-    roles: Array<string>;
+    role?: string | null | undefined;
+    roles?: Array<string> | null | undefined;
   };
 };
 
 export type UpdateOneUserMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
-  input: UpdateUserInput;
+  input: UpdateOneUserInput;
 }>;
 
 export type UpdateOneUserMutation = {
@@ -11225,18 +12427,22 @@ export type UpdateOneUserMutation = {
     firstName?: string | null | undefined;
     lastName?: string | null | undefined;
     isActive: boolean;
-    role: string;
-    roles: Array<string>;
+    role?: string | null | undefined;
+    roles?: Array<string> | null | undefined;
   };
 };
 
 export type DeleteOneUserMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
+  input: DeleteOneUserInput;
 }>;
 
 export type DeleteOneUserMutation = {
   __typename?: 'Mutation';
-  deleteOneUser: { __typename?: 'User'; id: string; email: string };
+  deleteOneUser: {
+    __typename?: 'UserDeleteResponse';
+    id?: string | null | undefined;
+    email?: string | null | undefined;
+  };
 };
 
 export const AdminUserFragmentFragmentDoc = `
@@ -12073,9 +13279,20 @@ useGetAdminSystemHealthMetricsQuery.fetcher = (
   );
 
 export const GetAdminUsersDocument = `
-    query GetAdminUsers($filter: UserFilter, $sorting: [UserSort!], $paging: UserPaging) {
+    query GetAdminUsers($filter: UserFilter, $sorting: [UserSort!], $paging: CursorPaging) {
   users(filter: $filter, sorting: $sorting, paging: $paging) {
-    ...AdminUserMinimalFragment
+    totalCount
+    edges {
+      node {
+        ...AdminUserMinimalFragment
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
   }
 }
     ${AdminUserMinimalFragmentFragmentDoc}`;
@@ -12137,7 +13354,7 @@ useGetAdminUserQuery.fetcher = (
   fetcher<GetAdminUserQuery, GetAdminUserQueryVariables>(GetAdminUserDocument, variables, options);
 
 export const AdminCreateUserDocument = `
-    mutation AdminCreateUser($input: CreateUserInput!) {
+    mutation AdminCreateUser($input: CreateOneUserInput!) {
   createOneUser(input: $input) {
     ...AdminUserFragment
   }
@@ -12174,8 +13391,8 @@ useAdminCreateUserMutation.fetcher = (
   );
 
 export const AdminUpdateUserDocument = `
-    mutation AdminUpdateUser($id: ID!, $input: UpdateUserInput!) {
-  updateOneUser(id: $id, input: $input) {
+    mutation AdminUpdateUser($input: UpdateOneUserInput!) {
+  updateOneUser(input: $input) {
     ...AdminUserMinimalFragment
   }
 }
@@ -12211,8 +13428,8 @@ useAdminUpdateUserMutation.fetcher = (
   );
 
 export const AdminDeleteUserDocument = `
-    mutation AdminDeleteUser($id: ID!) {
-  deleteOneUser(id: $id) {
+    mutation AdminDeleteUser($input: DeleteOneUserInput!) {
+  deleteOneUser(input: $input) {
     id
     email
   }
@@ -12588,7 +13805,12 @@ useMyPaymentHistoryQuery.fetcher = (
 export const SubscriptionPlansDocument = `
     query SubscriptionPlans {
   subscriptionPlans {
-    ...SubscriptionPlanFragment
+    edges {
+      node {
+        ...SubscriptionPlanFragment
+      }
+    }
+    totalCount
   }
 }
     ${SubscriptionPlanFragmentFragmentDoc}`;
@@ -12620,7 +13842,7 @@ useSubscriptionPlansQuery.fetcher = (
   );
 
 export const SubscriptionPlanDocument = `
-    query SubscriptionPlan($id: String!) {
+    query SubscriptionPlan($id: ID!) {
   subscriptionPlan(id: $id) {
     ...SubscriptionPlanFragment
   }
@@ -15191,9 +16413,20 @@ useSearchDocumentsQuery.fetcher = (
   );
 
 export const GetUsersDocument = `
-    query GetUsers($filter: UserFilter, $paging: UserPaging, $sorting: [UserSort!]) {
+    query GetUsers($filter: UserFilter, $paging: CursorPaging, $sorting: [UserSort!]) {
   users(filter: $filter, paging: $paging, sorting: $sorting) {
-    ...UserDetailFragment
+    totalCount
+    edges {
+      node {
+        ...UserDetailFragment
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
   }
 }
     ${UserDetailFragmentFragmentDoc}`;
@@ -15239,7 +16472,7 @@ useGetUserQuery.fetcher = (variables: GetUserQueryVariables, options?: RequestIn
   fetcher<GetUserQuery, GetUserQueryVariables>(GetUserDocument, variables, options);
 
 export const CreateOneUserDocument = `
-    mutation CreateOneUser($input: CreateUserInput!) {
+    mutation CreateOneUser($input: CreateOneUserInput!) {
   createOneUser(input: $input) {
     ...UserDetailFragment
   }
@@ -15276,8 +16509,8 @@ useCreateOneUserMutation.fetcher = (
   );
 
 export const UpdateOneUserDocument = `
-    mutation UpdateOneUser($id: ID!, $input: UpdateUserInput!) {
-  updateOneUser(id: $id, input: $input) {
+    mutation UpdateOneUser($input: UpdateOneUserInput!) {
+  updateOneUser(input: $input) {
     ...UserDetailFragment
   }
 }
@@ -15313,8 +16546,8 @@ useUpdateOneUserMutation.fetcher = (
   );
 
 export const DeleteOneUserDocument = `
-    mutation DeleteOneUser($id: ID!) {
-  deleteOneUser(id: $id) {
+    mutation DeleteOneUser($input: DeleteOneUserInput!) {
+  deleteOneUser(input: $input) {
     id
     email
   }

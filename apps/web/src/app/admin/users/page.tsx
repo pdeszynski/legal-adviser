@@ -2,9 +2,9 @@
 
 /* eslint-disable max-lines */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { CrudFilter } from '@refinedev/core';
+import { useList } from '@refinedev/core';
 import { Button, Input } from '@legal/ui';
 import {
   Search,
@@ -20,6 +20,7 @@ import {
   Download,
   Loader2,
 } from 'lucide-react';
+import type { User } from '@/generated/graphql';
 import { dataProvider } from '@providers/data-provider';
 import type { GraphQLMutationConfig } from '@providers/data-provider';
 import { UserDetailDialog } from './user-detail-dialog';
@@ -27,12 +28,9 @@ import { UserPasswordDialog } from './user-password-dialog';
 import { UserDeleteDialog } from './user-delete-dialog';
 import { BulkRoleDialog } from './bulk-role-dialog';
 import { BulkSuspendDialog } from './bulk-suspend-dialog';
-import type { User } from '@/generated/graphql';
-
-// Use generated User type from admin.graphql
 
 interface RoleFilter {
-  role?: 'user' | 'admin' | 'all';
+  role?: 'client' | 'admin' | 'all';
   status?: 'active' | 'suspended' | 'all';
   twoFactor?: 'enabled' | 'disabled' | 'all';
   search: string;
@@ -49,9 +47,6 @@ export default function AdminUsersPage() {
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-  const [isLoading, setIsLoading] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
-  const [total, setTotal] = useState(0);
 
   // Dialog states
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
@@ -63,69 +58,88 @@ export default function AdminUsersPage() {
   const [suspendDialogOpen, setSuspendDialogOpen] = useState(false);
   const [bulkProgress, setBulkProgress] = useState<{ current: number; total: number } | null>(null);
 
-  const fetchUsers = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const dp = dataProvider;
-      if (!dp) return;
+  // Determine if we need client-side filtering (for role filter only)
+  // twoFactorEnabled is now filterable server-side via @FilterableField()
+  const needsClientSideFilter = filters.role && filters.role !== 'all';
 
-      const filterList: CrudFilter[] = [];
+  // Build Refine filters from state
+  const refineFilters = useMemo(() => {
+    const filterList = [];
 
-      // Apply role filter
-      if (filters.role && filters.role !== 'all') {
-        filterList.push({ field: 'role', operator: 'eq', value: filters.role });
-      }
-
-      // Apply status filter
-      if (filters.status && filters.status !== 'all') {
-        filterList.push({
-          field: 'isActive',
-          operator: 'eq',
-          value: filters.status === 'active',
-        });
-      }
-
-      // Apply 2FA filter
-      if (filters.twoFactor && filters.twoFactor !== 'all') {
-        filterList.push({
-          field: 'twoFactorEnabled',
-          operator: 'eq',
-          value: filters.twoFactor === 'enabled',
-        });
-      }
-
-      // Apply search filter
-      if (filters.search) {
-        filterList.push({ field: 'email', operator: 'contains', value: filters.search });
-      }
-
-      const result = await dp.getList<User>({
-        resource: 'users',
-        pagination: { currentPage, pageSize },
-        filters: filterList.length > 0 ? filterList : undefined,
-        sorters: [{ field: 'createdAt', order: 'desc' }],
+    // Apply status filter (backend-supported via isActive field)
+    if (filters.status && filters.status !== 'all') {
+      filterList.push({
+        field: 'isActive',
+        operator: 'eq',
+        value: filters.status === 'active',
       });
-
-      setUsers(result.data);
-      setTotal(result.total);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to fetch users:', error);
-    } finally {
-      setIsLoading(false);
     }
-  }, [currentPage, pageSize, filters]);
 
-  React.useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    // Apply 2FA filter (backend-supported via twoFactorEnabled field)
+    if (filters.twoFactor && filters.twoFactor !== 'all') {
+      filterList.push({
+        field: 'twoFactorEnabled',
+        operator: 'eq',
+        value: filters.twoFactor === 'enabled',
+      });
+    }
+
+    // Apply search filter (backend-supported via email field)
+    if (filters.search) {
+      filterList.push({ field: 'email', operator: 'contains', value: filters.search });
+    }
+
+    return filterList;
+  }, [filters.status, filters.twoFactor, filters.search]);
+
+  // Use Refine's useList hook for data fetching
+  // When role filter is active, fetch larger page size for client-side filtering
+  // Otherwise, use proper server-side pagination
+  const listResult = useList<User>({
+    resource: 'users',
+    pagination: {
+      current: needsClientSideFilter ? 1 : currentPage,
+      pageSize: needsClientSideFilter ? 50 : pageSize,
+    } as any,
+    filters: refineFilters.length > 0 ? (refineFilters as any) : undefined,
+    sorters: [{ field: 'createdAt', order: 'desc' }],
+  });
+
+  const { data, isLoading, refetch } = listResult.query;
+  const fetchedUsers = (listResult.result?.data as unknown as User[]) || [];
+
+  // Apply client-side filter for role only (computed field from user_roles table)
+  const users = useMemo(() => {
+    if (!needsClientSideFilter) {
+      return fetchedUsers;
+    }
+    return fetchedUsers.filter((user) => {
+      if (filters.role && filters.role !== 'all') {
+        if (user.role !== filters.role) return false;
+      }
+      return true;
+    });
+  }, [fetchedUsers, filters.role, needsClientSideFilter]);
+
+  // Calculate total for pagination
+  const total = needsClientSideFilter ? users.length : listResult.result?.total || 0;
+
+  // Client-side pagination when role filter is active
+  const paginatedUsers = useMemo(() => {
+    if (needsClientSideFilter) {
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      return users.slice(startIndex, endIndex);
+    }
+    return users;
+  }, [users, currentPage, pageSize, needsClientSideFilter]);
 
   const handleSearchChange = (value: string) => {
     setFilters({ ...filters, search: value });
     setCurrentPage(1);
   };
 
-  const handleRoleFilterChange = (role: 'user' | 'admin' | 'all') => {
+  const handleRoleFilterChange = (role: 'client' | 'admin' | 'all') => {
     setFilters({ ...filters, role });
     setCurrentPage(1);
   };
@@ -151,10 +165,19 @@ export default function AdminUsersPage() {
   };
 
   const toggleAllSelection = () => {
-    if (selectedUsers.size === users.length) {
-      setSelectedUsers(new Set());
+    const visibleUserIds = paginatedUsers.map((u) => String(u.id));
+    const allVisibleSelected = visibleUserIds.every((id) => selectedUsers.has(id));
+
+    if (allVisibleSelected) {
+      // Deselect all visible users
+      const newSelection = new Set(selectedUsers);
+      visibleUserIds.forEach((id) => newSelection.delete(id));
+      setSelectedUsers(newSelection);
     } else {
-      setSelectedUsers(new Set(users.map((u) => u.id)));
+      // Select all visible users
+      const newSelection = new Set(selectedUsers);
+      visibleUserIds.forEach((id) => newSelection.add(id));
+      setSelectedUsers(newSelection);
     }
   };
 
@@ -162,45 +185,40 @@ export default function AdminUsersPage() {
     userId: string,
     action: 'suspend' | 'activate' | 'promote' | 'demote',
   ) => {
-    const dp = dataProvider;
-    if (!dp) return;
+    const operation =
+      action === 'suspend'
+        ? 'suspendUser'
+        : action === 'activate'
+          ? 'activateUser'
+          : 'changeUserRole';
 
-    const mutationConfig: GraphQLMutationConfig<{
-      userId: string;
-      reason?: string;
-      role?: string;
-    }> = {
-      url: '',
-      method: 'post',
-      config: {
-        mutation: {
-          operation:
-            action === 'suspend'
-              ? 'suspendUser'
-              : action === 'activate'
-                ? 'activateUser'
-                : 'changeUserRole',
-          fields: ['id', 'email', 'isActive', 'role'],
-          variables: {
-            input:
-              action === 'suspend'
-                ? { userId, reason: 'Admin action' }
-                : action === 'activate'
-                  ? { userId }
-                  : { userId, role: action === 'promote' ? 'admin' : 'user' },
-          },
-        },
-      },
-    };
+    const input =
+      action === 'suspend'
+        ? { userId, reason: 'Admin action' }
+        : action === 'activate'
+          ? { userId }
+          : { userId, role: action === 'promote' ? 'admin' : 'client' };
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (dp as any).custom({
+      const dp = dataProvider;
+      if (!dp) return;
+
+      const mutationConfig: GraphQLMutationConfig<any> = {
         url: '',
         method: 'post',
-        config: mutationConfig.config,
-      });
-      fetchUsers();
+        config: {
+          mutation: {
+            operation,
+            fields: ['id', 'email', 'isActive', 'role'],
+            variables: { input },
+          },
+        },
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (dp as any).custom(mutationConfig);
+
+      refetch();
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(`Failed to ${action} user:`, error);
@@ -214,7 +232,7 @@ export default function AdminUsersPage() {
     if (selectedUsers.size === 0) return;
 
     if (action === 'delete') {
-      const usersToDelete = users.filter((u) => selectedUsers.has(u.id));
+      const usersToDelete = users.filter((u) => selectedUsers.has(String(u.id)));
       setUsersToDelete(usersToDelete);
       setDeleteDialogOpen(true);
       return;
@@ -293,13 +311,13 @@ export default function AdminUsersPage() {
   const handleBulkActivate = useCallback(async () => {
     if (selectedUsers.size === 0) return;
 
-    const dp = dataProvider;
-    if (!dp) return;
-
     const userIds = Array.from(selectedUsers);
     setBulkProgress({ current: 0, total: userIds.length });
 
     try {
+      const dp = dataProvider;
+      if (!dp) return;
+
       const mutationConfig: GraphQLMutationConfig<{ userIds: string[] }> = {
         url: '',
         method: 'post',
@@ -318,7 +336,7 @@ export default function AdminUsersPage() {
       await (dp as any).custom(mutationConfig);
 
       setSelectedUsers(new Set());
-      fetchUsers();
+      refetch();
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to activate users:', error);
@@ -328,7 +346,7 @@ export default function AdminUsersPage() {
     } finally {
       setBulkProgress(null);
     }
-  }, [selectedUsers, fetchUsers]);
+  }, [selectedUsers, refetch]);
 
   // Open bulk role dialog
   const openBulkRoleDialog = useCallback(() => {
@@ -435,11 +453,11 @@ export default function AdminUsersPage() {
               Admins
             </Button>
             <Button
-              variant={filters.role === 'user' ? 'default' : 'outline'}
+              variant={filters.role === 'client' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => handleRoleFilterChange('user')}
+              onClick={() => handleRoleFilterChange('client')}
             >
-              Users
+              Clients
             </Button>
           </div>
           <div className="flex gap-2">
@@ -488,7 +506,7 @@ export default function AdminUsersPage() {
               No 2FA
             </Button>
           </div>
-          <Button variant="outline" size="sm" onClick={fetchUsers}>
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
             <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
@@ -581,7 +599,10 @@ export default function AdminUsersPage() {
                   <th className="p-4 text-left font-medium text-sm">
                     <input
                       type="checkbox"
-                      checked={selectedUsers.size === users.length && users.length > 0}
+                      checked={
+                        paginatedUsers.length > 0 &&
+                        paginatedUsers.every((u) => selectedUsers.has(String(u.id)))
+                      }
                       onChange={toggleAllSelection}
                       className="h-4 w-4 rounded border-gray-300"
                     />
@@ -602,20 +623,23 @@ export default function AdminUsersPage() {
                       Loading users...
                     </td>
                   </tr>
-                ) : users.length === 0 ? (
+                ) : paginatedUsers.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="p-8 text-center text-muted-foreground">
                       No users found
                     </td>
                   </tr>
                 ) : (
-                  users.map((user) => (
-                    <tr key={user.id} className="border-b hover:bg-muted/50 transition-colors">
+                  paginatedUsers.map((user) => (
+                    <tr
+                      key={String(user.id)}
+                      className="border-b hover:bg-muted/50 transition-colors"
+                    >
                       <td className="p-4">
                         <input
                           type="checkbox"
-                          checked={selectedUsers.has(user.id)}
-                          onChange={() => toggleUserSelection(user.id)}
+                          checked={selectedUsers.has(String(user.id))}
+                          onChange={() => toggleUserSelection(String(user.id))}
                           className="h-4 w-4 rounded border-gray-300"
                         />
                       </td>
@@ -695,7 +719,7 @@ export default function AdminUsersPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => openDetailDialog(user)}
+                            onClick={() => openDetailDialog(user as User)}
                             title="View details"
                           >
                             <Eye className="h-4 w-4" />
@@ -703,7 +727,7 @@ export default function AdminUsersPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => openPasswordDialog(user)}
+                            onClick={() => openPasswordDialog(user as User)}
                             title="Reset password"
                           >
                             <Key className="h-4 w-4" />
@@ -712,7 +736,7 @@ export default function AdminUsersPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleUserAction(user.id, 'suspend')}
+                              onClick={() => handleUserAction(String(user.id), 'suspend')}
                               title="Suspend user"
                             >
                               <UserX className="h-4 w-4" />
@@ -721,17 +745,17 @@ export default function AdminUsersPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleUserAction(user.id, 'activate')}
+                              onClick={() => handleUserAction(String(user.id), 'activate')}
                               title="Activate user"
                             >
                               <Check className="h-4 w-4" />
                             </Button>
                           )}
-                          {user.role === 'user' ? (
+                          {user.role === 'client' ? (
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleUserAction(user.id, 'promote')}
+                              onClick={() => handleUserAction(String(user.id), 'promote')}
                               title="Promote to admin"
                             >
                               <Shield className="h-4 w-4" />
@@ -740,8 +764,8 @@ export default function AdminUsersPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleUserAction(user.id, 'demote')}
-                              title="Demote to user"
+                              onClick={() => handleUserAction(String(user.id), 'demote')}
+                              title="Demote to client"
                             >
                               <ShieldAlert className="h-4 w-4" />
                             </Button>
@@ -749,7 +773,7 @@ export default function AdminUsersPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => openDeleteDialog(user)}
+                            onClick={() => openDeleteDialog(user as User)}
                             title="Delete user"
                             className="text-destructive hover:text-destructive hover:bg-destructive/10"
                           >
@@ -802,14 +826,14 @@ export default function AdminUsersPage() {
         open={detailDialogOpen}
         onClose={() => setDetailDialogOpen(false)}
         user={selectedUser}
-        onUpdate={fetchUsers}
+        onUpdate={refetch}
       />
 
       <UserPasswordDialog
         open={passwordDialogOpen}
         onClose={() => setPasswordDialogOpen(false)}
         user={selectedUser}
-        onUpdate={fetchUsers}
+        onUpdate={refetch}
       />
 
       <UserDeleteDialog
@@ -818,27 +842,27 @@ export default function AdminUsersPage() {
         users={usersToDelete}
         onDelete={() => {
           setSelectedUsers(new Set());
-          fetchUsers();
+          refetch();
         }}
       />
 
       <BulkRoleDialog
         open={roleDialogOpen}
         onClose={() => setRoleDialogOpen(false)}
-        users={users.filter((u) => selectedUsers.has(u.id))}
+        users={users.filter((u) => selectedUsers.has(String(u.id)))}
         onUpdate={() => {
           setSelectedUsers(new Set());
-          fetchUsers();
+          refetch();
         }}
       />
 
       <BulkSuspendDialog
         open={suspendDialogOpen}
         onClose={() => setSuspendDialogOpen(false)}
-        users={users.filter((u) => selectedUsers.has(u.id))}
+        users={users.filter((u) => selectedUsers.has(String(u.id)))}
         onUpdate={() => {
           setSelectedUsers(new Set());
-          fetchUsers();
+          refetch();
         }}
       />
     </>

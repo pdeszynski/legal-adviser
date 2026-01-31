@@ -19,16 +19,22 @@ query MyPaymentHistory {
   }
 }
 
-# Query: Get all available subscription plans
-# Returns all active subscription plans ordered by display order
+# Query: Get all subscription plans
+# Returns all subscription plans using nestjs-query Connection format
+# For public catalog, add filter: { isActive: { eq: true } }
 query SubscriptionPlans {
   subscriptionPlans {
-    ...SubscriptionPlanFragment
+    edges {
+      node {
+        ...SubscriptionPlanFragment
+      }
+    }
+    totalCount
   }
 }
 
 # Query: Get a specific subscription plan by ID
-query SubscriptionPlan($id: String!) {
+query SubscriptionPlan($id: ID!) {
   subscriptionPlan(id: $id) {
     ...SubscriptionPlanFragment
   }

@@ -1,0 +1,18 @@
+{
+  "category": "refactor",
+  "description": "Admin analytics dashboard at /admin/analytics should remain custom. Analytics involves complex aggregations, statistical calculations, chart data transformations, and domain-specific metrics (token usage trends, document completion rates, user growth curves). These are NOT simple CRUD operations - they require specialized GraphQL aggregation queries, data processing, and visualization logic. Keep existing custom implementation with optimized aggregation queries and chart components.",
+  "id": "admin-analytics-dashboard-keep-custom",
+  "title": "Keep Custom Implementation for Analytics Dashboard",
+  "dependencies": [],
+  "priority": 3,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Admin analytics dashboard at /admin/analytics should remain custom. Analytics involves complex aggregations, statistical calculations, chart data transformations, and domain-specific metrics (token usage trends, document completion rates, user growth curves). These are NOT simple CRUD operations - they require specialized GraphQL aggregation queries, data processing, and visualization logic. Keep existing custom implementation with optimized aggregation queries and chart components.",
+      "timestamp": "2026-01-30T09:00:33.575Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-30T10:24:33.600Z"
+}

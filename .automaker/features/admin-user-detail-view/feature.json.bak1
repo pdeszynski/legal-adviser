@@ -4,7 +4,7 @@
   "id": "admin-user-detail-view",
   "title": "Admin User Detail View",
   "priority": 2,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {

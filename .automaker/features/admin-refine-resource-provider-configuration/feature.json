@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Properly define Refine resources for all admin entities following https://refine.dev/core/docs/data/data-provider/#usage-1. Configure resources in data provider for: User, AuditLog, Notification, Document (admin view), UsageRecord, SubscriptionPlan. Each resource should map to nestjs-query auto-generated CRUD operations. Define resource names, list of standard operations (getList, getOne, create, update, delete). Enable fine-grained access control if needed. This establishes the foundation for all admin CRUD pages to use standard Refine patterns.",
+  "id": "admin-refine-resource-provider-configuration",
+  "title": "Configure Refine Data Provider Resources for Admin Entities",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Properly define Refine resources for all admin entities following https://refine.dev/core/docs/data/data-provider/#usage-1. Configure resources in data provider for: User, AuditLog, Notification, Document (admin view), UsageRecord, SubscriptionPlan. Each resource should map to nestjs-query auto-generated CRUD operations. Define resource names, list of standard operations (getList, getOne, create, update, delete). Enable fine-grained access control if needed. This establishes the foundation for all admin CRUD pages to use standard Refine patterns.",
+      "timestamp": "2026-01-30T09:00:33.570Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-30T10:22:45.628Z"
+}

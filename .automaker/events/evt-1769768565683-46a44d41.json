@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769768565683-46a44d41",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T10:22:45.683Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-refine-resource-provider-configuration",
+  "featureName": "Configure Refine Data Provider Resources for Admin Entities",
+  "error": "Feature completed in 194s - auto-verified",
+  "passes": true
+}

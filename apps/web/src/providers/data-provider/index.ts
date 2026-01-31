@@ -19,6 +19,12 @@ import { getCsrfHeaders } from '@/lib/csrf';
 const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3001/graphql';
 
 /**
+ * Maximum page size allowed by the GraphQL API.
+ * The paging.first parameter has a max value of 50 on the backend.
+ */
+const MAX_PAGE_SIZE = 50;
+
+/**
  * Session expiry handler callback
  * Set by initializeSessionHandler to enable logout on 401/403
  */
@@ -290,9 +296,10 @@ async function ensureCursorsCached(
     lastCachedPageNumber > 1 ? entry!.cursors[lastCachedPageNumber - 2] : undefined;
 
   for (let pageNum = lastCachedPageNumber + 1; pageNum < targetPage; pageNum++) {
+    const cappedPageSize = Math.min(pageSize, MAX_PAGE_SIZE);
     const graphqlPaging: { first: number; after?: string } = currentCursor
-      ? { first: pageSize, after: currentCursor }
-      : { first: pageSize };
+      ? { first: cappedPageSize, after: currentCursor }
+      : { first: cappedPageSize };
 
     const graphqlFilter = buildGraphQLFilter(filters);
     const graphqlSorting = buildGraphQLSorting(sorters);
@@ -302,12 +309,22 @@ async function ensureCursorsCached(
       const queryToUse = query;
       let dataKey = '';
 
-      if (resource === 'documents') {
+      if (resource === 'users') {
+        dataKey = 'users';
+      } else if (resource === 'documents') {
         dataKey = 'legalDocuments';
       } else if (resource === 'audit_logs') {
         dataKey = 'auditLogs';
       } else if (resource === 'legalRulings') {
         dataKey = 'legalRulings';
+      } else if (resource === 'notifications') {
+        dataKey = 'notifications';
+      } else if (resource === 'demoRequests') {
+        dataKey = 'demoRequests';
+      } else if (resource === 'apiKeys') {
+        dataKey = 'apiKeys';
+      } else if (resource === 'subscription_plans') {
+        dataKey = 'subscriptionPlans';
       } else {
         break; // Unknown resource
       }
@@ -345,7 +362,214 @@ async function ensureCursorsCached(
 }
 
 /**
+ * Field type categories for nestjs-query filter operator mapping
+ *
+ * nestjs-query uses different comparison operators for different field types:
+ * - BooleanFieldComparison: is, isNot (no 'eq' operator)
+ * - StringFieldComparison: eq, neq, iLike, like, in, notIn, gt, gte, lt, lte
+ * - NumberFieldComparison: eq, neq, gt, gte, lt, lte, in, notIn
+ * - DateFieldComparison: eq, neq, gt, gte, lt, lte, in, notIn
+ * - EnumFieldComparison: eq, neq, in, notIn (no iLike/like operators)
+ */
+
+/**
+ * Field type metadata for determining correct GraphQL filter operators
+ */
+type FieldType = 'boolean' | 'string' | 'number' | 'date' | 'enum' | 'unknown';
+
+/**
+ * Field type registry with type information for known fields
+ * Maps field names to their types for proper operator selection
+ */
+const FIELD_TYPE_REGISTRY: Record<string, FieldType> = {
+  // Boolean fields - use 'is'/'isNot' operators
+  isActive: 'boolean',
+  twoFactorEnabled: 'boolean',
+  isPinned: 'boolean',
+  read: 'boolean',
+  emailNotifications: 'boolean',
+  inAppNotifications: 'boolean',
+  moderated: 'boolean',
+  flagged: 'boolean',
+
+  // Date fields - use date comparison operators
+  createdAt: 'date',
+  updatedAt: 'date',
+  deletedAt: 'date',
+  twoFactorVerifiedAt: 'date',
+  verifiedAt: 'date',
+  lastLoginAt: 'date',
+  passwordChangedAt: 'date',
+  submittedAt: 'date',
+  contactedAt: 'date',
+  expiresAt: 'date',
+  lastUsedAt: 'date',
+  rulingDate: 'date',
+  flaggedAt: 'date',
+  moderatedAt: 'date',
+
+  // Enum fields - use eq/neq/in operators (no iLike/like)
+  role: 'enum',
+  status: 'enum',
+  action: 'enum',
+  resourceType: 'enum',
+  tier: 'enum',
+  billingInterval: 'enum',
+  type: 'enum',
+  moderationStatus: 'enum',
+  courtType: 'enum',
+
+  // Number fields - use numeric comparison operators
+  price: 'number',
+  yearlyDiscount: 'number',
+  maxUsers: 'number',
+  trialDays: 'number',
+  rateLimitPerMinute: 'number',
+  displayOrder: 'number',
+  usageCount: 'number',
+};
+
+/**
+ * Detect field type based on field name patterns and known field registry
+ *
+ * @param fieldName - The field name to detect type for
+ * @returns The detected field type
+ */
+function detectFieldType(fieldName: string): FieldType {
+  // Check explicit registry first
+  if (FIELD_TYPE_REGISTRY[fieldName]) {
+    return FIELD_TYPE_REGISTRY[fieldName];
+  }
+
+  // Pattern-based detection for unknown fields
+
+  // Boolean patterns: starts with 'is', 'has', 'should'
+  if (/^(is|has|should|can|will|must)[A-Z]/.test(fieldName)) {
+    return 'boolean';
+  }
+
+  // Date patterns: ends with 'At', 'Date', 'Time', 'On'
+  if (/(At|Date|Time|On)$/.test(fieldName)) {
+    return 'date';
+  }
+
+  // Common enum patterns (status, type, category, etc.)
+  if (
+    /^(status|type|category|tier|level|state|phase|stage|action|role|scope|plan|interval|mode|method)$/.test(
+      fieldName,
+    )
+  ) {
+    return 'enum';
+  }
+
+  // Default to string for unknown fields (most common)
+  return 'string';
+}
+
+/**
+ * Operator mapping configuration per field type
+ *
+ * Defines which GraphQL operator to use for each Refine operator
+ * based on the detected field type.
+ */
+type OperatorMapping = {
+  [refineOperator: string]: (value: unknown) => Record<string, unknown>;
+};
+
+/**
+ * Get operator mapping for a specific field type
+ *
+ * @param fieldType - The detected field type
+ * @returns Object mapping Refine operators to GraphQL filter builders
+ */
+function getOperatorMapping(fieldType: FieldType): OperatorMapping {
+  switch (fieldType) {
+    case 'boolean':
+      // BooleanFieldComparison: is, isNot (no 'eq')
+      return {
+        eq: (value) => ({ is: value }),
+        ne: (value) => ({ isNot: value }),
+        neq: (value) => ({ isNot: value }),
+        in: (value) => ({ is: value }), // Fallback - boolean 'in' not well supported
+        default: (value) => ({ is: value }),
+      };
+
+    case 'date':
+      // DateFieldComparison: eq, neq, gt, gte, lt, lte, in
+      return {
+        eq: (value) => ({ eq: value }),
+        ne: (value) => ({ neq: value }),
+        neq: (value) => ({ neq: value }),
+        gt: (value) => ({ gt: value }),
+        gte: (value) => ({ gte: value }),
+        lt: (value) => ({ lt: value }),
+        lte: (value) => ({ lte: value }),
+        in: (value) => ({ in: value }),
+        default: (value) => ({ eq: value }),
+      };
+
+    case 'number':
+      // NumberFieldComparison: eq, neq, gt, gte, lt, lte, in, notIn
+      return {
+        eq: (value) => ({ eq: value }),
+        ne: (value) => ({ neq: value }),
+        neq: (value) => ({ neq: value }),
+        gt: (value) => ({ gt: value }),
+        gte: (value) => ({ gte: value }),
+        lt: (value) => ({ lt: value }),
+        lte: (value) => ({ lte: value }),
+        in: (value) => ({ in: value }),
+        default: (value) => ({ eq: value }),
+      };
+
+    case 'enum':
+      // EnumFieldComparison: eq, neq, in, notIn (no iLike/like)
+      return {
+        eq: (value) => ({ eq: value }),
+        ne: (value) => ({ neq: value }),
+        neq: (value) => ({ neq: value }),
+        in: (value) => ({ in: value }),
+        default: (value) => ({ eq: value }),
+      };
+
+    case 'string':
+    default:
+      // StringFieldComparison: eq, neq, iLike, like, in, gt, gte, lt, lte
+      return {
+        eq: (value) => ({ eq: value }),
+        ne: (value) => ({ neq: value }),
+        neq: (value) => ({ neq: value }),
+        contains: (value) => ({ iLike: `%${value}%` }),
+        startswith: (value) => ({ iLike: `${value}%` }),
+        endswith: (value) => ({ iLike: `%${value}` }),
+        in: (value) => ({ in: value }),
+        gt: (value) => ({ gt: value }),
+        gte: (value) => ({ gte: value }),
+        lt: (value) => ({ lt: value }),
+        lte: (value) => ({ lte: value }),
+        default: (value) => ({ eq: value }),
+      };
+  }
+}
+
+/**
  * Convert Refine filters to nestjs-query GraphQL filter format
+ *
+ * This function:
+ * 1. Detects the type of each field (boolean, date, string, number, enum)
+ * 2. Maps Refine operators to the correct GraphQL filter operators based on type
+ * 3. Handles special cases like boolean fields (use 'is' not 'eq')
+ * 4. Skips empty/undefined values
+ *
+ * Supported operators by field type:
+ * - Boolean: eq→is, ne→isNot
+ * - String: eq, ne, contains, startswith, endswith, in, gt, gte, lt, lte
+ * - Number: eq, ne, gt, gte, lt, lte, in
+ * - Date: eq, ne, gt, gte, lt, lte, in
+ * - Enum: eq, ne, in
+ *
+ * @param filters - Refine CrudFilters array
+ * @returns GraphQL filter object or undefined if no valid filters
  */
 function buildGraphQLFilter(filters?: CrudFilters): Record<string, unknown> | undefined {
   if (!filters || filters.length === 0) return undefined;
@@ -359,45 +583,26 @@ function buildGraphQLFilter(filters?: CrudFilters): Record<string, unknown> | un
       // Skip empty values
       if (value === undefined || value === null || value === '') continue;
 
-      switch (operator) {
-        case 'eq':
-          filterObj[field] = { eq: value };
-          break;
-        case 'ne':
-          filterObj[field] = { neq: value };
-          break;
-        case 'contains':
-          filterObj[field] = { iLike: `%${value}%` };
-          break;
-        case 'startswith':
-          filterObj[field] = { iLike: `${value}%` };
-          break;
-        case 'endswith':
-          filterObj[field] = { iLike: `%${value}` };
-          break;
-        case 'in':
-          filterObj[field] = { in: value };
-          break;
-        case 'gt':
-          filterObj[field] = { gt: value };
-          break;
-        case 'gte':
-          filterObj[field] = { gte: value };
-          break;
-        case 'lt':
-          filterObj[field] = { lt: value };
-          break;
-        case 'lte':
-          filterObj[field] = { lte: value };
-          break;
-        default:
-          filterObj[field] = { eq: value };
-      }
+      // Detect field type for proper operator mapping
+      const fieldType = detectFieldType(field);
+      const operatorMapping = getOperatorMapping(fieldType);
+
+      // Get the operator function, falling back to default if not found
+      const operatorFn = operatorMapping[operator] || operatorMapping.default;
+
+      // Build and apply the filter
+      filterObj[field] = operatorFn(value);
     }
   }
 
   return Object.keys(filterObj).length > 0 ? filterObj : undefined;
 }
+
+/**
+ * Export field detection functions for testing and external use
+ */
+export { detectFieldType, getOperatorMapping, buildGraphQLFilter, FIELD_TYPE_REGISTRY };
+export type { FieldType };
 
 /**
  * Convert Refine sorting to nestjs-query GraphQL sorting format
@@ -425,7 +630,7 @@ function buildGraphQLPaging(
   filters?: CrudFilters,
   sorters?: CrudSorting,
 ): { first: number; after?: string } {
-  const pageSize = pagination?.pageSize || 10;
+  const pageSize = Math.min(pagination?.pageSize || 10, MAX_PAGE_SIZE);
   const current = pagination?.currentPage || 1;
 
   // First page - no cursor needed
@@ -482,6 +687,7 @@ export const dataProvider: DataProvider = {
                 lastName
                 isActive
                 role
+                twoFactorEnabled
                 disclaimerAccepted
                 stripeCustomerId
                 createdAt
@@ -501,30 +707,47 @@ export const dataProvider: DataProvider = {
       const currentPage = pagination?.currentPage || 1;
       const pageSize = pagination?.pageSize || 10;
 
+      // Separate filters into server-side and client-side
+      // Note: 'role' is a computed field (from user_roles table) that cannot be filtered
+      // at the database level through nestjs-query. It is resolved via @ResolveField.
+      // For role filtering, the frontend should apply client-side filtering after fetching.
+      const clientSideFilters = filters?.filter((f) => 'field' in f && f.field === 'role') || [];
+      const serverSideFilters =
+        filters?.filter((f) => 'field' in f && f.field !== 'role') || undefined;
+
+      // Only use server-side pagination if no role filter is active
+      // Role filtering requires fetching all data first
+      const needsClientSideFilter = clientSideFilters.length > 0;
+
+      const effectivePageSize = needsClientSideFilter
+        ? MAX_PAGE_SIZE
+        : Math.min(pageSize, MAX_PAGE_SIZE);
+      const effectivePage = needsClientSideFilter ? 1 : currentPage;
+
       let prefetchCursor: string | undefined = undefined;
-      if (currentPage > 1) {
+      if (effectivePage > 1 && !needsClientSideFilter) {
         prefetchCursor = await ensureCursorsCached(
           resource,
-          currentPage,
-          pageSize,
+          effectivePage,
+          effectivePageSize,
           query,
-          filters,
+          serverSideFilters,
           sorters,
         );
       }
 
-      const graphqlFilter = buildGraphQLFilter(filters);
+      const graphqlFilter = buildGraphQLFilter(serverSideFilters);
       const graphqlSorting = buildGraphQLSorting(sorters) || [
         { field: 'createdAt', direction: 'DESC' },
       ];
 
       let graphqlPaging: { first: number; after?: string };
-      if (currentPage <= 1) {
-        graphqlPaging = { first: pageSize };
+      if (effectivePage <= 1) {
+        graphqlPaging = { first: effectivePageSize };
       } else if (prefetchCursor) {
-        graphqlPaging = { first: pageSize, after: prefetchCursor };
+        graphqlPaging = { first: effectivePageSize, after: prefetchCursor };
       } else {
-        graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+        graphqlPaging = buildGraphQLPaging(pagination, resource, serverSideFilters, sorters);
       }
 
       const data = await executeGraphQL<{
@@ -545,14 +768,38 @@ export const dataProvider: DataProvider = {
       });
 
       const errors = getProviderErrors(data);
-      const items = data.users.edges.map((edge) => edge.node);
+      let items = data.users.edges.map((edge) => edge.node);
+
+      // Apply client-side filtering for role (computed field from user_roles table)
+      if (needsClientSideFilter && items.length > 0) {
+        for (const filter of clientSideFilters) {
+          if ('field' in filter) {
+            const { field, operator, value } = filter;
+
+            if (field === 'role' && operator === 'eq' && value !== 'all') {
+              items = items.filter((item: any) => item.role === value);
+            }
+          }
+        }
+      }
+
+      // Apply client-side pagination for filtered results
+      let filteredItems = items;
+      let filteredTotal = data.users.totalCount;
+
+      if (needsClientSideFilter) {
+        filteredTotal = items.length;
+        const startIndex = (currentPage - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        filteredItems = items.slice(startIndex, endIndex);
+      }
 
       const cacheKey = getCacheKey(resource, filters, sorters);
       storeCursor(cacheKey, currentPage, data.users.pageInfo.endCursor, data.users.totalCount);
 
       return {
-        data: items,
-        total: data.users.totalCount,
+        data: filteredItems,
+        total: filteredTotal,
         ...(errors.length > 0 && { _errors: errors }),
       };
     }
@@ -676,6 +923,11 @@ export const dataProvider: DataProvider = {
                 title
                 type
                 status
+                moderationStatus
+                moderationReason
+                moderatedById
+                flaggedAt
+                moderatedAt
                 contentRaw
                 metadata {
                   plaintiffName
@@ -864,6 +1116,205 @@ export const dataProvider: DataProvider = {
       };
     }
 
+    if (resource === 'notifications') {
+      const query = `
+        query GetNotifications($filter: NotificationFilter, $paging: CursorPaging, $sorting: [NotificationSort!]) {
+          notifications(filter: $filter, paging: $paging, sorting: $sorting) {
+            totalCount
+            edges {
+              node {
+                id
+                recipientEmail
+                userId
+                subject
+                template
+                status
+                templateData
+                messageId
+                errorMessage
+                metadata
+                sentAt
+                createdAt
+                updatedAt
+              }
+            }
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+          }
+        }
+      `;
+
+      const currentPage = pagination?.currentPage || 1;
+      const pageSize = pagination?.pageSize || 10;
+
+      let prefetchCursor: string | undefined = undefined;
+      if (currentPage > 1) {
+        prefetchCursor = await ensureCursorsCached(
+          resource,
+          currentPage,
+          pageSize,
+          query,
+          filters,
+          sorters,
+        );
+      }
+
+      const graphqlFilter = buildGraphQLFilter(filters);
+      const graphqlSorting = buildGraphQLSorting(sorters) || [
+        { field: 'createdAt', direction: 'DESC' },
+      ];
+
+      let graphqlPaging: { first: number; after?: string };
+      if (currentPage <= 1) {
+        graphqlPaging = { first: pageSize };
+      } else if (prefetchCursor) {
+        graphqlPaging = { first: pageSize, after: prefetchCursor };
+      } else {
+        graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+      }
+
+      const data = await executeGraphQL<{
+        notifications: {
+          totalCount: number;
+          edges: Array<{ node: TData }>;
+          pageInfo: {
+            hasNextPage: boolean;
+            hasPreviousPage: boolean;
+            startCursor: string;
+            endCursor: string;
+          };
+        };
+      }>(query, {
+        filter: graphqlFilter || {},
+        paging: graphqlPaging,
+        sorting: graphqlSorting,
+      });
+
+      const errors = getProviderErrors(data);
+      const items = data.notifications.edges.map((edge) => edge.node);
+
+      const cacheKey = getCacheKey(resource, filters, sorters);
+      storeCursor(
+        cacheKey,
+        currentPage,
+        data.notifications.pageInfo.endCursor,
+        data.notifications.totalCount,
+      );
+
+      return {
+        data: items,
+        total: data.notifications.totalCount,
+        ...(errors.length > 0 && { _errors: errors }),
+      };
+    }
+
+    if (resource === 'subscription_plans') {
+      // Now using nestjs-query Connection format for proper server-side pagination
+      const query = `
+        query GetSubscriptionPlans($filter: SubscriptionPlanFilter, $paging: CursorPaging, $sorting: [SubscriptionPlanSort!]) {
+          subscriptionPlans(filter: $filter, paging: $paging, sorting: $sorting) {
+            totalCount
+            edges {
+              node {
+                id
+                tier
+                name
+                description
+                price
+                billingInterval
+                yearlyDiscount
+                features
+                maxUsers
+                trialDays
+                isActive
+                displayOrder
+                stripePriceId
+                stripeYearlyPriceId
+                createdAt
+                updatedAt
+              }
+            }
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+          }
+        }
+      `;
+
+      const currentPage = pagination?.currentPage || 1;
+      const pageSize = pagination?.pageSize || 10;
+
+      // For pages beyond the first, ensure we have the required cursor
+      let prefetchCursor: string | undefined = undefined;
+      if (currentPage > 1) {
+        prefetchCursor = await ensureCursorsCached(
+          resource,
+          currentPage,
+          pageSize,
+          query,
+          filters,
+          sorters,
+        );
+      }
+
+      const graphqlFilter = buildGraphQLFilter(filters);
+      const graphqlSorting = buildGraphQLSorting(sorters) || [
+        { field: 'displayOrder', direction: 'ASC' },
+      ];
+
+      // Build paging with the potentially prefetched cursor
+      let graphqlPaging: { first: number; after?: string };
+      if (currentPage <= 1) {
+        graphqlPaging = { first: pageSize };
+      } else if (prefetchCursor) {
+        graphqlPaging = { first: pageSize, after: prefetchCursor };
+      } else {
+        graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+      }
+
+      const data = await executeGraphQL<{
+        subscriptionPlans: {
+          totalCount: number;
+          edges: Array<{ node: TData }>;
+          pageInfo: {
+            hasNextPage: boolean;
+            hasPreviousPage: boolean;
+            startCursor: string;
+            endCursor: string;
+          };
+        };
+      }>(query, {
+        filter: graphqlFilter || {},
+        paging: graphqlPaging,
+        sorting: graphqlSorting,
+      });
+
+      const errors = getProviderErrors(data);
+      const items = data.subscriptionPlans.edges.map((edge) => edge.node);
+
+      // Store cursor for this page to enable navigation
+      const cacheKey = getCacheKey(resource, filters, sorters);
+      storeCursor(
+        cacheKey,
+        currentPage,
+        data.subscriptionPlans.pageInfo.endCursor,
+        data.subscriptionPlans.totalCount,
+      );
+
+      return {
+        data: items,
+        total: data.subscriptionPlans.totalCount,
+        ...(errors.length > 0 && { _errors: errors }),
+      };
+    }
+
     if (resource === 'demoRequests') {
       const query = `
         query GetDemoRequests($filter: DemoRequestFilter, $paging: CursorPaging, $sorting: [DemoRequestSort!]) {
@@ -969,6 +1420,103 @@ export const dataProvider: DataProvider = {
       };
     }
 
+    if (resource === 'apiKeys') {
+      const query = `
+        query GetApiKeys($filter: ApiKeyFilter, $paging: CursorPaging, $sorting: [ApiKeySort!]) {
+          apiKeys(filter: $filter, paging: $paging, sorting: $sorting) {
+            totalCount
+            edges {
+              node {
+                id
+                userId
+                name
+                keyPrefix
+                scopes
+                rateLimitPerMinute
+                status
+                expiresAt
+                lastUsedAt
+                usageCount
+                description
+                createdAt
+                updatedAt
+              }
+            }
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+          }
+        }
+      `;
+
+      const currentPage = pagination?.currentPage || 1;
+      const pageSize = pagination?.pageSize || 10;
+
+      // For pages beyond the first, ensure we have the required cursor
+      let prefetchCursor: string | undefined = undefined;
+      if (currentPage > 1) {
+        prefetchCursor = await ensureCursorsCached(
+          resource,
+          currentPage,
+          pageSize,
+          query,
+          filters,
+          sorters,
+        );
+      }
+
+      const graphqlFilter = buildGraphQLFilter(filters);
+      const graphqlSorting = buildGraphQLSorting(sorters) || [
+        { field: 'createdAt', direction: 'DESC' },
+      ];
+
+      // Build paging with the potentially prefetched cursor
+      let graphqlPaging: { first: number; after?: string };
+      if (currentPage <= 1) {
+        graphqlPaging = { first: pageSize };
+      } else if (prefetchCursor) {
+        graphqlPaging = { first: pageSize, after: prefetchCursor };
+      } else {
+        graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+      }
+
+      const data = await executeGraphQL<{
+        apiKeys: {
+          totalCount: number;
+          edges: Array<{ node: TData }>;
+          pageInfo: {
+            hasNextPage: boolean;
+            hasPreviousPage: boolean;
+            startCursor: string;
+            endCursor: string;
+          };
+        };
+      }>(query, {
+        filter: graphqlFilter || {},
+        paging: graphqlPaging,
+        sorting: graphqlSorting,
+      });
+
+      // Extract any GraphQL errors from the response
+      const errors = getProviderErrors(data);
+
+      const items = data.apiKeys.edges.map((edge) => edge.node);
+
+      // Store cursor for this page to enable navigation
+      const cacheKey = getCacheKey(resource, filters, sorters);
+      storeCursor(cacheKey, currentPage, data.apiKeys.pageInfo.endCursor, data.apiKeys.totalCount);
+
+      return {
+        data: items,
+        total: data.apiKeys.totalCount,
+        // Attach errors to the result for components to handle
+        ...(errors.length > 0 && { _errors: errors }),
+      };
+    }
+
     throw new Error(`Unknown resource: ${resource}`);
   },
 
@@ -1049,6 +1597,11 @@ export const dataProvider: DataProvider = {
             title
             type
             status
+            moderationStatus
+            moderationReason
+            moderatedById
+            flaggedAt
+            moderatedAt
             contentRaw
             metadata {
               plaintiffName
@@ -1097,6 +1650,69 @@ export const dataProvider: DataProvider = {
       };
     }
 
+    if (resource === 'notifications') {
+      const query = `
+        query GetNotification($id: ID!) {
+          notification(id: $id) {
+            id
+            recipientEmail
+            userId
+            user {
+              id
+              email
+              firstName
+              lastName
+            }
+            subject
+            template
+            status
+            templateData
+            messageId
+            errorMessage
+            metadata
+            sentAt
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ notification: TData }>(query, { id });
+      return {
+        data: data.notification,
+      };
+    }
+
+    if (resource === 'subscription_plans') {
+      const query = `
+        query GetSubscriptionPlan($id: ID!) {
+          subscriptionPlan(id: $id) {
+            id
+            tier
+            name
+            description
+            price
+            billingInterval
+            yearlyDiscount
+            features
+            maxUsers
+            trialDays
+            isActive
+            displayOrder
+            stripePriceId
+            stripeYearlyPriceId
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ subscriptionPlan: TData }>(query, { id });
+      return {
+        data: data.subscriptionPlan,
+      };
+    }
+
     if (resource === 'demoRequests') {
       const query = `
         query GetDemoRequest($id: ID!) {
@@ -1127,6 +1743,33 @@ export const dataProvider: DataProvider = {
       };
     }
 
+    if (resource === 'apiKeys') {
+      const query = `
+        query GetApiKey($id: ID!) {
+          apiKey(id: $id) {
+            id
+            userId
+            name
+            keyPrefix
+            scopes
+            rateLimitPerMinute
+            status
+            expiresAt
+            lastUsedAt
+            usageCount
+            description
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ apiKey: TData }>(query, { id });
+      return {
+        data: data.apiKey,
+      };
+    }
+
     throw new Error(`Unknown resource: ${resource}`);
   },
 
@@ -1145,7 +1788,7 @@ export const dataProvider: DataProvider = {
     // User creation via nestjs-query auto-generated mutation
     if (resource === 'users') {
       const mutation = `
-        mutation CreateOneUser($input: CreateUserInput!) {
+        mutation CreateOneUser($input: CreateOneUserInput!) {
           createOneUser(input: $input) {
             id
             email
@@ -1180,6 +1823,11 @@ export const dataProvider: DataProvider = {
             title
             type
             status
+            moderationStatus
+            moderationReason
+            moderatedById
+            flaggedAt
+            moderatedAt
             contentRaw
             metadata {
               plaintiffName
@@ -1234,6 +1882,71 @@ export const dataProvider: DataProvider = {
       };
     }
 
+    // Subscription plans via nestjs-query auto-generated mutation
+    if (resource === 'subscription_plans') {
+      const mutation = `
+        mutation CreateOneSubscriptionPlan($input: CreateOneSubscriptionPlanInput!) {
+          createOneSubscriptionPlan(input: $input) {
+            id
+            tier
+            name
+            description
+            price
+            billingInterval
+            yearlyDiscount
+            features
+            maxUsers
+            trialDays
+            isActive
+            displayOrder
+            stripePriceId
+            stripeYearlyPriceId
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ createOneSubscriptionPlan: TData }>(mutation, {
+        input: variables,
+      });
+
+      return {
+        data: data.createOneSubscriptionPlan,
+      };
+    }
+
+    // API keys via nestjs-query auto-generated mutation
+    if (resource === 'apiKeys') {
+      const mutation = `
+        mutation CreateOneApiKey($input: CreateOneApiKeyInput!) {
+          createOneApiKey(input: $input) {
+            id
+            userId
+            name
+            keyPrefix
+            scopes
+            rateLimitPerMinute
+            status
+            expiresAt
+            lastUsedAt
+            usageCount
+            description
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ createOneApiKey: TData }>(mutation, {
+        input: variables,
+      });
+
+      return {
+        data: data.createOneApiKey,
+      };
+    }
+
     throw new Error(`Create not implemented for resource: ${resource}`);
   },
 
@@ -1252,9 +1965,10 @@ export const dataProvider: DataProvider = {
     meta?: { operation?: string; [key: string]: unknown };
   }) => {
     if (resource === 'users') {
+      // nestjs-query format: id is inside input object
       const mutation = `
-        mutation UpdateOneUser($id: ID!, $input: UpdateUserInput!) {
-          updateOneUser(id: $id, input: $input) {
+        mutation UpdateOneUser($input: UpdateOneUserInput!) {
+          updateOneUser(input: $input) {
             id
             email
             username
@@ -1270,8 +1984,10 @@ export const dataProvider: DataProvider = {
       `;
 
       const data = await executeGraphQL<{ updateOneUser: TData }>(mutation, {
-        id,
-        input: variables,
+        input: {
+          id,
+          ...variables,
+        },
       });
 
       return {
@@ -1288,6 +2004,11 @@ export const dataProvider: DataProvider = {
             title
             type
             status
+            moderationStatus
+            moderationReason
+            moderatedById
+            flaggedAt
+            moderatedAt
             contentRaw
             metadata {
               plaintiffName
@@ -1344,6 +2065,79 @@ export const dataProvider: DataProvider = {
       };
     }
 
+    // Subscription plans via nestjs-query auto-generated mutation
+    if (resource === 'subscription_plans') {
+      // nestjs-query format: id is inside input object
+      const mutation = `
+        mutation UpdateOneSubscriptionPlan($input: UpdateOneSubscriptionPlanInput!) {
+          updateOneSubscriptionPlan(input: $input) {
+            id
+            tier
+            name
+            description
+            price
+            billingInterval
+            yearlyDiscount
+            features
+            maxUsers
+            trialDays
+            isActive
+            displayOrder
+            stripePriceId
+            stripeYearlyPriceId
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ updateOneSubscriptionPlan: TData }>(mutation, {
+        input: {
+          id,
+          ...variables,
+        },
+      });
+
+      return {
+        data: data.updateOneSubscriptionPlan,
+      };
+    }
+
+    // API keys via nestjs-query auto-generated mutation
+    if (resource === 'apiKeys') {
+      // nestjs-query format: id is inside input object
+      const mutation = `
+        mutation UpdateOneApiKey($input: UpdateOneApiKeyInput!) {
+          updateOneApiKey(input: $input) {
+            id
+            userId
+            name
+            keyPrefix
+            scopes
+            rateLimitPerMinute
+            status
+            expiresAt
+            lastUsedAt
+            usageCount
+            description
+            createdAt
+            updatedAt
+          }
+        }
+      `;
+
+      const data = await executeGraphQL<{ updateOneApiKey: TData }>(mutation, {
+        input: {
+          id,
+          ...variables,
+        },
+      });
+
+      return {
+        data: data.updateOneApiKey,
+      };
+    }
+
     throw new Error(`Update not implemented for resource: ${resource}`);
   },
 
@@ -1358,19 +2152,22 @@ export const dataProvider: DataProvider = {
     id: string | number;
   }) => {
     if (resource === 'users') {
+      // nestjs-query format: id is inside input object
       const mutation = `
-        mutation DeleteOneUser($id: ID!) {
-          deleteOneUser(id: $id) {
+        mutation DeleteOneUser($input: DeleteOneUserInput!) {
+          deleteOneUser(input: $input) {
             id
             email
           }
         }
       `;
 
-      await executeGraphQL<{ deleteOneUser: TData }>(mutation, { id });
+      const result = await executeGraphQL<{ deleteOneUser: TData }>(mutation, {
+        input: { id },
+      });
 
       return {
-        data: { id } as TData,
+        data: result.deleteOneUser,
       };
     }
 
@@ -1385,6 +2182,48 @@ export const dataProvider: DataProvider = {
 
       return {
         data: { id } as TData,
+      };
+    }
+
+    // Subscription plans via nestjs-query auto-generated mutation
+    if (resource === 'subscription_plans') {
+      // nestjs-query format: id is inside input object
+      const mutation = `
+        mutation DeleteOneSubscriptionPlan($input: DeleteOneSubscriptionPlanInput!) {
+          deleteOneSubscriptionPlan(input: $input) {
+            id
+            name
+          }
+        }
+      `;
+
+      const result = await executeGraphQL<{ deleteOneSubscriptionPlan: TData }>(mutation, {
+        input: { id },
+      });
+
+      return {
+        data: result.deleteOneSubscriptionPlan,
+      };
+    }
+
+    // API keys via nestjs-query auto-generated mutation
+    if (resource === 'apiKeys') {
+      // nestjs-query format: id is inside input object
+      const mutation = `
+        mutation DeleteOneApiKey($input: DeleteOneApiKeyInput!) {
+          deleteOneApiKey(input: $input) {
+            id
+            name
+          }
+        }
+      `;
+
+      const result = await executeGraphQL<{ deleteOneApiKey: TData }>(mutation, {
+        input: { id },
+      });
+
+      return {
+        data: result.deleteOneApiKey,
       };
     }
 

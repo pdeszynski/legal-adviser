@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769765785985-7117a2e5",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-30T09:36:25.985Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-refine-e2e-tests-after-refactor",
+  "featureName": "Update E2E Tests for Refactored Admin Pages",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

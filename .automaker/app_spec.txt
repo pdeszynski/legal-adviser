@@ -4277,7 +4277,7 @@ Update seeds to make sure the roels are created, add role to admin@refine.dev as
       <description>Create comprehensive E2E tests to verify GraphQL returns UserRole entities correctly for all role-based operations. Test scenarios: 1) Query me() - verify user_roles array is returned with UserRole objects, 2) Query user(id) - verify user_roles includes UserRole with nested Role data, 3) Query users list - verify each user has user_roles array, 4) Verify UserRole objects include: id, userId, roleId, role { id, name, description }, createdAt, 5) Verify deprecated role field is NOT present in response, 6) Test with admin@refine.dev - verify ADMIN role appears in user_roles, 7) Test with user@example.com - verify USER role in user_roles, 8) Test mutations (userCreate, userUpdate) create UserRole relationships, 9) Verify frontend useUserRole hook receives correct array format, 10) Add network request interception in tests to inspect actual GraphQL response structure. Use Playwright to test authenticated GraphQL queries.</description>
     </feature>
     <feature>
-      <name>Fix returned value from graphql </name>
+      <name>Fix returned value from graphql</name>
       <description>## Parent Task Context (Already Completed)
 
 &gt; **Note:** The following parent task has already been completed. This context is provided to help you understand the background and requirements for this sub-task. Do not re-implement the parent task - focus only on the new sub-task described below.
@@ -4291,6 +4291,154 @@ Update seeds to make sure the roels are created, add role to admin@refine.dev as
 ## Task Description
 
 It&apos;s still not working, for user admin@refine.dev instead of super admin i&apos;m getting a role = client, this is returned from graphql</description>
+    </feature>
+    <feature>
+      <name>Refactor Admin API Key Management to Use Standard Refine CRUD</name>
+      <description>Refactor admin API keys management to use Refine&apos;s standard CRUD patterns with useTable for listing and useEdit for managing keys. Use nestjs-query auto-generated resolvers for ApiKey entity. Configure resource with standard operations. API key management is pure CRUD (create, list, revoke/delete) - perfect candidate for standard Refine patterns. Replace custom mutations with standard resource operations.</description>
+    </feature>
+    <feature>
+      <name>Refactor Admin Audit Logs to Use Standard Refine Table Hook</name>
+      <description>Refactor admin audit logs page at /admin/audit-logs to use Refine&apos;s useTable hook with filtering, sorting, and pagination. Replace custom data provider calls with standard useTable from @refinedev/core. Configure filters for date range, action type, and user filtering. Use nestjs-query auto-generated resolvers for AuditLog entity with @FilterableField decorators. This leverages Refine&apos;s built-in table features (filtering, sorting, pagination) instead of custom implementation. Audit logs are read-only CRUD with filtering - perfect for standard patterns.</description>
+    </feature>
+    <feature>
+      <name>Refactor Admin User Management to Use Standard Refine CRUD</name>
+      <description>Refactor admin user management page at /admin/users to use Refine.dev&apos;s standard CRUD patterns with nestjs-query auto-generated resolvers. Replace custom mutations and data provider calls with standard Refine hooks: useTable for listing, useShow for detail view, useEdit for editing, useCreate for user creation. Use @refinedev/nestjs-query&apos;s auto-generated CRUD operations from User entity. Configure resource in data provider following https://refine.dev/core/docs/data/data-provider/#usage-1. Example: https://github.com/refinedev/refine/blob/main/examples/data-provider-nestjs-query/src/pages/posts/list.tsx. This simplifies the admin code by leveraging nestjs-query&apos;s auto-generated resolvers for CRUD operations. User management is a pure CRUD admin task that fits this pattern perfectly - no complex domain logic, just standard user data operations.</description>
+    </feature>
+    <feature>
+      <name>Refactor Admin Document List to Use Standard Refine Table</name>
+      <description>Refactor admin document management list view to use Refine&apos;s useTable hook with standard filtering and sorting. Leverage nestjs-query auto-generated resolvers for LegalDocument entity. Use @FilterableField decorators for searchable fields (title, status, type, createdAt). Replace custom GraphQL queries with standard resource getList operation. Keep custom actions (pdf download, sharing) as supplementary buttons in table actions column. Document list is CRUD with read operations - fits standard pattern.</description>
+    </feature>
+    <feature>
+      <name>Configure Refine Data Provider Resources for Admin Entities</name>
+      <description>Properly define Refine resources for all admin entities following https://refine.dev/core/docs/data/data-provider/#usage-1. Configure resources in data provider for: User, AuditLog, Notification, Document (admin view), UsageRecord, SubscriptionPlan. Each resource should map to nestjs-query auto-generated CRUD operations. Define resource names, list of standard operations (getList, getOne, create, update, delete). Enable fine-grained access control if needed. This establishes the foundation for all admin CRUD pages to use standard Refine patterns.</description>
+    </feature>
+    <feature>
+      <name>Document Refine.dev CRUD Patterns for Admin Development</name>
+      <description>Update CLAUDE.md and admin development documentation to clarify when to use standard Refine CRUD patterns vs custom implementations. Add guidelines: 1) Use standard CRUD (useTable, useEdit, useForm) for simple admin data operations: user management, audit logs, settings, API keys, document listings, 2) Use custom implementations for complex domain logic: Temporal workflows, analytics aggregations, approval workflows, business-specific operations, 3) Reference Refine.dev documentation: https://refine.dev/core/docs/data/hooks/use-table/, https://refine.dev/core/docs/data/data-provider/, 4) Provide examples of both patterns, 5) Document resource configuration patterns, 6) Show nestjs-query integration examples. This prevents future over-engineering of simple admin tasks.</description>
+    </feature>
+    <feature>
+      <name>Keep Custom Implementation for Analytics Dashboard</name>
+      <description>Admin analytics dashboard at /admin/analytics should remain custom. Analytics involves complex aggregations, statistical calculations, chart data transformations, and domain-specific metrics (token usage trends, document completion rates, user growth curves). These are NOT simple CRUD operations - they require specialized GraphQL aggregation queries, data processing, and visualization logic. Keep existing custom implementation with optimized aggregation queries and chart components.</description>
+    </feature>
+    <feature>
+      <name>Configure Refine Routing for Admin Resources</name>
+      <description>Update routing configuration in Refine provider to properly handle admin resource routes. Configure routes for: /admin/users (user resource), /admin/audit-logs (auditLog resource), /admin/documents (document resource for admin), /admin/api-keys (apiKey resource), /admin/settings (systemSettings resource). Use Refine&apos;s resource-based routing instead of manual route configuration. Enable nested routes for detail views (e.g., /admin/users/:id). Ensure navigation menu uses resource-based routes. This standardizes routing across admin section.</description>
+    </feature>
+    <feature>
+      <name>Keep Custom Implementation for Document Generation Workflows</name>
+      <description>Document generation queue monitoring and management should NOT be refactored to standard CRUD. This involves complex Temporal workflow orchestration, status tracking across distributed systems, and domain-specific actions (retry, cancel, force-complete). These operations are NOT simple CRUD - they involve triggering workflows, monitoring async operations, and managing distributed state. Keep existing custom implementation with specialized mutations and real-time subscriptions. This is an example of complex domain logic that belongs in the core domain, not admin CRUD.</description>
+    </feature>
+    <feature>
+      <name>Keep Custom Implementation for Document Moderation</name>
+      <description>Document moderation interface should remain custom. Moderation involves reviewing user-generated content, applying approval workflows, and triggering domain-specific actions (notify user, update status, flag content). This is business logic specific to the legal document domain, not generic CRUD. Keep existing custom implementation with specialized mutations and approval workflow UI.</description>
+    </feature>
+    <feature>
+      <name>Refactor Admin System Settings to Use Refine Form Hooks</name>
+      <description>Refactor admin system settings page at /admin/settings to use Refine&apos;s useForm hook or useCustom for settings that are standard key-value pairs. For settings backed by entities (SystemSettings entity), use standard useEdit hook with nestjs-query resolvers. Replace custom mutation calls with Refine&apos;s form patterns. Settings management is CRUD on a singleton resource - fits Refine patterns with minor customization.</description>
+    </feature>
+    <feature>
+      <name>Update E2E Tests for Refactored Admin Pages</name>
+      <description>Update existing E2E tests for admin pages after refactoring to standard Refine CRUD patterns. Ensure tests still pass for: user management (list, create, edit, delete), audit logs (filtering, pagination), document management (list view), API key management (CRUD operations). Update test selectors and interactions to match Refine&apos;s standard component structure. Add tests for new standard features like inline editing, bulk actions if enabled. Verify no regressions in admin functionality after refactoring.</description>
+    </feature>
+    <feature>
+      <name>Analyze Admin Panel GraphQL Request Errors</name>
+      <description>Investigate and document all GraphQL request errors occurring in the admin panel. Use browser DevTools Network tab to capture failing GraphQL requests. Identify: 1) Which admin pages are failing (users, audit-logs, documents, etc.), 2) Error messages and status codes, 3) Request payloads being sent, 4) Response format mismatches, 5) Any missing or incorrect GraphQL operations. Document findings in a structured report with: endpoint URL, query/mutation, error message, expected vs actual behavior. Focus on understanding why requests return &apos;invalid request&apos; errors - likely issues with nestjs-query auto-generated resolvers not matching Refine data provider expectations.</description>
+    </feature>
+    <feature>
+      <name>Fix Admin User CRUD Operations (Create, Update, Delete)</name>
+      <description>Fix user CRUD operations in admin panel to work with nestjs-query auto-generated mutations. Implementation: 1) Verify nestjs-query generates createOneUser, updateOneUser, deleteOneUser mutations, 2) Update Refine data provider to use correct mutation format: mutation { createOneUser(input: { email: ..., role: ... }) { id email role } }, 3) Ensure useCreate, useUpdate, useDelete hooks from Refine work correctly, 4) Verify input types match CreateUserInput, UpdateUserInput from nestjs-query, 5) Test creating a new user from admin panel, 6) Test editing user (role, status), 7) Test deleting user with confirmation, 8) Handle errors gracefully with user-friendly messages. Follow Refine patterns for CRUD operations with nestjs-query.</description>
+    </feature>
+    <feature>
+      <name>Fix Admin Audit Logs GraphQL Integration</name>
+      <description>Fix the admin audit logs page at /admin/audit-logs to work with nestjs-query resolvers. Implementation: 1) Verify AuditLog entity has @FilterableField decorators for filterable fields (action, userId, timestamp), 2) Ensure AuditLogQueryService is registered and auto-generates CRUD operations, 3) Update Refine data provider auditLogs resource to query with proper nestjs-query format, 4) Fix JSON field handling for changeDetails (nestjs-query needs special handling for JSON fields - exclude from sub-selection or use scalar), 5) Implement filtering by date range, action type, and user, 6) Fix pagination to use cursor-based paging (first/after), 7) Test that audit logs load correctly with all filters working. Resolve the &apos;String cannot represent value&apos; serialization errors for JSON fields.</description>
+    </feature>
+    <feature>
+      <name>Fix Admin Document List GraphQL Integration</name>
+      <description>Fix the admin document list page to work with nestjs-query auto-generated resolvers. Implementation: 1) Verify LegalDocument entity has proper nestjs-query decorators and QueryService, 2) Update Refine data provider legalDocuments resource to use nestjs-query format, 3) Ensure filtering works (status, type, createdAt, etc.), 4) Fix pagination to use cursor-based paging, 5) Fix sorting configuration, 6) Test document list loads correctly, 7) Verify filtering and pagination work. This is straightforward CRUD following the same pattern as users list.</description>
+    </feature>
+    <feature>
+      <name>Fix Admin User List GraphQL Integration with nestjs-query</name>
+      <description>Fix the admin users list page at /admin/users to work correctly with nestjs-query auto-generated resolvers and Refine data provider. Implementation tasks: 1) Verify User entity has proper @nestjs-query decorators (@ObjectType, @FilterableField, @Relation), 2) Ensure UserQueryService is properly registered in UsersModule, 3) Verify GraphQL schema includes users query with paging (first, after) and filtering options, 4) Update Refine data provider to format requests correctly for nestjs-query format: query { users(first: 10, after: null, filter: { ... }, sorting: [{ field: email, direction: ASC }]) { edges { node { id email role } }, pageInfo { endCursor hasNextPage }, totalCount } }, 5) Ensure response parsing handles nestjs-query connection format (edges.node structure), 6) Test filtering, sorting, and pagination work correctly. Use the reference examples from nestjs-query docs and Refine nestjs-query example.</description>
+    </feature>
+    <feature>
+      <name>Document Admin CRUD Integration Pattern for Future Development</name>
+      <description>Update CLAUDE.md and admin development documentation with the correct pattern for integrating Refine with nestjs-query auto-generated resolvers. Include: 1) Entity decorator setup (@ObjectType, @FilterableField, @Relation), 2) QueryService registration in modules, 3) Refine data provider configuration showing correct request/response formats, 4) Example from working users list page, 5) Connection-based pagination handling (edges.node), 6) JSON field handling patterns (like auditLogs.changeDetails), 7) Common pitfalls and how to avoid them, 8) Links to reference examples (nestjs-query docs, Refine nestjs-query example). This documentation will prevent future admin pages from having the same integration issues.</description>
+    </feature>
+    <feature>
+      <name>Create E2E Tests for Admin Pages After Fixes</name>
+      <description>Create comprehensive Playwright E2E tests to verify all admin pages work correctly after GraphQL integration fixes. Test scenarios: 1) Admin login and navigation to /admin, 2) Users list loads and displays data, 3) User filtering and pagination work, 4) Create new user (if applicable), 5) Edit user role, 6) Delete user (with confirmation), 7) Audit logs load with filters working, 8) Document list loads and displays, 9) Pagination and filtering work on all pages, 10) Verify no &apos;invalid request&apos; errors appear. Use admin@refine.dev credentials for testing. Ensure tests catch regressions where GraphQL requests fail.</description>
+    </feature>
+    <feature>
+      <name>Verify All Admin Resources Are Configured in Refine Data Provider</name>
+      <description>Audit and fix all admin resource configurations in the Refine data provider to ensure they follow nestjs-query patterns. Resources to verify: 1) users - should use nestjs-query auto-generated CRUD, 2) auditLogs - should use nestjs-query with JSON field handling, 3) documents (legalDocuments) - should use nestjs-query CRUD, 4) apiKeys - should use nestjs-query CRUD, 5) notifications - should use nestjs-query CRUD, 6) Any other admin resources. For each resource, verify: getList, getOne, create, update, deleteOne methods are correctly implemented with nestjs-query connection format (edges.node structure). Remove any custom mutations that should use nestjs-query auto-generated ones. Document any resources that legitimately need custom implementations (analytics, system health) vs standard CRUD.</description>
+    </feature>
+    <feature>
+      <name>Refactor Admin Views to Use useTable Hook</name>
+      <description>Refactor all admin list views to use Refine&apos;s standard useTable hook with nestjs-query auto-generated resolvers. This includes user management, audit logs, document lists, API keys, and notifications. The refactoring will ensure proper filtering, sorting, and pagination functionality. Implementation: 1) Replace custom data provider calls with useTable from @refinedev/core, 2) Use nestjs-query auto-generated CRUD operations for each entity, 3) Configure columns with proper filtering and sorting, 4) Implement cursor-based pagination handling, 5) Fix filter builders to use nestjs-query filter format, 6) Ensure sorting configuration matches backend @FilterableField decorators, 7) Remove redundant custom mutations for standard CRUD operations, 8) Test each view to ensure filtering, sorting, and pagination work correctly. This follows the Refine CRUD patterns documented in CLAUDE.md and addresses the current filtering issues.</description>
+    </feature>
+    <feature>
+      <name>Fix Admin User View Filtering</name>
+      <description>Fix the filtering functionality in the admin user management view at /admin/users. Currently filters are not working correctly after the user view was fixed. Implementation: 1) Verify User entity has @FilterableField decorators for filterable fields (email, username, role, isActive, createdAt), 2) Ensure UserQueryService generates proper filter types (UserFilter with StringFilter, BooleanFilter, etc.), 3) Update useTable configuration to use correct filter mapping, 4) Implement buildGraphQLFilter function that converts Refine filters to nestjs-query format, 5) Test filtering by role, status, email, and date range, 6) Ensure filter state persists across pagination changes. This is an urgent fix needed for the user management view.</description>
+    </feature>
+    <feature>
+      <name>Integrate Admin Views with Refine Data Provider</name>
+      <description>Update the Refine data provider to properly support all admin resources with nestjs-query format. Implementation: 1) Add/update getList methods for: users, auditLogs, legalDocuments, apiKeys, notifications, 2) Ensure each resource uses proper nestjs-query connection format (edges.node structure), 3) Implement buildGraphQLFilter to convert Refine filters to nestjs-query format ({ field: { eq: value } }), 4) Implement buildGraphQLSorting to convert Refine sorters to nestjs-query format, 5) Implement cursor-based pagination with cursorCache for sequential page navigation, 6) Handle JSON fields properly (auditLogs.changeDetails should be scalar, not sub-selected), 7) Add error handling and proper TypeScript types. This ensures all admin views can use standard Refine hooks.</description>
+    </feature>
+    <feature>
+      <name>Fix pagination limit validation error</name>
+      <description>{,…}
+data
+: 
+null
+errors
+: 
+[{message: &quot;Field paging.first max allowed value is `50`.&quot;, locations: [{line: 3, column: 11}],…}]
+0
+: 
+{message: &quot;Field paging.first max allowed value is `50`.&quot;, locations: [{line: 3, column: 11}],…}
+extensions
+: 
+{code: &quot;BAD_REQUEST&quot;, httpStatus: 400,…}
+locations
+: 
+[{line: 3, column: 11}]
+message
+: 
+&quot;Field paging.first max allowed value is `50`.&quot;
+path
+: 
+[&quot;users&quot;]
+0
+: 
+&quot;users&quot;</description>
+    </feature>
+    <feature>
+      <name>Add E2E Tests for Admin View Filtering</name>
+      <description>Create comprehensive Playwright E2E tests for filtering functionality across all admin views. Test scenarios: 1) User list - filter by role (admin, lawyer, client), filter by status (active/inactive), filter by email (contains), filter by date range, 2) Audit logs - filter by action type, filter by date range, filter by user, 3) Documents - filter by status, filter by type, filter by date, 4) API keys - filter by status, filter by user, 5) Verify filters work together (combined filtering), 6) Verify filter state persists across pagination, 7) Verify clear filters button resets all filters, 8) Verify filters show correct results count. Use Playwright to interact with filter controls and verify results.</description>
+    </feature>
+    <feature>
+      <name>Fix Document List Filters with nestjs-query</name>
+      <description>Ensure LegalDocument entity has proper nestjs-query filter decorators and document list page filters work correctly. Implementation: 1) Verify LegalDocument entity has @FilterableField decorators on filterable fields: title (string), status (enum), type (enum), createdAt (date), updatedAt (date), 2) Ensure status and type are enum types with proper GraphQL definitions, 3) Update document list page to use Refine&apos;s setFilters for status and type filters, 4) Ensure filters use correct operators: status/type use &apos;eq&apos; (string enum), createdAt uses &apos;gte/lte&apos; for date ranges, 5) Remove any client-side filtering logic, 6) Test filtering documents by status (DRAFT, GENERATING, COMPLETED, FAILED), 7) Test filtering by document type, 8) Test date range filters for createdAt, 9) Verify pagination works correctly with active filters. Reference existing working patterns from users list if available.</description>
+    </feature>
+    <feature>
+      <name>Fix Audit Logs Filters with nestjs-query</name>
+      <description>Ensure AuditLog entity filters work correctly with nestjs-query. Implementation: 1) Verify AuditLog entity has @FilterableField decorators on: action (string enum), userId (UUID), timestamp (date), resourceType (string), 2) Ensure changeDetails JSON field is NOT filterable (excluded from filter operations), 3) Update audit logs page to send filters via setFilters, 4) Map action filter to use &apos;eq&apos; operator, 5) Map timestamp filter to use date range operators (&apos;gte&apos; for start date, &apos;lte&apos; for end date), 6) Map userId filter to use &apos;eq&apos;, 7) Test filtering by action type (LOGIN, LOGOUT, DOCUMENT_CREATE, etc.), 8) Test date range filtering, 9) Verify no errors with &apos;eq&apos; not defined for timestamp/date fields. Ensure JSON field changeDetails doesn&apos;t cause filter errors.</description>
+    </feature>
+    <feature>
+      <name>Remove Client-Side Filtering from Admin Pages</name>
+      <description>Remove all client-side filtering logic from admin pages and replace with proper backend GraphQL filtering. Current issue: Admin pages (users, audit-logs, documents, etc.) are filtering data on the client side instead of sending filter parameters to the backend. This causes performance issues and doesn&apos;t work with pagination. Implementation: 1) Audit all admin pages to identify client-side filtering (useEffect filtering data arrays, filter functions on results), 2) Remove client-side filter logic, 3) Ensure filters are passed to Refine&apos;s useTable/setFilters hooks, 4) Verify filters are sent to backend via GraphQL variables, 5) Test that backend returns filtered results using nestjs-query resolvers, 6) Ensure filter state persists across pagination changes, 7) Remove any &apos;filteredData&apos; local state variables. Pages to fix: users page (role filtering), audit-logs page (action, date filtering), documents page (status, type filtering), API keys page (status filtering). Use standard nestjs-query filter patterns.</description>
+    </feature>
+    <feature>
+      <name>Update buildGraphQLFilter to Map Field Types Correctly</name>
+      <description>Enhance the buildGraphQLFilter function in Refine data provider to detect field types and use correct nestjs-query filter operators. Implementation: 1) Accept field metadata or type information in buildGraphQLFilter, 2) Create field type detection logic: if field name is &apos;isActive&apos;, &apos;isVerified&apos; treat as boolean, if field name is &apos;createdAt&apos;, &apos;updatedAt&apos; treat as date, if field is enum (role, status) treat as string enum, 3) Map Refine operators based on detected type: boolean fields use &apos;is&apos; for &apos;eq&apos;, string fields use &apos;eq&apos; for &apos;eq&apos;, date fields use &apos;gte/lte&apos; for range filters, 4) Add operator mapping object: { eq: (type) =&gt; type === &apos;boolean&apos; ? &apos;is&apos; : &apos;eq&apos;, contains: &apos;iLike&apos;, gt: &apos;gt&apos;, gte: &apos;gte&apos;, lt: &apos;lt&apos;, lte: &apos;lte&apos;, in: &apos;in&apos; }, 5) Update filter building logic to use type-aware mapping, 6) Add unit tests verifying correct filter output for boolean, string, date, and enum fields, 7) Document supported operators per field type. Test filtering by: isActive (boolean), email (string), createdAt (date range), role (enum). Verify GraphQL queries no longer throw &apos;Field not defined&apos; errors.</description>
+    </feature>
+    <feature>
+      <name>Fix GraphQL Filter Format to Match nestjs-query Schema</name>
+      <description>Fix GraphQL filter variable format to match nestjs-query&apos;s expected input types. Current issue: Frontend is sending filters in wrong format causing &apos;Field &quot;eq&quot; is not defined by type &quot;BooleanFieldComparison&quot;&apos; errors. The issue is that different field types use different comparison operators in nestjs-query. Implementation: 1) For Boolean fields: use &apos;is&apos; instead of &apos;eq&apos; ({ isActive: { is: true } }), 2) For String fields: use &apos;eq&apos;, &apos;contains&apos;, &apos;startsWith&apos;, &apos;endsWith&apos; ({ email: { eq: &apos;test@example.com&apos; } }), 3) For Number fields: use &apos;eq&apos;, &apos;gt&apos;, &apos;gte&apos;, &apos;lt&apos;, &apos;lte&apos; ({ age: { gte: 18 } }), 4) For Date fields: use &apos;eq&apos;, &apos;gt&apos;, &apos;gte&apos;, &apos;lt&apos;, &apos;lte&apos; ({ createdAt: { gte: &apos;2024-01-01&apos; } }), 5) Update buildGraphQLFilter function in data provider to map Refine filter operators to correct nestjs-query format, 6) Map Refine&apos;s &apos;eq&apos; operator differently based on field type (boolean→&apos;is&apos;, string→&apos;eq&apos;), 7) Add unit tests for filter builder function. Test with various filter types: boolean isActive, string email, date createdAt, enum role. Verify no more &apos;Field not defined&apos; errors in GraphQL responses.</description>
+    </feature>
+    <feature>
+      <name>Add E2E Tests for Admin Filtering Functionality</name>
+      <description>Create comprehensive Playwright E2E tests for admin page filtering to ensure filters work correctly after fixes. Test scenarios: 1) Users page: filter by role (admin, lawyer, client), filter by isActive (true/false), verify filtered results match, 2) Audit logs: filter by action type, filter by date range, verify correct filters sent in GraphQL request, 3) Documents: filter by status (DRAFT, COMPLETED), filter by type, verify results, 4) API keys: filter by status, verify filtering, 5) Test combined filters (role + isActive), 6) Verify filter state persists across pagination, 7) Verify &apos;Clear filters&apos; button resets all filters, 8) Inspect network requests to verify filter format matches nestjs-query expectations, 9) Test that no client-side filtering occurs (all filtering happens on backend), 10) Verify no GraphQL errors in console. Use Playwright&apos;s request interception to capture GraphQL queries and verify filter variables. Add tests to apps/web/tests/admin-filters.spec.ts.</description>
     </feature>
   </implemented_features>
 

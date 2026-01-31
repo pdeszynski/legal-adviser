@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769778805921-87124b86",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T13:13:25.921Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-admin-audit-logs-graphql-integration",
+  "featureName": "Fix Admin Audit Logs GraphQL Integration",
+  "error": "Feature completed in 1292s - auto-verified",
+  "passes": true
+}

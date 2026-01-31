@@ -15,7 +15,7 @@ import { Button } from '@legal/ui';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@legal/ui';
-import { ChevronRight, ShieldAlert } from 'lucide-react';
+import { ChevronRight, ShieldAlert, Key, History, Settings, FileText } from 'lucide-react';
 import type { SupportedLocale } from '@i18n/config';
 import { ADMIN_MENU_ITEMS } from '@config/menu.config';
 import { useUserRole, type UserRole } from '@hooks/use-user-role';
@@ -70,6 +70,59 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       dataProvider={dataProvider}
       authProvider={authProviderClient}
       i18nProvider={i18nProvider}
+      resources={[
+        {
+          name: 'users',
+          list: '/admin/users',
+          create: '/admin/users/create',
+          show: '/admin/users/:id',
+          meta: {
+            label: 'Users',
+            canDelete: true,
+            icon: <span aria-label="users">👥</span>,
+          },
+        },
+        {
+          name: 'documents',
+          list: '/admin/documents',
+          meta: {
+            label: 'Documents',
+            canDelete: true,
+            icon: <span aria-label="documents">📄</span>,
+          },
+        },
+        {
+          name: 'auditLog',
+          identifier: 'audit_logs',
+          list: '/admin/audit-logs',
+          meta: {
+            label: 'Audit Logs',
+            canDelete: false,
+            icon: <span aria-label="audit-logs">📋</span>,
+          },
+        },
+        {
+          name: 'apiKey',
+          identifier: 'api_keys',
+          list: '/admin/api-keys',
+          create: '/admin/api-keys/create',
+          meta: {
+            label: 'API Keys',
+            canDelete: true,
+            icon: <span aria-label="api-keys">🔑</span>,
+          },
+        },
+        {
+          name: 'systemSettings',
+          identifier: 'settings',
+          list: '/admin/settings',
+          meta: {
+            label: 'System Settings',
+            canDelete: false,
+            icon: <span aria-label="settings">⚙️</span>,
+          },
+        },
+      ]}
       options={{
         syncWithLocation: true,
         warnWhenUnsavedChanges: true,

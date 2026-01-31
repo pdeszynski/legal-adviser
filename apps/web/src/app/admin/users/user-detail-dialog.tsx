@@ -16,6 +16,9 @@ interface UserDetailDialogProps {
   onUpdate: () => void;
 }
 
+// Helper to safely get user role
+const getUserRole = (user: User | null): string => user?.role || 'client';
+
 export function UserDetailDialog({ open, onClose, user, onUpdate }: UserDetailDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +27,7 @@ export function UserDetailDialog({ open, onClose, user, onUpdate }: UserDetailDi
     username: user?.username || '',
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
-    role: user?.role || 'user',
+    role: getUserRole(user),
     isActive: user?.isActive ?? true,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -37,7 +40,7 @@ export function UserDetailDialog({ open, onClose, user, onUpdate }: UserDetailDi
         username: user.username || '',
         firstName: user.firstName || '',
         lastName: user.lastName || '',
-        role: user.role,
+        role: getUserRole(user),
         isActive: user.isActive,
       });
     }
@@ -77,10 +80,13 @@ export function UserDetailDialog({ open, onClose, user, onUpdate }: UserDetailDi
       // Build the input object with only changed fields
       const inputUpdate: Record<string, unknown> = {};
       if (editForm.email !== user.email) inputUpdate.email = editForm.email;
-      if (editForm.username !== (user.username ?? '')) inputUpdate.username = editForm.username || undefined;
-      if (editForm.firstName !== (user.firstName ?? '')) inputUpdate.firstName = editForm.firstName || undefined;
-      if (editForm.lastName !== (user.lastName ?? '')) inputUpdate.lastName = editForm.lastName || undefined;
-      if (editForm.role !== user.role) inputUpdate.role = editForm.role;
+      if (editForm.username !== (user.username ?? ''))
+        inputUpdate.username = editForm.username || undefined;
+      if (editForm.firstName !== (user.firstName ?? ''))
+        inputUpdate.firstName = editForm.firstName || undefined;
+      if (editForm.lastName !== (user.lastName ?? ''))
+        inputUpdate.lastName = editForm.lastName || undefined;
+      if (editForm.role !== getUserRole(user)) inputUpdate.role = editForm.role;
       if (editForm.isActive !== user.isActive) inputUpdate.isActive = editForm.isActive;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,10 +96,21 @@ export function UserDetailDialog({ open, onClose, user, onUpdate }: UserDetailDi
         config: {
           mutation: {
             operation: 'updateOneUser',
-            fields: ['id', 'email', 'username', 'firstName', 'lastName', 'role', 'isActive', 'updatedAt'],
+            fields: [
+              'id',
+              'email',
+              'username',
+              'firstName',
+              'lastName',
+              'role',
+              'isActive',
+              'updatedAt',
+            ],
             variables: {
-              id: user.id,
-              input: inputUpdate,
+              input: {
+                id: user.id,
+                ...inputUpdate,
+              },
             },
           },
         },
@@ -230,13 +247,13 @@ export function UserDetailDialog({ open, onClose, user, onUpdate }: UserDetailDi
                 </span>
                 <span
                   className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
-                    user.role === 'admin'
+                    getUserRole(user) === 'admin'
                       ? 'bg-primary/10 text-primary'
                       : 'bg-muted text-muted-foreground'
                   }`}
                 >
                   <Shield className="h-3 w-3" />
-                  {user.role}
+                  {getUserRole(user)}
                 </span>
               </div>
             </div>
@@ -336,7 +353,7 @@ export function UserDetailDialog({ open, onClose, user, onUpdate }: UserDetailDi
                 ) : (
                   <div className="flex items-center gap-2 p-2 bg-muted/30 rounded">
                     <Shield className="h-4 w-4 text-muted-foreground" />
-                    <span className="capitalize">{user.role}</span>
+                    <span className="capitalize">{getUserRole(user)}</span>
                   </div>
                 )}
               </div>

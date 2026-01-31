@@ -1,0 +1,22 @@
+{
+  "category": "refactor",
+  "description": "Refactor all admin list views to use Refine's standard useTable hook with nestjs-query auto-generated resolvers. This includes user management, audit logs, document lists, API keys, and notifications. The refactoring will ensure proper filtering, sorting, and pagination functionality. Implementation: 1) Replace custom data provider calls with useTable from @refinedev/core, 2) Use nestjs-query auto-generated CRUD operations for each entity, 3) Configure columns with proper filtering and sorting, 4) Implement cursor-based pagination handling, 5) Fix filter builders to use nestjs-query filter format, 6) Ensure sorting configuration matches backend @FilterableField decorators, 7) Remove redundant custom mutations for standard CRUD operations, 8) Test each view to ensure filtering, sorting, and pagination work correctly. This follows the Refine CRUD patterns documented in CLAUDE.md and addresses the current filtering issues.",
+  "id": "refactor-admin-views-to-use-table",
+  "title": "Refactor Admin Views to Use useTable Hook",
+  "dependencies": [
+    "admin-refine-crud-user-management",
+    "admin-refine-crud-audit-logs",
+    "admin-refine-crud-document-list",
+    "admin-refine-crud-api-keys"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Refactor all admin list views to use Refine's standard useTable hook with nestjs-query auto-generated resolvers. This includes user management, audit logs, document lists, API keys, and notifications. The refactoring will ensure proper filtering, sorting, and pagination functionality. Implementation: 1) Replace custom data provider calls with useTable from @refinedev/core, 2) Use nestjs-query auto-generated CRUD operations for each entity, 3) Configure columns with proper filtering and sorting, 4) Implement cursor-based pagination handling, 5) Fix filter builders to use nestjs-query filter format, 6) Ensure sorting configuration matches backend @FilterableField decorators, 7) Remove redundant custom mutations for standard CRUD operations, 8) Test each view to ensure filtering, sorting, and pagination work correctly. This follows the Refine CRUD patterns documented in CLAUDE.md and addresses the current filtering issues.",
+      "timestamp": "2026-01-30T15:41:58.172Z",
+      "source": "initial"
+    }
+  ]
+}

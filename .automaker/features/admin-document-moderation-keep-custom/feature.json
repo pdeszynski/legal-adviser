@@ -1,0 +1,18 @@
+{
+  "category": "refactor",
+  "description": "Document moderation interface should remain custom. Moderation involves reviewing user-generated content, applying approval workflows, and triggering domain-specific actions (notify user, update status, flag content). This is business logic specific to the legal document domain, not generic CRUD. Keep existing custom implementation with specialized mutations and approval workflow UI.",
+  "id": "admin-document-moderation-keep-custom",
+  "title": "Keep Custom Implementation for Document Moderation",
+  "dependencies": [],
+  "priority": 3,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Document moderation interface should remain custom. Moderation involves reviewing user-generated content, applying approval workflows, and triggering domain-specific actions (notify user, update status, flag content). This is business logic specific to the legal document domain, not generic CRUD. Keep existing custom implementation with specialized mutations and approval workflow UI.",
+      "timestamp": "2026-01-30T09:00:33.574Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-30T10:51:49.516Z"
+}

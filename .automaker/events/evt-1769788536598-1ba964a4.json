@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769788536598-1ba964a4",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T15:55:36.598Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "refactor-admin-views-to-use-table",
+  "featureName": "Refactor Admin Views to Use useTable Hook",
+  "error": "Feature completed in 809s - auto-verified",
+  "passes": true
+}

@@ -1,0 +1,20 @@
+{
+  "category": "refactor",
+  "description": "Refactor admin audit logs page at /admin/audit-logs to use Refine's useTable hook with filtering, sorting, and pagination. Replace custom data provider calls with standard useTable from @refinedev/core. Configure filters for date range, action type, and user filtering. Use nestjs-query auto-generated resolvers for AuditLog entity with @FilterableField decorators. This leverages Refine's built-in table features (filtering, sorting, pagination) instead of custom implementation. Audit logs are read-only CRUD with filtering - perfect for standard patterns.",
+  "id": "admin-refine-crud-audit-logs",
+  "title": "Refactor Admin Audit Logs to Use Standard Refine Table Hook",
+  "dependencies": [
+    "audit-log-entity",
+    "nestjs-query-migration"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Refactor admin audit logs page at /admin/audit-logs to use Refine's useTable hook with filtering, sorting, and pagination. Replace custom data provider calls with standard useTable from @refinedev/core. Configure filters for date range, action type, and user filtering. Use nestjs-query auto-generated resolvers for AuditLog entity with @FilterableField decorators. This leverages Refine's built-in table features (filtering, sorting, pagination) instead of custom implementation. Audit logs are read-only CRUD with filtering - perfect for standard patterns.",
+      "timestamp": "2026-01-30T09:00:33.569Z",
+      "source": "initial"
+    }
+  ]
+}

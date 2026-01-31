@@ -6,15 +6,7 @@ import { Button, Input } from '@legal/ui';
 import { Label } from '@legal/ui';
 import { dataProvider } from '@providers/data-provider';
 import type { GraphQLMutationConfig } from '@providers/data-provider';
-
-interface User {
-  id: string;
-  email: string;
-  username?: string | null;
-  firstName?: string | null;
-  lastName?: string | null;
-  isActive: boolean;
-}
+import type { User } from '@/generated/graphql';
 
 interface BulkSuspendDialogProps {
   open: boolean;

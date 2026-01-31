@@ -4,6 +4,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useShow, useList, useCustom } from '@refinedev/core';
 import {
   ArrowLeft,
   Mail,
@@ -37,7 +38,7 @@ interface User {
   firstName?: string;
   lastName?: string;
   isActive: boolean;
-  role: 'user' | 'admin';
+  role: 'client' | 'admin' | 'super_admin' | 'lawyer' | 'paralegal' | 'guest';
   disclaimerAccepted: boolean;
   disclaimerAcceptedAt?: string;
   stripeCustomerId?: string;
@@ -100,17 +101,62 @@ export default function AdminUserDetailPage() {
   const userId = (params.id as string) || '';
 
   const [activeTab, setActiveTab] = useState<TabType>('overview');
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Tab-specific data
-  const [documents, setDocuments] = useState<LegalDocument[]>([]);
-  const [queries, setQueries] = useState<LegalQuery[]>([]);
-  const [sessions, setSessions] = useState<UserSession[]>([]);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
-  const [usageStats, setUsageStats] = useState<UsageStats | null>(null);
+  // Tab-specific data - use useList for related data
+  const documentsQuery = useList<LegalDocument>({
+    resource: 'legalDocuments',
+    pagination: { pageSize: 20 },
+    filters: [{ field: 'userId', operator: 'eq', value: userId }],
+    sorters: [{ field: 'createdAt', order: 'desc' }],
+    queryOptions: {
+      enabled: activeTab === 'documents',
+    },
+  });
+
+  const queriesQuery = useList<LegalQuery>({
+    resource: 'legalQueries',
+    pagination: { pageSize: 20 },
+    filters: [{ field: 'userId', operator: 'eq', value: userId }],
+    sorters: [{ field: 'createdAt', order: 'desc' }],
+    queryOptions: {
+      enabled: activeTab === 'queries',
+    },
+  });
+
+  const sessionsQuery = useList<UserSession>({
+    resource: 'user-sessions',
+    pagination: { pageSize: 10 },
+    filters: [{ field: 'userId', operator: 'eq', value: userId }],
+    sorters: [{ field: 'createdAt', order: 'desc' }],
+    queryOptions: {
+      enabled: activeTab === 'overview',
+    },
+  });
+
+  const auditLogsQuery = useList<AuditLog>({
+    resource: 'audit-logs',
+    pagination: { pageSize: 50 },
+    filters: [{ field: 'userId', operator: 'eq', value: userId }],
+    sorters: [{ field: 'createdAt', order: 'desc' }],
+    queryOptions: {
+      enabled: activeTab === 'audit',
+    },
+  });
+
+  // Use Refine's useShow hook for user data
+  const showResult = useShow<User>({
+    resource: 'users',
+    id: userId,
+  });
+
+  const { data, isLoading, error, refetch } = showResult.query;
+  const user = data?.data;
+
+  const documents = documentsQuery.result?.data || [];
+  const queries = queriesQuery.result?.data || [];
+  const sessions = sessionsQuery.result?.data || [];
+  const auditLogs = auditLogsQuery.result?.data || [];
 
   // Edit mode for settings tab
   const [isEditing, setIsEditing] = useState(false);
@@ -119,7 +165,7 @@ export default function AdminUserDetailPage() {
     username: '',
     firstName: '',
     lastName: '',
-    role: 'user' as 'user' | 'admin',
+    role: 'client' as 'client' | 'admin' | 'super_admin' | 'lawyer' | 'paralegal' | 'guest',
     isActive: true,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -131,165 +177,41 @@ export default function AdminUserDetailPage() {
   // 2FA force-disable dialog
   const [disable2faDialogOpen, setDisable2faDialogOpen] = useState(false);
 
-  // Fetch user data
-  const fetchUser = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const dp = dataProvider;
-      if (!dp) throw new Error('Data provider not available');
-
-      const result = await dp.getOne<User>({
-        resource: 'users',
-        id: userId,
-      });
-      setUser(result.data);
-      setEditForm({
-        email: result.data.email,
-        username: result.data.username || '',
-        firstName: result.data.firstName || '',
-        lastName: result.data.lastName || '',
-        role: result.data.role,
-        isActive: result.data.isActive,
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch user');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userId]);
-
-  // Fetch user's documents
-  const fetchDocuments = useCallback(async () => {
-    try {
-      const dp = dataProvider;
-      if (!dp) return;
-
-      const result = await dp.getList<LegalDocument>({
-        resource: 'legalDocuments',
-        pagination: { currentPage: 1, pageSize: 20 },
-        filters: [{ field: 'userId', operator: 'eq', value: userId }],
-        sorters: [{ field: 'createdAt', order: 'desc' }],
-      });
-      setDocuments(result.data);
-    } catch (err) {
-      console.error('Failed to fetch documents:', err);
-    }
-  }, [userId]);
-
-  // Fetch user's queries
-  const fetchQueries = useCallback(async () => {
-    try {
-      const dp = dataProvider;
-      if (!dp) return;
-
-      const result = await dp.getList<LegalQuery>({
-        resource: 'legalQueries',
-        pagination: { currentPage: 1, pageSize: 20 },
-        filters: [{ field: 'userId', operator: 'eq', value: userId }],
-        sorters: [{ field: 'createdAt', order: 'desc' }],
-      });
-      setQueries(result.data);
-    } catch (err) {
-      console.error('Failed to fetch queries:', err);
-    }
-  }, [userId]);
-
-  // Fetch user's sessions
-  const fetchSessions = useCallback(async () => {
-    try {
-      const dp = dataProvider;
-      if (!dp) return;
-
-      const result = await dp.getList<UserSession>({
-        resource: 'user-sessions',
-        pagination: { currentPage: 1, pageSize: 10 },
-        filters: [{ field: 'userId', operator: 'eq', value: userId }],
-        sorters: [{ field: 'createdAt', order: 'desc' }],
-      });
-      setSessions(result.data);
-    } catch (err) {
-      console.error('Failed to fetch sessions:', err);
-    }
-  }, [userId]);
-
-  // Fetch audit logs
-  const fetchAuditLogs = useCallback(async () => {
-    try {
-      const dp = dataProvider;
-      if (!dp) return;
-
-      const result = await dp.getList<AuditLog>({
-        resource: 'audit-logs',
-        pagination: { currentPage: 1, pageSize: 50 },
-        filters: [{ field: 'userId', operator: 'eq', value: userId }],
-        sorters: [{ field: 'createdAt', order: 'desc' }],
-      });
-      setAuditLogs(result.data);
-    } catch (err) {
-      console.error('Failed to fetch audit logs:', err);
-    }
-  }, [userId]);
-
-  // Fetch usage stats
-  const fetchUsageStats = useCallback(async () => {
-    try {
-      const dp = dataProvider;
-      if (!dp) return;
-
-      const result = await (dp as any).custom({
-        url: '',
-        method: 'post',
-        config: {
+  // Usage stats query
+  const usageStatsQuery = useCustom<UsageStats>({
+    url: '',
+    method: 'post',
+    config: {
+      query: {
+        operation: 'usageStats',
+        fields: ['totalCost', 'totalRequests', 'totalTokens'],
+        variables: {
           query: {
-            operation: 'usageStats',
-            fields: ['totalCost', 'totalRequests', 'totalTokens'],
-            variables: {
-              query: {
-                userId,
-              },
-            },
+            userId,
           },
         },
+      },
+    },
+    queryOptions: {
+      enabled: activeTab === 'overview',
+    },
+  });
+
+  const usageStats = (usageStatsQuery as any).data?.data;
+
+  // Initialize edit form when user data changes
+  useEffect(() => {
+    if (user) {
+      setEditForm({
+        email: user.email,
+        username: user.username || '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        role: user.role,
+        isActive: user.isActive,
       });
-      setUsageStats(result.data);
-    } catch (err) {
-      console.error('Failed to fetch usage stats:', err);
     }
-  }, [userId]);
-
-  // Initial fetch
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
-
-  // Fetch tab-specific data when tab changes
-  useEffect(() => {
-    if (!user) return;
-    switch (activeTab) {
-      case 'documents':
-        fetchDocuments();
-        break;
-      case 'queries':
-        fetchQueries();
-        break;
-      case 'overview':
-        fetchSessions();
-        fetchUsageStats();
-        break;
-      case 'audit':
-        fetchAuditLogs();
-        break;
-    }
-  }, [
-    activeTab,
-    user,
-    fetchDocuments,
-    fetchQueries,
-    fetchSessions,
-    fetchAuditLogs,
-    fetchUsageStats,
-  ]);
+  }, [user]);
 
   const handleEditFieldChange = (field: keyof typeof editForm, value: string | boolean) => {
     setEditForm((prev) => ({ ...prev, [field]: value }));
@@ -321,47 +243,53 @@ export default function AdminUserDetailPage() {
       const dp = dataProvider;
       if (!dp) throw new Error('Data provider not available');
 
-      await (dp as any).custom({
-        url: '',
-        method: 'post',
-        config: {
-          mutation: {
-            operation: 'updateOneUser',
-            fields: [
-              'id',
-              'email',
-              'username',
-              'firstName',
-              'lastName',
-              'role',
-              'isActive',
-              'updatedAt',
-            ],
-            variables: {
-              input: {
-                id: { value: userId },
-                update: {
-                  ...(editForm.email !== user.email && { email: editForm.email }),
-                  ...(editForm.username !== user.username && {
-                    username: editForm.username || undefined,
-                  }),
-                  ...(editForm.firstName !== user.firstName && {
-                    firstName: editForm.firstName || undefined,
-                  }),
-                  ...(editForm.lastName !== user.lastName && {
-                    lastName: editForm.lastName || undefined,
-                  }),
-                  ...(editForm.role !== user.role && { role: editForm.role }),
-                  ...(editForm.isActive !== user.isActive && { isActive: editForm.isActive }),
-                },
+      // Build the update input with only changed fields
+      const updateInput: Record<string, unknown> = {};
+      if (editForm.email !== user.email) {
+        updateInput.email = editForm.email;
+      }
+      if (editForm.username !== user.username) {
+        updateInput.username = editForm.username || undefined;
+      }
+      if (editForm.firstName !== user.firstName) {
+        updateInput.firstName = editForm.firstName || undefined;
+      }
+      if (editForm.lastName !== user.lastName) {
+        updateInput.lastName = editForm.lastName || undefined;
+      }
+      if (editForm.isActive !== user.isActive) {
+        updateInput.isActive = editForm.isActive;
+      }
+
+      // Note: Role changes should use the dedicated changeUserRole mutation
+      // as it requires special handling (audit log, permissions, etc.)
+      if (editForm.role !== user.role) {
+        await (dp as any).custom({
+          url: '',
+          method: 'post',
+          config: {
+            mutation: {
+              operation: 'changeUserRole',
+              fields: ['id', 'role'],
+              variables: {
+                input: { userId: user.id, role: editForm.role },
               },
             },
           },
-        },
-      });
+        });
+      }
+
+      // Only call updateOneUser if there are other fields to update
+      if (Object.keys(updateInput).length > 0) {
+        await dp.update({
+          resource: 'users',
+          id: userId,
+          variables: updateInput,
+        });
+      }
 
       setIsEditing(false);
-      fetchUser();
+      refetch();
     } catch (err) {
       setErrors({
         submit: err instanceof Error ? err.message : 'Failed to update user',
@@ -369,7 +297,7 @@ export default function AdminUserDetailPage() {
     } finally {
       setIsSaving(false);
     }
-  }, [user, editForm, userId, fetchUser]);
+  }, [user, editForm, userId, refetch]);
 
   const handleToggleStatus = useCallback(async () => {
     if (!user) return;
@@ -402,7 +330,7 @@ export default function AdminUserDetailPage() {
       });
       setSuspendDialogOpen(false);
       setSuspendReason('');
-      fetchUser();
+      refetch();
     } catch (err) {
       setErrors({
         submit: err instanceof Error ? err.message : 'Failed to update user status',
@@ -410,7 +338,7 @@ export default function AdminUserDetailPage() {
     } finally {
       setIsSaving(false);
     }
-  }, [user, suspendReason, fetchUser]);
+  }, [user, suspendReason, refetch]);
 
   const handlePasswordReset = useCallback(async () => {
     if (!user) return;
@@ -454,7 +382,7 @@ export default function AdminUserDetailPage() {
   }, [user]);
 
   const handleRoleChange = useCallback(
-    async (newRole: 'user' | 'admin') => {
+    async (newRole: 'client' | 'admin') => {
       if (!user) return;
 
       setIsSaving(true);
@@ -481,7 +409,7 @@ export default function AdminUserDetailPage() {
           method: 'post',
           config: mutationConfig.config,
         });
-        fetchUser();
+        refetch();
       } catch (err) {
         setErrors({
           submit: err instanceof Error ? err.message : 'Failed to change role',
@@ -490,7 +418,7 @@ export default function AdminUserDetailPage() {
         setIsSaving(false);
       }
     },
-    [user, fetchUser],
+    [user, refetch],
   );
 
   const handleForceDisable2fa = useCallback(async () => {
@@ -521,7 +449,7 @@ export default function AdminUserDetailPage() {
         config: mutationConfig.config,
       });
       setDisable2faDialogOpen(false);
-      fetchUser();
+      refetch();
     } catch (err) {
       setErrors({
         submit: err instanceof Error ? err.message : 'Failed to disable 2FA',
@@ -529,7 +457,7 @@ export default function AdminUserDetailPage() {
     } finally {
       setIsSaving(false);
     }
-  }, [user, fetchUser]);
+  }, [user, refetch]);
 
   const getDisplayName = (user: User) => {
     if (user.firstName && user.lastName) {
@@ -562,7 +490,7 @@ export default function AdminUserDetailPage() {
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-destructive" />
           <h2 className="mt-4 text-lg font-semibold">Error Loading User</h2>
-          <p className="text-muted-foreground">{error}</p>
+          <p className="text-muted-foreground">{String(error)}</p>
           <Button className="mt-4" onClick={() => router.push('/admin/users')}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Users
@@ -1013,12 +941,12 @@ export default function AdminUserDetailPage() {
                     <Label>Role</Label>
                     <div className="flex gap-2">
                       <Button
-                        variant={user.role === 'user' ? 'default' : 'outline'}
+                        variant={user.role === 'client' ? 'default' : 'outline'}
                         size="sm"
-                        onClick={() => user.role !== 'user' && handleRoleChange('user')}
+                        onClick={() => user.role !== 'client' && handleRoleChange('client')}
                         disabled={isSaving}
                       >
-                        User
+                        Client
                       </Button>
                       <Button
                         variant={user.role === 'admin' ? 'default' : 'outline'}

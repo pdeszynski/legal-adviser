@@ -16,7 +16,7 @@ interface CreateUserForm {
   lastName: string;
   password: string;
   confirmPassword: string;
-  role: 'user' | 'admin';
+  role: 'client' | 'admin';
   isActive: boolean;
 }
 
@@ -35,7 +35,7 @@ const defaultForm: CreateUserForm = {
   lastName: '',
   password: '',
   confirmPassword: '',
-  role: 'user',
+  role: 'client',
   isActive: true,
 };
 
@@ -178,16 +178,13 @@ export default function CreateUserPage() {
 
     setIsLoading(true);
     try {
-      const dp = dataProvider;
-      if (!dp) throw new Error('Data provider not available');
-
       const mutationConfig: GraphQLMutationConfig<{
         email: string;
         username?: string;
         firstName?: string;
         lastName?: string;
         password: string;
-        role?: 'user' | 'admin';
+        role?: 'client' | 'admin';
         isActive?: boolean;
       }> = {
         url: '',
@@ -210,6 +207,9 @@ export default function CreateUserPage() {
           },
         },
       };
+
+      const dp = dataProvider;
+      if (!dp) throw new Error('Data provider not available');
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = await (dp as any).custom(mutationConfig);
@@ -467,13 +467,13 @@ export default function CreateUserPage() {
               <div className="flex gap-2">
                 <Button
                   type="button"
-                  variant={form.role === 'user' ? 'default' : 'outline'}
+                  variant={form.role === 'client' ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => handleChange('role', 'user')}
+                  onClick={() => handleChange('role', 'client')}
                   disabled={isLoading}
                   className="flex-1"
                 >
-                  User
+                  Client
                 </Button>
                 <Button
                   type="button"
@@ -487,8 +487,8 @@ export default function CreateUserPage() {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                {form.role === 'user'
-                  ? 'Standard user with access to main application features.'
+                {form.role === 'client'
+                  ? 'Standard client with access to main application features.'
                   : 'Administrator with full access to user management and system settings.'}
               </p>
             </div>

@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Update CLAUDE.md and admin development documentation to clarify when to use standard Refine CRUD patterns vs custom implementations. Add guidelines: 1) Use standard CRUD (useTable, useEdit, useForm) for simple admin data operations: user management, audit logs, settings, API keys, document listings, 2) Use custom implementations for complex domain logic: Temporal workflows, analytics aggregations, approval workflows, business-specific operations, 3) Reference Refine.dev documentation: https://refine.dev/core/docs/data/hooks/use-table/, https://refine.dev/core/docs/data/data-provider/, 4) Provide examples of both patterns, 5) Document resource configuration patterns, 6) Show nestjs-query integration examples. This prevents future over-engineering of simple admin tasks.",
+  "id": "admin-refine-migration-documentation",
+  "title": "Document Refine.dev CRUD Patterns for Admin Development",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update CLAUDE.md and admin development documentation to clarify when to use standard Refine CRUD patterns vs custom implementations. Add guidelines: 1) Use standard CRUD (useTable, useEdit, useForm) for simple admin data operations: user management, audit logs, settings, API keys, document listings, 2) Use custom implementations for complex domain logic: Temporal workflows, analytics aggregations, approval workflows, business-specific operations, 3) Reference Refine.dev documentation: https://refine.dev/core/docs/data/hooks/use-table/, https://refine.dev/core/docs/data/data-provider/, 4) Provide examples of both patterns, 5) Document resource configuration patterns, 6) Show nestjs-query integration examples. This prevents future over-engineering of simple admin tasks.",
+      "timestamp": "2026-01-30T09:00:33.577Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769764467303-b60e2d79",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T09:14:27.303Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-refine-crud-api-keys",
+  "featureName": "Refactor Admin API Key Management to Use Standard Refine CRUD",
+  "error": "Feature completed in 829s - auto-verified",
+  "passes": true
+}

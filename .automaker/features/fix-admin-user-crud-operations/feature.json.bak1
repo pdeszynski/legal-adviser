@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Fix user CRUD operations in admin panel to work with nestjs-query auto-generated mutations. Implementation: 1) Verify nestjs-query generates createOneUser, updateOneUser, deleteOneUser mutations, 2) Update Refine data provider to use correct mutation format: mutation { createOneUser(input: { email: ..., role: ... }) { id email role } }, 3) Ensure useCreate, useUpdate, useDelete hooks from Refine work correctly, 4) Verify input types match CreateUserInput, UpdateUserInput from nestjs-query, 5) Test creating a new user from admin panel, 6) Test editing user (role, status), 7) Test deleting user with confirmation, 8) Handle errors gracefully with user-friendly messages. Follow Refine patterns for CRUD operations with nestjs-query.",
+  "id": "fix-admin-user-crud-operations",
+  "title": "Fix Admin User CRUD Operations (Create, Update, Delete)",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Fix user CRUD operations in admin panel to work with nestjs-query auto-generated mutations. Implementation: 1) Verify nestjs-query generates createOneUser, updateOneUser, deleteOneUser mutations, 2) Update Refine data provider to use correct mutation format: mutation { createOneUser(input: { email: ..., role: ... }) { id email role } }, 3) Ensure useCreate, useUpdate, useDelete hooks from Refine work correctly, 4) Verify input types match CreateUserInput, UpdateUserInput from nestjs-query, 5) Test creating a new user from admin panel, 6) Test editing user (role, status), 7) Test deleting user with confirmation, 8) Handle errors gracefully with user-friendly messages. Follow Refine patterns for CRUD operations with nestjs-query.",
+      "timestamp": "2026-01-30T12:47:56.578Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-30T12:48:04.749Z"
+}

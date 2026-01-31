@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769765787443-af0961b1",
+  "trigger": "feature_error",
+  "timestamp": "2026-01-30T09:36:27.443Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-refine-resource-provider-configuration",
+  "featureName": "Configure Refine Data Provider Resources for Admin Entities",
+  "error": "Operation was cancelled",
+  "errorType": "cancellation"
+}

@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Audit and fix all admin resource configurations in the Refine data provider to ensure they follow nestjs-query patterns. Resources to verify: 1) users - should use nestjs-query auto-generated CRUD, 2) auditLogs - should use nestjs-query with JSON field handling, 3) documents (legalDocuments) - should use nestjs-query CRUD, 4) apiKeys - should use nestjs-query CRUD, 5) notifications - should use nestjs-query CRUD, 6) Any other admin resources. For each resource, verify: getList, getOne, create, update, deleteOne methods are correctly implemented with nestjs-query connection format (edges.node structure). Remove any custom mutations that should use nestjs-query auto-generated ones. Document any resources that legitimately need custom implementations (analytics, system health) vs standard CRUD.",
+  "id": "verify-all-admin-resources-in-data-provider",
+  "title": "Verify All Admin Resources Are Configured in Refine Data Provider",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Audit and fix all admin resource configurations in the Refine data provider to ensure they follow nestjs-query patterns. Resources to verify: 1) users - should use nestjs-query auto-generated CRUD, 2) auditLogs - should use nestjs-query with JSON field handling, 3) documents (legalDocuments) - should use nestjs-query CRUD, 4) apiKeys - should use nestjs-query CRUD, 5) notifications - should use nestjs-query CRUD, 6) Any other admin resources. For each resource, verify: getList, getOne, create, update, deleteOne methods are correctly implemented with nestjs-query connection format (edges.node structure). Remove any custom mutations that should use nestjs-query auto-generated ones. Document any resources that legitimately need custom implementations (analytics, system health) vs standard CRUD.",
+      "timestamp": "2026-01-30T12:47:56.582Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-30T13:38:32.142Z"
+}

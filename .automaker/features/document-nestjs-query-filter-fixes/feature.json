@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Ensure LegalDocument entity has proper nestjs-query filter decorators and document list page filters work correctly. Implementation: 1) Verify LegalDocument entity has @FilterableField decorators on filterable fields: title (string), status (enum), type (enum), createdAt (date), updatedAt (date), 2) Ensure status and type are enum types with proper GraphQL definitions, 3) Update document list page to use Refine's setFilters for status and type filters, 4) Ensure filters use correct operators: status/type use 'eq' (string enum), createdAt uses 'gte/lte' for date ranges, 5) Remove any client-side filtering logic, 6) Test filtering documents by status (DRAFT, GENERATING, COMPLETED, FAILED), 7) Test filtering by document type, 8) Test date range filters for createdAt, 9) Verify pagination works correctly with active filters. Reference existing working patterns from users list if available.",
+  "id": "document-nestjs-query-filter-fixes",
+  "title": "Fix Document List Filters with nestjs-query",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Ensure LegalDocument entity has proper nestjs-query filter decorators and document list page filters work correctly. Implementation: 1) Verify LegalDocument entity has @FilterableField decorators on filterable fields: title (string), status (enum), type (enum), createdAt (date), updatedAt (date), 2) Ensure status and type are enum types with proper GraphQL definitions, 3) Update document list page to use Refine's setFilters for status and type filters, 4) Ensure filters use correct operators: status/type use 'eq' (string enum), createdAt uses 'gte/lte' for date ranges, 5) Remove any client-side filtering logic, 6) Test filtering documents by status (DRAFT, GENERATING, COMPLETED, FAILED), 7) Test filtering by document type, 8) Test date range filters for createdAt, 9) Verify pagination works correctly with active filters. Reference existing working patterns from users list if available.",
+      "timestamp": "2026-01-31T13:10:48.230Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T13:18:48.089Z"
+}

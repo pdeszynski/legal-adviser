@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769788558490-1ae5bf81",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T15:55:58.490Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-admin-user-view-filtering",
+  "featureName": "Fix Admin User View Filtering",
+  "error": "Feature completed in 829s - auto-verified",
+  "passes": true
+}

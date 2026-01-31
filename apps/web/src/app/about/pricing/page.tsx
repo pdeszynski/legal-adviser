@@ -57,10 +57,10 @@ const PricingPage = () => {
                 </span>
                 <button
                   onClick={() => setIsYearly(!isYearly)}
-                  className={`relative h-8 w-14 rounded-full transition-colors ${isYearly ? 'bg-emerald-600' : 'bg-muted'}`}
+                  className={`relative h-7 w-12 rounded-full transition-colors border-2 ${isYearly ? 'bg-emerald-600 border-emerald-600' : 'bg-muted border-muted'}`}
                 >
                   <span
-                    className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow-md transition-transform ${isYearly ? 'translate-x-7' : 'translate-x-1'}`}
+                    className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-200 ${isYearly ? 'translate-x-5' : 'translate-x-0'}`}
                   />
                 </button>
                 <span className={`text-sm ${isYearly ? 'font-semibold' : 'text-muted-foreground'}`}>
@@ -79,7 +79,7 @@ const PricingPage = () => {
           <div className="container mx-auto px-4 md:px-6">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
               {plans.map((planKey) => {
-                const plan = t(`plans.${planKey}`) as any;
+                const plan = t.raw(`plans.${planKey}`) as any;
                 const price = getMonthlyPrice(planKey, plan.price);
                 const isPopular = plan.popular;
 
@@ -110,9 +110,7 @@ const PricingPage = () => {
                         </span>
                         {planKey !== 'enterprise' && (
                           <span className="text-muted-foreground">
-                            {planKey === 'free'
-                              ? t('forever')
-                              : `$/{isYearly ? t('month') : t('month')}`}
+                            {planKey === 'free' ? t('forever') : `/${t('month')}`}
                           </span>
                         )}
                       </div>

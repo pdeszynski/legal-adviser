@@ -1,0 +1,19 @@
+{
+  "category": "bug",
+  "description": "Fix the admin users list page at /admin/users to work correctly with nestjs-query auto-generated resolvers and Refine data provider. Implementation tasks: 1) Verify User entity has proper @nestjs-query decorators (@ObjectType, @FilterableField, @Relation), 2) Ensure UserQueryService is properly registered in UsersModule, 3) Verify GraphQL schema includes users query with paging (first, after) and filtering options, 4) Update Refine data provider to format requests correctly for nestjs-query format: query { users(first: 10, after: null, filter: { ... }, sorting: [{ field: email, direction: ASC }]) { edges { node { id email role } }, pageInfo { endCursor hasNextPage }, totalCount } }, 5) Ensure response parsing handles nestjs-query connection format (edges.node structure), 6) Test filtering, sorting, and pagination work correctly. Use the reference examples from nestjs-query docs and Refine nestjs-query example.",
+  "id": "fix-admin-user-list-graphql-integration",
+  "title": "Fix Admin User List GraphQL Integration with nestjs-query",
+  "dependencies": [
+    "analyze-admin-graphql-errors"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Fix the admin users list page at /admin/users to work correctly with nestjs-query auto-generated resolvers and Refine data provider. Implementation tasks: 1) Verify User entity has proper @nestjs-query decorators (@ObjectType, @FilterableField, @Relation), 2) Ensure UserQueryService is properly registered in UsersModule, 3) Verify GraphQL schema includes users query with paging (first, after) and filtering options, 4) Update Refine data provider to format requests correctly for nestjs-query format: query { users(first: 10, after: null, filter: { ... }, sorting: [{ field: email, direction: ASC }]) { edges { node { id email role } }, pageInfo { endCursor hasNextPage }, totalCount } }, 5) Ensure response parsing handles nestjs-query connection format (edges.node structure), 6) Test filtering, sorting, and pagination work correctly. Use the reference examples from nestjs-query docs and Refine nestjs-query example.",
+      "timestamp": "2026-01-30T12:47:56.577Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive Playwright E2E tests for admin page filtering to ensure filters work correctly after fixes. Test scenarios: 1) Users page: filter by role (admin, lawyer, client), filter by isActive (true/false), verify filtered results match, 2) Audit logs: filter by action type, filter by date range, verify correct filters sent in GraphQL request, 3) Documents: filter by status (DRAFT, COMPLETED), filter by type, verify results, 4) API keys: filter by status, verify filtering, 5) Test combined filters (role + isActive), 6) Verify filter state persists across pagination, 7) Verify 'Clear filters' button resets all filters, 8) Inspect network requests to verify filter format matches nestjs-query expectations, 9) Test that no client-side filtering occurs (all filtering happens on backend), 10) Verify no GraphQL errors in console. Use Playwright's request interception to capture GraphQL queries and verify filter variables. Add tests to apps/web/tests/admin-filters.spec.ts.",
+  "id": "add-admin-filter-e2e-tests",
+  "title": "Add E2E Tests for Admin Filtering Functionality",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive Playwright E2E tests for admin page filtering to ensure filters work correctly after fixes. Test scenarios: 1) Users page: filter by role (admin, lawyer, client), filter by isActive (true/false), verify filtered results match, 2) Audit logs: filter by action type, filter by date range, verify correct filters sent in GraphQL request, 3) Documents: filter by status (DRAFT, COMPLETED), filter by type, verify results, 4) API keys: filter by status, verify filtering, 5) Test combined filters (role + isActive), 6) Verify filter state persists across pagination, 7) Verify 'Clear filters' button resets all filters, 8) Inspect network requests to verify filter format matches nestjs-query expectations, 9) Test that no client-side filtering occurs (all filtering happens on backend), 10) Verify no GraphQL errors in console. Use Playwright's request interception to capture GraphQL queries and verify filter variables. Add tests to apps/web/tests/admin-filters.spec.ts.",
+      "timestamp": "2026-01-31T13:10:48.229Z",
+      "source": "initial"
+    }
+  ]
+}

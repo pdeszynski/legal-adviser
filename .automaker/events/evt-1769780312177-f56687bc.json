@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769780312177-f56687bc",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T13:38:32.177Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "verify-all-admin-resources-in-data-provider",
+  "featureName": "Verify All Admin Resources Are Configured in Refine Data Provider",
+  "error": "Feature completed in 1072s - auto-verified",
+  "passes": true
+}

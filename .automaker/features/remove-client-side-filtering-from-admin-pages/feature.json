@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Remove all client-side filtering logic from admin pages and replace with proper backend GraphQL filtering. Current issue: Admin pages (users, audit-logs, documents, etc.) are filtering data on the client side instead of sending filter parameters to the backend. This causes performance issues and doesn't work with pagination. Implementation: 1) Audit all admin pages to identify client-side filtering (useEffect filtering data arrays, filter functions on results), 2) Remove client-side filter logic, 3) Ensure filters are passed to Refine's useTable/setFilters hooks, 4) Verify filters are sent to backend via GraphQL variables, 5) Test that backend returns filtered results using nestjs-query resolvers, 6) Ensure filter state persists across pagination changes, 7) Remove any 'filteredData' local state variables. Pages to fix: users page (role filtering), audit-logs page (action, date filtering), documents page (status, type filtering), API keys page (status filtering). Use standard nestjs-query filter patterns.",
+  "id": "remove-client-side-filtering-from-admin-pages",
+  "title": "Remove Client-Side Filtering from Admin Pages",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Remove all client-side filtering logic from admin pages and replace with proper backend GraphQL filtering. Current issue: Admin pages (users, audit-logs, documents, etc.) are filtering data on the client side instead of sending filter parameters to the backend. This causes performance issues and doesn't work with pagination. Implementation: 1) Audit all admin pages to identify client-side filtering (useEffect filtering data arrays, filter functions on results), 2) Remove client-side filter logic, 3) Ensure filters are passed to Refine's useTable/setFilters hooks, 4) Verify filters are sent to backend via GraphQL variables, 5) Test that backend returns filtered results using nestjs-query resolvers, 6) Ensure filter state persists across pagination changes, 7) Remove any 'filteredData' local state variables. Pages to fix: users page (role filtering), audit-logs page (action, date filtering), documents page (status, type filtering), API keys page (status filtering). Use standard nestjs-query filter patterns.",
+      "timestamp": "2026-01-31T13:10:48.227Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T13:34:51.368Z"
+}

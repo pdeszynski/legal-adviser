@@ -1,0 +1,17 @@
+{
+  "category": "refactor",
+  "description": "Refactor admin document management list view to use Refine's useTable hook with standard filtering and sorting. Leverage nestjs-query auto-generated resolvers for LegalDocument entity. Use @FilterableField decorators for searchable fields (title, status, type, createdAt). Replace custom GraphQL queries with standard resource getList operation. Keep custom actions (pdf download, sharing) as supplementary buttons in table actions column. Document list is CRUD with read operations - fits standard pattern.",
+  "id": "admin-refine-crud-document-list",
+  "title": "Refactor Admin Document List to Use Standard Refine Table",
+  "priority": 2,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Refactor admin document management list view to use Refine's useTable hook with standard filtering and sorting. Leverage nestjs-query auto-generated resolvers for LegalDocument entity. Use @FilterableField decorators for searchable fields (title, status, type, createdAt). Replace custom GraphQL queries with standard resource getList operation. Keep custom actions (pdf download, sharing) as supplementary buttons in table actions column. Document list is CRUD with read operations - fits standard pattern.",
+      "timestamp": "2026-01-30T09:00:33.571Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-30T09:22:05.415Z"
+}

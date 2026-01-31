@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769764921504-edb29610",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T09:22:01.504Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-refine-crud-audit-logs",
+  "featureName": "Refactor Admin Audit Logs to Use Standard Refine Table Hook",
+  "error": "Feature completed in 451s - auto-verified",
+  "passes": true
+}

@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Update existing E2E tests for admin pages after refactoring to standard Refine CRUD patterns. Ensure tests still pass for: user management (list, create, edit, delete), audit logs (filtering, pagination), document management (list view), API key management (CRUD operations). Update test selectors and interactions to match Refine's standard component structure. Add tests for new standard features like inline editing, bulk actions if enabled. Verify no regressions in admin functionality after refactoring.",
+  "id": "admin-refine-e2e-tests-after-refactor",
+  "title": "Update E2E Tests for Refactored Admin Pages",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update existing E2E tests for admin pages after refactoring to standard Refine CRUD patterns. Ensure tests still pass for: user management (list, create, edit, delete), audit logs (filtering, pagination), document management (list view), API key management (CRUD operations). Update test selectors and interactions to match Refine's standard component structure. Add tests for new standard features like inline editing, bulk actions if enabled. Verify no regressions in admin functionality after refactoring.",
+      "timestamp": "2026-01-30T09:00:33.577Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-30T09:26:36.465Z"
+}

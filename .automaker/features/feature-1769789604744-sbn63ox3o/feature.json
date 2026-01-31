@@ -1,0 +1,30 @@
+{
+  "category": "Uncategorized",
+  "description": "{,…}\ndata\n: \nnull\nerrors\n: \n[{message: \"Field paging.first max allowed value is `50`.\", locations: [{line: 3, column: 11}],…}]\n0\n: \n{message: \"Field paging.first max allowed value is `50`.\", locations: [{line: 3, column: 11}],…}\nextensions\n: \n{code: \"BAD_REQUEST\", httpStatus: 400,…}\nlocations\n: \n[{line: 3, column: 11}]\nmessage\n: \n\"Field paging.first max allowed value is `50`.\"\npath\n: \n[\"users\"]\n0\n: \n\"users\"",
+  "title": "Fix pagination limit validation error",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": false,
+  "model": "claude-opus",
+  "thinkingLevel": "none",
+  "reasoningEffort": "none",
+  "branchName": "master",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "workMode": "current",
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1769789604744-sbn63ox3o",
+  "descriptionHistory": [
+    {
+      "description": "{,…}\ndata\n: \nnull\nerrors\n: \n[{message: \"Field paging.first max allowed value is `50`.\", locations: [{line: 3, column: 11}],…}]\n0\n: \n{message: \"Field paging.first max allowed value is `50`.\", locations: [{line: 3, column: 11}],…}\nextensions\n: \n{code: \"BAD_REQUEST\", httpStatus: 400,…}\nlocations\n: \n[{line: 3, column: 11}]\nmessage\n: \n\"Field paging.first max allowed value is `50`.\"\npath\n: \n[\"users\"]\n0\n: \n\"users\"",
+      "timestamp": "2026-01-30T16:13:24.849Z",
+      "source": "initial"
+    }
+  ],
+  "startedAt": "2026-01-30T16:13:24.900Z",
+  "updatedAt": "2026-01-30T16:23:03.101Z"
+}

@@ -1,6 +1,6 @@
 {
   "category": "enhancement",
-  "description": "Implement bulk operations on admin user management page. Add checkboxes for selecting multiple users. Support bulk actions: suspend accounts (with reason), activate accounts, assign roles (add/remove), export selected users (CSV), delete users (with confirmation and warning). Implement BulkUserMutation GraphQL resolver with proper authorization. Show confirmation dialogs before executing bulk operations. Display progress indicators for operations. Audit log all bulk actions with admin user ID and affected users.",
+  "description": "Implement bulk operations on admin user management page using Refine's useBulk hook or standard batch mutations. Support bulk actions: suspend accounts, activate accounts, assign roles, export selected users (CSV), delete users. Use Refine's built-in bulk operation patterns where possible.",
   "id": "admin-user-bulk-operations",
   "title": "Admin User Bulk Operations",
   "priority": 3,
@@ -11,6 +11,11 @@
       "description": "Implement bulk operations on admin user management page. Add checkboxes for selecting multiple users. Support bulk actions: suspend accounts (with reason), activate accounts, assign roles (add/remove), export selected users (CSV), delete users (with confirmation and warning). Implement BulkUserMutation GraphQL resolver with proper authorization. Show confirmation dialogs before executing bulk operations. Display progress indicators for operations. Audit log all bulk actions with admin user ID and affected users.",
       "timestamp": "2026-01-24T08:43:29.451Z",
       "source": "initial"
+    },
+    {
+      "description": "Implement bulk operations on admin user management page using Refine's useBulk hook or standard batch mutations. Support bulk actions: suspend accounts, activate accounts, assign roles, export selected users (CSV), delete users. Use Refine's built-in bulk operation patterns where possible.",
+      "timestamp": "2026-01-30T09:00:33.586Z",
+      "source": "edit"
     }
   ],
   "updatedAt": "2026-01-24T10:36:07.836Z"

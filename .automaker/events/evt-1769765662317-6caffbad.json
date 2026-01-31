@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769765662317-6caffbad",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T09:34:22.317Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-refine-crud-document-list",
+  "featureName": "Refactor Admin Document List to Use Standard Refine Table",
+  "error": "Feature completed in 737s - auto-verified",
+  "passes": true
+}

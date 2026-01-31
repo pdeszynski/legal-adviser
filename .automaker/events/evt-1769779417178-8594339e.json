@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769779417178-8594339e",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T13:23:37.178Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-admin-user-list-graphql-integration",
+  "featureName": "Fix Admin User List GraphQL Integration with nestjs-query",
+  "error": "Feature completed in 2135s - auto-verified",
+  "passes": true
+}

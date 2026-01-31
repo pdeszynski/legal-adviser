@@ -1,0 +1,19 @@
+{
+  "category": "refactor",
+  "description": "Refactor admin system settings page at /admin/settings to use Refine's useForm hook or useCustom for settings that are standard key-value pairs. For settings backed by entities (SystemSettings entity), use standard useEdit hook with nestjs-query resolvers. Replace custom mutation calls with Refine's form patterns. Settings management is CRUD on a singleton resource - fits Refine patterns with minor customization.",
+  "id": "admin-refine-crud-settings-management",
+  "title": "Refactor Admin System Settings to Use Refine Form Hooks",
+  "dependencies": [
+    "admin-refine-resource-provider-configuration"
+  ],
+  "priority": 3,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Refactor admin system settings page at /admin/settings to use Refine's useForm hook or useCustom for settings that are standard key-value pairs. For settings backed by entities (SystemSettings entity), use standard useEdit hook with nestjs-query resolvers. Replace custom mutation calls with Refine's form patterns. Settings management is CRUD on a singleton resource - fits Refine patterns with minor customization.",
+      "timestamp": "2026-01-30T09:00:33.571Z",
+      "source": "initial"
+    }
+  ]
+}

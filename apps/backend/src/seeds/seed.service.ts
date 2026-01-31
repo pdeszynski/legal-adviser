@@ -103,7 +103,16 @@ export class SeedService {
       await this.seedSessions();
       await this.seedDocuments();
       await this.seedAnalyses();
-      await this.seedRulings();
+
+      // Only seed rulings if --clean-all was used (external data tables)
+      if (cleanAll) {
+        await this.seedRulings();
+      } else {
+        this.logger.log(
+          'Skipping legal_rulings seeding (external data preserved). Use --clean-all to reseed.',
+        );
+      }
+
       await this.seedQueries();
       await this.seedAuditLogs();
 

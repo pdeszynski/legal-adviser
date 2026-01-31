@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Fix the filtering functionality in the admin user management view at /admin/users. Currently filters are not working correctly after the user view was fixed. Implementation: 1) Verify User entity has @FilterableField decorators for filterable fields (email, username, role, isActive, createdAt), 2) Ensure UserQueryService generates proper filter types (UserFilter with StringFilter, BooleanFilter, etc.), 3) Update useTable configuration to use correct filter mapping, 4) Implement buildGraphQLFilter function that converts Refine filters to nestjs-query format, 5) Test filtering by role, status, email, and date range, 6) Ensure filter state persists across pagination changes. This is an urgent fix needed for the user management view.",
+  "id": "fix-admin-user-view-filtering",
+  "title": "Fix Admin User View Filtering",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Fix the filtering functionality in the admin user management view at /admin/users. Currently filters are not working correctly after the user view was fixed. Implementation: 1) Verify User entity has @FilterableField decorators for filterable fields (email, username, role, isActive, createdAt), 2) Ensure UserQueryService generates proper filter types (UserFilter with StringFilter, BooleanFilter, etc.), 3) Update useTable configuration to use correct filter mapping, 4) Implement buildGraphQLFilter function that converts Refine filters to nestjs-query format, 5) Test filtering by role, status, email, and date range, 6) Ensure filter state persists across pagination changes. This is an urgent fix needed for the user management view.",
+      "timestamp": "2026-01-30T15:41:58.173Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-30T15:42:09.642Z"
+}

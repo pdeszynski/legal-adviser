@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769790837178-b745df8f",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T16:33:57.178Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "add-admin-view-e2e-tests-for-filtering",
+  "featureName": "Add E2E Tests for Admin View Filtering",
+  "error": "Feature completed in 2300s - auto-verified",
+  "passes": true
+}

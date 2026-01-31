@@ -742,3 +742,982 @@ export class AiClientService {
 | `BasePromptTemplate` | System prompt string             |
 | `StructuredOutput`   | `output_type=BaseModel`          |
 | `bind_tools()`       | Tool registration on Agent       |
+
+## Refine.dev Admin CRUD Patterns
+
+### Overview
+
+The admin panel uses Refine.dev as the primary framework. This section clarifies when to use standard Refine CRUD patterns vs custom implementations to prevent over-engineering.
+
+**Key Principle:** Use standard Refine patterns for simple data operations. Reserve custom implementations for complex business logic that cannot be expressed with standard CRUD.
+
+### Decision Matrix
+
+| Use Case                       | Approach                                           | Example                                |
+| ------------------------------ | -------------------------------------------------- | -------------------------------------- |
+| **Simple CRUD Operations**     | Standard Refine (`useTable`, `useEdit`, `useForm`) | User management, settings, API keys    |
+| **List/View with Filters**     | Standard Refine (`useTable`, `useList`)            | Document listings, audit logs          |
+| **Complex Business Logic**     | Custom Implementation                              | Temporal workflows, approval workflows |
+| **Analytics Aggregations**     | Custom Implementation (`useCustom`)                | Dashboard metrics, charts              |
+| **Domain-Specific Operations** | Custom Mutations                                   | Bulk operations, role changes          |
+
+### Standard CRUD Pattern (Preferred)
+
+**Use for:** User management, audit logs, settings, API keys, document listings, subscription plans.
+
+**Example - Simple List Page:**
+
+```tsx
+'use client';
+
+import { useTable } from '@refinedev/react-table';
+import { useMemo } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
+
+type Document = {
+  id: string;
+  title: string;
+  status: string;
+  createdAt: string;
+};
+
+export default function AdminDocumentsPage() {
+  const columns = useMemo<ColumnDef<Document>[]>(
+    () => [
+      { id: 'title', accessorKey: 'title', header: 'Title' },
+      { id: 'status', accessorKey: 'status', header: 'Status' },
+      { id: 'createdAt', accessorKey: 'createdAt', header: 'Created' },
+    ],
+    [],
+  );
+
+  const { reactTable } = useTable<Document>({
+    columns,
+    refineCoreProps: {
+      resource: 'documents',
+      pagination: { pageSize: 20 },
+      sorters: { initial: [{ field: 'createdAt', order: 'desc' }] },
+    },
+  });
+
+  return <table>{/* Render table using reactTable */}</table>;
+}
+```
+
+**Example - Using useList for Data Fetching:**
+
+```tsx
+import { useList } from '@refinedev/core';
+
+const { data, isLoading, refetch } = useList<User>({
+  resource: 'users',
+  pagination: { current: 1, pageSize: 10 },
+  filters: [{ field: 'role', operator: 'eq', value: 'admin' }],
+  sorters: [{ field: 'createdAt', order: 'desc' }],
+});
+```
+
+**Reference:** https://refine.dev/core/docs/data/hooks/use-table/
+
+### Custom Implementation Pattern
+
+**Use for:** Analytics dashboards, temporal workflow management, approval workflows, bulk operations with complex logic.
+
+**Example - Custom Query with useCustom:**
+
+```tsx
+import { useCustom } from '@refinedev/core';
+
+const { data, isLoading } = useCustom<DashboardStats>({
+  url: '/admin-dashboard',
+  method: 'get',
+  config: {
+    query: {
+      operation: 'adminDashboard',
+      fields: ['totalUsers', 'activeSessions', 'documentCount'],
+    },
+  },
+});
+```
+
+**Example - Custom Mutation:**
+
+```tsx
+import { useCustomMutation } from '@refinedev/core';
+import { dataProvider } from '@providers/data-provider';
+
+const mutation = useCustomMutation();
+
+const handleBulkAction = async () => {
+  mutation.mutate({
+    url: '',
+    method: 'post',
+    config: {
+      mutation: {
+        operation: 'bulkSuspendUsers',
+        fields: ['success', 'failed { id error }'],
+        variables: { input: { userIds: ['1', '2'] } },
+      },
+    },
+  });
+};
+```
+
+**Reference:** https://refine.dev/core/docs/data/data-provider/
+
+### Resource Configuration Patterns
+
+The data provider (`apps/web/src/providers/data-provider/index.ts`) supports multiple resource types with GraphQL queries.
+
+**Standard Resources (nestjs-query auto-generated):**
+
+- `users` - User management
+- `subscription_plans` - Subscription management
+
+**Custom Resources (custom GraphQL queries):**
+
+- `documents` - Legal documents
+- `audit_logs` - Audit trail
+- `notifications` - Notification history
+- `legalRulings` - Legal rulings database
+- `demoRequests` - Demo request management
+
+**Adding a New Resource:**
+
+1. **Backend:** Create nestjs-query resolver or custom resolver
+2. **Frontend Data Provider:** Add `getList`, `getOne`, `create`, `update`, `deleteOne` methods
+3. **Frontend Page:** Use standard Refine hooks (`useTable`, `useList`, `useShow`)
+
+### NestJS-Query Integration
+
+**Backend Entity Setup:**
+
+```typescript
+// apps/backend/src/modules/users/entities/user.entity.ts
+@ObjectType('User')
+@Resolver((of) => User)
+export class User {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => String)
+  email: string;
+
+  @Field(() => UserRole)
+  role: UserRole;
+}
+
+//nestjs-query automatically generates:
+// - users: UserConnection!
+// - user(id: ID!): User!
+// - createOneUser(input: CreateUserInput!): User!
+// - updateOneUser(id: ID!, input: UpdateUserInput!): User!
+// - deleteOneUser(id: ID!): User!
+```
+
+**Frontend Data Provider Mapping:**
+
+```typescript
+// apps/web/src/providers/data-provider/index.ts
+getList: async ({ resource, pagination, filters, sorters }) => {
+  if (resource === 'users') {
+    const query = `
+      query GetUsers($filter: UserFilter, $paging: CursorPaging, $sorting: [UserSort!]) {
+        users(filter: $filter, paging: $paging, sorting: $sorting) {
+          totalCount
+          edges { node { id email role } }
+          pageInfo { endCursor }
+        }
+      }
+    `;
+    // Execute and return
+  }
+};
+```
+
+## NestJS-Query + Refine.dev Integration Guide
+
+This section provides the complete pattern for integrating Refine.dev with nestjs-query auto-generated resolvers. Following this pattern ensures type-safe, efficient admin pages with minimal boilerplate.
+
+### 1. Backend: Entity Decorator Setup
+
+**Location:** `apps/backend/src/modules/{module}/entities/{entity}.entity.ts`
+
+**Required Decorators:**
+
+```typescript
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { ObjectType, Field, ID, GraphQLISODateTime } from '@nestjs/graphql';
+import { IDField, FilterableField, QueryOptions, Relation } from '@ptc-org/nestjs-query-graphql';
+
+@Entity('users')
+@ObjectType('User')
+@QueryOptions({ enableTotalCount: true }) // Required for Connection totalCount
+@Relation('sessions', () => UserSession, { nullable: true }) // Define relations
+export class User {
+  @PrimaryGeneratedColumn('uuid')
+  @IDField(() => ID)
+  id: string;
+
+  @Column({ type: 'varchar', length: 255, unique: true })
+  @FilterableField() // Makes field filterable in GraphQL queries
+  email: string;
+
+  @Column({ type: 'boolean', default: true })
+  @FilterableField()
+  isActive: boolean;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Field(() => String, { nullable: true }) // Non-filterable field
+  username: string | null;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  @FilterableField(() => GraphQLISODateTime)
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  @FilterableField(() => GraphQLISODateTime)
+  updatedAt: Date;
+}
+```
+
+**Key Decorator Rules:**
+
+| Decorator                                          | Purpose                                 | When to Use                    |
+| -------------------------------------------------- | --------------------------------------- | ------------------------------ |
+| `@IDField(() => ID)`                               | Primary key with GraphQL ID type        | All entity IDs                 |
+| `@FilterableField()`                               | Enables filtering/sorting on this field | Fields you want to filter/sort |
+| `@FilterableField(() => Type, { nullable: true })` | Nullable filterable field               | Optional fields                |
+| `@Field(() => Type, { nullable: true })`           | Regular GraphQL field (no filter)       | Computed/read-only fields      |
+| `@QueryOptions({ enableTotalCount: true })`        | Enables totalCount in Connection        | All entities                   |
+| `@Relation()`                                      | Defines relationship to other entities  | OneToMany/ManyToOne            |
+
+**JSON Field Handling:**
+
+```typescript
+import GraphQLJSON from 'graphql-type-json';
+
+// Define a TypeScript interface for your JSON structure
+export interface ChangeDetails {
+  changedFields?: string[];
+  before?: Record<string, unknown>;
+  after?: Record<string, unknown>;
+  context?: Record<string, unknown>;
+}
+
+@Entity('audit_logs')
+@ObjectType('AuditLog')
+@QueryOptions({ enableTotalCount: true })
+export class AuditLog {
+  // ... other fields
+
+  @Column({ type: 'jsonb', nullable: true })
+  @Field(() => GraphQLJSON, { nullable: true })
+  changeDetails: ChangeDetails | null;
+}
+```
+
+### 2. Backend: Module Registration with QueryService
+
+**Location:** `apps/backend/src/modules/{module}/{module}.module.ts`
+
+```typescript
+import { Module } from '@nestjs/common';
+import { NestjsQueryGraphQLModule } from '@ptc-org/nestjs-query-graphql';
+import { NestjsQueryTypeOrmModule } from '@ptc-org/nestjs-query-typeorm';
+import { User } from './entities/user.entity';
+import { CreateUserInput, UpdateUserInput } from './dto';
+import { UsersAdminResolver } from './users-admin.resolver';
+
+@Module({
+  imports: [
+    // TypeORM repository for custom services
+    TypeOrmModule.forFeature([User]),
+
+    // nestjs-query for User entity - auto-generates CRUD with Connection format
+    NestjsQueryGraphQLModule.forFeature({
+      imports: [NestjsQueryTypeOrmModule.forFeature([User])],
+      resolvers: [
+        {
+          DTOClass: User, // The entity class
+          EntityClass: User, // Same as DTOClass for simple CRUD
+          CreateDTOClass: CreateUserInput, // Custom create DTO
+          UpdateDTOClass: UpdateUserInput, // Custom update DTO
+          enableTotalCount: true, // Required for pagination
+          enableAggregate: true, // Enable aggregate queries
+          read: {
+            many: { name: 'users' }, // GraphQL query name for list
+            one: { name: 'user' }, // GraphQL query name for single
+          },
+          create: {
+            one: { name: 'createOneUser' },
+            many: { disabled: true }, // Disable bulk create
+          },
+          update: {
+            one: { name: 'updateOneUser' },
+            many: { disabled: true }, // Disable bulk update
+          },
+          delete: {
+            one: { name: 'deleteOneUser' },
+            many: { disabled: true }, // Disable bulk delete
+          },
+        },
+      ],
+    }),
+  ],
+  providers: [UsersAdminResolver], // Custom resolvers for business logic
+  exports: [UsersService],
+})
+export class UsersModule {}
+```
+
+**Auto-Generated GraphQL Operations:**
+
+```graphql
+# Queries
+users(filter: UserFilter, paging: CursorPaging, sorting: [UserSort!]): UserConnection!
+user(id: ID!): User!
+
+# Mutations
+createOneUser(input: CreateOneUserInput!): User!
+updateOneUser(input: UpdateOneUserInput!): User!
+deleteOneUser(input: DeleteOneUserInput!): User!
+
+# Types (auto-generated)
+type UserConnection {
+  totalCount: Int!
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserEdge {
+  node: User!
+  cursor: String!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+input UserFilter {
+  id: IDFilter
+  email: StringFilter
+  isActive: BooleanFilter
+  # ... other fields
+}
+
+input UserSort {
+  field: UserSortFields!
+  direction: SortDirection!
+}
+```
+
+### 3. Backend: Create/Update DTOs
+
+**Location:** `apps/backend/src/modules/{module}/dto/`
+
+```typescript
+// create-user.dto.ts
+import { IsEmail, IsOptional, IsString, MinLength, MaxLength } from 'class-validator';
+
+export class CreateUserDto {
+  @IsEmail()
+  email: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(50)
+  username?: string;
+
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+}
+
+// update-user.dto.ts
+export class UpdateUserDto {
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  username?: string;
+
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @IsOptional()
+  isActive?: boolean;
+}
+```
+
+### 4. Frontend: Data Provider Configuration
+
+**Location:** `apps/web/src/providers/data-provider/index.ts`
+
+The data provider maps Refine's data hooks to nestjs-query's GraphQL API with Connection-based pagination.
+
+**Key Functions:**
+
+```typescript
+// 1. Build filter object from Refine filters
+function buildGraphQLFilter(filters?: CrudFilters): Record<string, unknown> | undefined {
+  if (!filters || filters.length === 0) return undefined;
+
+  const filterObj: Record<string, unknown> = {};
+
+  for (const filter of filters) {
+    if ('field' in filter) {
+      const { field, operator, value } = filter;
+
+      switch (operator) {
+        case 'eq':
+          filterObj[field] = { eq: value };
+          break;
+        case 'ne':
+          filterObj[field] = { neq: value };
+          break;
+        case 'contains':
+          filterObj[field] = { iLike: `%${value}%` }; // Case-insensitive LIKE
+          break;
+        case 'gt':
+          filterObj[field] = { gt: value };
+          break;
+        case 'gte':
+          filterObj[field] = { gte: value };
+          break;
+        case 'lt':
+          filterObj[field] = { lt: value };
+          break;
+        case 'lte':
+          filterObj[field] = { lte: value };
+          break;
+        case 'in':
+          filterObj[field] = { in: value };
+          break;
+      }
+    }
+  }
+
+  return Object.keys(filterObj).length > 0 ? filterObj : undefined;
+}
+
+// 2. Build sorting object from Refine sorters
+function buildGraphQLSorting(
+  sorters?: CrudSorting,
+): Array<{ field: string; direction: string }> | undefined {
+  if (!sorters || sorters.length === 0) return undefined;
+
+  return sorters.map((sorter) => ({
+    field: sorter.field,
+    direction: sorter.order === 'asc' ? 'ASC' : 'DESC',
+  }));
+}
+
+// 3. Cursor cache for pagination (nestjs-query uses cursor-based pagination)
+const cursorCache = new Map<string, CursorCacheEntry>();
+
+function getCacheKey(resource: string, filters?: CrudFilters, sorters?: CrudSorting): string {
+  const filterStr = filters ? JSON.stringify(filters) : 'none';
+  const sorterStr = sorters ? JSON.stringify(sorters) : 'none';
+  return `${resource}:${filterStr}:${sorterStr}`;
+}
+
+function storeCursor(key: string, pageNumber: number, endCursor: string, totalCount: number): void {
+  let entry = cursorCache.get(key);
+  if (!entry) {
+    entry = { cursors: [], totalCount };
+    cursorCache.set(key, entry);
+  }
+  entry.totalCount = totalCount;
+  entry.cursors[pageNumber - 1] = endCursor;
+}
+```
+
+**Complete getList Implementation:**
+
+```typescript
+getList: async <TData extends BaseRecord = BaseRecord>({
+  resource,
+  pagination,
+  filters,
+  sorters,
+}) => {
+  if (resource === 'users') {
+    const query = `
+      query GetUsers($filter: UserFilter, $paging: CursorPaging, $sorting: [UserSort!]) {
+        users(filter: $filter, paging: $paging, sorting: $sorting) {
+          totalCount
+          edges {
+            node {
+              id
+              email
+              username
+              firstName
+              lastName
+              isActive
+              role
+              createdAt
+              updatedAt
+            }
+          }
+          pageInfo {
+            hasNextPage
+            hasPreviousPage
+            startCursor
+            endCursor
+          }
+        }
+      }
+    `;
+
+    const currentPage = pagination?.currentPage || 1;
+    const pageSize = pagination?.pageSize || 10;
+
+    // Build GraphQL parameters
+    const graphqlFilter = buildGraphQLFilter(filters);
+    const graphqlSorting = buildGraphQLSorting(sorters) || [
+      { field: 'createdAt', direction: 'DESC' },
+    ];
+
+    // Build paging (cursor-based)
+    const graphqlPaging = buildGraphQLPaging(pagination, resource, filters, sorters);
+
+    // Execute query
+    const data = await executeGraphQL<{
+      users: {
+        totalCount: number;
+        edges: Array<{ node: TData }>;
+        pageInfo: {
+          hasNextPage: boolean;
+          hasPreviousPage: boolean;
+          startCursor: string;
+          endCursor: string;
+        };
+      };
+    }>(query, {
+      filter: graphqlFilter || {},
+      paging: graphqlPaging,
+      sorting: graphqlSorting,
+    });
+
+    // Extract data from Connection format
+    const items = data.users.edges.map((edge) => edge.node);
+
+    // Store cursor for next page navigation
+    const cacheKey = getCacheKey(resource, filters, sorters);
+    storeCursor(cacheKey, currentPage, data.users.pageInfo.endCursor, data.users.totalCount);
+
+    return {
+      data: items,
+      total: data.users.totalCount,
+    };
+  }
+
+  throw new Error(`Unknown resource: ${resource}`);
+};
+```
+
+### 5. Frontend: Page Component with useList
+
+**Location:** `apps/web/src/app/admin/{resource}/page.tsx`
+
+**Reference:** `apps/web/src/app/admin/users/page.tsx`
+
+```tsx
+'use client';
+
+import { useList } from '@refinedev/core';
+import { useState, useMemo } from 'react';
+import type { User } from '@/generated/graphql';
+
+export default function AdminUsersPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
+  // Build filters from UI state
+  const refineFilters = useMemo(() => {
+    const filterList = [];
+
+    if (filters.role && filters.role !== 'all') {
+      filterList.push({ field: 'role', operator: 'eq', value: filters.role });
+    }
+
+    if (filters.status && filters.status !== 'all') {
+      filterList.push({
+        field: 'isActive',
+        operator: 'eq',
+        value: filters.status === 'active',
+      });
+    }
+
+    if (filters.search) {
+      filterList.push({ field: 'email', operator: 'contains', value: filters.search });
+    }
+
+    return filterList;
+  }, [filters]);
+
+  // Use Refine's useList hook
+  const listResult = useList<User>({
+    resource: 'users',
+    pagination: {
+      current: currentPage,
+      pageSize,
+    },
+    filters: refineFilters.length > 0 ? refineFilters : undefined,
+    sorters: [{ field: 'createdAt', order: 'desc' }],
+  });
+
+  const { data, isLoading, refetch } = listResult.query;
+  const users = (listResult.result?.data as unknown as User[]) || [];
+  const total = listResult.result?.total || 0;
+
+  return (
+    <div>
+      {/* Render table with users */}
+      <table>
+        {users.map((user) => (
+          <tr key={user.id}>
+            <td>{user.email}</td>
+            <td>{user.role}</td>
+          </tr>
+        ))}
+      </table>
+
+      {/* Pagination */}
+      <div>
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span>Page {currentPage}</span>
+        <button
+          onClick={() => setCurrentPage((p) => Math.min(Math.ceil(total / pageSize), p + 1))}
+          disabled={currentPage >= Math.ceil(total / pageSize)}
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+### 6. Frontend: Custom Mutations
+
+For operations not auto-generated by nestjs-query (business logic mutations):
+
+```tsx
+import { dataProvider } from '@providers/data-provider';
+import type { GraphQLMutationConfig } from '@providers/data-provider';
+
+const handleBulkAction = async (userIds: string[]) => {
+  const mutationConfig: GraphQLMutationConfig<{ userIds: string[] }> = {
+    url: '',
+    method: 'post',
+    config: {
+      mutation: {
+        operation: 'bulkActivateUsers',
+        fields: ['success', 'failed { id error }'],
+        variables: {
+          input: { userIds },
+        },
+      },
+    },
+  };
+
+  try {
+    await (dataProvider as any).custom(mutationConfig);
+    refetch();
+  } catch (error) {
+    console.error('Failed to activate users:', error);
+  }
+};
+```
+
+### 7. Resource Name Mapping
+
+**Data Provider to GraphQL Query Mapping:**
+
+| Resource Name   | GraphQL Query    | Data Key         |
+| --------------- | ---------------- | ---------------- |
+| `users`         | `users`          | `users`          |
+| `audit_logs`    | `auditLogs`      | `auditLogs`      |
+| `documents`     | `legalDocuments` | `legalDocuments` |
+| `legalRulings`  | `legalRulings`   | `legalRulings`   |
+| `notifications` | `notifications`  | `notifications`  |
+| `demoRequests`  | `demoRequests`   | `demoRequests`   |
+
+**Note:** Some resources use camelCase conversion (`audit_logs` → `auditLogs`).
+
+### 8. Common Pitfalls and Solutions
+
+| Issue                               | Cause                                                         | Solution                                                |
+| ----------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------- |
+| **Missing totalCount**              | `@QueryOptions({ enableTotalCount: true })` not set on entity | Add decorator to entity                                 |
+| **Filters not working**             | Field not decorated with `@FilterableField()`                 | Use `@FilterableField()` instead of `@Field()`          |
+| **Cannot sort by field**            | Field not filterable                                          | Add `@FilterableField()` decorator                      |
+| **Empty edges array**               | Cursor pagination misconfiguration                            | Check `buildGraphQLPaging` and cursor cache             |
+| **Type errors after schema change** | Codegen not run                                               | Run `pnpm codegen`                                      |
+| **Page navigation broken**          | Direct page jump without cursor cache                         | Implement `ensureCursorsCached` for sequential fetching |
+| **JSON field errors**               | Using wrong GraphQL type                                      | Use `GraphQLJSON` for jsonb columns                     |
+| **Wrong mutation format**           | nestjs-query expects `input: { id, ...fields }`               | Include id inside input object                          |
+| **Relation fields null**            | `@Relation()` decorator missing                               | Add `@Relation()` to entity                             |
+| **Filtering by nested field**       | Not supported by default nestjs-query                         | Use custom resolver or query                            |
+
+### 9. Adding a New Admin Resource (Step-by-Step)
+
+**Step 1: Create Entity** (`apps/backend/src/modules/{module}/entities/{entity}.entity.ts`)
+
+```typescript
+@Entity('resources')
+@ObjectType('Resource')
+@QueryOptions({ enableTotalCount: true })
+export class Resource {
+  @PrimaryGeneratedColumn('uuid')
+  @IDField(() => ID)
+  id: string;
+
+  @Column({ type: 'varchar', length: 255 })
+  @FilterableField()
+  name: string;
+
+  @Column({ type: 'jsonb', nullable: true })
+  @Field(() => GraphQLJSON, { nullable: true })
+  metadata: Record<string, unknown> | null;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  @FilterableField(() => GraphQLISODateTime)
+  createdAt: Date;
+}
+```
+
+**Step 2: Create DTOs** (`apps/backend/src/modules/{module}/dto/`)
+
+```typescript
+export class CreateResourceDto {
+  @IsString()
+  @MaxLength(255)
+  name: string;
+
+  @IsOptional()
+  metadata?: Record<string, unknown>;
+}
+
+export class UpdateResourceDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  name?: string;
+
+  @IsOptional()
+  metadata?: Record<string, unknown>;
+}
+```
+
+**Step 3: Register in Module** (`apps/backend/src/modules/{module}/{module}.module.ts`)
+
+```typescript
+NestjsQueryGraphQLModule.forFeature({
+  imports: [NestjsQueryTypeOrmModule.forFeature([Resource])],
+  resolvers: [
+    {
+      DTOClass: Resource,
+      EntityClass: Resource,
+      CreateDTOClass: CreateResourceDto,
+      UpdateDTOClass: UpdateResourceDto,
+      enableTotalCount: true,
+      read: { many: { name: 'resources' }, one: { name: 'resource' } },
+      create: { one: { name: 'createOneResource' }, many: { disabled: true } },
+      update: { one: { name: 'updateOneResource' }, many: { disabled: true } },
+      delete: { one: { name: 'deleteOneResource' }, many: { disabled: true } },
+    },
+  ],
+});
+```
+
+**Step 4: Run Codegen** (from project root)
+
+```bash
+pnpm codegen
+```
+
+**Step 5: Add Data Provider Entry** (`apps/web/src/providers/data-provider/index.ts`)
+
+```typescript
+if (resource === 'resources') {
+  const query = `
+    query GetResources($filter: ResourceFilter, $paging: CursorPaging, $sorting: [ResourceSort!]) {
+      resources(filter: $filter, paging: $paging, sorting: $sorting) {
+        totalCount
+        edges {
+          node {
+            id
+            name
+            metadata
+            createdAt
+            updatedAt
+          }
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
+      }
+    }
+  `;
+  // ... implement same pattern as users
+}
+```
+
+**Step 6: Create Page** (`apps/web/src/app/admin/resources/page.tsx`)
+
+```tsx
+'use client';
+import { useList } from '@refinedev/core';
+import type { Resource } from '@/generated/graphql';
+
+export default function AdminResourcesPage() {
+  const listResult = useList<Resource>({
+    resource: 'resources',
+    pagination: { current: 1, pageSize: 10 },
+    sorters: [{ field: 'createdAt', order: 'desc' }],
+  });
+
+  // ... render
+}
+```
+
+### 10. Reference Examples
+
+- **Entity with all decorators:** `apps/backend/src/modules/users/entities/user.entity.ts`
+- **Module registration:** `apps/backend/src/modules/users/users.module.ts`
+- **DTOs:** `apps/backend/src/modules/users/dto/create-user.dto.ts`
+- **Data provider:** `apps/web/src/providers/data-provider/index.ts`
+- **Working page:** `apps/web/src/app/admin/users/page.tsx`
+- **JSON fields:** `apps/backend/src/modules/audit-log/entities/audit-log.entity.ts`
+- **Custom mutations:** `apps/backend/src/modules/users/users-admin.resolver.ts`
+
+### 11. External References
+
+- [nestjs-query Documentation](https://tripti.github.io/nestjs-query/)
+- [Refine.dev Data Provider](https://refine.dev/docs/api-reference/core/providers/data-provider/)
+- [GraphQL Cursor Connection Spec](https://relay.dev/graphql/connections.htm)
+
+### Anti-Patterns to Avoid
+
+**1. Custom Table When useTable Works:**
+
+```tsx
+// ❌ AVOID - Reinventing table functionality
+const [users, setUsers] = useState([]);
+const [page, setPage] = useState(1);
+const [sort, setSort] = useState({ field, order });
+// Manual pagination, sorting, filtering...
+
+// ✅ PREFERRED - Use Refine's useTable
+const { reactTable, refineCore } = useTable<User>({
+  columns,
+  refineCoreProps: { resource: 'users' },
+});
+```
+
+**2. Manual State Management for Filters:**
+
+```tsx
+// ❌ AVOID - Complex filter state
+const [filters, setFilters] = useState({ role: '', status: '' });
+useEffect(() => {
+  fetchData();
+}, [filters]);
+
+// ✅ PREFERRED - Let Refine manage filter state
+const { setFilters } = useTable({
+  refineCoreProps: {
+    filters: { initial: [{ field: 'role', operator: 'eq', value: 'admin' }] },
+  },
+});
+```
+
+**3. Custom Mutations for Simple CRUD:**
+
+```tsx
+// ❌ AVOID - Manual GraphQL for simple update
+const updateUser = async (id, data) => {
+  await fetch('/graphql', {
+    body: JSON.stringify({
+      query: 'mutation UpdateUser($id: ID!, $input: UpdateUserInput!) { ... }',
+    }),
+  });
+};
+
+// ✅ PREFERRED - Use useUpdate hook
+const { mutate } = useUpdate();
+mutate({ resource: 'users', id, values: data });
+```
+
+### Common Admin Patterns
+
+**Bulk Operations Pattern:**
+
+```tsx
+// For complex bulk operations with progress tracking
+const handleBulkAction = async (userIds: string[], action: string) => {
+  const mutationConfig: GraphQLMutationConfig<{ userIds: string[] }> = {
+    url: '',
+    method: 'post',
+    config: {
+      mutation: {
+        operation: 'bulkActivateUsers',
+        fields: ['success', 'failed { id error }'],
+        variables: { input: { userIds } },
+      },
+    },
+  };
+  await (dataProvider as any).custom(mutationConfig);
+};
+```
+
+**Export Pattern:**
+
+```tsx
+// Client-side CSV export for selected items
+const exportToCSV = (items: User[]) => {
+  const headers = ['Email', 'Role', 'Status'];
+  const rows = items.map((u) => [u.email, u.role, u.isActive ? 'Active' : 'Suspended']);
+  const csv = [headers, ...rows].map((row) => row.join(',')).join('\n');
+  // Download blob
+};
+```
+
+### Summary
+
+- **Standard CRUD:** User management, audit logs, settings, API keys, document listings → Use `useTable`, `useList`, `useEdit`, `useForm`
+- **Custom Logic:** Temporal workflows, analytics, approval workflows → Use `useCustom`, `useCustomMutation`
+- **New Features:** Start with standard patterns, only customize when standard patterns don't fit
+- **Documentation:** https://refine.dev/docs/

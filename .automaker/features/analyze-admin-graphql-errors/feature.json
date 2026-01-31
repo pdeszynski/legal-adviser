@@ -1,0 +1,18 @@
+{
+  "category": "bug",
+  "description": "Investigate and document all GraphQL request errors occurring in the admin panel. Use browser DevTools Network tab to capture failing GraphQL requests. Identify: 1) Which admin pages are failing (users, audit-logs, documents, etc.), 2) Error messages and status codes, 3) Request payloads being sent, 4) Response format mismatches, 5) Any missing or incorrect GraphQL operations. Document findings in a structured report with: endpoint URL, query/mutation, error message, expected vs actual behavior. Focus on understanding why requests return 'invalid request' errors - likely issues with nestjs-query auto-generated resolvers not matching Refine data provider expectations.",
+  "id": "analyze-admin-graphql-errors",
+  "title": "Analyze Admin Panel GraphQL Request Errors",
+  "dependencies": [],
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Investigate and document all GraphQL request errors occurring in the admin panel. Use browser DevTools Network tab to capture failing GraphQL requests. Identify: 1) Which admin pages are failing (users, audit-logs, documents, etc.), 2) Error messages and status codes, 3) Request payloads being sent, 4) Response format mismatches, 5) Any missing or incorrect GraphQL operations. Document findings in a structured report with: endpoint URL, query/mutation, error message, expected vs actual behavior. Focus on understanding why requests return 'invalid request' errors - likely issues with nestjs-query auto-generated resolvers not matching Refine data provider expectations.",
+      "timestamp": "2026-01-30T12:47:56.575Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-30T12:51:50.319Z"
+}

@@ -2,6 +2,263 @@
   "version": 1,
   "events": [
     {
+      "id": "evt-1769866730864-f077d64b",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-31T13:38:50.864Z"
+    },
+    {
+      "id": "evt-1769866727121-6675072a",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-31T13:38:47.121Z",
+      "featureName": "Add E2E Tests for Admin Filtering Functionality",
+      "featureId": "add-admin-filter-e2e-tests"
+    },
+    {
+      "id": "evt-1769866621678-cb399c9a",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-31T13:37:01.678Z",
+      "featureName": "Fix GraphQL Filter Format to Match nestjs-query Schema",
+      "featureId": "fix-graphql-filter-format-for-nestjs-query"
+    },
+    {
+      "id": "evt-1769866585316-ed9734eb",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-31T13:36:25.316Z",
+      "featureName": "Update buildGraphQLFilter to Map Field Types Correctly",
+      "featureId": "update-buildgraphqlfilter-for-field-type-mapping"
+    },
+    {
+      "id": "evt-1769866491438-ac9fb2d4",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-31T13:34:51.438Z",
+      "featureName": "Remove Client-Side Filtering from Admin Pages",
+      "featureId": "remove-client-side-filtering-from-admin-pages"
+    },
+    {
+      "id": "evt-1769865777631-19bab89d",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-31T13:22:57.631Z",
+      "featureName": "Fix Audit Logs Filters with nestjs-query",
+      "featureId": "audit-logs-nestjs-query-filter-fixes"
+    },
+    {
+      "id": "evt-1769865528228-d5ac2767",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-31T13:18:48.228Z",
+      "featureName": "Fix Document List Filters with nestjs-query",
+      "featureId": "document-nestjs-query-filter-fixes"
+    },
+    {
+      "id": "evt-1769790844146-1e945307",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-30T16:34:04.146Z"
+    },
+    {
+      "id": "evt-1769790837178-b745df8f",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T16:33:57.178Z",
+      "featureName": "Add E2E Tests for Admin View Filtering",
+      "featureId": "add-admin-view-e2e-tests-for-filtering"
+    },
+    {
+      "id": "evt-1769790183122-53f93ce8",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T16:23:03.122Z",
+      "featureName": "",
+      "featureId": "feature-1769789604744-sbn63ox3o"
+    },
+    {
+      "id": "evt-1769789604850-f3c91681",
+      "trigger": "feature_created",
+      "timestamp": "2026-01-30T16:13:24.850Z",
+      "featureId": "feature-1769789604744-sbn63ox3o"
+    },
+    {
+      "id": "evt-1769788784888-64aa10cb",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T15:59:44.888Z",
+      "featureName": "Integrate Admin Views with Refine Data Provider",
+      "featureId": "refactor-admin-views-data-provider-integration"
+    },
+    {
+      "id": "evt-1769788558490-1ae5bf81",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T15:55:58.490Z",
+      "featureName": "Fix Admin User View Filtering",
+      "featureId": "fix-admin-user-view-filtering"
+    },
+    {
+      "id": "evt-1769788536598-1ba964a4",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T15:55:36.598Z",
+      "featureName": "Refactor Admin Views to Use useTable Hook",
+      "featureId": "refactor-admin-views-to-use-table"
+    },
+    {
+      "id": "evt-1769780318646-c6be0e1d",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-30T13:38:38.646Z"
+    },
+    {
+      "id": "evt-1769780312177-f56687bc",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T13:38:32.177Z",
+      "featureName": "Verify All Admin Resources Are Configured in Refine Data Provider",
+      "featureId": "verify-all-admin-resources-in-data-provider"
+    },
+    {
+      "id": "evt-1769780269683-86db68bc",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T13:37:49.683Z",
+      "featureName": "Create E2E Tests for Admin Pages After Fixes",
+      "featureId": "create-admin-pages-e2e-tests"
+    },
+    {
+      "id": "evt-1769779757215-55f6cc92",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T13:29:17.215Z",
+      "featureName": "Document Admin CRUD Integration Pattern for Future Development",
+      "featureId": "document-admin-crud-fixes-pattern"
+    },
+    {
+      "id": "evt-1769779417178-8594339e",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T13:23:37.178Z",
+      "featureName": "Fix Admin User List GraphQL Integration with nestjs-query",
+      "featureId": "fix-admin-user-list-graphql-integration"
+    },
+    {
+      "id": "evt-1769779239306-51cd64eb",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T13:20:39.306Z",
+      "featureName": "Fix Admin Document List GraphQL Integration",
+      "featureId": "fix-admin-document-list-graphql-integration"
+    },
+    {
+      "id": "evt-1769778805921-87124b86",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T13:13:25.921Z",
+      "featureName": "Fix Admin Audit Logs GraphQL Integration",
+      "featureId": "fix-admin-audit-logs-graphql-integration"
+    },
+    {
+      "id": "evt-1769778804525-e49c06f8",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T13:13:24.525Z",
+      "featureName": "Fix Admin User CRUD Operations (Create, Update, Delete)",
+      "featureId": "fix-admin-user-crud-operations"
+    },
+    {
+      "id": "evt-1769777510352-e091234a",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T12:51:50.352Z",
+      "featureName": "Analyze Admin Panel GraphQL Request Errors",
+      "featureId": "analyze-admin-graphql-errors"
+    },
+    {
+      "id": "evt-1769770738314-0b444cfd",
+      "trigger": "auto_mode_complete",
+      "timestamp": "2026-01-30T10:58:58.314Z"
+    },
+    {
+      "id": "evt-1769770736516-63a2ceae",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T10:58:56.516Z",
+      "featureName": "Update E2E Tests for Refactored Admin Pages",
+      "featureId": "admin-refine-e2e-tests-after-refactor"
+    },
+    {
+      "id": "evt-1769770316714-453e9393",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T10:51:56.714Z",
+      "featureName": "Refactor Admin System Settings to Use Refine Form Hooks",
+      "featureId": "admin-refine-crud-settings-management"
+    },
+    {
+      "id": "evt-1769770309541-74a80c08",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T10:51:49.541Z",
+      "featureName": "Keep Custom Implementation for Document Moderation",
+      "featureId": "admin-document-moderation-keep-custom"
+    },
+    {
+      "id": "evt-1769770110085-af5c8b8d",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T10:48:30.085Z",
+      "featureName": "Keep Custom Implementation for Document Generation Workflows",
+      "featureId": "admin-document-generation-keep-custom"
+    },
+    {
+      "id": "evt-1769769612136-5135560a",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T10:40:12.136Z",
+      "featureName": "Configure Refine Routing for Admin Resources",
+      "featureId": "admin-refine-routing-configuration"
+    },
+    {
+      "id": "evt-1769769146787-40807a38",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T10:32:26.787Z",
+      "featureName": "Keep Custom Implementation for Analytics Dashboard",
+      "featureId": "admin-analytics-dashboard-keep-custom"
+    },
+    {
+      "id": "evt-1769768670174-a5fc00d1",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T10:24:30.174Z",
+      "featureName": "Document Refine.dev CRUD Patterns for Admin Development",
+      "featureId": "admin-refine-migration-documentation"
+    },
+    {
+      "id": "evt-1769768565683-46a44d41",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T10:22:45.683Z",
+      "featureName": "Configure Refine Data Provider Resources for Admin Entities",
+      "featureId": "admin-refine-resource-provider-configuration"
+    },
+    {
+      "id": "evt-1769765787443-af0961b1",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-30T09:36:27.443Z",
+      "featureName": "Configure Refine Data Provider Resources for Admin Entities",
+      "featureId": "admin-refine-resource-provider-configuration"
+    },
+    {
+      "id": "evt-1769765785985-7117a2e5",
+      "trigger": "feature_error",
+      "timestamp": "2026-01-30T09:36:25.985Z",
+      "featureName": "Update E2E Tests for Refactored Admin Pages",
+      "featureId": "admin-refine-e2e-tests-after-refactor"
+    },
+    {
+      "id": "evt-1769765662317-6caffbad",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T09:34:22.317Z",
+      "featureName": "Refactor Admin Document List to Use Standard Refine Table",
+      "featureId": "admin-refine-crud-document-list"
+    },
+    {
+      "id": "evt-1769765196170-75be1964",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T09:26:36.170Z",
+      "featureName": "Refactor Admin User Management to Use Standard Refine CRUD",
+      "featureId": "admin-refine-crud-user-management"
+    },
+    {
+      "id": "evt-1769764921504-edb29610",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T09:22:01.504Z",
+      "featureName": "Refactor Admin Audit Logs to Use Standard Refine Table Hook",
+      "featureId": "admin-refine-crud-audit-logs"
+    },
+    {
+      "id": "evt-1769764467303-b60e2d79",
+      "trigger": "feature_success",
+      "timestamp": "2026-01-30T09:14:27.303Z",
+      "featureName": "Refactor Admin API Key Management to Use Standard Refine CRUD",
+      "featureId": "admin-refine-crud-api-keys"
+    },
+    {
       "id": "evt-1769709702597-35b7c7c0",
       "trigger": "auto_mode_complete",
       "timestamp": "2026-01-29T18:01:42.597Z"
@@ -6613,216 +6870,6 @@
       "timestamp": "2026-01-21T23:28:57.304Z",
       "featureName": "Error Tracking Integration",
       "featureId": "error-tracking-integration"
-    },
-    {
-      "id": "evt-1769037975606-76f3fc22",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:26:15.606Z",
-      "featureName": "Citation Rendering Component",
-      "featureId": "citation-rendering"
-    },
-    {
-      "id": "evt-1769037924423-768220de",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:25:24.423Z",
-      "featureName": "Verify Refine Paginator Configuration",
-      "featureId": "verify-refine-paginator-config"
-    },
-    {
-      "id": "evt-1769037801154-dff36953",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:23:21.154Z",
-      "featureName": "Case Law Search Page",
-      "featureId": "ruling-search-page"
-    },
-    {
-      "id": "evt-1769037722480-78ff1490",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:22:02.480Z",
-      "featureName": "Verify GraphQL Pagination Arguments",
-      "featureId": "verify-graphql-pagination-args"
-    },
-    {
-      "id": "evt-1769037527759-0d31da13",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:18:47.759Z",
-      "featureName": "Ruling Detail Page",
-      "featureId": "ruling-detail-page"
-    },
-    {
-      "id": "evt-1769037426995-88294b15",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:17:06.995Z",
-      "featureName": "Legal Q&A Chat Page",
-      "featureId": "chat-page"
-    },
-    {
-      "id": "evt-1769037357204-0caae263",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:15:57.204Z",
-      "featureName": "Ruling Search GraphQL Query",
-      "featureId": "ruling-search-graphql"
-    },
-    {
-      "id": "evt-1769037305168-8a34a22e",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:15:05.168Z",
-      "featureName": "Ruling Search Service",
-      "featureId": "ruling-search-service"
-    },
-    {
-      "id": "evt-1769037183702-59b3f987",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:13:03.702Z",
-      "featureName": "Chat Interface Component",
-      "featureId": "chat-ui-component"
-    },
-    {
-      "id": "evt-1769036840557-23eb88b7",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:07:20.557Z",
-      "featureName": "",
-      "featureId": "feature-1769035186585-q67kgmbio"
-    },
-    {
-      "id": "evt-1769036757339-be19a114",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:05:57.339Z",
-      "featureName": "Q&A Backend Integration",
-      "featureId": "qa-backend-integration"
-    },
-    {
-      "id": "evt-1769036615986-9aed32aa",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:03:35.986Z",
-      "featureName": "Fix Pagination Implementation Across All List Views",
-      "featureId": "fix-pagination-implementation"
-    },
-    {
-      "id": "evt-1769036582110-d6954286",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T23:03:02.110Z",
-      "featureName": "Pre-commit Lint Hook",
-      "featureId": "pre-commit-lint-hook"
-    },
-    {
-      "id": "evt-1769036397772-00d954e1",
-      "trigger": "feature_error",
-      "timestamp": "2026-01-21T22:59:57.772Z",
-      "featureName": "Fix Pagination Implementation Across All List Views",
-      "featureId": "fix-pagination-implementation"
-    },
-    {
-      "id": "evt-1769036360311-2c22e332",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T22:59:20.311Z",
-      "featureName": "Pre-commit Type Check Hook",
-      "featureId": "pre-commit-type-check-hook"
-    },
-    {
-      "id": "evt-1769036291921-d81bb53d",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T22:58:11.921Z",
-      "featureName": "Fix Pagination Implementation Across All List Views",
-      "featureId": "fix-pagination-implementation"
-    },
-    {
-      "id": "evt-1769036284376-0ac521b3",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T22:58:04.376Z",
-      "featureName": "Q&A FastAPI Endpoint",
-      "featureId": "qa-rest-endpoint"
-    },
-    {
-      "id": "evt-1769036169482-9103da06",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T22:56:09.482Z",
-      "featureName": "Commit Message Conventional Commits Validation",
-      "featureId": "commit-msg-conventional-commits"
-    },
-    {
-      "id": "evt-1769036143367-9b1152c4",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T22:55:43.367Z",
-      "featureName": "Configure lint-staged for File Filtering",
-      "featureId": "lint-staged-setup"
-    },
-    {
-      "id": "evt-1769034708685-13560596",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T22:31:48.685Z",
-      "featureName": "Configure Husky for Git Hooks",
-      "featureId": "husky-setup"
-    },
-    {
-      "id": "evt-1768984056062-9f9370de",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T08:27:36.062Z",
-      "featureName": "Q&A LangGraph Workflow",
-      "featureId": "qa-langgraph-workflow"
-    },
-    {
-      "id": "evt-1768983412109-3dfa4336",
-      "trigger": "feature_error",
-      "timestamp": "2026-01-21T08:16:52.109Z",
-      "featureName": "Q&A LangGraph Workflow",
-      "featureId": "qa-langgraph-workflow"
-    },
-    {
-      "id": "evt-1768982443471-e3078db4",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T08:00:43.471Z",
-      "featureName": "RAG Retrieval Logic",
-      "featureId": "rag-retrieval-logic"
-    },
-    {
-      "id": "evt-1768982267719-44ee4312",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T07:57:47.719Z",
-      "featureName": "RAG Vector Store Setup",
-      "featureId": "rag-vector-store"
-    },
-    {
-      "id": "evt-1768981983061-385d64c1",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T07:53:03.061Z",
-      "featureName": "Classifier Backend Integration",
-      "featureId": "classifier-backend-integration"
-    },
-    {
-      "id": "evt-1768981870788-33aba367",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T07:51:10.788Z",
-      "featureName": "Analyze Case Page",
-      "featureId": "analyze-case-page"
-    },
-    {
-      "id": "evt-1768981348906-148e1962",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T07:42:28.906Z",
-      "featureName": "Legal Grounds Classifier Agent",
-      "featureId": "classifier-agent"
-    },
-    {
-      "id": "evt-1768981325228-7721ec76",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T07:42:05.228Z",
-      "featureName": "Classifier FastAPI Endpoint",
-      "featureId": "classifier-rest-endpoint"
-    },
-    {
-      "id": "evt-1768981317586-a9a17f92",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T07:41:57.586Z",
-      "featureName": "Domain Events Infrastructure",
-      "featureId": "feature-1768302423822-blijwgyio"
-    },
-    {
-      "id": "evt-1768981084203-bfb16603",
-      "trigger": "feature_success",
-      "timestamp": "2026-01-21T07:38:04.203Z",
-      "featureName": "Document Completion Email Notification",
-      "featureId": "document-completion-notification"
     }
   ]
 }

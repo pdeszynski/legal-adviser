@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Refactor admin API keys management to use Refine's standard CRUD patterns with useTable for listing and useEdit for managing keys. Use nestjs-query auto-generated resolvers for ApiKey entity. Configure resource with standard operations. API key management is pure CRUD (create, list, revoke/delete) - perfect candidate for standard Refine patterns. Replace custom mutations with standard resource operations.",
+  "id": "admin-refine-crud-api-keys",
+  "title": "Refactor Admin API Key Management to Use Standard Refine CRUD",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Refactor admin API keys management to use Refine's standard CRUD patterns with useTable for listing and useEdit for managing keys. Use nestjs-query auto-generated resolvers for ApiKey entity. Configure resource with standard operations. API key management is pure CRUD (create, list, revoke/delete) - perfect candidate for standard Refine patterns. Replace custom mutations with standard resource operations.",
+      "timestamp": "2026-01-30T09:00:33.572Z",
+      "source": "initial"
+    }
+  ]
+}

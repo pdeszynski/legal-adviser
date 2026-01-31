@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769768670174-a5fc00d1",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T10:24:30.174Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-refine-migration-documentation",
+  "featureName": "Document Refine.dev CRUD Patterns for Admin Development",
+  "error": "Feature completed in 294s - auto-verified",
+  "passes": true
+}

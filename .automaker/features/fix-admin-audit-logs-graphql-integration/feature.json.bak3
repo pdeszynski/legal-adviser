@@ -1,0 +1,19 @@
+{
+  "category": "bug",
+  "description": "Fix the admin audit logs page at /admin/audit-logs to work with nestjs-query resolvers. Implementation: 1) Verify AuditLog entity has @FilterableField decorators for filterable fields (action, userId, timestamp), 2) Ensure AuditLogQueryService is registered and auto-generates CRUD operations, 3) Update Refine data provider auditLogs resource to query with proper nestjs-query format, 4) Fix JSON field handling for changeDetails (nestjs-query needs special handling for JSON fields - exclude from sub-selection or use scalar), 5) Implement filtering by date range, action type, and user, 6) Fix pagination to use cursor-based paging (first/after), 7) Test that audit logs load correctly with all filters working. Resolve the 'String cannot represent value' serialization errors for JSON fields.",
+  "id": "fix-admin-audit-logs-graphql-integration",
+  "title": "Fix Admin Audit Logs GraphQL Integration",
+  "dependencies": [
+    "fix-admin-user-list-graphql-integration"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Fix the admin audit logs page at /admin/audit-logs to work with nestjs-query resolvers. Implementation: 1) Verify AuditLog entity has @FilterableField decorators for filterable fields (action, userId, timestamp), 2) Ensure AuditLogQueryService is registered and auto-generates CRUD operations, 3) Update Refine data provider auditLogs resource to query with proper nestjs-query format, 4) Fix JSON field handling for changeDetails (nestjs-query needs special handling for JSON fields - exclude from sub-selection or use scalar), 5) Implement filtering by date range, action type, and user, 6) Fix pagination to use cursor-based paging (first/after), 7) Test that audit logs load correctly with all filters working. Resolve the 'String cannot represent value' serialization errors for JSON fields.",
+      "timestamp": "2026-01-30T12:47:56.579Z",
+      "source": "initial"
+    }
+  ]
+}

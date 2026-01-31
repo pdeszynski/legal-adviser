@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769779239306-51cd64eb",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T13:20:39.306Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-admin-document-list-graphql-integration",
+  "featureName": "Fix Admin Document List GraphQL Integration",
+  "error": "Feature completed in 432s - auto-verified",
+  "passes": true
+}

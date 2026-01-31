@@ -5,8 +5,9 @@
   "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
   "branchName": null,
   "runningFeatureIds": [
-    "create-verification-tests-for-userrole-graphql-responses",
-    "feature-1769709035122-bcpkw5ltx"
+    "fix-graphql-filter-format-for-nestjs-query",
+    "update-buildgraphqlfilter-for-field-type-mapping",
+    "add-admin-filter-e2e-tests"
   ],
-  "savedAt": "2026-01-29T17:52:01.391Z"
+  "savedAt": "2026-01-31T13:34:56.690Z"
 }

@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Enhance the buildGraphQLFilter function in Refine data provider to detect field types and use correct nestjs-query filter operators. Implementation: 1) Accept field metadata or type information in buildGraphQLFilter, 2) Create field type detection logic: if field name is 'isActive', 'isVerified' treat as boolean, if field name is 'createdAt', 'updatedAt' treat as date, if field is enum (role, status) treat as string enum, 3) Map Refine operators based on detected type: boolean fields use 'is' for 'eq', string fields use 'eq' for 'eq', date fields use 'gte/lte' for range filters, 4) Add operator mapping object: { eq: (type) => type === 'boolean' ? 'is' : 'eq', contains: 'iLike', gt: 'gt', gte: 'gte', lt: 'lt', lte: 'lte', in: 'in' }, 5) Update filter building logic to use type-aware mapping, 6) Add unit tests verifying correct filter output for boolean, string, date, and enum fields, 7) Document supported operators per field type. Test filtering by: isActive (boolean), email (string), createdAt (date range), role (enum). Verify GraphQL queries no longer throw 'Field not defined' errors.",
+  "id": "update-buildgraphqlfilter-for-field-type-mapping",
+  "title": "Update buildGraphQLFilter to Map Field Types Correctly",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Enhance the buildGraphQLFilter function in Refine data provider to detect field types and use correct nestjs-query filter operators. Implementation: 1) Accept field metadata or type information in buildGraphQLFilter, 2) Create field type detection logic: if field name is 'isActive', 'isVerified' treat as boolean, if field name is 'createdAt', 'updatedAt' treat as date, if field is enum (role, status) treat as string enum, 3) Map Refine operators based on detected type: boolean fields use 'is' for 'eq', string fields use 'eq' for 'eq', date fields use 'gte/lte' for range filters, 4) Add operator mapping object: { eq: (type) => type === 'boolean' ? 'is' : 'eq', contains: 'iLike', gt: 'gt', gte: 'gte', lt: 'lt', lte: 'lte', in: 'in' }, 5) Update filter building logic to use type-aware mapping, 6) Add unit tests verifying correct filter output for boolean, string, date, and enum fields, 7) Document supported operators per field type. Test filtering by: isActive (boolean), email (string), createdAt (date range), role (enum). Verify GraphQL queries no longer throw 'Field not defined' errors.",
+      "timestamp": "2026-01-31T13:10:48.228Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T13:36:25.282Z"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769770309541-74a80c08",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T10:51:49.541Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-document-moderation-keep-custom",
+  "featureName": "Keep Custom Implementation for Document Moderation",
+  "error": "Feature completed in 697s - auto-verified",
+  "passes": true
+}

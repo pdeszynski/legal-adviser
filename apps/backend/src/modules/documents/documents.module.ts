@@ -25,6 +25,7 @@ import { DocumentVersioningResolver } from './document-versioning.resolver';
 import { LegalAnalysisResolver } from './legal-analysis.resolver';
 import { PdfUrlResolver } from './pdf-url.resolver';
 import { DocumentModerationResolver } from './document-moderation.resolver';
+import { DocumentQueueResolver } from './document-queue.resolver';
 import { DocumentsController } from './documents.controller';
 import { DocumentStreamController } from './controllers/document-stream.controller';
 import { VectorSearchController } from './controllers/vector-search.controller';
@@ -72,6 +73,8 @@ import {
 // Temporal Module
 import { TemporalModule } from '../temporal/temporal.module';
 import { DocumentGenerationStarter } from '../temporal/workflows/document/document-generation.starter';
+// Audit Log Module
+import { AuditLogModule } from '../audit-log/audit-log.module';
 
 /**
  * Documents Module
@@ -111,6 +114,8 @@ import { DocumentGenerationStarter } from '../temporal/workflows/document/docume
     // Anti-corruption layer for external integrations
     SaosModule,
     IsapModule,
+    // Audit Log for tracking admin actions
+    AuditLogModule,
     // TypeORM for direct repository access (needed for LegalRulingService full-text search and DocumentSharingService)
     TypeOrmModule.forFeature([
       LegalRuling,
@@ -331,6 +336,7 @@ import { DocumentGenerationStarter } from '../temporal/workflows/document/docume
     DocumentVersioningResolver,
     LegalAnalysisResolver,
     DocumentModerationResolver,
+    DocumentQueueResolver,
     // PDF Export Services
     PdfTemplateService,
     PdfGeneratorService,

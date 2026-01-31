@@ -2,7 +2,7 @@
   "category": "feature",
   "description": "Create detailed user view page at /admin/users/:id showing comprehensive user profile information. Display user details (email, username, roles, status, timestamps), activity timeline (recent logins, actions taken, documents created), usage statistics (total documents, queries submitted, tokens consumed), and session history. Add tabs for: Documents (list of all user's documents), Queries (Q&A history), Settings (user preferences and roles), Audit Log (user actions). Implement role assignment with multi-select dropdown. Support account suspension with reason field. Include password reset functionality sending email to user.",
   "id": "admin-user-detail-view",
-  "title": "Admin User Detail View",
+  "title": "Admin User Detail View - Use Refine useShow Hook",
   "priority": 2,
   "status": "completed",
   "branchName": "002-legal-ai-core",

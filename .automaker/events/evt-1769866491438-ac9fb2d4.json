@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769866491438-ac9fb2d4",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-31T13:34:51.438Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "remove-client-side-filtering-from-admin-pages",
+  "featureName": "Remove Client-Side Filtering from Admin Pages",
+  "error": "Feature completed in 959s - auto-verified",
+  "passes": true
+}

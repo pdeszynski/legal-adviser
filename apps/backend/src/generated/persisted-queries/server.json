@@ -32,30 +32,30 @@
       "name": "GetAdminSystemHealthMetrics",
       "body": "query GetAdminSystemHealthMetrics($input: DashboardAnalyticsInput) {\n  systemHealthMetrics(input: $input) {\n    ...SystemHealthMetricsFragment\n    __typename\n  }\n}\n\nfragment SystemHealthMetricsFragment on SystemHealthMetrics {\n  documentSuccessRate\n  avgResponseTime\n  activeSessions\n  timestamp\n  __typename\n}"
     },
-    "sha256:5fce2f4b92d0a147d0ad7b967d2bf1b7f1f7c8d4a6f6803eb5e169c14a34f78b": {
+    "sha256:d31d2b27836ec627f64dc48285bc81255dc5032ab108751d7cc4395e01fb1d46": {
       "type": "query",
       "name": "GetAdminUsers",
-      "body": "query GetAdminUsers($filter: UserFilter, $sorting: [UserSort!], $paging: UserPaging) {\n  users(filter: $filter, sorting: $sorting, paging: $paging) {\n    ...AdminUserMinimalFragment\n    __typename\n  }\n}\n\nfragment AdminUserMinimalFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  twoFactorEnabled\n  createdAt\n  __typename\n}"
+      "body": "query GetAdminUsers($filter: UserFilter, $sorting: [UserSort!], $paging: CursorPaging) {\n  users(filter: $filter, sorting: $sorting, paging: $paging) {\n    totalCount\n    edges {\n      node {\n        ...AdminUserMinimalFragment\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment AdminUserMinimalFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  twoFactorEnabled\n  createdAt\n  __typename\n}"
     },
     "sha256:2749d4e3207befe8239d2ffe926495e7002ff40ed10af50313014ec0e6beb9a5": {
       "type": "query",
       "name": "GetAdminUser",
       "body": "query GetAdminUser($id: ID!) {\n  user(id: $id) {\n    ...AdminUserFragment\n    __typename\n  }\n}\n\nfragment AdminUserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}"
     },
-    "sha256:460f086e9cea20aba3064b458e2f2d236e801ece4fcbe2e1342d8c18d9ede7ac": {
+    "sha256:830cfbb06a6c3024ff10875e699ef846a4ae093b10ac8334c93e4f9e41a32ceb": {
       "type": "mutation",
       "name": "AdminCreateUser",
-      "body": "mutation AdminCreateUser($input: CreateUserInput!) {\n  createOneUser(input: $input) {\n    ...AdminUserFragment\n    __typename\n  }\n}\n\nfragment AdminUserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}"
+      "body": "mutation AdminCreateUser($input: CreateOneUserInput!) {\n  createOneUser(input: $input) {\n    ...AdminUserFragment\n    __typename\n  }\n}\n\nfragment AdminUserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}"
     },
-    "sha256:71600decfde1c9c3f879aa9b4583be92332e66acff3cdebbff4d91eef1171123": {
+    "sha256:866099b3fa828df91c1608c6cdd95f2a26a4752331031f859289f7176ae7e346": {
       "type": "mutation",
       "name": "AdminUpdateUser",
-      "body": "mutation AdminUpdateUser($id: ID!, $input: UpdateUserInput!) {\n  updateOneUser(id: $id, input: $input) {\n    ...AdminUserMinimalFragment\n    __typename\n  }\n}\n\nfragment AdminUserMinimalFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  twoFactorEnabled\n  createdAt\n  __typename\n}"
+      "body": "mutation AdminUpdateUser($input: UpdateOneUserInput!) {\n  updateOneUser(input: $input) {\n    ...AdminUserMinimalFragment\n    __typename\n  }\n}\n\nfragment AdminUserMinimalFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  twoFactorEnabled\n  createdAt\n  __typename\n}"
     },
-    "sha256:81f5e623835f088e07a8561672a2633c1656caf2b3a17b17750eb74b581cbfd8": {
+    "sha256:34fa548d859440fa4b63ed247f06c58a6b1da23052de3cb3efc8558a6689cb97": {
       "type": "mutation",
       "name": "AdminDeleteUser",
-      "body": "mutation AdminDeleteUser($id: ID!) {\n  deleteOneUser(id: $id) {\n    id\n    email\n    __typename\n  }\n}"
+      "body": "mutation AdminDeleteUser($input: DeleteOneUserInput!) {\n  deleteOneUser(input: $input) {\n    id\n    email\n    __typename\n  }\n}"
     },
     "sha256:afbdb54d576327024d91cb07158acf42f334887c246bca6b24f36a5f14073ed4": {
       "type": "mutation",
@@ -102,15 +102,15 @@
       "name": "MyPaymentHistory",
       "body": "query MyPaymentHistory {\n  myPaymentHistory {\n    ...PaymentHistoryItemFragment\n    __typename\n  }\n}\n\nfragment PaymentHistoryItemFragment on PaymentHistoryItem {\n  id\n  amount\n  currency\n  status\n  method\n  description\n  invoiceId\n  createdAt\n  refundedAt\n  refundAmount\n  __typename\n}"
     },
-    "sha256:a1738101fffcb6e03e06fe97c1ecdb215ee884923ca79780f951be283d2d895d": {
+    "sha256:82631bd287228d5a1f46259abdaac2f93625ec7b1449f482dd4a802f2e3d46e0": {
       "type": "query",
       "name": "SubscriptionPlans",
-      "body": "query SubscriptionPlans {\n  subscriptionPlans {\n    ...SubscriptionPlanFragment\n    __typename\n  }\n}\n\nfragment SubscriptionPlanFragment on SubscriptionPlan {\n  id\n  name\n  description\n  price\n  billingInterval\n  features\n  tier\n  isActive\n  displayOrder\n  maxUsers\n  createdAt\n  __typename\n}"
+      "body": "query SubscriptionPlans {\n  subscriptionPlans {\n    edges {\n      node {\n        ...SubscriptionPlanFragment\n        __typename\n      }\n      __typename\n    }\n    totalCount\n    __typename\n  }\n}\n\nfragment SubscriptionPlanFragment on SubscriptionPlan {\n  id\n  name\n  description\n  price\n  billingInterval\n  features\n  tier\n  isActive\n  displayOrder\n  maxUsers\n  createdAt\n  __typename\n}"
     },
-    "sha256:5b83da43516e120a53dd839d3b1a1bdd92fc1ad3f3b5cdc108c4f822291b0404": {
+    "sha256:053e10872fb2a3176a8c3f32076909581135b45d2f59c0e6fe07931d70ea6f76": {
       "type": "query",
       "name": "SubscriptionPlan",
-      "body": "query SubscriptionPlan($id: String!) {\n  subscriptionPlan(id: $id) {\n    ...SubscriptionPlanFragment\n    __typename\n  }\n}\n\nfragment SubscriptionPlanFragment on SubscriptionPlan {\n  id\n  name\n  description\n  price\n  billingInterval\n  features\n  tier\n  isActive\n  displayOrder\n  maxUsers\n  createdAt\n  __typename\n}"
+      "body": "query SubscriptionPlan($id: ID!) {\n  subscriptionPlan(id: $id) {\n    ...SubscriptionPlanFragment\n    __typename\n  }\n}\n\nfragment SubscriptionPlanFragment on SubscriptionPlan {\n  id\n  name\n  description\n  price\n  billingInterval\n  features\n  tier\n  isActive\n  displayOrder\n  maxUsers\n  createdAt\n  __typename\n}"
     },
     "sha256:aa81b473146ab522e58c03088166ea4dc70a39b03db365d478aa967cd5811d88": {
       "type": "mutation",
@@ -442,30 +442,30 @@
       "name": "SearchDocuments",
       "body": "query SearchDocuments($filter: LegalDocumentFilter!) {\n  legalDocuments(filter: $filter, paging: {first: 3}) {\n    edges {\n      node {\n        id\n        title\n        type\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}"
     },
-    "sha256:7f718fe07199f6a0b33c8f926198e7a2a3c654f54fa6a827f57b5743290d66af": {
+    "sha256:4e9a1458b6938bd3eaef215740bc87419733cf9309507e8327cbdeb974a4a41e": {
       "type": "query",
       "name": "GetUsers",
-      "body": "query GetUsers($filter: UserFilter, $paging: UserPaging, $sorting: [UserSort!]) {\n  users(filter: $filter, paging: $paging, sorting: $sorting) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  roles\n  __typename\n}"
+      "body": "query GetUsers($filter: UserFilter, $paging: CursorPaging, $sorting: [UserSort!]) {\n  users(filter: $filter, paging: $paging, sorting: $sorting) {\n    totalCount\n    edges {\n      node {\n        ...UserDetailFragment\n        __typename\n      }\n      __typename\n    }\n    pageInfo {\n      hasNextPage\n      hasPreviousPage\n      startCursor\n      endCursor\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  roles\n  __typename\n}"
     },
     "sha256:7c2943e1eeca432fa82f8397dc5598b32157cf63ca5e7ae17d17bef83c2a7b1a": {
       "type": "query",
       "name": "GetUser",
       "body": "query GetUser($id: ID!) {\n  user(id: $id) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  roles\n  __typename\n}"
     },
-    "sha256:03642c7382d39c4a91a698ba988c247c047e0bc7e07cba047fe9d187996b51a0": {
+    "sha256:334bec7a99be8ce29bc3f126ff72ac817fbf12b368af8c1aa7d96da382dd43e7": {
       "type": "mutation",
       "name": "CreateOneUser",
-      "body": "mutation CreateOneUser($input: CreateUserInput!) {\n  createOneUser(input: $input) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  roles\n  __typename\n}"
+      "body": "mutation CreateOneUser($input: CreateOneUserInput!) {\n  createOneUser(input: $input) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  roles\n  __typename\n}"
     },
-    "sha256:a3769670bd314daae812c539685fe7789948afd77e2c570203568361cae3c0fd": {
+    "sha256:83e5741898074990a295168c8806c0be59e20626df23848d8278ca18b3827752": {
       "type": "mutation",
       "name": "UpdateOneUser",
-      "body": "mutation UpdateOneUser($id: ID!, $input: UpdateUserInput!) {\n  updateOneUser(id: $id, input: $input) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  roles\n  __typename\n}"
+      "body": "mutation UpdateOneUser($input: UpdateOneUserInput!) {\n  updateOneUser(input: $input) {\n    ...UserDetailFragment\n    __typename\n  }\n}\n\nfragment UserDetailFragment on User {\n  ...UserFragment\n  disclaimerAccepted\n  disclaimerAcceptedAt\n  stripeCustomerId\n  twoFactorEnabled\n  createdAt\n  updatedAt\n  __typename\n}\n\nfragment UserFragment on User {\n  id\n  email\n  username\n  firstName\n  lastName\n  isActive\n  role\n  roles\n  __typename\n}"
     },
-    "sha256:b5605e7572f0db071faf0c38f7058e97eaa5f26f7965b83b34f6a8dcd766b839": {
+    "sha256:19091eb412b1e9c375ab4be64ffe7d515d1a101787b4cf5cf17dc8445c63e80a": {
       "type": "mutation",
       "name": "DeleteOneUser",
-      "body": "mutation DeleteOneUser($id: ID!) {\n  deleteOneUser(id: $id) {\n    id\n    email\n    __typename\n  }\n}"
+      "body": "mutation DeleteOneUser($input: DeleteOneUserInput!) {\n  deleteOneUser(input: $input) {\n    id\n    email\n    __typename\n  }\n}"
     }
   }
 }

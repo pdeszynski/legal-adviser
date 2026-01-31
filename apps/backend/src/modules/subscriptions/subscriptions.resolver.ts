@@ -34,15 +34,10 @@ export class SubscriptionsResolver {
 
   /**
    * Query: Get all active subscription plans (public catalog)
+   * NOTE: This query has been removed in favor of nestjs-query auto-generated 'subscriptionPlans' query.
+   * Use the nestjs-query query with filter: { isActive: { eq: true } } for the public catalog.
+   * The nestjs-query version provides pagination, sorting, and filtering out of the box.
    */
-  @Public()
-  @Query(() => [SubscriptionPlan], {
-    name: 'subscriptionPlans',
-    description: 'Get all active subscription plans ordered by price',
-  })
-  async getActivePlans(): Promise<SubscriptionPlan[]> {
-    return this.service.getActivePlans();
-  }
 
   /**
    * Query: Get a subscription plan by ID (public catalog)

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769777510352-e091234a",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T12:51:50.352Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "analyze-admin-graphql-errors",
+  "featureName": "Analyze Admin Panel GraphQL Request Errors",
+  "error": "Feature completed in 230s - auto-verified",
+  "passes": true
+}

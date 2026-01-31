@@ -32,6 +32,30 @@ input AddPermissionInput {
   roleId: String!
 }
 
+input AdminCreateApiKeyInput {
+  description: String
+  expiresAt: String
+  name: String!
+  rateLimitPerMinute: Int = 60
+  scopes: [ApiKeyScope!]!
+  userId: ID!
+}
+
+type AdminCreateApiKeyResponse {
+  createdAt: String!
+  description: String
+  expiresAt: String
+  id: ID!
+  keyPrefix: String!
+  name: String!
+  rateLimitPerMinute: Int!
+  rawKey: String!
+  scopes: [ApiKeyScope!]!
+  status: ApiKeyStatus!
+  updatedAt: String!
+  userId: ID!
+}
+
 input AdminCreateUserInput {
   email: String!
   firstName: String
@@ -53,6 +77,11 @@ type AdminForceDisableTwoFactorResponse {
 
   """The updated 2FA status (should be false)"""
   twoFactorEnabled: Boolean!
+}
+
+input AdminRevokeApiKeyInput {
+  id: ID!
+  reason: String
 }
 
 type AdvancedLegalRulingSearchResponse {
@@ -387,7 +416,161 @@ type ApiKey {
   status: ApiKeyStatus!
   updatedAt: DateTime!
   usageCount: Float!
+  user: User!
   userId: String!
+}
+
+input ApiKeyAggregateFilter {
+  and: [ApiKeyAggregateFilter!]
+  createdAt: DateFieldComparison
+  expiresAt: DateFieldComparison
+  id: IDFilterComparison
+  keyPrefix: StringFieldComparison
+  name: StringFieldComparison
+  or: [ApiKeyAggregateFilter!]
+  rateLimitPerMinute: IntFieldComparison
+  scopes: ApiKeyScopeFilterComparison
+  status: ApiKeyStatusFilterComparison
+  updatedAt: DateFieldComparison
+  usageCount: NumberFieldComparison
+  userId: StringFieldComparison
+}
+
+type ApiKeyAggregateGroupBy {
+  createdAt(by: GroupBy! = DAY): DateTime
+  expiresAt: DateTime
+  id: ID
+  keyPrefix: String
+  name: String
+  rateLimitPerMinute: Int
+  scopes: [ApiKeyScope!]
+  status: ApiKeyStatus
+  updatedAt(by: GroupBy! = DAY): DateTime
+  usageCount: Float
+  userId: String
+}
+
+type ApiKeyAggregateResponse {
+  avg: ApiKeyAvgAggregate
+  count: ApiKeyCountAggregate
+  groupBy: ApiKeyAggregateGroupBy
+  max: ApiKeyMaxAggregate
+  min: ApiKeyMinAggregate
+  sum: ApiKeySumAggregate
+}
+
+type ApiKeyAvgAggregate {
+  usageCount: Float
+}
+
+type ApiKeyConnection {
+  """Array of edges."""
+  edges: [ApiKeyEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type ApiKeyCountAggregate {
+  createdAt: Int
+  expiresAt: Int
+  id: Int
+  keyPrefix: Int
+  name: Int
+  rateLimitPerMinute: Int
+  scopes: Int
+  status: Int
+  updatedAt: Int
+  usageCount: Int
+  userId: Int
+}
+
+input ApiKeyDeleteFilter {
+  and: [ApiKeyDeleteFilter!]
+  createdAt: DateFieldComparison
+  expiresAt: DateFieldComparison
+  id: IDFilterComparison
+  keyPrefix: StringFieldComparison
+  name: StringFieldComparison
+  or: [ApiKeyDeleteFilter!]
+  rateLimitPerMinute: IntFieldComparison
+  scopes: ApiKeyScopeFilterComparison
+  status: ApiKeyStatusFilterComparison
+  updatedAt: DateFieldComparison
+  usageCount: NumberFieldComparison
+  userId: StringFieldComparison
+}
+
+type ApiKeyDeleteResponse {
+  createdAt: DateTime
+  description: String
+  expiresAt: DateTime
+  id: ID
+  keyPrefix: String
+  lastUsedAt: DateTime
+  lastUsedIp: String
+  name: String
+  rateLimitPerMinute: Int
+  scopes: [ApiKeyScope!]
+  status: ApiKeyStatus
+  updatedAt: DateTime
+  usageCount: Float
+  userId: String
+}
+
+type ApiKeyEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the ApiKey"""
+  node: ApiKey!
+}
+
+input ApiKeyFilter {
+  and: [ApiKeyFilter!]
+  createdAt: DateFieldComparison
+  expiresAt: DateFieldComparison
+  id: IDFilterComparison
+  keyPrefix: StringFieldComparison
+  name: StringFieldComparison
+  or: [ApiKeyFilter!]
+  rateLimitPerMinute: IntFieldComparison
+  scopes: ApiKeyScopeFilterComparison
+  status: ApiKeyStatusFilterComparison
+  updatedAt: DateFieldComparison
+  usageCount: NumberFieldComparison
+  userId: StringFieldComparison
+}
+
+type ApiKeyMaxAggregate {
+  createdAt: DateTime
+  expiresAt: DateTime
+  id: ID
+  keyPrefix: String
+  name: String
+  rateLimitPerMinute: Int
+  scopes: [ApiKeyScope!]
+  status: ApiKeyStatus
+  updatedAt: DateTime
+  usageCount: Float
+  userId: String
+}
+
+type ApiKeyMinAggregate {
+  createdAt: DateTime
+  expiresAt: DateTime
+  id: ID
+  keyPrefix: String
+  name: String
+  rateLimitPerMinute: Int
+  scopes: [ApiKeyScope!]
+  status: ApiKeyStatus
+  updatedAt: DateTime
+  usageCount: Float
+  userId: String
 }
 
 """API key scopes/permissions"""
@@ -408,11 +591,85 @@ enum ApiKeyScope {
   TEMPLATES_WRITE
 }
 
+input ApiKeyScopeFilterComparison {
+  eq: [ApiKeyScope!]
+  gt: [ApiKeyScope!]
+  gte: [ApiKeyScope!]
+  iLike: [ApiKeyScope!]
+  in: [[ApiKeyScope!]!]
+  is: Boolean
+  isNot: Boolean
+  like: [ApiKeyScope!]
+  lt: [ApiKeyScope!]
+  lte: [ApiKeyScope!]
+  neq: [ApiKeyScope!]
+  notILike: [ApiKeyScope!]
+  notIn: [[ApiKeyScope!]!]
+  notLike: [ApiKeyScope!]
+}
+
+input ApiKeySort {
+  direction: SortDirection!
+  field: ApiKeySortFields!
+  nulls: SortNulls
+}
+
+enum ApiKeySortFields {
+  createdAt
+  expiresAt
+  id
+  keyPrefix
+  name
+  rateLimitPerMinute
+  scopes
+  status
+  updatedAt
+  usageCount
+  userId
+}
+
 """API key status"""
 enum ApiKeyStatus {
   ACTIVE
   EXPIRED
   REVOKED
+}
+
+input ApiKeyStatusFilterComparison {
+  eq: ApiKeyStatus
+  gt: ApiKeyStatus
+  gte: ApiKeyStatus
+  iLike: ApiKeyStatus
+  in: [ApiKeyStatus!]
+  is: Boolean
+  isNot: Boolean
+  like: ApiKeyStatus
+  lt: ApiKeyStatus
+  lte: ApiKeyStatus
+  neq: ApiKeyStatus
+  notILike: ApiKeyStatus
+  notIn: [ApiKeyStatus!]
+  notLike: ApiKeyStatus
+}
+
+type ApiKeySumAggregate {
+  usageCount: Float
+}
+
+input ApiKeyUpdateFilter {
+  and: [ApiKeyUpdateFilter!]
+  createdAt: DateFieldComparison
+  expiresAt: DateFieldComparison
+  id: IDFilterComparison
+  keyPrefix: StringFieldComparison
+  name: StringFieldComparison
+  or: [ApiKeyUpdateFilter!]
+  rateLimitPerMinute: IntFieldComparison
+  scopes: ApiKeyScopeFilterComparison
+  status: ApiKeyStatusFilterComparison
+  updatedAt: DateFieldComparison
+  usageCount: NumberFieldComparison
+  userId: StringFieldComparison
 }
 
 input ApproveDocumentInput {
@@ -719,14 +976,26 @@ enum BillingInterval {
   YEARLY
 }
 
+input BillingIntervalFilterComparison {
+  eq: BillingInterval
+  gt: BillingInterval
+  gte: BillingInterval
+  iLike: BillingInterval
+  in: [BillingInterval!]
+  is: Boolean
+  isNot: Boolean
+  like: BillingInterval
+  lt: BillingInterval
+  lte: BillingInterval
+  neq: BillingInterval
+  notILike: BillingInterval
+  notIn: [BillingInterval!]
+  notLike: BillingInterval
+}
+
 input BooleanFieldComparison {
   is: Boolean
   isNot: Boolean
-}
-
-input BooleanFilter {
-  eq: Boolean
-  is: Boolean
 }
 
 """Boolean operators for combining search terms"""
@@ -768,6 +1037,12 @@ type BulkDeleteUsersResult {
 type BulkOperationError {
   error: String!
   id: String!
+}
+
+type BulkRevokeApiKeysResponse {
+  errors: [String!]
+  failed: Int!
+  success: Int!
 }
 
 input BulkSendNotificationInput {
@@ -818,6 +1093,25 @@ type BulkUsersResult {
 input CancelClarificationSessionInput {
   """ID of the clarification session to cancel"""
   sessionId: String!
+}
+
+input CancelDocumentGenerationInput {
+  """Document ID to cancel"""
+  documentId: ID!
+
+  """Optional reason for cancellation (logged to audit trail)"""
+  reason: String
+}
+
+type CancelDocumentGenerationResult {
+  """Document ID"""
+  documentId: ID!
+
+  """Message describing the cancellation result"""
+  message: String
+
+  """Whether the cancellation was successful"""
+  success: Boolean!
 }
 
 input CancelSubscriptionInput {
@@ -1750,6 +2044,23 @@ input CreateAiUsageRecordInput {
   tokensUsed: Int!
 }
 
+input CreateApiKey {
+  createdAt: DateTime!
+  description: String
+  expiresAt: DateTime
+  id: ID!
+  keyPrefix: String!
+  lastUsedAt: DateTime
+  lastUsedIp: String
+  name: String!
+  rateLimitPerMinute: Int
+  scopes: [ApiKeyScope!]!
+  status: ApiKeyStatus!
+  updatedAt: DateTime!
+  usageCount: Float!
+  userId: String!
+}
+
 input CreateApiKeyInput {
   description: String
   expiresAt: String
@@ -1957,6 +2268,16 @@ input CreateLegalRulingInput {
   summary: String
 }
 
+input CreateManyApiKeysInput {
+  """Array of records to create"""
+  apiKeys: [CreateApiKey!]!
+}
+
+input CreateManySubscriptionPlansInput {
+  """Array of records to create"""
+  subscriptionPlans: [CreateSubscriptionPlan!]!
+}
+
 input CreateNotificationInput {
   """Error message if sending failed"""
   errorMessage: String
@@ -1987,6 +2308,11 @@ input CreateNotificationInput {
 
   """User ID (if notification is for a registered user)"""
   userId: String
+}
+
+input CreateOneApiKeyInput {
+  """The record to create"""
+  apiKey: CreateApiKey!
 }
 
 input CreateOneChatSessionInput {
@@ -2039,6 +2365,16 @@ input CreateOneNotificationInput {
   notification: CreateNotificationInput!
 }
 
+input CreateOneSubscriptionPlanInput {
+  """The record to create"""
+  subscriptionPlan: CreateSubscriptionPlan!
+}
+
+input CreateOneUserInput {
+  """The record to create"""
+  user: CreateUserInput!
+}
+
 input CreateOneUserPreferencesInput {
   """The record to create"""
   userPreferences: CreateUserPreferencesInput!
@@ -2085,6 +2421,25 @@ type CreateScheduleResult {
 
   """Whether the creation was successful"""
   success: Boolean!
+}
+
+input CreateSubscriptionPlan {
+  billingInterval: BillingInterval!
+  createdAt: DateTime!
+  description: String
+  displayOrder: Float!
+  features: String!
+  id: ID!
+  isActive: Boolean!
+  maxUsers: Int
+  name: String!
+  price: Float!
+  stripePriceId: String
+  stripeYearlyPriceId: String
+  tier: PlanTier!
+  trialDays: Float!
+  updatedAt: DateTime!
+  yearlyDiscount: Float!
 }
 
 input CreateSubscriptionPlanInput {
@@ -2264,6 +2619,26 @@ input DeleteDocumentInputV2 {
   reason: String
 }
 
+input DeleteManyApiKeysInput {
+  """Filter to find records to delete"""
+  filter: ApiKeyDeleteFilter!
+}
+
+type DeleteManyResponse {
+  """The number of records deleted."""
+  deletedCount: Int!
+}
+
+input DeleteManySubscriptionPlansInput {
+  """Filter to find records to delete"""
+  filter: SubscriptionPlanDeleteFilter!
+}
+
+input DeleteOneApiKeyInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
 input DeleteOneChatSessionInput {
   """The id of the record to delete."""
   id: ID!
@@ -2300,6 +2675,16 @@ input DeleteOneLegalQueryInput {
 }
 
 input DeleteOneLegalRulingInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneSubscriptionPlanInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneUserInput {
   """The id of the record to delete."""
   id: ID!
 }
@@ -2872,6 +3257,78 @@ type DocumentMetrics {
   totalDocuments: Int!
 }
 
+type DocumentQueueEntry {
+  """ISO timestamp of creation"""
+  createdAt: String!
+
+  """Document ID"""
+  documentId: ID!
+
+  """Document status from database"""
+  documentStatus: String
+
+  """Document type"""
+  documentType: String!
+
+  """Error message if generation failed"""
+  errorMessage: String
+
+  """Generation time in milliseconds"""
+  generationTimeMs: Int
+
+  """Document title"""
+  title: String!
+
+  """ISO timestamp of last update"""
+  updatedAt: String
+
+  """User email who owns the document"""
+  userEmail: String
+
+  """User ID who owns the document"""
+  userId: String
+
+  """Current workflow status"""
+  workflowStatus: DocumentWorkflowStatus!
+}
+
+input DocumentQueueListInput {
+  """Filter by document type"""
+  documentType: String
+
+  """Maximum number of results to return"""
+  limit: Int = 50
+
+  """Number of results to skip"""
+  offset: Int = 0
+
+  """Filter by workflow status"""
+  status: DocumentWorkflowStatus
+
+  """Filter by user ID"""
+  userId: String
+}
+
+type DocumentQueueListResult {
+  """Number of completed workflows"""
+  completedCount: Int!
+
+  """List of documents in the queue"""
+  entries: [DocumentQueueEntry!]!
+
+  """Number of failed workflows"""
+  failedCount: Int!
+
+  """Number of entries per status"""
+  pendingCount: Int!
+
+  """Number of running workflows"""
+  runningCount: Int!
+
+  """Total number of entries"""
+  totalCount: Int!
+}
+
 type DocumentQueueMetrics {
   calculatedAt: DateTime!
 
@@ -3256,6 +3713,36 @@ enum DocumentVersionSortFields {
 
 type DocumentVersionSumAggregate {
   versionNumber: Float
+}
+
+"""Status of a document generation workflow"""
+enum DocumentWorkflowStatus {
+  CANCELLED
+  COMPLETED
+  FAILED
+  NOT_FOUND
+  PENDING
+  RUNNING
+}
+
+type DocumentWorkflowStatusResult {
+  """Document ID"""
+  documentId: ID!
+
+  """Error message if workflow failed"""
+  errorMessage: String
+
+  """Whether the workflow is currently running"""
+  isRunning: Boolean!
+
+  """ISO timestamp of last update"""
+  lastUpdated: String
+
+  """Current workflow status"""
+  status: DocumentWorkflowStatus!
+
+  """Workflow ID (derived from document ID)"""
+  workflowId: String
 }
 
 """Email template types available in the system"""
@@ -3681,6 +4168,26 @@ enum Industry {
   OTHER
   REAL_ESTATE
   TECHNOLOGY
+}
+
+input IntFieldComparison {
+  between: IntFieldComparisonBetween
+  eq: Int
+  gt: Int
+  gte: Int
+  in: [Int!]
+  is: Boolean
+  isNot: Boolean
+  lt: Int
+  lte: Int
+  neq: Int
+  notBetween: IntFieldComparisonBetween
+  notIn: [Int!]
+}
+
+input IntFieldComparisonBetween {
+  lower: Int!
+  upper: Int!
 }
 
 input InterestRequestInput {
@@ -4705,6 +5212,14 @@ type Mutation {
   """Add a permission to a role"""
   addPermissionToRole(input: AddPermissionInput!): Role!
 
+  """Revoke multiple API keys at once. (admin only)"""
+  adminBulkRevokeApiKeys(ids: [ID!]!): BulkRevokeApiKeysResponse!
+
+  """
+  Create a new API key for any user. The raw key is only shown once. (admin only)
+  """
+  adminCreateApiKey(input: AdminCreateApiKeyInput!): AdminCreateApiKeyResponse!
+
   """Create a backup (admin only)"""
   adminCreateBackup(input: CreateBackupInput): Backup!
 
@@ -4719,6 +5234,9 @@ type Mutation {
 
   """Restore a backup (admin only)"""
   adminRestoreBackup(input: RestoreBackupInput!): Boolean!
+
+  """Revoke any API key. This action cannot be undone. (admin only)"""
+  adminRevokeApiKey(input: AdminRevokeApiKeyInput!): ApiKey!
 
   """Add AI-generated answer to a legal query"""
   answerLegalQuery(id: ID!, input: AnswerLegalQueryInput!): LegalQuery!
@@ -4744,6 +5262,9 @@ type Mutation {
 
   """Cancel an active clarification session"""
   cancelClarificationSession(input: CancelClarificationSessionInput!): ClarificationSession!
+
+  """Cancel a running document generation workflow"""
+  cancelDocumentGeneration(input: CancelDocumentGenerationInput!): CancelDocumentGenerationResult!
 
   """Cancel the current user subscription"""
   cancelMySubscription(input: CancelSubscriptionInput!): UserSubscription!
@@ -4789,9 +5310,12 @@ type Mutation {
 
   """Create a contact in HubSpot from form submission"""
   createHubSpotContact(input: CreateHubSpotContactInput!): HubSpotContactResponse
+  createManyApiKeys(input: CreateManyApiKeysInput!): [ApiKey!]!
+  createManySubscriptionPlans(input: CreateManySubscriptionPlansInput!): [SubscriptionPlan!]!
 
   """Create a new subscription for the current user"""
   createMySubscription(input: CreateUserSubscriptionInput!): UserSubscription!
+  createOneApiKey(input: CreateOneApiKeyInput!): ApiKey!
   createOneChatSession(input: CreateOneChatSessionInput!): ChatSession!
   createOneDocumentComment(input: CreateOneDocumentCommentInput!): DocumentComment!
   createOneDocumentTemplate(input: CreateOneDocumentTemplateInput!): DocumentTemplate!
@@ -4802,9 +5326,8 @@ type Mutation {
   createOneLegalQuery(input: CreateOneLegalQueryInput!): LegalQuery!
   createOneLegalRuling(input: CreateOneLegalRulingInput!): LegalRuling!
   createOneNotification(input: CreateOneNotificationInput!): Notification!
-
-  """Create a new user (admin only)"""
-  createOneUser(input: CreateUserInput!): User!
+  createOneSubscriptionPlan(input: CreateOneSubscriptionPlanInput!): SubscriptionPlan!
+  createOneUser(input: CreateOneUserInput!): User!
   createOneUserPreference(input: CreateOneUserPreferencesInput!): UserPreferences!
 
   """Create a new custom role"""
@@ -4834,6 +5357,9 @@ type Mutation {
 
   """Delete a legal query (deprecated)"""
   deleteLegalQuery(id: ID!): Boolean! @deprecated(reason: "Use deleteOneLegalQuery instead")
+  deleteManyApiKeys(input: DeleteManyApiKeysInput!): DeleteManyResponse!
+  deleteManySubscriptionPlans(input: DeleteManySubscriptionPlansInput!): DeleteManyResponse!
+  deleteOneApiKey(input: DeleteOneApiKeyInput!): ApiKeyDeleteResponse!
   deleteOneChatSession(input: DeleteOneChatSessionInput!): ChatSessionDeleteResponse!
   deleteOneDocumentComment(input: DeleteOneDocumentCommentInput!): DocumentCommentDeleteResponse!
   deleteOneDocumentTemplate(input: DeleteOneDocumentTemplateInput!): DocumentTemplateDeleteResponse!
@@ -4842,9 +5368,8 @@ type Mutation {
   deleteOneLegalDocument(input: DeleteOneLegalDocumentInput!): LegalDocumentDeleteResponse!
   deleteOneLegalQuery(input: DeleteOneLegalQueryInput!): LegalQueryDeleteResponse!
   deleteOneLegalRuling(input: DeleteOneLegalRulingInput!): LegalRulingDeleteResponse!
-
-  """Delete a user (admin only)"""
-  deleteOneUser(id: ID!): User!
+  deleteOneSubscriptionPlan(input: DeleteOneSubscriptionPlanInput!): SubscriptionPlanDeleteResponse!
+  deleteOneUser(input: DeleteOneUserInput!): UserDeleteResponse!
   deleteOneUserPreference(input: DeleteOneUserPreferencesInput!): UserPreferencesDeleteResponse!
   deleteOneUserSession(input: DeleteOneUserSessionInput!): UserSessionDeleteResponse!
 
@@ -4953,6 +5478,9 @@ type Mutation {
   """Resume a paused Temporal schedule"""
   resumeSchedule(input: ResumeScheduleInput!): Boolean!
 
+  """Retry a failed document generation workflow"""
+  retryDocumentGeneration(input: RetryDocumentGenerationInput!): RetryDocumentGenerationResult!
+
   """Revoke an API key. This action cannot be undone."""
   revokeApiKey(id: String!): ApiKey!
 
@@ -5032,10 +5560,13 @@ type Mutation {
   updateDocumentSharePermission(input: UpdateSharePermissionInput!): DocumentShare!
   updateDocumentTemplate(id: ID!, input: UpdateTemplateInput!): DocumentTemplate!
   updateDocumentTitleV2(input: UpdateDocumentTitleInputV2!): LegalDocumentV2!
+  updateManyApiKeys(input: UpdateManyApiKeysInput!): UpdateManyResponse!
+  updateManySubscriptionPlans(input: UpdateManySubscriptionPlansInput!): UpdateManyResponse!
   updateMyPreferences(input: UpdateUserPreferencesInput!): UserPreferences!
 
   """Update notification preferences for a user"""
   updateNotificationPreferences(input: NotificationDeliveryPreferencesInput!): String!
+  updateOneApiKey(input: UpdateOneApiKeyInput!): ApiKey!
   updateOneChatSession(input: UpdateOneChatSessionInput!): ChatSession!
   updateOneDocumentComment(input: UpdateOneDocumentCommentInput!): DocumentComment!
   updateOneDocumentTemplate(input: UpdateOneDocumentTemplateInput!): DocumentTemplate!
@@ -5046,9 +5577,8 @@ type Mutation {
   updateOneLegalQuery(input: UpdateOneLegalQueryInput!): LegalQuery!
   updateOneLegalRuling(input: UpdateOneLegalRulingInput!): LegalRuling!
   updateOneNotification(input: UpdateOneNotificationInput!): Notification!
-
-  """Update a user (admin only)"""
-  updateOneUser(id: ID!, input: UpdateUserInput!): User!
+  updateOneSubscriptionPlan(input: UpdateOneSubscriptionPlanInput!): SubscriptionPlan!
+  updateOneUser(input: UpdateOneUserInput!): User!
   updateOneUserPreference(input: UpdateOneUserPreferencesInput!): UserPreferences!
 
   """Update profile information for the current user"""
@@ -5540,6 +6070,23 @@ enum PlanTier {
   PROFESSIONAL
 }
 
+input PlanTierFilterComparison {
+  eq: PlanTier
+  gt: PlanTier
+  gte: PlanTier
+  iLike: PlanTier
+  in: [PlanTier!]
+  is: Boolean
+  isNot: Boolean
+  like: PlanTier
+  lt: PlanTier
+  lte: PlanTier
+  neq: PlanTier
+  notILike: PlanTier
+  notIn: [PlanTier!]
+  notLike: PlanTier
+}
+
 input PolishFormattingRulesInput {
   addressFormat: String
   currencyFormat: String
@@ -5590,6 +6137,27 @@ type Query {
 
   """Analyze all empty chat sessions (messageCount = 0)"""
   analyzeEmptySessions: [EmptySessionAnalysis!]!
+  apiKey(
+    """The id of the record to find."""
+    id: ID!
+  ): ApiKey!
+  apiKeyAggregate(
+    """Filter to find records to aggregate on"""
+    filter: ApiKeyAggregateFilter
+  ): [ApiKeyAggregateResponse!]!
+  apiKeys(
+    """Specify to filter the records returned."""
+    filter: ApiKeyFilter! = {}
+
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [ApiKeySort!]! = []
+  ): ApiKeyConnection!
+
+  """Get all API keys for a specific user (admin only)"""
+  apiKeysByUser(userId: ID!): [ApiKey!]!
   auditLog(
     """The id of the record to find."""
     id: ID!
@@ -5738,6 +6306,9 @@ type Query {
     sorting: [DocumentCommentSort!]! = []
   ): DocumentCommentConnection!
 
+  """List documents in the generation queue"""
+  documentGenerationQueueList(input: DocumentQueueListInput): DocumentQueueListResult!
+
   """Get the latest version of a document"""
   documentLatestVersion(documentId: ID!): DocumentVersion
   documentMetrics(input: DashboardAnalyticsInput): DocumentMetrics!
@@ -5813,6 +6384,9 @@ type Query {
   """Get formatted context for AI processing from a clarification session"""
   getClarificationContext(sessionId: String!): String
   getDocumentGenerationMetrics(input: DashboardAnalyticsInput): DocumentGenerationMetrics!
+
+  """Get the status of a document generation workflow"""
+  getDocumentWorkflowStatus(documentId: String!): DocumentWorkflowStatusResult!
   getQueryVolume(input: DashboardAnalyticsInput): [AnalyticsTimeSeriesPoint!]!
   getTotalDocumentCount(input: DashboardAnalyticsInput): DocumentMetrics!
   getTotalTokenUsage(input: DashboardAnalyticsInput): [TokenUsageBreakdown!]!
@@ -6052,12 +6626,24 @@ type Query {
 
   """Full-text search for legal rulings with relevance ranking"""
   searchLegalRulings(input: SearchLegalRulingsInput!): LegalRulingSearchResponse!
+  subscriptionPlan(
+    """The id of the record to find."""
+    id: ID!
+  ): SubscriptionPlan!
+  subscriptionPlanAggregate(
+    """Filter to find records to aggregate on"""
+    filter: SubscriptionPlanAggregateFilter
+  ): [SubscriptionPlanAggregateResponse!]!
+  subscriptionPlans(
+    """Specify to filter the records returned."""
+    filter: SubscriptionPlanFilter! = {}
 
-  """Get a subscription plan by ID"""
-  subscriptionPlan(id: String!): SubscriptionPlan
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
 
-  """Get all active subscription plans ordered by price"""
-  subscriptionPlans: [SubscriptionPlan!]!
+    """Specify to sort results."""
+    sorting: [SubscriptionPlanSort!]! = []
+  ): SubscriptionPlanConnection!
 
   """Get comprehensive system health status for admin dashboard"""
   systemHealth: SystemHealthResponse!
@@ -6086,9 +6672,14 @@ type Query {
   """Get count of unread notifications for a user"""
   unreadNotificationCount(userId: String!): Int!
   usageStats(query: UsageStatsQueryInput!): UsageStatsResponse!
-
-  """Get a user by ID (admin only)"""
-  user(id: ID!): User
+  user(
+    """The id of the record to find."""
+    id: ID!
+  ): User!
+  userAggregate(
+    """Filter to find records to aggregate on"""
+    filter: UserAggregateFilter
+  ): [UserAggregateResponse!]!
   userGrowthMetrics(input: DashboardAnalyticsInput): UserGrowthMetrics!
   userPreference(
     """The id of the record to find."""
@@ -6128,9 +6719,16 @@ type Query {
   ): UserSessionConnection!
   userTokenLeaderboard(input: DashboardAnalyticsInput, limit: Int = 20): [UserTokenUsage!]!
   userUsageRecords(endDate: DateTime, limit: Float = 100, offset: Float = 0, operationType: AiOperationType, startDate: DateTime, userId: String!): [AiUsageRecord!]!
+  users(
+    """Specify to filter the records returned."""
+    filter: UserFilter! = {}
 
-  """Get all users with filtering, sorting, and paging (admin only)"""
-  users(filter: UserFilter, paging: UserPaging, sorting: [UserSort!]): [User!]!
+    """Limit or page results."""
+    paging: CursorPaging! = {first: 10}
+
+    """Specify to sort results."""
+    sorting: [UserSort!]! = []
+  ): UserConnection!
 
   """Validate an API key and check if it has the required scopes"""
   validateApiKey(input: ValidateApiKeyInput!): ValidateApiKeyResponse!
@@ -6258,6 +6856,28 @@ input ResumeScheduleInput {
 
   """The ID of the schedule to resume"""
   scheduleId: String!
+}
+
+input RetryDocumentGenerationInput {
+  """Document ID to retry"""
+  documentId: ID!
+
+  """Optional reason for retry (logged to audit trail)"""
+  reason: String
+}
+
+type RetryDocumentGenerationResult {
+  """Document ID"""
+  documentId: ID!
+
+  """Message describing the retry result"""
+  message: String
+
+  """Whether the retry was initiated"""
+  success: Boolean!
+
+  """New workflow ID for the retry attempt"""
+  workflowId: String
 }
 
 type Role {
@@ -6772,12 +7392,6 @@ input StringFieldComparison {
   notLike: String
 }
 
-input StringFilter {
-  eq: String
-  iLike: String
-  in: [String!]
-}
-
 input SubmitClarificationAnswersInput {
   """Array of question-answer pairs"""
   answers: [ClarificationAnswerInput!]!
@@ -6877,6 +7491,214 @@ type SubscriptionPlan {
   trialDays: Float!
   updatedAt: DateTime!
   yearlyDiscount: Float!
+}
+
+input SubscriptionPlanAggregateFilter {
+  and: [SubscriptionPlanAggregateFilter!]
+  billingInterval: BillingIntervalFilterComparison
+  createdAt: DateFieldComparison
+  displayOrder: NumberFieldComparison
+  id: IDFilterComparison
+  isActive: BooleanFieldComparison
+  maxUsers: IntFieldComparison
+  name: StringFieldComparison
+  or: [SubscriptionPlanAggregateFilter!]
+  price: NumberFieldComparison
+  tier: PlanTierFilterComparison
+  trialDays: NumberFieldComparison
+  updatedAt: DateFieldComparison
+  yearlyDiscount: NumberFieldComparison
+}
+
+type SubscriptionPlanAggregateGroupBy {
+  billingInterval: BillingInterval
+  createdAt(by: GroupBy! = DAY): DateTime
+  displayOrder: Float
+  id: ID
+  isActive: Boolean
+  maxUsers: Int
+  name: String
+  price: Float
+  tier: PlanTier
+  trialDays: Float
+  updatedAt(by: GroupBy! = DAY): DateTime
+  yearlyDiscount: Float
+}
+
+type SubscriptionPlanAggregateResponse {
+  avg: SubscriptionPlanAvgAggregate
+  count: SubscriptionPlanCountAggregate
+  groupBy: SubscriptionPlanAggregateGroupBy
+  max: SubscriptionPlanMaxAggregate
+  min: SubscriptionPlanMinAggregate
+  sum: SubscriptionPlanSumAggregate
+}
+
+type SubscriptionPlanAvgAggregate {
+  displayOrder: Float
+  price: Float
+  trialDays: Float
+  yearlyDiscount: Float
+}
+
+type SubscriptionPlanConnection {
+  """Array of edges."""
+  edges: [SubscriptionPlanEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type SubscriptionPlanCountAggregate {
+  billingInterval: Int
+  createdAt: Int
+  displayOrder: Int
+  id: Int
+  isActive: Int
+  maxUsers: Int
+  name: Int
+  price: Int
+  tier: Int
+  trialDays: Int
+  updatedAt: Int
+  yearlyDiscount: Int
+}
+
+input SubscriptionPlanDeleteFilter {
+  and: [SubscriptionPlanDeleteFilter!]
+  billingInterval: BillingIntervalFilterComparison
+  createdAt: DateFieldComparison
+  displayOrder: NumberFieldComparison
+  id: IDFilterComparison
+  isActive: BooleanFieldComparison
+  maxUsers: IntFieldComparison
+  name: StringFieldComparison
+  or: [SubscriptionPlanDeleteFilter!]
+  price: NumberFieldComparison
+  tier: PlanTierFilterComparison
+  trialDays: NumberFieldComparison
+  updatedAt: DateFieldComparison
+  yearlyDiscount: NumberFieldComparison
+}
+
+type SubscriptionPlanDeleteResponse {
+  billingInterval: BillingInterval
+  createdAt: DateTime
+  description: String
+  displayOrder: Float
+  features: String
+  id: ID
+  isActive: Boolean
+  maxUsers: Int
+  name: String
+  price: Float
+  stripePriceId: String
+  stripeYearlyPriceId: String
+  tier: PlanTier
+  trialDays: Float
+  updatedAt: DateTime
+  yearlyDiscount: Float
+}
+
+type SubscriptionPlanEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the SubscriptionPlan"""
+  node: SubscriptionPlan!
+}
+
+input SubscriptionPlanFilter {
+  and: [SubscriptionPlanFilter!]
+  billingInterval: BillingIntervalFilterComparison
+  createdAt: DateFieldComparison
+  displayOrder: NumberFieldComparison
+  id: IDFilterComparison
+  isActive: BooleanFieldComparison
+  maxUsers: IntFieldComparison
+  name: StringFieldComparison
+  or: [SubscriptionPlanFilter!]
+  price: NumberFieldComparison
+  tier: PlanTierFilterComparison
+  trialDays: NumberFieldComparison
+  updatedAt: DateFieldComparison
+  yearlyDiscount: NumberFieldComparison
+}
+
+type SubscriptionPlanMaxAggregate {
+  billingInterval: BillingInterval
+  createdAt: DateTime
+  displayOrder: Float
+  id: ID
+  maxUsers: Int
+  name: String
+  price: Float
+  tier: PlanTier
+  trialDays: Float
+  updatedAt: DateTime
+  yearlyDiscount: Float
+}
+
+type SubscriptionPlanMinAggregate {
+  billingInterval: BillingInterval
+  createdAt: DateTime
+  displayOrder: Float
+  id: ID
+  maxUsers: Int
+  name: String
+  price: Float
+  tier: PlanTier
+  trialDays: Float
+  updatedAt: DateTime
+  yearlyDiscount: Float
+}
+
+input SubscriptionPlanSort {
+  direction: SortDirection!
+  field: SubscriptionPlanSortFields!
+  nulls: SortNulls
+}
+
+enum SubscriptionPlanSortFields {
+  billingInterval
+  createdAt
+  displayOrder
+  id
+  isActive
+  maxUsers
+  name
+  price
+  tier
+  trialDays
+  updatedAt
+  yearlyDiscount
+}
+
+type SubscriptionPlanSumAggregate {
+  displayOrder: Float
+  price: Float
+  trialDays: Float
+  yearlyDiscount: Float
+}
+
+input SubscriptionPlanUpdateFilter {
+  and: [SubscriptionPlanUpdateFilter!]
+  billingInterval: BillingIntervalFilterComparison
+  createdAt: DateFieldComparison
+  displayOrder: NumberFieldComparison
+  id: IDFilterComparison
+  isActive: BooleanFieldComparison
+  maxUsers: IntFieldComparison
+  name: StringFieldComparison
+  or: [SubscriptionPlanUpdateFilter!]
+  price: NumberFieldComparison
+  tier: PlanTierFilterComparison
+  trialDays: NumberFieldComparison
+  updatedAt: DateFieldComparison
+  yearlyDiscount: NumberFieldComparison
 }
 
 """Subscription status"""
@@ -7310,6 +8132,23 @@ enum TwoFactorStatus {
   PENDING
 }
 
+input UpdateApiKey {
+  createdAt: DateTime
+  description: String
+  expiresAt: DateTime
+  id: ID
+  keyPrefix: String
+  lastUsedAt: DateTime
+  lastUsedIp: String
+  name: String
+  rateLimitPerMinute: Int
+  scopes: [ApiKeyScope!]
+  status: ApiKeyStatus
+  updatedAt: DateTime
+  usageCount: Float
+  userId: String
+}
+
 input UpdateApiKeyInput {
   description: String
   expiresAt: String
@@ -7458,6 +8297,27 @@ input UpdateLegalRulingInput {
   summary: String
 }
 
+input UpdateManyApiKeysInput {
+  """Filter used to find fields to update"""
+  filter: ApiKeyUpdateFilter!
+
+  """The update to apply to all records found using the filter"""
+  update: UpdateApiKey!
+}
+
+type UpdateManyResponse {
+  """The number of records updated."""
+  updatedCount: Int!
+}
+
+input UpdateManySubscriptionPlansInput {
+  """Filter used to find fields to update"""
+  filter: SubscriptionPlanUpdateFilter!
+
+  """The update to apply to all records found using the filter"""
+  update: UpdateSubscriptionPlan!
+}
+
 input UpdateNotificationInput {
   """Error message if sending failed"""
   errorMessage: String
@@ -7488,6 +8348,14 @@ input UpdateNotificationInput {
 
   """User ID"""
   userId: String
+}
+
+input UpdateOneApiKeyInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateApiKey!
 }
 
 input UpdateOneChatSessionInput {
@@ -7570,6 +8438,22 @@ input UpdateOneNotificationInput {
   update: UpdateNotificationInput!
 }
 
+input UpdateOneSubscriptionPlanInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateSubscriptionPlan!
+}
+
+input UpdateOneUserInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateUserInput!
+}
+
 input UpdateOneUserPreferencesInput {
   """The id of the record to update"""
   id: ID!
@@ -7603,6 +8487,25 @@ input UpdateSharePermissionInput {
 
   """ID of the share to update"""
   shareId: ID!
+}
+
+input UpdateSubscriptionPlan {
+  billingInterval: BillingInterval
+  createdAt: DateTime
+  description: String
+  displayOrder: Float
+  features: String
+  id: ID
+  isActive: Boolean
+  maxUsers: Int
+  name: String
+  price: Float
+  stripePriceId: String
+  stripeYearlyPriceId: String
+  tier: PlanTier
+  trialDays: Float
+  updatedAt: DateTime
+  yearlyDiscount: Float
 }
 
 input UpdateSubscriptionPlanInput {
@@ -7708,6 +8611,9 @@ type User {
   id: ID!
   isActive: Boolean!
   lastName: String
+  role: String
+  roles: [String!]
+  sessions: UserSession
   stripeCustomerId: String
   twoFactorEnabled: Boolean!
   twoFactorVerifiedAt: DateTime
@@ -7715,11 +8621,86 @@ type User {
   username: String
 }
 
+input UserAggregateFilter {
+  and: [UserAggregateFilter!]
+  createdAt: DateFieldComparison
+  email: StringFieldComparison
+  id: IDFilterComparison
+  isActive: BooleanFieldComparison
+  or: [UserAggregateFilter!]
+  twoFactorEnabled: BooleanFieldComparison
+  updatedAt: DateFieldComparison
+}
+
+type UserAggregateGroupBy {
+  createdAt(by: GroupBy! = DAY): DateTime
+  email: String
+  id: ID
+  isActive: Boolean
+  twoFactorEnabled: Boolean
+  updatedAt(by: GroupBy! = DAY): DateTime
+}
+
+type UserAggregateResponse {
+  count: UserCountAggregate
+  groupBy: UserAggregateGroupBy
+  max: UserMaxAggregate
+  min: UserMinAggregate
+}
+
+type UserConnection {
+  """Array of edges."""
+  edges: [UserEdge!]!
+
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type UserCountAggregate {
+  createdAt: Int
+  email: Int
+  id: Int
+  isActive: Int
+  twoFactorEnabled: Int
+  updatedAt: Int
+}
+
+type UserDeleteResponse {
+  createdAt: DateTime
+  disclaimerAccepted: Boolean
+  disclaimerAcceptedAt: DateTime
+  email: String
+  firstName: String
+  id: ID
+  isActive: Boolean
+  lastName: String
+  stripeCustomerId: String
+  twoFactorEnabled: Boolean
+  twoFactorVerifiedAt: DateTime
+  updatedAt: DateTime
+  username: String
+}
+
+type UserEdge {
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+
+  """The node containing the User"""
+  node: User!
+}
+
 input UserFilter {
-  email: StringFilter
-  isActive: BooleanFilter
-  role: StringFilter
-  username: StringFilter
+  and: [UserFilter!]
+  createdAt: DateFieldComparison
+  email: StringFieldComparison
+  id: IDFilterComparison
+  isActive: BooleanFieldComparison
+  or: [UserFilter!]
+  twoFactorEnabled: BooleanFieldComparison
+  updatedAt: DateFieldComparison
 }
 
 type UserGrowthMetrics {
@@ -7760,9 +8741,18 @@ type UserLeftEventPayload {
   userName: String!
 }
 
-input UserPaging {
-  after: String
-  first: Int
+type UserMaxAggregate {
+  createdAt: DateTime
+  email: String
+  id: ID
+  updatedAt: DateTime
+}
+
+type UserMinAggregate {
+  createdAt: DateTime
+  email: String
+  id: ID
+  updatedAt: DateTime
 }
 
 type UserPreferences {
@@ -8037,8 +9027,18 @@ enum UserSessionSortFields {
 }
 
 input UserSort {
-  direction: String!
-  field: String!
+  direction: SortDirection!
+  field: UserSortFields!
+  nulls: SortNulls
+}
+
+enum UserSortFields {
+  createdAt
+  email
+  id
+  isActive
+  twoFactorEnabled
+  updatedAt
 }
 
 type UserSubscription {

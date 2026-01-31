@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769769612136-5135560a",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-30T10:40:12.136Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "admin-refine-routing-configuration",
+  "featureName": "Configure Refine Routing for Admin Resources",
+  "error": "Feature completed in 1042s - auto-verified",
+  "passes": true
+}

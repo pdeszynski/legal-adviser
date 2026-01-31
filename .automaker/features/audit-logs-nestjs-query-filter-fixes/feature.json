@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Ensure AuditLog entity filters work correctly with nestjs-query. Implementation: 1) Verify AuditLog entity has @FilterableField decorators on: action (string enum), userId (UUID), timestamp (date), resourceType (string), 2) Ensure changeDetails JSON field is NOT filterable (excluded from filter operations), 3) Update audit logs page to send filters via setFilters, 4) Map action filter to use 'eq' operator, 5) Map timestamp filter to use date range operators ('gte' for start date, 'lte' for end date), 6) Map userId filter to use 'eq', 7) Test filtering by action type (LOGIN, LOGOUT, DOCUMENT_CREATE, etc.), 8) Test date range filtering, 9) Verify no errors with 'eq' not defined for timestamp/date fields. Ensure JSON field changeDetails doesn't cause filter errors.",
+  "id": "audit-logs-nestjs-query-filter-fixes",
+  "title": "Fix Audit Logs Filters with nestjs-query",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Ensure AuditLog entity filters work correctly with nestjs-query. Implementation: 1) Verify AuditLog entity has @FilterableField decorators on: action (string enum), userId (UUID), timestamp (date), resourceType (string), 2) Ensure changeDetails JSON field is NOT filterable (excluded from filter operations), 3) Update audit logs page to send filters via setFilters, 4) Map action filter to use 'eq' operator, 5) Map timestamp filter to use date range operators ('gte' for start date, 'lte' for end date), 6) Map userId filter to use 'eq', 7) Test filtering by action type (LOGIN, LOGOUT, DOCUMENT_CREATE, etc.), 8) Test date range filtering, 9) Verify no errors with 'eq' not defined for timestamp/date fields. Ensure JSON field changeDetails doesn't cause filter errors.",
+      "timestamp": "2026-01-31T13:10:48.230Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T13:22:57.439Z"
+}
