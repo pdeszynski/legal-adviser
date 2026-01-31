@@ -47,7 +47,7 @@
     "@legal/tsconfig": "workspace:*",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^9.39.2",
+    "eslint": "^9.26.0",
     "lucide-react": "^0.547.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
