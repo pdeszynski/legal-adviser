@@ -9,21 +9,21 @@ import {
 import { TotpStatusEnum } from '../../../domain/two-factor-auth/value-objects';
 
 /**
- * TwoFactorAuth ORM Entity
+ * Two-Factor Authentication Entity
  *
- * Represents the database schema for two-factor authentication in the infrastructure layer.
- * This is separate from the domain TwoFactorAuth aggregate and is used for persistence only.
+ * CQRS Read Model: This entity is used for querying two-factor authentication data.
+ * The write operations use TwoFactorAuthAggregate from the domain layer.
  *
  * Security Notes:
  * - The TOTP secret is encrypted at rest using AES-256-GCM
  * - Backup codes are hashed using bcrypt/scrypt before storage
- * - The `secret` column should not be selected by default queries
+ * - The `secret` column is not selected by default for security
  *
- * Note: This entity maps to the DDD TwoFactorAuthAggregate through the TwoFactorAuthMapper.
- * For GraphQL operations, use the TwoFactorAuth entity in modules/two-factor-auth/entities.
+ * This entity follows the simplified DDD approach where TypeORM annotations
+ * are acceptable on entities. Repository handles mapping to/from domain aggregates.
  */
 @Entity('two_factor_auth')
-export class TwoFactorAuthOrmEntity {
+export class TwoFactorAuth {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

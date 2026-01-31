@@ -9,7 +9,7 @@ import {
 } from '../../documents/entities/legal-document.entity';
 import { LegalQuery } from '../../queries/entities/legal-query.entity';
 import { AiUsageRecord } from '../../usage-tracking/entities/ai-usage-record.entity';
-import { DemoRequestOrmEntity } from '../../../infrastructure/persistence/entities/demo-request.orm-entity';
+import { DemoRequest } from '../../../infrastructure/persistence/entities/demo-request.entity';
 import { ChatSession } from '../../chat/entities/chat-session.entity';
 import { UserRole } from '../../auth/enums/user-role.enum';
 import {
@@ -90,8 +90,8 @@ export class AnalyticsService {
     private readonly queryRepository: Repository<LegalQuery>,
     @InjectRepository(AiUsageRecord)
     private readonly usageRepository: Repository<AiUsageRecord>,
-    @InjectRepository(DemoRequestOrmEntity)
-    private readonly demoRequestRepository: Repository<DemoRequestOrmEntity>,
+    @InjectRepository(DemoRequest)
+    private readonly demoRequestRepository: Repository<DemoRequest>,
     @InjectRepository(ChatSession)
     private readonly chatSessionRepository: Repository<ChatSession>,
   ) {}

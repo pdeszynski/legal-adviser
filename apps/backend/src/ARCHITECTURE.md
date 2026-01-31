@@ -107,11 +107,9 @@ This backend follows a strict layered architecture with clear dependency rules a
 ├── infrastructure/              # Infrastructure Layer
 │   └── persistence/
 │       ├── entities/
-│       │   └── legal-document.orm-entity.ts
-│       ├── mappers/
-│       │   └── legal-document.mapper.ts
+│       │   └── (CQRS read models - main entities from modules/)
 │       ├── repositories/
-│       │   └── legal-document.repository.ts
+│       │   └── legal-document.repository.ts (with inline toDomain/toEntity mapping)
 │       └── persistence.module.ts
 │
 ├── presentation/                # Presentation Layer
@@ -162,7 +160,7 @@ export class CreateDocumentUseCase implements IUseCase<
 }
 ```
 
-## Repository Pattern
+## Repository Pattern (CQRS + Simplified DDD)
 
 Repositories are defined as interfaces in the Domain layer and implemented in the Infrastructure layer:
 
@@ -176,40 +174,36 @@ export interface ILegalDocumentRepository extends IRepository<
   // ...other query methods
 }
 
-// Infrastructure Layer - Implementation
+// Infrastructure Layer - Implementation with inline mapping
 @Injectable()
 export class LegalDocumentRepository implements ILegalDocumentRepository {
   constructor(
-    @InjectRepository(LegalDocumentOrmEntity)
-    private readonly repository: Repository<LegalDocumentOrmEntity>,
+    @InjectRepository(LegalDocument) // Main entity from modules/
+    private readonly repository: Repository<LegalDocument>,
   ) {}
 
   async findById(id: string): Promise<LegalDocumentAggregate | null> {
     const entity = await this.repository.findOne({ where: { id } });
-    return entity ? LegalDocumentMapper.toDomain(entity) : null;
+    return entity ? this.toDomain(entity) : null;
   }
-  // ...
-}
-```
 
-## Mapper Pattern
-
-Mappers convert between Domain Aggregates and ORM Entities:
-
-```typescript
-export class LegalDocumentMapper {
-  static toDomain(entity: LegalDocumentOrmEntity): LegalDocumentAggregate {
+  // Inline CQRS write side transformation
+  private toDomain(entity: LegalDocument): LegalDocumentAggregate {
     return LegalDocumentAggregate.reconstitute(
       entity.id,
       entity.title,
-      // ...other properties
+      entity.contentRaw || '',
+      entity.type as DocumentTypeEnum,
+      entity.status as DocumentStatusEnum,
+      entity.sessionId, // sessionId → ownerId for DDD layer
+      entity.createdAt,
+      entity.updatedAt,
+      entity.metadata,
     );
   }
 
-  static toPersistence(
-    aggregate: LegalDocumentAggregate,
-  ): LegalDocumentOrmEntity {
-    const entity = new LegalDocumentOrmEntity();
+  private toEntity(aggregate: LegalDocumentAggregate): LegalDocument {
+    const entity = new LegalDocument();
     entity.id = aggregate.id;
     entity.title = aggregate.title.toValue();
     // ...other properties
@@ -217,6 +211,13 @@ export class LegalDocumentMapper {
   }
 }
 ```
+
+**Key Points:**
+
+- Repositories use main entities from `modules/` (CQRS Read Model)
+- Mapping to/from domain aggregates happens inline in the repository
+- No separate mapper files needed
+- TypeORM annotations acceptable on domain entities (simplified DDD)
 
 ## API Endpoints (V2)
 

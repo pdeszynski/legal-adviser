@@ -8,7 +8,7 @@ import { DemoRequestResolver } from './demo-request.resolver';
 import { DemoRequestsAdminResolver } from './demo-request-crud.resolver';
 import { HubSpotModule } from '../integrations/hubspot/hubspot.module';
 import { NotificationsModule } from '../notifications/notifications.module';
-import { DemoRequestOrmEntity } from '../../infrastructure/persistence/entities/demo-request.orm-entity';
+import { DemoRequest } from '../../infrastructure/persistence/entities/demo-request.entity';
 
 /**
  * Demo Request Module
@@ -36,13 +36,13 @@ import { DemoRequestOrmEntity } from '../../infrastructure/persistence/entities/
     ConfigModule,
     HubSpotModule,
     NotificationsModule,
-    TypeOrmModule.forFeature([DemoRequestOrmEntity]),
+    TypeOrmModule.forFeature([DemoRequest]),
     NestjsQueryGraphQLModule.forFeature({
-      imports: [NestjsQueryTypeOrmModule.forFeature([DemoRequestOrmEntity])],
+      imports: [NestjsQueryTypeOrmModule.forFeature([DemoRequest])],
       resolvers: [
         {
-          EntityClass: DemoRequestOrmEntity,
-          DTOClass: DemoRequestOrmEntity,
+          EntityClass: DemoRequest,
+          DTOClass: DemoRequest,
           enableTotalCount: true,
           enableAggregate: true,
           guards: [],

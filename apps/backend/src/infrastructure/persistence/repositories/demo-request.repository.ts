@@ -4,34 +4,30 @@ import { Repository, Between } from 'typeorm';
 import { DemoRequestAggregate } from '../../../domain/demo-request/aggregates';
 import { IDemoRequestRepository } from '../../../domain/demo-request/repositories';
 import { DemoRequestStatusEnum } from '../../../domain/demo-request/value-objects';
-import { DemoRequestOrmEntity } from '../entities';
-import { DemoRequestMapper } from '../mappers';
+import { DemoRequest } from '../entities';
 
 /**
  * TypeORM implementation of IDemoRequestRepository
  *
- * This class implements the repository interface defined in the Domain layer,
- * providing the actual persistence logic using TypeORM.
+ * Uses the DemoRequest entity directly (CQRS Read Model also used for persistence).
+ * This is a simplified DDD approach where TypeORM annotations are acceptable on entities.
  *
- * Infrastructure Layer Rules:
- * - Implements interfaces defined in Domain layer
- * - Contains all database-specific logic
- * - Uses mappers to convert between domain and persistence models
+ * Maps between DemoRequest entity and DemoRequestAggregate for write operations.
  */
 @Injectable()
 export class DemoRequestRepository implements IDemoRequestRepository {
   constructor(
-    @InjectRepository(DemoRequestOrmEntity)
-    private readonly repository: Repository<DemoRequestOrmEntity>,
+    @InjectRepository(DemoRequest)
+    private readonly repository: Repository<DemoRequest>,
   ) {}
 
   async findById(id: string): Promise<DemoRequestAggregate | null> {
     const entity = await this.repository.findOne({ where: { id } });
-    return entity ? DemoRequestMapper.toDomain(entity) : null;
+    return entity ? this.toDomain(entity) : null;
   }
 
   async save(aggregate: DemoRequestAggregate): Promise<void> {
-    const entity = DemoRequestMapper.toPersistence(aggregate);
+    const entity = this.toEntity(aggregate);
     await this.repository.save(entity);
   }
 
@@ -44,7 +40,7 @@ export class DemoRequestRepository implements IDemoRequestRepository {
       where: { email: email.toLowerCase() },
       order: { createdAt: 'DESC' },
     });
-    return entity ? DemoRequestMapper.toDomain(entity) : null;
+    return entity ? this.toDomain(entity) : null;
   }
 
   async findByStatus(
@@ -54,7 +50,7 @@ export class DemoRequestRepository implements IDemoRequestRepository {
       where: { status },
       order: { createdAt: 'DESC' },
     });
-    return DemoRequestMapper.toDomainList(entities);
+    return entities.map((e) => this.toDomain(e));
   }
 
   async findByStatusIn(
@@ -68,7 +64,7 @@ export class DemoRequestRepository implements IDemoRequestRepository {
       .where('demoRequest.status IN (:...statuses)', { statuses })
       .orderBy('demoRequest.createdAt', 'DESC')
       .getMany();
-    return DemoRequestMapper.toDomainList(entities);
+    return entities.map((e) => this.toDomain(e));
   }
 
   async findByHubspotContactId(
@@ -77,7 +73,7 @@ export class DemoRequestRepository implements IDemoRequestRepository {
     const entity = await this.repository.findOne({
       where: { hubspotContactId: contactId },
     });
-    return entity ? DemoRequestMapper.toDomain(entity) : null;
+    return entity ? this.toDomain(entity) : null;
   }
 
   async findNewRequests(): Promise<DemoRequestAggregate[]> {
@@ -101,6 +97,58 @@ export class DemoRequestRepository implements IDemoRequestRepository {
       },
       order: { submittedAt: 'DESC' },
     });
-    return DemoRequestMapper.toDomainList(entities);
+    return entities.map((e) => this.toDomain(e));
+  }
+
+  /**
+   * Map DemoRequest entity to DemoRequestAggregate (for write operations)
+   * This is the CQRS write side transformation
+   */
+  private toDomain(entity: DemoRequest): DemoRequestAggregate {
+    return DemoRequestAggregate.reconstitute(
+      entity.id,
+      entity.fullName,
+      entity.email,
+      entity.company,
+      entity.companySize,
+      entity.industry,
+      entity.useCase,
+      entity.timeline,
+      entity.budget,
+      entity.preferredDemoTime,
+      entity.status,
+      entity.hubspotContactId,
+      entity.submittedAt,
+      entity.contactedAt,
+      entity.createdAt,
+      entity.updatedAt,
+      entity.metadata ?? undefined,
+    );
+  }
+
+  /**
+   * Map DemoRequestAggregate to DemoRequest entity (for persistence)
+   * This is the CQRS write side transformation
+   */
+  private toEntity(aggregate: DemoRequestAggregate): DemoRequest {
+    const entity = new DemoRequest();
+    entity.id = aggregate.id;
+    entity.fullName = aggregate.fullName.toValue();
+    entity.email = aggregate.email.toValue();
+    entity.company = aggregate.company?.toValue() ?? null;
+    entity.companySize = aggregate.companySize;
+    entity.industry = aggregate.industry;
+    entity.useCase = aggregate.useCase.toValue();
+    entity.timeline = aggregate.timeline;
+    entity.budget = aggregate.budget;
+    entity.preferredDemoTime = aggregate.preferredDemoTime;
+    entity.status = aggregate.status.toValue();
+    entity.hubspotContactId = aggregate.hubspotContactId;
+    entity.submittedAt = aggregate.createdAt;
+    entity.contactedAt = aggregate.contactedAt;
+    entity.metadata = aggregate.metadata;
+    entity.createdAt = aggregate.createdAt;
+    entity.updatedAt = aggregate.updatedAt;
+    return entity;
   }
 }

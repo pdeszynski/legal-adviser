@@ -36,6 +36,7 @@ cd apps/web && npm test | playwright test
 ## Testing
 
 **Locations:**
+
 - Backend Unit: `apps/backend/src/modules/**/*.spec.ts`
 - Backend E2E: `apps/backend/tests/e2e/*.e2e-spec.ts`
 - Frontend Unit: `apps/web/src/**/*.spec.tsx`
@@ -43,6 +44,7 @@ cd apps/web && npm test | playwright test
 - AI Engine: `apps/ai-engine/tests/unit/*.py`
 
 **Post-Feature Checklist:**
+
 1. Codegen: `pnpm codegen` (after GraphQL schema changes)
 2. Lint: `eslint .`
 3. Type check: `tsc --noEmit` / `uv run mypy src/`
@@ -71,11 +73,13 @@ cd apps/web && npm test | playwright test
 **Hierarchy:** `SUPER_ADMIN(5) > ADMIN(4) > LAWYER(3) > PARALEGAL(2) > CLIENT(1) > GUEST(0)`
 
 **User Entity** (`apps/backend/src/modules/users/entities/user.entity.ts`):
+
 - Single `role` field (enum): `guest | client | paralegal | lawyer | admin | super_admin`
 - Default role: `CLIENT`
 - JWT `roles` array contains one role for compatibility
 
 **Backend Guards** (`apps/backend/src/modules/auth/guards/`):
+
 ```typescript
 // Single required role (ADMIN or higher)
 @UseGuards(GqlAuthGuard, RoleGuard)
@@ -88,6 +92,7 @@ async adminOnly() { ... }
 ```
 
 **Frontend Hook** (`apps/web/src/hooks/use-user-role.tsx`):
+
 ```tsx
 const { role, isAdmin, hasRole, hasRoleLevel } = useUserRole();
 ```
@@ -95,11 +100,13 @@ const { role, isAdmin, hasRole, hasRoleLevel } = useUserRole();
 ## GraphQL
 
 **Codegen:** Run `pnpm codegen` after ANY schema changes. Generates:
+
 - `apps/web/src/generated/graphql.ts` - Full types
 - `apps/web/src/generated/introspection.json` - Schema
 - `apps/web/src/generated/persisted-queries/client.json` - APQ
 
 **Field Resolvers:** Use `@ResolveField`, never `@ResolveProperty` (deprecated)
+
 ```typescript
 @ResolveField('pdfUrl', () => String, { nullable: true })
 async getPdfUrl(@Parent() document: LegalDocument): Promise<string | null> {
@@ -108,6 +115,7 @@ async getPdfUrl(@Parent() document: LegalDocument): Promise<string | null> {
 ```
 
 **Authorization:**
+
 ```typescript
 // Authenticated only
 @UseGuards(GqlAuthGuard)
@@ -153,6 +161,7 @@ await (dp as any).custom<GraphQLMutationConfig<UpdateInputType>>({
 ## NestJS-Query + Refine.dev Integration
 
 **Entity Decorators** (`apps/backend/src/modules/{module}/entities/{entity}.entity.ts`):
+
 ```typescript
 @Entity('users')
 @ObjectType('User')
@@ -173,6 +182,7 @@ export class User {
 ```
 
 **Module Registration** (`apps/backend/src/modules/{module}/{module}.module.ts`):
+
 ```typescript
 NestjsQueryGraphQLModule.forFeature({
   imports: [NestjsQueryTypeOrmModule.forFeature([User])],
@@ -189,6 +199,7 @@ NestjsQueryGraphQLModule.forFeature({
 ```
 
 **Frontend Page** (`apps/web/src/app/admin/{resource}/page.tsx`):
+
 ```tsx
 import { useList } from '@refinedev/core';
 
@@ -221,6 +232,7 @@ const listResult = useList<User>({
 **Tech:** FastAPI, PydanticAI, LangGraph, Langfuse
 
 **Commands:**
+
 ```bash
 cd apps/ai-engine && uv run dev      # Hot reload
 cd apps/ai-engine && uv run pytest    # Tests
@@ -246,75 +258,96 @@ const response = await fetch(GRAPHQL_URL, {
 });
 ```
 
-## TypeORM Entity Rules
+## CQRS + Simplified DDD Architecture
 
-**CRITICAL: Only ONE entity per database table.**
+**Pattern:** We use CQRS (Command Query Responsibility Segregation) with a simplified DDD approach:
 
-The database module (`apps/backend/src/database/database.module.ts`) uses a glob pattern to load all entities:
-```typescript
-entities: [__dirname + '/../**/*.{entity,orm-entity}{.ts,.js}']
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        QUERY SIDE (READ)                        │
+│              modules/{module}/entities/{entity}.entity.ts      │
+├─────────────────────────────────────────────────────────────────┤
+│ • TypeORM entities with @Entity() decorators                   │
+│ • Used for queries via nestjs-query auto-generated CRUD         │
+│ • GraphQL resolvers return these directly                      │
+│ • Optimized for reading data                                   │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                        COMMAND SIDE (WRITE)                     │
+│        domain/{aggregate}/ + application/use-cases/            │
+├─────────────────────────────────────────────────────────────────┤
+│ • Domain aggregates with rich business logic                   │
+│ • Use cases orchestrate write operations                        │
+│ • Repositories map aggregates ↔ entities for persistence       │
+│ • Optimized for business rules and invariants                  │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-**DO NOT:**
-- Create multiple TypeORM entities with `@Entity('table_name')` pointing to the same table
-- This causes "tables can have at most 1600 columns" error when TypeORM syncs both entities
+**Key Principles:**
 
-**DO:**
-- Use the main entity in `modules/{module}/entities/` as the source of truth
-- For DDD infrastructure, use plain classes (no `@Entity()` decorator) as DTOs/mappers
-- Import the main entity in repository/mapper classes
+1. **Accept TypeORM in domain** - Entities have TypeORM decorators (pragmatic DDD)
+2. **No separate ORM entities** - No `UserOrmEntity`, no mappers needed
+3. **Repository handles mapping** - `toDomain()` / `toEntity()` methods in repository only
+4. **One entity per table** - Never create duplicate `@Entity()` decorators for same table
 
-**Example of WRONG pattern (causes the error):**
+**Example - User Repository:**
+
 ```typescript
-// modules/users/entities/user.entity.ts
-@Entity('users')
-export class User { ... }
-
-// infrastructure/persistence/entities/user.orm-entity.ts
-@Entity('users')  // ❌ DUPLICATE - causes sync conflicts
-export class UserOrmEntity { ... }
-```
-
-**Example of CORRECT pattern:**
-```typescript
-// modules/users/entities/user.entity.ts - Main entity
-@Entity('users')
-export class User { ... }
-
-// infrastructure/persistence/entities/user.orm-entity.ts - Plain class only
-export class UserOrmEntity { ... }  // No @Entity decorator
-
-// infrastructure/persistence/repositories/user.repository.ts
 @Injectable()
-export class UserRepository {
+export class UserRepository implements IUserRepository {
   constructor(
-    @InjectRepository(User)  // Use main entity
+    @InjectRepository(User)  // Read model entity
     private readonly repository: Repository<User>,
   ) {}
+
+  async findById(id: string): Promise<UserAggregate | null> {
+    const entity = await this.repository.findOne({ where: { id } });
+    return entity ? this.toDomain(entity) : null; // Map to write model
+  }
+
+  async save(aggregate: UserAggregate): Promise<void> {
+    const entity = this.toEntity(aggregate); // Map from write model
+    await this.repository.save(entity);
+  }
+
+  private toDomain(entity: User): UserAggregate { ... }
+  private toEntity(aggregate: UserAggregate): User { ... }
 }
 ```
 
+**When to use which side:**
+
+- **Read (Query)**: Direct TypeORM queries, nestjs-query auto-generated CRUD
+- **Write (Command)**: Use cases → aggregates → repositories
+
+**DO NOT:**
+
+- Create separate `*OrmEntity` classes with `@Entity()` decorators (causes sync errors)
+- Create separate mapper files (mapping in repository is sufficient)
+- Copy entities between domain and infrastructure layers
+
 ## Key File Locations
 
-| Purpose | Location |
-|---------|----------|
-| Admin Layout | `apps/web/src/app/admin/layout.tsx` |
-| Menu Config | `apps/web/src/config/menu.config.tsx` |
-| Data Provider | `apps/web/src/providers/data-provider/index.ts` |
-| User Entity | `apps/backend/src/modules/users/entities/user.entity.ts` |
-| Auth Guards | `apps/backend/src/modules/auth/guards/` |
-| Database Config | `apps/backend/src/database/database.module.ts` |
-| GraphQL Schema | `apps/backend/src/schema.gql` (auto-generated) |
+| Purpose         | Location                                                 |
+| --------------- | -------------------------------------------------------- |
+| Admin Layout    | `apps/web/src/app/admin/layout.tsx`                      |
+| Menu Config     | `apps/web/src/config/menu.config.tsx`                    |
+| Data Provider   | `apps/web/src/providers/data-provider/index.ts`          |
+| User Entity     | `apps/backend/src/modules/users/entities/user.entity.ts` |
+| Auth Guards     | `apps/backend/src/modules/auth/guards/`                  |
+| Database Config | `apps/backend/src/database/database.module.ts`           |
+| GraphQL Schema  | `apps/backend/src/schema.gql` (auto-generated)           |
 
 ## Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| "Field not found" after backend change | Run `pnpm codegen` |
-| Direct fetch() returns auth errors | Use data provider's `custom()` method |
-| Spread operator with null overrides defaults | Use `??` (nullish coalescing) |
-| Decorator type errors | Check types declared before reference |
-| "Cannot access before initialization" | Reorder DTOs - dependencies first |
+| Issue                                        | Solution                              |
+| -------------------------------------------- | ------------------------------------- |
+| "Field not found" after backend change       | Run `pnpm codegen`                    |
+| Direct fetch() returns auth errors           | Use data provider's `custom()` method |
+| Spread operator with null overrides defaults | Use `??` (nullish coalescing)         |
+| Decorator type errors                        | Check types declared before reference |
+| "Cannot access before initialization"        | Reorder DTOs - dependencies first     |
 
 ## Post-Feature Checklist
 
@@ -327,13 +360,22 @@ export class UserRepository {
 
 ## Summary (Detailed Documentation Links)
 
+### Architecture: CQRS + Simplified DDD
+
+- **Query Side (Read)**: `modules/{module}/entities/` - TypeORM entities with decorators
+- **Command Side (Write)**: `domain/{aggregate}/` + `application/use-cases/` - Rich domain logic
+- **Repositories**: Map between read entities and write aggregates (no separate ORM entities)
+- **Acceptable**: TypeORM annotations leak to domain (pragmatic approach)
+
 ### Admin Layout
+
 - Single root layout at `apps/web/src/app/admin/layout.tsx`
 - All admin subdirectories inherit this layout
 - **DO NOT** add `layout.tsx` to admin subdirectories
 - Add menu entries to `apps/web/src/config/menu.config.tsx`
 
 ### RBAC (Role-Based Access Control)
+
 - Hierarchy: `SUPER_ADMIN(5) > ADMIN(4) > LAWYER(3) > PARALEGAL(2) > CLIENT(1) > GUEST(0)`
 - Higher roles inherit permissions from lower roles
 - Single `role` field on User entity (enum)
@@ -342,6 +384,7 @@ export class UserRepository {
 - Frontend: `useUserRole` hook in `apps/web/src/hooks/use-user-role.tsx`
 
 ### GraphQL
+
 - **Always run `pnpm codegen` after schema changes**
 - Generated types in `apps/web/src/generated/`
 - Use `@ResolveField`, never `@ResolveProperty` (deprecated)
@@ -350,6 +393,7 @@ export class UserRepository {
 - Use `@Public()` for public endpoints (login, register)
 
 ### NestJS-Query + Refine.dev
+
 - Entity decorators: `@Entity()`, `@ObjectType()`, `@QueryOptions({ enableTotalCount: true })`
 - Field decorators: `@IDField()`, `@FilterableField()` (for filtering/sorting), `@Field()` (read-only)
 - Relations: `@Relation()` for OneToMany/ManyToOne
@@ -359,6 +403,7 @@ export class UserRepository {
 - Data provider: `apps/web/src/providers/data-provider/index.ts`
 
 ### refine.dev Custom Mutations
+
 ```tsx
 const dp = dataProvider();
 await (dp as any).custom<GraphQLMutationConfig<InputType>>({
@@ -371,16 +416,19 @@ await (dp as any).custom<GraphQLMutationConfig<InputType>>({
 ```
 
 ### Two-Factor Authentication
+
 - TOTP (RFC 6238), QR codes, 10 backup codes, admin override
 - Rate limit: 5/minute, 10 failures = 30 min lockout
 - Frontend: `apps/web/src/components/settings/two-factor-setup.tsx`
 
 ### CSRF Protection
+
 - Double-submit cookie pattern
 - Frontend: `apps/web/src/lib/csrf.ts`
 - Cookie: `csrf-token`, Header: `x-csrf-token`
 
 ### AI Engine (`apps/ai-engine/`)
+
 - FastAPI, PydanticAI, LangGraph, Langfuse
 - Commands: `uv run dev`, `uv run pytest`, `uv run mypy src/`
 - Streaming: Frontend → AI Engine (JWT) → SSE
@@ -389,16 +437,19 @@ await (dp as any).custom<GraphQLMutationConfig<InputType>>({
 - Langfuse: Auto-tracing via `Agent.instrument_all()`
 
 ### HubSpot Integration
+
 - Location: `apps/backend/src/modules/integrations/hubspot/`
 - Lead scoring: Timeline + Company size + Details
 - Required contact properties: `use_case`, `timeline`, `company_size`, `message`
 
 ### Temporal
+
 - Schedules vs Workflows: Schedules = recurring/time-based, Workflows = one-time/event-driven
 - Cron format: `minute hour day month weekday`
 - Overlap policies: `SKIP` (default), `ALLOW_ALL`, `BUFFER_ONE`
 
 ### TypeORM Entity Rules
+
 - **CRITICAL: Only ONE entity per database table**
 - Database module uses glob: `**/*.{entity,orm-entity}{.ts,.js}`
 - Use main entity in `modules/{module}/entities/` as source of truth
@@ -406,15 +457,16 @@ await (dp as any).custom<GraphQLMutationConfig<InputType>>({
 - Multiple `@Entity()` decorators on same table cause "tables can have at most 1600 columns" error
 
 ### Common Issues
-| Issue | Solution |
-|-------|----------|
-| "Field not found" | Run `pnpm codegen` |
-| Direct fetch() auth errors | Use data provider's `custom()` |
-| Null overrides defaults | Use `??` (nullish coalescing) |
-| Decorator type errors | Check type declaration order |
-| "Cannot access before initialization" | Reorder DTOs - dependencies first |
-| Missing totalCount | Add `@QueryOptions({ enableTotalCount: true })` |
-| Filters not working | Use `@FilterableField()` instead of `@Field()` |
+
+| Issue                                 | Solution                                        |
+| ------------------------------------- | ----------------------------------------------- |
+| "Field not found"                     | Run `pnpm codegen`                              |
+| Direct fetch() auth errors            | Use data provider's `custom()`                  |
+| Null overrides defaults               | Use `??` (nullish coalescing)                   |
+| Decorator type errors                 | Check type declaration order                    |
+| "Cannot access before initialization" | Reorder DTOs - dependencies first               |
+| Missing totalCount                    | Add `@QueryOptions({ enableTotalCount: true })` |
+| Filters not working                   | Use `@FilterableField()` instead of `@Field()`  |
 
 ## References
 

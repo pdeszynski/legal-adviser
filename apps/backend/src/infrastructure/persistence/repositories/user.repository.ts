@@ -8,18 +8,14 @@ import {
   UserStatusEnum,
 } from '../../../domain/user-management/value-objects';
 import { User } from '../../../modules/users/entities/user.entity';
-import { UserMapper } from '../mappers/user.mapper';
 
 /**
  * TypeORM implementation of IUserRepository
  *
- * This class implements the repository interface defined in the Domain layer,
- * providing the actual persistence logic using TypeORM.
+ * Uses the User entity directly (CQRS Read Model also used for persistence).
+ * This is a simplified DDD approach where TypeORM annotations are acceptable on entities.
  *
- * Infrastructure Layer Rules:
- * - Implements interfaces defined in Domain layer
- * - Contains all database-specific logic
- * - Uses mappers to convert between domain and persistence models
+ * Maps between User entity and UserAggregate for write operations.
  */
 @Injectable()
 export class UserRepository implements IUserRepository {
@@ -30,11 +26,11 @@ export class UserRepository implements IUserRepository {
 
   async findById(id: string): Promise<UserAggregate | null> {
     const entity = await this.repository.findOne({ where: { id } });
-    return entity ? UserMapper.toDomain(entity) : null;
+    return entity ? this.toDomain(entity) : null;
   }
 
   async save(aggregate: UserAggregate): Promise<void> {
-    const entity = UserMapper.toPersistence(aggregate);
+    const entity = this.toEntity(aggregate);
     await this.repository.save(entity);
   }
 
@@ -44,28 +40,24 @@ export class UserRepository implements IUserRepository {
 
   async findByEmail(email: string): Promise<UserAggregate | null> {
     const entity = await this.repository.findOne({ where: { email } });
-    return entity ? UserMapper.toDomain(entity) : null;
+    return entity ? this.toDomain(entity) : null;
   }
 
   async findByRole(role: UserRoleEnum): Promise<UserAggregate[]> {
-    // Note: Current schema doesn't have a role column
-    // This is a simplified implementation that returns all active users
-    // In a full implementation, you would add a role column to the database
     const entities = await this.repository.find({
       where: { isActive: true },
       order: { createdAt: 'DESC' },
     });
-    return UserMapper.toDomainList(entities);
+    return entities.map((e) => this.toDomain(e));
   }
 
   async findByStatus(status: UserStatusEnum): Promise<UserAggregate[]> {
-    // Map UserStatusEnum to isActive boolean
     const isActive = status === UserStatusEnum.ACTIVE;
     const entities = await this.repository.find({
       where: { isActive },
       order: { createdAt: 'DESC' },
     });
-    return UserMapper.toDomainList(entities);
+    return entities.map((e) => this.toDomain(e));
   }
 
   async findActiveUsers(): Promise<UserAggregate[]> {
@@ -73,11 +65,50 @@ export class UserRepository implements IUserRepository {
       where: { isActive: true },
       order: { createdAt: 'DESC' },
     });
-    return UserMapper.toDomainList(entities);
+    return entities.map((e) => this.toDomain(e));
   }
 
   async existsByEmail(email: string): Promise<boolean> {
     const count = await this.repository.count({ where: { email } });
     return count > 0;
+  }
+
+  /**
+   * Map User entity to UserAggregate (for write operations)
+   * This is the CQRS write side transformation
+   */
+  private toDomain(entity: User): UserAggregate {
+    const status = entity.isActive
+      ? UserStatusEnum.ACTIVE
+      : UserStatusEnum.DEACTIVATED;
+
+    return UserAggregate.reconstitute(
+      entity.id,
+      entity.email,
+      entity.firstName || '',
+      entity.lastName || '',
+      UserRoleEnum.CLIENT, // Default - role management handled by authorization module
+      status,
+      entity.createdAt,
+      entity.updatedAt,
+      entity.passwordHash || undefined,
+      undefined, // lastLoginAt not tracked
+    );
+  }
+
+  /**
+   * Map UserAggregate to User entity (for persistence)
+   * This is the CQRS write side transformation
+   */
+  private toEntity(aggregate: UserAggregate): User {
+    const entity = new User();
+    entity.id = aggregate.id;
+    entity.email = aggregate.email.toValue();
+    entity.firstName = aggregate.fullName.firstName;
+    entity.lastName = aggregate.fullName.lastName;
+    entity.isActive = aggregate.status.canLogin();
+    entity.passwordHash = aggregate.passwordHash || null;
+    // createdAt/updatedAt managed by TypeORM automatically
+    return entity;
   }
 }

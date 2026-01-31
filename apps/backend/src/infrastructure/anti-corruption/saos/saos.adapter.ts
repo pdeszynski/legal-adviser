@@ -149,7 +149,9 @@ export class SaosAdapter {
         },
       };
     } catch (error) {
-      this.logger.error('Failed to search SAOS', error);
+      this.logger.error(
+        `Failed to search SAOS: ${this.formatAxiosError('searchSaos', this.extractErrorCode(error), error)}`,
+      );
       return {
         success: false,
         error: this.transformer.createIntegrationError(error),
@@ -209,7 +211,9 @@ export class SaosAdapter {
         data: ruling,
       };
     } catch (error) {
-      this.logger.error(`Failed to get SAOS judgment ${id}`, error);
+      this.logger.error(
+        `Failed to get SAOS judgment ${id}: ${this.formatAxiosError('getSaosJudgment', this.extractErrorCode(error), error)}`,
+      );
       return {
         success: false,
         error: this.transformer.createIntegrationError(error, false),
@@ -289,9 +293,10 @@ export class SaosAdapter {
             }
           }
         } else {
-          const errorMsg = settledResult.reason instanceof Error
-            ? settledResult.reason.message
-            : String(settledResult.reason);
+          const errorMsg =
+            settledResult.reason instanceof Error
+              ? settledResult.reason.message
+              : String(settledResult.reason);
           this.logger.error(
             `[SAOS] Promise rejected for judgment ${judgmentId}: ${errorMsg}`,
           );
@@ -339,7 +344,9 @@ export class SaosAdapter {
         );
       });
       if (failedIds.length > 5) {
-        this.logger.debug(`[SAOS] ... and ${failedIds.length - 5} more failures`);
+        this.logger.debug(
+          `[SAOS] ... and ${failedIds.length - 5} more failures`,
+        );
       }
     }
 
@@ -412,7 +419,9 @@ export class SaosAdapter {
       await firstValueFrom(this.httpService.get(`${this.saosApiUrl}/health`));
       return true;
     } catch (error) {
-      this.logger.error('SAOS health check failed', error);
+      this.logger.error(
+        `SAOS health check failed: ${this.formatAxiosError('healthCheck', this.extractErrorCode(error), error)}`,
+      );
       return false;
     }
   }
@@ -444,10 +453,12 @@ export class SaosAdapter {
         const errorCode = this.extractErrorCode(error);
 
         if (!this.isRetryable(errorCode)) {
-          this.logger.error(
-            `Non-retryable error in ${operationName}: ${errorCode}`,
+          const logMessage = this.formatAxiosError(
+            operationName,
+            errorCode,
             error,
           );
+          this.logger.error(logMessage);
           throw error;
         }
 
@@ -464,11 +475,58 @@ export class SaosAdapter {
       }
     }
 
-    this.logger.error(
-      `All ${this.retryConfig.maxAttempts} attempts failed for ${operationName}`,
+    const logMessage = this.formatAxiosError(
+      operationName,
+      this.extractErrorCode(lastError),
       lastError,
     );
+    this.logger.error(
+      `All ${this.retryConfig.maxAttempts} attempts failed for ${operationName}\n${logMessage}`,
+    );
     throw lastError;
+  }
+
+  /**
+   * Format Axios error for concise logging
+   */
+  private formatAxiosError(
+    operationName: string,
+    errorCode: string,
+    error: unknown,
+  ): string {
+    const parts = [`[SaosAdapter] ${operationName}`, `Code: ${errorCode}`];
+
+    if (this.isAxiosError(error)) {
+      const url = error.config?.url || 'unknown';
+      const method = error.config?.method?.toUpperCase() || 'GET';
+      parts.push(`Request: ${method} ${url}`);
+
+      if (error.response) {
+        const status = error.response.status;
+        const statusText = error.response.statusText || '';
+        parts.push(`Response: ${status} ${statusText}`);
+      } else if (error.code) {
+        parts.push(`Network error: ${error.code}`);
+        if (error.message) {
+          parts.push(`Message: ${error.message}`);
+        }
+      }
+    } else if (error instanceof Error) {
+      parts.push(`Message: ${error.message}`);
+    }
+
+    return parts.join(' | ');
+  }
+
+  private isAxiosError(
+    error: unknown,
+  ): error is {
+    config?: { url?: string; method?: string };
+    response?: { status: number; statusText?: string };
+    code?: string;
+    message?: string;
+  } {
+    return typeof error === 'object' && error !== null && 'config' in error;
   }
 
   /**

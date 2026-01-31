@@ -29,7 +29,7 @@ import { TemporalModule } from '../temporal/temporal.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Webhook, WebhookDelivery]),
-    TemporalModule.forRootWithDefaults(),
+    TemporalModule,
   ],
   providers: [
     WebhooksService,

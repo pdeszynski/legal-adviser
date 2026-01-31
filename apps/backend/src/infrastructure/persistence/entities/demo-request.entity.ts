@@ -35,18 +35,20 @@ registerEnumType(CompanySizeEnum, {
 });
 
 /**
- * DemoRequest ORM Entity
+ * Demo Request Entity
  *
- * Represents the database schema for demo request form submissions in the infrastructure layer.
- * This is separate from the domain DemoRequestAggregate and is used for persistence only.
+ * CQRS Read Model: This entity is used for querying demo request data and for TypeORM persistence.
+ * The write operations use DemoRequestAggregate from the domain layer.
  *
- * Note: This entity maps to the DDD DemoRequestAggregate through the DemoRequestMapper.
+ * This entity follows the simplified DDD approach where TypeORM annotations
+ * are acceptable on entities. Repository handles mapping to/from domain aggregates.
+ *
  * Uses nestjs-query decorators for GraphQL type generation and admin queries.
  */
 @Entity('demo_requests')
 @ObjectType('DemoRequest')
 @QueryOptions({ enableTotalCount: true })
-export class DemoRequestOrmEntity {
+export class DemoRequest {
   @PrimaryGeneratedColumn('uuid')
   @IDField(() => ID)
   id: string;

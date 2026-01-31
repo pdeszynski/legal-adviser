@@ -6,36 +6,32 @@ import {
   ITwoFactorAuthRepository,
   TotpStatusEnum,
 } from '../../../domain/two-factor-auth';
-import { TwoFactorAuthOrmEntity } from '../entities/two-factor-auth.orm-entity';
-import { TwoFactorAuthMapper } from '../mappers/two-factor-auth.mapper';
+import { TwoFactorAuth } from '../entities/two-factor-auth.entity';
 
 /**
  * TypeORM implementation of ITwoFactorAuthRepository
  *
- * This class implements the repository interface defined in the Domain layer,
- * providing the actual persistence logic using TypeORM.
+ * Uses the TwoFactorAuth entity directly (CQRS Read Model also used for persistence).
+ * This is a simplified DDD approach where TypeORM annotations are acceptable on entities.
  *
- * Infrastructure Layer Rules:
- * - Implements interfaces defined in Domain layer
- * - Contains all database-specific logic
- * - Uses mappers to convert between domain and persistence models
+ * Maps between TwoFactorAuth entity and TwoFactorAuthAggregate for write operations.
  */
 @Injectable()
 export class TwoFactorAuthRepository implements ITwoFactorAuthRepository {
   constructor(
-    @InjectRepository(TwoFactorAuthOrmEntity)
-    private readonly repository: Repository<TwoFactorAuthOrmEntity>,
+    @InjectRepository(TwoFactorAuth)
+    private readonly repository: Repository<TwoFactorAuth>,
   ) {}
 
   async findById(id: string): Promise<TwoFactorAuthAggregate | null> {
     const entity = await this.repository.findOne({
       where: { id },
     });
-    return entity ? TwoFactorAuthMapper.toDomain(entity) : null;
+    return entity ? this.toDomain(entity) : null;
   }
 
   async save(aggregate: TwoFactorAuthAggregate): Promise<void> {
-    const entity = TwoFactorAuthMapper.toPersistence(aggregate);
+    const entity = this.toEntity(aggregate);
     await this.repository.save(entity);
   }
 
@@ -47,7 +43,7 @@ export class TwoFactorAuthRepository implements ITwoFactorAuthRepository {
     const entity = await this.repository.findOne({
       where: { userId },
     });
-    return entity ? TwoFactorAuthMapper.toDomain(entity) : null;
+    return entity ? this.toDomain(entity) : null;
   }
 
   async findByStatus(
@@ -57,7 +53,7 @@ export class TwoFactorAuthRepository implements ITwoFactorAuthRepository {
       where: { status },
       order: { createdAt: 'DESC' },
     });
-    return TwoFactorAuthMapper.toDomainList(entities);
+    return entities.map((e) => this.toDomain(e));
   }
 
   async existsByUserId(userId: string): Promise<boolean> {
@@ -89,6 +85,39 @@ export class TwoFactorAuthRepository implements ITwoFactorAuthRepository {
         'updatedAt',
       ],
     });
-    return entity ? TwoFactorAuthMapper.toDomain(entity) : null;
+    return entity ? this.toDomain(entity) : null;
+  }
+
+  /**
+   * Map TwoFactorAuth entity to TwoFactorAuthAggregate (for write operations)
+   * This is the CQRS write side transformation
+   */
+  private toDomain(entity: TwoFactorAuth): TwoFactorAuthAggregate {
+    return TwoFactorAuthAggregate.reconstitute(
+      entity.id,
+      entity.userId,
+      entity.secret,
+      entity.backupCodes,
+      entity.status,
+      entity.createdAt,
+      entity.updatedAt,
+      entity.verifiedAt || undefined,
+    );
+  }
+
+  /**
+   * Map TwoFactorAuthAggregate to TwoFactorAuth entity (for persistence)
+   * This is the CQRS write side transformation
+   */
+  private toEntity(aggregate: TwoFactorAuthAggregate): TwoFactorAuth {
+    const entity = new TwoFactorAuth();
+    entity.id = aggregate.id;
+    entity.userId = aggregate.userId.toValue();
+    entity.secret = aggregate.secret.toValue();
+    entity.backupCodes = aggregate.backupCodes.getValues() as string[];
+    entity.status = aggregate.status.toValue();
+    entity.verifiedAt = aggregate.verifiedAt || null;
+    // createdAt/updatedAt managed by TypeORM automatically
+    return entity;
   }
 }

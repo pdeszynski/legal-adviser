@@ -1,4 +1,4 @@
 // Persistence module exports
 export * from './entities';
-export * from './mappers';
+// Note: mappers removed - mapping now inline in repositories
 export * from './repositories';

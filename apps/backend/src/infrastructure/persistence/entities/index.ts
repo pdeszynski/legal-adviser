@@ -1,5 +1,4 @@
 // Infrastructure persistence entities
-export * from './legal-document.orm-entity';
-export * from './two-factor-auth.orm-entity';
-export * from './user.orm-entity';
-export * from './demo-request.orm-entity';
+// Note: legal-document.orm-entity removed - DDD layer now uses main LegalDocument entity
+export * from './two-factor-auth.entity';
+export * from './demo-request.entity';

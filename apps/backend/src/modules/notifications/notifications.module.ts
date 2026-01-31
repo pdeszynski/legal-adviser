@@ -49,7 +49,7 @@ import { EmailSendingStarter } from '../temporal/workflows/notification/email-se
     ConfigModule,
     TypeOrmModule.forFeature([Notification, InAppNotification]),
     // Temporal module for email workflows
-    TemporalModule.forRootWithDefaults(),
+    TemporalModule,
     // nestjs-query auto-generated CRUD resolvers for InAppNotification and Notification
     NestjsQueryGraphQLModule.forFeature({
       imports: [

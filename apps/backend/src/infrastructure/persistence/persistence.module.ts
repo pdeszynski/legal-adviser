@@ -1,10 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {
-  LegalDocumentOrmEntity,
-  TwoFactorAuthOrmEntity,
-  DemoRequestOrmEntity,
-} from './entities';
+import { TwoFactorAuth, DemoRequest } from './entities';
 import {
   LegalDocumentRepository,
   TwoFactorAuthRepository,
@@ -12,6 +8,7 @@ import {
   UserRepository,
 } from './repositories';
 import { User } from '../../modules/users/entities/user.entity';
+import { LegalDocument } from '../../modules/documents/entities/legal-document.entity';
 
 /**
  * Persistence Module
@@ -23,9 +20,9 @@ import { User } from '../../modules/users/entities/user.entity';
   imports: [
     TypeOrmModule.forFeature([
       User, // Main User entity for DDD repository layer
-      LegalDocumentOrmEntity,
-      TwoFactorAuthOrmEntity,
-      DemoRequestOrmEntity,
+      LegalDocument, // Main LegalDocument entity for DDD repository layer
+      TwoFactorAuth,
+      DemoRequest,
     ]),
   ],
   providers: [

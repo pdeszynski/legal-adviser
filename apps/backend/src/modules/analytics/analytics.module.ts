@@ -6,7 +6,7 @@ import { LegalDocument } from '../documents/entities/legal-document.entity';
 import { LegalRuling } from '../documents/entities/legal-ruling.entity';
 import { LegalQuery } from '../queries/entities/legal-query.entity';
 import { AiUsageRecord } from '../usage-tracking/entities/ai-usage-record.entity';
-import { DemoRequestOrmEntity } from '../../infrastructure/persistence/entities/demo-request.orm-entity';
+import { DemoRequest } from '../../infrastructure/persistence/entities/demo-request.entity';
 import { ChatSession } from '../chat/entities/chat-session.entity';
 import { AnalyticsService } from './services/analytics.service';
 import { SaosIndexingAnalyticsService } from './services/saos-indexing-analytics.service';
@@ -32,12 +32,16 @@ import { AuthorizationModule } from '../authorization/authorization.module';
       LegalRuling,
       LegalQuery,
       AiUsageRecord,
-      DemoRequestOrmEntity,
+      DemoRequest,
       UserRoleEntity,
       ChatSession,
     ]),
   ],
-  providers: [AnalyticsService, SaosIndexingAnalyticsService, AnalyticsResolver],
+  providers: [
+    AnalyticsService,
+    SaosIndexingAnalyticsService,
+    AnalyticsResolver,
+  ],
   exports: [AnalyticsService, SaosIndexingAnalyticsService],
 })
 export class AnalyticsModule {}
