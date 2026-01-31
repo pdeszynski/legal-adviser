@@ -131,9 +131,8 @@ class Settings(BaseSettings):
         If keys are provided, they must both be set (not just one).
         """
         # If Langfuse is enabled, require both keys
-        if self.LANGFUSE_ENABLED:
-            if not self.LANGFUSE_PUBLIC_KEY or not self.LANGFUSE_SECRET_KEY:
-                raise ValueError(
+        if self.LANGFUSE_ENABLED and (not self.LANGFUSE_PUBLIC_KEY or not self.LANGFUSE_SECRET_KEY):
+            raise ValueError(
                     "LANGFUSE_ENABLED is True but LANGFUSE_PUBLIC_KEY or LANGFUSE_SECRET_KEY is not set. "
                     "Set both keys or disable Langfuse by setting LANGFUSE_ENABLED=false"
                 )

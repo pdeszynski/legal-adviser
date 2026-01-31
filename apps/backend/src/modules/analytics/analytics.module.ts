@@ -3,10 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { UserRoleEntity } from '../authorization/entities';
 import { LegalDocument } from '../documents/entities/legal-document.entity';
+import { LegalRuling } from '../documents/entities/legal-ruling.entity';
 import { LegalQuery } from '../queries/entities/legal-query.entity';
 import { AiUsageRecord } from '../usage-tracking/entities/ai-usage-record.entity';
 import { DemoRequestOrmEntity } from '../../infrastructure/persistence/entities/demo-request.orm-entity';
+import { ChatSession } from '../chat/entities/chat-session.entity';
 import { AnalyticsService } from './services/analytics.service';
+import { SaosIndexingAnalyticsService } from './services/saos-indexing-analytics.service';
 import { AnalyticsResolver } from './analytics.resolver';
 import { AuthorizationModule } from '../authorization/authorization.module';
 
@@ -18,7 +21,7 @@ import { AuthorizationModule } from '../authorization/authorization.module';
  *
  * Bounded Context: Analytics
  * - Dependencies: Users, Documents, Queries, Usage Tracking
- * - Services: AnalyticsService
+ * - Services: AnalyticsService, SaosIndexingAnalyticsService
  * - Resolvers: AnalyticsResolver
  */
 @Module({
@@ -26,13 +29,15 @@ import { AuthorizationModule } from '../authorization/authorization.module';
     TypeOrmModule.forFeature([
       User,
       LegalDocument,
+      LegalRuling,
       LegalQuery,
       AiUsageRecord,
       DemoRequestOrmEntity,
       UserRoleEntity,
+      ChatSession,
     ]),
   ],
-  providers: [AnalyticsService, AnalyticsResolver],
-  exports: [AnalyticsService],
+  providers: [AnalyticsService, SaosIndexingAnalyticsService, AnalyticsResolver],
+  exports: [AnalyticsService, SaosIndexingAnalyticsService],
 })
 export class AnalyticsModule {}

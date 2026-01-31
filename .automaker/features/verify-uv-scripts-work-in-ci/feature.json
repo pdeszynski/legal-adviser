@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "After installing UV and Python, verify that all UV-based scripts work correctly in the CI environment. Test commands: 1) 'uv run ruff check --select I .' for type checking, 2) 'uv run ruff check .' for linting, 3) 'uv run pytest' for running tests, 4) Verify UV can install dependencies from pyproject.toml or requirements.txt, 5) Check that UV cache works in CI environment for faster subsequent runs, 6) Ensure PATH includes UV installation directory. Add debug logging to CI workflow to show UV version and Python version. Create a separate verification job or add as step in existing jobs to confirm UV is working before main build steps run.",
+  "id": "verify-uv-scripts-work-in-ci",
+  "title": "Verify UV-Based Scripts Work in GitHub Actions CI Environment",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "After installing UV and Python, verify that all UV-based scripts work correctly in the CI environment. Test commands: 1) 'uv run ruff check --select I .' for type checking, 2) 'uv run ruff check .' for linting, 3) 'uv run pytest' for running tests, 4) Verify UV can install dependencies from pyproject.toml or requirements.txt, 5) Check that UV cache works in CI environment for faster subsequent runs, 6) Ensure PATH includes UV installation directory. Add debug logging to CI workflow to show UV version and Python version. Create a separate verification job or add as step in existing jobs to confirm UV is working before main build steps run.",
+      "timestamp": "2026-01-31T14:11:57.808Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T14:35:29.730Z"
+}

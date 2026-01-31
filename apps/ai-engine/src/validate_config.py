@@ -36,7 +36,8 @@ def validate_langfuse_config(settings: Any | None = None) -> dict[str, Any]:
     5. LANGFUSE_SAMPLING_RATE is within valid range (0-1)
 
     Args:
-        settings: Optional settings instance. If not provided, will get from get_settings().
+        settings: Optional settings instance. If not provided, will get from
+            get_settings().
 
     Returns:
         Dictionary with validation results:
@@ -159,7 +160,8 @@ def validate_openai_config(settings: Any | None = None) -> dict[str, Any]:
     2. OPENAI_MODEL is a valid model name
 
     Args:
-        settings: Optional settings instance. If not provided, will get from get_settings().
+        settings: Optional settings instance. If not provided, will get from
+            get_settings().
 
     Returns:
         Dictionary with validation results (same structure as validate_langfuse_config)

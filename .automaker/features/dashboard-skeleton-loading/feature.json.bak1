@@ -1,16 +1,21 @@
 {
   "category": "enhancement",
-  "description": "Implement skeleton placeholders for all dashboard widgets: document count cards, activity timeline, notification bell, and statistics charts. Show card-shaped skeletons with shimmer effect for widget containers. Ensure widgets load progressively as data becomes available.",
+  "description": "Ensure dashboard skeleton loading includes the new stats cards being added to the admin dashboard. Update skeleton components to match the layout of stats cards showing user counts, document counts, and query counts. Apply consistent shimmer animation across all dashboard widgets including the new stats section.",
   "id": "dashboard-skeleton-loading",
   "title": "Add Skeleton Loading to Dashboard Widgets",
   "priority": 1,
-  "status": "verified",
+  "status": "completed",
   "branchName": "002-legal-ai-core",
   "descriptionHistory": [
     {
       "description": "Implement skeleton placeholders for all dashboard widgets: document count cards, activity timeline, notification bell, and statistics charts. Show card-shaped skeletons with shimmer effect for widget containers. Ensure widgets load progressively as data becomes available.",
       "timestamp": "2026-01-23T18:46:41.075Z",
       "source": "initial"
+    },
+    {
+      "description": "Ensure dashboard skeleton loading includes the new stats cards being added to the admin dashboard. Update skeleton components to match the layout of stats cards showing user counts, document counts, and query counts. Apply consistent shimmer animation across all dashboard widgets including the new stats section.",
+      "timestamp": "2026-01-31T15:31:50.378Z",
+      "source": "edit"
     }
   ],
   "startedAt": "2026-01-23T19:47:06.081Z",

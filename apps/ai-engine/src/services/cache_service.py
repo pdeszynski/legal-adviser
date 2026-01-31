@@ -242,9 +242,7 @@ class RedisCache(CacheBackend):
             if client is None:
                 return
 
-            keys = []
-            async for key in client.scan_iter(f"{self._key_prefix}*"):
-                keys.append(key)
+            keys = [key async for key in client.scan_iter(f"{self._key_prefix}*")]
 
             if keys:
                 await client.delete(*keys)

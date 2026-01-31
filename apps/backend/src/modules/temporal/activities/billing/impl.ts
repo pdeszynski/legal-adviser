@@ -115,6 +115,23 @@ export function createActivities(dependencies: {
         [key: string]: unknown;
       };
     } | null>;
+    findByCourtSignatureDate: (
+      courtName: string,
+      signature: string,
+      rulingDate: Date,
+    ) => Promise<{
+      id: string;
+      signature: string;
+      rulingDate: Date;
+      courtName: string;
+      courtType: any;
+      summary?: string;
+      fullText?: string;
+      metadata?: {
+        sourceReference?: string;
+        [key: string]: unknown;
+      };
+    } | null>;
     create: (data: {
       signature: string;
       rulingDate: Date;

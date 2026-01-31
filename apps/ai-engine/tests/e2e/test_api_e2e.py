@@ -210,7 +210,8 @@ class TestQAEndpoints:
     def test_ask_question_with_mode_lawyer(self, client: TestClient):
         """Test Q&A endpoint with LAWYER mode."""
         # Note: Full mocking test disabled - actual endpoint exists test only
-        # The endpoint requires proper async mocking which is complex for sync TestClient
+        # The endpoint requires proper async mocking which is complex for sync
+        # TestClient
         response = client.post(
             "/api/v1/qa/ask",
             json={

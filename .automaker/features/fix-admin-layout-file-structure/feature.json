@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Fix the Next.js App Router file structure to ensure all /admin routes use AdminLayout consistently. The issue is likely that some admin pages have layout.tsx files that override the AdminLayout, or are missing the correct parent layout reference. Implementation: 1) Check apps/web/src/app/admin/layout.tsx exists and is properly configured, 2) Verify all admin sub-routes (users, templates, audit-logs, documents, api-keys, settings, analytics, etc.) are nested under admin/, 3) Remove any layout.tsx files from admin subdirectories that might be overriding the parent AdminLayout, 4) Ensure admin route group is properly structured, 5) Verify that pages directly under /admin inherit AdminLayout automatically. Goal: All /admin/* routes should show AdminLayout with admin navigation menu.",
+  "id": "fix-admin-layout-file-structure",
+  "title": "Fix Admin Layout File Structure in Next.js App Router",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Fix the Next.js App Router file structure to ensure all /admin routes use AdminLayout consistently. The issue is likely that some admin pages have layout.tsx files that override the AdminLayout, or are missing the correct parent layout reference. Implementation: 1) Check apps/web/src/app/admin/layout.tsx exists and is properly configured, 2) Verify all admin sub-routes (users, templates, audit-logs, documents, api-keys, settings, analytics, etc.) are nested under admin/, 3) Remove any layout.tsx files from admin subdirectories that might be overriding the parent AdminLayout, 4) Ensure admin route group is properly structured, 5) Verify that pages directly under /admin inherit AdminLayout automatically. Goal: All /admin/* routes should show AdminLayout with admin navigation menu.",
+      "timestamp": "2026-01-31T14:09:32.305Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T14:26:57.468Z"
+}

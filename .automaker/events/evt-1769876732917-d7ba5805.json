@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769876732917-d7ba5805",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-31T16:25:32.917Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "create-saos-crawler-e2e-tests",
+  "featureName": "Create E2E Tests for SAOS Crawler Functionality",
+  "error": "Feature completed in 760s - auto-verified",
+  "passes": true
+}

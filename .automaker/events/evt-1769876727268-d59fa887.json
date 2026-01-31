@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769876727268-d59fa887",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-31T16:25:27.268Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "add-saos-crawler-observability-and-monitoring",
+  "featureName": "Add SAOS Crawler Observability and Monitoring",
+  "error": "Feature completed in 776s - auto-verified",
+  "passes": true
+}

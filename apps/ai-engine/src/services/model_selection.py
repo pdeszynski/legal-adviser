@@ -76,7 +76,7 @@ def assess_task_complexity(
     operation: str,
     prompt_length: int = 0,
     context_length: int = 0,
-    has_structured_output: bool = False,
+    _has_structured_output: bool = False,
     expected_output_tokens: int = 0,
 ) -> TaskComplexity:
     """Assess task complexity to determine appropriate model tier.
@@ -112,9 +112,8 @@ def assess_task_complexity(
     estimated_input_tokens = total_input_chars // 4  # Rough estimate
 
     # Check for simple operations
-    if operation in simple_operations:
-        if estimated_input_tokens < 1000 and expected_output_tokens < 500:
-            return TaskComplexity(
+    if operation in simple_operations and estimated_input_tokens < 1000 and expected_output_tokens < 500:
+        return TaskComplexity(
                 tier=ModelTier.FAST,
                 confidence=0.9,
                 reason="Simple operation with small input/output",

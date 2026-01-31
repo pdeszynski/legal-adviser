@@ -1,0 +1,16 @@
+{
+  "category": "refactor",
+  "description": "Update CLAUDE.md documentation to clearly explain how Next.js App Router layouts work for the admin section, and how to maintain consistency when adding new admin pages. Include: 1) Explanation of the admin/ directory structure and layout inheritance, 2) How AdminLayout is applied to all /admin/* routes automatically, 3) Common pitfalls that cause layout override (adding layout.tsx to subdirectories), 4) Checklist when creating new admin pages: place under /admin/, do not add layout.tsx, verify admin menu appears, 5) Examples of correct vs incorrect admin page structure, 6) How to test admin layout during development. Add warning section about not creating nested layouts that override AdminLayout. This documentation helps prevent future layout inconsistencies.",
+  "id": "document-admin-layout-routing-patterns",
+  "title": "Document Admin Layout and Routing Patterns",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update CLAUDE.md documentation to clearly explain how Next.js App Router layouts work for the admin section, and how to maintain consistency when adding new admin pages. Include: 1) Explanation of the admin/ directory structure and layout inheritance, 2) How AdminLayout is applied to all /admin/* routes automatically, 3) Common pitfalls that cause layout override (adding layout.tsx to subdirectories), 4) Checklist when creating new admin pages: place under /admin/, do not add layout.tsx, verify admin menu appears, 5) Examples of correct vs incorrect admin page structure, 6) How to test admin layout during development. Add warning section about not creating nested layouts that override AdminLayout. This documentation helps prevent future layout inconsistencies.",
+      "timestamp": "2026-01-31T14:09:32.306Z",
+      "source": "initial"
+    }
+  ]
+}

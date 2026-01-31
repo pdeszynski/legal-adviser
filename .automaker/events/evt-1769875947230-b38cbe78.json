@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769875947230-b38cbe78",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-31T16:12:27.230Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-saos-crawler-missing-text-content",
+  "featureName": "Fix SAOS Crawler Missing Judgment Text Content",
+  "error": "Feature completed in 473s - auto-verified",
+  "passes": true
+}

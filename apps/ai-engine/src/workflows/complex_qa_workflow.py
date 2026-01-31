@@ -413,41 +413,37 @@ class ComplexQAWorkflow:
         if user_responses:
             state["user_responses"] = user_responses
 
-        try:
-            # Run the workflow
-            result = await self.graph.ainvoke(state)
+        # Run the workflow
+        result = await self.graph.ainvoke(state)
 
-            processing_time_ms = (time.time() - start_time) * 1000
+        processing_time_ms = (time.time() - start_time) * 1000
 
-            # Prepare output
-            output = {
-                "answer": result.get("final_answer"),
-                "citations": result.get("formatted_citations", []),
-                "confidence": result.get("confidence", 0.0),
-                "query_type": result.get("query_type", "general"),
-                "key_terms": result.get("key_terms", []),
-                "clarification_questions": result.get("clarification_questions", []),
-                "needs_clarification": result.get("needs_clarification", False),
-                "statute_references": result.get("statute_references", []),
-                "case_law_references": result.get("case_law_references", []),
-                "processing_time_ms": processing_time_ms,
-                "error": result.get("error"),
-            }
+        # Prepare output
+        output = {
+            "answer": result.get("final_answer"),
+            "citations": result.get("formatted_citations", []),
+            "confidence": result.get("confidence", 0.0),
+            "query_type": result.get("query_type", "general"),
+            "key_terms": result.get("key_terms", []),
+            "clarification_questions": result.get("clarification_questions", []),
+            "needs_clarification": result.get("needs_clarification", False),
+            "statute_references": result.get("statute_references", []),
+            "case_law_references": result.get("case_law_references", []),
+            "processing_time_ms": processing_time_ms,
+            "error": result.get("error"),
+        }
 
-            # Update trace with workflow-level metadata
-            if is_langfuse_enabled():
-                update_current_trace(
-                    output={
-                        "answer_length": len(output["answer"] or ""),
-                        "confidence": output["confidence"],
-                        "needs_clarification": output["needs_clarification"],
-                    }
-                )
+        # Update trace with workflow-level metadata
+        if is_langfuse_enabled():
+            update_current_trace(
+                output={
+                    "answer_length": len(output["answer"] or ""),
+                    "confidence": output["confidence"],
+                    "needs_clarification": output["needs_clarification"],
+                }
+            )
 
-            return output
-
-        except Exception:
-            raise
+        return output
 
 
 # Singleton instance

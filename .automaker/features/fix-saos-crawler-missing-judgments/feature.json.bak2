@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Investigate and fix why not all judgments from SAOS API responses are being saved to the database. The issue occurs at pagination page 20+ where certain judgments (e.g., 'Sygn. akt I C 697/19 WYROK W IMIENIU RZECZYPOSPOLITEJ POLSKIEJ Dnia 10 lutego 2020') are not persisted. Root causes may include: 1) Database transaction errors not being logged, 2) Unique constraint violations failing silently, 3) Batch insertion issues with large datasets, 4) Error handling skipping records instead of failing. Implementation: 1) Add comprehensive logging for each judgment processing attempt, 2) Log database errors with full stack traces, 3) Check for duplicate detection logic that may be incorrectly skipping valid judgments, 4) Verify all fields from API response are being mapped correctly, 5) Add metrics tracking (processed count, skipped count, error count), 6) Test with specific API endpoint to reproduce missing judgment, 7) Ensure deduplication uses correct unique identifier (court + signature + date, not just signature). This is critical for data completeness.",
+  "id": "fix-saos-crawler-missing-judgments",
+  "title": "Fix SAOS API Crawler Missing Judgments",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Investigate and fix why not all judgments from SAOS API responses are being saved to the database. The issue occurs at pagination page 20+ where certain judgments (e.g., 'Sygn. akt I C 697/19 WYROK W IMIENIU RZECZYPOSPOLITEJ POLSKIEJ Dnia 10 lutego 2020') are not persisted. Root causes may include: 1) Database transaction errors not being logged, 2) Unique constraint violations failing silently, 3) Batch insertion issues with large datasets, 4) Error handling skipping records instead of failing. Implementation: 1) Add comprehensive logging for each judgment processing attempt, 2) Log database errors with full stack traces, 3) Check for duplicate detection logic that may be incorrectly skipping valid judgments, 4) Verify all fields from API response are being mapped correctly, 5) Add metrics tracking (processed count, skipped count, error count), 6) Test with specific API endpoint to reproduce missing judgment, 7) Ensure deduplication uses correct unique identifier (court + signature + date, not just signature). This is critical for data completeness.",
+      "timestamp": "2026-01-31T16:04:26.561Z",
+      "source": "initial"
+    }
+  ]
+}

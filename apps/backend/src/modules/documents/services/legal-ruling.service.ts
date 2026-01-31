@@ -132,10 +132,38 @@ export class LegalRulingService {
 
   /**
    * Find a ruling by signature (unique case identifier)
+   *
+   * @deprecated Use findByCourtSignatureDate instead for proper uniqueness
+   * Different courts can have judgments with the same signature
    */
   async findBySignature(signature: string): Promise<LegalRuling | null> {
     return this.rulingRepository.findOne({
       where: { signature },
+    });
+  }
+
+  /**
+   * Find a ruling by the composite key: courtName + signature + rulingDate
+   *
+   * This is the proper unique identifier for legal rulings since signatures
+   * are only unique within a single court, not nationwide.
+   *
+   * @param courtName Name of the court
+   * @param signature Case signature/identifier
+   * @param rulingDate Date of the ruling
+   * @returns The ruling if found, null otherwise
+   */
+  async findByCourtSignatureDate(
+    courtName: string,
+    signature: string,
+    rulingDate: Date,
+  ): Promise<LegalRuling | null> {
+    return this.rulingRepository.findOne({
+      where: {
+        courtName,
+        signature,
+        rulingDate,
+      },
     });
   }
 
@@ -237,9 +265,15 @@ export class LegalRulingService {
    * Full-text search for legal rulings
    *
    * Uses PostgreSQL's full-text search with:
-   * - to_tsquery for query parsing
-   * - ts_rank for relevance scoring
+   * - to_tsquery for query parsing (using Polish configuration)
+   * - ts_rank with weights array for relevance scoring
    * - ts_headline for highlighted snippets
+   *
+   * Weights used in ranking:
+   * - A (1.0): signature, court name - highest priority
+   * - B (0.7): legal area, division name
+   * - C (0.5): summary, keywords, legal basis
+   * - D (0.3): full text - lowest priority
    *
    * @param options Search options including query string and filters
    * @returns Array of search results with relevance ranking
@@ -261,23 +295,25 @@ export class LegalRulingService {
       return [];
     }
 
-    // Build the search query using PostgreSQL full-text search
+    // Build the search query using PostgreSQL full-text search with Polish configuration
+    // The weights array {1.0, 0.7, 0.5, 0.3} corresponds to A, B, C, D weights
     let sql = `
       SELECT
         r.*,
         ts_rank(
-          COALESCE(r."searchVector", to_tsvector('simple', '')),
-          plainto_tsquery('simple', $1)
+          COALESCE(r."searchVector", to_tsvector('polish', '')),
+          plainto_tsquery('polish', $1),
+          1 -- Normalization method (1 = normalize by document length)
         ) as rank,
         ts_headline(
-          'simple',
+          'polish',
           COALESCE(r.summary, '') || ' ' || COALESCE(r."fullText", ''),
-          plainto_tsquery('simple', $1),
+          plainto_tsquery('polish', $1),
           'MaxWords=35, MinWords=15, ShortWord=3, HighlightAll=FALSE, MaxFragments=2, FragmentDelimiter=" ... "'
         ) as headline
       FROM legal_rulings r
       WHERE (
-        r."searchVector" @@ plainto_tsquery('simple', $1)
+        r."searchVector" @@ plainto_tsquery('polish', $1)
         OR r.signature ILIKE $2
         OR r."courtName" ILIKE $2
       )
@@ -346,7 +382,7 @@ export class LegalRulingService {
       SELECT COUNT(*) as count
       FROM legal_rulings r
       WHERE (
-        r."searchVector" @@ plainto_tsquery('simple', $1)
+        r."searchVector" @@ plainto_tsquery('polish', $1)
         OR r.signature ILIKE $2
         OR r."courtName" ILIKE $2
       )
@@ -447,28 +483,48 @@ export class LegalRulingService {
   /**
    * Update the search vector for a ruling using PostgreSQL tsvector
    * Uses weighted vectors for different fields (A=highest, D=lowest)
+   *
+   * NOTE: With the new trigger, this is typically called automatically.
+   * This method is kept for manual updates if needed.
+   *
+   * Weights:
+   *   A (1.0): signature, court name (highest)
+   *   B (0.7): legal area, division name
+   *   C (0.5): summary, keywords, legal basis
+   *   D (0.3): full text (lowest)
    */
   private async updateSearchVector(rulingId: string): Promise<void> {
-    // Use PostgreSQL setweight function for weighted full-text search
-    // A: signature (highest weight)
-    // B: court name, legal area
-    // C: summary, keywords
-    // D: full text (lowest weight)
+    // Use PostgreSQL setweight function for weighted full-text search with Polish configuration
     await this.dataSource.query(
       `
       UPDATE legal_rulings
       SET "searchVector" = (
-        setweight(to_tsvector('simple', COALESCE(signature, '')), 'A') ||
-        setweight(to_tsvector('simple', COALESCE("courtName", '')), 'B') ||
-        setweight(to_tsvector('simple', COALESCE(metadata->>'legalArea', '')), 'B') ||
-        setweight(to_tsvector('simple', COALESCE(summary, '')), 'C') ||
-        setweight(to_tsvector('simple', COALESCE(
+        -- Weight A (highest): signature and court name
+        setweight(to_tsvector('polish', COALESCE(signature, '')), 'A') ||
+        setweight(to_tsvector('polish', COALESCE("courtName", '')), 'A') ||
+
+        -- Weight B: legal area, division name
+        setweight(to_tsvector('polish', COALESCE(metadata->>'legalArea', '')), 'B') ||
+        setweight(to_tsvector('polish', COALESCE(metadata->>'divisionName', '')), 'B') ||
+
+        -- Weight C: summary, keywords, legal basis
+        setweight(to_tsvector('polish', COALESCE(summary, '')), 'C') ||
+        setweight(to_tsvector('polish', COALESCE(
           array_to_string(
             ARRAY(SELECT jsonb_array_elements_text(COALESCE(metadata->'keywords', '[]'::jsonb))),
             ' '
           ), ''
         )), 'C') ||
-        setweight(to_tsvector('simple', COALESCE("fullText", '')), 'D')
+        setweight(to_tsvector('polish', COALESCE(
+          array_to_string(
+            ARRAY(SELECT jsonb_array_elements_text(COALESCE(metadata->'legalBasis', '[]'::jsonb))),
+            ' '
+          ), ''
+        )), 'C') ||
+
+        -- Weight D (lowest): full text content and proceeding type
+        setweight(to_tsvector('polish', COALESCE("fullText", '')), 'D') ||
+        setweight(to_tsvector('polish', COALESCE(metadata->>'proceedingType', '')), 'D')
       )
       WHERE id = $1
     `,
@@ -477,8 +533,9 @@ export class LegalRulingService {
   }
 
   /**
-   * Rebuild search vectors for all rulings
-   * Useful for initial setup or after schema changes
+   * Rebuild search vectors for all rulings using Polish text configuration
+   * Useful for initial setup or after schema changes.
+   * NOTE: This is typically done automatically by the trigger after running the migration.
    */
   async rebuildAllSearchVectors(): Promise<number> {
     const rulings = await this.rulingRepository.find({ select: ['id'] });

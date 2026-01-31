@@ -254,11 +254,7 @@ def with_retry(
 
                         if not is_retryable(e):
                             # Non-retryable error, raise immediately
-                            logger.exception(
-                                "Non-retryable error in %s: %s",
-                                operation,
-                                e,
-                            )
+                            logger.exception("Non-retryable error in %s", operation)
                             raise
 
                         if attempt < retry_config.max_attempts - 1:
@@ -293,11 +289,7 @@ def with_retry(
 
                             await asyncio.sleep(delay)
                         else:
-                            logger.exception(
-                                "Max retries exceeded for %s: %s",
-                                operation,
-                                e,
-                            )
+                            logger.exception("Max retries exceeded for %s", operation)
 
                 # All retries exhausted
                 if last_error:
@@ -328,11 +320,7 @@ def with_retry(
                     last_error = e
 
                     if not is_retryable(e):
-                        logger.exception(
-                            "Non-retryable error in %s: %s",
-                            operation,
-                            e,
-                        )
+                        logger.exception("Non-retryable error in %s", operation)
                         raise
 
                     if attempt < retry_config.max_attempts - 1:
@@ -348,11 +336,7 @@ def with_retry(
                         )
                         time.sleep(delay)
                     else:
-                        logger.exception(
-                            "Max retries exceeded for %s: %s",
-                            operation,
-                            e,
-                        )
+                        logger.exception("Max retries exceeded for %s", operation)
 
             if last_error:
                 raise last_error
@@ -433,12 +417,7 @@ def with_error_tracking(
                     return result
 
                 except Exception as e:
-                    logger.error(
-                        "Error in %s: %s",
-                        op_name,
-                        e,
-                        exc_info=True,
-                    )
+                    logger.exception("Error in %s: %s", op_name, type(e).__name__)
 
                     # Track error in Langfuse
                     if trace:
@@ -469,12 +448,7 @@ def with_error_tracking(
                 return result
 
             except Exception as e:
-                logger.error(
-                    "Error in %s: %s",
-                    op_name,
-                    e,
-                    exc_info=True,
-                )
+                logger.exception("Error in %s: %s", op_name, type(e).__name__)
 
                 if trace:
                     track_error_context(trace, e)
@@ -583,7 +557,8 @@ def with_fallback(
         ```python
         @with_fallback(
             fallback_config=FallbackConfig(
-                fallback_message="I apologize, but I'm having trouble processing your request right now. Please try again."
+                fallback_message="I apologize, but I'm having trouble "
+                "processing your request right now. Please try again."
             ),
             operation="qa_agent.run"
         )
@@ -601,7 +576,8 @@ def with_fallback(
         ```python
         @with_fallback(
             fallback_config=FallbackConfig(
-                fallback_message="I apologize, but I'm having trouble processing your request right now. Please try again."
+                fallback_message="I apologize, but I'm having trouble "
+                "processing your request right now. Please try again."
             ),
             operation="qa_agent.run"
         )
@@ -775,12 +751,7 @@ async def safe_agent_run(
         return result
 
     except Exception as e:
-        logger.error(
-            "Agent %s failed: %s",
-            agent_name,
-            e,
-            exc_info=True,
-        )
+        logger.exception("Agent %s failed", agent_name)
 
         if trace:
             track_error_context(trace, e, {"agent": agent_name})

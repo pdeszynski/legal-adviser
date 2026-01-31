@@ -110,7 +110,7 @@ def _get_embedding_service() -> EmbeddingService:  # type: ignore[no-untyped-def
 
 
 async def retrieve_context_tool(
-    ctx: RunContext[ModelDeps] | None = None,
+    _ctx: RunContext[ModelDeps] | None = None,
     query: str = "",
     limit: int = 5,
     threshold: float = 0.7,

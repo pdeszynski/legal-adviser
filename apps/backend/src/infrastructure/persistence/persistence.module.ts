@@ -9,7 +9,9 @@ import {
   LegalDocumentRepository,
   TwoFactorAuthRepository,
   DemoRequestRepository,
+  UserRepository,
 } from './repositories';
+import { User } from '../../modules/users/entities/user.entity';
 
 /**
  * Persistence Module
@@ -20,6 +22,7 @@ import {
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      User, // Main User entity for DDD repository layer
       LegalDocumentOrmEntity,
       TwoFactorAuthOrmEntity,
       DemoRequestOrmEntity,
@@ -27,10 +30,15 @@ import {
   ],
   providers: [
     // Register the repository implementations
+    UserRepository,
     LegalDocumentRepository,
     TwoFactorAuthRepository,
     DemoRequestRepository,
     // Provide the repositories under their interface tokens for dependency injection
+    {
+      provide: 'IUserRepository',
+      useClass: UserRepository,
+    },
     {
       provide: 'ILegalDocumentRepository',
       useClass: LegalDocumentRepository,
@@ -45,6 +53,8 @@ import {
     },
   ],
   exports: [
+    'IUserRepository',
+    UserRepository,
     'ILegalDocumentRepository',
     LegalDocumentRepository,
     'ITwoFactorAuthRepository',

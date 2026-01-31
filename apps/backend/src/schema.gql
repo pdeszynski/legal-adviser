@@ -66,6 +66,32 @@ input AdminCreateUserInput {
   username: String
 }
 
+type AdminDashboardStats {
+  """Number of active sessions"""
+  activeSessionsCount: Int!
+
+  """When these stats were calculated"""
+  calculatedAt: DateTime!
+
+  """Document count breakdown by status"""
+  documentCountByStatus: DocumentCountByStatus!
+
+  """Total number of chat sessions"""
+  totalChatSessions: Int!
+
+  """Total number of documents"""
+  totalDocuments: Int!
+
+  """Total number of queries/conversations"""
+  totalQueries: Int!
+
+  """Total number of users"""
+  totalUsers: Int!
+
+  """User count breakdown by role"""
+  userCountByRole: UserCountByRole!
+}
+
 input AdminForceDisableTwoFactorInput {
   """The ID of the user to disable 2FA for"""
   userId: String!
@@ -3200,6 +3226,20 @@ enum DocumentCommentSortFields {
   updatedAt
 }
 
+type DocumentCountByStatus {
+  """Documents in COMPLETED status"""
+  completedCount: Int!
+
+  """Documents in DRAFT status"""
+  draftCount: Int!
+
+  """Documents in FAILED status"""
+  failedCount: Int!
+
+  """Documents in GENERATING status"""
+  generatingCount: Int!
+}
+
 type DocumentEditEventPayload {
   documentId: ID!
   operation: String!
@@ -4228,6 +4268,12 @@ type InterestRequestResponse {
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
 scalar JSON
+
+type JudgesMetadata {
+  function: String
+  name: String!
+  specialRoles: [String!]
+}
 
 type LangfuseDebugConfig {
   """Base URL for Langfuse dashboard"""
@@ -6116,6 +6162,7 @@ type Query {
 
   """Get all backups (admin only)"""
   adminBackups(limit: Float = 50, offset: Float = 0): [Backup!]!
+  adminDashboard: AdminDashboardStats!
 
   """
   Advanced search with boolean operators (AND, OR, NOT) and field-specific search
@@ -6582,6 +6629,9 @@ type Query {
 
   """Get all roles in the system"""
   roles: [Role!]!
+  saosIndexingByCourtType: [SaosIndexingByCourtType!]!
+  saosIndexingHealthStatus: SaosIndexingHealthStatus!
+  saosIndexingMetrics: SaosIndexingMetrics!
 
   """
   Full-text search across chat messages with relevance ranking and highlighting
@@ -6893,10 +6943,182 @@ type Role {
 }
 
 type RulingMetadata {
+  divisionName: String
+  judges: [JudgesMetadata!]
   keywords: [String!]
   legalArea: String
+  legalBasis: [String!]
+  proceedingType: String
   relatedCases: [String!]
   sourceReference: String
+}
+
+type SaosIndexingActivityLog {
+  """When the indexing completed"""
+  completedAt: DateTime
+
+  """Error message if failed"""
+  errorMessage: String
+  id: ID!
+
+  """Job ID for the indexing run"""
+  jobId: String!
+
+  """Processing time in milliseconds"""
+  processingTimeMs: Int!
+
+  """Number of records missing text content"""
+  recordsMissingTextContent: Int!
+
+  """Number of records processed"""
+  recordsProcessed: Int!
+
+  """Number of records saved/updated"""
+  recordsSaved: Int!
+
+  """Number of records skipped (duplicates)"""
+  recordsSkipped: Int!
+
+  """Number of records with errors"""
+  recordsWithErrors: Int!
+
+  """Source (SAOS or ISAP)"""
+  source: String!
+
+  """When the indexing started"""
+  startedAt: DateTime!
+
+  """Status of the indexing run"""
+  status: String!
+}
+
+type SaosIndexingByCourtType {
+  """Number of rulings from this court type"""
+  count: Int!
+
+  """Court type"""
+  courtType: String!
+
+  """Percentage of total rulings"""
+  percentage: Float!
+
+  """Number of rulings with full text from this court type"""
+  withFullText: Int!
+}
+
+type SaosIndexingError {
+  """Number of times this error occurred"""
+  count: Int!
+
+  """Court name for context"""
+  courtName: String
+
+  """Error message"""
+  errorMessage: String!
+
+  """Error type/category"""
+  errorType: String!
+  id: ID!
+
+  """Last time this error was seen"""
+  lastSeenAt: DateTime!
+
+  """When the error occurred"""
+  occurredAt: DateTime!
+
+  """Signature of the ruling that failed to index"""
+  rulingSignature: String
+
+  """Source of the indexing (SAOS or ISAP)"""
+  source: String!
+}
+
+type SaosIndexingHealthStatus {
+  """Active alerts/warnings"""
+  alerts: [String!]!
+
+  """Rulings breakdown by court type"""
+  byCourtType: [SaosIndexingByCourtType!]!
+
+  """When health status was calculated"""
+  calculatedAt: DateTime!
+
+  """Health status description"""
+  description: String!
+
+  """Current indexing metrics"""
+  metrics: SaosIndexingMetrics!
+
+  """Recent indexing activity logs"""
+  recentActivity: [SaosIndexingActivityLog!]!
+
+  """Recent indexing errors"""
+  recentErrors: [SaosIndexingError!]!
+
+  """Recent skipped records"""
+  recentSkipped: [SaosIndexingSkippedRecord!]!
+
+  """Overall health status"""
+  status: String!
+}
+
+type SaosIndexingMetrics {
+  """When these metrics were calculated"""
+  calculatedAt: DateTime!
+
+  """Percentage of rulings with full text content"""
+  fullTextCoverageRate: Float!
+
+  """Rulings indexed from ISAP"""
+  isapRulings: Int!
+
+  """Timestamp of the most recent ruling import"""
+  lastIndexingRunAt: DateTime!
+
+  """Timestamp of the most recently added ruling"""
+  lastRulingAddedAt: DateTime
+
+  """Timestamp of the most recent ruling update"""
+  lastRulingUpdatedAt: DateTime
+
+  """Number of new rulings added in the last 24 hours"""
+  newRulingsLast24Hours: Int!
+
+  """Rulings missing full text content (data quality issue)"""
+  rulingsMissingFullText: Int!
+
+  """Rulings with full text content (data quality metric)"""
+  rulingsWithFullText: Int!
+
+  """Rulings with summary/thesis content"""
+  rulingsWithSummary: Int!
+
+  """Rulings indexed from SAOS"""
+  saosRulings: Int!
+
+  """Total legal rulings in database"""
+  totalRulings: Int!
+
+  """Number of rulings updated in the last 24 hours"""
+  updatedRulingsLast24Hours: Int!
+}
+
+type SaosIndexingSkippedRecord {
+  """Number of times this skip occurred"""
+  count: Int!
+  id: ID!
+
+  """Signature of the skipped ruling"""
+  rulingSignature: String
+
+  """Reason for skipping"""
+  skipReason: String!
+
+  """When the record was skipped"""
+  skippedAt: DateTime!
+
+  """Source of the indexing (SAOS or ISAP)"""
+  source: String!
 }
 
 input SaveChatMessageInput {
@@ -8666,6 +8888,26 @@ type UserCountAggregate {
   isActive: Int
   twoFactorEnabled: Int
   updatedAt: Int
+}
+
+type UserCountByRole {
+  """Total number of admin users"""
+  adminCount: Int!
+
+  """Total number of client users"""
+  clientCount: Int!
+
+  """Total number of guest users"""
+  guestCount: Int!
+
+  """Total number of lawyer users"""
+  lawyerCount: Int!
+
+  """Total number of paralegal users"""
+  paralegalCount: Int!
+
+  """Total number of super admin users"""
+  superAdminCount: Int!
 }
 
 type UserDeleteResponse {

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769875971266-9c697bb4",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-31T16:12:51.266Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-saos-crawler-missing-judgments",
+  "featureName": "Fix SAOS API Crawler Missing Judgments",
+  "error": "Feature completed in 499s - auto-verified",
+  "passes": true
+}

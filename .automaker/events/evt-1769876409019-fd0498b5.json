@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769876409019-fd0498b5",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-31T16:20:09.019Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "fix-saos-crawler-unique-constraint-schema",
+  "featureName": "Fix SAOS Crawler Unique Constraint for Court-Specific Signatures",
+  "error": "Feature completed in 495s - auto-verified",
+  "passes": true
+}

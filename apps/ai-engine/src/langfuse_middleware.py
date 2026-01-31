@@ -158,9 +158,9 @@ async def update_trace_output(request: Request, output: dict[str, Any]) -> None:
 
 
 def create_span_from_request(
-    request: Request,
-    name: str,
-    metadata: dict[str, Any] | None = None,
+    _request: Request,
+    _name: str,
+    _metadata: dict[str, Any] | None = None,
 ) -> Any | None:
     """Create a child span from the current request trace.
 
@@ -168,9 +168,9 @@ def create_span_from_request(
     This function is kept for API compatibility but returns None.
 
     Args:
-        request: FastAPI request object
-        name: Span name
-        metadata: Optional metadata
+        _request: FastAPI request object (unused, kept for API compatibility)
+        _name: Span name (unused, kept for API compatibility)
+        _metadata: Optional metadata (unused, kept for API compatibility)
 
     Returns:
         None (spans are auto-created via @observe)

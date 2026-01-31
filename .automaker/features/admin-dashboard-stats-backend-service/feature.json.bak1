@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Create application service in backend (AdminStatsService) to aggregate dashboard statistics. Implementation: 1) Create method getDashboardStats() that queries multiple entities, 2) Use TypeORM QueryBuilder or repository methods for efficient aggregation, 3) Execute queries in parallel using Promise.all for better performance, 4) Return structured DTO with stats: { totalUsers, usersByRole, totalDocuments, documentsByStatus, totalQueries, activeSessions }, 5) Add caching with TTL (5 minutes) to prevent excessive database queries, 6) Handle errors gracefully if specific queries fail. Register service in AdminModule or appropriate module. Ensure service follows DDD layered architecture pattern.",
+  "id": "admin-dashboard-stats-backend-service",
+  "title": "Implement Admin Dashboard Stats Backend Service",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Create application service in backend (AdminStatsService) to aggregate dashboard statistics. Implementation: 1) Create method getDashboardStats() that queries multiple entities, 2) Use TypeORM QueryBuilder or repository methods for efficient aggregation, 3) Execute queries in parallel using Promise.all for better performance, 4) Return structured DTO with stats: { totalUsers, usersByRole, totalDocuments, documentsByStatus, totalQueries, activeSessions }, 5) Add caching with TTL (5 minutes) to prevent excessive database queries, 6) Handle errors gracefully if specific queries fail. Register service in AdminModule or appropriate module. Ensure service follows DDD layered architecture pattern.",
+      "timestamp": "2026-01-31T15:31:50.373Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T15:32:00.153Z"
+}

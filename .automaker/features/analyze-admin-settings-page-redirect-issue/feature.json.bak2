@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Investigate why /admin/settings page immediately redirects to /dashboard instead of loading. Root cause analysis tasks: 1) Check browser DevTools Network tab for the redirect response (status code, redirect location), 2) Verify if there's a client-side router guard causing the redirect (check apps/web/src/app/admin/settings/page.tsx and middleware), 3) Check if there's a server-side redirect in Next.js middleware or layout.tsx for /admin/settings, 4) Verify the user's JWT token contains correct roles (check localStorage and Authorization header), 5) Check if RoleGuard or AdminGuard is rejecting access to /admin/settings, 6) Verify the admin layout routing pattern is correct (should use single layout.tsx in /admin), 7) Check if there's a redirect in AdminLayout component itself, 8) Inspect server-side logs for any authorization failures, 9) Test with admin@refine.dev user to confirm role is SUPER_ADMIN or ADMIN, 10) Compare with working admin pages like /admin/users to identify differences. Document findings in a structured report with: root cause, stack trace if applicable, which component is causing the redirect, and recommended fix approach.",
+  "id": "analyze-admin-settings-page-redirect-issue",
+  "title": "Analyze Admin Settings Page Redirect Issue",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Investigate why /admin/settings page immediately redirects to /dashboard instead of loading. Root cause analysis tasks: 1) Check browser DevTools Network tab for the redirect response (status code, redirect location), 2) Verify if there's a client-side router guard causing the redirect (check apps/web/src/app/admin/settings/page.tsx and middleware), 3) Check if there's a server-side redirect in Next.js middleware or layout.tsx for /admin/settings, 4) Verify the user's JWT token contains correct roles (check localStorage and Authorization header), 5) Check if RoleGuard or AdminGuard is rejecting access to /admin/settings, 6) Verify the admin layout routing pattern is correct (should use single layout.tsx in /admin), 7) Check if there's a redirect in AdminLayout component itself, 8) Inspect server-side logs for any authorization failures, 9) Test with admin@refine.dev user to confirm role is SUPER_ADMIN or ADMIN, 10) Compare with working admin pages like /admin/users to identify differences. Document findings in a structured report with: root cause, stack trace if applicable, which component is causing the redirect, and recommended fix approach.",
+      "timestamp": "2026-01-31T14:42:44.508Z",
+      "source": "initial"
+    }
+  ]
+}

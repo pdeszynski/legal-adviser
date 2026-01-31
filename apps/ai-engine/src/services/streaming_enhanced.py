@@ -344,7 +344,8 @@ async def stream_qa_enhanced(
                 )
                 yield event.to_sse()
 
-                # Send done event for clarification case with CLARIFICATION_QUESTION response type
+                # Send done event for clarification case with
+                # CLARIFICATION_QUESTION response type
                 yield done_event(
                     citations=[],
                     confidence=0.0,
@@ -531,9 +532,9 @@ Please provide a comprehensive answer based on the above context."""
             try:
                 from ..agents.title_agent import generate_title
                 suggested_title = await generate_title(question, effective_session_id)
-                logger.debug(f"Generated title for session {effective_session_id}: {suggested_title}")
+                logger.debug("Generated title for session %s: %s", effective_session_id, suggested_title)
             except Exception as e:
-                logger.warning(f"Failed to generate title for session {effective_session_id}: {e}")
+                logger.warning("Failed to generate title for session %s: %s", effective_session_id, e)
                 # Fallback title will be generated on the frontend/backend
 
         # Send final done event with complete metadata

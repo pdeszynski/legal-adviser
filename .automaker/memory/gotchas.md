@@ -5,9 +5,9 @@ relevantTo: [error, bug, fix, issue, problem]
 importance: 0.9
 relatedFiles: []
 usageStats:
-  loaded: 1340
-  referenced: 535
-  successfulFeatures: 535
+  loaded: 1365
+  referenced: 559
+  successfulFeatures: 559
 ---
 # Gotchas
 
@@ -346,3 +346,47 @@ Mistakes and edge cases to avoid. These are lessons learned from past issues.
      - Mutation missing → Resolver not exported or module not registered
   4. **Add to post-feature checklist:** Run `pnpm codegen` as first step after any GraphQL schema modification
 - **Verification:** Check `apps/web/src/generated/graphql.ts` for new fields/types after schema changes
+
+#### [Gotcha] Duplicate TypeORM entities mapping to the same table cause "tables can have at most 1600 columns" error (2026-01-31)
+
+- **Situation:** Backend server fails to start with `QueryFailedError: tables can have at most 1600 columns` when trying to add a new column like `twoFactorVerifiedAt` to the `users` table
+- **Root cause:** The database module (`apps/backend/src/database/database.module.ts`) uses a glob pattern `entities: [__dirname + '/../**/*.{entity,orm-entity}{.ts,.js}']` to load ALL TypeORM entities. When two classes have `@Entity('table_name')` pointing to the same table, TypeORM tries to sync both entity definitions to the same table, causing duplicate column additions during schema synchronization
+- **How to avoid:**
+  1. **Only ONE TypeORM entity per database table** - This is a hard PostgreSQL limit (1600 columns per table)
+  2. **Use the main entity as the source of truth:** The entity in `modules/{module}/entities/` should be the only one with `@Entity()` decorator
+  3. **For DDD infrastructure layer:** Use plain classes (no `@Entity()` decorator) as DTOs/mappers. These classes mirror the entity structure for domain mapping but are not registered with TypeORM
+  4. **Repository pattern:** Import and use the main entity in repository/mapper classes, not the DTO class
+- **Example of WRONG pattern:**
+  ```typescript
+  // modules/users/entities/user.entity.ts
+  @Entity('users')
+  export class User { ... }
+
+  // infrastructure/persistence/entities/user.orm-entity.ts
+  @Entity('users')  // ❌ DUPLICATE - causes sync conflicts
+  export class UserOrmEntity { ... }
+  ```
+- **Example of CORRECT pattern:**
+  ```typescript
+  // modules/users/entities/user.entity.ts - Main entity
+  @Entity('users')
+  export class User { ... }
+
+  // infrastructure/persistence/entities/user.orm-entity.ts - Plain class only
+  export class UserOrmEntity { ... }  // No @Entity decorator
+
+  // infrastructure/persistence/repositories/user.repository.ts
+  @Injectable()
+  export class UserRepository {
+    constructor(
+      @InjectRepository(User)  // Use main entity
+      private readonly repository: Repository<User>,
+    ) {}
+  }
+  ```
+- **Files involved in fix:**
+  - `apps/backend/src/infrastructure/persistence/entities/user.orm-entity.ts` - Removed `@Entity('users')` decorator
+  - `apps/backend/src/infrastructure/persistence/repositories/user.repository.ts` - Changed to use `User` entity
+  - `apps/backend/src/infrastructure/persistence/mappers/user.mapper.ts` - Updated to work with `User` entity
+  - `apps/backend/src/infrastructure/persistence/persistence.module.ts` - Added `User` to TypeOrmModule.forFeature()
+- **Detection:** If you see "tables can have at most 1600 columns" error, immediately search for duplicate `@Entity('table_name')` decorators across the codebase

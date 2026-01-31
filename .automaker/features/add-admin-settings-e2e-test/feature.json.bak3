@@ -1,0 +1,19 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive Playwright E2E test for /admin/settings page to prevent regression of the redirect issue. Test scenarios: 1) Admin user (admin@refine.dev) can navigate to /admin/settings via menu link, 2) Admin user can access /admin/settings via direct URL, 3) Verify admin layout is displayed (sidebar, header with 'Admin Panel'), 4) Verify settings page content loads without redirecting to /dashboard, 5) Verify all settings tabs/sections are accessible, 6) Test that non-admin users (user@example.com) are redirected when attempting to access /admin/settings, 7) Test that unauthenticated users are redirected to /login, 8) Verify no console errors or GraphQL errors when accessing /admin/settings, 9) Test that settings page forms (profile, preferences, security) load correctly, 10) Verify role checking works for both ADMIN and SUPER_ADMIN roles. Add test to apps/web/tests/admin-settings.spec.ts. This test ensures the fix for the redirect issue is maintained and prevents future regressions.",
+  "id": "add-admin-settings-e2e-test",
+  "title": "Add E2E Test for Admin Settings Page Access",
+  "dependencies": [
+    "fix-admin-settings-page-access"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive Playwright E2E test for /admin/settings page to prevent regression of the redirect issue. Test scenarios: 1) Admin user (admin@refine.dev) can navigate to /admin/settings via menu link, 2) Admin user can access /admin/settings via direct URL, 3) Verify admin layout is displayed (sidebar, header with 'Admin Panel'), 4) Verify settings page content loads without redirecting to /dashboard, 5) Verify all settings tabs/sections are accessible, 6) Test that non-admin users (user@example.com) are redirected when attempting to access /admin/settings, 7) Test that unauthenticated users are redirected to /login, 8) Verify no console errors or GraphQL errors when accessing /admin/settings, 9) Test that settings page forms (profile, preferences, security) load correctly, 10) Verify role checking works for both ADMIN and SUPER_ADMIN roles. Add test to apps/web/tests/admin-settings.spec.ts. This test ensures the fix for the redirect issue is maintained and prevents future regressions.",
+      "timestamp": "2026-01-31T14:42:44.510Z",
+      "source": "initial"
+    }
+  ]
+}

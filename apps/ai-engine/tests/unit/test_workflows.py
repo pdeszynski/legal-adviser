@@ -482,9 +482,9 @@ class TestWorkflowOrchestrator:
 
     def test_run_workflow_invalid_type(self):
         """Test that invalid workflow type raises error."""
+        import asyncio
+
         orchestrator = WorkflowOrchestrator()
 
-        with pytest.raises(ValueError):
-            import asyncio
-
+        with pytest.raises(ValueError, match="Unknown workflow type"):
             asyncio.run(orchestrator.run_workflow("invalid_workflow"))

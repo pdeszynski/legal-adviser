@@ -22,6 +22,7 @@ import {
   Zap,
   Key,
   Layers,
+  Database,
 } from 'lucide-react';
 
 /**
@@ -81,6 +82,7 @@ const MENU_ICONS: Record<string, MenuItemIcon> = {
   admin_schedules: <Clock className="h-4 w-4" />,
   admin_ai_traces: <Network className="h-4 w-4" />,
   admin_document_queue: <Layers className="h-4 w-4" />,
+  admin_saos_indexing: <Database className="h-4 w-4" />,
   case_analysis: <Gavel className="h-4 w-4" />,
   case_law_search: <Scale className="h-4 w-4" />,
   advanced_search: <Search className="h-4 w-4" />,
@@ -389,6 +391,13 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     label: 'Document Queue',
     route: '/admin/document-queue',
     icon: MENU_ICONS.admin_document_queue,
+    allowedRoles: ['admin', 'super_admin'],
+  },
+  {
+    key: 'admin_saos_indexing',
+    label: 'SAOS Indexing',
+    route: '/admin/saos-indexing',
+    icon: MENU_ICONS.admin_saos_indexing,
     allowedRoles: ['admin', 'super_admin'],
   },
 ];

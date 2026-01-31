@@ -386,39 +386,35 @@ class DocumentGenerationWorkflow:
         )
         state["max_iterations"] = max_iterations
 
-        try:
-            # Run the workflow (agents are automatically traced via instrument=True)
-            result = await self.graph.ainvoke(state)
+        # Run the workflow (agents are automatically traced via instrument=True)
+        result = await self.graph.ainvoke(state)
 
-            processing_time_ms = (time.time() - start_time) * 1000
+        processing_time_ms = (time.time() - start_time) * 1000
 
-            # Prepare output
-            output = {
-                "final_document": result.get("final_document"),
-                "current_draft": result.get("current_draft"),
-                "draft_iteration": result.get("draft_iteration", 0),
-                "approved": result.get("approved", False),
-                "review_feedback": result.get("review_feedback"),
-                "legal_grounds": result.get("legal_grounds", []),
-                "processing_time_ms": processing_time_ms,
-                "error": result.get("error"),
-            }
+        # Prepare output
+        output = {
+            "final_document": result.get("final_document"),
+            "current_draft": result.get("current_draft"),
+            "draft_iteration": result.get("draft_iteration", 0),
+            "approved": result.get("approved", False),
+            "review_feedback": result.get("review_feedback"),
+            "legal_grounds": result.get("legal_grounds", []),
+            "processing_time_ms": processing_time_ms,
+            "error": result.get("error"),
+        }
 
-            # Update trace with workflow-level metadata
-            if is_langfuse_enabled():
-                update_current_trace(
-                    output={
-                        "document_length": len(output["final_document"] or ""),
-                        "iterations": output["draft_iteration"],
-                        "approved": output["approved"],
-                        "processing_time_ms": processing_time_ms,
-                    }
-                )
+        # Update trace with workflow-level metadata
+        if is_langfuse_enabled():
+            update_current_trace(
+                output={
+                    "document_length": len(output["final_document"] or ""),
+                    "iterations": output["draft_iteration"],
+                    "approved": output["approved"],
+                    "processing_time_ms": processing_time_ms,
+                }
+            )
 
-            return output
-
-        except Exception:
-            raise
+        return output
 
 
 # Singleton instance

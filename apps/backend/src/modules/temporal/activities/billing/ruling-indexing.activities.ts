@@ -15,13 +15,15 @@
  * - API rate limiting
  */
 
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { CourtType } from '../../../documents/entities/legal-ruling.entity';
 import { SaosAdapter } from '../../../../infrastructure/anti-corruption/saos/saos.adapter';
+import type { FetchJudgmentsDetailsOptions } from '../../../../infrastructure/anti-corruption/saos/saos.adapter';
 import { IsapAdapter } from '../../../../infrastructure/anti-corruption/isap/isap.adapter';
 import { LegalRulingService } from '../../../documents/services/legal-ruling.service';
 import { VectorStoreService } from '../../../documents/services/vector-store.service';
 import type { SearchRulingsQuery } from '../../../../domain/legal-rulings/value-objects/ruling-source.vo';
+import { SaosIndexingAnalyticsService } from '../../../analytics/services/saos-indexing-analytics.service';
 
 /**
  * Initialize Indexing Activity Input
@@ -84,6 +86,8 @@ export interface ProcessIndexingBatchInput {
   updateExisting?: boolean;
   /** Idempotency key for this batch */
   idempotencyKey?: string;
+  /** Whether to fetch full judgment details (default: true) */
+  fetchFullDetails?: boolean;
 }
 
 /**
@@ -243,6 +247,7 @@ export class RulingIndexingActivities {
     private readonly isapAdapter: IsapAdapter,
     private readonly legalRulingService: LegalRulingService,
     private readonly vectorStoreService?: VectorStoreService,
+    @Optional() private readonly saosAnalytics?: SaosIndexingAnalyticsService,
   ) {}
 
   /**
@@ -316,6 +321,9 @@ export class RulingIndexingActivities {
    *
    * Fetches a batch of rulings from the external source,
    * processes them, and stores them in the database with vector indexing.
+   *
+   * For SAOS source, can optionally fetch full judgment details including
+   * judges, parties, attorneys, legal basis, and referenced regulations.
    */
   async processIndexingBatch(
     input: ProcessIndexingBatchInput,
@@ -331,6 +339,7 @@ export class RulingIndexingActivities {
       courtType,
       updateExisting = true,
       idempotencyKey,
+      fetchFullDetails = true, // Default to true for better data quality
     } = input;
 
     const startTime = Date.now();
@@ -382,11 +391,20 @@ export class RulingIndexingActivities {
         dateFrom,
         dateTo,
         courtType,
+        fetchFullDetails,
       });
 
       this.logger.log(
         `Batch ${batchNumber} (job ${jobId}): Fetched ${externalRulings.length} rulings from ${source}, processing...`,
       );
+
+      // Track failures with details for better debugging
+      const failureDetails: Array<{
+        signature: string;
+        error: string;
+        courtName?: string;
+        rulingDate?: string;
+      }> = [];
 
       // Process each ruling
       for (const { ruling, sourceReference } of externalRulings) {
@@ -408,18 +426,100 @@ export class RulingIndexingActivities {
           }
         } catch (error) {
           failed++;
+          const errorDetails = {
+            signature: ruling.signature || 'UNKNOWN',
+            error: error instanceof Error ? error.message : 'Unknown error',
+            courtName: ruling.courtName,
+            rulingDate: ruling.rulingDate?.toISOString(),
+          };
+          failureDetails.push(errorDetails);
+
+          // Log with full stack trace for debugging
           this.logger.error(
-            `Failed to index ruling ${ruling.signature}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            `[${source}] Failed to index ruling in batch ${batchNumber}: ${JSON.stringify(errorDetails)}`,
+          );
+          this.logger.debug(
+            `[${source}] Stack trace for ruling "${errorDetails.signature}": ${error instanceof Error ? error.stack : 'No stack trace'}`,
           );
         }
       }
 
       const processingTimeMs = Date.now() - startTime;
 
+      // Log batch completion with failure details if any
       this.logger.log(
         `Batch ${batchNumber} (job ${jobId}) completed: ` +
           `indexed=${indexed}, skipped=${skipped}, failed=${failed} in ${processingTimeMs}ms`,
       );
+
+      // Track metrics with SAOS analytics service
+      if (this.saosAnalytics) {
+        // Count records missing text content
+        const recordsMissingTextContent = externalRulings.filter(
+          ({ ruling }) => !ruling.fullText || ruling.fullText.trim().length === 0,
+        ).length;
+
+        this.saosAnalytics.logIndexingActivity({
+          jobId,
+          source,
+          status: failed === 0 && indexed > 0 ? 'COMPLETED' : failed > 0 ? 'PARTIAL' : 'FAILED',
+          recordsProcessed: externalRulings.length,
+          recordsSaved: indexed,
+          recordsSkipped: skipped,
+          recordsWithErrors: failed,
+          recordsMissingTextContent,
+          processingTimeMs,
+        });
+
+        // Log errors for tracking
+        for (const detail of failureDetails) {
+          this.saosAnalytics.logIndexingError({
+            source,
+            errorType: 'INDEXING_FAILED',
+            errorMessage: detail.error,
+            rulingSignature: detail.signature,
+            courtName: detail.courtName,
+          });
+        }
+
+        // Log skipped records
+        if (skipped > 0) {
+          for (const { ruling } of externalRulings.slice(0, 10)) {
+            // Log sample of skipped records
+            const existingRuling = await this.legalRulingService.findBySignature(
+              ruling.signature,
+            );
+            if (existingRuling) {
+              this.saosAnalytics.logSkippedRecord({
+                source,
+                skipReason: 'DUPLICATE_SIGNATURE',
+                rulingSignature: ruling.signature,
+              });
+            }
+          }
+        }
+      }
+
+      // If there were failures, log a summary for easier review
+      if (failureDetails.length > 0) {
+        this.logger.warn(
+          `[${source}] Batch ${batchNumber} had ${failureDetails.length} failures. ` +
+            `Failed signatures: ${failureDetails.map((f) => f.signature).join(', ')}`,
+        );
+        // Log first few failure details in detail for debugging
+        failureDetails.slice(0, 3).forEach((detail, idx) => {
+          this.logger.debug(
+            `[${source}] Failure ${idx + 1}/${failureDetails.length}: ` +
+              `signature="${detail.signature}", error="${detail.error}", ` +
+              `court="${detail.courtName || 'N/A'}", date="${detail.rulingDate || 'N/A'}"`,
+          );
+        });
+        if (failureDetails.length > 3) {
+          this.logger.debug(
+            `[${source}] ... and ${failureDetails.length - 3} more failures`,
+          );
+        }
+      }
 
       // Mark batch as processed for idempotency
       if (idempotencyKey) {
@@ -438,8 +538,13 @@ export class RulingIndexingActivities {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+
       this.logger.error(
         `Failed to process batch ${batchNumber} (job ${jobId}): ${errorMessage}`,
+      );
+      this.logger.debug(
+        `[DEBUG] Batch ${batchNumber} error stack: ${errorStack || 'No stack trace'}`,
       );
 
       return {
@@ -469,6 +574,21 @@ export class RulingIndexingActivities {
         `indexed=${totalIndexed}, failed=${totalFailed}`,
     );
 
+    // Track final job status with analytics service
+    if (this.saosAnalytics) {
+      this.saosAnalytics.logIndexingActivity({
+        jobId,
+        source,
+        status: totalFailed === 0 ? 'COMPLETED' : 'PARTIAL',
+        recordsProcessed: totalIndexed + totalFailed,
+        recordsSaved: totalIndexed,
+        recordsSkipped: 0,
+        recordsWithErrors: totalFailed,
+        recordsMissingTextContent: 0, // Not tracked at job level
+        processingTimeMs: 0, // Not tracked at job level
+      });
+    }
+
     // Clean up idempotency tracking for this job
     for (const key of this.processedBatches) {
       if (key.startsWith(`${jobId}-`)) {
@@ -493,6 +613,28 @@ export class RulingIndexingActivities {
     this.logger.error(
       `Ruling indexing job ${jobId} failed for source ${source}: ${errorMessage}`,
     );
+
+    // Track job failure with analytics service
+    if (this.saosAnalytics) {
+      this.saosAnalytics.logIndexingActivity({
+        jobId,
+        source,
+        status: 'FAILED',
+        recordsProcessed: 0,
+        recordsSaved: 0,
+        recordsSkipped: 0,
+        recordsWithErrors: 1,
+        recordsMissingTextContent: 0,
+        processingTimeMs: 0,
+        errorMessage,
+      });
+
+      this.saosAnalytics.logIndexingError({
+        source,
+        errorType: 'JOB_FAILED',
+        errorMessage,
+      });
+    }
 
     // Clean up idempotency tracking for this job
     for (const key of this.processedBatches) {
@@ -600,6 +742,7 @@ export class RulingIndexingActivities {
    * Fetch rulings from external source
    *
    * Private helper method to fetch rulings from SAOS or ISAP.
+   * For SAOS, optionally fetches full judgment details.
    */
   private async fetchFromExternalSource(input: {
     source: 'SAOS' | 'ISAP';
@@ -608,8 +751,17 @@ export class RulingIndexingActivities {
     dateFrom?: Date;
     dateTo?: Date;
     courtType?: CourtType;
+    fetchFullDetails?: boolean;
   }): Promise<Array<{ ruling: any; sourceReference?: string }>> {
-    const { source, limit, offset, dateFrom, dateTo, courtType } = input;
+    const {
+      source,
+      limit,
+      offset,
+      dateFrom,
+      dateTo,
+      courtType,
+      fetchFullDetails = true,
+    } = input;
 
     this.logger.debug(
       `[DEBUG] fetchFromExternalSource called with: ${JSON.stringify({
@@ -619,10 +771,9 @@ export class RulingIndexingActivities {
         dateFrom: dateFrom?.toISOString?.() ?? dateFrom,
         dateTo: dateTo?.toISOString?.() ?? dateTo,
         courtType,
+        fetchFullDetails,
       })}`,
     );
-
-    const adapter = source === 'SAOS' ? this.saosAdapter : this.isapAdapter;
 
     const searchQuery: SearchRulingsQuery = {
       query: '',
@@ -633,7 +784,33 @@ export class RulingIndexingActivities {
       offset,
     };
 
-    const result = await adapter.search(searchQuery);
+    let result;
+
+    // For SAOS, use the enhanced searchWithDetails method if requested
+    if (source === 'SAOS' && fetchFullDetails) {
+      this.logger.log(
+        `SAOS: Fetching search results with full details (concurrency: 5, batchDelay: 100ms)`,
+      );
+
+      const fetchOptions: FetchJudgmentsDetailsOptions = {
+        concurrency: 5,
+        batchDelay: 100,
+        continueOnError: true,
+        onProgress: (current, total) => {
+          this.logger.debug(`SAOS detail fetch progress: ${current}/${total}`);
+        },
+      };
+
+      result = await this.saosAdapter.searchWithDetails(
+        searchQuery,
+        true,
+        fetchOptions,
+      );
+    } else {
+      // Standard search for ISAP or when full details not requested
+      const adapter = source === 'SAOS' ? this.saosAdapter : this.isapAdapter;
+      result = await adapter.search(searchQuery);
+    }
 
     // Adapter returns RulingSearchResponse with results and totalCount
     const responseData = result.data;
@@ -669,6 +846,7 @@ export class RulingIndexingActivities {
    * Index a single ruling
    *
    * Private helper method to index one ruling with deduplication.
+   * Includes comprehensive logging to track each judgment's processing status.
    */
   private async indexSingleRuling(input: {
     ruling: any;
@@ -678,29 +856,112 @@ export class RulingIndexingActivities {
   }): Promise<{ indexed: boolean; skipped: boolean }> {
     const { ruling, source, sourceReference, updateExisting } = input;
 
-    // Check if ruling already exists
-    const existingRuling = await this.legalRulingService.findBySignature(
-      ruling.signature,
+    // Validate required fields before processing
+    if (!ruling.signature) {
+      this.logger.warn(
+        `[${source}] Skipping ruling with missing signature: ${JSON.stringify({
+          externalId: ruling.externalId,
+          courtName: ruling.courtName,
+          rulingDate: ruling.rulingDate,
+        })}`,
+      );
+      return { indexed: false, skipped: true };
+    }
+
+    // Log warning if full text is missing (critical for RAG functionality)
+    if (!ruling.fullText || ruling.fullText.trim().length === 0) {
+      this.logger.warn(
+        `[${source}] Ruling ${ruling.signature} has no full text content. ` +
+          `This will limit search and RAG functionality. External ID: ${ruling.externalId || 'N/A'}`,
+      );
+    }
+
+    // Log the start of processing for this ruling
+    this.logger.debug(
+      `[${source}] Processing ruling: signature="${ruling.signature}", court="${ruling.courtName}", date="${ruling.rulingDate?.toISOString()}"`,
     );
 
-    if (existingRuling) {
-      if (updateExisting) {
-        // Update existing ruling
-        await this.legalRulingService.update(existingRuling.id, {
+    try {
+      // Check if ruling already exists by composite key (courtName + signature + rulingDate)
+      // Signatures are only unique within a court, not nationwide
+      const existingRuling =
+        await this.legalRulingService.findByCourtSignatureDate(
+          ruling.courtName,
+          ruling.signature,
+          ruling.rulingDate,
+        );
+
+      if (existingRuling) {
+        this.logger.debug(
+          `[${source}] Found existing ruling: signature="${ruling.signature}", court="${ruling.courtName}", date="${ruling.rulingDate.toISOString()}", existingId="${existingRuling.id}"`,
+        );
+
+        if (updateExisting) {
+          // Update existing ruling - log what's being updated
+          this.logger.debug(
+            `[${source}] Updating existing ruling: signature="${ruling.signature}", hasFullText=${!!ruling.fullText}, hasSummary=${!!ruling.summary}`,
+          );
+
+          await this.legalRulingService.update(existingRuling.id, {
+            ...ruling,
+            metadata: {
+              ...ruling.metadata,
+              sourceReference:
+                sourceReference ?? ruling.metadata?.sourceReference,
+              indexedFrom: source,
+              indexedAt: new Date().toISOString(),
+            },
+          });
+
+          this.logger.log(
+            `[${source}] Updated existing ruling: signature="${ruling.signature}", id="${existingRuling.id}"`,
+          );
+
+          // Re-index in vector store if full text changed
+          if (ruling.fullText) {
+            await this.indexInVectorStore({
+              rulingId: existingRuling.id,
+              fullText: ruling.fullText,
+              metadata: {
+                signature: ruling.signature,
+                courtName: ruling.courtName,
+                source,
+              },
+            });
+          }
+
+          return { indexed: true, skipped: false };
+        } else {
+          // Skip existing ruling
+          this.logger.debug(
+            `[${source}] Skipping existing ruling (updateExisting=false): signature="${ruling.signature}"`,
+          );
+          return { indexed: false, skipped: true };
+        }
+      } else {
+        // Insert new ruling - log details before insertion
+        this.logger.debug(
+          `[${source}] Creating new ruling: signature="${ruling.signature}", court="${ruling.courtName}", date="${ruling.rulingDate?.toISOString()}", hasFullText=${!!ruling.fullText}, fullTextLength=${ruling.fullText?.length || 0}`,
+        );
+
+        const createdRuling = await this.legalRulingService.create({
           ...ruling,
           metadata: {
             ...ruling.metadata,
-            sourceReference:
-              sourceReference ?? ruling.metadata?.sourceReference,
+            sourceReference: sourceReference ?? ruling.metadata?.sourceReference,
             indexedFrom: source,
             indexedAt: new Date().toISOString(),
           },
         });
 
-        // Re-index in vector store if full text changed
+        this.logger.log(
+          `[${source}] Created new ruling: signature="${ruling.signature}", id="${createdRuling.id}", court="${ruling.courtName}"`,
+        );
+
+        // Index in vector store
         if (ruling.fullText) {
           await this.indexInVectorStore({
-            rulingId: existingRuling.id,
+            rulingId: createdRuling.id,
             fullText: ruling.fullText,
             metadata: {
               signature: ruling.signature,
@@ -711,36 +972,18 @@ export class RulingIndexingActivities {
         }
 
         return { indexed: true, skipped: false };
-      } else {
-        // Skip existing ruling
-        return { indexed: false, skipped: true };
       }
-    } else {
-      // Insert new ruling
-      const createdRuling = await this.legalRulingService.create({
-        ...ruling,
-        metadata: {
-          ...ruling.metadata,
-          sourceReference: sourceReference ?? ruling.metadata?.sourceReference,
-          indexedFrom: source,
-          indexedAt: new Date().toISOString(),
-        },
-      });
+    } catch (error) {
+      // Log full error details with stack trace
+      this.logger.error(
+        `[${source}] Failed to index ruling: signature="${ruling.signature}", error=${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      this.logger.debug(
+        `[${source}] Full error details for ruling "${ruling.signature}": ${error instanceof Error ? error.stack : String(error)}`,
+      );
 
-      // Index in vector store
-      if (ruling.fullText) {
-        await this.indexInVectorStore({
-          rulingId: createdRuling.id,
-          fullText: ruling.fullText,
-          metadata: {
-            signature: ruling.signature,
-            courtName: ruling.courtName,
-            source,
-          },
-        });
-      }
-
-      return { indexed: true, skipped: false };
+      // Re-throw to let the caller handle the failure
+      throw error;
     }
   }
 

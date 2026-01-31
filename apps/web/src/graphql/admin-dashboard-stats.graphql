@@ -1,0 +1,45 @@
+# Admin Dashboard Stats Query
+# Simple stats query for admin dashboard overview
+#
+# This query fetches aggregated statistics for the admin dashboard at /admin
+# Returns: total users, documents, queries, document status breakdown, user role breakdown
+
+query GetAdminDashboardStats($input: DashboardAnalyticsInput) {
+  analyticsDashboard(input: $input) {
+    userGrowth {
+      totalUsers
+      activeUsers
+      newUsers
+      adminUsers
+      growthRate
+      periodStart
+      periodEnd
+    }
+    documents {
+      totalDocuments
+      completedDocuments
+      draftDocuments
+      failedDocuments
+      generatingDocuments
+      successRate
+      periodStart
+      periodEnd
+    }
+    queries {
+      totalQueries
+      uniqueUsers
+      avgQueriesPerUser
+      totalCitations
+      avgCitationsPerQuery
+      periodStart
+      periodEnd
+    }
+    systemHealth {
+      documentSuccessRate
+      avgResponseTime
+      activeSessions
+      timestamp
+    }
+    generatedAt
+  }
+}

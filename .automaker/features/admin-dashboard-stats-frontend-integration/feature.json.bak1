@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Update the admin dashboard page at /admin to fetch and display statistics from the new GraphQL query. Frontend implementation: 1) Create GraphQL query document in apps/web/src/graphql/admin-dashboard-stats.graphql, 2) Run pnpm codegen to generate TypeScript types for the query, 3) Update /admin/page.tsx to use the adminDashboard query with useCustom or generated hook, 4) Display stats in card/grid layout with proper styling using shadcn/ui Card components, 5) Show skeleton loading while stats are loading, 6) Handle error states gracefully, 7) Display stats with appropriate icons and labels: Total Users, Total Documents, Total Queries, Documents by Status (chart or breakdown), Users by Role. Ensure data refreshes periodically or on mount. Match the design of other admin pages.",
+  "id": "admin-dashboard-stats-frontend-integration",
+  "title": "Integrate Admin Dashboard Stats with Frontend",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update the admin dashboard page at /admin to fetch and display statistics from the new GraphQL query. Frontend implementation: 1) Create GraphQL query document in apps/web/src/graphql/admin-dashboard-stats.graphql, 2) Run pnpm codegen to generate TypeScript types for the query, 3) Update /admin/page.tsx to use the adminDashboard query with useCustom or generated hook, 4) Display stats in card/grid layout with proper styling using shadcn/ui Card components, 5) Show skeleton loading while stats are loading, 6) Handle error states gracefully, 7) Display stats with appropriate icons and labels: Total Users, Total Documents, Total Queries, Documents by Status (chart or breakdown), Users by Role. Ensure data refreshes periodically or on mount. Match the design of other admin pages.",
+      "timestamp": "2026-01-31T15:31:50.373Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T15:35:33.168Z"
+}

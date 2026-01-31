@@ -32,20 +32,24 @@ load_dotenv(dotenv_path=_env_path)
 # CRITICAL: Initialize Langfuse BEFORE importing agent modules
 # This ensures Agent.instrument_all() is called before any agents are created
 # Following the official integration pattern: https://langfuse.com/integrations/frameworks/pydantic-ai
-from .langfuse_init import init_langfuse
+from .langfuse_init import init_langfuse  # noqa: E402
 
 init_langfuse()
 
 # JWT Authentication imports
-from .auth import UserContext, get_current_user, get_current_user_optional
-from .exceptions import (
+from .auth import (  # noqa: E402
+    UserContext,
+    get_current_user,
+    get_current_user_optional,
+)
+from .exceptions import (  # noqa: E402
     AIEngineError,
     RateLimitError,
     ServiceUnavailableError,
     ValidationError,
 )
-from .langfuse_init import flush
-from .models.requests import (
+from .langfuse_init import flush  # noqa: E402
+from .models.requests import (  # noqa: E402
     AskQuestionRequest,
     ClassifyCaseRequest,
     GenerateDocumentRequest,
@@ -55,7 +59,7 @@ from .models.requests import (
     SearchRulingsRequest,
     SemanticSearchRequest,
 )
-from .models.responses import (
+from .models.responses import (  # noqa: E402
     AnswerResponse,
     Citation,
     ClassificationResponse,
@@ -73,10 +77,13 @@ from .models.responses import (
     ServiceUnavailableErrorResponse,
     ValidationErrorResponse,
 )
-from .sentry_init import init_sentry
-from .services.cost_monitoring import get_cost_summary_dict
-from .services.streaming import create_streaming_response, stream_qa_response
-from .services.streaming_enhanced import (
+from .sentry_init import init_sentry  # noqa: E402
+from .services.cost_monitoring import get_cost_summary_dict  # noqa: E402
+from .services.streaming import (  # noqa: E402
+    create_streaming_response,
+    stream_qa_response,
+)
+from .services.streaming_enhanced import (  # noqa: E402
     create_enhanced_streaming_response,
     stream_clarification_answer,
     stream_qa_enhanced,
@@ -89,9 +96,11 @@ init_sentry()
 # Workflows import agents at module level, so this must come after init_langfuse()
 # Import agent modules AFTER Langfuse initialization
 # This is critical: Agent.instrument_all() must be called before agents are created
-from .agents.classifier_agent import classifier_agent as get_classifier_agent
-from .agents.qa_agent import answer_question
-from .workflows import get_orchestrator
+from .agents.classifier_agent import (  # noqa: E402
+    classifier_agent as get_classifier_agent,
+)
+from .agents.qa_agent import answer_question  # noqa: E402
+from .workflows import get_orchestrator  # noqa: E402
 
 # Configure logging with DEBUG level for more verbose output
 logging.basicConfig(
@@ -196,7 +205,7 @@ except ImportError:
 
 
 # CORS middleware - must be added before route definitions
-from .config import get_settings
+from .config import get_settings  # noqa: E402
 
 settings = get_settings()
 _cors_origins = [
@@ -323,8 +332,9 @@ async def ai_engine_exception_handler(request: Request, exc: AIEngineError):
     user_id = _extract_user_id_from_request(request)
 
     # Track error in Langfuse using the new pattern
-    # Note: session_id is in request body, not accessible in global error handlers.
-    # Use placeholder for error traces - actual requests will have proper session_id in agent traces.
+    # Note: session_id is in request body, not accessible in global error
+    # handlers. Use placeholder for error traces - actual requests will have
+    # proper session_id in agent traces.
     from .langfuse_init import create_trace, is_langfuse_enabled
     if is_langfuse_enabled():
         trace = create_trace(
@@ -462,8 +472,9 @@ async def global_exception_handler(request: Request, exc: Exception):
     user_id = _extract_user_id_from_request(request)
 
     # Track in Langfuse using the new pattern
-    # Note: session_id is in request body, not accessible in global error handlers.
-    # Use placeholder for error traces - actual requests will have proper session_id in agent traces.
+    # Note: session_id is in request body, not accessible in global error
+    # handlers. Use placeholder for error traces - actual requests will have
+    # proper session_id in agent traces.
     from .langfuse_init import create_trace, is_langfuse_enabled
     if is_langfuse_enabled():
         trace = create_trace(
@@ -853,7 +864,7 @@ async def get_all_metrics():
 
 @app.get("/api/v1/debug/langfuse-status")
 async def get_langfuse_status(
-    user: UserContext = Depends(get_current_user),
+    user: UserContext = Depends(get_current_user),  # noqa: B008
 ):
     """Get Langfuse observability status for debugging.
 
@@ -955,7 +966,7 @@ async def get_langfuse_status(
 @app.get("/api/v1/debug/session-history/{session_id}")
 async def get_session_history_debug(
     session_id: str,
-    user: UserContext | None = Depends(get_current_user_optional),
+    user: UserContext | None = Depends(get_current_user_optional),  # noqa: B008
 ):
     """Debug endpoint to inspect conversation history for a session.
 
@@ -979,7 +990,8 @@ async def get_session_history_debug(
         - disclaimer: This endpoint only shows current request info, not stored history
 
     For actual stored conversation history:
-    - Use GraphQL query: { chatMessages(sessionId: "uuid") { role content sequenceOrder } }
+    - Use GraphQL query:
+      { chatMessages(sessionId: "uuid") { role content sequenceOrder } }
     - Or use the backend's getConversationHistory service method
     """
     from .auth import is_valid_uuid_v4
@@ -1044,7 +1056,7 @@ async def get_session_history_debug(
 async def ask_question_stream(
     request: AskQuestionRequest,
     http_request: Request,
-    user: UserContext | None = Depends(get_current_user_optional),
+    user: UserContext | None = Depends(get_current_user_optional),  # noqa: B008
 ):
     """Stream a legal Q&A response for real-time user feedback.
 
@@ -1100,7 +1112,7 @@ async def ask_question_stream(
 async def ask_question_stream_enhanced(
     request: AskQuestionRequest,
     http_request: Request,
-    user: UserContext | None = Depends(get_current_user_optional),
+    user: UserContext | None = Depends(get_current_user_optional),  # noqa: B008
 ):
     """Stream a legal Q&A response with structured SSE events.
 
@@ -1115,19 +1127,26 @@ async def ask_question_stream_enhanced(
 
     Request Body (JSON):
         question: The legal question to answer (required)
-        mode: Response mode - LAWYER (detailed) or SIMPLE (layperson), default: SIMPLE
+        mode: Response mode - LAWYER (detailed) or SIMPLE (layperson),
+            default: SIMPLE
         session_id: User session ID for tracking (must be valid UUID v4)
-        message_type: Type of message - QUESTION or CLARIFICATION_ANSWER, default: QUESTION
-        original_question: Original question (required for CLARIFICATION_ANSWER)
-        clarification_answers: User's answers to clarification questions (required for CLARIFICATION_ANSWER)
-        conversation_history: Optional conversation history as array of {role, content} objects
+        message_type: Type of message - QUESTION or CLARIFICATION_ANSWER,
+            default: QUESTION
+        original_question: Original question (required for
+            CLARIFICATION_ANSWER)
+        clarification_answers: User's answers to clarification questions
+            (required for CLARIFICATION_ANSWER)
+        conversation_history: Optional conversation history as array of
+            {role, content} objects
         conversation_metadata: Optional metadata for Langfuse observability
 
     SSE Event Format:
         data: {"type": "token", "content": "text chunk", "metadata": {}}
-        data: {"type": "citation", "content": "", "metadata": {"source": "...", "article": "...", "url": "..."}}
+        data: {"type": "citation", "content": "", "metadata":
+            {"source": "...", "article": "...", "url": "..."}}
         data: {"type": "error", "content": "", "metadata": {"error": "..."}}
-        data: {"type": "done", "content": "", "metadata": {"citations": [...], "confidence": 0.0, "processing_time_ms": 123}}
+        data: {"type": "done", "content": "", "metadata":
+            {"citations": [...], "confidence": 0.0, "processing_time_ms": 123}}
 
     Event Types:
     - token: Partial response content as it's generated
@@ -1410,7 +1429,7 @@ async def ask_question(request: AskQuestionRequest, http_request: Request):
         )
 
     except Exception as e:
-        logger.exception("Q&A processing failed: %s", e)
+        logger.exception("Q&A processing failed: %s", type(e).__name__)
         raise HTTPException(
             status_code=500,
             detail=f"Q&A processing failed: {e!s}",
@@ -1623,7 +1642,7 @@ async def ask_question_with_rag(request: AskQuestionRequest):
 @app.post("/api/v1/qa/ask-authenticated")
 async def ask_question_authenticated(
     request: AskQuestionRequest,
-    user: "UserContext" = Depends(get_current_user),
+    user: "UserContext" = Depends(get_current_user),  # noqa: B008
 ):
     """Ask a legal question with JWT authentication required.
 
@@ -1661,7 +1680,7 @@ async def ask_question_authenticated(
         )
 
     except Exception as e:
-        logger.exception("Authenticated Q&A processing failed: %s", e)
+        logger.exception("Authenticated Q&A processing failed: %s", type(e).__name__)
         raise HTTPException(
             status_code=500,
             detail=f"Q&A processing failed: {e!s}",
@@ -1670,7 +1689,7 @@ async def ask_question_authenticated(
 
 @app.get("/api/v1/auth/me")
 async def get_current_user_info(
-    user: "UserContext" = Depends(get_current_user),
+    user: "UserContext" = Depends(get_current_user),  # noqa: B008
 ):
     """Get current authenticated user information.
 

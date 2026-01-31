@@ -840,3 +840,360 @@ export class DemoRequestAnalytics {
   @Field(() => GraphQLISODateTime)
   generatedAt: Date;
 }
+
+/**
+ * User count by role breakdown
+ */
+@ObjectType('UserCountByRole')
+export class UserCountByRole {
+  @Field(() => Int, { description: 'Total number of admin users' })
+  adminCount: number;
+
+  @Field(() => Int, { description: 'Total number of super admin users' })
+  superAdminCount: number;
+
+  @Field(() => Int, { description: 'Total number of lawyer users' })
+  lawyerCount: number;
+
+  @Field(() => Int, { description: 'Total number of paralegal users' })
+  paralegalCount: number;
+
+  @Field(() => Int, { description: 'Total number of client users' })
+  clientCount: number;
+
+  @Field(() => Int, { description: 'Total number of guest users' })
+  guestCount: number;
+}
+
+/**
+ * Document count by status breakdown
+ */
+@ObjectType('DocumentCountByStatus')
+export class DocumentCountByStatus {
+  @Field(() => Int, { description: 'Documents in DRAFT status' })
+  draftCount: number;
+
+  @Field(() => Int, { description: 'Documents in GENERATING status' })
+  generatingCount: number;
+
+  @Field(() => Int, { description: 'Documents in COMPLETED status' })
+  completedCount: number;
+
+  @Field(() => Int, { description: 'Documents in FAILED status' })
+  failedCount: number;
+}
+
+/**
+ * Admin Dashboard Stats
+ *
+ * Aggregated statistics for the admin dashboard at /admin.
+ * Provides a quick overview of platform metrics.
+ */
+@ObjectType('AdminDashboardStats')
+export class AdminDashboardStats {
+  @Field(() => Int, { description: 'Total number of users' })
+  totalUsers: number;
+
+  @Field(() => Int, { description: 'Total number of documents' })
+  totalDocuments: number;
+
+  @Field(() => Int, { description: 'Total number of queries/conversations' })
+  totalQueries: number;
+
+  @Field(() => Int, { description: 'Total number of chat sessions' })
+  totalChatSessions: number;
+
+  @Field(() => Int, { description: 'Number of active sessions' })
+  activeSessionsCount: number;
+
+  @Field(() => UserCountByRole, {
+    description: 'User count breakdown by role',
+  })
+  userCountByRole: UserCountByRole;
+
+  @Field(() => DocumentCountByStatus, {
+    description: 'Document count breakdown by status',
+  })
+  documentCountByStatus: DocumentCountByStatus;
+
+  @Field(() => GraphQLISODateTime, {
+    description: 'When these stats were calculated',
+  })
+  calculatedAt: Date;
+}
+
+/**
+ * SAOS Indexing Metrics
+ *
+ * Comprehensive monitoring metrics for the SAOS/ISAP ruling indexing workflow.
+ * Tracks data quality, error rates, and processing statistics.
+ */
+@ObjectType('SaosIndexingMetrics')
+export class SaosIndexingMetrics {
+  @Field(() => Int, { description: 'Total legal rulings in database' })
+  totalRulings: number;
+
+  @Field(() => Int, { description: 'Rulings indexed from SAOS' })
+  saosRulings: number;
+
+  @Field(() => Int, { description: 'Rulings indexed from ISAP' })
+  isapRulings: number;
+
+  @Field(() => Int, {
+    description: 'Rulings with full text content (data quality metric)',
+  })
+  rulingsWithFullText: number;
+
+  @Field(() => Int, {
+    description: 'Rulings missing full text content (data quality issue)',
+  })
+  rulingsMissingFullText: number;
+
+  @Field(() => Int, {
+    description: 'Rulings with summary/thesis content',
+  })
+  rulingsWithSummary: number;
+
+  @Field(() => Float, {
+    description: 'Percentage of rulings with full text content',
+  })
+  fullTextCoverageRate: number;
+
+  @Field(() => GraphQLISODateTime, {
+    description: 'Timestamp of the most recent ruling import',
+  })
+  lastIndexingRunAt: Date | null;
+
+  @Field(() => GraphQLISODateTime, {
+    description: 'Timestamp of the most recently added ruling',
+    nullable: true,
+  })
+  lastRulingAddedAt: Date | null;
+
+  @Field(() => Int, {
+    description: 'Number of new rulings added in the last 24 hours',
+  })
+  newRulingsLast24Hours: number;
+
+  @Field(() => GraphQLISODateTime, {
+    description: 'Timestamp of the most recent ruling update',
+    nullable: true,
+  })
+  lastRulingUpdatedAt: Date | null;
+
+  @Field(() => Int, {
+    description: 'Number of rulings updated in the last 24 hours',
+  })
+  updatedRulingsLast24Hours: number;
+
+  @Field(() => GraphQLISODateTime, {
+    description: 'When these metrics were calculated',
+  })
+  calculatedAt: Date;
+}
+
+/**
+ * SAOS Indexing by Court Type
+ *
+ * Breakdown of indexed rulings by court type.
+ */
+@ObjectType('SaosIndexingByCourtType')
+export class SaosIndexingByCourtType {
+  @Field(() => String, { description: 'Court type' })
+  courtType: string;
+
+  @Field(() => Int, { description: 'Number of rulings from this court type' })
+  count: number;
+
+  @Field(() => Int, {
+    description: 'Number of rulings with full text from this court type',
+  })
+  withFullText: number;
+
+  @Field(() => Float, {
+    description: 'Percentage of total rulings',
+  })
+  percentage: number;
+}
+
+/**
+ * SAOS Indexing Error
+ *
+ * Represents a recorded indexing error for tracking.
+ */
+@ObjectType('SaosIndexingError')
+export class SaosIndexingError {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => String, {
+    description: 'Source of the indexing (SAOS or ISAP)',
+  })
+  source: string;
+
+  @Field(() => String, { description: 'Error type/category' })
+  errorType: string;
+
+  @Field(() => String, { description: 'Error message' })
+  errorMessage: string;
+
+  @Field(() => String, {
+    description: 'Signature of the ruling that failed to index',
+    nullable: true,
+  })
+  rulingSignature?: string;
+
+  @Field(() => String, {
+    description: 'Court name for context',
+    nullable: true,
+  })
+  courtName?: string;
+
+  @Field(() => GraphQLISODateTime, { description: 'When the error occurred' })
+  occurredAt: Date;
+
+  @Field(() => GraphQLISODateTime, {
+    description: 'Last time this error was seen',
+  })
+  lastSeenAt: Date;
+
+  @Field(() => Int, { description: 'Number of times this error occurred' })
+  count: number;
+}
+
+/**
+ * SAOS Indexing Skipped Record
+ *
+ * Represents a skipped record with reason for tracking.
+ */
+@ObjectType('SaosIndexingSkippedRecord')
+export class SaosIndexingSkippedRecord {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => String, {
+    description: 'Source of the indexing (SAOS or ISAP)',
+  })
+  source: string;
+
+  @Field(() => String, { description: 'Reason for skipping' })
+  skipReason: string;
+
+  @Field(() => String, {
+    description: 'Signature of the skipped ruling',
+    nullable: true,
+  })
+  rulingSignature?: string;
+
+  @Field(() => GraphQLISODateTime, { description: 'When the record was skipped' })
+  skippedAt: Date;
+
+  @Field(() => Int, { description: 'Number of times this skip occurred' })
+  count: number;
+}
+
+/**
+ * SAOS Indexing Activity Log
+ *
+ * Represents a single indexing activity/batch execution.
+ */
+@ObjectType('SaosIndexingActivityLog')
+export class SaosIndexingActivityLog {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => String, { description: 'Job ID for the indexing run' })
+  jobId: string;
+
+  @Field(() => String, { description: 'Source (SAOS or ISAP)' })
+  source: string;
+
+  @Field(() => String, {
+    description: 'Status of the indexing run',
+  })
+  status: 'RUNNING' | 'COMPLETED' | 'FAILED' | 'PARTIAL';
+
+  @Field(() => Int, { description: 'Number of records processed' })
+  recordsProcessed: number;
+
+  @Field(() => Int, { description: 'Number of records saved/updated' })
+  recordsSaved: number;
+
+  @Field(() => Int, { description: 'Number of records skipped (duplicates)' })
+  recordsSkipped: number;
+
+  @Field(() => Int, { description: 'Number of records with errors' })
+  recordsWithErrors: number;
+
+  @Field(() => Int, {
+    description: 'Number of records missing text content',
+  })
+  recordsMissingTextContent: number;
+
+  @Field(() => Int, { description: 'Processing time in milliseconds' })
+  processingTimeMs: number;
+
+  @Field(() => GraphQLISODateTime, { description: 'When the indexing started' })
+  startedAt: Date;
+
+  @Field(() => GraphQLISODateTime, {
+    description: 'When the indexing completed',
+    nullable: true,
+  })
+  completedAt?: Date;
+
+  @Field(() => String, {
+    description: 'Error message if failed',
+    nullable: true,
+  })
+  errorMessage?: string;
+}
+
+/**
+ * SAOS Indexing Health Status
+ *
+ * Overall health status of the SAOS indexing system.
+ */
+@ObjectType('SaosIndexingHealthStatus')
+export class SaosIndexingHealthStatus {
+  @Field(() => String, { description: 'Overall health status' })
+  status: 'HEALTHY' | 'WARNING' | 'CRITICAL';
+
+  @Field(() => String, { description: 'Health status description' })
+  description: string;
+
+  @Field(() => SaosIndexingMetrics, {
+    description: 'Current indexing metrics',
+  })
+  metrics: SaosIndexingMetrics;
+
+  @Field(() => [SaosIndexingByCourtType], {
+    description: 'Rulings breakdown by court type',
+  })
+  byCourtType: SaosIndexingByCourtType[];
+
+  @Field(() => [SaosIndexingActivityLog], {
+    description: 'Recent indexing activity logs',
+  })
+  recentActivity: SaosIndexingActivityLog[];
+
+  @Field(() => [SaosIndexingError], {
+    description: 'Recent indexing errors',
+  })
+  recentErrors: SaosIndexingError[];
+
+  @Field(() => [SaosIndexingSkippedRecord], {
+    description: 'Recent skipped records',
+  })
+  recentSkipped: SaosIndexingSkippedRecord[];
+
+  @Field(() => [String], {
+    description: 'Active alerts/warnings',
+  })
+  alerts: string[];
+
+  @Field(() => GraphQLISODateTime, {
+    description: 'When health status was calculated',
+  })
+  calculatedAt: Date;
+}

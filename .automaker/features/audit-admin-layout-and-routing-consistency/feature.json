@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Perform comprehensive audit of all admin routes to identify layout inconsistencies. Document which admin pages use AdminLayout with admin menu, and which incorrectly fall back to main authenticated layout. Create matrix of: 1) All /admin/* routes, 2) Current layout each route uses, 3) Whether admin menu is displayed, 4) Whether correct styling/theme is applied. Identify root cause of routing issue - likely Next.js App Router file structure or layout inheritance problem. Focus on known issue: /admin/users works correctly with AdminLayout, but /admin/templates renders main layout instead.",
+  "id": "audit-admin-layout-and-routing-consistency",
+  "title": "Audit Admin Layout and Routing Consistency",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Perform comprehensive audit of all admin routes to identify layout inconsistencies. Document which admin pages use AdminLayout with admin menu, and which incorrectly fall back to main authenticated layout. Create matrix of: 1) All /admin/* routes, 2) Current layout each route uses, 3) Whether admin menu is displayed, 4) Whether correct styling/theme is applied. Identify root cause of routing issue - likely Next.js App Router file structure or layout inheritance problem. Focus on known issue: /admin/users works correctly with AdminLayout, but /admin/templates renders main layout instead.",
+      "timestamp": "2026-01-31T14:09:32.305Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T14:29:43.145Z"
+}

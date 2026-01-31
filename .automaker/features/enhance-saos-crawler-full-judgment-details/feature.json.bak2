@@ -1,0 +1,16 @@
+{
+  "category": "enhancement",
+  "description": "Update the SAOS crawler to fetch all available judgment data fields, not just the summary data from search results. According to SAOS API documentation (https://www.saos.org.pl/help/index.php/dokumentacja-api/api-przegladania-danych), the search endpoint returns summary data, and a separate API call is needed to get full judgment details. Implementation: 1) After fetching search results, make additional API calls to /api/judgments/{judgmentId} endpoint for each judgment, 2) Extract and store all available fields: full text content (textContent), judges (sędziowie), court division (wydział), legal basis (podstawa prawna), referenced regulations (przepisy), keywords (słowa kluczowe), parties (strony), attorneys (pełnomocnicy), proceeding type (typ postępowania), judgment type (rodzaj orzeczenia), 3) Update LegalRuling entity to include these additional fields or store in JSONB metadata field, 4) Implement rate limiting to avoid overwhelming SAOS API, 5) Add retry logic for failed detail fetches, 6) Update indexing workflow to use full text for tsvector generation. Consider implementing incremental backfill for existing records.",
+  "id": "enhance-saos-crawler-full-judgment-details",
+  "title": "Enhance SAOS Crawler to Fetch Complete Judgment Data",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Update the SAOS crawler to fetch all available judgment data fields, not just the summary data from search results. According to SAOS API documentation (https://www.saos.org.pl/help/index.php/dokumentacja-api/api-przegladania-danych), the search endpoint returns summary data, and a separate API call is needed to get full judgment details. Implementation: 1) After fetching search results, make additional API calls to /api/judgments/{judgmentId} endpoint for each judgment, 2) Extract and store all available fields: full text content (textContent), judges (sędziowie), court division (wydział), legal basis (podstawa prawna), referenced regulations (przepisy), keywords (słowa kluczowe), parties (strony), attorneys (pełnomocnicy), proceeding type (typ postępowania), judgment type (rodzaj orzeczenia), 3) Update LegalRuling entity to include these additional fields or store in JSONB metadata field, 4) Implement rate limiting to avoid overwhelming SAOS API, 5) Add retry logic for failed detail fetches, 6) Update indexing workflow to use full text for tsvector generation. Consider implementing incremental backfill for existing records.",
+      "timestamp": "2026-01-31T16:04:26.564Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "category": "bug",
+  "description": "After analyzing the redirect issue, verify the /admin/settings route is correctly configured to inherit AdminLayout. Implementation: 1) Confirm apps/web/src/app/admin/settings/page.tsx exists (NOT layout.tsx), 2) Verify there is NO layout.tsx in apps/web/src/app/admin/settings/ directory (this would override parent AdminLayout), 3) Check that /admin/layout.tsx exists and is properly configured, 4) Verify AdminLayout includes settings in menu configuration, 5) Ensure the route is properly registered in Next.js App Router, 6) Check if there's any middleware intercepting /admin/settings specifically, 7) Verify no conflicting route exists at /settings (without admin prefix), 8) Test that navigation to /admin/settings works via Link component and direct URL access. If layout inheritance is broken, follow documented patterns from admin-layout-and-routing-consistency and document-admin-layout-and-routing-patterns features.",
+  "id": "verify-admin-settings-route-configuration",
+  "title": "Verify Admin Settings Route Configuration and Layout Inheritance",
+  "dependencies": [
+    "analyze-admin-settings-page-redirect-issue"
+  ],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "After analyzing the redirect issue, verify the /admin/settings route is correctly configured to inherit AdminLayout. Implementation: 1) Confirm apps/web/src/app/admin/settings/page.tsx exists (NOT layout.tsx), 2) Verify there is NO layout.tsx in apps/web/src/app/admin/settings/ directory (this would override parent AdminLayout), 3) Check that /admin/layout.tsx exists and is properly configured, 4) Verify AdminLayout includes settings in menu configuration, 5) Ensure the route is properly registered in Next.js App Router, 6) Check if there's any middleware intercepting /admin/settings specifically, 7) Verify no conflicting route exists at /settings (without admin prefix), 8) Test that navigation to /admin/settings works via Link component and direct URL access. If layout inheritance is broken, follow documented patterns from admin-layout-and-routing-consistency and document-admin-layout-and-routing-patterns features.",
+      "timestamp": "2026-01-31T14:42:44.509Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -11,8 +11,10 @@ Langfuse integration follows the official pattern:
 
 Conversation History Support:
 This agent accepts conversation_history parameter containing previous messages.
-History format: [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
-The agent uses this context to avoid asking questions already answered in previous turns.
+History format:
+    [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+The agent uses this context to avoid asking questions already answered in
+previous turns.
 """
 
 import logging
@@ -161,7 +163,8 @@ async def generate_clarifications(
         query_type: The type of legal query (e.g., 'contract_dispute', 'employment')
         mode: Response mode (LAWYER or SIMPLE)
         conversation_history: Previous messages in format:
-            [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+            [{"role": "user", "content": "..."},
+             {"role": "assistant", "content": "..."}]
         session_id: Session ID for Langfuse tracing
         user_id: User ID for Langfuse tracing
 

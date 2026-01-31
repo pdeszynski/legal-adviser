@@ -1,0 +1,20 @@
+{
+  "category": "enhancement",
+  "description": "Improve PostgreSQL full-text search by using weighted tsvector columns where different fields contribute differently to relevance ranking. Current issue: search may not prioritize title/court appropriately over content. Implementation: 1) Update LegalRuling entity to use setweight() function when creating tsvector: setweight(to_tsvector('polish', coalesce(title, '')), 'A') || setweight(to_tsvector('polish', coalesce(courtName, '')), 'A') || setweight(to_tsvector('polish', coalesce(textContent, '')), 'B') || setweight(to_tsvector('polish', coalesce(summary, '')), 'C'), 2) Weights: A (highest) for title and court, B for full text content, C (lowest) for summary, 3) Add generated column for tsvector or update via trigger, 4) Create GIN index on weighted tsvector column for performance, 5) Update search queries to use ts_rank() with weights for relevance scoring, 6) Analyze search result quality and adjust weights if needed, 7) Add integration tests verifying search results prioritize title matches over content matches. Follow PostgreSQL documentation for setweight() and ts_rank().",
+  "id": "enhance-saos-full-text-search-with-weighted-tsvector",
+  "title": "Enhance Full-Text Search with Weighted TSVector Index",
+  "dependencies": [
+    "legal-ruling-entity",
+    "ruling-search-service"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Improve PostgreSQL full-text search by using weighted tsvector columns where different fields contribute differently to relevance ranking. Current issue: search may not prioritize title/court appropriately over content. Implementation: 1) Update LegalRuling entity to use setweight() function when creating tsvector: setweight(to_tsvector('polish', coalesce(title, '')), 'A') || setweight(to_tsvector('polish', coalesce(courtName, '')), 'A') || setweight(to_tsvector('polish', coalesce(textContent, '')), 'B') || setweight(to_tsvector('polish', coalesce(summary, '')), 'C'), 2) Weights: A (highest) for title and court, B for full text content, C (lowest) for summary, 3) Add generated column for tsvector or update via trigger, 4) Create GIN index on weighted tsvector column for performance, 5) Update search queries to use ts_rank() with weights for relevance scoring, 6) Analyze search result quality and adjust weights if needed, 7) Add integration tests verifying search results prioritize title matches over content matches. Follow PostgreSQL documentation for setweight() and ts_rank().",
+      "timestamp": "2026-01-31T16:04:26.565Z",
+      "source": "initial"
+    }
+  ]
+}

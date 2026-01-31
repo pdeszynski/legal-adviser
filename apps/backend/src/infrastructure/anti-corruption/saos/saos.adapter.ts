@@ -18,6 +18,20 @@ import {
 } from './saos.types';
 
 /**
+ * Configuration for batch detail fetching
+ */
+export interface FetchJudgmentsDetailsOptions {
+  /** Maximum number of concurrent requests */
+  concurrency?: number;
+  /** Delay between batches in milliseconds */
+  batchDelay?: number;
+  /** Whether to continue on error */
+  continueOnError?: boolean;
+  /** Progress callback */
+  onProgress?: (current: number, total: number) => void;
+}
+
+/**
  * SAOS Anti-Corruption Layer Adapter
  *
  * Provides a clean interface to SAOS API, isolating the domain
@@ -201,6 +215,193 @@ export class SaosAdapter {
         error: this.transformer.createIntegrationError(error, false),
       };
     }
+  }
+
+  /**
+   * Fetch full details for multiple judgments by their SAOS IDs
+   *
+   * This method handles rate limiting, retries, and concurrent requests
+   * to efficiently fetch full judgment details for a list of IDs.
+   *
+   * @param judgmentIds - Array of SAOS judgment IDs (as numbers or strings)
+   * @param options - Configuration for batch fetching
+   * @returns Map of SAOS ID to LegalRulingDto (successful fetches only)
+   */
+  async fetchJudgmentDetails(
+    judgmentIds: Array<string | number>,
+    options: FetchJudgmentsDetailsOptions = {},
+  ): Promise<Map<string, LegalRulingDto>> {
+    const {
+      concurrency = 5,
+      batchDelay = 100,
+      continueOnError = true,
+      onProgress,
+    } = options;
+
+    const result = new Map<string, LegalRulingDto>();
+    const failedIds: Array<{ id: string; error: string }> = [];
+    const total = judgmentIds.length;
+
+    if (total === 0) {
+      return result;
+    }
+
+    this.logger.log(
+      `[SAOS] Fetching full details for ${total} judgments (concurrency: ${concurrency}, batchDelay: ${batchDelay}ms)`,
+    );
+
+    // Process in batches to control concurrency and rate limiting
+    for (let i = 0; i < judgmentIds.length; i += concurrency) {
+      const batchNumber = Math.floor(i / concurrency) + 1;
+      const batch = judgmentIds.slice(i, i + concurrency);
+
+      this.logger.debug(
+        `[SAOS] Processing batch ${batchNumber}: ${batch.length} judgments (IDs: ${batch.map(String).join(', ')})`,
+      );
+
+      // Fetch all judgments in this batch concurrently
+      const batchResults = await Promise.allSettled(
+        batch.map((id) => this.getJudgment(String(id))),
+      );
+
+      // Process results
+      for (let j = 0; j < batchResults.length; j++) {
+        const settledResult = batchResults[j];
+        const judgmentId = String(batch[j]);
+
+        if (settledResult.status === 'fulfilled') {
+          const judgmentResult = settledResult.value;
+          if (judgmentResult.success && judgmentResult.data) {
+            result.set(judgmentId, judgmentResult.data);
+            this.logger.debug(
+              `[SAOS] Successfully fetched judgment ${judgmentId}: signature="${judgmentResult.data.signature}", court="${judgmentResult.data.courtName}"`,
+            );
+          } else {
+            const errorMsg = judgmentResult.error?.message || 'Unknown error';
+            this.logger.warn(
+              `[SAOS] Failed to fetch judgment ${judgmentId}: ${errorMsg}`,
+            );
+            failedIds.push({ id: judgmentId, error: errorMsg });
+            if (!continueOnError) {
+              throw new Error(
+                `Failed to fetch judgment ${judgmentId}: ${judgmentResult.error?.message}`,
+              );
+            }
+          }
+        } else {
+          const errorMsg = settledResult.reason instanceof Error
+            ? settledResult.reason.message
+            : String(settledResult.reason);
+          this.logger.error(
+            `[SAOS] Promise rejected for judgment ${judgmentId}: ${errorMsg}`,
+          );
+          this.logger.debug(
+            `[SAOS] Full error for judgment ${judgmentId}: ${settledResult.reason}`,
+          );
+          failedIds.push({ id: judgmentId, error: errorMsg });
+          if (!continueOnError) {
+            throw settledResult.reason;
+          }
+        }
+      }
+
+      // Report progress
+      const currentCount = result.size;
+      if (onProgress) {
+        onProgress(currentCount, total);
+      }
+
+      // Add delay between batches for rate limiting (except for last batch)
+      if (i + concurrency < judgmentIds.length && batchDelay > 0) {
+        await this.sleep(batchDelay);
+      }
+
+      this.logger.debug(
+        `[SAOS] Batch ${batchNumber} complete: ${currentCount}/${total} judgments fetched (${result.size} successful, ${failedIds.length} failed)`,
+      );
+    }
+
+    // Log summary of completed fetch
+    this.logger.log(
+      `[SAOS] Fetched full details for ${result.size}/${total} judgments (${failedIds.length} failed)`,
+    );
+
+    // If there were failures, log a summary
+    if (failedIds.length > 0) {
+      this.logger.warn(
+        `[SAOS] Failed to fetch ${failedIds.length} judgments. ` +
+          `Failed IDs: ${failedIds.map((f) => f.id).join(', ')}`,
+      );
+      // Log first few failures in detail
+      failedIds.slice(0, 5).forEach((f, idx) => {
+        this.logger.debug(
+          `[SAOS] Failure ${idx + 1}/${failedIds.length}: ID=${f.id}, error="${f.error}"`,
+        );
+      });
+      if (failedIds.length > 5) {
+        this.logger.debug(`[SAOS] ... and ${failedIds.length - 5} more failures`);
+      }
+    }
+
+    return result;
+
+    return result;
+  }
+
+  /**
+   * Search SAOS for legal rulings with optional full detail fetching
+   *
+   * @param query - Search query parameters
+   * @param fetchDetails - If true, fetches full details for all results
+   * @param fetchOptions - Options for batch detail fetching (when fetchDetails is true)
+   */
+  async searchWithDetails(
+    query: SearchRulingsQuery,
+    fetchDetails: boolean = false,
+    fetchOptions?: FetchJudgmentsDetailsOptions,
+  ): Promise<IntegrationResult<RulingSearchResponse>> {
+    // First, get search results (summary data)
+    const searchResult = await this.search(query);
+
+    if (!searchResult.success || !searchResult.data) {
+      return searchResult;
+    }
+
+    // If not fetching details, return as-is
+    if (!fetchDetails) {
+      return searchResult;
+    }
+
+    // Fetch full details for all results
+    const saosIds = searchResult.data.results
+      .map((result) => result.ruling.externalId)
+      .filter((id): id is string => id !== undefined);
+
+    if (saosIds.length === 0) {
+      return searchResult;
+    }
+
+    const detailMap = await this.fetchJudgmentDetails(saosIds, fetchOptions);
+
+    // Merge detailed data back into search results
+    const enhancedResults = searchResult.data.results.map((result) => {
+      const detailedRuling = detailMap.get(result.ruling.externalId || '');
+      if (detailedRuling) {
+        return {
+          ...result,
+          ruling: detailedRuling,
+        };
+      }
+      return result;
+    });
+
+    return {
+      success: true,
+      data: {
+        ...searchResult.data,
+        results: enhancedResults,
+      },
+    };
   }
 
   /**

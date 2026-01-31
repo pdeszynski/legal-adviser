@@ -5,9 +5,9 @@
   "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
   "branchName": null,
   "runningFeatureIds": [
-    "fix-graphql-filter-format-for-nestjs-query",
-    "update-buildgraphqlfilter-for-field-type-mapping",
-    "add-admin-filter-e2e-tests"
+    "add-saos-crawler-observability-and-monitoring",
+    "create-saos-crawler-e2e-tests",
+    "enhance-saos-full-text-search-with-weighted-tsvector"
   ],
-  "savedAt": "2026-01-31T13:34:56.690Z"
+  "savedAt": "2026-01-31T16:20:13.334Z"
 }

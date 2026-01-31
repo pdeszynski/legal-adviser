@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Add proper Python environment setup in GitHub Actions workflow for the ai-engine package. The CI is attempting to run Python tools (ruff, pytest) but the Python environment is not properly configured. Implementation: 1) Add 'actions/setup-python@v5' step in CI workflow before running ai-engine commands, 2) Set Python version to match .python-version file (likely 3.11 or 3.12), 3) Cache pip packages using 'actions/cache@v4' for Python dependencies, 4) Install UV package manager as part of Python setup step, 5) Ensure the Python and UV setup happens before pnpm run typecheck/lint/test, 6) Update CI workflow to run ai-engine setup steps only when Python files change. This ensures the CI environment has Python, UV, and necessary dependencies installed before running Python tooling.",
+  "id": "setup-python-environment-in-github-ci",
+  "title": "Configure Python Environment Setup in GitHub Actions CI",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Add proper Python environment setup in GitHub Actions workflow for the ai-engine package. The CI is attempting to run Python tools (ruff, pytest) but the Python environment is not properly configured. Implementation: 1) Add 'actions/setup-python@v5' step in CI workflow before running ai-engine commands, 2) Set Python version to match .python-version file (likely 3.11 or 3.12), 3) Cache pip packages using 'actions/cache@v4' for Python dependencies, 4) Install UV package manager as part of Python setup step, 5) Ensure the Python and UV setup happens before pnpm run typecheck/lint/test, 6) Update CI workflow to run ai-engine setup steps only when Python files change. This ensures the CI environment has Python, UV, and necessary dependencies installed before running Python tooling.",
+      "timestamp": "2026-01-31T14:11:57.806Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T14:26:56.392Z"
+}

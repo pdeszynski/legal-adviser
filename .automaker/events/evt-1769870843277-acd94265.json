@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769870843277-acd94265",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-31T14:47:23.277Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "analyze-admin-settings-page-redirect-issue",
+  "featureName": "Analyze Admin Settings Page Redirect Issue",
+  "error": "Feature completed in 277s - auto-verified",
+  "passes": true
+}

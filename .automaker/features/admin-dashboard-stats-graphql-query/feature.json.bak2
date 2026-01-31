@@ -1,0 +1,17 @@
+{
+  "category": "feature",
+  "description": "Create a GraphQL query to fetch aggregated statistics for the admin dashboard at /admin. The query should return: 1) Total number of users (count from users table), 2) Total number of documents (count from legal_documents table), 3) Total number of queries/conversations (count from legal_queries or chat_sessions table), 4) Document counts by status (DRAFT, GENERATING, COMPLETED, FAILED), 5) User count by role (admin, lawyer, client counts), 6) Active sessions count (if tracked). Create adminDashboard query in GraphQL resolvers with @RequireRole(ADMIN) decorator. Return structured stats object with all counts. Use efficient database aggregation queries (COUNT with GROUP BY) for performance.",
+  "id": "admin-dashboard-stats-graphql-query",
+  "title": "Create Admin Dashboard Stats GraphQL Query",
+  "dependencies": [],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Create a GraphQL query to fetch aggregated statistics for the admin dashboard at /admin. The query should return: 1) Total number of users (count from users table), 2) Total number of documents (count from legal_documents table), 3) Total number of queries/conversations (count from legal_queries or chat_sessions table), 4) Document counts by status (DRAFT, GENERATING, COMPLETED, FAILED), 5) User count by role (admin, lawyer, client counts), 6) Active sessions count (if tracked). Create adminDashboard query in GraphQL resolvers with @RequireRole(ADMIN) decorator. Return structured stats object with all counts. Use efficient database aggregation queries (COUNT with GROUP BY) for performance.",
+      "timestamp": "2026-01-31T15:31:50.372Z",
+      "source": "initial"
+    }
+  ]
+}

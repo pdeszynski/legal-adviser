@@ -35,10 +35,10 @@ from src.langfuse_init import (
     update_current_trace,
 )
 from src.main import app
+from src.services.langfuse_tracker import get_langfuse_tracker
 
 # create_trace is not in __all__ so import it directly from the module
 create_trace = getattr(langfuse_init, "create_trace", None)
-from src.services.langfuse_tracker import get_langfuse_tracker
 
 # -----------------------------------------------------------------------------
 # Test Fixtures
@@ -348,7 +348,8 @@ class TestClassifierAgentTracing:
             def mock_update_trace(**kwargs):
                 trace_metadata.append(kwargs)
 
-            # Need to patch is_langfuse_enabled to make update_current_trace actually run
+            # Need to patch is_langfuse_enabled to make update_current_trace
+            # actually run
             with patch("src.agents.classifier_agent.is_langfuse_enabled", return_value=True), \
                  patch("src.agents.classifier_agent.update_current_trace", side_effect=mock_update_trace):
                 _result, _metadata = await classify_case(
@@ -358,7 +359,8 @@ class TestClassifierAgentTracing:
                 )
 
                 # Verify trace was called with input (first call before agent runs)
-                # The update_current_trace is called twice: once for input, once for output
+                # The update_current_trace is called twice: once for input, once for
+                # output
                 assert len(trace_metadata) >= 1
 
                 # Check that session_id and user_id were passed in some call
@@ -432,7 +434,8 @@ class TestQAAgentTracing:
                 assert result["confidence"] == 0.85
                 assert result["query_type"] == "statute_interpretation"
 
-                # Verify metadata was captured (processing_time_ms is added to result, not trace)
+                # Verify metadata was captured (processing_time_ms is added to result,
+                # not trace)
                 assert "processing_time_ms" in result
                 assert result["processing_time_ms"] >= 0
 
@@ -441,7 +444,8 @@ class TestQAAgentTracing:
         """Test that user context (roles, etc.) is propagated to traces."""
         from src.auth import UserContext
 
-        # UserContext is a dataclass with roles as a list, role_level is a computed property
+        # UserContext is a dataclass with roles as a list, role_level is a computed
+        # property
         user = UserContext(
             id="user-with-roles",
             username="testuser",
@@ -534,6 +538,7 @@ class TestErrorTracking:
     @pytest.mark.asyncio
     async def test_qa_agent_timeout_error(self, reset_tracker):
         """Test that timeout errors are properly classified and tracked."""
+        from src.exceptions import AgentExecutionError
 
         with patch("src.agents.qa_agent.get_query_analyzer_agent") as mock_analyzer_getter:
             mock_analyzer = AsyncMock()
@@ -545,10 +550,11 @@ class TestErrorTracking:
 
             # The function should wrap the TimeoutError in LLMTimeoutError
             # We need to also mock is_langfuse_enabled to avoid trace update issues
-            with patch("src.agents.qa_agent.is_langfuse_enabled", return_value=False):
-                # Should raise LLMTimeoutError (wrapped by the error handling in answer_question)
-                with pytest.raises(Exception):
-                    await answer_question(
+            with (
+                patch("src.agents.qa_agent.is_langfuse_enabled", return_value=False),
+                pytest.raises(AgentExecutionError, match="qa_agent_simple"),
+            ):
+                await answer_question(
                         question="Test question",
                         mode="SIMPLE",
                         session_id="timeout-session",

@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Implement fix for /admin/settings page redirect issue based on root cause identified in analysis. Fix approaches based on findings: IF layout inheritance issue: Remove any layout.tsx from /admin/settings/ directory and ensure it inherits from /admin/layout.tsx. IF role validation issue: Fix role guard or client-side role check to correctly identify admin users - ensure user_roles array is checked for ADMIN/SUPER_ADMIN role. IF route configuration issue: Fix Next.js App Router configuration or middleware that's incorrectly intercepting /admin/settings. IF navigation component issue: Fix any navigation guards or redirects in AdminLayout or settings page component. IF JWT token issue: Ensure admin user's token contains correct roles in user_roles claim. After fix: 1) Test navigation to /admin/settings via menu link works, 2) Test direct URL access to /admin/settings works, 3) Verify admin layout (sidebar, header) is displayed, 4) Verify settings page content loads correctly, 5) Test with admin@refine.dev user, 6) Test that non-admin users still get redirected. Add E2E test to prevent regression.",
+  "id": "fix-admin-settings-page-access",
+  "title": "Fix Admin Settings Page Access Based on Investigation Findings",
+  "priority": 1,
+  "status": "in_progress",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Implement fix for /admin/settings page redirect issue based on root cause identified in analysis. Fix approaches based on findings: IF layout inheritance issue: Remove any layout.tsx from /admin/settings/ directory and ensure it inherits from /admin/layout.tsx. IF role validation issue: Fix role guard or client-side role check to correctly identify admin users - ensure user_roles array is checked for ADMIN/SUPER_ADMIN role. IF route configuration issue: Fix Next.js App Router configuration or middleware that's incorrectly intercepting /admin/settings. IF navigation component issue: Fix any navigation guards or redirects in AdminLayout or settings page component. IF JWT token issue: Ensure admin user's token contains correct roles in user_roles claim. After fix: 1) Test navigation to /admin/settings via menu link works, 2) Test direct URL access to /admin/settings works, 3) Verify admin layout (sidebar, header) is displayed, 4) Verify settings page content loads correctly, 5) Test with admin@refine.dev user, 6) Test that non-admin users still get redirected. Add E2E test to prevent regression.",
+      "timestamp": "2026-01-31T14:42:44.510Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T14:53:46.947Z"
+}

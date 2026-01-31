@@ -147,11 +147,11 @@ def _decode_jwt(token: str) -> dict[str, Any]:
     """
     try:
         import jwt
-    except ImportError:
+    except ImportError as e:
         raise ImportError(
             "PyJWT is required for JWT validation. "
             "Install it with: uv add pyjwt"
-        )
+        ) from e
 
     settings = get_settings()
     secret = settings.JWT_SECRET
@@ -221,7 +221,7 @@ def validate_jwt_token(token: str, session_id: str | None = None) -> UserContext
         raise
     except ImportError as e:
         # PyJWT not installed - configuration error
-        logger.exception("PyJWT not installed: %s", e)
+        logger.exception("PyJWT not installed")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={
@@ -231,9 +231,8 @@ def validate_jwt_token(token: str, session_id: str | None = None) -> UserContext
         ) from e
 
     # Validate session_id format if provided
-    if session_id is not None and session_id != "":
-        if not is_valid_uuid_v4(session_id):
-            raise HTTPException(
+    if session_id is not None and session_id != "" and not is_valid_uuid_v4(session_id):
+        raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail={
                     "error_code": "INVALID_SESSION_ID",
@@ -302,7 +301,7 @@ security = HTTPBearer(auto_error=False)
 
 
 async def _jwt_dependency_from_credentials(
-    credentials: HTTPAuthorizationCredentials | None = Depends(security),
+    credentials: HTTPAuthorizationCredentials | None = Depends(security),  # noqa: B008
 ) -> UserContext:
     """Internal dependency that extracts and validates JWT from credentials.
 

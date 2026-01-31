@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useCustom } from '@refinedev/core';
+import { useEffect, useState, useMemo } from 'react';
+import { useCustom, useList } from '@refinedev/core';
 import {
   BarChart,
   Bar,
@@ -25,11 +25,21 @@ import {
   TrendingDown,
   Clock,
   RefreshCw,
+  Shield,
+  Briefcase,
+  User as UserIcon,
+  Crown,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@legal/ui';
 import { useDocumentMonitoring } from '@/hooks';
-import { DocumentQueueMonitor, DocumentActivityFeed } from '@/components/admin';
-import type { AnalyticsDashboard } from '@/generated/graphql';
+import {
+  DocumentQueueMonitor,
+  DocumentActivityFeed,
+  AdminStatsGridSkeleton,
+  AdminTokenStatsGridSkeleton,
+  AdminUsersByRoleSkeleton,
+} from '@/components/admin';
+import type { AnalyticsDashboard, User } from '@/generated/graphql';
 
 // Import additional types for chart data
 import type { DocumentTypeDistribution, AiOperationBreakdown } from '@/generated/graphql';
@@ -69,6 +79,15 @@ function formatPercentage(value: number): string {
   return value.toFixed(1) + '%';
 }
 
+// User role configuration for display
+const USER_ROLES = [
+  { value: 'super_admin', label: 'Super Admin', icon: Crown, color: 'text-purple-600' },
+  { value: 'admin', label: 'Admin', icon: Shield, color: 'text-red-600' },
+  { value: 'lawyer', label: 'Lawyer', icon: Briefcase, color: 'text-blue-600' },
+  { value: 'paralegal', label: 'Paralegal', icon: Users, color: 'text-green-600' },
+  { value: 'client', label: 'Client', icon: UserIcon, color: 'text-gray-600' },
+] as const;
+
 export default function AdminDashboardPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d'>('30d');
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
@@ -80,6 +99,39 @@ export default function AdminDashboardPage() {
     isLoading: isMonitoringLoading,
     refetch: refetchMonitoring,
   } = useDocumentMonitoring();
+
+  // Fetch total users count (without filters to get all users)
+  const totalUsersList = useList<User>({
+    resource: 'users',
+    pagination: { current: 1, pageSize: 1 } as any,
+  });
+
+  // Fetch users by role for each role type
+  const usersByRoleQueries = USER_ROLES.map((role) => {
+    return useList<User>({
+      resource: 'users',
+      filters: [{ field: 'role', operator: 'eq', value: role.value }] as any,
+      pagination: { current: 1, pageSize: 1 } as any,
+    });
+  });
+
+  // Calculate users by role data
+  const usersByRoleData = useMemo(() => {
+    return USER_ROLES.map((role, index) => {
+      const queryResult = usersByRoleQueries[index];
+      const total = queryResult.result?.total || 0;
+      return {
+        name: role.label,
+        value: total,
+        icon: role.icon,
+        color: role.color,
+        role: role.value,
+      };
+    });
+  }, [usersByRoleQueries]);
+
+  const totalUsers = totalUsersList.result?.total || 0;
+  const isLoadingTotalUsers = totalUsersList.query.isLoading || usersByRoleQueries.some((q) => q.query.isLoading);
 
   // Calculate date range based on selected period
   const getStartDate = () => {
@@ -211,147 +263,188 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Summary Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* Total Users Card */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {isLoading ? '...' : formatNumber(analytics?.userGrowth?.totalUsers || 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {analytics?.userGrowth?.newUsers || 0} new this period
-            </p>
-            {analytics?.userGrowth?.growthRate !== undefined && (
-              <div
-                className={`flex items-center gap-1 text-xs mt-1 ${
-                  analytics.userGrowth.growthRate >= 0 ? 'text-green-600' : 'text-red-600'
-                }`}
-              >
-                {analytics.userGrowth.growthRate >= 0 ? (
-                  <TrendingUp className="h-3 w-3" />
-                ) : (
-                  <TrendingDown className="h-3 w-3" />
-                )}
-                {formatPercentage(Math.abs(analytics.userGrowth.growthRate))} growth
+      {isLoading ? (
+        <AdminStatsGridSkeleton />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {/* Total Users Card */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatNumber(analytics?.userGrowth?.totalUsers || 0)}
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <p className="text-xs text-muted-foreground">
+                {analytics?.userGrowth?.newUsers || 0} new this period
+              </p>
+              {analytics?.userGrowth?.growthRate !== undefined && (
+                <div
+                  className={`flex items-center gap-1 text-xs mt-1 ${
+                    analytics.userGrowth.growthRate >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
+                  {analytics.userGrowth.growthRate >= 0 ? (
+                    <TrendingUp className="h-3 w-3" />
+                  ) : (
+                    <TrendingDown className="h-3 w-3" />
+                  )}
+                  {formatPercentage(Math.abs(analytics.userGrowth.growthRate))} growth
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-        {/* Active Sessions Card */}
+          {/* Active Sessions Card */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Sessions</CardTitle>
+              <Activity className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {analytics?.systemHealth?.activeSessions || 0}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {analytics?.userGrowth?.activeUsers || 0} active users
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Documents Card */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Documents</CardTitle>
+              <FileText className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatNumber(analytics?.documents?.totalDocuments || 0)}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {analytics?.documents?.generatingDocuments || 0} generating now
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-green-600">
+                  {analytics?.documents?.completedDocuments || 0} completed
+                </span>
+                <span className="text-xs text-red-600">
+                  {analytics?.documents?.failedDocuments || 0} failed
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Queries Card */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">AI Queries</CardTitle>
+              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatNumber(analytics?.queries?.totalQueries || 0)}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {formatNumber(analytics?.queries?.uniqueUsers || 0)} unique users
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {analytics?.queries?.avgQueriesPerUser?.toFixed(1) || 0} avg per user
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Users by Role Breakdown */}
+      {isLoadingTotalUsers ? (
+        <AdminUsersByRoleSkeleton />
+      ) : (
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Sessions</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Users by Role
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {isLoading ? '...' : analytics?.systemHealth?.activeSessions || 0}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {analytics?.userGrowth?.activeUsers || 0} active users
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Documents Card */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Documents</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {isLoading ? '...' : formatNumber(analytics?.documents?.totalDocuments || 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {analytics?.documents?.generatingDocuments || 0} generating now
-            </p>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-green-600">
-                {analytics?.documents?.completedDocuments || 0} completed
-              </span>
-              <span className="text-xs text-red-600">
-                {analytics?.documents?.failedDocuments || 0} failed
-              </span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              {usersByRoleData.map((roleData) => {
+                const IconComponent = roleData.icon;
+                const percentage = totalUsers > 0 ? (roleData.value / totalUsers) * 100 : 0;
+                return (
+                  <div
+                    key={roleData.role}
+                    className="p-4 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <IconComponent className={`h-4 w-4 ${roleData.color}`} />
+                      <span className="text-sm font-medium text-muted-foreground">{roleData.name}</span>
+                    </div>
+                    <div className="text-2xl font-bold">{roleData.value}</div>
+                    <div className="text-xs text-muted-foreground">{percentage.toFixed(1)}% of total</div>
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
-
-        {/* Queries Card */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">AI Queries</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {isLoading ? '...' : formatNumber(analytics?.queries?.totalQueries || 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {formatNumber(analytics?.queries?.uniqueUsers || 0)} unique users
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {analytics?.queries?.avgQueriesPerUser?.toFixed(1) || 0} avg per user
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      )}
 
       {/* Token Usage and Cost Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        {/* Total Tokens */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Tokens</CardTitle>
-            <Zap className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {isLoading ? '...' : formatNumber(analytics?.aiUsage?.totalTokens || 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {analytics?.aiUsage?.totalRequests || 0} requests
-            </p>
-          </CardContent>
-        </Card>
+      {isLoading ? (
+        <AdminTokenStatsGridSkeleton />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-3">
+          {/* Total Tokens */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Tokens</CardTitle>
+              <Zap className="h-4 w-4 text-yellow-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatNumber(analytics?.aiUsage?.totalTokens || 0)}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {analytics?.aiUsage?.totalRequests || 0} requests
+              </p>
+            </CardContent>
+          </Card>
 
-        {/* Total Cost */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Cost</CardTitle>
-            <span className="text-lg">$</span>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {isLoading ? '...' : formatCurrency(analytics?.aiUsage?.totalCost || 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Avg {formatCurrency(analytics?.aiUsage?.avgCostPerRequest || 0)}/request
-            </p>
-          </CardContent>
-        </Card>
+          {/* Total Cost */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Cost</CardTitle>
+              <span className="text-lg">$</span>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatCurrency(analytics?.aiUsage?.totalCost || 0)}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Avg {formatCurrency(analytics?.aiUsage?.avgCostPerRequest || 0)}/request
+              </p>
+            </CardContent>
+          </Card>
 
-        {/* System Health */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">System Health</CardTitle>
-            <Activity className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {isLoading
-                ? '...'
-                : formatPercentage(analytics?.systemHealth?.documentSuccessRate || 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">Document success rate</p>
-          </CardContent>
-        </Card>
-      </div>
+          {/* System Health */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">System Health</CardTitle>
+              <Activity className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatPercentage(analytics?.systemHealth?.documentSuccessRate || 0)}
+              </div>
+              <p className="text-xs text-muted-foreground">Document success rate</p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Real-Time Document Monitoring */}
       <div className="grid gap-4 md:grid-cols-2">

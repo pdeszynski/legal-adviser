@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "The GitHub Actions CI is failing because UV (Python package manager) is not installed. The ai-engine package uses 'uv run' for typecheck, lint, and test commands, but the CI environment doesn't have UV installed. Fix the GitHub Actions workflow to install UV before running Python-related commands. Implementation: 1) Add UV installation step in .github/workflows/ci.yml before running pnpm build/typecheck/lint/test, 2) Use official UV installation script: 'curl -LsSf https://astral.sh/uv/install.sh | sh' or pip install uv, 3) Ensure UV is available in PATH for subsequent steps, 4) Verify UV installation works across Ubuntu runners used by GitHub Actions, 5) Add caching for UV to speed up builds if not already present. This ensures all 'uv run' commands work in CI environment.",
+  "id": "install-uv-in-github-workflow",
+  "title": "Install UV Package Manager in GitHub CI Workflow",
+  "dependencies": [],
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "The GitHub Actions CI is failing because UV (Python package manager) is not installed. The ai-engine package uses 'uv run' for typecheck, lint, and test commands, but the CI environment doesn't have UV installed. Fix the GitHub Actions workflow to install UV before running Python-related commands. Implementation: 1) Add UV installation step in .github/workflows/ci.yml before running pnpm build/typecheck/lint/test, 2) Use official UV installation script: 'curl -LsSf https://astral.sh/uv/install.sh | sh' or pip install uv, 3) Ensure UV is available in PATH for subsequent steps, 4) Verify UV installation works across Ubuntu runners used by GitHub Actions, 5) Add caching for UV to speed up builds if not already present. This ensures all 'uv run' commands work in CI environment.",
+      "timestamp": "2026-01-31T14:11:57.805Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -3,12 +3,12 @@ import {
   UserRoleEnum,
   UserStatusEnum,
 } from '../../../domain/user-management/value-objects';
-import { UserOrmEntity } from '../entities/user.orm-entity';
+import { User } from '../../../modules/users/entities/user.entity';
 
 /**
  * User Mapper
  *
- * Maps between UserAggregate (domain) and UserOrmEntity (persistence).
+ * Maps between UserAggregate (domain) and User entity (persistence).
  *
  * Infrastructure Layer Pattern:
  * - Converts value objects to primitive types for storage
@@ -19,7 +19,7 @@ export class UserMapper {
   /**
    * Map ORM entity to Domain aggregate
    */
-  static toDomain(entity: UserOrmEntity): UserAggregate {
+  static toDomain(entity: User): UserAggregate {
     // Map isActive boolean to UserStatusEnum
     const status = entity.isActive
       ? UserStatusEnum.ACTIVE
@@ -46,8 +46,8 @@ export class UserMapper {
   /**
    * Map Domain aggregate to ORM entity
    */
-  static toPersistence(aggregate: UserAggregate): UserOrmEntity {
-    const entity = new UserOrmEntity();
+  static toPersistence(aggregate: UserAggregate): User {
+    const entity = new User();
 
     entity.id = aggregate.id;
     entity.email = aggregate.email.toValue();
@@ -58,18 +58,13 @@ export class UserMapper {
     entity.createdAt = aggregate.createdAt;
     entity.updatedAt = aggregate.updatedAt;
 
-    // Fields not present in UserAggregate - keep defaults
-    entity.username = null;
-    entity.disclaimerAccepted = false;
-    entity.disclaimerAcceptedAt = null;
-
     return entity;
   }
 
   /**
    * Map list of ORM entities to list of Domain aggregates
    */
-  static toDomainList(entities: UserOrmEntity[]): UserAggregate[] {
+  static toDomainList(entities: User[]): UserAggregate[] {
     return entities.map((entity) => this.toDomain(entity));
   }
 }

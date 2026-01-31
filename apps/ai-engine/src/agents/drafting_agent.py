@@ -10,8 +10,10 @@ Langfuse integration follows the official pattern:
 
 Conversation History Support:
 This agent accepts conversation_history parameter containing previous messages.
-History format: [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
-The agent uses this context to refine document generation based on previously provided details.
+History format:
+    [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+The agent uses this context to refine document generation based on previously
+provided details.
 """
 
 import logging
@@ -238,7 +240,8 @@ async def generate_document(
         session_id: Session ID for tracking
         user_id: User ID for observability
         conversation_history: Previous messages in format:
-            [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+            [{"role": "user", "content": "..."},
+             {"role": "assistant", "content": "..."}]
 
     Returns:
         Tuple of (draft result, metadata dict)
@@ -270,27 +273,26 @@ async def generate_document(
             },
         )
 
-    try:
-        agent = drafting_agent()
+    agent = drafting_agent()
 
-        # Get template information for this document type
-        template_info = get_template_for_document_type(document_type)
+    # Get template information for this document type
+    template_info = get_template_for_document_type(document_type)
 
-        # Build enhanced prompt with template guidance
-        template_sections = "\n".join(
-            f"- {section}" for section in template_info["required_sections"]
-        )
+    # Build enhanced prompt with template guidance
+    template_sections = "\n".join(
+        f"- {section}" for section in template_info["required_sections"]
+    )
 
-        # Build conversation history context
-        history_context = ""
-        if conversation_history:
-            history_lines = []
-            for msg in conversation_history[-6:]:  # Limit to last 6 messages
-                role_display = "User" if msg.get("role") == "user" else "Assistant"
-                history_lines.append(f"{role_display}: {msg.get('content', '')}")
-            history_context = f"\n\n## Previous Conversation\n{chr(10).join(history_lines)}"
+    # Build conversation history context
+    history_context = ""
+    if conversation_history:
+        history_lines = []
+        for msg in conversation_history[-6:]:  # Limit to last 6 messages
+            role_display = "User" if msg.get("role") == "user" else "Assistant"
+            history_lines.append(f"{role_display}: {msg.get('content', '')}")
+        history_context = f"\n\n## Previous Conversation\n{chr(10).join(history_lines)}"
 
-        user_prompt = f"""Please draft a legal document with the following specifications:
+    user_prompt = f"""Please draft a legal document with the following specifications:
 
 ## Document Type
 {document_type}
@@ -318,34 +320,30 @@ Required sections for this document type:
 
 Generate the complete document with all requested metadata."""
 
-        result = await agent.run(user_prompt, output_type=DraftResult)
-        draft = result.output
+    result = await agent.run(user_prompt, output_type=DraftResult)
+    draft = result.output
 
-        processing_time_ms = (time.time() - start_time) * 1000
+    processing_time_ms = (time.time() - start_time) * 1000
 
-        metadata = {
-            "processing_time_ms": processing_time_ms,
-            "model": settings.OPENAI_MODEL,
-            "document_type": document_type,
-            "content_length": len(draft.content),
-            "quality_score": draft.quality_score,
-            "placeholder_count": len(draft.place_holders),
-        }
+    metadata = {
+        "processing_time_ms": processing_time_ms,
+        "model": settings.OPENAI_MODEL,
+        "document_type": document_type,
+        "content_length": len(draft.content),
+        "quality_score": draft.quality_score,
+        "placeholder_count": len(draft.place_holders),
+    }
 
-        # Update trace with output
-        if is_langfuse_enabled():
-            update_current_trace(
-                output={
-                    "document_type": document_type,
-                    "content_length": len(draft.content),
-                    "quality_score": draft.quality_score,
-                    "placeholder_count": len(draft.place_holders),
-                    "processing_time_ms": processing_time_ms,
-                }
-            )
+    # Update trace with output
+    if is_langfuse_enabled():
+        update_current_trace(
+            output={
+                "document_type": document_type,
+                "content_length": len(draft.content),
+                "quality_score": draft.quality_score,
+                "placeholder_count": len(draft.place_holders),
+                "processing_time_ms": processing_time_ms,
+            }
+        )
 
-        return draft, metadata
-
-    except Exception:
-        # Error is automatically tracked by PydanticAI's instrumentation
-        raise
+    return draft, metadata

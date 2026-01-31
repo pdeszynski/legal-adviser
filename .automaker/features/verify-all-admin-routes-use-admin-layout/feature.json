@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "After fixing the layout file structure, verify that all admin routes now consistently use AdminLayout. Test each admin route: 1) /admin/users - should show AdminLayout with admin menu, 2) /admin/templates - should show AdminLayout (NOT main layout), 3) /admin/audit-logs - should show AdminLayout, 4) /admin/documents - should show AdminLayout, 5) /admin/api-keys - should show AdminLayout, 6) /admin/settings - should show AdminLayout, 7) /admin/analytics - should show AdminLayout, 8) /admin/dashboard - should show AdminLayout. For each route, verify: navigation shows admin-specific menu items, styling matches admin theme (sidebar/header), no main layout elements appear, correct role-based access control works. Create E2E test to verify layout consistency.",
+  "id": "verify-all-admin-routes-use-admin-layout",
+  "title": "Verify All Admin Routes Use AdminLayout After Fix",
+  "priority": 1,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "After fixing the layout file structure, verify that all admin routes now consistently use AdminLayout. Test each admin route: 1) /admin/users - should show AdminLayout with admin menu, 2) /admin/templates - should show AdminLayout (NOT main layout), 3) /admin/audit-logs - should show AdminLayout, 4) /admin/documents - should show AdminLayout, 5) /admin/api-keys - should show AdminLayout, 6) /admin/settings - should show AdminLayout, 7) /admin/analytics - should show AdminLayout, 8) /admin/dashboard - should show AdminLayout. For each route, verify: navigation shows admin-specific menu items, styling matches admin theme (sidebar/header), no main layout elements appear, correct role-based access control works. Create E2E test to verify layout consistency.",
+      "timestamp": "2026-01-31T14:09:32.306Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T14:18:40.781Z"
+}

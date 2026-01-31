@@ -1,0 +1,19 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive Playwright E2E tests to verify admin layout consistency and prevent regressions. Test scenarios: 1) Admin user navigates to /admin/users - verifies AdminLayout is used, admin menu visible, 2) Admin user navigates to /admin/templates - verifies AdminLayout is used (not main layout), 3) Test all /admin/* routes to verify consistent layout, 4) Verify non-admin user cannot access any admin routes (403), 5) Verify navigation menu shows admin-specific items on all admin pages, 6) Verify layout persists across page navigations within admin section, 7) Visual regression tests to compare layout across different admin pages. Store screenshots as baseline for future comparisons. Tests should catch if any admin page accidentally uses main layout.",
+  "id": "create-admin-layout-consistency-e2e-tests",
+  "title": "Create E2E Tests for Admin Layout Consistency",
+  "dependencies": [
+    "verify-all-admin-routes-use-admin-layout"
+  ],
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive Playwright E2E tests to verify admin layout consistency and prevent regressions. Test scenarios: 1) Admin user navigates to /admin/users - verifies AdminLayout is used, admin menu visible, 2) Admin user navigates to /admin/templates - verifies AdminLayout is used (not main layout), 3) Test all /admin/* routes to verify consistent layout, 4) Verify non-admin user cannot access any admin routes (403), 5) Verify navigation menu shows admin-specific items on all admin pages, 6) Verify layout persists across page navigations within admin section, 7) Visual regression tests to compare layout across different admin pages. Store screenshots as baseline for future comparisons. Tests should catch if any admin page accidentally uses main layout.",
+      "timestamp": "2026-01-31T14:09:32.306Z",
+      "source": "initial"
+    }
+  ]
+}

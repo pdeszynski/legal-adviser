@@ -53,6 +53,7 @@ registerEnumType(CourtType, {
  * Ruling Metadata Interface
  *
  * Additional metadata about the ruling
+ * Extended to support full judgment details from SAOS
  */
 export interface RulingMetadata {
   /** Legal area/domain (e.g., civil, criminal, administrative) */
@@ -63,6 +64,43 @@ export interface RulingMetadata {
   keywords?: string[];
   /** Source URL or database reference */
   sourceReference?: string;
+  /** Division name (wydział) within the court */
+  divisionName?: string;
+  /** Full legal basis (podstawa prawna) for the judgment */
+  legalBasis?: string[];
+  /** Referenced regulations (przepisy) cited in the judgment */
+  referencedRegulations?: Array<{
+    raw: string;
+    journalNo?: string;
+    year?: number;
+    position?: number;
+    text?: string;
+  }>;
+  /** Parties to the proceedings (strony) */
+  parties?: Array<{
+    name: string;
+    type: 'PERSON' | 'INSTITUTION' | 'UNKNOWN';
+    role?: string;
+  }>;
+  /** Attorneys/representatives (pełnomocnicy) */
+  attorneys?: Array<{
+    name: string;
+    role?: string;
+    representedParty?: string;
+  }>;
+  /** Type of proceeding (typ postępowania) */
+  proceedingType?: string;
+  /** Judges who presided over the case */
+  judges?: Array<{
+    name: string;
+    function?: string;
+    specialRoles?: string[];
+  }>;
+  /** Referenced court cases */
+  referencedCourtCases?: Array<{
+    caseNumber: string;
+    href?: string;
+  }>;
   /** Additional context */
   [key: string]: unknown;
 }
@@ -84,6 +122,37 @@ export class RulingMetadataType {
 
   @Field(() => String, { nullable: true })
   sourceReference?: string;
+
+  @Field(() => String, { nullable: true })
+  divisionName?: string;
+
+  @Field(() => [String], { nullable: true })
+  legalBasis?: string[];
+
+  @Field(() => [JudgesMetadataType], { nullable: true })
+  judges?: Array<{
+    name: string;
+    function?: string;
+    specialRoles?: string[];
+  }>;
+
+  @Field(() => String, { nullable: true })
+  proceedingType?: string;
+}
+
+/**
+ * GraphQL Object Type for Judges Metadata
+ */
+@ObjectType('JudgesMetadata')
+export class JudgesMetadataType {
+  @Field(() => String)
+  name!: string;
+
+  @Field(() => String, { nullable: true })
+  function?: string;
+
+  @Field(() => [String], { nullable: true })
+  specialRoles?: string[];
 }
 
 /**
@@ -94,16 +163,23 @@ export class RulingMetadataType {
  *
  * Aggregate Root: LegalRuling
  * Invariants:
- *   - A ruling must have a signature (unique case identifier)
+ *   - A ruling must have a signature (case identifier)
  *   - A ruling must have a court name
  *   - Ruling date must be a valid date
+ *   - The combination of courtName + signature + rulingDate must be unique
+ *
+ * Uniqueness Note:
+ *   Signatures are unique within a single court, not nationwide.
+ *   Different courts can issue judgments with identical signatures
+ *   (e.g., 'I C 697/19' can appear in multiple regional courts).
+ *   Therefore, the unique constraint uses a composite key: (courtName, signature, rulingDate).
  *
  * Uses nestjs-query decorators for auto-generated CRUD resolvers.
  */
 @Entity('legal_rulings')
 @ObjectType('LegalRuling')
 @QueryOptions({ enableTotalCount: true })
-@Index(['signature'], { unique: true })
+@Index(['courtName', 'signature', 'rulingDate'], { unique: true })
 @Index(['courtName'])
 @Index(['courtType'])
 @Index(['rulingDate'])
@@ -115,10 +191,13 @@ export class LegalRuling {
   id: string;
 
   /**
-   * Unique case signature/identifier (e.g., "III CZP 8/21")
-   * This is the official court case reference number
+   * Case signature/identifier (e.g., "III CZP 8/21")
+   * This is the official court case reference number.
+   *
+   * Note: This field is NOT unique by itself. The uniqueness is guaranteed
+   * by the composite index on (courtName, signature, rulingDate).
    */
-  @Column({ type: 'varchar', length: 100, unique: true })
+  @Column({ type: 'varchar', length: 100 })
   @FilterableField()
   signature: string;
 
@@ -223,11 +302,14 @@ export class LegalRuling {
   /**
    * Get searchable text content for full-text search indexing
    * Combines all searchable fields into a single text for tsvector creation
+   *
+   * Enhanced to include judges, parties, legal basis, and other details
+   * for improved search relevance.
    */
   getSearchableContent(): string {
     const parts: string[] = [];
 
-    // Add signature with higher weight (it's the primary identifier)
+    // Add signature with highest weight (primary identifier)
     if (this.signature) {
       parts.push(this.signature);
     }
@@ -242,7 +324,7 @@ export class LegalRuling {
       parts.push(this.summary);
     }
 
-    // Add full text
+    // Add full text (most important content)
     if (this.fullText) {
       parts.push(this.fullText);
     }
@@ -255,6 +337,64 @@ export class LegalRuling {
     // Add legal area from metadata
     if (this.metadata?.legalArea) {
       parts.push(this.metadata.legalArea);
+    }
+
+    // Add division name for more specific court context
+    if (this.metadata?.divisionName) {
+      parts.push(this.metadata.divisionName);
+    }
+
+    // Add judges' names for judge-specific searches
+    if (this.metadata?.judges) {
+      for (const judge of this.metadata.judges) {
+        parts.push(judge.name);
+      }
+    }
+
+    // Add legal basis for legal provision searches
+    if (this.metadata?.legalBasis) {
+      parts.push(...this.metadata.legalBasis);
+    }
+
+    // Add referenced regulations
+    if (this.metadata?.referencedRegulations) {
+      for (const reg of this.metadata.referencedRegulations) {
+        parts.push(reg.raw);
+        if (reg.text) {
+          parts.push(reg.text);
+        }
+      }
+    }
+
+    // Add parties for case participant searches
+    if (this.metadata?.parties) {
+      for (const party of this.metadata.parties) {
+        parts.push(party.name);
+      }
+    }
+
+    // Add attorneys for legal representative searches
+    if (this.metadata?.attorneys) {
+      for (const attorney of this.metadata.attorneys) {
+        parts.push(attorney.name);
+      }
+    }
+
+    // Add proceeding type
+    if (this.metadata?.proceedingType) {
+      parts.push(this.metadata.proceedingType);
+    }
+
+    // Add related cases
+    if (this.metadata?.relatedCases) {
+      parts.push(...this.metadata.relatedCases);
+    }
+
+    // Add referenced court cases
+    if (this.metadata?.referencedCourtCases) {
+      for (const refCase of this.metadata.referencedCourtCases) {
+        parts.push(refCase.caseNumber);
+      }
     }
 
     return parts.join(' ');

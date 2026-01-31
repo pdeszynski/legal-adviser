@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive E2E tests for the SAOS crawler to ensure all data is being correctly fetched and stored. Test scenarios: 1) Mock SAOS API responses with known test data, 2) Verify search results page 20+ are processed correctly (test specific missing judgment case), 3) Verify text content is fetched and stored from detail endpoint, 4) Test deduplication with same signature from different courts (both should be saved), 5) Test composite unique constraint prevents exact duplicates (same court + signature + date), 6) Verify all additional fields are populated (judges, legal basis, regulations, etc.), 7) Test error handling when SAOS API returns 500 or timeout, 8) Test rate limiting and retry logic, 9) Verify tsvector generation includes weighted fields, 10) Test full-text search returns expected results with proper ranking. Use mocked SAOS API for deterministic testing. Add tests to apps/backend/tests/integration/saos-crawler.spec.ts.",
+  "id": "create-saos-crawler-e2e-tests",
+  "title": "Create E2E Tests for SAOS Crawler Functionality",
+  "priority": 2,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive E2E tests for the SAOS crawler to ensure all data is being correctly fetched and stored. Test scenarios: 1) Mock SAOS API responses with known test data, 2) Verify search results page 20+ are processed correctly (test specific missing judgment case), 3) Verify text content is fetched and stored from detail endpoint, 4) Test deduplication with same signature from different courts (both should be saved), 5) Test composite unique constraint prevents exact duplicates (same court + signature + date), 6) Verify all additional fields are populated (judges, legal basis, regulations, etc.), 7) Test error handling when SAOS API returns 500 or timeout, 8) Test rate limiting and retry logic, 9) Verify tsvector generation includes weighted fields, 10) Test full-text search returns expected results with proper ranking. Use mocked SAOS API for deterministic testing. Add tests to apps/backend/tests/integration/saos-crawler.spec.ts.",
+      "timestamp": "2026-01-31T16:04:26.566Z",
+      "source": "initial"
+    }
+  ]
+}

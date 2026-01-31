@@ -1,4 +1,5 @@
 {
+  "GetAdminDashboardStats": "sha256:bfa1c2cc5754862cc8c4df989bb09b09cd37d43fda9cdf08c8d0fe774e8106c7",
   "GetAdminAnalyticsDashboard": "sha256:e84bcbdccd37ddea1943cb27258f4f081b4316b1dd1612ef65fea1615d358993",
   "GetAdminUserGrowthMetrics": "sha256:faf21458dd03f6964b54f680d5b4fded45878446ac540bfd935059c31d938a5e",
   "GetAdminDocumentMetrics": "sha256:33b8b30eef660249eaf6db567a4aff147baabc3ef047d66aa6489e22bc0460ef",

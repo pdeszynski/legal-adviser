@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "After analyzing the redirect issue, verify role-based access control for /admin/settings is correctly configured. Implementation: 1) Check if /admin/settings page has any client-side role checks that might be causing redirect, 2) Verify useUserRole hook is working correctly for admin users, 3) Check if there's a role guard in AdminLayout that's rejecting access, 4) Verify the user's JWT token contains valid ADMIN or SUPER_ADMIN role in user_roles array, 5) Test with admin@refine.dev seed user (should have admin role), 6) Check if settings page has different role requirements than other admin pages, 7) Verify RoleGuard is configured correctly on backend resolvers if settings uses custom queries, 8) Add debug logging to role checks to see which check is failing. If role validation is failing, fix the guard or role checking logic to match the pattern used by other working admin pages like /admin/users.",
+  "id": "verify-admin-settings-role-authorization",
+  "title": "Verify Admin Settings Role Authorization Configuration",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "After analyzing the redirect issue, verify role-based access control for /admin/settings is correctly configured. Implementation: 1) Check if /admin/settings page has any client-side role checks that might be causing redirect, 2) Verify useUserRole hook is working correctly for admin users, 3) Check if there's a role guard in AdminLayout that's rejecting access, 4) Verify the user's JWT token contains valid ADMIN or SUPER_ADMIN role in user_roles array, 5) Test with admin@refine.dev seed user (should have admin role), 6) Check if settings page has different role requirements than other admin pages, 7) Verify RoleGuard is configured correctly on backend resolvers if settings uses custom queries, 8) Add debug logging to role checks to see which check is failing. If role validation is failing, fix the guard or role checking logic to match the pattern used by other working admin pages like /admin/users.",
+      "timestamp": "2026-01-31T14:42:44.509Z",
+      "source": "initial"
+    }
+  ]
+}

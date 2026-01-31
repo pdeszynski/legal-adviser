@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769869120829-52e72fc0",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-31T14:18:40.829Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "verify-all-admin-routes-use-admin-layout",
+  "featureName": "Verify All Admin Routes Use AdminLayout After Fix",
+  "error": "Feature completed in 537s - auto-verified",
+  "passes": true
+}

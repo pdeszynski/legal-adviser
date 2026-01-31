@@ -84,13 +84,10 @@ class ClarificationQuestionDto(BaseModel):
     @classmethod
     def validate_question_id(cls, v: str) -> str:
         """Validate that question_id is a valid UUID v4."""
-        try:
-            parsed_uuid = uuid.UUID(v)
-            # Explicitly check that it's a v4 UUID
-            if parsed_uuid.version != 4:
-                raise ValueError("question_id must be a valid UUID v4")
-        except ValueError:
-            raise ValueError("question_id must be a valid UUID v4")
+        parsed_uuid = uuid.UUID(v)
+        # Explicitly check that it's a v4 UUID
+        if parsed_uuid.version != 4:
+            raise ValueError("question_id must be a valid UUID v4") from None
         return v
 
     @field_validator("options")
@@ -112,7 +109,8 @@ class ClarificationAnswerDto(BaseModel):
     This model represents the user's response to a specific clarification question.
 
     Attributes:
-        question_id: ID of the question being answered (must match ClarificationQuestionDto.question_id)
+        question_id: ID of the question being answered (must match
+            ClarificationQuestionDto.question_id)
         question_type: Type of question (for validation/context)
         answer: The user's answer text
     """
@@ -137,13 +135,10 @@ class ClarificationAnswerDto(BaseModel):
     @classmethod
     def validate_question_id(cls, v: str) -> str:
         """Validate that question_id is a valid UUID v4."""
-        try:
-            parsed_uuid = uuid.UUID(v)
-            # Explicitly check that it's a v4 UUID
-            if parsed_uuid.version != 4:
-                raise ValueError("question_id must be a valid UUID v4")
-        except ValueError:
-            raise ValueError("question_id must be a valid UUID v4")
+        parsed_uuid = uuid.UUID(v)
+        # Explicitly check that it's a v4 UUID
+        if parsed_uuid.version != 4:
+            raise ValueError("question_id must be a valid UUID v4") from None
         return v
 
 
@@ -240,13 +235,10 @@ class ClarificationAnswersRequestDto(BaseModel):
     @classmethod
     def validate_session_id(cls, v: str) -> str:
         """Validate that session_id is a valid UUID v4."""
-        try:
-            parsed_uuid = uuid.UUID(v)
-            # Explicitly check that it's a v4 UUID
-            if parsed_uuid.version != 4:
-                raise ValueError("session_id must be a valid UUID v4")
-        except ValueError:
-            raise ValueError("session_id must be a valid UUID v4")
+        parsed_uuid = uuid.UUID(v)
+        # Explicitly check that it's a v4 UUID
+        if parsed_uuid.version != 4:
+            raise ValueError("session_id must be a valid UUID v4") from None
         return v
 
     @field_validator("mode")

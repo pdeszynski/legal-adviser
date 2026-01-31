@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769870064654-59be7040",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-31T14:34:24.654Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "document-admin-layout-routing-patterns",
+  "featureName": "Document Admin Layout and Routing Patterns",
+  "error": "Feature completed in 444s - auto-verified",
+  "passes": true
+}

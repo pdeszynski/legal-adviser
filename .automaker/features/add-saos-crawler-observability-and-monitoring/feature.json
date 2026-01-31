@@ -1,0 +1,17 @@
+{
+  "category": "enhancement",
+  "description": "Add comprehensive monitoring and alerting for the SAOS indexing workflow to detect data quality issues early. Implementation: 1) Add Temporal activity metrics: recordsProcessed, recordsSaved, recordsSkipped (duplicate), recordsWithErrors, recordsMissingTextContent, 2) Create dashboard/GraphQL query showing crawler health: success rate, error count, last run timestamp, data quality metrics, 3) Add alerts for: error rate > 5%, missing text content > 10%, no new records in 24 hours, 4) Log sample of skipped records with reason (duplicate signature, missing fields, etc.), 5) Add data quality check job that runs after indexing: verify text content exists, check for duplicate court+signature combinations, validate date ranges, 6) Integrate with Langfuse to trace judgment indexing workflow, 7) Add admin page at /admin/saos-indexing-status showing current state. This helps identify crawler issues before users report them.",
+  "id": "add-saos-crawler-observability-and-monitoring",
+  "title": "Add SAOS Crawler Observability and Monitoring",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Add comprehensive monitoring and alerting for the SAOS indexing workflow to detect data quality issues early. Implementation: 1) Add Temporal activity metrics: recordsProcessed, recordsSaved, recordsSkipped (duplicate), recordsWithErrors, recordsMissingTextContent, 2) Create dashboard/GraphQL query showing crawler health: success rate, error count, last run timestamp, data quality metrics, 3) Add alerts for: error rate > 5%, missing text content > 10%, no new records in 24 hours, 4) Log sample of skipped records with reason (duplicate signature, missing fields, etc.), 5) Add data quality check job that runs after indexing: verify text content exists, check for duplicate court+signature combinations, validate date ranges, 6) Integrate with Langfuse to trace judgment indexing workflow, 7) Add admin page at /admin/saos-indexing-status showing current state. This helps identify crawler issues before users report them.",
+      "timestamp": "2026-01-31T16:04:26.566Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T16:25:27.199Z"
+}

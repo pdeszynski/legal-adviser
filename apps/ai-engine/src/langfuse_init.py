@@ -28,6 +28,8 @@ import sys
 import uuid
 from typing import Any
 
+from .config import get_settings
+
 # DEBUG: Track initialization status
 _debug_log = []
 
@@ -61,8 +63,6 @@ except Exception as e:
     _debug(f"pydantic_ai.Agent import FAILED: {type(e).__name__}: {e}")
     _pydantic_ai_available = False
     Agent = None  # type: ignore
-
-from .config import get_settings
 
 # Singleton instance
 _langfuse_client: Any = None
@@ -450,7 +450,7 @@ def update_current_trace(
 
         # Note: In the new SDK, user_id and session_id are set via @observe decorator
         # The automatic instrumentation via Agent.instrument_all() handles most tracing
-    except Exception:
+    except Exception:  # noqa: S110
         # Silently fail to avoid breaking the main application
         pass
 
@@ -473,7 +473,7 @@ def _record_langfuse_error(
 
         tracker = get_langfuse_tracker()
         tracker.record_error(error_type, error_message, context)
-    except Exception:
+    except Exception:  # noqa: S110
         # Silently fail - error tracking should not break main application
         pass
 

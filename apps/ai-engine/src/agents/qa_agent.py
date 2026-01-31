@@ -12,7 +12,8 @@ Enhanced with structured error handling and retry logic.
 
 Conversation History Support:
 This agent accepts conversation_history parameter containing previous messages.
-History format: [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+History format:
+    [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
 The agent uses this context to provide answers that reference previous exchanges.
 """
 
@@ -25,8 +26,6 @@ from pydantic_ai.models.openai import OpenAIModel
 
 from ..auth import UserContext
 from ..config import get_settings
-
-logger = logging.getLogger(__name__)
 from ..exceptions import (
     AgentExecutionError,
     LLMContextLengthExceededError,
@@ -45,6 +44,8 @@ from .rag_tool import (
     format_contexts_for_prompt,
     retrieve_context_tool,
 )
+
+logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------------------------------
 # Output Models

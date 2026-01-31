@@ -7,7 +7,7 @@ import {
   UserRoleEnum,
   UserStatusEnum,
 } from '../../../domain/user-management/value-objects';
-import { UserOrmEntity } from '../entities/user.orm-entity';
+import { User } from '../../../modules/users/entities/user.entity';
 import { UserMapper } from '../mappers/user.mapper';
 
 /**
@@ -24,8 +24,8 @@ import { UserMapper } from '../mappers/user.mapper';
 @Injectable()
 export class UserRepository implements IUserRepository {
   constructor(
-    @InjectRepository(UserOrmEntity)
-    private readonly repository: Repository<UserOrmEntity>,
+    @InjectRepository(User)
+    private readonly repository: Repository<User>,
   ) {}
 
   async findById(id: string): Promise<UserAggregate | null> {

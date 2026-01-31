@@ -2,6 +2,11 @@
   "format": "apollo-persisted-query-manifest",
   "version": 1,
   "operations": {
+    "sha256:bfa1c2cc5754862cc8c4df989bb09b09cd37d43fda9cdf08c8d0fe774e8106c7": {
+      "type": "query",
+      "name": "GetAdminDashboardStats",
+      "body": "query GetAdminDashboardStats($input: DashboardAnalyticsInput) {\n  analyticsDashboard(input: $input) {\n    userGrowth {\n      totalUsers\n      activeUsers\n      newUsers\n      adminUsers\n      growthRate\n      periodStart\n      periodEnd\n      __typename\n    }\n    documents {\n      totalDocuments\n      completedDocuments\n      draftDocuments\n      failedDocuments\n      generatingDocuments\n      successRate\n      periodStart\n      periodEnd\n      __typename\n    }\n    queries {\n      totalQueries\n      uniqueUsers\n      avgQueriesPerUser\n      totalCitations\n      avgCitationsPerQuery\n      periodStart\n      periodEnd\n      __typename\n    }\n    systemHealth {\n      documentSuccessRate\n      avgResponseTime\n      activeSessions\n      timestamp\n      __typename\n    }\n    generatedAt\n    __typename\n  }\n}"
+    },
     "sha256:e84bcbdccd37ddea1943cb27258f4f081b4316b1dd1612ef65fea1615d358993": {
       "type": "query",
       "name": "GetAdminAnalyticsDashboard",

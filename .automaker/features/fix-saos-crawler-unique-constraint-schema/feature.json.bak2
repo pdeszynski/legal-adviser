@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Fix the deduplication logic and database schema to correctly handle judgment signatures. Current issue: signature alone is used as unique identifier, but signatures are only unique within a single court, not nationwide. Different courts can issue judgments with identical signatures (e.g., 'I C 697/19' can appear in multiple courts). Implementation: 1) Update unique constraint to use composite key: court + signature + judgmentDate, 2) Modify LegalRuling entity schema to include court field as part of unique constraint, 3) Create database migration to: a) Drop existing unique index on signature field, b) Add composite unique index on (courtId, signature, judgmentDate), 4) Update crawler deduplication check to query by all three fields, 5) Update existing database records that may have conflicts (keep first occurrence, mark others as duplicates), 6) Add documentation explaining SAOS signature structure. This ensures valid judgments from different courts with same signature are all stored.",
+  "id": "fix-saos-crawler-unique-constraint-schema",
+  "title": "Fix SAOS Crawler Unique Constraint for Court-Specific Signatures",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Fix the deduplication logic and database schema to correctly handle judgment signatures. Current issue: signature alone is used as unique identifier, but signatures are only unique within a single court, not nationwide. Different courts can issue judgments with identical signatures (e.g., 'I C 697/19' can appear in multiple courts). Implementation: 1) Update unique constraint to use composite key: court + signature + judgmentDate, 2) Modify LegalRuling entity schema to include court field as part of unique constraint, 3) Create database migration to: a) Drop existing unique index on signature field, b) Add composite unique index on (courtId, signature, judgmentDate), 4) Update crawler deduplication check to query by all three fields, 5) Update existing database records that may have conflicts (keep first occurrence, mark others as duplicates), 6) Add documentation explaining SAOS signature structure. This ensures valid judgments from different courts with same signature are all stored.",
+      "timestamp": "2026-01-31T16:04:26.563Z",
+      "source": "initial"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769876919321-9fb5106f",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-31T16:28:39.321Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "enhance-saos-full-text-search-with-weighted-tsvector",
+  "featureName": "Enhance Full-Text Search with Weighted TSVector Index",
+  "error": "Feature completed in 506s - auto-verified",
+  "passes": true
+}

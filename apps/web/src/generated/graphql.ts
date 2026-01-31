@@ -91,6 +91,26 @@ export type AdminCreateUserInput = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type AdminDashboardStats = {
+  __typename?: 'AdminDashboardStats';
+  /** Number of active sessions */
+  activeSessionsCount: Scalars['Int']['output'];
+  /** When these stats were calculated */
+  calculatedAt: Scalars['DateTime']['output'];
+  /** Document count breakdown by status */
+  documentCountByStatus: DocumentCountByStatus;
+  /** Total number of chat sessions */
+  totalChatSessions: Scalars['Int']['output'];
+  /** Total number of documents */
+  totalDocuments: Scalars['Int']['output'];
+  /** Total number of queries/conversations */
+  totalQueries: Scalars['Int']['output'];
+  /** Total number of users */
+  totalUsers: Scalars['Int']['output'];
+  /** User count breakdown by role */
+  userCountByRole: UserCountByRole;
+};
+
 export type AdminForceDisableTwoFactorInput = {
   /** The ID of the user to disable 2FA for */
   userId: Scalars['String']['input'];
@@ -2977,6 +2997,18 @@ export type DocumentCommentSortFields =
   | 'text'
   | 'updatedAt';
 
+export type DocumentCountByStatus = {
+  __typename?: 'DocumentCountByStatus';
+  /** Documents in COMPLETED status */
+  completedCount: Scalars['Int']['output'];
+  /** Documents in DRAFT status */
+  draftCount: Scalars['Int']['output'];
+  /** Documents in FAILED status */
+  failedCount: Scalars['Int']['output'];
+  /** Documents in GENERATING status */
+  generatingCount: Scalars['Int']['output'];
+};
+
 export type DocumentEditEventPayload = {
   __typename?: 'DocumentEditEventPayload';
   documentId: Scalars['ID']['output'];
@@ -3934,6 +3966,13 @@ export type InterestRequestResponse = {
   referenceId?: Maybe<Scalars['String']['output']>;
   /** Whether the request was submitted successfully */
   success: Scalars['Boolean']['output'];
+};
+
+export type JudgesMetadata = {
+  __typename?: 'JudgesMetadata';
+  function?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  specialRoles?: Maybe<Array<Scalars['String']['output']>>;
 };
 
 export type LangfuseDebugConfig = {
@@ -6288,6 +6327,7 @@ export type Query = {
   adminBackupStats: BackupStats;
   /** Get all backups (admin only) */
   adminBackups: Array<Backup>;
+  adminDashboard: AdminDashboardStats;
   /** Advanced search with boolean operators (AND, OR, NOT) and field-specific search */
   advancedSearchLegalRulings: AdvancedLegalRulingSearchResponse;
   /** Generate a report of users affected by empty messages */
@@ -7299,8 +7339,12 @@ export type Role = {
 
 export type RulingMetadata = {
   __typename?: 'RulingMetadata';
+  divisionName?: Maybe<Scalars['String']['output']>;
+  judges?: Maybe<Array<JudgesMetadata>>;
   keywords?: Maybe<Array<Scalars['String']['output']>>;
   legalArea?: Maybe<Scalars['String']['output']>;
+  legalBasis?: Maybe<Array<Scalars['String']['output']>>;
+  proceedingType?: Maybe<Scalars['String']['output']>;
   relatedCases?: Maybe<Array<Scalars['String']['output']>>;
   sourceReference?: Maybe<Scalars['String']['output']>;
 };
@@ -8847,6 +8891,22 @@ export type UserCountAggregate = {
   updatedAt?: Maybe<Scalars['Int']['output']>;
 };
 
+export type UserCountByRole = {
+  __typename?: 'UserCountByRole';
+  /** Total number of admin users */
+  adminCount: Scalars['Int']['output'];
+  /** Total number of client users */
+  clientCount: Scalars['Int']['output'];
+  /** Total number of guest users */
+  guestCount: Scalars['Int']['output'];
+  /** Total number of lawyer users */
+  lawyerCount: Scalars['Int']['output'];
+  /** Total number of paralegal users */
+  paralegalCount: Scalars['Int']['output'];
+  /** Total number of super admin users */
+  superAdminCount: Scalars['Int']['output'];
+};
+
 export type UserDeleteResponse = {
   __typename?: 'UserDeleteResponse';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -9407,6 +9467,56 @@ export type WorkerStatusResult = {
   totalWorkers: Scalars['Int']['output'];
   /** List of worker status entries */
   workers: Array<WorkerStatusEntry>;
+};
+
+export type GetAdminDashboardStatsQueryVariables = Exact<{
+  input?: InputMaybe<DashboardAnalyticsInput>;
+}>;
+
+export type GetAdminDashboardStatsQuery = {
+  __typename?: 'Query';
+  analyticsDashboard: {
+    __typename?: 'AnalyticsDashboard';
+    generatedAt: Date;
+    userGrowth: {
+      __typename?: 'UserGrowthMetrics';
+      totalUsers: number;
+      activeUsers: number;
+      newUsers: number;
+      adminUsers: number;
+      growthRate: number;
+      periodStart: Date;
+      periodEnd: Date;
+    };
+    documents: {
+      __typename?: 'DocumentMetrics';
+      totalDocuments: number;
+      completedDocuments: number;
+      draftDocuments: number;
+      failedDocuments: number;
+      generatingDocuments: number;
+      successRate: number;
+      periodStart: Date;
+      periodEnd: Date;
+    };
+    queries: {
+      __typename?: 'QueryMetrics';
+      totalQueries: number;
+      uniqueUsers: number;
+      avgQueriesPerUser: number;
+      totalCitations: number;
+      avgCitationsPerQuery: number;
+      periodStart: Date;
+      periodEnd: Date;
+    };
+    systemHealth: {
+      __typename?: 'SystemHealthMetrics';
+      documentSuccessRate: number;
+      avgResponseTime: number;
+      activeSessions: number;
+      timestamp: Date;
+    };
+  };
 };
 
 export type AdminUserFragmentFragment = {
@@ -13018,6 +13128,78 @@ export const RefreshTokenPayloadFragmentFragmentDoc = `
   refreshToken
 }
     `;
+export const GetAdminDashboardStatsDocument = `
+    query GetAdminDashboardStats($input: DashboardAnalyticsInput) {
+  analyticsDashboard(input: $input) {
+    userGrowth {
+      totalUsers
+      activeUsers
+      newUsers
+      adminUsers
+      growthRate
+      periodStart
+      periodEnd
+    }
+    documents {
+      totalDocuments
+      completedDocuments
+      draftDocuments
+      failedDocuments
+      generatingDocuments
+      successRate
+      periodStart
+      periodEnd
+    }
+    queries {
+      totalQueries
+      uniqueUsers
+      avgQueriesPerUser
+      totalCitations
+      avgCitationsPerQuery
+      periodStart
+      periodEnd
+    }
+    systemHealth {
+      documentSuccessRate
+      avgResponseTime
+      activeSessions
+      timestamp
+    }
+    generatedAt
+  }
+}
+    `;
+
+export const useGetAdminDashboardStatsQuery = <
+  TData = GetAdminDashboardStatsQuery,
+  TError = unknown,
+>(
+  variables?: GetAdminDashboardStatsQueryVariables,
+  options?: Omit<UseQueryOptions<GetAdminDashboardStatsQuery, TError, TData>, 'queryKey'> & {
+    queryKey?: UseQueryOptions<GetAdminDashboardStatsQuery, TError, TData>['queryKey'];
+  },
+) => {
+  return useQuery<GetAdminDashboardStatsQuery, TError, TData>({
+    queryKey:
+      variables === undefined ? ['GetAdminDashboardStats'] : ['GetAdminDashboardStats', variables],
+    queryFn: fetcher<GetAdminDashboardStatsQuery, GetAdminDashboardStatsQueryVariables>(
+      GetAdminDashboardStatsDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useGetAdminDashboardStatsQuery.fetcher = (
+  variables?: GetAdminDashboardStatsQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  fetcher<GetAdminDashboardStatsQuery, GetAdminDashboardStatsQueryVariables>(
+    GetAdminDashboardStatsDocument,
+    variables,
+    options,
+  );
+
 export const GetAdminAnalyticsDashboardDocument = `
     query GetAdminAnalyticsDashboard($input: DashboardAnalyticsInput) {
   analyticsDashboard(input: $input) {

@@ -16,12 +16,12 @@ import logging
 import os
 import signal
 import sys
-from pathlib import Path
+from types import FrameType
 
 import uvicorn
 
 # Add parent directory to path so we can import from src
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # noqa: PTH100, PTH120
 
 from src.main import app
 
@@ -30,9 +30,6 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-
-from types import FrameType
 
 
 def handle_signal(signum: int, _frame: FrameType | None) -> None:

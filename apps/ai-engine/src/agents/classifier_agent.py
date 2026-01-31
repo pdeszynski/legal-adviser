@@ -10,8 +10,10 @@ Langfuse integration follows the official pattern:
 
 Conversation History Support:
 This agent accepts conversation_history parameter containing previous messages.
-History format: [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
-The agent uses this context to refine classification based on previously disclosed facts.
+History format:
+    [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+The agent uses this context to refine classification based on previously disclosed
+facts.
 """
 
 import logging
@@ -155,7 +157,8 @@ async def classify_case(
         session_id: Session ID for tracking
         user_id: User ID for observability
         conversation_history: Previous messages in format:
-            [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+            [{"role": "user", "content": "..."},
+             {"role": "assistant", "content": "..."}]
 
     Returns:
         Tuple of (classification result, metadata dict)
@@ -202,35 +205,30 @@ Please classify the case considering all information from the conversation histo
             },
         )
 
-    try:
-        agent = classifier_agent()
-        result = await agent.run(enhanced_prompt)
-        classification = result.output  # type: ignore[attr-defined]
+    agent = classifier_agent()
+    result = await agent.run(enhanced_prompt)
+    classification = result.output  # type: ignore[attr-defined]
 
-        processing_time_ms = (time.time() - start_time) * 1000
+    processing_time_ms = (time.time() - start_time) * 1000
 
-        metadata = {
-            "processing_time_ms": processing_time_ms,
-            "model": settings.OPENAI_MODEL,
-            "grounds_count": len(classification.identified_grounds),  # type: ignore[attr-defined]
-            "overall_confidence": classification.overall_confidence,  # type: ignore[attr-defined]
-        }
+    metadata = {
+        "processing_time_ms": processing_time_ms,
+        "model": settings.OPENAI_MODEL,
+        "grounds_count": len(classification.identified_grounds),  # type: ignore[attr-defined]
+        "overall_confidence": classification.overall_confidence,  # type: ignore[attr-defined]
+    }
 
-        # Update trace with output
-        if is_langfuse_enabled():
-            update_current_trace(
-                output={
-                    "grounds_count": len(classification.identified_grounds),  # type: ignore[attr-defined]
-                    "overall_confidence": classification.overall_confidence,  # type: ignore[attr-defined]
-                    "summary": (
-                        classification.summary[:200] if classification.summary else ""  # type: ignore[attr-defined]
-                    ),
-                    "processing_time_ms": processing_time_ms,
-                },
-            )
+    # Update trace with output
+    if is_langfuse_enabled():
+        update_current_trace(
+            output={
+                "grounds_count": len(classification.identified_grounds),  # type: ignore[attr-defined]
+                "overall_confidence": classification.overall_confidence,  # type: ignore[attr-defined]
+                "summary": (
+                    classification.summary[:200] if classification.summary else ""  # type: ignore[attr-defined]
+                ),
+                "processing_time_ms": processing_time_ms,
+            },
+        )
 
-        return classification, metadata  # type: ignore[return-value]
-
-    except Exception:
-        # Error is automatically tracked by PydanticAI's instrumentation
-        raise
+    return classification, metadata  # type: ignore[return-value]

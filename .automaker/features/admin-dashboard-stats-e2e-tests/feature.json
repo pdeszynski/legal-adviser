@@ -1,0 +1,17 @@
+{
+  "category": "bug",
+  "description": "Create comprehensive Playwright E2E tests for the admin dashboard statistics feature. Test scenarios: 1) Admin user can navigate to /admin and see stats cards, 2) Stats load correctly and display non-zero counts (if data exists), 3) Skeleton loading appears before stats are loaded, 4) Stats refresh on page reload, 5) Non-admin users cannot access stats (403), 6) Error states display gracefully if backend fails, 7) Verify stats match database counts (can query GraphQL API directly in test). Use admin@refine.dev credentials for testing. Ensure tests catch regressions in stats aggregation or display.",
+  "id": "admin-dashboard-stats-e2e-tests",
+  "title": "Create E2E Tests for Admin Dashboard Stats",
+  "priority": 2,
+  "status": "verified",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Create comprehensive Playwright E2E tests for the admin dashboard statistics feature. Test scenarios: 1) Admin user can navigate to /admin and see stats cards, 2) Stats load correctly and display non-zero counts (if data exists), 3) Skeleton loading appears before stats are loaded, 4) Stats refresh on page reload, 5) Non-admin users cannot access stats (403), 6) Error states display gracefully if backend fails, 7) Verify stats match database counts (can query GraphQL API directly in test). Use admin@refine.dev credentials for testing. Ensure tests catch regressions in stats aggregation or display.",
+      "timestamp": "2026-01-31T15:31:50.375Z",
+      "source": "initial"
+    }
+  ],
+  "updatedAt": "2026-01-31T15:53:49.345Z"
+}

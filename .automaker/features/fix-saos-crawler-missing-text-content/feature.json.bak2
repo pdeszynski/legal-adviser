@@ -1,0 +1,16 @@
+{
+  "category": "bug",
+  "description": "Fix the bug where most SAOS judgments are being saved to the database without their full text content. Current behavior: textContent field is null or empty for majority of rulings. Root causes may include: 1) API response field mapping error - text content may be in a different field (content, text, uzasadnienie, motywy), 2) Text content may require a separate API call to fetch full judgment details, 3) Text field may be nested in API response structure, 4) Error handling may be silencing failures when parsing text content. Implementation: 1) Inspect raw SAOS API response to identify where text content is located, 2) Check if text content requires calling separate endpoint per the SAOS API documentation (https://www.saos.org.pl/help/index.php/dokumentacja-api/api-przegladania-danych), 3) Update crawler to fetch full judgment details including text content, 4) Add validation to ensure textContent is not empty before saving, 5) Add logging for cases where text content is missing, 6) Backfill existing database records by fetching full details. This is critical for RAG functionality - text content is essential for semantic search.",
+  "id": "fix-saos-crawler-missing-text-content",
+  "title": "Fix SAOS Crawler Missing Judgment Text Content",
+  "priority": 1,
+  "status": "backlog",
+  "branchName": "master",
+  "descriptionHistory": [
+    {
+      "description": "Fix the bug where most SAOS judgments are being saved to the database without their full text content. Current behavior: textContent field is null or empty for majority of rulings. Root causes may include: 1) API response field mapping error - text content may be in a different field (content, text, uzasadnienie, motywy), 2) Text content may require a separate API call to fetch full judgment details, 3) Text field may be nested in API response structure, 4) Error handling may be silencing failures when parsing text content. Implementation: 1) Inspect raw SAOS API response to identify where text content is located, 2) Check if text content requires calling separate endpoint per the SAOS API documentation (https://www.saos.org.pl/help/index.php/dokumentacja-api/api-przegladania-danych), 3) Update crawler to fetch full judgment details including text content, 4) Add validation to ensure textContent is not empty before saving, 5) Add logging for cases where text content is missing, 6) Backfill existing database records by fetching full details. This is critical for RAG functionality - text content is essential for semantic search.",
+      "timestamp": "2026-01-31T16:04:26.562Z",
+      "source": "initial"
+    }
+  ]
+}

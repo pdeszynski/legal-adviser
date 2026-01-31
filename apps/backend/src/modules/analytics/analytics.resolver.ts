@@ -1,6 +1,7 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { AnalyticsService } from './services/analytics.service';
+import { SaosIndexingAnalyticsService } from './services/saos-indexing-analytics.service';
 import {
   AnalyticsDashboard,
   DashboardAnalyticsInput,
@@ -22,6 +23,10 @@ import {
   TokenUsageTrend,
   TokenUsageExport,
   DemoRequestAnalytics,
+  AdminDashboardStats,
+  SaosIndexingMetrics,
+  SaosIndexingByCourtType,
+  SaosIndexingHealthStatus,
 } from './dto/analytics.dto';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
@@ -37,7 +42,10 @@ import { Int } from '@nestjs/graphql';
  */
 @Resolver()
 export class AnalyticsResolver {
-  constructor(private readonly analyticsService: AnalyticsService) {}
+  constructor(
+    private readonly analyticsService: AnalyticsService,
+    private readonly saosIndexingService: SaosIndexingAnalyticsService,
+  ) {}
 
   /**
    * Get complete dashboard analytics
@@ -300,6 +308,67 @@ export class AnalyticsResolver {
     @Args('input', { nullable: true }) input?: DashboardAnalyticsInput,
   ): Promise<DemoRequestAnalytics> {
     return this.analyticsService.getDemoRequestAnalytics(input || {});
+  }
+
+  /**
+   * Get admin dashboard stats
+   *
+   * Aggregated statistics for the admin dashboard at /admin.
+   * Returns:
+   * - Total number of users
+   * - Total number of documents
+   * - Total number of queries/conversations
+   * - Document counts by status (DRAFT, GENERATING, COMPLETED, FAILED)
+   * - User count by role (admin, lawyer, client counts)
+   * - Active sessions count
+   *
+   * Admin-only access.
+   */
+  @Query(() => AdminDashboardStats, { name: 'adminDashboard' })
+  @UseGuards(GqlAuthGuard, AdminGuard)
+  async getAdminDashboardStats(): Promise<AdminDashboardStats> {
+    return this.analyticsService.getAdminDashboardStats();
+  }
+
+  /**
+   * Get SAOS indexing metrics
+   *
+   * Returns comprehensive metrics about the SAOS/ISAP ruling indexing workflow.
+   * Includes data quality metrics, processing statistics, and timestamps.
+   *
+   * Admin-only access.
+   */
+  @Query(() => SaosIndexingMetrics, { name: 'saosIndexingMetrics' })
+  @UseGuards(GqlAuthGuard, AdminGuard)
+  async getSaosIndexingMetrics(): Promise<SaosIndexingMetrics> {
+    return this.saosIndexingService.getSaosIndexingMetrics();
+  }
+
+  /**
+   * Get SAOS indexing breakdown by court type
+   *
+   * Returns the count and coverage of indexed rulings grouped by court type.
+   *
+   * Admin-only access.
+   */
+  @Query(() => [SaosIndexingByCourtType], { name: 'saosIndexingByCourtType' })
+  @UseGuards(GqlAuthGuard, AdminGuard)
+  async getSaosIndexingByCourtType(): Promise<SaosIndexingByCourtType[]> {
+    return this.saosIndexingService.getSaosIndexingByCourtType();
+  }
+
+  /**
+   * Get SAOS indexing health status
+   *
+   * Returns the overall health status of the SAOS indexing system
+   * including metrics, alerts, recent activity, and errors.
+   *
+   * Admin-only access.
+   */
+  @Query(() => SaosIndexingHealthStatus, { name: 'saosIndexingHealthStatus' })
+  @UseGuards(GqlAuthGuard, AdminGuard)
+  async getSaosIndexingHealthStatus(): Promise<SaosIndexingHealthStatus> {
+    return this.saosIndexingService.getSaosIndexingHealthStatus();
   }
 
   /**

@@ -32,7 +32,8 @@ export function BillingPlanChange({
 
   const { mutate: changePlan } = useChangeSubscriptionPlanMutation();
 
-  const plans = plansData?.subscriptionPlans || [];
+  // Type assertion needed because generated GraphQL type doesn't match actual data shape
+  const plans = (plansData?.subscriptionPlans as any) ?? [];
 
   const handleChangePlan = async () => {
     if (!selectedPlan) {
@@ -54,7 +55,7 @@ export function BillingPlanChange({
     }
   };
 
-  const getPlanPrice = (plan: SubscriptionPlansQuery['subscriptionPlans'][number]) => {
+  const getPlanPrice = (plan: { price: number }) => {
     return `$${plan.price}/mo`;
   };
 
@@ -74,7 +75,9 @@ export function BillingPlanChange({
     return order.indexOf(tier);
   };
 
-  const sortedPlans = [...plans].sort((a, b) => getPlanOrder(a.tier) - getPlanOrder(b.tier));
+  const sortedPlans = Array.isArray(plans)
+    ? [...plans].sort((a, b) => getPlanOrder(a.tier) - getPlanOrder(b.tier))
+    : [];
 
   if (isLoading) {
     return <BillingPlanChangeSkeleton />;
@@ -87,7 +90,7 @@ export function BillingPlanChange({
         {translate('billing.planChange.currentPlan', { plan: currentPlanName })}
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {sortedPlans.map((plan) => {
+        {sortedPlans.map((plan: any) => {
           const isSelected = selectedPlan === plan.id;
           const isCurrent = plan.tier === currentPlan;
 

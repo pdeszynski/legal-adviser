@@ -1,0 +1,11 @@
+{
+  "id": "evt-1769875911460-22f6cfb1",
+  "trigger": "feature_success",
+  "timestamp": "2026-01-31T16:11:51.460Z",
+  "projectPath": "/Users/piteer/workspace/radca-prawny/legal",
+  "projectName": "legal",
+  "featureId": "enhance-saos-crawler-full-judgment-details",
+  "featureName": "Enhance SAOS Crawler to Fetch Complete Judgment Data",
+  "error": "Feature completed in 442s - auto-verified",
+  "passes": true
+}

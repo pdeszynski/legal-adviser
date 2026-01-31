@@ -331,17 +331,18 @@ export class AdvancedLegalRulingSearchService {
       SELECT
         r.*,
         ts_rank(
-          COALESCE(r."searchVector", to_tsvector('simple', '')),
-          to_tsquery('simple', $1)
+          COALESCE(r."searchVector", to_tsvector('polish', '')),
+          to_tsquery('polish', $1),
+          1 -- Normalization by document length
         ) as rank,
         ts_headline(
-          'simple',
+          'polish',
           COALESCE(r.summary, '') || ' ' || COALESCE(r."fullText", ''),
-          to_tsquery('simple', $1),
+          to_tsquery('polish', $1),
           'MaxWords=35, MinWords=15, ShortWord=3, HighlightAll=FALSE, MaxFragments=2, FragmentDelimiter=" ... "'
         ) as headline
       FROM legal_rulings r
-      WHERE r."searchVector" @@ to_tsquery('simple', $1)
+      WHERE r."searchVector" @@ to_tsquery('polish', $1)
     `;
 
     const params: (string | Date | number)[] = [tsquery];
@@ -425,7 +426,7 @@ export class AdvancedLegalRulingSearchService {
     let sql = `
       SELECT COUNT(*) as count
       FROM legal_rulings r
-      WHERE r."searchVector" @@ to_tsquery('simple', $1)
+      WHERE r."searchVector" @@ to_tsquery('polish', $1)
     `;
 
     const params: (string | Date)[] = [tsquery];

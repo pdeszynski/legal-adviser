@@ -25,11 +25,30 @@ export class SaosTransformer {
     // Convert numeric id to string (SAOS API returns id as number)
     const idStr = String(external.id);
 
+    // Build comprehensive metadata from all available SAOS fields
     const metadata: LegalRulingMetadata = {
       legalArea: external.metadata?.legalArea as string | undefined,
-      keywords: external.keywords,
+      keywords: external.keywords || external.keywordsDetail,
       relatedCases: external.references,
       sourceReference: `SAOS:${idStr}`,
+
+      // Full judgment detail fields
+      divisionName: external.divisionName || external.division?.name,
+      legalBasis: external.legalBasis || external.legal_basis,
+      referencedRegulations: external.referencedRegulations,
+      parties: external.parties,
+      attorneys: external.attorneys,
+      proceedingType: external.proceedingType,
+
+      // Judges information
+      judges: external.judges?.map((judge) => ({
+        name: judge.name,
+        function: judge.function || undefined,
+        specialRoles: judge.specialRoles,
+      })),
+
+      // Referenced court cases
+      referencedCourtCases: external.referencedCourtCases,
     };
 
     // Handle both old and new SAOS API response structures
@@ -52,7 +71,12 @@ export class SaosTransformer {
       external.courtType ||
       'COMMON';
 
-    const fullText = external.textContent || external.text_content || null;
+    // Use fullTextContent from detail view if available, otherwise fall back to textContent/text_content
+    const fullText =
+      external.fullTextContent ||
+      external.textContent ||
+      external.text_content ||
+      null;
 
     return {
       signature,

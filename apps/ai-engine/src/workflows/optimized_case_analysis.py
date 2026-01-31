@@ -215,15 +215,17 @@ async def complete_node(state: CaseAnalysisState) -> CaseAnalysisState:
         # Build optimized analysis (shorter template)
         analysis_parts = ["# Case Analysis\n", "## Legal Grounds\n"]
 
-        for ground in grounds[:5]:  # Limit to top 5 grounds
-            analysis_parts.append(
-                f"**{ground.get('name', 'Unknown')}** ({ground.get('confidence_score', 0):.0%})\n"
-            )
+        analysis_parts.extend(
+            f"**{ground.get('name', 'Unknown')}** ({ground.get('confidence_score', 0):.0%})\n"
+            for ground in grounds[:5]  # Limit to top 5 grounds
+        )
 
         if contexts:
             analysis_parts.append("\n## Context\n")
-            for ctx in contexts[:3]:  # Limit to top 3 contexts
-                analysis_parts.append(f"- {ctx.get('source', 'Unknown')}: {ctx.get('article', 'N/A')}\n")
+            analysis_parts.extend(
+                f"- {ctx.get('source', 'Unknown')}: {ctx.get('article', 'N/A')}\n"
+                for ctx in contexts[:3]  # Limit to top 3 contexts
+            )
 
         # Generate recommendations based on confidence
         confidence = state.get("classification_confidence", 0.0)
@@ -417,40 +419,37 @@ class OptimizedCaseAnalysisWorkflow:
         if user_responses:
             state["user_responses"] = user_responses
 
-        try:
-            # Run the workflow
-            result = await self.graph.ainvoke(state)
+        # Run the workflow
+        start_time = time.time()
+        result = await self.graph.ainvoke(state)
 
-            processing_time_ms = (time.time() - start_time) * 1000
+        processing_time_ms = (time.time() - start_time) * 1000
 
-            # Prepare output
-            output = {
-                "legal_grounds": result.get("legal_grounds", []),
-                "classification_confidence": result.get("classification_confidence", 0.0),
-                "retrieved_contexts": result.get("retrieved_contexts", []),
-                "clarification_questions": result.get("clarification_questions", []),
-                "final_analysis": result.get("final_analysis"),
-                "recommendations": result.get("recommendations"),
-                "needs_clarification": result.get("needs_clarification", False),
-                "processing_time_ms": processing_time_ms,
-                "optimized": True,
-                "error": result.get("error"),
-            }
+        # Prepare output
+        output = {
+            "legal_grounds": result.get("legal_grounds", []),
+            "classification_confidence": result.get("classification_confidence", 0.0),
+            "retrieved_contexts": result.get("retrieved_contexts", []),
+            "clarification_questions": result.get("clarification_questions", []),
+            "final_analysis": result.get("final_analysis"),
+            "recommendations": result.get("recommendations"),
+            "needs_clarification": result.get("needs_clarification", False),
+            "processing_time_ms": processing_time_ms,
+            "optimized": True,
+            "error": result.get("error"),
+        }
 
-            # Update trace with workflow-level metadata
-            if is_langfuse_enabled():
-                update_current_trace(
-                    output={
-                        "grounds_count": len(output["legal_grounds"]),
-                        "confidence": output["classification_confidence"],
-                        "needs_clarification": output["needs_clarification"],
-                    }
-                )
+        # Update trace with workflow-level metadata
+        if is_langfuse_enabled():
+            update_current_trace(
+                output={
+                    "grounds_count": len(output["legal_grounds"]),
+                    "confidence": output["classification_confidence"],
+                    "needs_clarification": output["needs_clarification"],
+                }
+            )
 
-            return output
-
-        except Exception:
-            raise
+        return output
 
 
 # Singleton instance

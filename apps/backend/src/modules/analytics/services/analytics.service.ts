@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, LessThanOrEqual } from 'typeorm';
+import { Repository, Between, LessThanOrEqual, IsNull } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { UserRoleEntity } from '../../authorization/entities';
 import {
@@ -10,6 +10,7 @@ import {
 import { LegalQuery } from '../../queries/entities/legal-query.entity';
 import { AiUsageRecord } from '../../usage-tracking/entities/ai-usage-record.entity';
 import { DemoRequestOrmEntity } from '../../../infrastructure/persistence/entities/demo-request.orm-entity';
+import { ChatSession } from '../../chat/entities/chat-session.entity';
 import { UserRole } from '../../auth/enums/user-role.enum';
 import {
   AnalyticsDashboard,
@@ -44,6 +45,9 @@ import {
   DemoRequestTopUseCase,
   DemoRequestTimeSeriesPoint,
   DemoRequestResponseTimeMetrics,
+  AdminDashboardStats,
+  UserCountByRole,
+  DocumentCountByStatus,
 } from '../dto/analytics.dto';
 
 /**
@@ -88,6 +92,8 @@ export class AnalyticsService {
     private readonly usageRepository: Repository<AiUsageRecord>,
     @InjectRepository(DemoRequestOrmEntity)
     private readonly demoRequestRepository: Repository<DemoRequestOrmEntity>,
+    @InjectRepository(ChatSession)
+    private readonly chatSessionRepository: Repository<ChatSession>,
   ) {}
 
   /**
@@ -1651,5 +1657,152 @@ export class AnalyticsService {
       totalContacted,
       calculatedAt: new Date(),
     };
+  }
+
+  /**
+   * Get admin dashboard stats
+   *
+   * Aggregated statistics for the admin dashboard at /admin.
+   * Uses efficient COUNT queries with GROUP BY for performance.
+   */
+  async getAdminDashboardStats(): Promise<AdminDashboardStats> {
+    const now = new Date();
+
+    // Run all count queries in parallel for performance
+    const [
+      totalUsers,
+      totalDocuments,
+      totalQueries,
+      totalChatSessions,
+      activeSessionsCount,
+      userCountByRole,
+      documentCountsByStatus,
+    ] = await Promise.all([
+      // Total users count
+      this.userRepository.count(),
+
+      // Total documents count
+      this.documentRepository.count(),
+
+      // Total queries count
+      this.queryRepository.count(),
+
+      // Total chat sessions count
+      this.chatSessionRepository.count(),
+
+      // Active sessions count (not soft deleted)
+      this.chatSessionRepository.count({ where: { deletedAt: IsNull() } }),
+
+      // User count by role
+      this.getUserCountByRole(),
+
+      // Document count by status
+      this.getDocumentCountByStatus(),
+    ]);
+
+    return {
+      totalUsers,
+      totalDocuments,
+      totalQueries,
+      totalChatSessions,
+      activeSessionsCount,
+      userCountByRole,
+      documentCountByStatus: documentCountsByStatus,
+      calculatedAt: now,
+    };
+  }
+
+  /**
+   * Get user count grouped by role
+   * Uses efficient aggregation with COUNT and GROUP BY
+   */
+  private async getUserCountByRole(): Promise<UserCountByRole> {
+    const results = await this.userRoleRepository
+      .createQueryBuilder('ur')
+      .select('r.type', 'role')
+      .addSelect('COUNT(DISTINCT ur.userId)', 'count')
+      .innerJoin('ur.role', 'r')
+      .where('ur.isActive = :isActive', { isActive: true })
+      .groupBy('r.type')
+      .getRawMany();
+
+    // Initialize all counts to 0
+    const counts = {
+      adminCount: 0,
+      superAdminCount: 0,
+      lawyerCount: 0,
+      paralegalCount: 0,
+      clientCount: 0,
+      guestCount: 0,
+    };
+
+    // Map results to counts
+    for (const row of results) {
+      const count = parseInt(row.count, 10);
+      switch (row.role) {
+        case 'admin':
+          counts.adminCount = count;
+          break;
+        case 'super_admin':
+          counts.superAdminCount = count;
+          break;
+        case 'lawyer':
+          counts.lawyerCount = count;
+          break;
+        case 'paralegal':
+          counts.paralegalCount = count;
+          break;
+        case 'client':
+          counts.clientCount = count;
+          break;
+        case 'guest':
+          counts.guestCount = count;
+          break;
+      }
+    }
+
+    return counts;
+  }
+
+  /**
+   * Get document count grouped by status
+   * Uses efficient aggregation with COUNT and GROUP BY
+   */
+  private async getDocumentCountByStatus(): Promise<DocumentCountByStatus> {
+    const results = await this.documentRepository
+      .createQueryBuilder('doc')
+      .select('doc.status', 'status')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('doc.status')
+      .getRawMany();
+
+    // Initialize all counts to 0
+    const counts = {
+      draftCount: 0,
+      generatingCount: 0,
+      completedCount: 0,
+      failedCount: 0,
+    };
+
+    // Map results to counts
+    for (const row of results) {
+      const count = parseInt(row.count, 10);
+      switch (row.status) {
+        case DocumentStatus.DRAFT:
+          counts.draftCount = count;
+          break;
+        case DocumentStatus.GENERATING:
+          counts.generatingCount = count;
+          break;
+        case DocumentStatus.COMPLETED:
+          counts.completedCount = count;
+          break;
+        case DocumentStatus.FAILED:
+          counts.failedCount = count;
+          break;
+      }
+    }
+
+    return counts;
   }
 }
